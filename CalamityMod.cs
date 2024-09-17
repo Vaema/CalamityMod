@@ -144,8 +144,6 @@ namespace CalamityMod
                 WeakReferenceSupport.WikiThisSupport();
             }
 
-            BossRushEvent.Load();
-            // TODO -- As ModBossBarStyle is a ModType, its Load function does not need to be called directly here.
             EnchantmentManager.LoadAllEnchantments();
             VanillaArmorChangeManager.Load();
             SetupBossKillTimes();
@@ -196,7 +194,6 @@ namespace CalamityMod
 
             PopupGUIManager.UnloadGUIs();
             InvasionProgressUIManager.UnloadGUIs();
-            BossRushEvent.Unload();
             SchematicManager.Unload();
             PlayerDashManager.Unload();
 

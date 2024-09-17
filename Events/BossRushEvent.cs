@@ -52,8 +52,7 @@ using ArtemisBoss = CalamityMod.NPCs.ExoMechs.Artemis.Artemis;
 
 namespace CalamityMod.Events
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class BossRushEvent
+    public sealed class BossRushEvent : ModSystem
     {
         public enum TimeChangeContext
         {
@@ -137,7 +136,7 @@ namespace CalamityMod.Events
         public static readonly SoundStyle VictorySound = new("CalamityMod/Sounds/Custom/BossRush/BossRushVictory");
 
         #region Loading and Unloading
-        public static void Load()
+        public override void OnModLoad()
         {
             BossIDsAfterDeath = new Dictionary<int, int[]>();
 
@@ -456,7 +455,7 @@ namespace CalamityMod.Events
             };
         }
 
-        public static void Unload()
+        public override void Unload()
         {
             Bosses = null;
             BossIDsAfterDeath = null;
