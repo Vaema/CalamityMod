@@ -127,7 +127,7 @@ namespace CalamityMod
         {
             carpetOriginal = TextureAssets.FlyingCarpet;
 
-            // I hate this I hate thisI hate thisIhatethisIhatethisIhatethisIhatethisIhatethisIhatethis
+            // Initialize the CalamityLists as this is coupled in tons of other type
             CalamityLists.Load();
 
             // Initialize the EnemyStats struct as early as it is safe to do so

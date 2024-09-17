@@ -36,9 +36,9 @@ namespace CalamityMod.Particles
                 int ID = particleTypes.Count; //Get the ID of the particle
                 particleTypes[type] = ID;
 
-                // Flow: 2024/08/17
-                // 'UnintializedObject' is allowed to use here as it's only read for Texture
-                // But Do NOT EVER use it's instance as it's literally Uninitialized.
+                // Flow: 2024/09/17
+                // 'UnintializedObject' is allowed to use here as it's only read for Texture string Property
+                // But do NOT EVER use it's instance as they are literally Uninitialized.
                 // It might cause unintended behaviour if we do that.
 #pragma warning disable SYSLIB0050
                 Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
