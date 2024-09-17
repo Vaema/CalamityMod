@@ -26,6 +26,9 @@ namespace CalamityMod.NPCs
 
         public override void SetStaticDefaults()
         {
+            ghostKillCount = 0;
+            sharkKillCount = 0;
+
             _PolterghastTriggerNPCS = [
                 ModContent.NPCType<PhantomSpirit>(),
                 ModContent.NPCType<PhantomSpiritS>(),
@@ -37,9 +40,14 @@ namespace CalamityMod.NPCs
                 NPCID.SandShark,
                 NPCID.SandsharkHallow,
                 NPCID.SandsharkCorrupt,
-                NPCID.SandsharkCrimson,
-                // ModContent.NPCType<AstralSandShark>() Uncomment this once we have one
+                NPCID.SandsharkCrimson
             ];
+        }
+
+        public override void Unload()
+        {
+            _PolterghastTriggerNPCS = null;
+            _GreatSharkTriggerNPCS = null;
         }
 
         public override void OnKill(NPC npc)
@@ -101,8 +109,8 @@ namespace CalamityMod.NPCs
             if (NPC.AnyNPCs(ModContent.NPCType<GreatSandShark.GreatSandShark>()))
                 return;
 
-            var fusionShark = slainedNPC.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld;
-            if (!_GreatSharkTriggerNPCS.Contains(slainedNPC.type) && !fusionShark)
+            var fusionFeeder = slainedNPC.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld;
+            if (!_GreatSharkTriggerNPCS.Contains(slainedNPC.type) && !fusionFeeder)
                 return;
 
             sharkKillCount++;
