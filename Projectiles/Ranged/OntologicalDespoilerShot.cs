@@ -104,10 +104,6 @@ namespace CalamityMod.Projectiles.Ranged
                         dust2.noGravity = true;
                         dust2.scale = scale;
                         dust2.color = baseColor;
-                        //Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
-                        //dust3.noGravity = true;
-                        //dust3.scale = scale;
-                        //dust3.color = baseColor;
                     }
                 }
                 else
@@ -193,10 +189,10 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.35f;
+            int hitsToMinMult = 8;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

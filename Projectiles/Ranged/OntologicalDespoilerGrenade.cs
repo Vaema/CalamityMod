@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
