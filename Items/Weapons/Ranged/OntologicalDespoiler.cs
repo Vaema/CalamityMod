@@ -61,25 +61,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (player.whoAmI != Main.myPlayer)
-                return;
-
-            // Right-click channeling
-            player.Calamity().rightClickListener = true;
-
-            if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse)
-            {
-                // Only one out at a time
-                if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
-                    return;
-
-                var source = player.GetSource_ItemUse(player.ActiveItem());
-                Projectile holdout = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
-                holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
-                SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);
-                shotType = !shotType;
-            }
+            if (Main.myPlayer == player.whoAmI)
+                player.Calamity().rightClickListener = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -88,8 +71,19 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
                 return false;
 
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, shotType ? 0 : 5);
-            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
+            if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
+            {
+                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
+                holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+                SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);
+                shotType = !shotType;
+            }
+            else
+            {
+                Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, shotType ? 0 : 5);
+                holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
+            }
             return false;
         }
         public override void ModifyTooltips(List<TooltipLine> list)

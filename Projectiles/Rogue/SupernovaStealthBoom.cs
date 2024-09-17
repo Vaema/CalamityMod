@@ -141,8 +141,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.damage *= 100;
                 }
 
-                for (int i = 0; i < 5; i++)
-                    SoundEngine.PlaySound(Supernova.StealthExplosionSound with { Pitch = Projectile.ai[2], MaxInstances = 5 }, Projectile.Center);
+                SoundEngine.PlaySound(Supernova.StealthExplosionSound with { Pitch = Projectile.ai[2] }, Projectile.Center);
                 Projectile.numHits = 0;
                 damageFrame = true;
                 doDamage = true;

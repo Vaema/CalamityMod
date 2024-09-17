@@ -837,12 +837,13 @@ OntologicalDespoiler: {
 	DisplayName: Ontological Despoiler
 	Tooltip:
 		'''
-		Charges and fires bursts of concentrated unreality, swap between unstable and null modes with right click
-		Unstable is trifurcated and pierces through enemies
-		Null is fired rapidly and has homing properties
-		The first charging stage increases the fire rate of the burst
-		The second charging stage replaces the burst with a disruption shot for unstable, or an annihilation beam for null
-		Modes charge slower when used in succession; switching resets it
+		Fires chargeable bursts of concentrated unreality
+		Swap between unstable mode and null mode with <right>
+		Unstable bursts are trifurcated and pierce enemies
+		Null bursts have high rate-of-fire and home in on enemies
+		At 50% charge, the bursts are fired rapidly
+		At 100% charge, unleash an unstable disruption shot or a null annihilation beam
+		Modes charge slower when used in succession, this is reset by switching
 		'Rob them of continuity and the laws of physics they hold so dear.'
 		'''
 }

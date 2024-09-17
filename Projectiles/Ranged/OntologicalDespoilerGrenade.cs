@@ -38,12 +38,16 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 2;
+            Projectile.extraUpdates = 3;
             Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            // Remove this when ranger doesnt get +1 extra update for free
+            if (Projectile.extraUpdates > 3)
+                Projectile.extraUpdates = 3;
+
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             Projectile.frameCounter++;
@@ -174,8 +178,13 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 1.2f * power, 39, false);
                 GeneralParticleHandler.SpawnParticle(orb3);
 
-                SoundStyle fire = new("CalamityMod/Sounds/Item/EarthMeteor");
-                SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = Main.rand.NextFloat(0, 0.1f) * -3 }, Projectile.Center);
+                for (int i = 0; i < 3; i++)
+                {
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/EarthMeteor");
+                    SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = -0.1f * (i + 1), MaxInstances = 3 }, Projectile.Center);
+                }
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/ShadowboltReflect");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.9f, Pitch = -0.4f}, Projectile.Center);
 
                 Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 5.5f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
             }
