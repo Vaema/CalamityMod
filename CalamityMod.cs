@@ -80,10 +80,6 @@ namespace CalamityMod
         // These should all be moved to other files, whether that's CalamityLists or brand new ModSystems.
         // It is best to have a ton of small ModSystems.
 
-        // Boss Spawners
-        public static int ghostKillCount = 0;
-        public static int sharkKillCount = 0;
-
         // Holds the Texture Arrays for all the lava textures.
         // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
         // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
