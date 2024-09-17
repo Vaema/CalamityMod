@@ -133,7 +133,6 @@ namespace CalamityMod
                 LavaTextures.fall[0] = waterfallTexture[1];
 
                 PrimitiveRenderer.Initialize();
-                ForegroundDrawing.ForegroundManager.Load();
 
                 // This must be done separately from immediate loading, as loading is now multithreaded.
                 // However, render targets and certain other graphical objects can only be created on the main thread.

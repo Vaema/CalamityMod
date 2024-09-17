@@ -1517,23 +1517,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Foreground tiles drawing
-        private static void DrawForegroundStuff(Terraria.On_Main.orig_DrawGore orig, Main self)
-        {
-            orig(self);
-            if (Main.PlayerLoaded && !Main.gameMenu)
-                ForegroundManager.DrawTiles();
-        }
-
-        private static void ClearForegroundStuff(On_TileDrawing.orig_PreDrawTiles orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
-        {
-            orig(self, solidLayer, forRenderTargets, intoRenderTargets);
-
-            if (!solidLayer && (intoRenderTargets || Lighting.UpdateEveryFrame))
-                ForegroundManager.ClearTiles();
-        }
-        #endregion
-
         #region Tile ping overlay
         private static void ClearTilePings(On_TileDrawing.orig_Draw orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
