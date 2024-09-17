@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(30).
+                AddIngredient<BloodOrb>(15).
                 AddIngredient(ItemID.SoulofFlight).
                 AddTile(TileID.AlchemyTable).
                 Register()

@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Ranged
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/AuricBulletHit") { Volume = 0.7f };
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

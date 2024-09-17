@@ -15,7 +15,6 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        private int noTileHitCounter = 120;
         public int time = 0;
 
         public override void SetStaticDefaults()

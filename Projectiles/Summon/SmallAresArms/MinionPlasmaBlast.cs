@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;

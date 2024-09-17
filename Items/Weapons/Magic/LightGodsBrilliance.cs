@@ -49,10 +49,10 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ShadecrystalBarrage>().
                 AddIngredient<AbyssalTome>().
                 AddIngredient(ItemID.HolyWater, 10).
-                AddIngredient(ItemID.SoulofLight, 30).
-                AddIngredient<EffulgentFeather>(5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
+                AddIngredient<EffulgentFeather>(5).
+                AddIngredient(ItemID.SoulofLight, 30).
                 AddTile(TileID.Bookcases).
                 Register();
         }

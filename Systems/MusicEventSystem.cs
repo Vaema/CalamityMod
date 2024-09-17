@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -280,40 +281,7 @@ namespace CalamityMod.Systems
 
         public static void SendSyncRequest()
         {
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.MusicEventSyncRequest);
-            packet.Send();
-        }
-
-        public static void FulfillSyncRequest(int requester)
-        {
-            // Only fulfill requests as the server host
-            if (!Main.dedServ)
-                return;
-
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.MusicEventSyncResponse);
-
-            int trackCount = PlayedEvents.Count;
-            packet.Write(trackCount);
-
-            for (int i = 0; i < trackCount; i++)
-                packet.Write(PlayedEvents[i]);
-
-            packet.Send(toClient: requester);
-        }
-
-        public static void ReceiveSyncResponse(BinaryReader reader)
-        {
-            // Only receive info on clients
-            if (Main.dedServ)
-                return;
-
-            PlayedEvents.Clear();
-            int trackCount = reader.ReadInt32();
-
-            for (int i = 0; i < trackCount; i++)
-                PlayedEvents.Add(reader.ReadString());
+            MusicEventSyncRequestPacket.Send();
         }
 
         #endregion

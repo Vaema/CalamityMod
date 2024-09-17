@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
         private static float RotationIncrement = 0.22f;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

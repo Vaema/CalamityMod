@@ -37,13 +37,14 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<SulphurousSand>(15).
+                AddIngredient<SulphurousSand>().
+                AddIngredient(ItemID.Waterleaf).
                 AddTile(TileID.Bottles).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(10).
+                AddIngredient<BloodOrb>(5).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

@@ -48,8 +48,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Terrarian).
-                AddIngredient<CoreofCalamity>(2).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CoreofCalamity>(2).
                 AddTile<DraedonsForge>().
                 Register();
         }

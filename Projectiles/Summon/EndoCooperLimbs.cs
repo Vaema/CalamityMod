@@ -129,7 +129,9 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (Projectile.ai[0] == 2f)
                 return false;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+
+            var dye = Main.player[Projectile.owner]?.cMinion ?? 0;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, armorShaderToUse: dye);
             return false;
         }
 

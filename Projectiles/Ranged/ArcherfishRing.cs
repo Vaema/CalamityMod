@@ -63,8 +63,6 @@ namespace CalamityMod.Projectiles.Ranged
         {
             //Audio feedback for hitting the ring
             SoundEngine.PlaySound(PopSound, Projectile.Center);
-
-            target.AddBuff(BuffID.Wet, 240);
         }
 
         public override bool PreDraw(ref Color lightColor)

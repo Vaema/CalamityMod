@@ -3,6 +3,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -231,10 +232,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     //
                     // Other way possible is to having bandit stolen inventory per player
                     // But I didn't wanted to change system too much
-                    ModPacket packet = CalamityMod.Instance.GetPacket();
-                    packet.Write((byte)CalamityModMessageType.WantToRefundReforges);
-                    packet.Write((byte)Main.myPlayer);
-                    packet.Send();
+                    WantToRefundReforgesPacket.Send();
                 }
 
                 SoundEngine.PlaySound(SoundID.Coins); // Money dink sound
@@ -309,12 +307,11 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCShop shop = new(Type);
             shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
                 .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<Kylie>(), Item.buyPrice(gold: 9))
+                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
                 .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
                 .Add(ItemID.TigerClimbingGear)
                 .AddWithCustomValue(ItemID.InvisibilityPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
                 .AddWithCustomValue(ItemID.NightOwlPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
                 .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
                 .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
                 .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
@@ -354,8 +351,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
         {
-            cooldown = 180;
-            randExtraCooldown = 60;
+            cooldown = 90;
+            randExtraCooldown = 15;
         }
 
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)

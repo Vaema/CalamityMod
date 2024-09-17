@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -71,15 +72,7 @@ namespace CalamityMod.Items.Critters
                     }
                     else
                     {
-                        var netMessage = CalamityMod.Instance.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.PlaceAltCritter);
-                        netMessage.Write(player.whoAmI);
-                        netMessage.Write(mouseX);
-                        netMessage.Write(mouseY);
-                        netMessage.Write(item.makeNPC);
-                        netMessage.Write(item.type);
-                        netMessage.Write(colorType);
-                        netMessage.Send();
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
                     }
                 }
             }

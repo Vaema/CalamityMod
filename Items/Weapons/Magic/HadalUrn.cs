@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureVoid;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -49,8 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<BlackAnurian>().
-                AddIngredient<SmoothVoidstone>(20).
-                AddIngredient<Lumenyl>(5).
+                AddIngredient<Voidstone>(20).
                 AddIngredient<DepthCells>(15).
                 AddIngredient(ItemID.Bone, 10).
                 AddTile(TileID.MythrilAnvil).

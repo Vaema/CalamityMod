@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +18,6 @@ namespace CalamityMod.NPCs.Signus
     {
         public override void SetStaticDefaults()
         {
-            this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
         }
 
@@ -42,6 +42,15 @@ namespace CalamityMod.NPCs.Signus
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CosmicMine")
+            });
         }
 
         public override void SendExtraAI(BinaryWriter writer)

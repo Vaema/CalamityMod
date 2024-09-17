@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/DeathwindGlow").Value);
         }
-
+        
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int index = 0; index < 4; ++index)
@@ -46,11 +46,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float SpeedY = velocity.Y + Main.rand.Next(-20, 21) * 0.05f;
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                 {
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 1.75), knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 2), knockback, player.whoAmI);
                 }
                 else
                 {
-                    int baseArrow = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.75), knockback, player.whoAmI);
+                    int baseArrow = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
                     Main.projectile[baseArrow].noDropItem = true;
                 }
             }

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -20,8 +21,8 @@ namespace CalamityMod.Items.SummonItems
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
+            Item.width = 58;
+            Item.height = 60;
             Item.useAnimation = 10;
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -45,11 +46,16 @@ namespace CalamityMod.Items.SummonItems
             return true;
         }
 
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition + new Vector2(10 * -player.direction, 20);
+        }
+
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<EffulgentFeather>(15).
                 AddIngredient<LifeAlloy>(10).
+                AddIngredient<EffulgentFeather>(15).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

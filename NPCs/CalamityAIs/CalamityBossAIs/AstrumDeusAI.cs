@@ -17,6 +17,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -220,14 +221,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 // On server, immediately send the correct extra AI of this head to clients.
                                 if (Main.netMode == NetmodeID.Server)
                                 {
-                                    var netMessage = mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                    netMessage.Write((byte)headOneID);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[0]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[1]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[2]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[3]);
-                                    netMessage.Send();
+                                    SyncCalamityNPCAIArrayPacket.Send(Main.npc[headOneID]);
                                 }
 
                                 // Make sure the second split worm is also contiguous.
@@ -243,14 +237,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 // On server, immediately send the correct extra AI of this head to clients.
                                 if (Main.netMode == NetmodeID.Server)
                                 {
-                                    var netMessage = mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                    netMessage.Write((byte)headTwoID);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[0]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[1]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[2]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[3]);
-                                    netMessage.Send();
+                                    SyncCalamityNPCAIArrayPacket.Send(Main.npc[headTwoID]);
                                 }
                             }
 
@@ -382,14 +369,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                             if (Main.netMode == NetmodeID.Server)
                             {
-                                var netMessage = mod.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                netMessage.Write((byte)lol);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[0]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[1]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[2]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[3]);
-                                netMessage.Send();
+                                SyncCalamityNPCAIArrayPacket.Send(Main.npc[lol]);
                             }
 
                             Main.npc[lol].ai[2] = npc.whoAmI;

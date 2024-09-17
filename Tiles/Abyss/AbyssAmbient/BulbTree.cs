@@ -9,18 +9,12 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
-    public class BulbTree1 : ModTile
+    public class BulbTree1 : GlowMaskTile
     {
-        protected virtual string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree1Glow";
-        internal static FramedGlowMask GlowMask; 
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree1Glow";
 
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            if (!string.IsNullOrEmpty(GlowAsset))
-            {
-                GlowMask = new(GlowAsset, 18, 18);
-            }
-
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.Width = 3;
@@ -37,8 +31,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(52, 124, 153));
             DustType = 33;
-
-            base.SetStaticDefaults();
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -53,27 +45,19 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            if (GlowMask is not null && GlowMask.HasContentInFramePos(tile.TileFrameX, tile.TileFrameY))
-            {
-                Vector2 pos = new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero;
-                Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
-                spriteBatch.Draw(GlowMask.Texture, pos, frame, Color.White);
-            }
+            return Color.White;
         }
     }
 
     public class BulbTree2 : BulbTree1
     {
-        protected override string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree3Glow";
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree2Glow";
     }
 
     public class BulbTree3 : BulbTree1
     {
-        protected override string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree3Glow";
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree3Glow";
     }
 }

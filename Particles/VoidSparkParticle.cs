@@ -17,14 +17,14 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool UseAdditiveBlend => false;
 
-        public override string Texture => "CalamityMod/Particles/LargeSpark";
+        public override string Texture => "CalamityMod/Particles/GlowSpark2";
 
         public VoidSparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, float shrinkSpeed = 1)
         {
             Position = relativePosition;
             Velocity = velocity;
             AffectedByGravity = affectedByGravity;
-            Scale = scale;
+            Scale = scale * 0.357f;
             Lifetime = lifetime;
             Color = InitialColor = color;
             ShrinkSpeed = shrinkSpeed;
@@ -35,6 +35,7 @@ namespace CalamityMod.Particles
             Scale *= 0.9f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             Velocity *= 0.95f;
+
             Ylength *= (1 + (0.25f * ShrinkSpeed));
             Xlength *= (1 - (0.3f * ShrinkSpeed));
 
@@ -50,9 +51,10 @@ namespace CalamityMod.Particles
         {
             Vector2 scale = new Vector2(Xlength, Ylength) * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Black, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.85f, 1f), 0, 0f);
+            spriteBatch.Draw(texture2, Position - Main.screenPosition, null, Color with { A = 0 }, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Black, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.75f, 0.9f), 0, 0f);
         }
     }
 }

@@ -38,8 +38,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<GalaxySmasher>().
-                AddIngredient(ItemID.SoulofMight, 30).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<LifeAlloy>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;

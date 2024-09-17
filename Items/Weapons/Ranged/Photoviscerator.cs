@@ -25,7 +25,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         // Right-click stats
         public static float RightClickVelocityMult = 2.5f;
-        public static int RightClickCooldown = 30;
+        public static int RightClickCooldown = 25;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        }
 
         public override void SetDefaults()
         {
@@ -55,33 +59,22 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (player.whoAmI != Main.myPlayer)
-                return;
-
-            // Right-click channeling
-            player.Calamity().rightClickListener = true;
-
-            if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse)
-            {
-                // Only one out at a time
-                if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
-                    return;
-                // If you don't have any Gel don't even spawn the holdout
-                if (!player.HasAmmo(Item))
-                    return;
-
-                var source = player.GetSource_ItemUse_WithPotentialAmmo(Item, ItemID.Gel);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, Item.shoot, 0, 0f, player.whoAmI);
-            }
+            if (Main.myPlayer == player.whoAmI)
+                player.Calamity().rightClickListener = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // The holdout will initially double up when right clicking otherwise
             if (player.altFunctionUse == 2f)
-                return false;
-
-            Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
+            {
+                if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
+                    Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
+                else
+                    return false;
+            }
+            else
+                Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
             return false;
         }
 
