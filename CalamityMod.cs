@@ -133,7 +133,6 @@ namespace CalamityMod
             EnchantmentManager.LoadAllEnchantments();
             VanillaArmorChangeManager.Load();
             SetupBossKillTimes();
-            SchematicManager.Load();
 
             //lava
             LavaRendering.instance = new LavaRendering();
@@ -175,7 +174,6 @@ namespace CalamityMod
             CalamityGlobalProjectile.UnloadTweaks();
 
             PopupGUIManager.UnloadGUIs();
-            SchematicManager.Unload();
             PlayerDashManager.Unload();
 
             Main.QueueMainThreadAction(() =>
