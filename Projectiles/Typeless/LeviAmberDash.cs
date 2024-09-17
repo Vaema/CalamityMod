@@ -37,8 +37,9 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (target.CanBeMoved(true))
             {
-                target.velocity.Y += -1.8f;
-                target.velocity.X += 4.2f * Owner.direction;
+                // Launch
+                Vector2 launchVel = (Owner.Calamity().mouseWorld - target.Center).SafeNormalize(Vector2.UnitY) * 16;
+                target.velocity = launchVel;
             }
 
             target.AddBuff(BuffID.Wet, 300);

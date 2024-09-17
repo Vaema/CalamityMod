@@ -341,13 +341,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (j == totalSegments)
                             type = NPCID.TheDestroyerTail;
 
-                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                        Main.npc[segment].ai[3] = npc.whoAmI;
-                        Main.npc[segment].realLife = npc.whoAmI;
-                        Main.npc[segment].ai[1] = index;
-                        Main.npc[index].ai[0] = segment;
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                        index = segment;
+                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                            Main.npc[segment].ai[3] = npc.whoAmI;
+                            Main.npc[segment].realLife = npc.whoAmI;
+                            Main.npc[segment].ai[1] = index;
+                            Main.npc[index].ai[0] = segment;
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                            index = segment;
                     }
                 }
 

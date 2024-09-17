@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 420);
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.98f);
+                Projectile.damage = (int)(Projectile.damage * 0.95f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

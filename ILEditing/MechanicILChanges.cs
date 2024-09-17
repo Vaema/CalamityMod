@@ -36,6 +36,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -75,6 +76,42 @@ namespace CalamityMod.ILEditing
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
         public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
+
+        #region Punch Card Spawning Command
+        private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
+        {
+            // Any of these conditions should result in normal behaviour
+            if (!Main.drawingPlayerChat || Main.CurrentInputTextTakerOverride != null || Main.editSign || PlayerInput.UsingGamepad)
+            {
+                orig();
+                return;
+            }
+
+            // Allow only one pick up of the card this way per player (also don't give it to dead people)
+            Player player = Main.player[Main.myPlayer];
+            if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
+            {
+                orig();
+                return;
+            }
+
+            // Find 2 specific sets of text from the live chat box (as the player is typing)
+            // Gives the item to you and abruptly shuts the chat box down if both parts are found
+            string text = Main.chatText.ToLower();
+            string prefix = "Items.Accessories.PunchCard.SpawnText";
+            if ((text.Contains(CalamityUtils.GetTextValue($"{prefix}1")) || text.Contains(CalamityUtils.GetTextValue($"{prefix}1Alt"))) && text.Contains(CalamityUtils.GetTextValue($"{prefix}2")))
+            {
+                player.QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
+                player.Calamity().spawnedPunchCard = true;
+                Main.chatText = "";
+                Main.ClosePlayerChat();
+                Main.chatRelease = false;
+                SoundEngine.PlaySound(SoundID.MenuClose);
+                return;
+            }
+            orig();
+        }
+        #endregion
 
         #region Dash Fixes and Improvements
         private static void MakeShieldSlamIFramesConsistent(ILContext il)
@@ -1818,11 +1855,15 @@ namespace CalamityMod.ILEditing
                 int colType = tileCache.TileColor;
 
                 Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
-                Color tileLight = drawData.tileLight;
 
-                if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
-                if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
-                if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+                if (glowMaskTile.GlowMaskAffectedByLight)
+                {
+                    Color tileLight = drawData.tileLight;
+
+                    if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
+                    if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
+                    if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+                }
 
                 drawColor = glowMaskTile.GlowMaskPaintInteraction switch
                 {
@@ -1831,9 +1872,12 @@ namespace CalamityMod.ILEditing
                     _ => drawColor
                 };
 
-                // Cull no lit and too dark colors
-                if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
-                    return;
+                if (glowMaskTile.GlowMaskCanBeCulled)
+                {
+                    // Cull no lit and too dark colors
+                    if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
+                        return;
+                }
 
                 drawColor.A = 255;
 
@@ -1844,8 +1888,7 @@ namespace CalamityMod.ILEditing
                 }
                 else
                 {
-                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - screenPosition + screenOffset;
                     Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }

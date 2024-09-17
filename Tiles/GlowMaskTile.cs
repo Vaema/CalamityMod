@@ -26,6 +26,8 @@ namespace CalamityMod.Tiles
         internal static int LookupLength;
 
         public PaintColorTint GlowMaskPaintInteraction = PaintColorTint.OnlyByDeepPaint;
+        public bool GlowMaskAffectedByLight = true;
+        public bool GlowMaskCanBeCulled = true;
 
         public abstract string GlowMaskAsset { get; }
 

@@ -674,7 +674,7 @@ namespace CalamityMod
             return false;
         }
 
-        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
@@ -687,7 +687,7 @@ namespace CalamityMod
             for (int i = 0; i < 10; i++)
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, 0, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, effects, 0f);
             }
         }
 
@@ -710,7 +710,7 @@ namespace CalamityMod
             }
         }
 
-        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
+        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
@@ -720,8 +720,8 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame);
-            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, 0, 0f);
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, effects, 0f);
         }
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)

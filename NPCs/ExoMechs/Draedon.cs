@@ -4,6 +4,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
+using CalamityMod.Packets;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -222,12 +223,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 CalamityWorld.DraedonMechdusa = false;
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.CodebreakerSummonStuff);
-                    netMessage.Write(CalamityWorld.DraedonSummonCountdown);
-                    netMessage.WriteVector2(CalamityWorld.DraedonSummonPosition);
-                    netMessage.Write(CalamityWorld.DraedonMechdusa);
-                    netMessage.Send();
+                    CodebreakerSummonStuffPacket.Send();
                 }
             }
 
@@ -336,10 +332,7 @@ namespace CalamityMod.NPCs.ExoMechs
 
                             if (Main.netMode != NetmodeID.SinglePlayer)
                             {
-                                var netMessage = CalamityMod.Instance.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.ExoMechSelection);
-                                netMessage.Write((int)CalamityWorld.DraedonMechToSummon);
-                                netMessage.Send();
+                                ExoMechSelectionPacket.Send();
                             }
                         }
                     }

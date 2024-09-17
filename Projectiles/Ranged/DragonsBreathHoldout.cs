@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
             fade = MathHelper.Lerp(fade, 0, 0.25f);
             if (Time == 0)
             {
-                weldingTimer = Owner.itemAnimationMax * 4;
+                weldingTimer = Owner.itemAnimationMax * 6;
             }
             if (firingBeam)
             {

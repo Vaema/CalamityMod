@@ -646,11 +646,26 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
                         }
                     }
-                    else
+                    else if (NPC.localAI[2] == 1f)
                     {
                         // Charge towards target
                         float inertia = (bossRush || enraged) ? 57f : death ? 63f : revenge ? 66f : expertMode ? 69f : 75f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
+
+                        // Stop charging towards the player when within a certain distance
+                        if (NPC.Distance(player.Center) < 160f * NPC.scale)
+                            NPC.localAI[2] = 2f;
+                    }
+                    else
+                    {
+                        // Slow down
+                        if (NPC.Distance(player.Center) >= 240f * NPC.scale || NPC.localAI[2] == 3f)
+                        {
+                            if (NPC.localAI[2] != 3f)
+                                NPC.localAI[2] = 3f;
+
+                            NPC.velocity *= 0.98f;
+                        }
                     }
 
                     // Lay holy bombs while charging

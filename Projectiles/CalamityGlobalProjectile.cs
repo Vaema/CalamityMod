@@ -120,8 +120,9 @@ namespace CalamityMod.Projectiles
         // If true, this projectile creates impact sparks upon hitting enemies
         public bool deepcoreBullet = false;
 
-        // If true, causes all projectiles fired by this weapon to have homing. Currently used for Arterial Assault.
-        public bool allProjectilesHome = false;
+        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
+        // Currently used for Arterial Assault.
+        public float conditionalHomingRange = 0f;
 
         // Amount of extra updates that are set in SetDefaults.
         public int defExtraUpdates = -1;
@@ -203,8 +204,9 @@ namespace CalamityMod.Projectiles
         #region Set Defaults
         public override void SetDefaults(Projectile projectile)
         {
-            // OLD 1.3 CODE: Disable Lunatic Cultist's homing resistance globally
-            // ProjectileID.Sets.CultistIsResistantTo[projectile.type] = false;
+            // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
+            if (projectile.type == ProjectileID.ZapinatorLaser)
+                projectile.originalDamage = projectile.damage;
 
             // Apply Calamity Global Projectile Tweaks.
             SetDefaults_ApplyTweaks(projectile);
@@ -3549,6 +3551,20 @@ namespace CalamityMod.Projectiles
                     projectile.velocity *= ((Main.masterMode || BossRushEvent.BossRushActive) ? 1.017078f : 1.015525f);
             }
 
+            // Zapinator lasers cannot trigger their damage multiplier more than once
+            if (projectile.type == ProjectileID.ZapinatorLaser && projectile.damage > projectile.originalDamage)
+            {
+                if (projectile.ai[0] == 0f)
+                {
+                    projectile.originalDamage = projectile.damage;
+                    projectile.ai[0] = 1f;
+                }
+                else
+                {
+                    projectile.damage = projectile.originalDamage;
+                }
+            }
+
             // Golf Balls go nyoom on touching Auric Ore/Repulsers
             if (ProjectileID.Sets.IsAGolfBall[projectile.type])
             {
@@ -3897,7 +3913,6 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-
                 // Support to help things like holdout swords work with Arc Flash Ring
                 if (!spawnArcFlash && projectile.numHits == 0)
                     spawnArcFlash = true;
@@ -3906,10 +3921,9 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     spawnArcFlash = true;
-
-                if (allProjectilesHome)
+                if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, 300f, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
                 }
                 if (brimstoneBullets)
                 {

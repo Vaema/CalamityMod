@@ -276,6 +276,37 @@ namespace CalamityMod.ILEditing
         // TODO -- Finish this
         #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
 
+        #region Prevent UFO Mount from Dismounting in Water
+        private static void PreventUFODismountInWater(ILContext il)
+        {
+            // Prevent the Cosmic Car Key's UFO mount from dismounting when the player is in water.
+            var cursor = new ILCursor(il);
+
+            // Unfortunately, the code responsible for this is 4000 lines into Player.Update, meaning that reaching it is far from simple.
+            // The following method was the easiest way I could find to reach it:
+            // Move to the third call of Mount.Dismount.
+            for (int i = 0; i < 3; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallvirt<Mount>("Dismount")))
+                {
+                    LogFailure("Prevent UFO Dismounting in Water", "Could not reach the Dismount instruction.");
+                    return;
+                }
+            }
+            // Move the cursor backwards to place it right after the instruction which loads Main.myPlayer onto the stack.
+            if (!cursor.TryGotoPrev(MoveType.After, i => i.MatchLdsfld<Main>("myPlayer")))
+            {
+                LogFailure("Prevent UFO Dismounting in Water", "Could not locate the myPlayer check.");
+                return;
+            }
+
+            // Remove the instruction and replace it with the integer limit. The next instruction checks if this value is equal to Player.whoAmI.
+            // Player.whoAmI will never be the integer limit, so the check will always fail and the UFO will not dismount.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
+        }
+        #endregion Prevent UFO Mount from Dismounting in Water
+
         #region Color Blighted Gel
         private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {

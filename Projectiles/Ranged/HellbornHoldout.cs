@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.08f;
+            modifiers.SourceDamage *= 0.1f;
             if (Owner.Calamity().hellbornShots < 8)
             {
                 Owner.Calamity().hellbornShots++;

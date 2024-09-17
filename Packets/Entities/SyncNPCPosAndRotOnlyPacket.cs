@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Terraria;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Packets
+{
+    public sealed class SyncNPCPosAndRotOnlyPacket : CalamityPacket
+    {
+        public static SyncNPCPosAndRotOnlyPacket Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCPosAndRotOnly;
+
+        public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
+        {
+            if (npc is null)
+                return;
+
+            var packet = Instance.CreateBasePacket();
+            packet.WriteWhoAmI(npc);
+            packet.WriteVector2(npc.position);
+            packet.Write((Half)npc.rotation); //rotation unit is radian (-π/2 ≤ rotation ≤ π/2) so Half precision should works
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var npc = packet.ReadNPC();
+            var position = packet.ReadVector2();
+            var rotation = (float)packet.ReadHalf(); 
+
+            if (npc is null)
+                return;
+
+            npc.position = position;
+            npc.rotation = rotation;
+
+            if (Main.dedServ)
+            {
+                Send(npc, ignoreClient: sender);
+            }
+        }
+    }
+}

@@ -330,7 +330,8 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             }
 
             // Draw the hammer.
-            Main.spriteBatch.Draw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
+            Main.CurrentDrawnEntityShader = Main.player[Projectile.owner]?.cMinion ?? 0;
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             return false;
         }
     }

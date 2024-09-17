@@ -37,7 +37,8 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<SulphurousSand>(15).
+                AddIngredient<SulphurousSand>().
+                AddIngredient(ItemID.Waterleaf).
                 AddTile(TileID.Bottles).
                 Register();
 

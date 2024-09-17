@@ -1008,6 +1008,10 @@ namespace CalamityMod.Systems
             convert[ItemID.AmberHook] = ItemID.SandstorminaBottle;
             convert[ItemID.SandstorminaBottle] = ItemID.FlyingCarpet;
             convert[ItemID.FlyingCarpet] = ItemID.AmberHook;
+
+            // Enchanted Sword and Terragrim shimmer into each other
+            convert[ItemID.EnchantedSword] = ItemID.Terragrim;
+            convert[ItemID.Terragrim] = ItemID.EnchantedSword;
         }
         #endregion
 
@@ -1946,6 +1950,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofFright);
             r.AddIngredient(ItemID.SoulofMight);
             r.AddIngredient(ItemID.SoulofSight);
+            r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
             r.DisableDecraft();
 
@@ -1956,6 +1961,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofFright);
             r.AddIngredient(ItemID.SoulofMight);
             r.AddIngredient(ItemID.SoulofSight);
+            r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
             r.DisableDecraft();
 

@@ -63,20 +63,15 @@ namespace CalamityMod.Walls
             {
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
-                brightness *= (float)MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawcolor *= brightness;
                 Color glowColor = drawcolor * 0.4f;
 
-                if (lightColor.R > glowColor.R) glowColor.R = lightColor.R;
-                if (lightColor.G > glowColor.G) glowColor.G = lightColor.G;
-                if (lightColor.B > glowColor.B) glowColor.B = lightColor.B;
-
-                if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
-                    return;
-
+                // For now checking for glowing frames greatly reducing the bottleneck
+                // But maybe we could squeeze bit more by removing the loop
                 for (int k = 0; k < 3; k++)
                 {
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-1, 1f), Main.rand.NextFloat(-1, 1f)) * 0.2f * k;

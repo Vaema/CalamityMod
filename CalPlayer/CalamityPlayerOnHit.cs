@@ -705,18 +705,25 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (abaddon && crit && AbaddonCooldown <= 0)
+            if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
             {
                 AbaddonCooldown = 15;
-                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.03f, 25);
+                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 50);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
+            }
+
+            if (voidOfExtinction && crit && VoidCooldown <= 0)
+            {
+                VoidCooldown = 15;
+                int VoidExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 70);
+                Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
             }
 
             if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
                 ursaSergeantCooldown = 300;
 
-                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(333);
+                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(200);
                 ursaSlashdamage = Player.ApplyArmorAccDamageBonusesTo(ursaSlashdamage);
 
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);

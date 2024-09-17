@@ -45,6 +45,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
@@ -154,6 +155,9 @@ namespace CalamityMod.CalPlayer
             // Handle Androomba's Right Click function
             AndroombaRightClick();
 
+            // Drawing parameters
+            UpdateDrawingParameters();
+
             // Update all particle sets for items.
             // This must be done here instead of in the item logic because these sets are not properly instanced
             // in the global classes. Attempting to update them there will cause multiple updates to one set for multiple items.
@@ -246,7 +250,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.X *= 1.2f;
                         int damage = Player.ApplyArmorAccDamageBonusesTo(Player.GetBestClassDamage().ApplyTo(75));
 
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 20f, Player.whoAmI);
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                         HasIncreasedDashFirstFrame = true;
                     }
                     float numberOfDusts = 10f;
@@ -1477,6 +1481,8 @@ namespace CalamityMod.CalPlayer
                 astralStarRainCooldown--;
             if (AbaddonCooldown > 0)
                 AbaddonCooldown--;
+            if (VoidCooldown > 0)
+                VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
             if (AlchFlaskCooldown > 0)
@@ -4452,11 +4458,7 @@ namespace CalamityMod.CalPlayer
                             }
                             else
                             {
-                                var netMessage = Mod.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaSolution);
-                                netMessage.Write(npc.whoAmI);
-                                netMessage.Write(soltype);
-                                netMessage.Send();
+                                SyncAndroombaSolutionPacket.Send(npc.ModNPC<AndroombaFriendly>(), soltype);
                             }
                             if (npc.ai[0] == 0f)
                             {
@@ -4466,11 +4468,7 @@ namespace CalamityMod.CalPlayer
                                 }
                                 else
                                 {
-                                    var netMessage = Mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                                    netMessage.Write(npc.whoAmI);
-                                    netMessage.Write(1);
-                                    netMessage.Send();
+                                    SyncAndroombaAIPacket.Send(npc.ModNPC<AndroombaFriendly>(), phase: 1);
                                 }
                             }
                             if (Main.netMode == NetmodeID.Server)
