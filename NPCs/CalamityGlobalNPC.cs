@@ -7658,7 +7658,7 @@ namespace CalamityMod.NPCs
                         }
                     }
 
-                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
+                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerHeadGlowmask.Value : TextureAssets.Dest[0].Value;
                     switch (npc.type)
                     {
                         default:
@@ -7666,11 +7666,11 @@ namespace CalamityMod.NPCs
                             break;
 
                         case NPCID.TheDestroyerBody:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
                             break;
 
                         case NPCID.TheDestroyerTail:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
                             break;
                     }
 
