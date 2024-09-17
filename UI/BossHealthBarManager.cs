@@ -25,6 +25,7 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Utils;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
@@ -92,6 +93,14 @@ namespace CalamityMod.UI
 
         public delegate bool NPCSpecialHPGetRequirement(NPC npc);
         public delegate long NPCSpecialHPGetFunction(NPC npc, bool checkingForMaxLife);
+
+        public override void Load()
+        {
+            BossExclusionList = [];
+            MinibossHPBarList = [];
+            EntityExtensionHandler = [];
+            SpecialHPRequirements = [];
+        }
 
         public override void SetStaticDefaults()
         {
@@ -191,8 +200,7 @@ namespace CalamityMod.UI
 
         public static void SetupBossExclusionList()
         {
-            BossExclusionList = new List<int>
-            {
+            BossExclusionList.AddRange([
                 NPCID.None,
                 NPCID.MoonLordFreeEye,
                 NPCID.MoonLordHead,
@@ -220,14 +228,13 @@ namespace CalamityMod.UI
                 NPCType<AresGaussNuke>(),
                 NPCType<AresLaserCannon>(),
                 NPCType<AresPlasmaFlamethrower>(),
-                NPCType<AresTeslaCannon>(),
-            };
+                NPCType<AresTeslaCannon>()
+            ]);
         }
 
         public static void SetupMinibossHPBarList()
         {
-            MinibossHPBarList = new List<int>
-            {
+            MinibossHPBarList.AddRange([
                 // DD2 Event.
                 NPCID.DD2Betsy,
                 NPCID.DD2OgreT2,
@@ -285,12 +292,12 @@ namespace CalamityMod.UI
                 NPCType<ProvSpawnHealer>(),
                 NPCType<ProfanedGuardianDefender>(),
                 NPCType<ProfanedGuardianHealer>()
-            };
+            ]);
         }
 
         public static void SetupExtensionHandlerList()
         {
-            EntityExtensionHandler = new Dictionary<int, BossEntityExtension>()
+            EntityExtensionHandler.AddRange(new Dictionary<int, BossEntityExtension>()
             {
                 [NPCID.EaterofWorldsHead] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Segments"), NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail),
                 [NPCID.BrainofCthulhu] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Creepers"), NPCID.Creeper),
@@ -300,7 +307,7 @@ namespace CalamityMod.UI
                 [NPCID.PirateShip] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Cannons"), NPCID.PirateShipCannon),
                 [NPCType<CeaselessVoid>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.DarkEnergy"), NPCType<DarkEnergy>()),
                 [NPCType<RavagerBody>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.BodyParts"), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>()),
-            };
+            });
         }
 
         // Collection simplification looks horrendous in the context of delegate creation.
@@ -308,7 +315,6 @@ namespace CalamityMod.UI
 #pragma warning disable IDE0028 // Simplify collection initialization
         public static void SetupRequirementsList()
         {
-            SpecialHPRequirements = new Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction>();
             SpecialHPRequirements.Add(npc => npc.Calamity().SplittingWorm, (npc, checkingForMaxLife) =>
             {
                 // Go across the entire worm and accumulate life. The expectation is that the boss follows the linked-list-esque standard

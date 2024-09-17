@@ -127,6 +127,9 @@ namespace CalamityMod
         {
             carpetOriginal = TextureAssets.FlyingCarpet;
 
+            // I hate this I hate thisI hate thisIhatethisIhatethisIhatethisIhatethisIhatethisIhatethis
+            CalamityLists.Load();
+
             // Initialize the EnemyStats struct as early as it is safe to do so
             NPCStats.Load();
 
@@ -180,6 +183,8 @@ namespace CalamityMod
         {
             bossKillTimes?.Clear();
             bossKillTimes = null;
+
+            CalamityLists.Unload();
 
             BalancingChangesManager.Unload();
             Attunement.Unload();
