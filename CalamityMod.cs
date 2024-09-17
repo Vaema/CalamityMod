@@ -84,9 +84,6 @@ namespace CalamityMod
         public static int ghostKillCount = 0;
         public static int sharkKillCount = 0;
 
-        // Boss Head Icons
-        public static int chadPrimeIcon;
-
         public static Asset<Texture2D> carpetOriginal;
 
         // Holds the Texture Arrays for all the lava textures.
@@ -122,13 +119,12 @@ namespace CalamityMod
         public static bool ExternalFlag_DisableDefenseDamage = false;
         #endregion
 
-        internal static CalamityMod Instance;
+        internal static CalamityMod Instance => _Instance ??= ModContent.GetInstance<CalamityMod>();
+        private static CalamityMod _Instance;
 
         #region Load
         public override void Load()
         {
-            Instance = this;
-
             carpetOriginal = TextureAssets.FlyingCarpet;
 
             // Initialize the EnemyStats struct as early as it is safe to do so
@@ -148,7 +144,6 @@ namespace CalamityMod
                 WeakReferenceSupport.WikiThisSupport();
             }
 
-            CooldownRegistry.Load();
             BossRushEvent.Load();
             // TODO -- As ModBossBarStyle is a ModType, its Load function does not need to be called directly here.
             BossHealthBarManager.Load(this);
@@ -187,28 +182,6 @@ namespace CalamityMod
             ChargeMeterUI.Load();
             FlightBar.Load();
 
-            // TODO -- Is this not possible to place in ModNPC.Load or ModNPC.SetStaticDefaults ?
-            // Centralizing head texture registration like this seems absurdly stiff
-            Apollo.LoadHeadIcons();
-            Artemis.LoadHeadIcons();
-            Cryogen.LoadHeadIcons();
-            DevourerofGodsHead.LoadHeadIcons();
-            DevourerofGodsBody.LoadHeadIcons();
-            DevourerofGodsTail.LoadHeadIcons();
-            HiveMind.LoadHeadIcons();
-            Polterghast.LoadHeadIcons();
-            StormWeaverHead.LoadHeadIcons();
-            SupremeCalamitas.LoadHeadIcons();
-            ThanatosHead.LoadHeadIcons();
-            ThanatosBody1.LoadHeadIcons();
-            ThanatosBody2.LoadHeadIcons();
-            ThanatosTail.LoadHeadIcons();
-
-            // All the head icon loading shit is done here, so I'm putting this here
-            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
-            CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
-            chadPrimeIcon = ModContent.GetModBossHeadSlot(chadPrimeIconPath);
-
             InvasionProgressUIManager.LoadGUIs();
         }
         #endregion
@@ -231,7 +204,6 @@ namespace CalamityMod
             InvasionProgressUIManager.UnloadGUIs();
             BossRushEvent.Unload();
             SchematicManager.Unload();
-            CooldownRegistry.Unload();
             PlayerDashManager.Unload();
 
             Main.QueueMainThreadAction(() =>
@@ -250,8 +222,7 @@ namespace CalamityMod
             }
 
             carpetOriginal = null;
-
-            Instance = null;
+            _Instance = null;
             base.Unload();
         }
         #endregion

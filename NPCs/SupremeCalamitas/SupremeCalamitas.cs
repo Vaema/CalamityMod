@@ -226,24 +226,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static Asset<Texture2D> ForcefieldTexture;
 
         // TODO -- This is cumbersome. Change it to be better in 1.4.
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string hoodedIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodedHeadIcon";
             string hoodlessIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodlessHeadIcon";
             string cirrusIconPath = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon";
             string cirrusIconP2Path = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon2";
-
-            CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
-            hoodedHeadIconIndex = ModContent.GetModBossHeadSlot(hoodedIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
-            hoodlessHeadIconIndex = ModContent.GetModBossHeadSlot(hoodlessIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(cirrusIconPath, -1);
-            cirrusHeadIconIndex = ModContent.GetModBossHeadSlot(cirrusIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(cirrusIconP2Path, -1);
-            cirrusHeadIconP2Index = ModContent.GetModBossHeadSlot(cirrusIconP2Path);
+            
+            hoodedHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
+            hoodlessHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
+            cirrusHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(cirrusIconPath, -1);
+            cirrusHeadIconP2Index = CalamityMod.Instance.AddBossHeadTexture(cirrusIconP2Path, -1);
         }
 
         public override void SetStaticDefaults()

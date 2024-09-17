@@ -66,16 +66,13 @@ namespace CalamityMod.NPCs.Cryogen
         public static int cryoIconIndex;
         public static int pyroIconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string cryoIconPath = "CalamityMod/NPCs/Cryogen/Cryogen_Phase1_Head_Boss";
             string pyroIconPath = "CalamityMod/NPCs/Cryogen/Pyrogen_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
-            cryoIconIndex = ModContent.GetModBossHeadSlot(cryoIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
-            pyroIconIndex = ModContent.GetModBossHeadSlot(pyroIconPath);
+            
+            cryoIconIndex = CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
+            pyroIconIndex = CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
         }
 
         public override void SetStaticDefaults()
