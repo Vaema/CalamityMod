@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 200;
+            ItemID.Sets.ExtractinatorMode[Type] = Type;
             ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
         }
 
@@ -20,7 +21,7 @@ namespace CalamityMod.Items.Placeables
         {
             Item.width = 16;
             Item.height = 16;
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            
             Item.createTile = ModContent.TileType<Tiles.AstralDesert.CelestialRemains>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;

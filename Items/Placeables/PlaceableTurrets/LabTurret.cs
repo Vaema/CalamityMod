@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<PlayerLabTurret>());
 
-            Item.value = Item.buyPrice(0, 5, 0, 0);
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Orange;
         }
 
