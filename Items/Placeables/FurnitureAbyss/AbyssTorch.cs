@@ -20,20 +20,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
 
         public override void SetDefaults()
         {
-            Item.width = 10;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.holdStyle = 1;
-            Item.noWet = false;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureAbyss.AbyssTorch>();
-            Item.flame = true;
-            Item.value = 500;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.FurnitureAbyss.AbyssTorch>(), 0, true);
         }
 
         public override void HoldItem(Player player)

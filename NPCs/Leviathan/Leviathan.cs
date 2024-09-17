@@ -878,7 +878,7 @@ namespace CalamityMod.NPCs.Leviathan
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<LeviathanMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<AnahitaMask>(), 7);
-                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
+                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment

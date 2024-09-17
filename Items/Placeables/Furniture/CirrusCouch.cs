@@ -9,17 +9,9 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = 0;
-            Item.createTile = ModContent.TileType<Tiles.Furniture.CirrusCouch>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CirrusCouch>());
+            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.value = Item.sellPrice(gold: 2, silver: 50);
         }
     }
 }

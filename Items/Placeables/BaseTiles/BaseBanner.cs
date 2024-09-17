@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Placeables
             // Banners usually have these values.
             Item.width = 10;
             Item.height = 24;
-            Item.rare = ItemRarityID.Blue;
             Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Blue;
         }
     }
 }

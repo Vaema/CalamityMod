@@ -158,7 +158,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ItemID.SuperManaPotion)
                 .Add(ModContent.ItemType<DeliciousMeat>())
                 .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
-                .AddWithCustomValue(ModContent.ItemType<FrigidMonolith>(), Item.buyPrice(5))
+                .Add(ModContent.ItemType<FrigidMonolith>())
                 .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
                 .Add(ItemID.IceCream, Condition.HappyEnough, Condition.InSnow)
                 .Register();
