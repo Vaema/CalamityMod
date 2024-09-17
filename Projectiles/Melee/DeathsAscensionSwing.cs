@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -47,8 +49,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Projectile.ownerHitCheck = true;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 8;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
             Projectile.frameCounter = 0;
         }
 
@@ -112,6 +114,8 @@ namespace CalamityMod.Projectiles.Melee
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
+
+            Projectile.ai[2]--;            
         }
 
         // This hurt my soul to do, but because the swing is done with a sprite animation, tracking specific visual rotation of the weapon is nigh impossible
@@ -162,5 +166,18 @@ namespace CalamityMod.Projectiles.Melee
 
         // Deal damage only once it starts swinging down and then going back up 
         public override bool? CanDamage() => ((frameX == 0 && frameY >= 3) || frameX == 1);
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.ai[2] <= 0 && Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<DeathsAscensionRift>()] < 4)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(48, 48), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                SoundEngine.PlaySound(SoundID.Item165 with { Pitch = -1 }, Projectile.Center);
+                Projectile.ai[2] = 20;
+                float screenShakePower = 3 * Utils.GetLerpValue(1300f, 0f, target.Distance(Main.LocalPlayer.Center), true);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+            }
+        }
     }
 }

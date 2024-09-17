@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,7 +44,22 @@ namespace CalamityMod.Projectiles.Melee
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 18f, 20f);
+            if (Projectile.ai[2] <= 0)
+            {
+                CalamityUtils.HomeInOnNPC(Projectile, true, 1200f, 18f, 20f);
+            }
+            else
+            {
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(0.05f) * Projectile.velocity.Length();
+                Projectile.ai[2]--;
+            }
+
+            // Rift scythes cant pierce once when they start homing
+            if (Projectile.ai[2] == 1)
+            {
+                Projectile.penetrate = 1;
+                Projectile.localNPCHitCooldown = 1;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
