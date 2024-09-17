@@ -231,9 +231,9 @@ namespace CalamityMod.Tiles
                 case 53:
                     npc = NPCType<Rotdog>();
                     break;
-                /*case 54:
-                    npc = NPCType<Unused>(); - Formerly Calamity Eye
-                    break*/
+                case 54:
+                    npc = NPCType<CladCrab>();
+                    break;
                 case 55:
                     npc = NPCType<CalamityEye>();
                     break;
