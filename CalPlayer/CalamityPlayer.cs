@@ -1405,7 +1405,7 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("HasCraftedDraedonsForge", HasCraftedDraedonsForge);
 
             // Calculate the new total time of all sessions at the instant of this player save.
-            TimeSpan newSessionTotal = previousSessionTotal.Add(CalamityMod.SpeedrunTimer.Elapsed);
+            TimeSpan newSessionTotal = previousSessionTotal.Add(SpeedrunTimerSystem.Elapsed);
             long totalTicks = newSessionTotal.Ticks;
 
             // Save all cooldowns which are marked as persisting through save/load.
@@ -4998,7 +4998,7 @@ namespace CalamityMod.CalPlayer
             // Enabling the config while a player is loaded will show the timer immediately.
             // But it won't start running until you save and quit and re-enter a world.
             if (CalamityClientConfig.Instance.SpeedrunTimer)
-                CalamityMod.SpeedrunTimer.Restart();
+                SpeedrunTimerSystem.Restart();
 
             bool showWikiMessage = CalamityClientConfig.Instance.WikiStatusMessage;
             bool showVCMMMessage = CalamityClientConfig.Instance.VCMMStatusMessage && !ExternalMods.VCMMAvailable;

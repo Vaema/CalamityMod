@@ -102,9 +102,6 @@ namespace CalamityMod
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
 
-        // Speedrun timer
-        internal static Stopwatch SpeedrunTimer = new Stopwatch();
-
         #region External Flags
         // External flag to disable non-Revengeance boss AI edits
         // This can be edited by other mods using reflection to prevent compatibility issues

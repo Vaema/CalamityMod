@@ -8516,7 +8516,7 @@ namespace CalamityMod.NPCs
 
                     CalamityPlayer mp = player.Calamity();
                     mp.lastSplitType = newBossTypeJustDowned;
-                    mp.lastSplit = mp.previousSessionTotal.Add(CalamityMod.SpeedrunTimer.Elapsed);
+                    mp.lastSplit = mp.previousSessionTotal.Add(SpeedrunTimerSystem.Elapsed);
                 }
             }
         }
