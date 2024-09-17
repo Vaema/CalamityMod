@@ -9,8 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI.DraedonsArsenal
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class ChargeMeterUI
+    [Autoload(Side = ModSide.Client)]
+    public sealed class ChargeMeterUI : ModSystem
     {
         // These values were handpicked on a 1080p screen by Ozzatron. Please disregard the bizarre precision.
         internal const float DefaultChargePosX = 50.104603f;
@@ -20,14 +20,14 @@ namespace CalamityMod.UI.DraedonsArsenal
         private static Vector2? dragOffset = null;
         private static Texture2D edgeTexture, barTexture;
 
-        internal static void Load()
+        public override void OnModLoad()
         {
             edgeTexture = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/ChargeMeterBorder", AssetRequestMode.ImmediateLoad).Value;
             barTexture = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/ChargeMeter", AssetRequestMode.ImmediateLoad).Value;
             Reset();
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             Reset();
             edgeTexture = barTexture = null;

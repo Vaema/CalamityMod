@@ -11,8 +11,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI.Rippers
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class RipperUI
+    [Autoload(Side = ModSide.Client)]
+    public sealed class RipperUI : ModSystem
     {
         // These values were handpicked on a 1080p screen by Ozzatron. Please disregard the bizarre precision.
         public const float DefaultRagePosX = 35.77406f;
@@ -51,7 +51,7 @@ namespace CalamityMod.UI.Rippers
         private static Texture2D adrenBarTex, adrenBorderTex, adrenBorderTexFull, adrenAnimTex, draedonBarTex, draedonAnimTex;
         private static Texture2D electrolyteGelTex, starlightFuelTex, ectoheartTex;
 
-        internal static void Load()
+        public override void OnModLoad()
         {
             rageBarTex = ModContent.Request<Texture2D>("CalamityMod/UI/Rippers/RageBar", AssetRequestMode.ImmediateLoad).Value;
             rageBorderTex = ModContent.Request<Texture2D>("CalamityMod/UI/Rippers/RageBarBorder", AssetRequestMode.ImmediateLoad).Value;
@@ -79,7 +79,7 @@ namespace CalamityMod.UI.Rippers
             Reset();
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             Reset();
             rageBarTex = rageBorderTex = rageAnimTex = null;

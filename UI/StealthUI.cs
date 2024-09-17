@@ -10,8 +10,8 @@ using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.UI
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class StealthUI
+    [Autoload(Side = ModSide.Client)]
+    public sealed class StealthUI : ModSystem
     {
         // These values were handpicked on a 1080p screen by Ozzatron. Please disregard the bizarre precision.
         internal const float DefaultStealthPosX = 50.104603f;
@@ -21,7 +21,7 @@ namespace CalamityMod.UI
         private static Vector2? dragOffset = null;
         private static Texture2D edgeTexture, indicatorTexture, barTexture, fullBarTexture;
 
-        internal static void Load()
+        public override void OnModLoad()
         {
             edgeTexture = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/StealthMeter", AssetRequestMode.ImmediateLoad).Value;
             indicatorTexture = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/StealthMeterStrikeIndicator", AssetRequestMode.ImmediateLoad).Value;
@@ -30,7 +30,7 @@ namespace CalamityMod.UI
             Reset();
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             Reset();
             edgeTexture = indicatorTexture = barTexture = fullBarTexture = null;

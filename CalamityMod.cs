@@ -177,11 +177,6 @@ namespace CalamityMod
                 Main.OnPreDraw += PrepareRenderTargets;
             });
 
-            RipperUI.Load();
-            StealthUI.Load();
-            ChargeMeterUI.Load();
-            FlightBar.Load();
-
             InvasionProgressUIManager.LoadGUIs();
         }
         #endregion
@@ -210,11 +205,6 @@ namespace CalamityMod
             {
                 Main.OnPreDraw -= PrepareRenderTargets;
             });
-
-            RipperUI.Unload();
-            StealthUI.Unload();
-            ChargeMeterUI.Unload();
-            FlightBar.Unload();
 
             if (!Main.dedServ)
             {
