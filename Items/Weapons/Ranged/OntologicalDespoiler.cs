@@ -101,7 +101,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip6");
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip7");
             if (line != null)
                 line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.3f);
         }
