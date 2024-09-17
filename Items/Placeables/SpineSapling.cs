@@ -24,6 +24,8 @@ namespace CalamityMod.Items.Placeables
             Item.autoReuse = true;
             Item.consumable = true;
             Item.maxStack = 9999;
+
+            Item.value = Item.sellPrice(copper: 50);
         }
     }
 }

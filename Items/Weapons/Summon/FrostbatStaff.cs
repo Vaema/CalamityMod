@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<FrostbatMinion>();
             Item.knockBack = 1f;
 
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             (Item.width, Item.height) = (50, 50);
             Item.mana = 10;
             Item.noMelee = true;

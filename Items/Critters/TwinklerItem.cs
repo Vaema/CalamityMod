@@ -25,10 +25,10 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 40, 0);
-            //item.CloneDefaults(2004); //Lightning Bug item
             Item.bait = 40;
             Item.makeNPC = (short)ModContent.NPCType<Twinkler>();
+
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
         }
     }

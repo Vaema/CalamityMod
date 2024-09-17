@@ -25,9 +25,10 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 10, 0, 0);
             Item.bait = 20;
             Item.makeNPC = (short)ModContent.NPCType<BabyGhostBell>();
+
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
         }
     }

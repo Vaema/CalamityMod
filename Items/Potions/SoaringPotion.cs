@@ -26,11 +26,12 @@ namespace CalamityMod.Items.Potions
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.UseSound = SoundID.Item3;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
-            Item.rare = ItemRarityID.LightRed;
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<Soaring>();
             Item.buffTime = CalamityUtils.SecondsToFrames(360f);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()

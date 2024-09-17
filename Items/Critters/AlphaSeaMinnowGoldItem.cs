@@ -25,9 +25,10 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 25, 0, 0);
             Item.bait = 30;
             Item.makeNPC = (short)ModContent.NPCType<AlphaSeaMinnowGold>();
+
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Green;
         }
     }

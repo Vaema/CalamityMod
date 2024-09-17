@@ -25,9 +25,9 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 30, 0);
-            //item.CloneDefaults(2004); //Lightning Bug item
             Item.makeNPC = (short)ModContent.NPCType<BabyFlakCrab>();
+
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.LightPurple;
         }
     }

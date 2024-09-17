@@ -25,9 +25,10 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 5, 0, 0);
             Item.bait = 20;
             Item.makeNPC = (short)ModContent.NPCType<PearlpodGold>();
+
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
     }

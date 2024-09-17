@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 12;
             Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 5);
+            Item.value = Item.sellPrice(gold: 1, silver: 40);
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;

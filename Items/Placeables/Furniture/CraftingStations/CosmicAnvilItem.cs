@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.consumable = true;
             Item.createTile = ModContent.TileType<CosmicAnvil>();
 
+            Item.value = Item.sellPrice(gold: 60);
             Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.sellPrice(platinum: 2, gold: 50);
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

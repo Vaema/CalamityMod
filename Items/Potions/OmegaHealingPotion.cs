@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Potions
             Item.UseSound = SoundID.Item3;
             Item.consumable = true;
             Item.potion = true;
-            Item.value = Item.buyPrice(0, 7, 0, 0);
+
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 

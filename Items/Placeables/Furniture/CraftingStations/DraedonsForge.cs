@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.consumable = true;
             Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.DraedonsForge>();
 
+            Item.value = Item.sellPrice(platinum: 4);
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = Item.sellPrice(platinum: 27, gold: 50);
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

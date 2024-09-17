@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 840;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 50;
-            Item.useTime = Item.useAnimation = 80; // 42 frames of firing animation
+            Item.useAnimation = Item.useTime = 80; // 42 frames of firing animation
             Item.knockBack = 2f;
             Item.shoot = ModContent.ProjectileType<ThunderboltHoldout>();
             Item.shootSpeed = 16f;

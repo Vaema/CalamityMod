@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.autoReuse = true;
             Item.consumable = true;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 1, silver: 60);
+            Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.Red;
         }
     }
