@@ -23,7 +23,6 @@ namespace CalamityMod.Particles
         //Static list for details concerning every particle type
         internal static Dictionary<Type, int> particleTypes;
         internal static Dictionary<int, Texture2D> particleTextures;
-        private static List<Particle> particleInstances;
         //Lists used when drawing particles batched
         private static List<Particle> batchedAlphaBlendParticles;
         private static List<Particle> batchedNonPremultipliedParticles;
@@ -37,8 +36,13 @@ namespace CalamityMod.Particles
                 int ID = particleTypes.Count; //Get the ID of the particle
                 particleTypes[type] = ID;
 
-                Particle instance = (Particle)Activator.CreateInstance(type);
-                particleInstances.Add(instance);
+                // Flow: 2024/08/17
+                // 'UnintializedObject' is allowed to use here as it's only read for Texture
+                // But Do NOT EVER use it's instance as it's literally Uninitialized.
+                // It might cause unintended behaviour if we do that.
+#pragma warning disable SYSLIB0050
+                Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
+#pragma warning restore SYSLIB0050
 
                 string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
                 if (instance.Texture != "")
@@ -54,7 +58,6 @@ namespace CalamityMod.Particles
             particlesToKill = [];
             particleTypes = [];
             particleTextures = [];
-            particleInstances = [];
 
             batchedAlphaBlendParticles = [];
             batchedNonPremultipliedParticles = [];
@@ -68,7 +71,6 @@ namespace CalamityMod.Particles
             particlesToKill = null;
             particleTypes = null;
             particleTextures = null;
-            particleInstances = null;
 
             batchedAlphaBlendParticles = null;
             batchedNonPremultipliedParticles = null;
