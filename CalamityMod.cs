@@ -146,7 +146,6 @@ namespace CalamityMod
 
             BossRushEvent.Load();
             // TODO -- As ModBossBarStyle is a ModType, its Load function does not need to be called directly here.
-            BossHealthBarManager.Load(this);
             EnchantmentManager.LoadAllEnchantments();
             VanillaArmorChangeManager.Load();
             SetupBossKillTimes();

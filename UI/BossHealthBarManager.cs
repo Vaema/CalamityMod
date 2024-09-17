@@ -93,7 +93,7 @@ namespace CalamityMod.UI
         public delegate bool NPCSpecialHPGetRequirement(NPC npc);
         public delegate long NPCSpecialHPGetFunction(NPC npc, bool checkingForMaxLife);
 
-        internal static void Load(Mod mod)
+        public override void SetStaticDefaults()
         {
             Bars = new List<BossHPUI>();
 
@@ -173,6 +173,20 @@ namespace CalamityMod.UI
             SetupMinibossHPBarList();
             SetupExtensionHandlerList();
             SetupRequirementsList();
+        }
+
+        public override void Unload()
+        {
+            BossMainHPBar = null;
+            BossComboHPBar = null;
+            BossSeperatorBar = null;
+            HPBarFont = null;
+            Bars = null;
+            BossExclusionList = null;
+            MinibossHPBarList = null;
+            OneToMany = null;
+            EntityExtensionHandler = null;
+            SpecialHPRequirements = null;
         }
 
         public static void SetupBossExclusionList()
@@ -347,20 +361,6 @@ namespace CalamityMod.UI
             });
         }
 #pragma warning restore IDE0028 // Simplify collection initialization
-
-        public override void Unload()
-        {
-            BossMainHPBar = null;
-            BossComboHPBar = null;
-            BossSeperatorBar = null;
-            HPBarFont = null;
-            Bars = null;
-            BossExclusionList = null;
-            MinibossHPBarList = null;
-            OneToMany = null;
-            EntityExtensionHandler = null;
-            SpecialHPRequirements = null;
-        }
 
         public override void Update(IBigProgressBar currentBar, ref BigProgressBarInfo info)
         {
