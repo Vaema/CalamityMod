@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -17,6 +18,7 @@ namespace CalamityMod.Projectiles.Magic
         public NPC Target;
         public float RandomAnglingStrength = 0f;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 10;
@@ -27,7 +29,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 180;
         }
 
-        public override bool? CanDamage() => Timer >= 30f;
+        // Can only deal damage after it starts homing
+        public override bool? CanDamage() => Timer >= 25f;
 
         public override void AI()
         {
@@ -38,7 +41,7 @@ namespace CalamityMod.Projectiles.Magic
                 RandomAnglingStrength = Main.rand.NextFloat(-0.16f, 0.16f);
 
             // Determine behavior
-            if (Timer < 30) // Don't try to home for the first half second
+            if (Timer < 25) // Don't try to home at the start
                 State = 0f;
             else
             {

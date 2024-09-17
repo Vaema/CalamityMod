@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,19 +35,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            int dustAmt = Main.rand.Next(3, 7);
-            for (int d = 0; d < dustAmt; d++)
-            {
-                int dustType = Utils.SelectRandom(Main.rand, new int[]
-                {
-                    246,
-                    DustID.PinkFairy,
-                    DustID.Flare_Blue
-                });
-                Dust idx = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity / 2f, dustType, Vector2.Zero, 100, default, 2.1f);
-                idx.velocity *= 2f;
-                idx.noGravity = true;
-            }
+            AltLineParticle line = new(Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 6f), false, 20, 1f, SHPB.FindColorForSoul((int)Projectile.ai[0]));
+            GeneralParticleHandler.SpawnParticle(line);
         }
     }
 }

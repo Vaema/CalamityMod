@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,32 +30,61 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         // This is reused for all SHPC projectiles
-        public static Color FindColorForSoul(int projai)
+        #region General SHPC Projectile Functions
+        public enum SoulType
         {
-            Color returnColor = new(0, 0, 0);
+            Light, // Larger explosion
+            Night, // Explosion lasts longer
+            Flight, // Restores flight time on direct hits
+            Might, // Launches enemies
+            Sight, // Weakly homes
+            Fright // Deals extra flat damage
+        }
+
+        public static SoulType GetSoulEffects(int projai)
+        {
             switch (projai)
             {
                 case 0:
-                    returnColor = new(240, 29, 196);
-                    break;
+                    return SoulType.Light;
                 case 1:
-                    returnColor = new(123, 29, 220);
-                    break;
+                    return SoulType.Night;
                 case 2:
-                    returnColor = new(106, 240, 250);
-                    break;
+                    return SoulType.Flight;
                 case 3:
-                    returnColor = new(4, 51, 222);
-                    break;
+                    return SoulType.Might;
                 case 4:
-                    returnColor = new(79, 255, 124);
-                    break;
+                    return SoulType.Sight;
                 case 5:
-                    returnColor = new(255, 128, 20);
-                    break;
+                    return SoulType.Fright;
+
+                default:
+                    return SoulType.Light;
             }
-            return returnColor;
         }
+
+        public static Color FindColorForSoul(int projai)
+        {
+            switch (projai)
+            {
+                case 0:
+                    return new(240, 29, 196);
+                case 1:
+                    return new(123, 29, 220);
+                case 2:
+                    return new(106, 240, 250);
+                case 3:
+                    return new(4, 51, 222);
+                case 4:
+                    return new(79, 255, 124);
+                case 5:
+                    return new(255, 128, 20);
+
+                default:
+                    return new(0, 0, 0);
+            }
+        }
+        #endregion General SHPC Projectile Functions
 
         public override void AI()
         {
@@ -75,21 +105,50 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             // Size pulsing
+            bool lightSoul = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light;
+
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale += 0.05f;
-                if (Projectile.scale > 1.9f)
+                if (Projectile.scale > 1.9f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
                     Projectile.localAI[0] = 1f;
             }
             else
             {
                 Projectile.scale -= 0.05f;
-                if (Projectile.scale < 1.5f)
+                if (Projectile.scale < 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
                     Projectile.localAI[0] = 0f;
             }
 
-            Projectile.velocity.X *= 0.985f;
-            Projectile.velocity.Y *= 0.985f;
+            // Sight has weak homing
+            if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Sight)
+            {
+                float npcDistCheck = SHPC.SightHomingRange;
+                int index = -1;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (!n.CanBeChasedBy(Projectile))
+                        continue;
+
+                    float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                    if (currentNPCDist < npcDistCheck)
+                    {
+                        npcDistCheck = currentNPCDist;
+                        index = n.whoAmI;
+                    }
+                }
+
+                if (index != -1)
+                {
+                    float speed = Projectile.velocity.Length();
+                    Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.npc[index].Center).ToRotation(), 0.1f).ToRotationVector2() * speed;
+                }
+                else // Slow down over time if not homing
+                    Projectile.velocity *= 0.9875f;
+            }
+            else // Always slow down if not Sight
+                Projectile.velocity *= 0.9875f;
+
             float explodeRange = 250f;
             bool canExplode = false;
             foreach (NPC n in Main.ActiveNPCs)
@@ -114,21 +173,40 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => FindColorForSoul((int)Projectile.ai[0]);
-
-        public override bool PreDraw(ref Color lightColor)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
-            return false;
+            Player owner = Main.player[Projectile.owner];
+            // Flight restores flight time on direct hit
+            if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight)
+            {
+                if (owner.wingTime < owner.wingTimeMax)
+                    owner.wingTime += SHPC.FlightDirectHitFlightBoost;
+
+                if (owner.wingTime > owner.wingTimeMax)
+                    owner.wingTime = owner.wingTimeMax;
+            }
+
+            // Might launches enemies
+            if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Might && target.CanBeMoved(false))
+            {
+                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength;
+                target.velocity = launchVel;
+            }
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // Fright deals extra flat damage
+            if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Fright)
+                modifiers.SourceDamage.Flat += SHPC.FrightFlatDamage;
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3.5f)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3.5f;
+            float screenshake = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light ? 5f : 3.5f;
+            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenshake)
+                Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenshake;
 
             if (Projectile.owner == Main.myPlayer)
             {
@@ -140,6 +218,16 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6));
                 }
             }
+        }
+
+        public override Color? GetAlpha(Color lightColor) => FindColorForSoul((int)Projectile.ai[0]);
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

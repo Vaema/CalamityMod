@@ -21,10 +21,17 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
 
-        public const int ShotsPerSoul = 50;
+        public const int ShotsPerSoul = 40;
         public int storedSoulpower = 0;
         public int storedSoulType = ItemID.SoulofLight; // Determines bar color and soul effects for projectile
         public int recoilProgress = 0;
+
+        public const float LightExplosionSizeMult = 1.5f;
+        public const float NightExplosionTimeMult = 2.5f;
+        public const int FlightDirectHitFlightBoost = 30; // The amount of flight time restored on direct hits with Flight bombs, in frames
+        public const float MightKnockbackStrength = 8.5f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
+        public const float SightHomingRange = 320f; // Range of homing for Sight bombs, in pixels
+        public const int FrightFlatDamage = 16;
 
         public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
 
@@ -32,13 +39,13 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 124;
             Item.height = 52;
-            Item.damage = 36;
+            Item.damage = 77;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
             Item.useAnimation = Item.useTime = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 3.25f;
+            Item.knockBack = 3f;
             Item.UseSound = FireSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SHPB>();
@@ -207,7 +214,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
                 Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
-                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.25f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
+                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.175f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
                 return false;
             }
             else
@@ -310,13 +317,14 @@ namespace CalamityMod.Items.Weapons.Magic
                 Register();
         }
 
-        #region Saving Ammo Amount
+        #region Saving Ammo Amount and Soul Type
         public override ModItem Clone(Item item)
         {
             ModItem clone = base.Clone(item);
             if (clone is SHPC a && item.ModItem is SHPC a2)
             {
                 a.storedSoulpower = a2.storedSoulpower;
+                a.storedSoulType = a2.storedSoulType;
             }
             return clone;
         }
@@ -324,21 +332,25 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SaveData(TagCompound tag)
         {
             tag["ammoStored"] = storedSoulpower;
+            tag["soulType"] = storedSoulType;
         }
 
         public override void LoadData(TagCompound tag)
         {
             storedSoulpower = tag.GetInt("ammoStored");
+            storedSoulType = tag.GetInt("soulType");
         }
 
         public override void NetSend(BinaryWriter writer)
         {
             writer.Write(storedSoulpower);
+            writer.Write(storedSoulType);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
             storedSoulpower = reader.ReadInt32();
+            storedSoulType = reader.ReadInt32();
         }
         #endregion Saving Ammo Amount
     }
