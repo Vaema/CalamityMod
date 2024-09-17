@@ -181,6 +181,10 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.ai[2] < 10 && ChargeLV1) // Give charge speed nerf if you use any form of charge
                     Owner.Calamity().despoilerNerf = true;
                 hasBegunFiring = true;
+
+                if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound3))
+                    ChargeSound3?.Stop();
+
                 KeepRefreshingLifetime = false;
 
                 // Big Shot mode
@@ -204,7 +208,7 @@ namespace CalamityMod.Projectiles.Ranged
                         else
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 0.6f, ModContent.ProjectileType<OntologicalDespoilerBeam>(), charge2DamageNeg, Projectile.knockBack * 3, Projectile.owner);
-                            Owner.Calamity().GeneralScreenShakePower = 10.5f;
+                            Owner.Calamity().GeneralScreenShakePower = 12f;
                         }
                         SoundEngine.PlaySound(OntologicalDespoiler.BigShot, Projectile.position);
 
@@ -296,13 +300,16 @@ namespace CalamityMod.Projectiles.Ranged
                 CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1.2f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
 
                 // Sounds
-                if (ChargeLV1)
+                if (!hasBegunFiring)
                 {
-                    if ((CurrentChargingFrames - Charge1Frames) % (OntologicalDespoiler.ChargeLoopSoundFrames * 2) == 0)
-                        OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeLoop, Projectile.Center);
+                    if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound2))
+                    {
+                        ChargeSound2.Volume = Utils.Remap(CurrentChargingFrames, 0, Charge1Frames, 0, 0.8f, true) * 100;
+                        ChargeSound2.Pitch = Utils.Remap(CurrentChargingFrames, 0, Charge2Frames, -1, 0.45f, true);
+                    }
+                    else
+                        OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeLoop with { Volume = 0.01f, Pitch = 0f, IsLooped = true }, Projectile.Center);
                 }
-                else if (Time == 10)
-                    OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeStart, Projectile.Center);
 
                 // Charge-up visuals
                 if (CurrentChargingFrames >= 10 && (Positive || (!Positive && !ChargeLV2)))

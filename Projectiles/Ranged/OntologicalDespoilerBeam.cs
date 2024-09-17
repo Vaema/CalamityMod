@@ -106,8 +106,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.velocity *= 0.5f;
             Projectile.scale = 1.3f;
 
-            SoundStyle fire = new("CalamityMod/Sounds/Item/TheHiveNuke");
-            SoundEngine.PlaySound(fire with { Volume = 1, Pitch = Main.rand.NextFloat(0, 0.1f) }, Projectile.Center);
+            for (int i = 0; i < 3; i++)
+            {
+                SoundStyle fire = new("CalamityMod/Sounds/Item/OntologicalDespoilerLargeImpact");
+                SoundEngine.PlaySound(fire with { Volume = 0.65f, MaxInstances = 3 }, Projectile.Center);
+            }
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/MeldExplosion");
             SoundEngine.PlaySound(fire2 with { Volume = 1, Pitch = Main.rand.NextFloat(-0.5f, -0.6f) }, Projectile.Center);
         }
