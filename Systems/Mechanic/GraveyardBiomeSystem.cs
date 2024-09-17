@@ -13,7 +13,7 @@ namespace CalamityMod.Systems
         // For now it literally adjust the graveyard count required for GraveyardBiome
         // But we can add something later on /shrug
 
-        public override void Load()
+        public override void OnModLoad()
         {
             // Make Graveyard biomes require more Gravestones
             SceneMetrics.GraveyardTileMax = 60;

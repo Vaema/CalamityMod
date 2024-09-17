@@ -197,16 +197,16 @@ namespace CalamityMod
             SummonersAssociationSupport();
             ColoredDamageTypesSupport();
             LuminanceSupport();
-            // done here to assure that all other mods have already loaded so that Calamity can automatically grab any of these types they may have
+
             if (!Main.dedServ)
             {
-                CooldownRegistry.RegisterModCooldowns();
+                WikiThisSupport();
                 PopupGUIManager.LoadGUIs();
             }
         }
 
         #region BiomeLava
-        public static void LavaStyleToBiomeLava()
+        private static void LavaStyleToBiomeLava()
         {
             CalamityMod calamity = GetInstance<CalamityMod>();
             Mod biomelava = ExternalMods.biomeLava;
@@ -255,7 +255,7 @@ namespace CalamityMod
 
         #region WikiThis
         // This is a separate function because it only runs clientside
-        public static void WikiThisSupport()
+        private static void WikiThisSupport()
         {
             // Wikithis is a clientside mod
             if (Main.netMode == NetmodeID.Server)
@@ -1292,7 +1292,7 @@ namespace CalamityMod
         private static Color StealthDamageColor = new(185, 105, 250);
         private static Color StealthCritColor = new(144, 33, 235);
 
-        public static void ColoredDamageTypesSupport()
+        private static void ColoredDamageTypesSupport()
         {
             Mod coloredDamageTypes = ExternalMods.coloredDamageTypes;
             if (coloredDamageTypes is null)
@@ -1319,7 +1319,7 @@ namespace CalamityMod
         private static void RegisterWorldInfoIcon(Mod luminance, string texturePath, string hoverTextKey, Func<WorldFileData, bool> shouldAppear, byte priority)
             => luminance.Call("RegisterWorldInfoIcon", texturePath, hoverTextKey, shouldAppear, priority);
         
-        public static void LuminanceSupport()
+        private static void LuminanceSupport()
         {
             Mod luminance = ExternalMods.luminance;
             if (luminance is null)

@@ -139,9 +139,6 @@ namespace CalamityMod
                 LoadClient();
                 PrimitiveRenderer.Initialize();
                 ForegroundDrawing.ForegroundManager.Load();
-
-                // Wikithis support
-                WeakReferenceSupport.WikiThisSupport();
             }
 
             EnchantmentManager.LoadAllEnchantments();

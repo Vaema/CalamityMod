@@ -12,7 +12,7 @@ namespace CalamityMod.Systems
 {
     internal sealed class MountsBalancingSystem : ModSystem
     {
-        public override void Load()
+        public override void OnModLoad()
         {
             // Mount balancing occurs during runtime and is undone when Calamity is unloaded.
             Mount.mounts[MountID.Unicorn].dashSpeed *= CalamityPlayer.UnicornSpeedNerfPower;
