@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ExtraTextures
@@ -24,6 +26,10 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
 
+        // Flying Carpet Replacements
+        public static Asset<Texture2D> FlyingCarpetVanilla;
+        public static Asset<Texture2D> FlyingCarpetAuric;
+
         public override void OnModLoad()
         {
             DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
@@ -37,11 +43,17 @@ namespace CalamityMod.ExtraTextures
 
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
             WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
+
+            FlyingCarpetVanilla = TextureAssets.FlyingCarpet;
+            FlyingCarpetAuric = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AuricCarpet", AssetRequestMode.AsyncLoad);
         }
 
         public override void Unload()
         {
-            
+            if (!Main.dedServ)
+            {
+                TextureAssets.FlyingCarpet = FlyingCarpetVanilla;
+            }
         }
     }
 }

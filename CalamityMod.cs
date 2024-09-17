@@ -84,8 +84,6 @@ namespace CalamityMod
         public static int ghostKillCount = 0;
         public static int sharkKillCount = 0;
 
-        public static Asset<Texture2D> carpetOriginal;
-
         // Holds the Texture Arrays for all the lava textures.
         // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
         // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
@@ -125,8 +123,6 @@ namespace CalamityMod
         #region Load
         public override void Load()
         {
-            carpetOriginal = TextureAssets.FlyingCarpet;
-
             // Initialize the CalamityLists as this is coupled in tons of other type
             CalamityLists.Load();
 
@@ -204,12 +200,6 @@ namespace CalamityMod
                 Main.OnPreDraw -= PrepareRenderTargets;
             });
 
-            if (!Main.dedServ)
-            {
-                TextureAssets.FlyingCarpet = carpetOriginal;
-            }
-
-            carpetOriginal = null;
             _Instance = null;
             base.Unload();
         }

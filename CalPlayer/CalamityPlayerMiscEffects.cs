@@ -13,6 +13,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
@@ -787,8 +788,8 @@ namespace CalamityMod.CalPlayer
             // Update Carpet textures
             if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
-                Asset<Texture2D> carpetAuric = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AuricCarpet");
-                Asset<Texture2D> carpetOriginal = CalamityMod.carpetOriginal;
+                Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
+                Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
                 TextureAssets.FlyingCarpet = (auricSet ? carpetAuric : carpetOriginal);
             }
 
