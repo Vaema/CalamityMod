@@ -18,7 +18,7 @@ namespace CalamityMod.DataStructures
         /// <summary>
         /// Owner of this Renderer Item
         /// </summary>
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
 
         /// <summary>
         /// The draw depth of the renderer. This is used to draw them in descending order; higher values are drawn first.

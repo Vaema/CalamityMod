@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Accessories
         public const int maxPscAnimTime = 120;
 
         // Interface stuff.
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
         public bool ShaderIsDyeable => false;
 
@@ -44,7 +44,10 @@ namespace CalamityMod.Items.Accessories
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                var player = OwnerPlayer;
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
+
+                var player = Main.player[OwnerPlayer];
                 if (player is null)
                     return false;
 

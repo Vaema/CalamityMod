@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldActiveDefense = 30;
         public static float ShieldActiveDamageReduction = 0.1f;
 
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;
 
         public bool ShouldDrawDyeableShader
@@ -50,7 +50,10 @@ namespace CalamityMod.Items.Accessories
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                var player = OwnerPlayer;
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
+
+                var player = Main.player[OwnerPlayer];
                 if (player is null)
                     return false;
 
@@ -172,7 +175,10 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            var player = OwnerPlayer;
+            if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                return;
+
+            var player = Main.player[OwnerPlayer];
             if (player is null)
                 return;
 
