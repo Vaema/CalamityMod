@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
             Item.consumable = true;
             Item.createTile = ModContent.TileType<FrigidMonolithTile>();
             Item.DefaultToPlaceableTile(ModContent.TileType<FrigidMonolithTile>());
-            Item.value = Item.buyPrice(gold: 25); // sold by Archmage
+            Item.value = Item.buyPrice(gold: 25); // Sold by Archmage
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
             Item.vanity = true;

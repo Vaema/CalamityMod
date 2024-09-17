@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Potions
             Item.buffType = BuffID.WellFed2;
             Item.buffTime = CalamityUtils.SecondsToFrames(1800f);
 
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.buyPrice(silver: 50); // Sold by Archmage
             Item.rare = ItemRarityID.Pink;
         }
     }

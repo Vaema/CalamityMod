@@ -30,7 +30,7 @@ namespace CalamityMod.Items.SummonItems
             Item.noUseGraphic = true;
             Item.makeNPC = (short)ModContent.NPCType<BloodwormNormal>();
 
-            Item.value = Item.sellPrice(gold: 20); // 2x the sell price of Truffle Worms; also sold by Amidias for 2x the price
+            Item.value = Item.sellPrice(gold: 20); // 2x the sell price of Truffle Worms; also sold by Sea King for a custom (2x) price
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

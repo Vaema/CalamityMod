@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Fountains
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<SulphurousFountainTile>());
-            Item.value = Item.buyPrice(gold: 4);
+            Item.value = Item.buyPrice(gold: 4); // Sold by Witch Doctor
             Item.rare = ItemRarityID.Blue;
         }
     }
