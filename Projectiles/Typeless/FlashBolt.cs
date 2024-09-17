@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (time == 0)
             {
                 colorValue += Main.rand.Next(0, 20);
-                sizeMult = Projectile.ai[0];
+                sizeMult = 1;
                 if (visible)
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/ArcFlash");
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (targetDist < 1400f)
             {
                 Vector2 pos = Projectile.Center - Projectile.velocity * 15;
-                if (Projectile.timeLeft % (int)(4 * sizeMult) == 0)
+                if (Projectile.timeLeft % 4 == 0)
                 {
                     Particle spark2 = new BoltParticle(pos, -Projectile.velocity * 0.05f, false, 30, 0.6f * sizeMult, usedColor * (visible ? 1 : 0.25f), new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(spark2);
@@ -114,15 +114,6 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
 
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i <= 2; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (Projectile.velocity * 4).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
-                dust.noGravity = true;
-                dust.color = Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid;
-            }
-        }
         // Theres some leftover code here for an explosion on hit, in case we want that
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 60 * sizeMult * (Projectile.numHits > 1 ? 3 : 1), targetHitbox);
         public override bool? CanCutTiles() => false;
