@@ -125,12 +125,21 @@ namespace CalamityMod
 
             if (!Main.dedServ)
             {
-                LoadClient();
+                // Lava Texture
+                LavaTextures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
+                LavaTextures.slope[0] = TextureAssets.LiquidSlope[1];
+                LavaTextures.block[0] = TextureAssets.Liquid[1];
+                var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
+                LavaTextures.fall[0] = waterfallTexture[1];
+
                 PrimitiveRenderer.Initialize();
                 ForegroundDrawing.ForegroundManager.Load();
+
+                // This must be done separately from immediate loading, as loading is now multithreaded.
+                // However, render targets and certain other graphical objects can only be created on the main thread.
+                Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
 
-            EnchantmentManager.LoadAllEnchantments();
             VanillaArmorChangeManager.Load();
             SetupBossKillTimes();
 
@@ -141,23 +150,6 @@ namespace CalamityMod
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
         }
-
-        private void LoadClient()
-        {
-            // Lava Texture
-            LavaTextures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
-            LavaTextures.slope[0] = TextureAssets.LiquidSlope[1];
-            LavaTextures.block[0] = TextureAssets.Liquid[1];
-            var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
-            LavaTextures.fall[0] = waterfallTexture[1];
-
-            // This must be done separately from immediate loading, as loading is now multithreaded.
-            // However, render targets and certain other graphical objects can only be created on the main thread.
-            Main.QueueMainThreadAction(() =>
-            {
-                Main.OnPreDraw += PrepareRenderTargets;
-            });
-        }
         #endregion
 
         #region Unload
@@ -167,7 +159,6 @@ namespace CalamityMod
             bossKillTimes = null;
 
             Attunement.Unload();
-            EnchantmentManager.UnloadAllEnchantments();
             VanillaArmorChangeManager.Unload();
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
