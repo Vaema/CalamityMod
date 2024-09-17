@@ -116,9 +116,6 @@ namespace CalamityMod
         #region Load
         public override void Load()
         {
-            // Initialize the CalamityLists as this is coupled in tons of other type
-            CalamityLists.Load();
-
             // Initialize the EnemyStats struct as early as it is safe to do so
             NPCStats.Load();
 
@@ -142,7 +139,6 @@ namespace CalamityMod
             LavaRendering.instance = new LavaRendering();
 
             Attunement.Load();
-            BalancingChangesManager.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
         }
@@ -173,9 +169,6 @@ namespace CalamityMod
             bossKillTimes?.Clear();
             bossKillTimes = null;
 
-            CalamityLists.Unload();
-
-            BalancingChangesManager.Unload();
             Attunement.Unload();
             EnchantmentManager.UnloadAllEnchantments();
             VanillaArmorChangeManager.Unload();
