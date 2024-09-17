@@ -17,18 +17,7 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.width = 36;
-            Item.height = 16;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 25;
-            Item.useTime = 25;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.makeNPC = (short)ModContent.NPCType<AndroombaFriendly>();
-
+            Item.DefaultToCapturedCritter(ModContent.NPCType<AndroombaFriendly>());
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }

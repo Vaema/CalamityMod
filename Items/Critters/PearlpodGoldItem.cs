@@ -15,19 +15,8 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 24;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
+            Item.DefaultToCapturedCritter(ModContent.NPCType<PearlpodGold>());
             Item.bait = 20;
-            Item.makeNPC = (short)ModContent.NPCType<PearlpodGold>();
-
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
