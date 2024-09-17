@@ -824,11 +824,11 @@ NullificationPistol: {
 	DisplayName: Nullification Pistol
 	Tooltip:
 		'''
-		Fires polarized energy, swap between modes with right click
+		Fires discrete bolts of polarized energy. <right> to swap modes
 		Positive energy splits into three piercing beams
-		Negative energy rapidly fires homing bolts
-		Both types blast enemies away at close range
-		Energy modes weaken the longer they are used; switching resets it
+		Negative energy shoots rapidly and homes in on enemies
+		All shots blow away enemies at close range
+		Each mode weakens with continuous use and resets to full power when swapped
 		'Weaponizing alien tech? Now that's what I like to hear!'
 		'''
 }
@@ -837,13 +837,13 @@ OntologicalDespoiler: {
 	DisplayName: Ontological Despoiler
 	Tooltip:
 		'''
-		Fires chargeable bursts of concentrated unreality
-		Swap between unstable mode and null mode with <right>
-		Unstable bursts are trifurcated and pierce enemies
-		Null bursts have high rate-of-fire and home in on enemies
-		At 50% charge, the bursts are fired rapidly
-		At 100% charge, unleash an unstable disruption shot or a null annihilation beam
-		Modes charge slower when used in succession, this is reset by switching
+		Condenses chargeable pockets of concentrated unreality. <right> to swap modes
+		Unstable condensate shots trifurcate and pierce enemies
+		Null condensate shots fire rapidly and home in on enemies
+		At 50% charge or higher, rate of fire significantly increases
+		Fully charged unstable condensate lobs a homing disruption sphere
+		Fully charged null condensate emits a hitscan null-annihilation beam
+		Each mode charges slower when used repeatedly and resets to full speed when swapped
 		'Rob them of continuity and the laws of physics they hold so dear.'
 		'''
 }

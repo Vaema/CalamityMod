@@ -141,10 +141,10 @@ NovaShot.DisplayName: Nova Bolt
 Nuke.DisplayName: Nuke
 NullFlash.DisplayName: Null Flash
 NullShot.DisplayName: Null
-OntologicalDespoilerBeam.DisplayName: Annihilation Beam
-OntoligicalDespoilerBurst.DisplayName: Disruption Burst
-OntologicalDespoilerGrenade.DisplayName: Disruption Shot
-OntologicalDespoilerShot.DisplayName: Volatile Energy Shot
+OntologicalDespoilerBeam.DisplayName: Null-Annihilation Beam
+OntoligicalDespoilerBurst.DisplayName: Disruption Blast
+OntologicalDespoilerGrenade.DisplayName: Disruption Sphere
+OntologicalDespoilerShot.DisplayName: Unreality Condensate
 OpalChargedStrike.DisplayName: Charged Plasma Bolt
 OpalStrike.DisplayName: Heated Bolt
 PiercingBullet.DisplayName: Piercing Blow
