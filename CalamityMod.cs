@@ -158,8 +158,6 @@ namespace CalamityMod
             {
                 Main.OnPreDraw += PrepareRenderTargets;
             });
-
-            InvasionProgressUIManager.LoadGUIs();
         }
         #endregion
 
@@ -177,7 +175,6 @@ namespace CalamityMod
             CalamityGlobalProjectile.UnloadTweaks();
 
             PopupGUIManager.UnloadGUIs();
-            InvasionProgressUIManager.UnloadGUIs();
             SchematicManager.Unload();
             PlayerDashManager.Unload();
 
