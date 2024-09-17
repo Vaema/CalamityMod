@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/ShadowboltReflect");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.9f, Pitch = -0.4f}, Projectile.Center);
 
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 5.5f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 12f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
             }
             else
             {

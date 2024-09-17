@@ -199,7 +199,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                         int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
-                        int charge2DamageNeg = Projectile.damage * 30;
+                        int charge2DamageNeg = Projectile.damage * 32;
 
                         if (Positive)
                         {
@@ -261,7 +261,7 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
                             }
                         }
                         else
@@ -297,7 +297,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ChargeLV1)
                     ShotsLoaded = MaxLoadableShots;
 
-                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1.2f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
+                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
 
                 // Sounds
                 if (!hasBegunFiring)
