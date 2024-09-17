@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Magic
     public class ThunderboltHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<Thunderbolt>();
+        public int Time = 0;
         public override float MaxOffsetLengthFromArm => 64f;
         public override float BaseOffsetY => -16f;
         public override float OffsetXUpwards => -16f;
@@ -56,6 +57,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void HoldoutAI()
         {
+            Time++;
+
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = HeldItem is null ? 0 : Owner.GetWeaponDamage(HeldItem);
 
@@ -132,6 +135,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
+            if (Time < 2)
+            {
+                return false;
+            }
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
