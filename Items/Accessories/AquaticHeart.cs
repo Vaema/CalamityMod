@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            string statusTooltip = NPC.downedBoss3 ? this.GetLocalizedValue("FullTooltip") : this.GetLocalizedValue("LockedTooltip");
+            string statusTooltip = this.GetLocalizedValue(NPC.downedBoss3 ? "FullTooltip" : "LockedTooltip");
             tooltips.FindAndReplace("[STATUS]", statusTooltip);
         }
     }
