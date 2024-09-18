@@ -32,6 +32,16 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> FlyingCarpetVanilla;
         public static Asset<Texture2D> FlyingCarpetAuric;
 
+        // Boss Heads
+        // I know it's not exactly the "Texture" but it belongs to ExtraTextures so 🤷
+        public static int BossHeadIndex_ChadPrime;
+
+        public override void Load()
+        {
+            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
+            BossHeadIndex_ChadPrime = CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
+        }
+
         public override void OnModLoad()
         {
             DestroyerHeadGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);

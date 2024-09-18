@@ -1222,9 +1222,6 @@ namespace CalamityMod.NPCs
         #region Load/Unload
         public override void Load()
         {
-            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
-            chadPrimeIcon = CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
-
             #region Setup Vanilla DR Values
             DRValues = new SortedDictionary<int, float> {
                 { NPCID.AngryBonesBig, 0.2f },
@@ -3604,7 +3601,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
-                    index = chadPrimeIcon;
+                    index = ExtraTextureRefs.BossHeadIndex_ChadPrime;
 
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
