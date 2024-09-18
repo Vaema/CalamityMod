@@ -118,8 +118,6 @@ namespace CalamityMod
             }
 
             SetupBossKillTimes();
-
-            BaseIdleHoldoutProjectile.LoadAll();
         }
         #endregion
 
