@@ -150,6 +150,7 @@ AuroraSpirit.DisplayName: Aurora Spirit
 BloodlettingServant.DisplayName: Bloodletting Servant
 BloomSlime.DisplayName: Bloom Slime
 Bohldohr.DisplayName: Bohldohr
+BucketZombie.DisplayName: "{$NPCName.Zombie}"
 CladCrab.DisplayName: Clad Crab
 Cnidrion.DisplayName: Cnidrion
 CrawlerAmber.DisplayName: Amber Crawler
