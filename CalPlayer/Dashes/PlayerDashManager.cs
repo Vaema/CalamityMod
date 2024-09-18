@@ -44,7 +44,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public override void OnModLoad()
         {
             DashIdentificationTable = new();
-            ReflectionHelper.IterateCalamityModTypes<PlayerDashEffect>(includeBaseType: false, type =>
+            ReflectionHelper.IterateCalamityTypes<PlayerDashEffect>(includeBaseType: false, type =>
             {
                 string id = (string)type.GetProperty("ID").GetValue(null);
 

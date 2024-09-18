@@ -4,29 +4,29 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
     // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class VanillaArmorChangeManager
+    public class VanillaArmorChangeManager : ModSystem
     {
         internal static List<VanillaArmorChange> ArmorChanges;
 
-        internal static void Load()
+        public override void OnModLoad()
         {
-            ArmorChanges = new List<VanillaArmorChange>();
-            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
-            foreach (Type type in types)
+            ArmorChanges = [];
+            ReflectionHelper.IterateCalamityTypes<VanillaArmorChange>(includeBaseType: false, type =>
             {
-                if (!type.IsSubclassOf(typeof(VanillaArmorChange)) || type.IsAbstract)
-                    continue;
-
-                ArmorChanges.Add((VanillaArmorChange)FormatterServices.GetUninitializedObject(type));
-            }
+                ArmorChanges.Add((VanillaArmorChange)Activator.CreateInstance(type));
+            });
         }
 
-        internal static void Unload() => ArmorChanges = null;
+        public override void Unload()
+        {
+            ArmorChanges = null;
+        }
 
         public static void ApplySetBonusTooltipChanges(Item checkItem, ref string setBonusText)
         {

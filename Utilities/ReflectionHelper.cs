@@ -85,19 +85,19 @@ namespace CalamityMod
             }
         }
 
-        public static IEnumerable<Type> GetCalamityModTypes()
+        public static IEnumerable<Type> GetCalamityTypes()
         {
             return AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
         }
 
-        public static void IterateCalamityModTypes<T>(bool includeBaseType, Action<Type> action)
+        public static void IterateCalamityTypes<T>(bool includeBaseType, Action<Type> action)
         {
             // WHY????
             if (action is null)
                 return;
 
             Type baseType = typeof(T);
-            var types = GetCalamityModTypes();
+            var types = GetCalamityTypes();
             foreach (var type in types)
             {
                 if (type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType))

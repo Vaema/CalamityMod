@@ -117,7 +117,6 @@ namespace CalamityMod
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
 
-            VanillaArmorChangeManager.Load();
             SetupBossKillTimes();
 
             BaseIdleHoldoutProjectile.LoadAll();
@@ -129,8 +128,6 @@ namespace CalamityMod
         {
             bossKillTimes?.Clear();
             bossKillTimes = null;
-
-            VanillaArmorChangeManager.Unload();
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
