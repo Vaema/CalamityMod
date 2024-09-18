@@ -9,7 +9,6 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
@@ -888,7 +887,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas(isBackground: true);
+                LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
             {
@@ -896,7 +895,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas();
+                LavaRenderingSystem.Instance.DrawLavas();
             });
         }
 
@@ -909,7 +908,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas();
+                LavaRenderingSystem.Instance.DrawLavas();
             });
         }
 
@@ -922,7 +921,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas(isBackground: true);
+                LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
         }
 
@@ -935,7 +934,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.alphaSave = CalamityMod.lavaAlpha.ToArray();
+                LavaRenderingSystem.LavaAlpha.CopyTo(LavaRenderingSystem.AlphaSave, 0);
             });
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(0), i => i.MatchStloc(34), i => i.MatchBr(out _), i => i.MatchLdloc(34), i => i.MatchLdcI4(1), i => i.MatchBeq(out _)))
             {
@@ -946,7 +945,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate((CaptureBiome biome) => {
                 for (int i = 0; i < 1; i++)
                 {
-                    CalamityMod.lavaAlpha[i] = ((i == CalamityMod.LavaStyle) ? 1f : 0f);
+                    LavaRenderingSystem.LavaAlpha[i] = ((i == LavaRenderingSystem.LavaStyle) ? 1f : 0f);
                 }
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -955,7 +954,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: true, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("bloodMoon"), i => i.MatchBrtrue(out _), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchBr(out _), i => i.MatchLdcI4(9), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -963,7 +962,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: true, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -971,7 +970,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: false, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -979,7 +978,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: false, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc2(), i => i.MatchStsfld<Main>("liquidAlpha")))
             {
@@ -987,7 +986,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                CalamityMod.lavaAlpha = LavaRendering.alphaSave;
+                LavaRenderingSystem.AlphaSave.CopyTo(LavaRenderingSystem.LavaAlpha, 0);
             });
         }
 
@@ -1005,7 +1004,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
             cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
-                LavaRendering.instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
+                LavaRenderingSystem.Instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
         #endregion
@@ -1028,7 +1027,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
-            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRendering.instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRendering.instance.WaterStyleMaxCount)));
+            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
 
             //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type")), i => i.MatchStloc(8)))
@@ -1056,7 +1055,11 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
-            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) => (style >= LavaRendering.instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava) ? CalamityMod.LavaTextures.liquid[style - LavaRendering.instance.WaterStyleMaxCount - 1].Value : initialTexture);
+            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
+                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
+                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
+                    : initialTexture
+            );
         }
 
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
@@ -1138,13 +1141,13 @@ namespace CalamityMod.ILEditing
                 LogFailure("Ambient lava bubble replacer", "Could not locate the bubble newdust parameters");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.dustLava());
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(16), i => i.MatchLdcI4(8), i => i.MatchLdcI4(35)))
             {
                 LogFailure("Ambient lava bubble replacer", "Could not locate the surface bubble newdust parameters");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
         
         private void LavaDropletReplacer(ILContext il)
@@ -1155,7 +1158,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("Ambient lava droplet replacer", "Could not locate the lava droplet newgore parameters");
                 return;
             }
-			cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.goreLava());
+			cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
 		}
 
         private void SplashEntityLava(ILContext il)
@@ -1166,13 +1169,13 @@ namespace CalamityMod.ILEditing
                 LogFailure("Entity Lava Splashing (Item, Projectile, NPC, Player)", "Could not locate the first lava bubble splashing");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.dustLava());
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Entity>("width"), i => i.MatchLdcI4(12), i => i.MatchAdd(), i => i.MatchLdcI4(24), i => i.MatchLdcI4(35)))
             {
                 LogFailure("Entity Lava Splashing (Item, Projectile, NPC, Player)", "Could not locate the second lava bubble splashing");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
 
         private void PlayerDebuffEdit(ILContext il)
@@ -1188,7 +1191,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(161);
             cursor.EmitDelegate((Player player, int onFiretime) =>
             {
-                LavaStylesLoader.InflictDebuff(player, CalamityMod.LavaStyle, onFiretime);
+                LavaStylesLoader.InflictDebuff(player, LavaRenderingSystem.LavaStyle, onFiretime);
             });
         }
         #endregion
@@ -1196,7 +1199,7 @@ namespace CalamityMod.ILEditing
         #region Other
         private Color WaterfallGlowmaskEditor(On_WaterfallManager.orig_StylizeColor orig, float alpha, int maxSteps, int waterfallType, int y, int s, Tile tileCache, Color aColor)
         {
-            if (CalamityMod.LavaStyle != 0 && !LavaStylesLoader.Get(CalamityMod.LavaStyle).LavafallGlowmask())
+            if (LavaRenderingSystem.LavaStyle != 0 && !LavaStylesLoader.Get(LavaRenderingSystem.LavaStyle).LavafallGlowmask())
             {
                 return aColor;
             }
@@ -1209,7 +1212,7 @@ namespace CalamityMod.ILEditing
         private void LavaFallRedrawer(On_WaterfallManager.orig_Draw orig, WaterfallManager self, SpriteBatch spriteBatch)
         {
             orig.Invoke(self, spriteBatch);
-            LavaRendering.instance.InitialDrawLavafall(self);
+            LavaRenderingSystem.Instance.InitialDrawLavafall(self);
         }
         #endregion
 
@@ -1250,28 +1253,28 @@ namespace CalamityMod.ILEditing
                 {
                     Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
 
-                    float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                    float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                    float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
+                    float R = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.X : 0f;
+                    float G = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
+                    float B = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
+                    LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref R, ref G, ref B);
 
                     for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
                     {
-                        if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
+                        if (LavaRenderingSystem.LavaAlpha[styleIndex] > 0f && styleIndex != LavaRenderingSystem.LavaStyle)
                         {
                             float r = styleIndex == 0 ? lavaLight.X : 0f;
                             float g = styleIndex == 0 ? lavaLight.Y : 0f;
                             float b = styleIndex == 0 ? lavaLight.Z : 0f;
                             LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
 
-                            float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                            float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                            float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+                            float r2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.X : 0f;
+                            float g2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
+                            float b2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
+                            LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref r2, ref g2, ref b2);
 
-                            R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            R = float.Lerp(r, r2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
+                            G = float.Lerp(g, g2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
+                            B = float.Lerp(b, b2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
                         }
                     }
 
@@ -1297,7 +1300,7 @@ namespace CalamityMod.ILEditing
                 float r = 0.55f;
                 float g = 0.33f;
                 float b = 0.11f;
-                LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r, ref g, ref b);
+                LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref r, ref g, ref b);
                 if (!(r == 0 && g == 0 && b == 0))
                 {
                     float r8;
@@ -1334,7 +1337,7 @@ namespace CalamityMod.ILEditing
                 }
                 else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
                 {
-                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
                 }
             });
         }
@@ -1390,7 +1393,7 @@ namespace CalamityMod.ILEditing
                 // Reason: Flag6 is "IsWater" flag, and since we don't modified that behaviour "yet" it will never be triggered here
                 // Fix this when there will be new lava style with dynamic color changes
                 else if (tileCache.LiquidType == LiquidID.Lava)
-                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
             });
 
             // And now remaining TotalCount is now could pass to local variable

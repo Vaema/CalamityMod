@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Liquid;
 using Terraria.Graphics;
 using Terraria.ID;
@@ -16,18 +18,42 @@ using static Terraria.WaterfallManager;
 
 namespace CalamityMod.Systems
 {
-    public class LavaRendering : ModSystem
+    [Autoload(Side = ModSide.Client)]
+    public sealed class LavaRenderingSystem : ModSystem
     {
         //Welcome to Calamity's lava rendering. Prepare your eyes
-        public static LavaRendering instance;
+        public static LavaRenderingSystem Instance;
+
+        public static int LavaStyle;
+        public static float[] LavaAlpha = new float[1];
+        internal static float[] AlphaSave = new float[1];
+
+        // Holds the Texture Arrays for all the lava textures.
+        // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
+        // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
+        public struct Textures
+        {
+            public static Asset<Texture2D>[] liquid = new Asset<Texture2D>[1];
+            public static Asset<Texture2D>[] slope = new Asset<Texture2D>[1];
+            public static Asset<Texture2D>[] block = new Asset<Texture2D>[1];
+            public static Asset<Texture2D>[] fall = new Asset<Texture2D>[1];
+        }
 
         public int WaterStyleMaxCount = ModContent.GetContent<ModWaterStyle>().Count() + LoaderManager.Get<WaterStylesLoader>().VanillaCount;
 
-        internal static float[] alphaSave;
-
         public override void Load()
         {
-            LavaRendering.alphaSave = new float[CalamityMod.lavaAlpha.Length];
+            Instance = this;
+        }
+
+        public override void OnModLoad()
+        {
+            // Lava Texture
+            Textures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
+            Textures.slope[0] = TextureAssets.LiquidSlope[1];
+            Textures.block[0] = TextureAssets.Liquid[1];
+            var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
+            Textures.fall[0] = waterfallTexture[1];
         }
 
         public void DrawLavas(bool isBackground = false)
@@ -35,17 +61,17 @@ namespace CalamityMod.Systems
             Main.drewLava = false;
             if (!isBackground)
             {
-                CalamityMod.LavaStyle = 0;
+                LavaStyle = 0;
                 LavaStylesLoader.IsLavaActive();
                 for (int i = 0; i < 1; i++)
                 {
-                    if (CalamityMod.LavaStyle != i)
+                    if (LavaStyle != i)
                     {
-                        CalamityMod.lavaAlpha[i] = Math.Max(CalamityMod.lavaAlpha[i] - 0.2f, 0f);
+                        LavaAlpha[i] = Math.Max(LavaAlpha[i] - 0.2f, 0f);
                     }
                     else
                     {
-                        CalamityMod.lavaAlpha[i] = Math.Min(CalamityMod.lavaAlpha[i] + 0.2f, 1f);
+                        LavaAlpha[i] = Math.Min(LavaAlpha[i] + 0.2f, 1f);
                     }
                 }
                 LavaStylesLoader.UpdateLiquidAlphas();
@@ -53,18 +79,18 @@ namespace CalamityMod.Systems
             bool flag = false;
             for (int j = 0; j < LavaStylesLoader.TotalCount; j++)
             {
-                if (CalamityMod.lavaAlpha[j] > 0f && j != CalamityMod.LavaStyle)
+                if (LavaAlpha[j] > 0f && j != LavaStyle)
                 {
-                    DrawLiquid(isBackground, j, isBackground ? 1f : CalamityMod.lavaAlpha[j], drawSinglePassLiquids: false);
+                    DrawLiquid(isBackground, j, isBackground ? 1f : LavaAlpha[j], drawSinglePassLiquids: false);
                     flag = true;
                 }
             }
-            DrawLiquid(isBackground, CalamityMod.LavaStyle, flag ? CalamityMod.lavaAlpha[CalamityMod.LavaStyle] : 1f);
+            DrawLiquid(isBackground, LavaStyle, flag ? LavaAlpha[LavaStyle] : 1f);
         }
 
         protected internal void DrawLiquid(bool bg = false, int lavaStyle = 0, float Alpha = 1f, bool drawSinglePassLiquids = true)
         {
-            if (!Lighting.NotRetro)
+            if (!Lighting.NotRetro) // Is Retro
             {
                 oldDrawLava(bg, lavaStyle, Alpha);
                 return;
@@ -362,12 +388,12 @@ namespace CalamityMod.Systems
                                 color3.G = (byte)((color2.G * 3 + color4.G * 2) / 5);
                                 color3.B = (byte)((color2.B * 3 + color4.B * 2) / 5);
                                 color3.A = (byte)((color2.A * 3 + color4.A * 2) / 5);
-                                Main.spriteBatch.Draw(CalamityMod.LavaTextures.block[num4].Value, vector2 - Main.screenPosition + new Vector2((float)num20, (float)num21) + vector, (Rectangle?)new Rectangle(value.X + num20, value.Y + num21, width, height), color3, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
+                                Main.spriteBatch.Draw(Textures.block[num4].Value, vector2 - Main.screenPosition + new Vector2((float)num20, (float)num21) + vector, (Rectangle?)new Rectangle(value.X + num20, value.Y + num21, width, height), color3, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
                             }
                         }
                         else
                         {
-                            Main.spriteBatch.Draw(CalamityMod.LavaTextures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)value, color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
+                            Main.spriteBatch.Draw(Textures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)value, color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
                         }
                     }
                     else
@@ -376,7 +402,7 @@ namespace CalamityMod.Systems
                         {
                             value.X += (int)(Main.wFrame * 18f);
                         }
-                        Main.spriteBatch.Draw(CalamityMod.LavaTextures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)value, color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
+                        Main.spriteBatch.Draw(Textures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)value, color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
                     }
                     if (!Main.tile[j, i + 1].IsHalfBlock)
                     {
@@ -389,7 +415,7 @@ namespace CalamityMod.Systems
                     num19 = (float)(int)color.A * num9;
                     color = new((int)(byte)num16, (int)(byte)num17, (int)(byte)num18, (int)(byte)num19);
                     vector2 = new((float)(j * 16), (float)(i * 16 + 16));
-                    Main.spriteBatch.Draw(CalamityMod.LavaTextures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)new Rectangle(0, 4, 16, 8), color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
+                    Main.spriteBatch.Draw(Textures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)new Rectangle(0, 4, 16, 8), color, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
                     float num22 = 6f;
                     float num24 = 0.75f;
                     num22 = 4f;
@@ -404,7 +430,7 @@ namespace CalamityMod.Systems
                         float num26 = 1f - (float)m / num22;
                         num26 *= num24;
                         vector2 = new((float)(j * 16), (float)(num25 * 16 - 2));
-                        Main.spriteBatch.Draw(CalamityMod.LavaTextures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)new Rectangle(0, 18, 16, 16), color * num26, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
+                        Main.spriteBatch.Draw(Textures.block[num4].Value, vector2 - Main.screenPosition + vector, (Rectangle?)new Rectangle(0, 18, 16, 16), color * num26, 0f, default(Vector2), 1f, (SpriteEffects)0, 0f);
                     }
                 }
             }
@@ -550,11 +576,11 @@ namespace CalamityMod.Systems
             }
             if (waterStyleOverride != -1)
             {
-                CalamityMod.LavaStyle = waterStyleOverride;
+                LavaStyle = waterStyleOverride;
             }
             if (num2 == 0)
             {
-                num2 = CalamityMod.LavaStyle;
+                num2 = LavaStyle;
             }
             Lighting.GetCornerColors(tileX, tileY, out var vertices);
             Vector2 vector = new((float)(tileX * 16), (float)(tileY * 16));
@@ -653,7 +679,7 @@ namespace CalamityMod.Systems
             {
                 for (int i = 0; i < LavaStylesLoader.TotalCount; i++)
                 {
-                    if (CalamityMod.lavaAlpha[i] > 0f && i != num2)
+                    if (LavaAlpha[i] > 0f && i != num2)
                     {
                         DrawPartialLiquid(!solidLayer, tileCache, ref position, ref liquidSize, i, ref vertices);
                         flag7 = true;
@@ -662,7 +688,7 @@ namespace CalamityMod.Systems
                 }
             }
             VertexColors colors = vertices;
-            float num7 = (flag7 ? CalamityMod.lavaAlpha[num2] : 1f);
+            float num7 = (flag7 ? LavaAlpha[num2] : 1f);
             ref Color bottomLeftColor2 = ref colors.BottomLeftColor;
             bottomLeftColor2 *= num7;
             ref Color bottomRightColor2 = ref colors.BottomRightColor;
@@ -684,23 +710,23 @@ namespace CalamityMod.Systems
             }
             if (flag || num == 0)
             {
-                Main.tileBatch.Draw(CalamityMod.LavaTextures.block[liquidType].Value, position, liquidSize, colors, default(Vector2), 1f, (SpriteEffects)0);
+                Main.tileBatch.Draw(Textures.block[liquidType].Value, position, liquidSize, colors, default(Vector2), 1f, (SpriteEffects)0);
                 return;
             }
             liquidSize.X += 18 * (num - 1);
             switch (num)
             {
                 case 1:
-                    Main.tileBatch.Draw(CalamityMod.LavaTextures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
+                    Main.tileBatch.Draw(Textures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
                     break;
                 case 2:
-                    Main.tileBatch.Draw(CalamityMod.LavaTextures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
+                    Main.tileBatch.Draw(Textures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
                     break;
                 case 3:
-                    Main.tileBatch.Draw(CalamityMod.LavaTextures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
+                    Main.tileBatch.Draw(Textures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
                     break;
                 case 4:
-                    Main.tileBatch.Draw(CalamityMod.LavaTextures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
+                    Main.tileBatch.Draw(Textures.slope[liquidType].Value, position, liquidSize, colors, Vector2.Zero, 1f, (SpriteEffects)0);
                     break;
             }
         }
@@ -709,9 +735,9 @@ namespace CalamityMod.Systems
         {
             for (int i = 0; i < LavaStylesLoader.TotalCount; i++)
             {
-                if (CalamityMod.lavaAlpha[i] > 0f)
+                if (LavaAlpha[i] > 0f)
                 {
-                    DrawLavafall(waterfallManager, i, CalamityMod.lavaAlpha[i]);
+                    DrawLavafall(waterfallManager, i, LavaAlpha[i]);
                 }
             }
         }
@@ -1117,8 +1143,8 @@ namespace CalamityMod.Systems
 
         private void DrawLavafall(int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            Texture2D value = CalamityMod.LavaTextures.fall[waterfallType].Value;
-            Main.spriteBatch.Draw(value, position, (Rectangle?)sourceRect, color, 0f, default(Vector2), 1f, effects, 0f);
+            Texture2D value = Textures.fall[waterfallType].Value;
+            Main.spriteBatch.Draw(value, position, (Rectangle?)sourceRect, color, 0f, default, 1f, effects, 0f);
         }
 
         private static float GetLavafallAlpha(float Alpha, int maxSteps, int y, int s, Tile tileCache)
@@ -1133,9 +1159,9 @@ namespace CalamityMod.Systems
 
         public static int dustLava()
         {
-            if (CalamityMod.LavaStyle >= 1)
+            if (LavaStyle >= 1)
             {
-                return LavaStylesLoader.Get(CalamityMod.LavaStyle).GetSplashDust();
+                return LavaStylesLoader.Get(LavaStyle).GetSplashDust();
             }
             else
             {
@@ -1146,9 +1172,9 @@ namespace CalamityMod.Systems
         //just better as a method rather than hardcoded type values
         public static int goreLava()
         {
-            if (CalamityMod.LavaStyle >= 1)
+            if (LavaStyle >= 1)
             {
-                return LavaStylesLoader.Get(CalamityMod.LavaStyle).GetDropletGore();
+                return LavaStylesLoader.Get(LavaStyle).GetDropletGore();
             }
             else
             {

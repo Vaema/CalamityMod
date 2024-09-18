@@ -80,21 +80,6 @@ namespace CalamityMod
         // These should all be moved to other files, whether that's CalamityLists or brand new ModSystems.
         // It is best to have a ton of small ModSystems.
 
-        // Holds the Texture Arrays for all the lava textures.
-        // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
-        // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
-        public struct LavaTextures
-        {
-            public static Asset<Texture2D>[] liquid = new Asset<Texture2D>[1];
-            public static Asset<Texture2D>[] slope = new Asset<Texture2D>[1];
-            public static Asset<Texture2D>[] block = new Asset<Texture2D>[1];
-            public static Asset<Texture2D>[] fall = new Asset<Texture2D>[1];
-        }
-
-        public static int LavaStyle;
-
-        public static float[] lavaAlpha = new float[1];
-
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
 
@@ -125,13 +110,6 @@ namespace CalamityMod
 
             if (!Main.dedServ)
             {
-                // Lava Texture
-                LavaTextures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
-                LavaTextures.slope[0] = TextureAssets.LiquidSlope[1];
-                LavaTextures.block[0] = TextureAssets.Liquid[1];
-                var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
-                LavaTextures.fall[0] = waterfallTexture[1];
-
                 PrimitiveRenderer.Initialize();
 
                 // This must be done separately from immediate loading, as loading is now multithreaded.
@@ -141,9 +119,6 @@ namespace CalamityMod
 
             VanillaArmorChangeManager.Load();
             SetupBossKillTimes();
-
-            //lava
-            LavaRendering.instance = new LavaRendering();
 
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();

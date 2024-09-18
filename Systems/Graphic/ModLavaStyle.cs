@@ -127,11 +127,12 @@ namespace CalamityMod.Systems
         {
             orig.Invoke(unloading);
             int totalCount = TotalCount;
-            Array.Resize(ref CalamityMod.LavaTextures.liquid, totalCount);
-            Array.Resize(ref CalamityMod.LavaTextures.block, totalCount);
-            Array.Resize(ref CalamityMod.LavaTextures.slope, totalCount);
-            Array.Resize(ref CalamityMod.LavaTextures.fall, totalCount);
-            Array.Resize(ref CalamityMod.lavaAlpha, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.liquid, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.block, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.slope, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.fall, totalCount);
+            Array.Resize(ref LavaRenderingSystem.LavaAlpha, totalCount);
+            Array.Resize(ref LavaRenderingSystem.AlphaSave, totalCount);
         }
 
         private static readonly List<ModLavaStyle> _content = [];
@@ -157,10 +158,10 @@ namespace CalamityMod.Systems
             foreach (ModLavaStyle item in Content)
             {
                 int Slot = item.Slot;
-                CalamityMod.LavaTextures.liquid[Slot] = ModContent.Request<Texture2D>(item.Texture, (AssetRequestMode)2);
-                CalamityMod.LavaTextures.block[Slot] = ModContent.Request<Texture2D>(item.BlockTexture, (AssetRequestMode)2);
-                CalamityMod.LavaTextures.slope[Slot] = ModContent.Request<Texture2D>(item.SlopeTexture, (AssetRequestMode)2);
-                CalamityMod.LavaTextures.fall[Slot] = ModContent.Request<Texture2D>(item.WaterfallTexture, (AssetRequestMode)2);
+                LavaRenderingSystem.Textures.liquid[Slot] = ModContent.Request<Texture2D>(item.Texture, AssetRequestMode.AsyncLoad);
+                LavaRenderingSystem.Textures.block[Slot] = ModContent.Request<Texture2D>(item.BlockTexture, AssetRequestMode.AsyncLoad);
+                LavaRenderingSystem.Textures.slope[Slot] = ModContent.Request<Texture2D>(item.SlopeTexture, AssetRequestMode.AsyncLoad);
+                LavaRenderingSystem.Textures.fall[Slot] = ModContent.Request<Texture2D>(item.WaterfallTexture, AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -182,34 +183,34 @@ namespace CalamityMod.Systems
 
         public static void UpdateLiquidAlphas()
         {
-            if (CalamityMod.LavaStyle >= VanillaCount)
+            if (LavaRenderingSystem.LavaStyle >= VanillaCount)
             {
                 for (int i = 0; i < VanillaCount; i++)
                 {
-                    CalamityMod.lavaAlpha[i] -= 0.2f;
-                    if (CalamityMod.lavaAlpha[i] < 0f)
+                    LavaRenderingSystem.LavaAlpha[i] -= 0.2f;
+                    if (LavaRenderingSystem.LavaAlpha[i] < 0f)
                     {
-                        CalamityMod.lavaAlpha[i] = 0f;
+                        LavaRenderingSystem.LavaAlpha[i] = 0f;
                     }
                 }
             }
             foreach (ModLavaStyle item in Content)
             {
                 int type = item.Slot;
-                if (CalamityMod.LavaStyle == type)
+                if (LavaRenderingSystem.LavaStyle == type)
                 {
-                    CalamityMod.lavaAlpha[type] += 0.2f;
-                    if (CalamityMod.lavaAlpha[type] > 1f)
+                    LavaRenderingSystem.LavaAlpha[type] += 0.2f;
+                    if (LavaRenderingSystem.LavaAlpha[type] > 1f)
                     {
-                        CalamityMod.lavaAlpha[type] = 1f;
+                        LavaRenderingSystem.LavaAlpha[type] = 1f;
                     }
                 }
                 else
                 {
-                    CalamityMod.lavaAlpha[type] -= 0.2f;
-                    if (CalamityMod.lavaAlpha[type] < 0f)
+                    LavaRenderingSystem.LavaAlpha[type] -= 0.2f;
+                    if (LavaRenderingSystem.LavaAlpha[type] < 0f)
                     {
-                        CalamityMod.lavaAlpha[type] = 0f;
+                        LavaRenderingSystem.LavaAlpha[type] = 0f;
                     }
                 }
             }
@@ -253,7 +254,7 @@ namespace CalamityMod.Systems
                     bool? flag = lavaStyle?.IsLavaActive();
                     if (flag != null && flag == true)
                     {
-                        CalamityMod.LavaStyle = lavaStyle.Slot;
+                        LavaRenderingSystem.LavaStyle = lavaStyle.Slot;
                     }
                 }
             }
