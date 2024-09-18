@@ -121,7 +121,6 @@ namespace CalamityMod
             SetupBossKillTimes();
 
             BaseIdleHoldoutProjectile.LoadAll();
-            PlayerDashManager.Load();
         }
         #endregion
 
@@ -137,7 +136,6 @@ namespace CalamityMod
             CalamityGlobalProjectile.UnloadTweaks();
 
             PopupGUIManager.UnloadGUIs();
-            PlayerDashManager.Unload();
 
             Main.QueueMainThreadAction(() =>
             {
