@@ -18,6 +18,7 @@ namespace CalamityMod.Items.LabFinders
         {
             Item.width = 24;
             Item.height = 26;
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
 

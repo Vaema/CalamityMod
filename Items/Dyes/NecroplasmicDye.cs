@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.Purple;
-            Item.value = Item.sellPrice(0, 2, 50, 0);
+            Item.value = Item.sellPrice(silver: 75);
         }
 
         public override void AddRecipes()

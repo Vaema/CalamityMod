@@ -22,6 +22,7 @@ namespace CalamityMod.Items.LabFinders
             Item.Calamity().MaxCharge = 100;
             Item.Calamity().ChargePerUse = 10;
             Item.Calamity().UsesCharge = true;
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
 
