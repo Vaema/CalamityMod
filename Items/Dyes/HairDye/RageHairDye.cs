@@ -11,15 +11,15 @@ namespace CalamityMod.Items.Dyes.HairDye
         {
             Item.width = 20;
             Item.height = 26;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(gold: 7, silver: 50);
-            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = Item.useTime = 17;
             Item.UseSound = SoundID.Item3;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.useTurn = true;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
             Item.consumable = true;
+            Item.maxStack = 9999;
+
+            Item.value = Item.buyPrice(gold: 7, silver: 50); // Sold by Stylist
+            Item.rare = ItemRarityID.Green;
         }
     }
 }

@@ -12,15 +12,11 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.ZephyrFish);
-            Item.shoot = ModContent.ProjectileType<BrimlingPet>();
-            Item.buffType = ModContent.BuffType<BrimlingBuff>();
-
+            Item.DefaultToVanitypet(ModContent.ProjectileType<BrimlingPet>(), ModContent.BuffType<BrimlingBuff>());
+            Item.UseSound = SoundID.NPCHit51;
             Item.value = Item.sellPrice(gold: 4);
             Item.rare = ItemRarityID.Red;
             Item.Calamity().devItem = true;
-
-            Item.UseSound = SoundID.NPCHit51;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
