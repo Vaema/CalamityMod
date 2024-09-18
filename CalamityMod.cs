@@ -145,7 +145,6 @@ namespace CalamityMod
             //lava
             LavaRendering.instance = new LavaRendering();
 
-            Attunement.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
         }
@@ -157,7 +156,6 @@ namespace CalamityMod
             bossKillTimes?.Clear();
             bossKillTimes = null;
 
-            Attunement.Unload();
             VanillaArmorChangeManager.Unload();
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
