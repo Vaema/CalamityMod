@@ -161,13 +161,29 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.spriteDirection = -NPC.direction;
         }
 
+        public static bool IsPassableTile(int x, int y)
+        {
+            return (!Main.tile[x, y].HasUnactuatedTile ||
+                !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
+        }
+
         public void StepUp()
         {
             Vector2 position = NPC.position;
             position.X += NPC.velocity.X;
             int x = (int)((position.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1)) * NPC.direction) / 16f);
             int y = (int)((position.Y + (float)NPC.height - 1f) / 16f);
-            if ((float)(x * 16) < position.X + (float)NPC.width && (float)(x * 16 + 16) > position.X && ((Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType]) || (Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile)) && (!Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || (Main.tile[x, y - 1].IsHalfBlock && (!Main.tile[x, y - 4].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 4].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 4].TileType]))) && (!Main.tile[x, y - 2].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 2].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 2].TileType]) && (!Main.tile[x, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 3].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 3].TileType]) && (!Main.tile[x - NPC.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - NPC.direction, y - 3].TileType]))
+
+            if ((float)(x * 16) >= position.X + (float)NPC.width || (float)(x * 16 + 16) <= position.X)
+                return;
+
+            bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
+            bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
+            bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
+            bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
+            bool tile3AbovePassable = !Main.tile[x - NPC.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - NPC.direction, y - 3].TileType];
+
+            if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
             {
                 float npcBottom = (float)(y * 16);
                 if (Main.tile[x, y].IsHalfBlock)
