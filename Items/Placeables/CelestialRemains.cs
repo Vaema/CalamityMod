@@ -17,20 +17,7 @@ namespace CalamityMod.Items.Placeables
             ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 16;
-            Item.height = 16;
-            
-            Item.createTile = ModContent.TileType<Tiles.AstralDesert.CelestialRemains>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.AstralDesert.CelestialRemains>());
 
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {

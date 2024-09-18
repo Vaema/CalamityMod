@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<ReinforcedCrate>());
-            Item.value = Item.sellPrice(copper: 30);
+            Item.value = Item.sellPrice(silver: 1);
         }
 
         public override void AddRecipes()
