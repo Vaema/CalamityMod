@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Mounts
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.rare = ItemRarityID.Orange;
-            Item.value = Item.buyPrice(0, 9, 0, 0);
+            Item.value = Item.sellPrice(gold: 5);
             Item.UseSound = SoundID.Item23;
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<OnyxExcavator>();

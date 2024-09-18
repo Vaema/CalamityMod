@@ -10,10 +10,6 @@ namespace CalamityMod.Items.Mounts
     public class GazeOfCrysthamyr : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Mounts";
-        public override void SetStaticDefaults()
-        {
-
-        }
 
         public override void SetDefaults()
         {
@@ -23,7 +19,7 @@ namespace CalamityMod.Items.Mounts
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.HoldUp;
 
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 

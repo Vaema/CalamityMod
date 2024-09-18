@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<SquishyBean>();
 
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().devItem = true;
         }

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Mounts
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
 
-            Item.value = Item.sellPrice(gold: 20);
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
 

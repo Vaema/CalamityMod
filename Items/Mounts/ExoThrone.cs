@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<DraedonGamerChairMount>();
 
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Violet>();
         }
 

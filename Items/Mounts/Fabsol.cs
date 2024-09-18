@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<AlicornMount>();
 
-            Item.value = Item.buyPrice(platinum: 3);
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().devItem = true;
         }

@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<PhuppersChair>();
 
-            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().devItem = true;
         }
