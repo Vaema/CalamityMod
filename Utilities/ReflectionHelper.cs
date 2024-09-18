@@ -90,7 +90,7 @@ namespace CalamityMod
             return AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
         }
 
-        public static void IterateCalamityTypes<T>(bool includeBaseType, Action<Type> action)
+        public static void IterateCalamityTypes<T>(bool includeBaseType = false, Action<Type> action = null)
         {
             // WHY????
             if (action is null)

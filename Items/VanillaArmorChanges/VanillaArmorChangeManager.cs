@@ -17,7 +17,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void OnModLoad()
         {
             ArmorChanges = [];
-            ReflectionHelper.IterateCalamityTypes<VanillaArmorChange>(includeBaseType: false, type =>
+            ReflectionHelper.IterateCalamityTypes<VanillaArmorChange>(action: type =>
             {
                 ArmorChanges.Add((VanillaArmorChange)Activator.CreateInstance(type));
             });

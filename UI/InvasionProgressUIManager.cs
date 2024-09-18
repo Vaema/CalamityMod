@@ -27,7 +27,7 @@ namespace CalamityMod.UI
         public override void OnModLoad()
         {
             // Look through every type in the mod, and check if it's derived from InvasionProgressUI. If it is, create a copy and save it in the static list.
-            ReflectionHelper.IterateCalamityTypes<InvasionProgressUI>(includeBaseType: false, type =>
+            ReflectionHelper.IterateCalamityTypes<InvasionProgressUI>(action: type =>
             {
                 gUIs.Add(Activator.CreateInstance(type) as InvasionProgressUI);
             });
