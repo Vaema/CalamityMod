@@ -132,8 +132,6 @@ namespace CalamityMod
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
 
-            PopupGUIManager.UnloadGUIs();
-
             Main.QueueMainThreadAction(() =>
             {
                 Main.OnPreDraw -= PrepareRenderTargets;

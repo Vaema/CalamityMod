@@ -201,7 +201,6 @@ namespace CalamityMod
             if (!Main.dedServ)
             {
                 WikiThisSupport();
-                PopupGUIManager.LoadGUIs();
             }
         }
 
