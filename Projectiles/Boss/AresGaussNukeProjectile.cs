@@ -180,12 +180,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            // Nuke explosion sound.
+            // NukeOfBliss explosion sound.
             SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, Projectile.Center);
 
             if (Main.netMode != NetmodeID.Server)
             {
-                // Nuke gores
+                // NukeOfBliss gores
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("AresGaussNuke1").Type, 1f);
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("AresGaussNuke3").Type, 1f);
             }
