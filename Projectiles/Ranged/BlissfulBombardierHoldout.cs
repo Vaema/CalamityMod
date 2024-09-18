@@ -217,6 +217,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return false;
 
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
             //Texture2D glowTexture = Request<Texture2D>(GlowTexture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
@@ -236,6 +237,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.EntitySpriteDraw(texture, drawPosition + (Main.rand.NextVector2Circular(12, 12) * fade), null, staticEffectsColor with { A = 0 } * fade, drawRotation, rotationPoint, Projectile.scale, flipSprite);
             }
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            Main.EntitySpriteDraw(texture2, drawPosition, null, Color.White, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
 
             return false;
         }

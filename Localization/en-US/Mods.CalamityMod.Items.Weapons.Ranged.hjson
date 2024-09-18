@@ -186,10 +186,10 @@ BlightSpewer: {
 BlissfulBombardier: {
 	DisplayName: Blissful Bombardier
 	Tooltip:
-		'''
-		Fires flare rockets
-		Rockets will destroy tiles with tile-destroying ammo
-		'''
+'''
+Launches a large crystal missile into the sky which releases mini missiles before falling back down at your cursor
+The crystal missile homes really fucking good but the little ones dont
+'''
 }
 
 BloodBoiler: {
