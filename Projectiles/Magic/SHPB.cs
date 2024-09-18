@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Magic
                 else // Slow down over time if not homing
                     Projectile.velocity *= 0.9875f;
             }
-            else // Always slow down if not Sight
+            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight))// Always slow down if not Flight
                 Projectile.velocity *= 0.9875f;
 
             float explodeRange = 250f;

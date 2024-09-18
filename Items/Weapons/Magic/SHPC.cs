@@ -28,9 +28,9 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public const float LightExplosionSizeMult = 1.5f;
         public const float NightExplosionTimeMult = 2.5f;
-        public const int FlightDirectHitFlightBoost = 30; // The amount of flight time restored on direct hits with Flight bombs, in frames
+        public const int FlightDirectHitFlightBoost = 25; // The amount of flight time restored on direct hits with Flight bombs, in frames
         public const float MightKnockbackStrength = 8.5f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
-        public const float SightHomingRange = 320f; // Range of homing for Sight bombs, in pixels
+        public const float SightHomingRange = 288f; // Range of homing for Sight bombs, in pixels
         public const int FrightFlatDamage = 16;
 
         public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
