@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Magic
             // Might launches enemies
             if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Might && target.CanBeMoved(false))
             {
-                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength;
+                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength - new Vector2(0, 3);
                 target.velocity = launchVel;
             }
         }

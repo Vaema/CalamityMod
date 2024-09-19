@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
             if (SHPB.GetSoulEffects((int)Projectile.ai[0]) == SHPB.SoulType.Might && target.CanBeMoved(false))
             {
                 Player owner = Main.player[Projectile.owner];
-                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength;
+                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength - new Vector2(0, 3);
                 target.velocity = launchVel;
             }
         }
