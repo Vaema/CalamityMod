@@ -1240,7 +1240,11 @@ StormSurge: {
 
 SulphuricAcidCannon: {
 	DisplayName: Sulphuric Acid Cannon
-	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
+	Tooltip:
+		'''
+		Fires homing Acid Rockets
+		Acid Rockets stick to enemies and explode into toxic mist after a short delay
+		'''
 }
 
 SuperradiantSlaughterer: {
