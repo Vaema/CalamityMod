@@ -146,7 +146,7 @@ namespace CalamityMod.UI.Rippers
                     changed = true;
                 }
                 if (changed)
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
             }
 
             if (modPlayer.AdrenalineEnabled)
@@ -165,7 +165,7 @@ namespace CalamityMod.UI.Rippers
                     changed = true;
                 }
                 if (changed)
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
             }
 
             #region Mouse Interaction
@@ -225,7 +225,7 @@ namespace CalamityMod.UI.Rippers
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     rageDragOffset = null;
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 }
             }
             else if (adrenHover)
@@ -267,7 +267,7 @@ namespace CalamityMod.UI.Rippers
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     adrenDragOffset = null;
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 }
             }
             #endregion

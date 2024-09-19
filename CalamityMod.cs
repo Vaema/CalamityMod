@@ -78,26 +78,6 @@ namespace CalamityMod
         }
         #endregion Render Target Management
 
-        #region Force ModConfig save (Reflection)
-        internal static void SaveConfig(CalamityClientConfig cfg)
-        {
-            // There is no current way to manually save a mod configuration file in tModLoader.
-            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
-            try
-            {
-                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-                if (saveMethodInfo is not null)
-                    saveMethodInfo.Invoke(null, new object[] { cfg });
-                else
-                    Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
-            }
-            catch
-            {
-                Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
-            }
-        }
-        #endregion
-
         #region Music
 
         // This function returns an available Calamity Music Mod track, or null if the Calamity Music Mod is not available.

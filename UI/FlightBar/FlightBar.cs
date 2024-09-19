@@ -125,7 +125,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 return;
             }
 
@@ -175,7 +175,7 @@ namespace CalamityMod.UI
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 }
             }
         }
