@@ -29,9 +29,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float LightExplosionSizeMult = 1.5f;
         public const float NightExplosionTimeMult = 2.5f;
         public const int FlightDirectHitFlightBoost = 25; // The amount of flight time restored on direct hits with Flight bombs, in frames
-        public const float MightKnockbackStrength = 8.5f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
+        public const float MightKnockbackStrength = 9f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
         public const float SightHomingRange = 288f; // Range of homing for Sight bombs, in pixels
-        public const int FrightFlatDamage = 16;
+        public const int FrightFlatDamage = 20;
 
         public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
 
@@ -39,9 +39,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 124;
             Item.height = 52;
-            Item.damage = 77;
+            Item.damage = 93;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
+            Item.mana = 15;
             Item.useAnimation = Item.useTime = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -141,7 +141,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             return projai;
         }
-        #endregion Weapon-Specific Functions
+        #endregion
 
         public override Vector2? HoldoutOffset() => new Vector2(-35, -10);
 
@@ -213,8 +213,11 @@ namespace CalamityMod.Items.Weapons.Magic
             if (player.altFunctionUse == 2)
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
-                Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
-                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.175f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
+                if (storedSoulpower % 2 == 0)
+                {
+                    Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
+                    Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.25f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
+                }
                 return false;
             }
             else
@@ -277,7 +280,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
-        #endregion Recoil Stuff
+        #endregion
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
@@ -352,6 +355,6 @@ namespace CalamityMod.Items.Weapons.Magic
             storedSoulpower = reader.ReadInt32();
             storedSoulType = reader.ReadInt32();
         }
-        #endregion Saving Ammo Amount
+        #endregion
     }
 }
