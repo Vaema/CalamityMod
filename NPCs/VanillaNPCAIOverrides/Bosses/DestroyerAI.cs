@@ -330,7 +330,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyer)
             {
                 // Spawn segments from head
-                if (npc.ai[0] == 0f)
+                if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.ai[3] = npc.whoAmI;
                     npc.realLife = npc.whoAmI;
@@ -341,13 +341,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (j == totalSegments)
                             type = NPCID.TheDestroyerTail;
 
-                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                        Main.npc[segment].ai[3] = npc.whoAmI;
-                        Main.npc[segment].realLife = npc.whoAmI;
-                        Main.npc[segment].ai[1] = index;
-                        Main.npc[index].ai[0] = segment;
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                        index = segment;
+                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                            Main.npc[segment].ai[3] = npc.whoAmI;
+                            Main.npc[segment].realLife = npc.whoAmI;
+                            Main.npc[segment].ai[1] = index;
+                            Main.npc[index].ai[0] = segment;
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                            index = segment;
                     }
                 }
 
@@ -397,7 +397,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int damage = npc.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
                                 double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                 double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -589,7 +589,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int damage = npc.GetProjectileDamage(projectileType);
 
                         // Reduce mech boss projectile damage depending on the new ore progression changes
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         {
                             double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                             double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -1293,7 +1293,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int damage = npc.GetProjectileDamage(type);
 
                         // Reduce mech boss projectile damage depending on the new ore progression changes
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         {
                             double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                             double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
@@ -1873,7 +1873,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int damage = npc.GetProjectileDamage(type);
 
                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
                         double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                         double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -2056,7 +2056,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int damage = npc.GetProjectileDamage(type);
 
                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
                         double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                         double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;

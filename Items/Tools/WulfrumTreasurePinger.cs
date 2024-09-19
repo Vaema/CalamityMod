@@ -29,14 +29,14 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 52;
             Item.height = 42;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.autoReuse = false;
             Item.holdStyle = 16; //Custom hold style
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = null;
             Item.noMelee = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 10);
             usesLeft = maxUses;
             timeBeforeBlast = breakTime;
         }

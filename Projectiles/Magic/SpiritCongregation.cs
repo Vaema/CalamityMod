@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
         }
@@ -139,11 +140,6 @@ namespace CalamityMod.Projectiles.Magic
                 if (HoverOffset != Vector2.Zero)
                     HoverOffset = Vector2.Zero;
             }
-
-            // Previously, Gruesome Eminence stopped being able to hurt you when fully charged.
-            // This has been changed so that its threat is everpresent.
-            Projectile.hostile = Time > 75f;
-            // Projectile.hostile = !tame && Time > 75f;
 
             // Explode into a burst of spirit dust and gas clouds when a bigger face appears.
             if (!WasStrongBefore && CurrentPower > LargeMouthPowerLowerBound)
@@ -302,22 +298,6 @@ namespace CalamityMod.Projectiles.Magic
                 backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBackBig").Value;
 
             DrawHead(backTexture, 1.04f);
-        }
-
-        // Damage scales up over time as it grows.
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float damageFactor = 0.25f + 0.75f * CurrentPower;
-            int fullPowerDamage;
-            if (Main.masterMode)
-                fullPowerDamage = 540;
-            else if (Main.expertMode)
-                fullPowerDamage = 450;
-            else
-                fullPowerDamage = 360;
-
-            modifiers.SourceDamage *= 0f;
-            modifiers.SourceDamage.Flat += (int)(damageFactor * fullPowerDamage);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

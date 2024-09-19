@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -53,20 +54,20 @@ namespace CalamityMod.Systems
             }
 
             AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(214.577d),
-                () => DownedBossSystem.downedCalamitasClone, () => CalamityConfig.Instance.Interlude1);
+                () => DownedBossSystem.downedCalamitasClone, () => CalamityClientConfig.Instance.Interlude1);
 
             AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(191.912d), () => NPC.downedMoonlord,
-                () => CalamityConfig.Instance.Interlude2, outroSilence: TimeSpan.FromSeconds(1f));
+                () => CalamityClientConfig.Instance.Interlude2, outroSilence: TimeSpan.FromSeconds(1f));
 
             // Alternative Interlude 2 -> AddEntry("MLDefeated", "Interlude2_CutIntro", TimeSpan.FromSeconds(160.989d),
-            //    () => NPC.downedMoonlord, () => CalamityConfig.Instance.Interlude2,
+            //    () => NPC.downedMoonlord, () => CalamityClientConfig.Instance.Interlude2,
             //    outroSilence: TimeSpan.FromSeconds(1f));
 
             AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d),
-                () => DownedBossSystem.downedYharon, () => CalamityConfig.Instance.Interlude3);
+                () => DownedBossSystem.downedYharon, () => CalamityClientConfig.Instance.Interlude3);
 
             AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(203.620d),
-                () => DownedBossSystem.downedDoG, () => CalamityConfig.Instance.DevourerofGodsEulogy,
+                () => DownedBossSystem.downedDoG, () => CalamityClientConfig.Instance.DevourerofGodsEulogy,
                 introSilence: TimeSpan.FromSeconds(7.5f));
 
             // Acceptance is NOT toggleable in the config
@@ -280,40 +281,7 @@ namespace CalamityMod.Systems
 
         public static void SendSyncRequest()
         {
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.MusicEventSyncRequest);
-            packet.Send();
-        }
-
-        public static void FulfillSyncRequest(int requester)
-        {
-            // Only fulfill requests as the server host
-            if (!Main.dedServ)
-                return;
-
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.MusicEventSyncResponse);
-
-            int trackCount = PlayedEvents.Count;
-            packet.Write(trackCount);
-
-            for (int i = 0; i < trackCount; i++)
-                packet.Write(PlayedEvents[i]);
-
-            packet.Send(toClient: requester);
-        }
-
-        public static void ReceiveSyncResponse(BinaryReader reader)
-        {
-            // Only receive info on clients
-            if (Main.dedServ)
-                return;
-
-            PlayedEvents.Clear();
-            int trackCount = reader.ReadInt32();
-
-            for (int i = 0; i < trackCount; i++)
-                PlayedEvents.Add(reader.ReadString());
+            MusicEventSyncRequestPacket.Send();
         }
 
         #endregion

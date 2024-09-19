@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dustID = ProvUtils.GetDustID(pscState);
+            int dustID = ProvUtils.GetDustID(!Main.dayTime);
             int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, dustID, 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;
             Main.dust[num469].velocity *= 0f;
@@ -137,8 +137,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -146,8 +145,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -180,8 +178,7 @@ namespace CalamityMod.Projectiles.Summon
                 Split(false, false);
             }
             SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dustID = ProvUtils.GetDustID(pscState);
+            int dustID = ProvUtils.GetDustID(!Main.dayTime);
             for (int num193 = 0; num193 < 6; num193++)
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 50, default, 1.5f);
@@ -211,6 +208,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.3f;
         }
@@ -251,7 +249,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (Projectile.timeLeft > 550)
                 Projectile.velocity *= 0.95f;
-            int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, ProvUtils.GetDustID((float)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night)), 0f, 0f, 100, default, Main.dayTime ? 1f : 0.75f);
+            int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, ProvUtils.GetDustID(!Main.dayTime), 0f, 0f, 100, default, Main.dayTime ? 1f : 0.75f);
             Main.dust[num469].noGravity = true;
             Main.dust[num469].velocity *= 0f;
 
@@ -329,17 +327,15 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -380,8 +376,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 200;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dust = ProvUtils.GetDustID(pscState);
+            int dust = ProvUtils.GetDustID(!Main.dayTime);
             for (int num621 = 0; num621 < 4; num621++)
             {
                 int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, 0f, 0f, 100, default, Main.dayTime ? 2f : 0.5f);
@@ -507,9 +502,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], ProvUtils.GetProjectileColor(pscState, Projectile.alpha), 1);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha), 1);
             return false;
         }
 
@@ -524,8 +518,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.width = Projectile.height = 200;
                 Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
                 Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-                int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-                int dust = ProvUtils.GetDustID(pscState);
+                int dust = ProvUtils.GetDustID(!Main.dayTime);
                 for (int num621 = 0; num621 < 4; num621++)
                 {
                     int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, 0f, 0f, 100, default, Main.dayTime ? 2f : 0.5f);
@@ -736,8 +729,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Projectile.velocity *= boomerSwarm ? 1.03f : 1.02f;
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dust = ProvUtils.GetDustID(pscState);
+            int dust = ProvUtils.GetDustID(!Main.dayTime);
             int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, dust, 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;
             Main.dust[num469].velocity *= 0f;
@@ -747,8 +739,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -756,8 +747,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/ProfanedCrystalRangedHugesNight").Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -792,8 +782,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 200;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dust = ProvUtils.GetDustID(pscState);
+            int dust = ProvUtils.GetDustID(!Main.dayTime);
             for (int num621 = 0; num621 < 4; num621++)
             {
                 int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, 0f, 0f, 100, default, Main.dayTime ? 2f : 0.5f);
@@ -922,8 +911,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.height = 50;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dust = ProvUtils.GetDustID(pscState);
+            int dust = ProvUtils.GetDustID(!Main.dayTime);
             for (int num621 = 0; num621 < 10; num621++)
             {
                 int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, 0f, 0f, 100, default, Main.dayTime ? 2f : 0.5f);
@@ -956,16 +944,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -983,6 +969,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.25f;
         }
         public override void SetDefaults()
@@ -1507,9 +1494,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
                     Vector2 dustVelocity = (Projectile.Center - spawnPosition) * 0.085f + owner.velocity;
 
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-
-                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(pscState));
+                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(!Main.dayTime));
                     dust.velocity = dustVelocity;
                     dust.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
                     dust.noGravity = true;
@@ -1567,7 +1552,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 dustPos = new Vector2(Owner.Center.X + Main.rand.NextFloat(-10, 10), Owner.Center.Y + Main.rand.NextFloat(-10, 10));
                 Vector2 velocity = (Owner.Center - dustPos).SafeNormalize(Vector2.Zero);
                 velocity *= Main.dayTime ? 3f : 6.9f;
-                var dust = Dust.NewDustPerfect(Owner.Center, ProvUtils.GetDustID((float)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night)), velocity, 0, default(Color), 2f);
+                var dust = Dust.NewDustPerfect(Owner.Center, ProvUtils.GetDustID(!Main.dayTime), velocity, 0, default(Color), 2f);
                 if (!Main.dayTime)
                     dust.noGravity = true;
             }
@@ -1656,7 +1641,7 @@ namespace CalamityMod.Projectiles.Summon
             drawPos -= new Vector2(texture.Width, texture.Height) * Projectile.scale / 2f;
             drawPos += drawOrigin * Projectile.scale + new Vector2(0f, Projectile.gfxOffY);
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
-            if (CalamityConfig.Instance.Afterimages)  //handle afterimages manually since the utility broke it and didn't render correctly
+            if (CalamityClientConfig.Instance.Afterimages)  //handle afterimages manually since the utility broke it and didn't render correctly
             {
                 for (int i = 0; i < Projectile.oldPos.Length; ++i)
                 {
@@ -1687,6 +1672,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 2;
             ProjectileID.Sets.TrailingMode[Type] = 0;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.5f;
@@ -1795,8 +1781,7 @@ namespace CalamityMod.Projectiles.Summon
 
             //Ensure that psa's spears are not coloured by night
             var psc = Projectile.ai[0] > 0f;
-            int pscState = (int)((!Main.dayTime && psc) ? Providence.BossMode.Night : Providence.BossMode.Day);
-            int num469 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ProvUtils.GetDustID(pscState), 0f, 0f, 100, default, !Main.dayTime && psc ? 0.5f : 1f);
+            int num469 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ProvUtils.GetDustID(!Main.dayTime && psc), 0f, 0f, 100, default, !Main.dayTime && psc ? 0.5f : 1f);
             Main.dust[num469].noGravity = true;
             Main.dust[num469].velocity *= 0f;
             handleAI(psc && Projectile.ai[1] > 0f);
@@ -1813,9 +1798,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             var psc = Projectile.ai[0] > 0f;
-            int pscState = (int)((!Main.dayTime && psc) ? Providence.BossMode.Night : Providence.BossMode.Day);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], ProvUtils.GetProjectileColor(pscState, Projectile.alpha), 1);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime && psc, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], ProvUtils.GetDayNightColor(!Main.dayTime && psc, Projectile.alpha), 1);
             return false;
         }
 
@@ -1830,9 +1814,8 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
                 Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
                 var psc = Projectile.ai[0] > 0f;
-                var shouldAdjust = !Main.dayTime && psc;
-                int pscState = (int)(shouldAdjust ? Providence.BossMode.Night : Providence.BossMode.Day);
-                int dustID = ProvUtils.GetDustID(pscState);
+                bool shouldAdjust = !Main.dayTime && psc;
+                int dustID = ProvUtils.GetDustID(shouldAdjust);
                 for (int num621 = 0; num621 < 4; num621++)
                 {
                     int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 100, default, !Main.dayTime && psc ? 0.5f : 2f);
@@ -1927,16 +1910,14 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
             Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, ProvUtils.GetDustID(pscState), 0f, 0f, 100, default, 1f);
+            int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, ProvUtils.GetDustID(!Main.dayTime), 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;
             Main.dust[num469].velocity *= 0f;
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -1944,8 +1925,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -1980,8 +1960,7 @@ namespace CalamityMod.Projectiles.Summon
                 Split();
             }
             SoundEngine.PlaySound(HolyBlast.ImpactSound, Projectile.Center);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dustID = ProvUtils.GetDustID(pscState);
+            int dustID = ProvUtils.GetDustID(!Main.dayTime);
             for (int num193 = 0; num193 < 6; num193++)
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 50, default, Main.dayTime ? 1.5f : 0.5f);
@@ -2011,6 +1990,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.3f;
         }
@@ -2077,17 +2057,15 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            return ProvUtils.GetProjectileColor(pscState, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
             int num214 = texture.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(pscState, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -2102,8 +2080,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
 
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dust = ProvUtils.GetDustID(pscState);
+            int dust = ProvUtils.GetDustID(!Main.dayTime);
 
             for (int num621 = 0; num621 < 4; num621++)
             {

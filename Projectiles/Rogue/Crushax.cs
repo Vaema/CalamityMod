@@ -9,6 +9,8 @@ namespace CalamityMod.Projectiles.Rogue
     public class Crushax : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -17,13 +19,11 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.penetrate = 2;
             Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
+            AIType = ProjectileID.ThrowingKnife;
+            Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 300;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
-            AIType = ProjectileID.ThrowingKnife;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 7;
         }
 
         public override void AI()

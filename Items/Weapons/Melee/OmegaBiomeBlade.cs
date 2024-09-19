@@ -398,9 +398,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<TrueBiomeBlade>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<AstralBar>(3).
                 AddIngredient<LifeAlloy>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

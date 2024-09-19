@@ -15,8 +15,6 @@ namespace CalamityMod.Items.Potions
         {
             Item.width = 32;
             Item.height = 30;
-            Item.value = Item.buyPrice(0, 0, 50, 0);
-            Item.rare = ItemRarityID.Pink;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.useAnimation = 17;
@@ -26,6 +24,9 @@ namespace CalamityMod.Items.Potions
             Item.useTurn = true;
             Item.buffType = BuffID.WellFed2;
             Item.buffTime = CalamityUtils.SecondsToFrames(1800f);
+
+            Item.value = Item.buyPrice(silver: 50); // Sold by Archmage
+            Item.rare = ItemRarityID.Pink;
         }
     }
 }

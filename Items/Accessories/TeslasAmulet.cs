@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
                 AddIngredient<AerialiteBar>(8).
                 AddIngredient<SeaPrism>(8).
                 AddIngredient<StormlionMandible>(4).

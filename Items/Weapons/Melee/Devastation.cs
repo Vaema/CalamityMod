@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 default:
                     break;
             }
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, Main.myPlayer);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, Main.myPlayer);
             float projSpeed = Item.shootSpeed;
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
@@ -130,7 +130,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<CatastropheClaymore>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<AstralBar>(10).
-                AddIngredient(ItemID.MeteoriteBar, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

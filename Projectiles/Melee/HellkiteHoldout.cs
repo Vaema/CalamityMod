@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public override Vector2 HitboxSize => new Vector2(185, 185) * Projectile.scale;
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
-        public override Vector2 SpriteOrigin => new(0, 125);
+        public override Vector2 SpriteOrigin => new(-3, 124);
         public Vector2 mousePos;
         public Vector2 aimVel;
         public bool doSwing = false;
@@ -69,12 +69,15 @@ namespace CalamityMod.Projectiles.Melee
 
             FlipAsSword = Owner.direction == -1 ? true : false;
         }
-
         public override void UseStyle()
         {
             AnimationProgress = Animation % (chargedSwing ? (int)(storedUseAnim * 0.7f) : storedUseAnim);
 
+            if (Owner.Calamity().mouseRight)
+                Projectile.ai[2] = 5;
+
             DrawUnconditionally = false;
+            bool cantUse = (Owner == null || !Owner.active || Owner.dead || (Projectile.ai[2] == 0 && !Owner.channel) || (Projectile.ai[2] == 5 && !Owner.Calamity().mouseRight) || Owner.CCed || Owner.noItems);
 
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
@@ -91,8 +94,16 @@ namespace CalamityMod.Projectiles.Melee
                 fadeIn = Utils.Remap(chargeTimer, 0, chargeTimerMax, 0, 1f);
 
             // If you are no longer holding the charge, then stop charge counter so you can swing
-            if (!Owner.Calamity().mouseRight)
+            if (cantUse)
+            {
                 chargeTimer = 0;
+                if (Projectile.ai[2] == 5)
+                {
+                    Owner.itemAnimation = Owner.itemAnimationMax;
+                    Projectile.timeLeft = Owner.itemAnimation;
+                }
+                Projectile.ai[2] = 0;
+            }
 
             if (!doSwing)
             {
@@ -106,13 +117,16 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 bladePos = new Vector2(60, 0);
                 Vector2 particlePos = Owner.Center + (bladePos).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
 
-                if (Owner.Calamity().mouseRight)
+                if (Projectile.ai[2] == 5)
                 {
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.05f);
 
                     float rotationValue = 65f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
                     Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(rotationValue), 0.3f);
                     Animation = 0;
+                    Owner.itemAnimation++;
+                    Projectile.timeLeft++;
+
                     if (chargeTimer < chargeTimerMax && !chargedSwing)
                         chargeTimer++;
                     if (Main.zenithWorld)
@@ -148,6 +162,7 @@ namespace CalamityMod.Projectiles.Melee
                     chargedSwing = true;
                     useAnim = storedUseAnim / 3;
                     chargeTimer++;
+
                     if (Main.zenithWorld)
                     {
                         if (chargeTimerMax - (GFBMulti * GFBMulti * 2) <= 12 && !GFBFlashWarning)
@@ -203,7 +218,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (AnimationProgress < (useAnim / 3))
                 {
-                    if (Owner.Calamity().mouseRight && !chargedSwing)
+                    if (Projectile.ai[2] == 5 && !chargedSwing)
                         doSwing = false;
 
                     aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -223,6 +238,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.2f);
+                    FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 }
                 else
                 {
@@ -272,10 +288,10 @@ namespace CalamityMod.Projectiles.Melee
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(150f * Projectile.ai[1] * Owner.direction, 120f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time / timeMax, 1))),
                         0.2f);
 
-                    //if (time >= timeMax)
-                        //doSwing = false;
                     if (time < (int)(timeMax * 0.9f))
+                    {
                         postSwing = true;
+                    }
 
                     if (CanHit)
                     {
@@ -394,14 +410,14 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.25f;
-            int hitsToMinMult = 4;
+            int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? 4f * (GFBMulti) : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? 4.5f * (GFBMulti) : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             // Only draw the projectile if the projectile's owner is currently using the item this projectile is attached to.
-            if ((useAnim > 0 || DrawUnconditionally) && Owner.ItemAnimationActive)
+            if ((useAnim > 0 || DrawUnconditionally) && (Owner.ItemAnimationActive || Owner.Calamity().mouseRight))
             {
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
                 Asset<Texture2D> glowTex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/HellkiteGlow");
@@ -411,13 +427,11 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 generalDrawPos = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
                 SpriteEffects sEffects = spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Color auraColor = Color.Lerp(Color.OrangeRed, Color.Orange, Utils.GetLerpValue(0, 5, i)) * 0.2f * fadeIn;
+                    Color auraColor = (Color.Lerp(Color.Red, Color.OrangeRed, Utils.GetLerpValue(0, 6, i)) * 0.35f * fadeIn) with { A = 0 };
                     Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/HellkiteGhost").Value;
-                    Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
-                    rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f) * 0.5f - 0.5f);
-                    Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + rotationalDrawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
+                    Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + Main.rand.NextVector2Circular(9, 9) + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
                 }
 
                 Main.EntitySpriteDraw(tex.Value, generalDrawPos, tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
@@ -426,7 +440,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     for (int i = 0; i < 5; i++)
                     {
-                        Color auraColor = Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 5, i)) * 0.4f * fadeIn;
+                        Color auraColor = (Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 5, i)) * 0.4f * fadeIn) with { A = 0 };
                         Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
                         rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 13f) * 0.5f);
                         Main.EntitySpriteDraw(glowTex.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset + new Vector2(0, Owner.gfxOffY), glowTex.Value.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);

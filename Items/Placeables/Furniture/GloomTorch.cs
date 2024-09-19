@@ -18,20 +18,7 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void SetDefaults()
         {
-            Item.width = 14;
-            Item.height = 18;
-            Item.maxStack = 9999;
-            Item.holdStyle = 1;
-            Item.noWet = true;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.Crags.GloomTorch>();
-            Item.flame = true;
-            Item.value = 500;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.Crags.GloomTorch>(), 0, false);
         }
 
         public override void HoldItem(Player player)

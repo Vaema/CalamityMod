@@ -13,10 +13,7 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.ZephyrFish);
-            Item.shoot = ModContent.ProjectileType<LeviPet>();
-            Item.buffType = ModContent.BuffType<LeviBuff>();
-
+            Item.DefaultToVanitypet(ModContent.ProjectileType<LeviPet>(), ModContent.BuffType<LeviBuff>());
             Item.value = Item.sellPrice(gold: 40);
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().devItem = true;

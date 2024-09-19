@@ -511,7 +511,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 origin = NPC.frame.Size() * 0.5f;
             int afterimageCount = 4;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageCount; i += 2)
                 {
@@ -527,7 +527,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             texture = GlowTexture.Value;
             Color baseGlowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.35f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageCount; i++)
                 {

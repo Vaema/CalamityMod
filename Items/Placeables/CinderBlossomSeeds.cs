@@ -25,6 +25,8 @@ namespace CalamityMod.Items.Placeables
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.maxStack = 9999;
+
+            Item.value = Item.sellPrice(copper: 50);
         }
 
         public override bool? UseItem(Player player)

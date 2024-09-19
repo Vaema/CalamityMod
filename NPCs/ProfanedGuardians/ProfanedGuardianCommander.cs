@@ -12,6 +12,7 @@ using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
@@ -570,7 +571,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 int damage = NPC.GetProjectileDamage(type);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
                                     Main.projectile[proj].timeLeft = projTimeLeft;
                                 }
                             }
@@ -704,10 +705,25 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
                         }
                     }
-                    else
+                    else if (NPC.localAI[2] == 1f)
                     {
                         inertia *= 1.5f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
+
+                        // Stop charging towards the player when within a certain distance
+                        if (NPC.Distance(player.Center) < 160f * NPC.scale)
+                            NPC.localAI[2] = 2f;
+                    }
+                    else
+                    {
+                        // Slow down
+                        if (NPC.Distance(player.Center) >= 240f * NPC.scale || NPC.localAI[2] == 3f)
+                        {
+                            if (NPC.localAI[2] != 3f)
+                                NPC.localAI[2] = 3f;
+
+                            NPC.velocity *= 0.98f;
+                        }
                     }
 
                     // Throw down holy fire while charging
@@ -1016,7 +1032,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -1054,7 +1070,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (colorOverride != null)
                     timeBasedColorLerp = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
@@ -1072,7 +1088,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedColorLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects

@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
         private float speed = 0f;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -73,7 +74,6 @@ namespace CalamityMod.Projectiles.Ranged
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, speed, 12f);
             return false;
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);

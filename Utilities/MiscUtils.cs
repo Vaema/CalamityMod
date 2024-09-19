@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Tools.ClimateChange;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,6 +38,7 @@ namespace CalamityMod
                     return i;
             return -1;
         }
+
 
         public static bool ChangeIngredientStack(this Recipe r, int itemID, int stack)
         {
@@ -195,7 +198,7 @@ namespace CalamityMod
             sfx.Volume = MathHelper.Clamp(sfx.Volume * volumeMultiplier, 0f, 1f);
         }
 
-        public static void StartRain(bool torrentialTear = false, bool maxSeverity = false)
+        public static void StartRain(bool torrentialTear = false, bool maxSeverity = false, bool worldSync = true)
         {
             int framesInDay = 86400;
             int framesInHour = framesInDay / 24;
@@ -245,39 +248,57 @@ namespace CalamityMod
             Main.raining = true;
             if (torrentialTear)
                 TorrentialTear.AdjustRainSeverity(maxSeverity);
-            CalamityNetcode.SyncWorld();
+
+            if (worldSync)
+                CalamityNetcode.SyncWorld();
+        }
+
+        public static void StopRain(bool clearWeather = false, bool worldSync = true)
+        {
+            if (clearWeather)
+                Main.StopRain();
+            else
+                Main.raining = false;
+            
+            if (worldSync)
+                CalamityNetcode.SyncWorld();
         }
 
         public static void StartSandstorm()
         {
-            // If it's not windy enough, make it windy enough for a sandstorm
-            // 0.6f is the minimum for vanilla but Calamity changes it to 0.2f
-            // Windy days occur when wind speed is at least 0.5f (0.4f in vanilla) so this should never cause a windy day
-            float windSpeed = 0f;
-            if (Main.windSpeedCurrent < 0.2f && Main.windSpeedCurrent > 0f)
+            if (Main.netMode != NetmodeID.MultiplayerClient && !Sandstorm.Happening)
+            {
+                // If it's not windy enough, make it windy enough for a sandstorm
+                // 0.6f is the minimum for vanilla but Calamity changes it to 0.2f
+                // Windy days occur when wind speed is at least 0.5f (0.4f in vanilla) so this should never cause a windy day
+                float windSpeed = 0f;
                 if (Main.windSpeedCurrent == 0f)
                 {
-                    windSpeed = Main.rand.NextFloat(0.2f, 0.4f) * (Main.rand.Next(0, 2) * 2 - 1);
+                    windSpeed = Main.rand.NextFloat(0.3f, 0.4f) * (Main.rand.Next(0, 2) * 2 - 1);
                 }
-                else if (Main.windSpeedCurrent < 0.2f && Main.windSpeedCurrent > 0f)
+                else if (Main.windSpeedCurrent < 0.3f && Main.windSpeedCurrent > 0f)
                 {
-                    windSpeed = Main.rand.NextFloat(0.2f, 0.4f);
+                    windSpeed = Main.rand.NextFloat(0.3f, 0.4f);
                 }
-                else if (Main.windSpeedCurrent > -0.2f && Main.windSpeedCurrent < 0f)
+                else if (Main.windSpeedCurrent > -0.3f && Main.windSpeedCurrent < 0f)
                 {
-                    windSpeed = Main.rand.NextFloat(-0.4f, -0.2f);
+                    windSpeed = Main.rand.NextFloat(-0.4f, -0.3f);
                 }
-            if (windSpeed != 0f)
-            {
-                Main.windSpeedCurrent = windSpeed < 0f ? -0.2f : 0.2f;
-                Main.windSpeedTarget = windSpeed;
+                if (windSpeed != 0f)
+                {
+                    Main.windSpeedCurrent = windSpeed < 0f ? -0.3f : 0.3f;
+                    Main.windSpeedTarget = windSpeed;
+                }
+                Sandstorm.StartSandstorm();
             }
-            Sandstorm.StartSandstorm();
         }
 
         public static void StopSandstorm()
         {
-            Terraria.GameContent.Events.Sandstorm.Happening = false;
+            if (Main.netMode != NetmodeID.MultiplayerClient && Sandstorm.Happening)
+            {
+                Sandstorm.StopSandstorm();
+            }
         }
 
         public static void AddWithCondition<T>(this List<T> list, T type, bool condition)

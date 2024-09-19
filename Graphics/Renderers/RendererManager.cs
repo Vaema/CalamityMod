@@ -83,18 +83,26 @@ namespace CalamityMod.Graphics.Renderers
         {
             orig();
 
-            if (Main.gameMenu)
+            if (Main.gameMenu || Main.dedServ)
                 return;
+
+            // Reset drawn frame check
+            foreach (var player in Main.ActivePlayers)
+            {
+                player.Calamity().drawnAnyShieldThisFrame = false;
+            }
 
             foreach (var renderer in Renderers)
             {
                 if (!renderer.ShouldDraw)
                     continue;
 
-                renderer.MainTarget.SwapTo(Color.Transparent);
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                renderer.DrawToTarget(Main.spriteBatch);
-                Main.spriteBatch.End();
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, () =>
+                {
+                    renderer.MainTarget.SwapTo(Color.Transparent);
+                    renderer.DrawToTarget(Main.spriteBatch);
+                });
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);

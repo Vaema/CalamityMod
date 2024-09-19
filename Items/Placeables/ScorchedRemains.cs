@@ -12,20 +12,6 @@ namespace CalamityMod.Items.Placeables
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 13;
-            Item.height = 10;
-            Item.createTile = ModContent.TileType<Tiles.Crags.ScorchedRemains>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-            Item.value = 1000;
-            Item.rare = ItemRarityID.Orange;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Crags.ScorchedRemains>());
     }
 }

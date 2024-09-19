@@ -15,26 +15,13 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.Torches[Item.type] = true;
             ItemID.Sets.SingleUseInGamepad[Type] = true;
-            ItemID.Sets.WaterTorches[Item.type] = true;
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ShimmerTorch;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 10;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.holdStyle = 1;
-            Item.noWet = false;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureMarnite.MarniteLight>();
-            Item.flame = true;
-            Item.value = 500;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.FurnitureMarnite.MarniteLight>(), 0, false);
+            Item.value = Item.sellPrice(copper: 20);
         }
 
         public override void HoldItem(Player player)
@@ -56,7 +43,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
         {
             CreateRecipe(3).
                 AddIngredient(ItemID.Torch, 3).
-                AddIngredient<PolishedMarniteBlock>(1).
+                AddIngredient<PolishedMarniteBlock>().
                 Register();
         }
     }

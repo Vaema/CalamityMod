@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,20 +14,15 @@ namespace CalamityMod.Items
         {
             Item.width = 20;
             Item.height = 30;
-            Item.damage = 0;
-            Item.useTime = 15;
-            Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.value = 0;
-            Item.rare = ItemRarityID.Blue;
             Item.autoReuse = true;
+            Item.useTurn = true;
+            Item.value = Item.sellPrice(silver: 1); // Same as Target Dummy
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override bool AltFunctionUse(Player player) => true;
 
         public static void DeleteDummies()
         {
@@ -59,9 +55,7 @@ namespace CalamityMod.Items
                     // dummies are gone, and cause them to reappear, making the deletion moot.
                     else
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.DeleteAllSuperDummies);
-                        netMessage.Send();
+                        DeleteAllSuperDummiesPacket.Send();
                     }
                 }
             }
@@ -77,14 +71,27 @@ namespace CalamityMod.Items
                 // Otherwise, send a message to the server indicating that a Super Dummy should be spawned at this position.
                 else
                 {
-                    var netMessage = Mod.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.SpawnSuperDummy);
-                    netMessage.Write(x);
-                    netMessage.Write(y);
-                    netMessage.Send();
+                    SpawnSuperDummyPacket.Send(x, y);
                 }
             }
             return true;
+        }
+
+        public override bool CanRightClick() => true;
+
+        // RightClick only called by client, no worry about potential packetstorm
+        public override void RightClick(Player player)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                DeleteDummies();
+            }
+            else
+            {
+                DeleteAllSuperDummiesPacket.Send();
+            }
+
+            Item.RestoreConsumedItemByRightClick();
         }
 
         public override void AddRecipes()

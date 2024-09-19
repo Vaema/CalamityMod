@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.World;
 using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
@@ -136,10 +137,17 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    //place each piece of the sunken sea based on the above positons
+                    SunkenSea.ForLoop = CalamityClientConfig.Instance.SunkenSeaMultiThreading switch
+                    {
+                        2 => SunkenSea.CSharpParallelFor,
+                        1 => SunkenSea.ReLogicParallelFor,
+                        _ => SunkenSea.NormalForLoop,
+                    };
+
+                    // place each piece of the sunken sea based on the above positons
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
-                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
+                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     SunkenSea.PlaceSunkenSeaAmbience();
@@ -306,6 +314,16 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
                     MiscWorldgenRoutines.PlaceRoxShrine();
                 }));
+
+                // No Traps/GFB Auric Land Mines
+                if (Main.noTrapsWorld)
+                {
+                    tasks.Insert(++currentFinalIndex, new PassLegacy("Auric Land Mines", (progress, config) =>
+                    {
+                        progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AuricLandMines").Value;
+                        MiscWorldgenRoutines.GenerateAuricLandMines();
+                    }));
+                }
             }
         }
 
@@ -333,7 +351,7 @@ namespace CalamityMod.Systems
                 // Disable gen pass if Early Hardmode Rework is disabled.
                 // Could just not add/remove gen pass, but that could lead to mod conflicts
                 // in case whatever mod targets this specific gen pass.
-                if (!CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 {
                     hardmodeOreT1Pass.Disable();
                 }
@@ -381,6 +399,14 @@ namespace CalamityMod.Systems
                         {
                             if (chest.item[inventoryIndex].type == ItemID.SuspiciousLookingEye)
                             {
+                                // For Mushroom Chests, Suspicious Looking Eyes are replaced with Shroomerang instead
+                                if (isMushroomChest)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ItemID.Shroomerang);
+                                    chest.item[inventoryIndex].Prefix(-1);
+                                    break;
+                                }
+
                                 // 60% chance of 3-5 Mining Potions
                                 // 20% chance of 2-3 Builder's Potions
                                 // 20% chance of 5-9 Shine Potions
@@ -402,6 +428,17 @@ namespace CalamityMod.Systems
                                 }
                                 break;
                             }
+                        }
+                    }
+
+                    // Replace Step Stool in surface Chests with Kylie
+                    // Calamity adds a very easy recipe for this so hopefully this isn't a big deal (The 4 unironic Step Stool lovers will be out for my head)
+                    if (isBrownChest)
+                    {
+                        if (chest.item[0].type == ItemID.PortableStool)
+                        {
+                            chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
+                            chest.item[0].Prefix(-1);
                         }
                     }
 

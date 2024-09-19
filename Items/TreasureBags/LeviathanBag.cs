@@ -69,7 +69,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<AnahitasArpeggio>(),
                 ModContent.ItemType<Atlantis>(),
                 ModContent.ItemType<GastricBelcherStaff>(),
-                ModContent.ItemType<BrackishFlask>(),
+                ModContent.ItemType<Whitewater>(),
                 ModContent.ItemType<LeviathanTeeth>(),
             }));
 

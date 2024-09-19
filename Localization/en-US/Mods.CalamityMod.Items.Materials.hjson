@@ -113,11 +113,6 @@ DarksunFragment: {
 	Tooltip: An impacted crystal suffused with opposing celestial energies
 }
 
-DemonicBoneAsh: {
-	DisplayName: Demonic Bone Ash
-	Tooltip: ""
-}
-
 DepthCells: {
 	DisplayName: Depth Cells
 	Tooltip: The cells of abyssal creatures
@@ -222,11 +217,6 @@ MolluskHusk: {
 	Tooltip: The remains of a mollusk
 }
 
-MurkyPaste: {
-	DisplayName: Murky Paste
-	Tooltip: ""
-}
-
 MysteriousCircuitry: {
 	DisplayName: Mysterious Circuitry
 	Tooltip: ""
@@ -325,11 +315,6 @@ SuspiciousScrap: {
 TitanHeart: {
 	DisplayName: Titan Heart
 	Tooltip: Can be offered up at the Astral Beacon
-}
-
-TrapperBulb: {
-	DisplayName: Trapper Bulb
-	Tooltip: ""
 }
 
 TwistingNether: {

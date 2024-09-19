@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [AutoloadBossHead]
     public class SkeletronPrime2 : ModNPC
     {
         public override string BossHeadTexture => $"Terraria/Images/NPC_Head_Boss_18";
@@ -290,7 +291,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.ai[2] += phase3 ? 1.2f : 0.8f;
                 if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
                 {
-                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 400f &&
+                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 320f &&
                         Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 400f;
 
                     bool shouldCharge = !phase2 && !allArmsDead && !CalamityWorld.LegendaryMode;
@@ -319,22 +320,22 @@ namespace CalamityMod.NPCs.NormalNPCs
                 else
                     NPC.rotation = NPC.velocity.X / 15f;
 
-                float acceleration = (bossRush ? 0.2f : 0.125f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
+                float acceleration = (bossRush ? 0.16f : 0.12f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
-                    acceleration += 0.025f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!laserAlive)
                 {
-                    acceleration += 0.025f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!viceAlive)
-                    acceleration += 0.025f;
+                    acceleration += 0.0125f;
                 if (!sawAlive)
-                    acceleration += 0.025f;
+                    acceleration += 0.0125f;
                 acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
@@ -351,7 +352,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     headDecelerationDownDist = 50f;
                 }
 
-                if (NPC.position.Y > Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (400f + headDecelerationUpDist))
+                if (NPC.position.Y > Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (320f + headDecelerationUpDist))
                 {
                     if (NPC.velocity.Y > 0f)
                         NPC.velocity.Y *= deceleration;
@@ -361,7 +362,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.velocity.Y > topVelocity)
                         NPC.velocity.Y = topVelocity;
                 }
-                else if (NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (450f + headDecelerationDownDist))
+                else if (NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (360f + headDecelerationDownDist))
                 {
                     if (NPC.velocity.Y < 0f)
                         NPC.velocity.Y *= deceleration;
@@ -417,7 +418,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             int damage = NPC.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
                                 double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                 double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -682,7 +683,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     int damage = NPC.GetProjectileDamage(type);
 
                                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                     {
                                         double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                         double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -725,10 +726,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.rotation = NPC.velocity.X / 15f;
 
-                    float flightVelocity = bossRush ? 32f : death ? 28f : 24f;
-                    float flightAcceleration = bossRush ? 1.28f : death ? 1.12f : 0.96f;
+                    float flightVelocity = bossRush ? 28f : death ? 25f : 22f;
+                    float flightAcceleration = bossRush ? 1.16f : death ? 0.96f : 0.76f;
 
-                    Vector2 destination = new Vector2(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X, Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - 500f);
+                    Vector2 destination = new Vector2(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X, Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - 420f);
                     NPC.SimpleFlyMovement((destination - NPC.Center).SafeNormalize(Vector2.UnitY) * flightVelocity, flightAcceleration);
 
                     // Spit bombs and then go to floating phase
@@ -750,7 +751,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                 {
                                     double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                     double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -877,50 +878,44 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, 149);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, 150);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_1").Type, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_2").Type, NPC.scale);
 
-                    int num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    Gore gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X += 1f;
-                    Main.gore[num802].velocity.Y += 1f;
+                    int gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X += 1f;
+                    Main.gore[gore].velocity.Y += 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X -= 1f;
-                    Main.gore[num802].velocity.Y += 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X -= 1f;
+                    Main.gore[gore].velocity.Y += 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X += 1f;
-                    Main.gore[num802].velocity.Y -= 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X += 1f;
+                    Main.gore[gore].velocity.Y -= 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X -= 1f;
-                    Main.gore[num802].velocity.Y -= 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X -= 1f;
+                    Main.gore[gore].velocity.Y -= 1f;
                 }
 
-                for (int num798 = 0; num798 < 10; num798++)
+                for (int i = 0; i < 10; i++)
                 {
-                    int num799 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
-                    Dust dust = Main.dust[num799];
-                    dust.velocity *= 1.4f;
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
+                    Main.dust[dust].velocity *= 1.4f;
                 }
 
-                for (int num800 = 0; num800 < 5; num800++)
+                for (int i = 0; i < 5; i++)
                 {
-                    int num801 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 2.5f);
-                    Main.dust[num801].noGravity = true;
-                    Dust dust = Main.dust[num801];
-                    dust.velocity *= 5f;
-                    num801 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
-                    dust = Main.dust[num801];
-                    dust.velocity *= 3f;
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 2.5f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity *= 5f;
+
+                    dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
+                    Main.dust[dust].velocity *= 3f;
                 }
             }
         }

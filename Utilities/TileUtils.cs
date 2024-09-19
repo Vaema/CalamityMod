@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
@@ -280,6 +281,34 @@ namespace CalamityMod
             }
             return true;
         }
+        public static bool IsTileExposedToAir(int x, int y) => IsTileExposedToAir(x, y, out _);
+
+        public static bool IsTileExposedToAir(int x, int y, out float? angleToOpenAir)
+        {
+            angleToOpenAir = null;
+            if (!ParanoidTileRetrieval(x - 1, y).HasTile)
+            {
+                angleToOpenAir = MathHelper.Pi;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x + 1, y).HasTile)
+            {
+                angleToOpenAir = 0f;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y - 1).HasTile)
+            {
+                angleToOpenAir = MathHelper.PiOver2;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y + 1).HasTile)
+            {
+                angleToOpenAir = -MathHelper.PiOver2;
+                return true;
+            }
+
+            return false;
+        }
 
         public static bool TileActiveAndOfType(int x, int y, int type)
         {
@@ -556,6 +585,41 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// The X position of the Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public static int X(this Tile tile)
+        {
+            TilePos(tile, out int x, out _);
+            return x;
+        }
+
+        /// <summary>
+        /// The Y position of the Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public static int Y(this Tile tile)
+        {
+            TilePos(tile, out _, out int y);
+            return y;
+        }
+
+        /// <summary>
+        /// Gets the Position of the tile, the same values that would be inputted in Main.tile to get this Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="x">The outputted X value, if you want the X by itself use Tile.X</param>
+        /// <param name="y">The outputted Y value, if you want the Y by itself use Tile.Y</param>
+        public static void TilePos(this Tile tile, out int x, out int y)
+        {
+            uint tileId = Unsafe.BitCast<Tile, uint>(tile);
+            x = Math.DivRem((int)tileId, Main.tile.Height, out y); //Thanks to FoxXD_ for the help with this
+        }
+
+        
+        /// <summary>
         /// Determines if a tile is solid ground based on whether it's active and not actuated or if the tile is solid in any way, including just the top.
         /// </summary>
         /// <param name="tile">The tile to check.</param>
@@ -704,5 +768,9 @@ namespace CalamityMod
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);
         }
+
+        public static int PixelsToTiles(this int pixels) => pixels / 16;
+
+        public static int TilesToPixels(this int tiles) => tiles * 16;
     }
 }

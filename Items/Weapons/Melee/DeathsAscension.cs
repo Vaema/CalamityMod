@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 70;
             Item.damage = 1200;
             Item.knockBack = 9f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.channel = true;
@@ -84,14 +84,19 @@ namespace CalamityMod.Items.Weapons.Melee
                 {
                     float SpeedX = velocity.X + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
                     float SpeedY = velocity.Y + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI, 0f, 0f);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI);
                 }
             }
             else
             {
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DeathsAscensionSwing>(), damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DeathsAscensionSwing>(), damage, knockback, player.whoAmI);
             }
             return false;
+        }
+        
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition;
         }
 
         public override void AddRecipes()
@@ -99,8 +104,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.DeathSickle).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<TwistingNether>().
                 AddIngredient(ItemID.SoulofNight, 15).
+                AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

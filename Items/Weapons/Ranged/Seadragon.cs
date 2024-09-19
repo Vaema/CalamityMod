@@ -98,8 +98,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Megalodon>().
                 AddIngredient<Necroplasm>(9).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient<SeaPrism>(10).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -22,6 +22,11 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Tiles.Abyss;
+using CalamityMod.Tiles.Astral;
+using CalamityMod.Tiles.AstralDesert;
+using CalamityMod.Tiles.AstralSnow;
+using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
@@ -111,8 +116,9 @@ namespace CalamityMod.Projectiles
         // If true, this projectile creates impact sparks upon hitting enemies
         public bool deepcoreBullet = false;
 
-        // If true, causes all projectiles fired by this weapon to have homing. Currently used for Arterial Assault.
-        public bool allProjectilesHome = false;
+        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
+        // Currently used for Arterial Assault.
+        public float conditionalHomingRange = 0f;
 
         // Amount of extra updates that are set in SetDefaults.
         public int defExtraUpdates = -1;
@@ -194,8 +200,9 @@ namespace CalamityMod.Projectiles
         #region Set Defaults
         public override void SetDefaults(Projectile projectile)
         {
-            // OLD 1.3 CODE: Disable Lunatic Cultist's homing resistance globally
-            // ProjectileID.Sets.CultistIsResistantTo[projectile.type] = false;
+            // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
+            if (projectile.type == ProjectileID.ZapinatorLaser)
+                projectile.originalDamage = projectile.damage;
 
             // Apply Calamity Global Projectile Tweaks.
             SetDefaults_ApplyTweaks(projectile);
@@ -3540,6 +3547,20 @@ namespace CalamityMod.Projectiles
                     projectile.velocity *= ((Main.masterMode || BossRushEvent.BossRushActive) ? 1.017078f : 1.015525f);
             }
 
+            // Zapinator lasers cannot trigger their damage multiplier more than once
+            if (projectile.type == ProjectileID.ZapinatorLaser && projectile.damage > projectile.originalDamage)
+            {
+                if (projectile.ai[0] == 0f)
+                {
+                    projectile.originalDamage = projectile.damage;
+                    projectile.ai[0] = 1f;
+                }
+                else
+                {
+                    projectile.damage = projectile.originalDamage;
+                }
+            }
+
             // Golf Balls go nyoom on touching Auric Ore/Repulsers
             if (ProjectileID.Sets.IsAGolfBall[projectile.type])
             {
@@ -3889,9 +3910,9 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                if (allProjectilesHome)
+                if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, 300f, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
                 }
                 if (brimstoneBullets)
                 {
@@ -4067,7 +4088,8 @@ namespace CalamityMod.Projectiles
                 || projectile.type == ProjectileID.PureSpray
                 || projectile.type == ProjectileID.CorruptSpray
                 || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray;
+                || projectile.type == ProjectileID.HallowSpray
+                || projectile.type == ProjectileID.Fertilizer;
             if (!isConversionProjectile)
                 return;
 
@@ -4078,10 +4100,39 @@ namespace CalamityMod.Projectiles
 
                 bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
+                if (!WorldGen.InWorld(x, y, 3))
+                    return;
+
                 for (int i = x - 1; i <= x + 1; i++)
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
+                        if (projectile.type == ProjectileID.Fertilizer)
+                        {
+                            Tile tile = Main.tile[i, j];
+
+                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);
+                            }
+                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowPalmTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                            }
+                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                    SpineTree.Spawn(i, j, 22, 28, true);
+                            }
+                        }
+
                         if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
                         {
                             AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
@@ -4222,13 +4273,13 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
-            // damageScale = 0.1f + player.velocity.Length() / 7f * 0.9f
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
-                modifiers.SourceDamage *= calamityVelocityDamageMultiplier;
+                modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
             // If applicable, use ricoshot bonus damage.

@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
             AddIngredient<ScorchedBone>(12).
-            AddIngredient<DemonicBoneAsh>(3).
+            AddIngredient<AncientBoneDust>(4).
             AddIngredient<EssenceofHavoc>(8).
             AddTile(TileID.Anvils).
             Register();

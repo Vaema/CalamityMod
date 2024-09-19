@@ -13,18 +13,6 @@ namespace CalamityMod.Items.Placeables
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults()
-        {
-            Item.createTile = ModContent.TileType<Peat>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
-            Item.maxStack = 999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Peat>());
     }
 }

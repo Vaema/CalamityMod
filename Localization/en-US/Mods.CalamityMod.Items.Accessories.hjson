@@ -246,7 +246,7 @@ AsgardianAegis: {
 		  Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
 		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch,
 		  Blackout, Brain Rot, Burning Blood, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, God Slayer Inferno, Burning
+		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno, Burning
 		'''
 }
 
@@ -373,6 +373,9 @@ Calamity: {
 		'''
 		Lights your cursor ablaze with the Witch's flames, engulfing it in a blazing aura
 		Enemies touching the blaze take immense damage and are inflicted with Vulnerability Hex
+		Focusing an enemy for 2.5 seconds curses them, ascending Vulnerability Hex to its True form
+		Foes afflicted with True Vulnerability Hex take 1.15x damage from all sources
+		This effect is increased to 2.5x for the blazing cursor itself
 		Equip in a vanity slot to change the cursor without dealing damage
 		These changes work in conjunction with the Rainbow Cursor
 		'''
@@ -435,7 +438,7 @@ CorruptFlask: {
 	DisplayName: Corrupt Flask
 	Tooltip:
 		'''
-		Incerases damage reduction by 4% and defense by 6 while in the corruption
+		Increases damage reduction by 4% and defense by 6 while in the corruption
 		Immunity to Brain Rot
 		'''
 }
@@ -1197,7 +1200,7 @@ OldDukeScales: {
 	HoldShiftTooltip:
 		'''
 		[c/c3dfff:  Using any dash will consume 20% of your stamina]
-		[c/c3dfff:  Stamina will gradually restore after not dashing for 1 second]
+		[c/c3dfff:  Stamina will gradually restore after not dashing for 1.5 seconds]
 		[c/c3dfff:  Stamina recovers faster when you are stationary]
 		[c/c3dfff:  If your stamina reaches 0%, you become exhausted]
 		[c/e3545c:  While exhausted, this item's damage reduction and movement bonuses are negated]
@@ -1427,7 +1430,6 @@ RoverDrive: {
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
-
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
 }
@@ -2060,4 +2062,18 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
+}
+
+PunchCard: {
+	DisplayName: Punch Card
+	Tooltip: "[c/842593:'Please... please get world record...']"
+	// These are used to spawn the item via chat -- both must be all lower case for the detection to work
+	SpawnText1: it's late
+	SpawnText1Alt: its late
+	SpawnText2: go to bed
+}
+
+SharkyPlush: {
+	DisplayName: Sharky Plush
+	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
 }

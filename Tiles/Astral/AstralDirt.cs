@@ -33,7 +33,7 @@ namespace CalamityMod.Tiles.Astral
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
-
+            TileID.Sets.Conversion.Dirt[Type] = true;
 
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");

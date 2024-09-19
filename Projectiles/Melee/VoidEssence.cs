@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -18,6 +19,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = NumAnimationFrames;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -151,6 +153,8 @@ namespace CalamityMod.Projectiles.Melee
                 float scale = Main.rand.NextFloat(1.0f, 1.8f);
                 Main.dust[idx].scale = scale;
             }
+
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
 
         public override void OnKill(int timeLeft)

@@ -114,7 +114,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
         }
         #endregion
 
@@ -440,7 +440,7 @@ namespace CalamityMod.ILEditing
             }
 
             if (item.prefix == PrefixID.Lucky)
-                self.luck += 0.05f;
+                self.Calamity().calamityBonusLuck += 0.05f;
         }
         #endregion
 

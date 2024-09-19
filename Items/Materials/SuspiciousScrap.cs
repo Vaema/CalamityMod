@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 30;
             Item.height = 30;
             Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 0, 20);
+            Item.value = Item.sellPrice(copper: 4);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

@@ -45,11 +45,15 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.Liquid;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -66,6 +70,7 @@ namespace CalamityMod.CalPlayer
         #region No Category
         public static bool areThereAnyDamnBosses = false;
         public static bool areThereAnyDamnEvents = false;
+        public float calamityBonusLuck = 0f;
         public bool potionSick = false;
         public int timePotionSick;
         public bool drawBossHPBar = true;
@@ -85,9 +90,9 @@ namespace CalamityMod.CalPlayer
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
         public const float projectileMeleeWeaponMeleeSpeedMultiplier = 0f;
-        public bool brimlashBusterBoost = false;
         public int evilSmasherBoost = 0;
-        public int hellbornBoost = 0;
+        public int burningSeaBurnOut = 0;
+        public int hellbornShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         public int potionTimer = 0;
@@ -139,10 +144,17 @@ namespace CalamityMod.CalPlayer
         public string CurrentlyViewedHologramText;
         #endregion
 
-        #region External variables -- Only set by Mod.Call
+        #region External variables -- Not used by Calamity, only via Mod.Call or reflection
         public int externalAbyssLight = 0;
+        public float externalBreathLossMultBoost = 0f;
+        public float externalBreathTickBoost = 0f;
+        public float externalFlightTimeMultBoost = 0f;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
+
+        // 27AUG2024: Ozzatron: per request, there is now an external bool for per-player defense damage immunity
+        public bool externalDefenseDamageImmunity = false;
+
         // NOTE -- With the Armageddon item removed from Calamity, this bool can only be set by other mods
         public bool disableAllDodges = false;
         #endregion
@@ -195,6 +207,7 @@ namespace CalamityMod.CalPlayer
         public int PHAThammer = 0;
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
+        public bool despoilerNerf = false;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -461,6 +474,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Permanent Buff
+        public bool spawnedPunchCard = false; // not exactly a buff, but is once per player permanent
         public bool extraAccessoryML = false;
         public bool eCore = false;
         public bool pHeart = false;
@@ -811,6 +825,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int VoidCooldown = 0;
         public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
@@ -831,7 +846,7 @@ namespace CalamityMod.CalPlayer
         public int silvaMageCooldown = 0;
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
-        public static int silvaReviveDuration = 480;
+        public static int silvaReviveDuration = 300;
         public int silvaCountdown = silvaReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
@@ -906,6 +921,7 @@ namespace CalamityMod.CalPlayer
         public bool icarusFolly = false;
         public bool weakPetrification = false;
         public bool vHex = false;
+        public bool trueVHex = false;
         public bool DoGExtremeGravity = false;
         public bool warped = false;
         public bool cDepth = false;
@@ -916,6 +932,7 @@ namespace CalamityMod.CalPlayer
         public bool absorberAffliction = false;
         public bool sulphurPoison = false;
         public bool nightwither = false;
+        public bool voidfrost = false;
         public bool eutrophication = false;
         public bool iCantBreathe = false; //Frozen Lungs debuff
         public bool cragsLava = false;
@@ -1118,6 +1135,8 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
+        public bool FlarebatBool = false;
+        public bool FrostbatBool = false;
         #endregion
 
         #region Biome
@@ -1180,6 +1199,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
         public bool ghostBracelet;
+        public bool punchCard;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -1278,6 +1298,7 @@ namespace CalamityMod.CalPlayer
         #region Saving And Loading
         public override void Initialize()
         {
+            spawnedPunchCard = false;
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
@@ -1331,6 +1352,7 @@ namespace CalamityMod.CalPlayer
         public override void SaveData(TagCompound tag)
         {
             var boost = new List<string>();
+            boost.AddWithCondition("spawnedPunchCard", spawnedPunchCard);
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
@@ -1422,6 +1444,7 @@ namespace CalamityMod.CalPlayer
         public override void LoadData(TagCompound tag)
         {
             var boost = tag.GetList<string>("boost");
+            spawnedPunchCard = boost.Contains("spawnedPunchCard");
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
@@ -1569,6 +1592,8 @@ namespace CalamityMod.CalPlayer
 
             ResetRogueStealth();
 
+            calamityBonusLuck = 0f;
+
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);
 
@@ -1580,13 +1605,18 @@ namespace CalamityMod.CalPlayer
             accStealthGenBoost = 0f;
 
             DashID = string.Empty;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            drawnAnyShieldThisFrame = false;
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
             if (!lunicCorpsSet)
@@ -1990,6 +2020,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;
@@ -2001,6 +2032,7 @@ namespace CalamityMod.CalPlayer
             snowmanNoseless = false;
             sulphurPoison = false;
             nightwither = false;
+            voidfrost = false;
             eutrophication = false;
             iCantBreathe = false;
             cragsLava = false;
@@ -2203,6 +2235,8 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
+            FlarebatBool = false;
+            FrostbatBool = false;
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
@@ -2235,6 +2269,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
             ghostBracelet = false;
+            punchCard = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -2283,13 +2318,13 @@ namespace CalamityMod.CalPlayer
         #region Screen Position Movements
         public override void ModifyScreenPosition()
         {
-            if (CalamityConfig.Instance.ScreenshakePower == 0)
+            if (CalamityClientConfig.Instance.ScreenshakePower == 0)
                 return;
 
             if (GeneralScreenShakePower > 0f)
             {
-                Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityConfig.Instance.ScreenshakePower);
-                GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityConfig.Instance.ScreenshakePower);
+                Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower);
+                GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
             }
         }
         #endregion
@@ -2324,6 +2359,8 @@ namespace CalamityMod.CalPlayer
                     SyncCooldownDictionary(Main.netMode == NetmodeID.Server);
                 }
             }
+
+            calamityBonusLuck = 0f;
 
             #region Defense Damage
             totalDefenseDamage = 0;
@@ -2365,6 +2402,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            VoidCooldown = 0;
             ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
@@ -2372,8 +2410,14 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             dragonRageHits = 0;
             dragonRageCooldown = 0;
             spectralVeilImmunity = 0;
@@ -2421,6 +2465,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;
@@ -2432,6 +2477,7 @@ namespace CalamityMod.CalPlayer
             abyssalDivingSuitPlateHits = 0;
             sulphurPoison = false;
             nightwither = false;
+            voidfrost = false;
             eutrophication = false;
             iCantBreathe = false;
             cragsLava = false;
@@ -2695,11 +2741,11 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             KameiBladeUseDelay = 0;
-            brimlashBusterBoost = false;
             AdrenalineTrail = false;
             ascendantTrail = false;
             evilSmasherBoost = 0;
-            hellbornBoost = 0;
+            burningSeaBurnOut = 0;
+            hellbornShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
             potionTimer = 0;
@@ -2723,7 +2769,7 @@ namespace CalamityMod.CalPlayer
 
             // Respawn the player faster
             // 3 seconds normally and configurable while a boss is alive between 15 and 60 seconds
-            int respawnTimerSet = areThereAnyDamnBosses ? (CalamityConfig.Instance.PlayerRespawnTime_BossAlive * 60) : 180;
+            int respawnTimerSet = areThereAnyDamnBosses ? (CalamityServerConfig.Instance.PlayerRespawnTime_BossAlive * 60) : 180;
             if (Player.respawnTimer > respawnTimerSet)
                 Player.respawnTimer = respawnTimerSet;
         }
@@ -3133,7 +3179,7 @@ namespace CalamityMod.CalPlayer
             // Trigger for pressing the God Slayer dash key
             if (CalamityKeybinds.GodSlayerDashHotKey.JustPressed)
             {
-                if (godSlayer && (Player.controlUp || Player.controlDown || Player.controlLeft || Player.controlRight) && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
+                if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
                 }
@@ -3395,14 +3441,14 @@ namespace CalamityMod.CalPlayer
         public override void UpdateEquips()
         {
             // TODO -- why is boss health bar code in Player.UpdateEquips and not a ModSystem
-            CalamityConfig.Instance.BossHealthBarExtraInfo = shouldDrawSmallText;
+            CalamityClientConfig.Instance.BossHealthBarExtraInfo = shouldDrawSmallText;
 
             // Putting this in GlobalItem will run multiple times for each slot, which this system already does, creating a slew of problems.
             VanillaArmorChangeManager.ApplyPotentialEffectsTo(Player);
 
             // If the config is enabled, vastly increase the player's base tile and wall placement speeds
             // This stacks with the Brick Layer and Portable Cement Mixer
-            if (CalamityConfig.Instance.FasterTilePlacement)
+            if (CalamityServerConfig.Instance.FasterTilePlacement)
             {
                 Player.tileSpeed += 0.5f;
                 Player.wallSpeed += 0.5f;
@@ -3665,7 +3711,7 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateBuffs
         public override void PostUpdateBuffs()
         {
-            if (Player.whoAmI == Main.myPlayer && CalamityConfig.Instance.VanillaCooldownDisplay)
+            if (Player.whoAmI == Main.myPlayer && CalamityClientConfig.Instance.VanillaCooldownDisplay)
             {
                 if (Player.whoAmI == Main.myPlayer && Player.potionDelay != 0)
                     potionSick = true;
@@ -3933,6 +3979,13 @@ namespace CalamityMod.CalPlayer
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
                 knockback += item.knockBack;
+        }
+        #endregion
+
+        #region Modify Luck
+        public override void ModifyLuck(ref float luck)
+        {
+            luck += calamityBonusLuck;
         }
         #endregion
 
@@ -4298,6 +4351,12 @@ namespace CalamityMod.CalPlayer
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
+            }
+            if (punchCard)
+            {
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
             }
 
             if (snowRuffianSet)
@@ -4936,11 +4995,11 @@ namespace CalamityMod.CalPlayer
 
             // Enabling the config while a player is loaded will show the timer immediately.
             // But it won't start running until you save and quit and re-enter a world.
-            if (CalamityConfig.Instance.SpeedrunTimer)
+            if (CalamityClientConfig.Instance.SpeedrunTimer)
                 CalamityMod.SpeedrunTimer.Restart();
 
-            bool showWikiMessage = CalamityConfig.Instance.WikiStatusMessage;
-            bool showVCMMMessage = CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable;
+            bool showWikiMessage = CalamityClientConfig.Instance.WikiStatusMessage;
+            bool showVCMMMessage = CalamityClientConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable;
             bool showStartupMessages = showWikiMessage || showVCMMMessage;
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display

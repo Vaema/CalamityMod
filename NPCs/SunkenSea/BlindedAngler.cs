@@ -126,7 +126,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<EutrophicScimitar>(), 4);
             npcLoot.Add(ModContent.ItemType<PrismShard>(), 1, 5, 9);
         }
 

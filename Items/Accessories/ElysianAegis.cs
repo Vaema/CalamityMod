@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[BuffID.CursedInferno] = true;
             player.buffImmune[BuffID.ShadowFlame] = true;
             player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
-            player.buffImmune[BuffID.Daybreak] = true;
+            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
         }
     }

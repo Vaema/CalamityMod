@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CalamityMod.Events;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -11,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
@@ -121,7 +123,7 @@ namespace CalamityMod.ILEditing
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
-            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
+            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
@@ -141,6 +143,26 @@ namespace CalamityMod.ILEditing
             // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0f);
+        }
+        #endregion
+
+        #region Remove Expert Brain of Cthulhu Random Debuffs
+        private static void RemoveExpertBrainRandomDebuffs(ILContext il)
+        {
+            // Remove Expert+ Brain of Cthulhu and Creeper random debuffs on hit.
+            var cursor = new ILCursor(il);
+
+            // Go to the check for Expert Mode.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Main>("get_expertMode")))
+            {
+                LogFailure("Remove Expert Brain Random Debuffs", "Could not locate the Expert Mode check.");
+                return;
+            }
+
+            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
+            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
         }
         #endregion
 
@@ -253,6 +275,37 @@ namespace CalamityMod.ILEditing
         #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
         // TODO -- Finish this
         #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
+
+        #region Prevent UFO Mount from Dismounting in Water
+        private static void PreventUFODismountInWater(ILContext il)
+        {
+            // Prevent the Cosmic Car Key's UFO mount from dismounting when the player is in water.
+            var cursor = new ILCursor(il);
+
+            // Unfortunately, the code responsible for this is 4000 lines into Player.Update, meaning that reaching it is far from simple.
+            // The following method was the easiest way I could find to reach it:
+            // Move to the third call of Mount.Dismount.
+            for (int i = 0; i < 3; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallvirt<Mount>("Dismount")))
+                {
+                    LogFailure("Prevent UFO Dismounting in Water", "Could not reach the Dismount instruction.");
+                    return;
+                }
+            }
+            // Move the cursor backwards to place it right after the instruction which loads Main.myPlayer onto the stack.
+            if (!cursor.TryGotoPrev(MoveType.After, i => i.MatchLdsfld<Main>("myPlayer")))
+            {
+                LogFailure("Prevent UFO Dismounting in Water", "Could not locate the myPlayer check.");
+                return;
+            }
+
+            // Remove the instruction and replace it with the integer limit. The next instruction checks if this value is equal to Player.whoAmI.
+            // Player.whoAmI will never be the integer limit, so the check will always fail and the UFO will not dismount.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
+        }
+        #endregion Prevent UFO Mount from Dismounting in Water
 
         #region Color Blighted Gel
         private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
@@ -1001,6 +1054,35 @@ namespace CalamityMod.ILEditing
         }
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
+
+        #region Celestial Sigil Non-Linearity Change
+        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        {
+            if (sItem.type == ItemID.CelestialSigil)
+                return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+
+            return orig(self, sItem);
+        }
+
+        private static void ApplyCelestialSigilChanges(On_Player.orig_ItemCheck_UseEventItems orig, Player self, Item sItem)
+        {
+            if (self.ItemTimeIsZero && self.itemAnimation > 0 && sItem.type == ItemID.CelestialSigil)
+            {
+                if (NPC.AnyNPCs(NPCID.MoonLordCore) || BossRushEvent.BossRushActive)
+                    return;
+
+                SoundEngine.PlaySound(SoundID.Roar, self.Center);
+                self.ApplyItemTime(sItem);
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.SpawnOnPlayer(self.whoAmI, NPCID.MoonLordCore);
+                else
+                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, self.whoAmI, NPCID.MoonLordCore);
+            }
+            else
+                orig(self, sItem);
+        }
+        #endregion
 
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property

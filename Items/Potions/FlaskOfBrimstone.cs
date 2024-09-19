@@ -22,7 +22,6 @@ namespace CalamityMod.Items.Potions
             Item.height = 34;
             Item.useTurn = true;
             Item.maxStack = 9999;
-            Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -30,7 +29,9 @@ namespace CalamityMod.Items.Potions
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<WeaponImbueBrimstone>();
             Item.buffTime = CalamityUtils.SecondsToFrames(1200f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+
+            Item.value = Item.sellPrice(silver: 5);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()

@@ -12,15 +12,6 @@ AdamantiteThrowingAxe: {
 	Tooltip: Stealth strikes ignore gravity and rain down lightning on enemy hits
 }
 
-AlphaVirus: {
-	DisplayName: Alpha Virus
-	Tooltip:
-		'''
-		Throws a giant plague cell with a lethal aura that explodes into 6 homing plague seekers
-		Stealth strikes cause the plague cell to move slower, accumulating an aura of swirling plague seekers as it flies
-		'''
-}
-
 Apoctolith: {
 	DisplayName: Apoctolith
 	Tooltip:
@@ -109,15 +100,6 @@ BouncySpikyBall: {
 		'''
 }
 
-BrackishFlask: {
-	DisplayName: Brackish Flask
-	Tooltip:
-		'''
-		Throws a flask that explodes into poisonous seawater blasts
-		Stealth strikes summon a brackish spear spike
-		'''
-}
-
 Brimblade: {
 	DisplayName: Brimblade
 	Tooltip:
@@ -158,7 +140,7 @@ Celestus: {
 
 Cinquedea: {
 	DisplayName: Cinquedea
-	Tooltip: Stealth strikes home in after hitting an enemy
+	Tooltip: Stealth strikes stick into enemies before launching forward, slicing everything
 }
 
 CobaltKunai: {
@@ -348,16 +330,7 @@ EclipsesFall: {
 		'''
 		Summons spears from the sky on hit
 		Stealth strikes impale enemies and summon a constant barrage of spears over time
-		'When the sun goes dark, you will know judgment'
-		'''
-}
-
-ElementalDisk: {
-	DisplayName: Elemental Disk
-	Tooltip:
-		'''
-		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes fly slower but travel farther, pierce through enemies, and spawn extra disks more frequently
+		'When the sun goes dark, you will know judgement'
 		'''
 }
 
@@ -367,7 +340,7 @@ EnchantedAxe: {
 		'''
 		Throws a high velocity axe that returns to you after travelling a short distance or hitting a wall
 		At the furthest point from the player, a magical axe that travels through walls will be cast towards the nearest enemy
-		Stealth strikes make the axe fly further, throwing out many other magical axes in all directions
+		Stealth strikes make the axe fly further, casting additional homing magical axes
 		'''
 }
 
@@ -664,7 +637,7 @@ Kylie: {
 	DisplayName: Kylie
 	Tooltip:
 		'''
-		Stealth strikes throws three shorter ranged kylies instead of a single long range one
+		Stealth strikes throw a kylie that weakly seeks out your cursor
 		'Also known as Dowak'
 		'''
 }
@@ -692,9 +665,9 @@ LeviathanTeeth: {
 	DisplayName: Leviathan Teeth
 	Tooltip:
 		'''
-		Rapidly throws a spread of venomous teeth that stick to enemies
-		This venom can stack when more teeth are stuck in an enemy
-		Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and spawning water blasts on hit
+		Rapidly throws a spread of teeth that stick into enemies
+		After sticking to an enemy, the teeth will gouge through them and shoot out the other side
+		Stealth strikes throw a single piercing tooth that creates a jawline of teeth to maul your foes
 		'''
 }
 
@@ -737,8 +710,8 @@ MetalMonstrosity: {
 	DisplayName: Metal Monstrosity
 	Tooltip:
 		'''
-		Hurls a heavy metal ball that shatters on impact
-		Stealth strikes cause the ball to release spikes as it travels
+		Hurls a heavy metal ball that shatters into shards and spiky balls on impact
+		Stealth strikes cause the ball to impale hit enemies, piercing them with extra shards when it breaks
 		'This has to hurt'
 		'''
 }
@@ -919,13 +892,22 @@ RealityRupture: {
 		'''
 }
 
+ReboundingRainbow: {
+	DisplayName: Rebounding Rainbow
+	Tooltip:
+		'''
+		Throws a disk that has a chance to generate several disks if enemies are near it
+		Stealth strikes fly slower but travel farther, pierce through enemies, and spawn extra disks more frequently
+		'''
+}
+
 RefractionRotor: {
 	DisplayName: Refraction Rotor
 	Tooltip:
 		'''
-		Fires a huge prismatic disk shuriken
-		The shuriken shatters moments after impact into homing rockets
-		Stealth strikes shatter into many more rockets
+		Throws a huge prismatic shuriken
+		The shuriken shatters moments after impact into homing blades
+		Stealth strikes throw 3 shurikens that rapidly home on enemies
 		'''
 }
 
@@ -1178,8 +1160,8 @@ StarofDestruction: {
 		'''
 		Throws a fan of cosmic bolts that meld together into a star of destruction
 		The explosive star will slowly follow your cursor until it expires or hits an enemy
-		Stealth strikes throw additional bolts that converge into faster star that can pierce, exploding on every hit
 		Upon running out of time, the star will burst into a huge explosion that deals increased damage
+		Stealth strikes throw additional bolts that converge into faster star that can pierce, exploding on every hit
 		'''
 }
 
@@ -1275,9 +1257,10 @@ TheOldReaper: {
 	DisplayName: The Old Reaper
 	Tooltip:
 		'''
-		Throws a homing reaper scythe that shreds enemies
-		Stealth strikes throw three at once
-		'Slice 'n dice'
+		Throws an irradiated scythe that cuts through enemies
+		Deposits unstable isotopes on hit, which create delayed nuclear explosions when they decay
+		Stealth strikes are thrown into the sky and fall upon enemies a few seconds later
+		On hit, stealth strikes create a focused deluge of acid rain
 		'''
 }
 
@@ -1336,9 +1319,8 @@ ToxicantTwister: {
 	DisplayName: Toxicant Twister
 	Tooltip:
 		'''
-		Throws a slow moving boomerang
-		After a few moments, the boomerang chooses a target and rapidly homes in
-		Stealth strikes home in faster and rapidly release sand
+		Throws a fan of four spinning disks that swirl around your cursor
+		Stealth strikes swirl in a wider range and create a vortex of toxic raindrops that home in on enemies
 		'''
 }
 
@@ -1402,6 +1384,18 @@ WebBall: {
 		'''
 		Throws a web-covered ball that covers enemies in cobwebs to slow them down
 		Stealth strikes slow enemies down longer
+		'''
+}
+
+Whitewater: {
+	DisplayName: Whitewater
+	Tooltip:
+		'''
+		Throws a flask of magic whitewater that tracks your cursor
+		After a second, the flask will glow brightly
+		Flasks that hit enemies while glowing create a temporary burst of returning water spears
+		After exploding or after being thrown for a while, the flask will return to you
+		Stealth strikes create more water spears and will make a swirling vortex of whitewater that heals any player it touches and knocks back enemies
 		'''
 }
 

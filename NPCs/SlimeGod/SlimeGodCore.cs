@@ -44,15 +44,37 @@ namespace CalamityMod.NPCs.SlimeGod
         public static readonly SoundStyle ShotSound = new("CalamityMod/Sounds/Custom/SlimeGodShot", 2);
         public static readonly SoundStyle BigShotSound = new("CalamityMod/Sounds/Custom/SlimeGodBigShot", 2);
 
+        public static Asset<Texture2D> ZenithSeedEyeTexture;
         public static Asset<Texture2D> EyeTexture;
+        public static Asset<Texture2D> OverlayTexture;
+
+        private int eyeFrameDrawn = 0;
+        private int eyeFrameX = 0;
+        private const int TotalXEyeFrames = 2;
+        private const int TotalEyeFrames = 25;
+        private const int TotalEyeFrames_FirstColumn = 19;
 
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Scale = 0.5f,
+                PortraitScale = 0.6f,
+                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SlimeGod_Bestiary",
+                PortraitPositionXOverride = 40,
+                PortraitPositionYOverride = 40
+            };
+            value.Position.X += 65;
+            value.Position.Y += 35;
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+
             if (!Main.dedServ)
             {
-                EyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes", AssetRequestMode.AsyncLoad);
+                ZenithSeedEyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes", AssetRequestMode.AsyncLoad);
+                EyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreEye", AssetRequestMode.AsyncLoad);
+                OverlayTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreOverlay", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -61,8 +83,8 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.GetNPCDamage();
             NPC.npcSlots = 10f;
-            NPC.width = 44;
-            NPC.height = 44;
+            NPC.width = 96;
+            NPC.height = 98;
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.scale = 2f;
 
@@ -99,6 +121,57 @@ namespace CalamityMod.NPCs.SlimeGod
             });
         }
 
+        public static bool ShouldDespawn(NPC npc)
+        {
+            return (!EbonianPaladinAlive(npc) && !CrimulanPaladinAlive(npc)) || npc.Calamity().newAI[3] == 1f || npc.ai[3] == 1f;
+        }
+
+        public static bool EbonianPaladinAlive(NPC npc)
+        {
+            if (CalamityGlobalNPC.slimeGodPurple != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
+                {
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 1)
+                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 1f;
+                    else
+                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 0f;
+
+                    npc.Calamity().newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
+                    npc.Calamity().newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
+
+                    // Despawn check
+                    npc.Calamity().newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool CrimulanPaladinAlive(NPC npc)
+        {
+            if (CalamityGlobalNPC.slimeGodRed != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
+                {
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 2)
+                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 1f;
+                    else
+                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 0f;
+
+                    npc.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
+                    npc.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
+
+                    // Despawn check
+                    npc.Calamity().newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(slimesSpawned);
@@ -128,12 +201,11 @@ namespace CalamityMod.NPCs.SlimeGod
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
+            // For animating the eye
+            NPC.localAI[0] += 1f;
+
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-                NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -182,7 +254,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                     NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
                     NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
-                    
+
                     // Despawn check
                     calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
 
@@ -194,7 +266,7 @@ namespace CalamityMod.NPCs.SlimeGod
             bool phase2 = !purpleSlimeAlive || !redSlimeAlive;
 
             // Vanish phase
-            if ((!purpleSlimeAlive && !redSlimeAlive) || calamityGlobalNPC.newAI[3] == 1f || NPC.ai[3] == 1f)
+            if (ShouldDespawn(NPC))
             {
                 // Avoid cheap bullshit
                 NPC.damage = 0;
@@ -305,11 +377,11 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
                 {
                     if (NPC.velocity.Y < -3f)
                         NPC.velocity.Y = -3f;
@@ -317,7 +389,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     if (NPC.velocity.Y > 16f)
                         NPC.velocity.Y = 16f;
 
-                    if (NPC.position.Y > Main.worldSurface * 16.0)
+                    if (NPC.position.Y > Main.worldSurface * 16D)
                     {
                         for (int x = 0; x < Main.maxNPCs; x++)
                         {
@@ -377,9 +449,11 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.velocity = Vector2.Normalize(goToPosition) * 24f;
 
                 // Reduce velocity to 0 to avoid spastic movement when inside big slime.
-                if (Vector2.Distance(NPC.Center, goToVector) < 24f)
+                float stickPositionAdjustment = buffedSlime == 1 ? 16f : 32f;
+                if (Vector2.Distance(NPC.Center, goToVector) < 80f + stickPositionAdjustment)
                 {
                     NPC.velocity = Vector2.Zero;
+                    NPC.Center = goToVector + Vector2.UnitY * stickPositionAdjustment;
 
                     NPC.Opacity -= 0.2f;
                     if (NPC.Opacity < 0f)
@@ -510,7 +584,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (distanceFromFlyDestination < 300f)
                 NPC.velocity = (NPC.velocity * 7f + idealVelocity) / 8f;
 
-            NPC.rotation = NPC.velocity.X * 0.1f;
+            NPC.rotation = NPC.velocity.X * 0.05f;
         }
 
         public Vector2 GetFlyDestination(Player target)
@@ -569,55 +643,127 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color newColor = buffedSlime == 0 ? new Color(255, 255, 255, drawColor.A) : drawColor;
+            Color newColor = new Color(255, 255, 255, 255);
             return newColor * NPC.Opacity;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
+            float sc = 1f;
+            if (!ShouldDespawn(NPC))
             {
-                spriteEffects = SpriteEffects.FlipHorizontally;
-            }
-            Color drawColorAlpha = NPC.GetAlpha(drawColor);
-            Color colorLightingArea = Lighting.GetColor((int)((double)NPC.position.X + (double)NPC.width * 0.5) / 16, (int)(((double)NPC.position.Y + (double)NPC.height * 0.5) / 16.0));
-            Texture2D texture2D3 = TextureAssets.Npc[NPC.type].Value;
-            Texture2D pog = EyeTexture.Value;
-            int frameTexture = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
-            int y3 = frameTexture * (int)NPC.frameCounter;
-            Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, frameTexture);
-            Vector2 halfRect = rectangle.Size() / 2f;
-            int twoConst = 2;
-            int coreID = 1;
-            spriteBatch.Draw(texture2D3, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-            if (Main.zenithWorld)
-            {
-                spriteBatch.Draw(pog, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-            }
-            if (!Main.zenithWorld)
-                while (((twoConst > 0 && coreID < 8) || (twoConst < 0 && coreID > 8)) && CalamityConfig.Instance.Afterimages)
+                if (buffedSlime != 0f)
                 {
-                    Color colorLightingAlpha = NPC.GetAlpha(colorLightingArea);
+                    NPC.scale = MathHelper.Lerp(NPC.scale, 0f, 0.2f);
+                    NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.7f, 0.4f);
+                }
+                else
+                {
+                    NPC.scale = MathHelper.Lerp(NPC.scale, sc, 0.2f);
+                    NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.4f);
+                }
+            }
+
+            SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Color drawColorAlpha = buffedSlime != 0f ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
+            Vector2 origin = NPC.frame.Size() * 0.5f;
+            Vector2 halfSize = NPC.Size * 0.5f;
+
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D eyeTexture = EyeTexture.Value;
+            Texture2D overlayTexture = OverlayTexture.Value;
+            Texture2D pog = ZenithSeedEyeTexture.Value;
+
+            // Used for animating the eye
+            if (NPC.localAI[0] % 6f == 0f)
+            {
+                eyeFrameDrawn++;
+                if (eyeFrameX == 0)
+                {
+                    if (eyeFrameDrawn >= TotalEyeFrames_FirstColumn)
                     {
-                        goto IL_6899;
+                        eyeFrameDrawn = 0;
+                        eyeFrameX = 1;
                     }
-IL_6881:
-                    coreID += twoConst;
-                    continue;
-IL_6899:
+                }
+                else
+                {
+                    if (eyeFrameDrawn >= TotalEyeFrames)
+                    {
+                        eyeFrameDrawn = 0;
+                        eyeFrameX = 0;
+                    }
+                }
+            }
+            Rectangle eyeFrame = new Rectangle(eyeTexture.Width / TotalXEyeFrames * eyeFrameX, eyeTexture.Height / TotalEyeFrames * eyeFrameDrawn, eyeTexture.Width / TotalXEyeFrames, eyeTexture.Height / TotalEyeFrames);
+            Vector2 eyeOrigin = new Vector2(eyeTexture.Width / TotalXEyeFrames, eyeTexture.Height / TotalEyeFrames) * 0.5f;
+
+            if (!Main.zenithWorld)
+            {
+                Vector2 drawPositionAdjustment = halfSize - screenPos + new Vector2(0f, NPC.gfxOffY);
+                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f;
+                int twoConst = 2;
+                int coreID = 1;
+
+                while (((twoConst > 0 && coreID < 8) || (twoConst < 0 && coreID > 8)) && CalamityClientConfig.Instance.Afterimages)
+                {
                     float trailLengthMult = (float)(8 - coreID);
                     if (twoConst < 0)
-                    {
                         trailLengthMult = (float)(1 - coreID);
-                    }
-                    colorLightingAlpha *= trailLengthMult / ((float)NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f);
-                    Vector2 drawPosition = NPC.oldPos[coreID];
-                    float coreRotate = NPC.rotation;
-                    Main.spriteBatch.Draw(texture2D3, drawPosition + NPC.Size / 2f - screenPos + new Vector2(0, NPC.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorLightingAlpha, coreRotate + NPC.rotation * 0f * (float)(coreID - 1) * -(float)spriteEffects.HasFlag(SpriteEffects.FlipHorizontally).ToDirectionInt(), halfRect, NPC.scale, spriteEffects, 0f);
-                    goto IL_6881;
+
+                    drawColorAlpha *= trailLengthMult / colorAlphaDivisor;
+                    Vector2 drawPosition = NPC.oldPos[coreID] + drawPositionAdjustment;
+
+                    // Draw the base texture afterimages
+                    spriteBatch.Draw(texture, drawPosition, NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                    
+                    // Draw the eye texture afterimages
+                    spriteBatch.Draw(eyeTexture, drawPosition, eyeFrame, drawColorAlpha, 0f, eyeOrigin, 1f, spriteEffects, 0f);
+                    
+                    // Draw the overlay texture afterimages
+                    spriteBatch.Draw(overlayTexture, drawPosition, NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                    
+                    coreID += twoConst;
                 }
+            }
+
+            // Reset the color
+            drawColorAlpha = NPC.GetAlpha(drawColor);
+
+            // Draw the base texture
+            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+
+            // Draw the eye
+            spriteBatch.Draw(eyeTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), eyeFrame, drawColorAlpha, 0f, eyeOrigin, 1f, spriteEffects, 0f);
+
+            // Draw the overlay
+            spriteBatch.Draw(overlayTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+
+            if (Main.zenithWorld)
+                spriteBatch.Draw(pog, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+
             return false;
+        }
+
+        // Can only hit the target if within certain distance
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            Rectangle targetHitbox = target.Hitbox;
+
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
+
+            return minDist <= 40f * NPC.scale;
         }
 
         public override void BossLoot(ref string name, ref int potionType)

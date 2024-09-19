@@ -4,6 +4,8 @@ using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -105,6 +107,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
+            var dye = Owner?.cMinion ?? 0;
             bool psc = Owner.Calamity().profanedCrystalBuffs;
             int rockType = (int)MathHelper.Clamp(Projectile.ai[2], 1f, 6f); ;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedRocks" + rockType.ToString()).Value;
@@ -122,19 +125,34 @@ namespace CalamityMod.Projectiles.Summon
                 lerpVal = Utils.GetLerpValue(psc ? 87 : 57, psc ? 150 : 120, ownerDist, true);
                 mult = MathHelper.Lerp(0.42f, 1f, lerpVal);
             }
-            if (CalamityConfig.Instance.Afterimages && Projectile.ai[0] >= 1f)  //handle afterimages manually since the utility broke it and didn't render correctly
+            if (CalamityClientConfig.Instance.Afterimages && Projectile.ai[0] >= 1f)  //handle afterimages manually since the utility broke it and didn't render correctly
             {
                 for (int i = 0; i < Projectile.oldPos.Length; ++i)
                 {
                     drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
                     // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
                     Color color = Projectile.GetAlpha(lightColor) * ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(texture, drawPos, frame, color * mult, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
+                    color *= mult;
+
+                    var drawData = new DrawData(texture, drawPos, frame, color)
+                    {
+                        rotation = Projectile.rotation,
+                        origin = drawOrigin
+                    };
+                    GameShaders.Armor.Apply(dye, Projectile, drawData);
+                    Main.spriteBatch.Draw(texture, drawPos, frame, color, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
                 }
             }
             else
             {
-                Main.spriteBatch.Draw(texture, drawPos, frame, Color.White * mult, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
+                var color = Color.White * mult;
+                var drawData = new DrawData(texture, drawPos, frame, color)
+                {
+                    rotation = Projectile.rotation,
+                    origin = drawOrigin
+                };
+                GameShaders.Armor.Apply(dye, Projectile, drawData);
+                Main.spriteBatch.Draw(texture, drawPos, frame, color, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
             }
 
             return false;

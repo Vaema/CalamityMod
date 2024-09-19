@@ -11,19 +11,7 @@ namespace CalamityMod.Items.Placeables
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SulphurousSand>();
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 13;
-            Item.height = 10;
-            Item.createTile = ModContent.TileType<Tiles.Abyss.SulphurousSandstone>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Abyss.SulphurousSandstone>());
 
         public override void AddRecipes()
         {

@@ -31,6 +31,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [LongDistanceNetSync]
     public class StormWeaverHead : ModNPC
     {
         public static int normalIconIndex;
@@ -176,7 +177,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
 
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
             else if (!Main.raining && !bossRush)
                 CalamityUtils.StartRain();
@@ -989,7 +990,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     ModContent.ItemType<TheStorm>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Thunderstorm>(), 10);
+                normalOnly.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));

@@ -52,7 +52,7 @@ namespace CalamityMod
         /// <param name="typeOneIncrement">If mode 1 is used, this controls the loop increment. Set it to more than 1 to skip afterimages.</param>
         /// <param name="texture">The texture to draw. Set to <b>null</b> to draw the projectile's own loaded texture.</param>
         /// <param name="drawCentered">If <b>false</b>, the afterimages will be centered on the projectile's position instead of its own center.</param>
-        public static void DrawAfterimagesCentered(Projectile proj, int mode, Color lightColor, int typeOneIncrement = 1, Texture2D texture = null, bool drawCentered = true)
+        public static void DrawAfterimagesCentered(Projectile proj, int mode, Color lightColor, int typeOneIncrement = 1, Texture2D texture = null, bool drawCentered = true, bool shrink = false, int armorShaderToUse = 0)
         {
             if (texture is null)
                 texture = TextureAssets.Projectile[proj.type].Value;
@@ -72,7 +72,7 @@ namespace CalamityMod
             // If no afterimages are drawn due to an invalid mode being specified, ensure the projectile itself is drawn anyway.
             bool failedToDrawAfterimages = false;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 Vector2 centerOffset = drawCentered ? proj.Size / 2f : Vector2.Zero;
                 Color alphaColor = proj.GetAlpha(lightColor);
@@ -81,12 +81,24 @@ namespace CalamityMod
                     // Standard afterimages. No customizable features other than total afterimage count.
                     // Type 0 afterimages linearly scale down from 100% to 0% opacity. Their color and lighting is equal to the main projectile's.
                     case 0:
+                        
+
                         for (int i = 0; i < proj.oldPos.Length; ++i)
                         {
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, scale, spriteEffects, 0f);
+                            float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * interpolant;
+
+                            var drawData = new DrawData(texture, drawPos, rectangle, color)
+                            {
+                                rotation = rotation,
+                                origin = origin,
+                                effect = spriteEffects
+                            };
+
+                            GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
                         }
                         break;
 
@@ -102,13 +114,23 @@ namespace CalamityMod
                         while (k < afterimageCount)
                         {
                             Vector2 drawPos = proj.oldPos[k] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                            float interpolant = ((float)(proj.oldPos.Length - k) / (float)proj.oldPos.Length);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS EITHER.
                             if (k > 0)
                             {
                                 float colorMult = (float)(afterimageCount - k);
                                 drawColor *= colorMult / afterimageColorCount;
                             }
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, scale, spriteEffects, 0f);
+
+                            var drawData = new DrawData(texture, drawPos, rectangle, drawColor)
+                            {
+                                rotation = rotation,
+                                origin = origin,
+                                effect = spriteEffects
+                            };
+
+                            GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
                             k += increment;
                         }
                         break;
@@ -123,8 +145,18 @@ namespace CalamityMod
 
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, scale, sfxForThisAfterimage, 0f);
+                            float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * interpolant;
+
+                            var drawData = new DrawData(texture, drawPos, rectangle, color)
+                            {
+                                rotation = rotation,
+                                origin = origin,
+                                effect = spriteEffects
+                            };
+
+                            GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, shrink ? scale * interpolant : scale, sfxForThisAfterimage, 0f);
                         }
                         break;
 
@@ -135,10 +167,13 @@ namespace CalamityMod
             }
 
             // Draw the projectile itself. Only do this if no afterimages are drawn because afterimage 0 is the projectile itself.
-            if (!CalamityConfig.Instance.Afterimages || ProjectileID.Sets.TrailCacheLength[proj.type] <= 0 || failedToDrawAfterimages)
+            if (!CalamityClientConfig.Instance.Afterimages || ProjectileID.Sets.TrailCacheLength[proj.type] <= 0 || failedToDrawAfterimages)
             {
                 Vector2 startPos = drawCentered ? proj.Center : proj.position;
-                Main.spriteBatch.Draw(texture, startPos - Main.screenPosition + new Vector2(0f, proj.gfxOffY), rectangle, proj.GetAlpha(lightColor), rotation, origin, scale, spriteEffects, 0f);
+                Vector2 drawPos = startPos - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                var drawData = new DrawData(texture, drawPos, rectangle, proj.GetAlpha(lightColor));
+                GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                Main.spriteBatch.Draw(texture, drawPos, rectangle, proj.GetAlpha(lightColor), rotation, origin, scale, spriteEffects, 0f);
             }
         }
 
@@ -321,29 +356,6 @@ namespace CalamityMod
             viewMatrix *= zoomScaleMatrix;
 
             projectionMatrix = Matrix.CreateOrthographicOffCenter(0f, width * zoom.X, 0f, height * zoom.Y, 0f, 1f) * zoomScaleMatrix;
-        }
-
-        /// <summary>
-        /// Sets a <see cref="SpriteBatch"/>'s <see cref="BlendState"/> arbitrarily.
-        /// </summary>
-        /// <param name="spriteBatch">The sprite batch.</param>
-        /// <param name="blendState">The blend state to use.</param>
-        public static void SetBlendState(this SpriteBatch spriteBatch, BlendState blendState)
-        {
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-        }
-
-        // Cached for efficiency purposes.
-        internal static readonly FieldInfo BeginEndPairField = typeof(SpriteBatch).GetField("inBeginEndPair", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        /// <summary>
-        /// Determines if a <see cref="SpriteBatch"/> is in a lock due to a <see cref="SpriteBatch.Begin"/> call.
-        /// </summary>
-        /// <param name="spriteBatch">The sprite batch to check.</param>
-        public static bool HasBeginBeenCalled(this SpriteBatch spriteBatch)
-        {
-            return (bool)BeginEndPairField.GetValue(spriteBatch);
         }
 
         /// <summary>

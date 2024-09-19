@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.Purple;
-            Item.value = Item.sellPrice(0, 2, 50, 0);
+            Item.value = Item.sellPrice(gold: 2, silver: 50);
         }
 
         public override void AddRecipes()
@@ -27,8 +27,8 @@ namespace CalamityMod.Items.Dyes
             CreateRecipe(5).
                 AddIngredient(ItemID.SolarDye).
                 AddIngredient(ItemID.VortexDye).
-                AddIngredient(ItemID.StardustDye).
                 AddIngredient(ItemID.NebulaDye).
+                AddIngredient(ItemID.StardustDye).
                 AddIngredient<GalacticaSingularity>().
                 AddTile(TileID.DyeVat).
                 Register();

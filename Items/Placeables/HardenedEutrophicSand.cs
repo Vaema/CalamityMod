@@ -13,19 +13,7 @@ namespace CalamityMod.Items.Placeables
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicSand>();
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 13;
-            Item.height = 10;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.HardenedEutrophicSand>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.HardenedEutrophicSand>());
 
         public override void AddRecipes()
         {

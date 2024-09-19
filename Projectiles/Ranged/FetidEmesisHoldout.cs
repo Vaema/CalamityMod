@@ -26,6 +26,8 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
         public bool isTired => cooldownTimer > 0;
         public float revSpeed = 1;
+        public bool isHoldingIn = false;
+        public bool holdingInBonus = false;
 
         public override void KillHoldoutLogic()
         {
@@ -35,8 +37,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            isHoldingIn = Owner.Calamity().mouseRight;
+
             if (!isTired && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
-                cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 180, true));
+                cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 120, true));
             if (isTired)
             {
                 PostFiringCooldown();
@@ -44,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             revSpeed = Utils.Remap(revFrames, 0, 200, 1, 20, true);
-            if (shootingTimer >= 60)
+            if (shootingTimer >= 60 && revFrames < 300)
             {
                 Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                 
@@ -69,36 +73,83 @@ namespace CalamityMod.Projectiles.Ranged
             
             shootingTimer += revSpeed;
             revFrames++;
+
             if (revFrames >= 300 && !isTired)
             {
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
-                OffsetLengthFromArm -= 35f;
-                cooldownTimer = 180;
-                SoundStyle bigShot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");
-                SoundStyle bigShotGun = new("CalamityMod/Sounds/Item/FlakKrakenShoot");
-                SoundEngine.PlaySound(bigShot with { Pitch = -0.2f, Volume = 0.6f }, Projectile.Center);
-                SoundEngine.PlaySound(bigShotGun with { Volume = 0.6f }, Projectile.Center);
+                if (isHoldingIn)
+                {
+                    if (revFrames == 420)
+                    {
+                        holdingInBonus = true;
+                        SoundEngine.PlaySound(SoundID.NPCHit14 with { Volume = 1f, Pitch = 0.3f }, Projectile.Center);
+                        for (int i = 0; i < 25; i++)
+                        {
+                            Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 8);
+                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
+                            dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
+                            dust2.noGravity = true;
+                            dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Chartreuse : Color.Green, 0.7f);
+                        }
+                        Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Chartreuse, "CalamityMod/Particles/HighResFoggyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 14);
+                        GeneralParticleHandler.SpawnParticle(pulse);
+                    }
 
-                int chunkDamage = (int)(Projectile.damage * 2.5f);
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 13;
-                for (int i = 0; i <= 5; i++)
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.03f * i) * (1 - i * 0.08f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, -i);
-                }
-                for (int j = 0; j <= 5; j++)
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.03f * j) * (1 - j * 0.08f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, j);
-                }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, 20);
-                
-                for (int i = 0; i <= 18; i++)
-                {
-                    Dust dust = Dust.NewDustPerfect(GunTipPosition, 66, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(5) ? 28 : 215, (Projectile.velocity * 2).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
                     dust.noGravity = true;
-                    dust.color = Color.Chartreuse;
+                    if (revFrames % 20 == 0)
+                    {
+                        SoundStyle tired = new("CalamityMod/Sounds/Custom/OldDukeHuff");
+                        SoundEngine.PlaySound(tired with { Volume = 0.3f, Pitch = 0.3f }, Projectile.Center);
+                        for (int i = 0; i <= 3; i++)
+                        {
+                            Dust dust5 = Dust.NewDustPerfect(GunTipPosition, 267, (Projectile.velocity * 5f).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.9f, 1.2f));
+                            dust5.noGravity = true;
+                            dust5.color = Color.Chartreuse;
+                        }
+                    }
                 }
-                Particle pulse = new GlowSparkParticle(GunTipPosition - shootVelocity, shootVelocity, false, 12, 0.035f, Color.Chartreuse, new Vector2(2.5f, 0.9f), true);
-                GeneralParticleHandler.SpawnParticle(pulse);
+                else
+                {
+                    Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                    OffsetLengthFromArm -= 35f;
+                    cooldownTimer = holdingInBonus ? 180 : 120;
+                    SoundStyle bigShot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");
+                    SoundStyle bigShotGun = new("CalamityMod/Sounds/Item/FlakKrakenShoot");
+                    SoundEngine.PlaySound(bigShot with { Pitch = -0.2f, Volume = 0.6f }, Projectile.Center);
+                    SoundEngine.PlaySound(bigShotGun with { Volume = 0.6f }, Projectile.Center);
+
+                    int chunkDamage = (int)(Projectile.damage * (2f + (holdingInBonus ? 1 : 0)));
+                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 13;
+                    if (holdingInBonus)
+                    {
+                        Particle pulse2 = new CustomPulse(GunTipPosition, Projectile.velocity * 14.5f, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Projectile.velocity.ToRotation(), 0.13f, 0, 34);
+                        GeneralParticleHandler.SpawnParticle(pulse2);
+                        Particle pulse = new CustomPulse(GunTipPosition, Projectile.velocity * 9f, Color.Chartreuse * 0.7f, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1f), Projectile.velocity.ToRotation(), 0.25f, 0, 34);
+                        GeneralParticleHandler.SpawnParticle(pulse);
+                    }
+                    for (int y = 0; y < (holdingInBonus ? 3 : 1); y++)
+                    {
+                        float velBonus = 1 - y * 0.2f;
+                        for (int i = 0; i <= 5; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.03f * i * velBonus) * (1 - i * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, -i, 0, velBonus);
+                        }
+                        for (int j = 0; j <= 5; j++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.03f * j * velBonus) * (1 - j * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, j, 0, velBonus);
+                        }
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, 20, 0, velBonus);
+
+                        for (int i = 0; i <= 18; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition, 66, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                            dust.noGravity = true;
+                            dust.color = Color.Chartreuse;
+                        }
+                        Particle pulse = new GlowSparkParticle(GunTipPosition - shootVelocity, shootVelocity * velBonus, false, 12, 0.035f, Color.Chartreuse, new Vector2(2.5f, 0.9f), true);
+                        GeneralParticleHandler.SpawnParticle(pulse);
+                    }
+                }
             }
         }
         private void PostFiringCooldown()
@@ -109,7 +160,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 smokeVel = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 5;
 
-                if (cooldownTimer % 40 == 0)
+                if (cooldownTimer % 35 == 0)
                 {
                     SoundStyle tired = new("CalamityMod/Sounds/Custom/OldDukeHuff");
                     SoundEngine.PlaySound(tired with { Pitch = -0.2f }, Projectile.Center);

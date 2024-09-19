@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 46;
             Item.damage = 66; // clueless
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -75,10 +75,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Silk, 40).
-                AddIngredient(ItemID.Ectoplasm, 20).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.ButterflyDust, 2).
+                AddIngredient(ItemID.Silk, 40).
+                AddIngredient(ItemID.Ectoplasm, 20).
                 AddTile(TileID.Loom).
                 Register();
         }

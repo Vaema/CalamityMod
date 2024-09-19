@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
-            Item.useTime = 4;
-            Item.useAnimation = 4;
+            
+            Item.useAnimation = Item.useTime = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<GenesisHoldout>(), damage, knockback, player.whoAmI, 0, 0);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<GenesisHoldout>(), damage, knockback, player.whoAmI);
             holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
         }

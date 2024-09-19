@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<PerditionBeacon>();
             Item.knockBack = 4f;
 
-            Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1.
+            Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1.
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

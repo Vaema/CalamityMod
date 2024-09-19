@@ -95,6 +95,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void FindFrame(int frameHeight)
         {
+            if (start)
+            {
+                NPC.frame.Y = Main.rand.Next(0, 5 + 1) * frameHeight;
+                start = false;
+            }
+
             NPC.frameCounter++;
             if (NPC.frameCounter % 5 == 4)
                 NPC.frame.Y += frameHeight;
@@ -119,7 +125,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 for (int i = 0; i < 10; i++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                 RotationalDegreeOffset = NPC.ai[0];
-                start = false;
             }
 
             // Increase DR if the target leaves SCal's arena.
@@ -266,7 +271,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
             int afterimageAmt = 2;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -289,7 +294,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             texture2D15 = GlowTexture.Value;
             Color redLerp = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {

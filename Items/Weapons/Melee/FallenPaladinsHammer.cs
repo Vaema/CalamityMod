@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class FallenPaladinsHammer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public static float Speed = 28.8f;
+        public static float Speed = 27f;
         public override void SetDefaults()
 
         {

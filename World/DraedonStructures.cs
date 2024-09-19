@@ -256,7 +256,11 @@ namespace CalamityMod.World
             {
                 int underworldTop = Main.UnderworldLayer;
                 //gen opposite to the brimstone crags
-                int placementPositionX = (Main.dungeonX > Main.maxTilesX / 2) ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / 9)) : WorldGen.genRand.Next((int)(Main.maxTilesX * 0.82), (int)(Main.maxTilesX * 0.925));
+                //has more wiggle room in seeds with modified hell gen
+                bool dungeonRight = Main.dungeonX > Main.maxTilesX / 2;
+                int midLeft = Main.drunkWorld || Main.remixWorld ? 6 : 9;
+                float midRight = Main.drunkWorld || Main.remixWorld ? 0.6f : 0.82f;
+                int placementPositionX = dungeonRight ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / midLeft)) : WorldGen.genRand.Next((int)(Main.maxTilesX * midRight), (int)(Main.maxTilesX * 0.925));
                 int placementPositionY = WorldGen.genRand.Next(Main.maxTilesY - 150, Main.maxTilesY - 125);
 
                 placementPoint = new Point(placementPositionX, placementPositionY);
@@ -513,6 +517,11 @@ namespace CalamityMod.World
                             activeTilesInArea++;
                         }
                     }
+                }
+                // Jungle overlaps a lot with snow on drunk/gfb worlds so it needs a bit of extra help
+                if (Main.drunkWorld)
+                {
+                    jungleTilesInArea *= 3;
                 }
                 if (!canGenerateInLocation || nearbyOtherWorkshop || jungleTilesInArea < totalTiles * 0.4f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
                 {

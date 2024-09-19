@@ -1,0 +1,267 @@
+﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Projectiles.Ranged;
+using CalamityMod.World;
+using Microsoft.CodeAnalysis;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using System;
+using System.IO;
+using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
+namespace CalamityMod.NPCs.SunkenSea
+{
+    public class KelpieSeadragon : ModNPC
+    {
+        public ref float SquishX => ref NPC.localAI[0];
+        public ref float SquishY => ref NPC.localAI[1];
+        public override void SetStaticDefaults()
+        {
+            Main.npcFrameCount[NPC.type] = 13;
+        }
+
+        public override void SetDefaults()
+        {
+            NPC.noGravity = true;
+            NPC.damage = 20;
+            NPC.width = 20;
+            NPC.height = 58;
+            NPC.defense = 5;
+            NPC.lifeMax = 350;
+            NPC.aiStyle = -1;
+            AIType = -1;
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.knockBackResist = 0.15f;
+            //Banner = NPC.type;
+            //BannerItem = ModContent.ItemType<KelpieSeadragonBanner>();
+            NPC.chaseable = false;
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToSickness = true;
+            NPC.Calamity().VulnerableToElectricity = true;
+            NPC.Calamity().VulnerableToWater = false;
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.KelpieSeadragon")
+            });
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(NPC.chaseable);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.chaseable = reader.ReadBoolean();
+        }
+
+        public override void AI()
+        {
+            if (NPC.direction == 0)
+            {
+                NPC.TargetClosest();
+            }
+            Player target = Main.player[NPC.target];
+            // Fall and be useless if out of water
+            if (!NPC.wet)
+            {
+                NPC.ai[0] = 0;
+                NPC.ai[1] = 0;
+                NPC.ai[2] = 0;
+                NPC.velocity.X *= 0.98f;
+                NPC.noGravity = false;
+                NPC.rotation = MathHelper.Lerp(NPC.rotation, MathHelper.PiOver2, 0.1f);
+                NPC.gfxOffY += 5;
+                return;
+            }
+            NPC.noGravity = true;
+            switch (NPC.ai[0])
+            {
+                // Idle AI. Mostly sits still but occasionally moves in a random direction for a bit. 
+                case 0:
+                    NPC.chaseable = false;
+                    if (target != null && target.active && target.Distance(NPC.Center) < 400 && Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1))
+                    {
+                        NPC.ai[0] = 1;
+                        NPC.ai[1] = 0;
+                        NPC.ai[2] = 0;
+                        SquishX = 0.9f;
+                        SquishY = 1.05f;
+                        NPC.TargetClosest();
+                    }
+                    if (NPC.velocity.Length() < 0.1f)
+                    {
+                        NPC.ai[1]++;
+                        // Randomly switch direction
+                        if (Main.rand.NextBool(120))
+                        {
+                            NPC.direction *= -1;
+                        }
+                        // Move in a random direction towards the direction the horse is facing
+                        if (NPC.ai[1] > 120 || Main.rand.NextBool(90))
+                        {
+                            Vector2 direction = new Vector2(NPC.direction * 30, Main.rand.Next(-30, 30));
+                            direction = direction.SafeNormalize(Vector2.Zero);
+                            NPC.velocity = direction * 2;
+                            NPC.ai[1] = 0;
+                        }
+                    }
+                    // Reset any rotation from aggressive AI
+                    NPC.rotation = MathHelper.Lerp(NPC.rotation, 0, 0.1f);
+                    NPC.velocity *= 0.99f;
+                    break;
+                case 1:
+                    if (target == null || !target.active || target.Distance(NPC.Center) > 600)
+                    {
+                        NPC.ai[0] = 0;
+                        NPC.ai[1] = 0;
+                        NPC.ai[2] = 0;
+                        SquishX = 0;
+                        SquishY = 0;
+                    }
+                    NPC.chaseable = true;
+                    // If the target is too far from its shooting range or a tile is in the way, move closer
+                    if (target.Distance(NPC.Center) > 300 || !Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1))
+                    {
+                        NPC.ai[1] = 0;
+                        NPC.ai[2]++;
+                        NPC.velocity = NPC.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 3f;
+                        NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.direction * MathHelper.PiOver4 / 2, 0.05f);
+                        // Loose interest if it can't reach the player for a few seconds
+                        if (!Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1) && NPC.ai[2] > 180)
+                        {
+                            NPC.ai[0] = 0;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
+                            SquishX = 0;
+                            SquishY = 0;
+                        }
+                    }
+                    else
+                    {
+                        // Otherwise sit at a distance and fire projectiles
+                        NPC.velocity *= 0.9f;
+                        NPC.ai[1]++;
+                        int fireRate = 30; // Do not change this without adjusting the frame rate as well
+                        float currentTime = NPC.ai[1] % 36;
+                        if (currentTime == fireRate)
+                        {
+                            SoundEngine.PlaySound(Sounds.CommonCalamitySounds.ExoPlasmaShootSound with { Volume = 0.2f, Pitch = 1.8f }, NPC.Center);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Vector2 spawnPos = new Vector2(NPC.Center.X + NPC.direction * 18, NPC.position.Y + 22);
+                                Vector2 projSpeed = spawnPos.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 6;
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), NPC.damage, 0f);
+                            }
+                        }
+                        // Squash and stretch
+                        int shotTime = 24; // When to squash 
+                        if (currentTime < 24)
+                        {
+                            SquishX = MathHelper.Lerp(SquishX, 0.9f, currentTime / shotTime);
+                            SquishY = MathHelper.Lerp(SquishY, 1.05f, currentTime / shotTime);
+                        }
+                        else
+                        {
+                            SquishX = MathHelper.Lerp(SquishX, 1.35f, (currentTime - shotTime) / (fireRate - shotTime));
+                            SquishY = MathHelper.Lerp(SquishY, 0.85f, (currentTime - shotTime) / (fireRate - shotTime));
+                        }
+
+                        NPC.rotation = MathHelper.Lerp(NPC.rotation, 0, 0.1f);
+                    }
+                    if (Math.Abs(NPC.velocity.X) > 0)
+                    {
+                        NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
+                    }
+                    else
+                    {
+                        NPC.direction = NPC.Center.X > target.Center.X ? -1 : 1;
+                    }
+                    break;
+            }
+            NPC.spriteDirection = NPC.direction;
+        }
+
+        public override void FindFrame(int frameHeight)
+        {
+            if (!NPC.wet && !NPC.IsABestiaryIconDummy)
+                return;
+            NPC.frameCounter++;
+            if (NPC.frameCounter > 5)
+            {
+                NPC.frame.Y += frameHeight;
+                NPC.frameCounter = 0;
+            }
+            // Anger
+            if (NPC.ai[0] == 1 && NPC.ai[1] > 0)
+            {
+                if (NPC.frame.Y > 12 * frameHeight || NPC.frame.Y < frameHeight * 7)
+                {
+                    NPC.frame.Y = frameHeight * 7;
+                }
+            }
+            // Idle
+            else
+            {
+                if (NPC.frame.Y > 6 * frameHeight)
+                {
+                    NPC.frame.Y = 0;
+                }
+            }
+        }
+
+        public override bool? CanBeHitByProjectile(Projectile projectile)
+        {
+            return null;
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+            }
+            return 0f;
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
+            }
+            if (NPC.life <= 0)
+            {
+                for (int k = 0; k < 25; k++)
+                {
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
+                }
+            }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Asset<Texture2D> tex = TextureAssets.Npc[Type];
+            SpriteEffects fx = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 stretch = NPC.ai[0] == 1 && NPC.ai[1] > 0 ? new Vector2(SquishX, SquishY): Vector2.One;
+            spriteBatch.Draw(tex.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColor, NPC.rotation, new Vector2(tex.Width() / 2, tex.Height() / 2 / Main.npcFrameCount[Type]), NPC.scale * stretch, fx, 0); 
+            return false;
+        }
+    }
+}

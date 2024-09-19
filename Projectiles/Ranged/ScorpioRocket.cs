@@ -27,6 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
                 Projectile.velocity *= 0.9f;
 
-            if (Projectile.wet && RocketID == ItemID.DryRocket && RocketID == ItemID.WetRocket && RocketID == ItemID.LavaRocket && RocketID == ItemID.HoneyRocket)
+            if (Projectile.wet && (RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket))
                 Projectile.Kill();
 
             // Rotates towards its velocity.

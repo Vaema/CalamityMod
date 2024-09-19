@@ -176,7 +176,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 spriteBatch.Draw(texture, drawLocation + drawOffset, NPC.frame, backAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -198,7 +198,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             texture = GlowTexture.Value;
             Color redLerpColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {

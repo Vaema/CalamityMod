@@ -147,6 +147,12 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<PlasmaRod>(), 3, 2));
                     break;
 
+                // Skeleton Merchant
+                // Punch Card @ 100%
+                case NPCID.SkeletonMerchant:
+                    npcLoot.Add(ModContent.ItemType<PunchCard>());
+                    break;
+
                 // Mimic
                 // Drops all of its items Calamity Style @ 25% each
                 // This requires erasing its vanilla behavior.
@@ -195,6 +201,13 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Ice
+
+                // Ice Bat.
+                // Frostbat Staff @ 6.67%
+                case NPCID.IceBat:
+                    npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
+                    break;
+
                 // Icy Merman, Icy Tortoise, Ice Elemental, Wolf
                 // Essence of Eleum @ 100%
                 case NPCID.IcyMerman:
@@ -267,9 +280,11 @@ namespace CalamityMod.NPCs
                 // Shark
                 // Shark Tooth Necklace @ 4% Normal, 6.67% Expert+
                 // Joyful Heart @ 4% Normal, 6.67% Expert+
+                // Sharky Plush @ 1%
                 case NPCID.Shark:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.SharkToothNecklace, 25, 15));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<JoyfulHeart>(), 25, 15));
+                    npcLoot.Add(ModContent.ItemType<SharkyPlush>(), 100);
                     break;
 
                 // Blood Jelly, Fungo Fish
@@ -342,20 +357,6 @@ namespace CalamityMod.NPCs
                 #region Jungle
                 //Moss hornets are after all of this switching since it no longer works if placed here
 
-                // Jungle Slime, Spiked Jungle Slime, Arapaima
-                // Murky Paste @ 33.33% Normal, 50% Expert+
-                case NPCID.JungleSlime:
-                case NPCID.SpikedJungleSlime:
-                case NPCID.Arapaima:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<MurkyPaste>(), 3, 2));
-                    break;
-
-                // Angry Trapper
-                // Trapper Bulb @ 50% Normal, 100% Expert+
-                case NPCID.AngryTrapper:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<TrapperBulb>(), 2, 1));
-                    break;
-
                 // Moth
                 // Butterfly Dust @ 100% INSTEAD OF 50%
                 case NPCID.Moth:
@@ -422,6 +423,13 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Hell
+
+                // Hellbat.
+                // Flarebat Staff @ 4%
+                case NPCID.Hellbat:
+                    npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    break;
+
                 // Fire Imp
                 // Ashen Stalactite @ 10% Normal, 16.67% Expert+
                 case NPCID.FireImp:
@@ -429,30 +437,24 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Demon, Voodoo Demon
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Bladecrest Oathsword @ 4% Normal, 6.67% Expert+
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BladecrestOathsword>(), 25, 15));
                     break;
 
                 // Bone Serpent
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Old Lord Oathsword @ 8.33% Normal, 14.29% Expert+
                 case NPCID.BoneSerpentHead:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OldLordClaymore>(), 12, 7));
                     break;
 
                 // Red Devil
                 // Fire Feather @ 10% INSTEAD OF 1.33%
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Abbadon @ 8.33% Normal, 14.29% Expert+
                 // Essence of Chaos @ 50%
                 case NPCID.RedDevil:
                     npcLoot.ChangeDropRate(ItemID.FireFeather, 1, 10);
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Abaddon>(), 12, 7));
                     npcLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
                     break;
@@ -623,8 +625,17 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Mothron
-                // 20-30 Darksun Fragment @ 100% IF Devourer of Gods dead
                 case NPCID.Mothron:
+                    // Make all drops accessible pre-Mechs as Mothrons already only spawn post-Plantera (linearity rule removal)
+                    // This is identical to vanilla drop rates
+                    // This loot is already reported in vanilla regardless of condition so we don't need to report it twice
+                    LeadingConditionRule postMechs = new LeadingConditionRule(new Conditions.DownedAllMechBosses());
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.BrokenHeroSword, 4, 1), hideLootReport: true);
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.MothronWings, 20, 1), hideLootReport: true);
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.TheEyeOfCthulhu, 3, 1), hideLootReport: true);
+                    npcLoot.Add(postMechs);
+
+                    // 20-30 Darksun Fragment @ 100% IF Devourer of Gods dead
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 1, 20, 30);
                     break;
 
@@ -1662,6 +1673,34 @@ DukeEditFailed:
             if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
+
+            // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
+            // This is type-indiscriminate and will also most probably hit modded NPCs too
+            int[] randomFoodItems = new int[]
+            {
+                ItemID.ApplePie,
+                ItemID.BananaSplit,
+                ItemID.BBQRibs,
+                ItemID.Burger,
+                ItemID.MilkCarton,
+                ItemID.ChocolateChipCookie,
+                ItemID.CoffeeCup,
+                ItemID.CreamSoda,
+                ItemID.FriedEgg,
+                ItemID.Fries,
+                ItemID.Grapes,
+                ItemID.Hotdog,
+                ItemID.IceCream,
+                ItemID.Milkshake,
+                ItemID.Nachos,
+                ItemID.Pizza,
+                ItemID.PotatoChips,
+                ItemID.ShrimpPoBoy,
+                ItemID.Spaghetti,
+                ItemID.Steak
+            };
+            foreach (int foodItemID in randomFoodItems)
+                npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
         }
         #endregion
 
@@ -1692,32 +1731,6 @@ DukeEditFailed:
         #region Pre Kill
         public override bool PreKill(NPC npc)
         {
-            // Stop all random food drops that aren't sold, crafted or etc.
-            var randomFoodItems = new int[]
-            {
-                ItemID.ApplePie,
-                ItemID.BananaSplit,
-                ItemID.BBQRibs,
-                ItemID.Burger,
-                ItemID.MilkCarton,
-                ItemID.ChocolateChipCookie,
-                ItemID.CoffeeCup,
-                ItemID.CreamSoda,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.Grapes,
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Milkshake,
-                ItemID.Nachos,
-                ItemID.Pizza,
-                ItemID.PotatoChips,
-                ItemID.ShrimpPoBoy,
-                ItemID.Spaghetti,
-                ItemID.Steak
-            };
-            DropHelper.BlockDrops(randomFoodItems);
-
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
             if (CalamityWorld.revenge && (CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
@@ -1816,7 +1829,7 @@ DukeEditFailed:
                     if (!Main.hardMode && !BossRushEvent.BossRushActive)
                     {
                         // Increase altar count to allow natural mech boss spawning.
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                             WorldGen.altarCount++;
 
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
@@ -1840,7 +1853,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss1 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (!NPC.downedMechBoss1 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 
@@ -1852,7 +1865,7 @@ DukeEditFailed:
                         SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                         SetNewBossJustDowned(npc);
 
-                        if (!NPC.downedMechBoss2 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (!NPC.downedMechBoss2 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             SpawnMechBossHardmodeOres();
                     }
                     break;
@@ -1862,7 +1875,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss3 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (!NPC.downedMechBoss3 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 

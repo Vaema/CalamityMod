@@ -314,9 +314,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 spawnPosition = player.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
                     Vector2 dustVelocity = (player.Center - spawnPosition) * 0.085f + owner.velocity;
 
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-
-                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(pscState));
+                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(!Main.dayTime));
                     dust.velocity = dustVelocity;
                     dust.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
                     dust.color = Color.Lerp(Color.LightCoral, Color.White, Projectile.ai[2] / 120 * Main.rand.NextFloat(0.65f, 1f));
@@ -331,7 +329,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (SpawnedFromPSC && !ForcedVanity && Owner.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

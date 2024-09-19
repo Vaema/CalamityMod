@@ -11,6 +11,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureVoid;
@@ -1177,18 +1178,27 @@ namespace CalamityMod.World
 
         /// <summary>
         /// Unlocks all abyss chests, automatically synced across the server.
-        /// Only run initally on the server.
+        /// It SHOULD only run initally on the server.
         /// </summary>
         public static void UnlockAllAbyssChests()
         {
-            UnlockChests = true;
-
             if (Main.netMode == NetmodeID.Server)
             {
-                var netMessage = CalamityMod.Instance.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.UnlockAbyssChests);
-                netMessage.Send();
+                UnlockAbyssChestsPacket.Send();
+                DoUnlockAllAbyssChests();
             }
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                DoUnlockAllAbyssChests();
+            }
+        }
+
+        /// <summary>
+        /// Actually Unlocks all abyss chests, This is NOT synced between clients. Call <see cref="Abyss.UnlockAllAbyssChests"/> instead unless you know what you doing.
+        /// </summary>
+        internal static void DoUnlockAllAbyssChests()
+        {
+            UnlockChests = true;
 
             for (int c = 0; c < Main.maxChests; c++)
             {

@@ -19,17 +19,18 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 64;
             Item.height = 24;
             Item.damage = 1;
-            Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 75;
             Item.DamageType = DamageClass.Ranged;
-            Item.noMelee = true;
-            Item.autoReuse = true;
-            Item.useAmmo = AmmoID.Bullet;
-            Item.shootSpeed = 9f;
+            Item.useAnimation = Item.useTime = 75;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<BouncingShotgunPellet>();
+            Item.shootSpeed = 9f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAmmo = AmmoID.Bullet;
             Item.UseSound = SoundID.Item38;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;

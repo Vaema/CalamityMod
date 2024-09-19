@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [LongDistanceNetSync]
     public class ArmoredDiggerHead : ModNPC
     {
         bool TailSpawned = false;
@@ -429,6 +431,21 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            Player player = spawnInfo.Player;
+            bool gfbCondition = Main.zenithWorld && (player.ZoneHallow || player.ZoneUnderworldHeight) && NPC.downedMoonlord;
+            if ((gfbCondition || (player.ZoneRockLayerHeight && !player.ZoneUnderworldHeight && !player.ZoneJungle)) && !player.ZoneDungeon && !player.Calamity().ZoneSunkenSea && !player.Calamity().ZoneAbyss)
+            {
+                if (!CalamityPlayer.areThereAnyDamnBosses && NPC.downedPlantBoss && !NPC.AnyNPCs(ModContent.NPCType<ArmoredDiggerHead>()))
+                {
+                    float spawnRateDivisor = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 125f : CalamityWorld.revenge ? 425f : 500f;
+                    return 1 / spawnRateDivisor;
+                }
+            }
+            return 0f;
+        }
+
         public override void BossLoot(ref string name, ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
@@ -471,7 +488,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<DemonicBoneAsh>(), 1, 2, 4);
             npcLoot.Add(ModContent.ItemType<MysteriousCircuitry>(), 1, 4, 8);
             npcLoot.Add(ModContent.ItemType<DubiousPlating>(), 1, 4, 8);
             npcLoot.AddIf(() => Main.zenithWorld, ModContent.ItemType<UnholyEssence>(), 1, 3, 6);

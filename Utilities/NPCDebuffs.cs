@@ -144,9 +144,10 @@ namespace CalamityMod
         private static readonly int[] sunkenSeaEnemyImmunities = new int[2] { ModContent.BuffType<Eutrophication>(), ModContent.BuffType<PearlAura>() };
         private static readonly int[] abyssEnemyImmunities = new int[2] { ModContent.BuffType<CrushDepth>(), ModContent.BuffType<RiptideDebuff>() };
         private static readonly int[] cragEnemyImmunities = new int[3] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>() };
+        private static readonly int[] scalImmunities = new int[5] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<VulnerabilityHex>(), ModContent.BuffType<TrueVulnerabilityHex>() };
         private static readonly int[] astralEnemyImmunities = new int[2] { BuffID.Poisoned, ModContent.BuffType<AstralInfectionDebuff>() };
         private static readonly int[] plagueEnemyImmunities = new int[3] { BuffID.Poisoned, BuffID.Venom, ModContent.BuffType<Plague>() };
-        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), ModContent.BuffType<Nightwither>() };
+        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), BuffID.Daybreak };
         #endregion
 
         #region Load/Unload
@@ -164,6 +165,7 @@ namespace CalamityMod
             Tuple<GeneralImmunityStatus, int[]> sunkenSea = new(GeneralImmunityStatus.None, sunkenSeaEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> abyss = new(GeneralImmunityStatus.None, abyssEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> crags = new(GeneralImmunityStatus.None, cragEnemyImmunities);
+            Tuple<GeneralImmunityStatus, int[]> scal = new(GeneralImmunityStatus.None, scalImmunities);
             Tuple<GeneralImmunityStatus, int[]> astral = new(GeneralImmunityStatus.None, astralEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> plague = new(GeneralImmunityStatus.None, plagueEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> holy = new(GeneralImmunityStatus.None, holyEnemyImmunities);
@@ -252,6 +254,7 @@ namespace CalamityMod
 
                 { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
                 { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<WildBumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
 
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
@@ -269,7 +272,7 @@ namespace CalamityMod
                 { ModContent.NPCType<CosmicLantern>(), immuneToEverything },
                 { ModContent.NPCType<CosmicMine>(), immuneToEverything },
 
-                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<WhisperingDeath>() }) },
+                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<Voidfrost>(), ModContent.BuffType<WhisperingDeath>() }) },
                 { ModContent.NPCType<PolterPhantom>(), immuneToEverything },
                 { ModContent.NPCType<PhantomFuckYou>(), immuneToEverything },
                 { ModContent.NPCType<PolterghastHook>(), immuneToEverything },
@@ -292,11 +295,11 @@ namespace CalamityMod
                 { ModContent.NPCType<ThanatosBody2>(), immuneToEverything },
                 { ModContent.NPCType<ThanatosTail>(), immuneToEverything },
 
-                { ModContent.NPCType<SupremeCalamitas>(), crags },
-                { ModContent.NPCType<SupremeCatastrophe>(), crags },
-                { ModContent.NPCType<SupremeCataclysm>(), crags },
-                { ModContent.NPCType<SoulSeekerSupreme>(), crags },
-                { ModContent.NPCType<BrimstoneHeart>(), crags },
+                { ModContent.NPCType<SupremeCalamitas>(), scal },
+                { ModContent.NPCType<SupremeCatastrophe>(), scal },
+                { ModContent.NPCType<SupremeCataclysm>(), scal },
+                { ModContent.NPCType<SoulSeekerSupreme>(), scal },
+                { ModContent.NPCType<BrimstoneHeart>(), scal },
                 { ModContent.NPCType<SepulcherHead>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBody>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBodyEnergyBall>(), immuneToEverything },
@@ -338,11 +341,8 @@ namespace CalamityMod
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
                 { ModContent.NPCType<GiantClam>(), sunkenSea },
                 { ModContent.NPCType<PrismBack>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent1>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent2>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent3>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent4>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent5>(), sunkenSea },
+                { ModContent.NPCType<SandProwler>(), sunkenSea },
+                { ModContent.NPCType<SandProwlerNested>(), sunkenSea },
 
                 { ModContent.NPCType<BabyCannonballJellyfish>(), abyss },
                 { ModContent.NPCType<CannonballJellyfish>(), abyss },

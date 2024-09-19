@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<FrostBolt>().
                 AddIngredient<FlareBolt>().
-                AddIngredient<EssenceofEleum>(2).
                 AddIngredient<EssenceofHavoc>(2).
+                AddIngredient<EssenceofEleum>(2).
                 AddTile(TileID.Bookcases).
                 Register();
         }

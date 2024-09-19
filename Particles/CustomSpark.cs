@@ -16,13 +16,14 @@ namespace CalamityMod.Particles
         public string NewTexture;
         public float ExtraRotation;
         public Vector2 Stretch = new Vector2(0.5f, 1.6f);
+        public float ShrinkSpeed = 0;
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public bool AltVisual = true;
         public override bool UseAdditiveBlend => AltVisual;
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false)
+        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -35,6 +36,7 @@ namespace CalamityMod.Particles
             FadeInScale = scale;
             Lifetime = lifetime;
             Color = InitialColor = color;
+            ShrinkSpeed = shrinkSpeed;
 
             AltVisual = useAddativeBlend;
             GlowCenter = glowCenter;
@@ -70,6 +72,9 @@ namespace CalamityMod.Particles
                 Velocity.Y += 0.25f;
             }
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2 + ExtraRotation;
+
+            Stretch.X *= (1 - 0.2f * ShrinkSpeed);
+            Stretch.Y *= (1 + 0.2f * ShrinkSpeed);
         }
 
         public override void CustomDraw(SpriteBatch spriteBatch)

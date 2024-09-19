@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public int colorTimer = 0;
         public int fallTime = 180;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 36;
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.extraUpdates = 15;
 
-                NPC target = Projectile.Center.ClosestNPCAt(2000);
+                NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
                 if (target != null)
                     Projectile.velocity = (target.Center - Projectile.Center + target.velocity * 8).SafeNormalize(Vector2.UnitX) * 8;
                 else
@@ -149,6 +150,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
             if (Projectile.numHits <= 0)
             {
                 Player Owner = Main.player[Projectile.owner];

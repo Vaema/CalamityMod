@@ -12,6 +12,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
@@ -203,6 +204,10 @@ namespace CalamityMod.Items
                     item.expert = false;
                     break;
             }
+
+            // Increase how much health Mushrooms heal.
+            if (item.type == ItemID.Mushroom && item.healLife == 15)
+                item.healLife = 25;
 
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
             if (item.type == ItemID.BeamSword)
@@ -640,13 +645,6 @@ namespace CalamityMod.Items
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
-
-            // Moon Lord instantly spawns when Celestial Sigil is used.
-            if (item.type == ItemID.CelestialSigil)
-            {
-                NPC.MoonLordCountdown = 1;
-                NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
-            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
@@ -1114,7 +1112,6 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.SquirePlating:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetDamage<MeleeDamageClass>() -= 0.05f;
                     break;
                 case ItemID.SquireGreaves:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
@@ -1805,7 +1802,7 @@ namespace CalamityMod.Items
                 return keepPrefix ? prefix : 0;
             }
 
-            if (!CalamityConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
+            if (!CalamityServerConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
                 return -1;
 
             // Pick a prefix using the new system.
@@ -1824,11 +1821,17 @@ namespace CalamityMod.Items
                 ItemLoader.ReforgePrice(item, ref value, ref p.discountAvailable);
 
                 // Steal 20% of that money.
-                CalamityWorld.MoneyStolenByBandit += value / 5;
+                int stolen = value / 5;
+                CalamityWorld.MoneyStolenByBandit += stolen;
 
                 // Increment the reforge counter to allow the Bandit to refund
                 // Also triggers Tinkerer dialogue that hints to the player that money is being stolen
                 CalamityWorld.Reforges++;
+
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    BanditStolenMoneySyncPacket.Send(stolen);
+                }
             }
         }
         #endregion

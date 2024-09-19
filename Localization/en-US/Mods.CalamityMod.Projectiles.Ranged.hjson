@@ -19,7 +19,6 @@ AuricBullet.DisplayName: Auric Bullet
 AuroraFire.DisplayName: Aurora Blaze
 BallistaGreatArrow.DisplayName: Ballista Great Arrow
 BarinadeArrow.DisplayName: Fin Arrow
-BigCoral.DisplayName: Big Coral
 BlightFlames.DisplayName: Blight Flames
 BlissfulBombardierDustProjectile.DisplayName: Holy Flare Dust
 BloodBoilerFire.DisplayName: Blood Fire
@@ -59,6 +58,7 @@ CorrodedShell.DisplayName: Corroded Shell
 CosmicFire.DisplayName: Dead Sun's Fire
 DaemonsFlameArrow.DisplayName: Daemon's Arrow
 DeadSunExplosion.DisplayName: Dead Sun's Explosion
+DragonsBreathBurst.DisplayName: Draconic Burst
 DragonsBreathFlames.DisplayName: Draconic Flames
 DragonsBreathMag.DisplayName: Dragons Breath Cartridge
 DragonsBreathRound.DisplayName: Dragon's Breath Round
@@ -139,8 +139,12 @@ NorfleetExplosion.DisplayName: Explosion
 NovaChargedShot.DisplayName: Charged Nova Blast
 NovaShot.DisplayName: Nova Bolt
 Nuke.DisplayName: Nuke
+NullFlash.DisplayName: Null Flash
 NullShot.DisplayName: Null
-NullShot2.DisplayName: Null
+OntologicalDespoilerBeam.DisplayName: Null-Annihilation Beam
+OntoligicalDespoilerBurst.DisplayName: Disruption Blast
+OntologicalDespoilerGrenade.DisplayName: Disruption Sphere
+OntologicalDespoilerShot.DisplayName: Unreality Condensate
 OpalChargedStrike.DisplayName: Charged Plasma Bolt
 OpalStrike.DisplayName: Heated Bolt
 PiercingBullet.DisplayName: Piercing Blow
@@ -172,7 +176,7 @@ RealmRavagerBullet.DisplayName: Explosive Bullet
 RicoshotCoin.DisplayName: Ricoshot Coin
 RocketFire.DisplayName: Fire
 RubberMortarRoundProj.DisplayName: Rubber Mortar
-SandstormBullet.DisplayName: Sandstorm
+SandblasterBullet.DisplayName: Sandstorm
 ScorchedEarthBlast.DisplayName: Earth Scorcher
 ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
@@ -183,7 +187,7 @@ SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
 SeasSearingSpout.DisplayName: Spout
-SepticSkewerBacteria.DisplayName: Bacteria
+SepticSkewerBacteria.DisplayName: Septic Gore
 SepticSkewerHarpoon.DisplayName: Septic Skewer
 SevensStrikerBrick.DisplayName: Brick
 SevensStrikerCherry.DisplayName: Cherry
@@ -244,6 +248,7 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
-NitroShot.DisplayName: Nitro Shot
-ChargedBlastSplit.DisplayName: Charged Blast Split
-LeviatitanAberration.DisplayName: Leviatitan Aberration
+HellbornProj.DisplayName: Hell-born Gunblast
+HellbornShell.DisplayName: Hell's Shell
+RubicoPrimeMag.DisplayName: Rubico Prime Mag
+MegalodonShot.DisplayName: Megalodon Shot

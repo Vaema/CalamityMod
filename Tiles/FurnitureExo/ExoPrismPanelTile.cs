@@ -4,22 +4,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureExo
 {
-    public class ExoPrismPanelTile : ModTile
+    public class ExoPrismPanelTile : GlowMaskTile
     {
-        internal static Texture2D GlowTexture;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureExo/ExoPrismPanelTileGlow";
 
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            if (!Main.dedServ)
-            {
-                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoPrismPanelTileGlow", AssetRequestMode.ImmediateLoad).Value;
-            }
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 
@@ -46,33 +42,9 @@ namespace CalamityMod.Tiles.FurnitureExo
             frameYOffset = frameOffset * AnimationFrameHeight;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            // If the cached textures don't exist for some reason, don't bother using them.
-            if (GlowTexture is null)
-                return;
-
-            Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
-            int xPos = tile.TileFrameX;
-            int frameOffset = (i + j) % 6 * AnimationFrameHeight;
-            int yPos = tile.TileFrameY + frameOffset;
-            Color drawColour = GetDrawColour(i, j, Color.White);
-            Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-
-            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
-        }
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            return Color.White;
         }
     }
 }

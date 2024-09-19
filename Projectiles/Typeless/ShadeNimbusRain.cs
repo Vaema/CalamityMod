@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = 180;
             Projectile.alpha = 50;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 8;
+            Projectile.idStaticNPCHitCooldown = 6;
         }
 
         public override void OnKill(int timeLeft)

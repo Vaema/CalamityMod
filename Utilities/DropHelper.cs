@@ -118,8 +118,6 @@ namespace CalamityMod
         public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
 
-        public static string ProvidenceHallowText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceHallow");
-        public static string ProvidenceUnderworldText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceUnderworld");
         public static string ProvidenceNightText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceNight");
         public static string ProvidenceChallengeText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceChallenge");
 
@@ -489,7 +487,7 @@ namespace CalamityMod
         public static IItemDropRuleCondition HallowedBarsCondition = If((info) =>
         {
             // If the Early Hardmode Progression Rework is not enabled, then Hallowed Bars can always drop from Mechanical Bosses.
-            if (!CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+            if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 return true;
 
             // If the Early Hardmode Progression Rework is enabled, then all 3 Mechanical Bosses must be defeated for Hallowed Bars to drop.
@@ -1160,10 +1158,13 @@ namespace CalamityMod
                 {
                     NPC npc = info.npc;
                     int idx = Item.NewItem(npc.GetSource_Loot(), npc.Center, itemId, stack, true, -1);
-                    Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
-                    foreach (Player player in Main.ActivePlayers)
-                        NetMessage.SendData(MessageID.InstancedItem, player.whoAmI, -1, null, idx);
-                    Main.item[idx].active = false;
+                    if (idx < Main.maxItems)
+                    {
+                        Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
+                        foreach (Player player in Main.ActivePlayers)
+                            NetMessage.SendData(MessageID.InstancedItem, player.whoAmI, -1, null, idx);
+                        Main.item[idx].active = false;
+                    }
                 }
 
                 // Otherwise just drop the item.

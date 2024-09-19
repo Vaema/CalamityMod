@@ -323,9 +323,8 @@ namespace CalamityMod.Projectiles.Summon
 
                 if (shouldDrawDust)
                 {
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
                     var shouldAdjust = !Main.dayTime && buffedAi;
-                    int dustId = ProvUtils.GetDustID(pscState);
+                    int dustId = ProvUtils.GetDustID(!Main.dayTime);
                     for (int i = 0; i < 6; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + (Projectile.Size / 2f).RotatedBy(Projectile.rotation), dustId);
@@ -453,7 +452,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (!ForcedVanity && SpawnedFromPSC)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

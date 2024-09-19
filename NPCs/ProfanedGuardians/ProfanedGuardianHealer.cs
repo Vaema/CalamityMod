@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -441,7 +442,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
                 int afterimageAmt = 5;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -483,7 +484,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     overrideColor = colorOverride.Value;
                 }
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
@@ -510,7 +511,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedDrawColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                Providence.Providence.BossMode mode = Providence.Providence.BossMode.Day;
+                if (!Main.dayTime) mode = Providence.Providence.BossMode.Night;
+
+                NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
                 spriteBatch.Draw(texture2D16, drawLocation, NPC.frame, overrideColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }

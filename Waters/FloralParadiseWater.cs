@@ -1,28 +1,38 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.Abyss;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class FloralParadiseWater : ModWaterStyle
+    public class FloralParadiseWaterflow : ModWaterfallStyle { }
+
+    public class FloralParadiseWater : CalamityModWaterStyle
     {
+        public static int Type { get; private set; }
+        public static CalamityModWaterStyle Instance { get; private set; }
+
+        public override void SetStaticDefaults()
+        {
+            Type = Slot;
+            Instance = this;
+        }
+
+        public override void Unload()
+        {
+            Type = -1;
+            Instance = null;
+        }
+
         public override int ChooseWaterfallStyle()
         {
             return ModContent.Find<ModWaterfallStyle>("CalamityMod/FloralParadiseWaterflow").Slot;
         }
 
-        public override int GetSplashDust()
-        {
-            return 33;
-        }
-
-        public override int GetDropletGore()
-        {
-            return 713;
-        }
-
-        public override Color BiomeHairColor()
-        {
-            return Color.PaleTurquoise;
-        }
+        public override int GetSplashDust() => DustID.Water;
+        public override int GetDropletGore() => GoreID.WaterDripCavern;
+        public override Color BiomeHairColor() => Color.PaleTurquoise;
     }
 }

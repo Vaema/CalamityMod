@@ -15,19 +15,21 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 36;
             Item.height = 42;
             Item.damage = 8;
+            Item.DamageType = DamageClass.Summon;
+            Item.sentry = true;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 35;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item44;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 35;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<EXPLODINGFROG>();
             Item.shootSpeed = 10f;
-            Item.sentry = true;
-            Item.DamageType = DamageClass.Summon;
+
+            Item.UseSound = SoundID.Item44;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

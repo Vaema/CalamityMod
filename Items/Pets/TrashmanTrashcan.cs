@@ -10,20 +10,10 @@ namespace CalamityMod.Items.Pets
     public class TrashmanTrashcan : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Pets";
-        public override void SetStaticDefaults()
-        {
-        }
+
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 30;
-            Item.damage = 0;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
-            Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<DannyDevitoPet>();
-            Item.buffType = ModContent.BuffType<DannyDevito>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<DannyDevitoPet>(), ModContent.BuffType<DannyDevito>());
             Item.UseSound = SoundID.NPCDeath13;
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Pink;
