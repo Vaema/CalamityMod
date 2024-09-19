@@ -107,7 +107,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             // Takes greatly reduced damage from sentries because thats how it is in Plants versus Zombies
             // Pumpoem will be none the wiser
-            if (projectile.IsMinionOrSentryRelated)
+            if (projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
             {
                 modifiers.SourceDamage *= 0.05f;
                 SoundEngine.PlaySound(SoundID.NPCHit4 with { Pitch = -1, Volume = 0.8f }, NPC.Center);
