@@ -38,7 +38,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [AutoloadBossHead]
     [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
     public class Cryogen : ModNPC
     {
