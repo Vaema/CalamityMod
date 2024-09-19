@@ -86,6 +86,7 @@ using static Terraria.ModLoader.ModContent;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Packets;
 using CalamityMod.ExtraTextures;
+using MonoMod.Utils;
 
 namespace CalamityMod.NPCs
 {
@@ -1341,6 +1342,10 @@ namespace CalamityMod.NPCs
                 { NPCID.WallofFlesh, 0.5f },
             };
             #endregion
+
+            // Somehow the SetStatic is called few times before SetStaticDefaults
+            // So We Initialize the Dictionary first. And Push Data later (At SetStaticDefaults)
+            BossKillTimes = [];
         }
 
         public override void Unload()
@@ -1356,8 +1361,9 @@ namespace CalamityMod.NPCs
         #region Set Defaults
         public override void SetStaticDefaults()
         {
-            #region Setup Boss Kill Time
-            BossKillTimes = new SortedDictionary<int, int> {
+            #region Add Entries to BossKillTimes
+            BossKillTimes.AddRange<int, int>(new Dictionary<int, int>(){
+
                 //
                 // VANILLA BOSSES
                 //
@@ -1447,7 +1453,7 @@ namespace CalamityMod.NPCs
                 { NPCType<ThanatosTail>(), 21600 },
                 { NPCType<SupremeCalamitas.SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
                 { NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
-            };
+            });
             #endregion
 
             // Set Plantera to be able to update oldPos[x]
