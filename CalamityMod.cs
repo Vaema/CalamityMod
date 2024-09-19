@@ -1,72 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Cooldowns;
-using CalamityMod.DataStructures;
-using CalamityMod.Effects;
-using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
-using CalamityMod.Items.Dyes.HairDye;
-using CalamityMod.Items.VanillaArmorChanges;
-using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.ExoMechs.Apollo;
-using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.NPCs.ExoMechs.Artemis;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
-using CalamityMod.NPCs.HiveMind;
-using CalamityMod.NPCs.Leviathan;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.Perforator;
-using CalamityMod.NPCs.PlaguebringerGoliath;
-using CalamityMod.NPCs.Polterghast;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.NPCs.ProfanedGuardians;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.NPCs.Signus;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.NPCs.StormWeaver;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs.Yharon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Schematics;
-using CalamityMod.Skies;
-using CalamityMod.Systems;
-using CalamityMod.UI;
-using CalamityMod.UI.CalamitasEnchants;
-using CalamityMod.UI.DraedonsArsenal;
-using CalamityMod.UI.Rippers;
-using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
-using Terraria.GameContent.Dyes;
-using Terraria.GameContent.Liquid;
-using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -76,13 +18,6 @@ namespace CalamityMod
 {
     public class CalamityMod : Mod
     {
-        // TODO -- A huge amount of random floating variables exist here.
-        // These should all be moved to other files, whether that's CalamityLists or brand new ModSystems.
-        // It is best to have a ton of small ModSystems.
-
-        // Boss Kill Time data structure
-        public static SortedDictionary<int, int> bossKillTimes;
-
         #region External Flags
         // External flag to disable non-Revengeance boss AI edits
         // This can be edited by other mods using reflection to prevent compatibility issues
@@ -114,16 +49,12 @@ namespace CalamityMod
                 // However, render targets and certain other graphical objects can only be created on the main thread.
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
-
-            SetupBossKillTimes();
         }
         #endregion
 
         #region Unload
         public override void Unload()
         {
-            bossKillTimes?.Clear();
-            bossKillTimes = null;
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
@@ -164,106 +95,6 @@ namespace CalamityMod
             {
                 Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
             }
-        }
-        #endregion
-
-        #region Boss Kill Times
-        private void SetupBossKillTimes()
-        {
-            // Kill times are measured exactly in frames.
-            // 60   frames = 1 second
-            // 3600 frames = 1 minute
-            bossKillTimes = new SortedDictionary<int, int> {
-                //
-                // VANILLA BOSSES
-                //
-                { NPCID.KingSlime, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EyeofCthulhu, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EaterofWorldsHead, 7200 }, // 2:00 (120 seconds)
-                { NPCID.EaterofWorldsBody, 7200 },
-                { NPCID.EaterofWorldsTail, 7200 },
-                { NPCID.BrainofCthulhu, 7200 }, // 2:00 (120 seconds, total length of fight including Creepers phase)
-                { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
-                { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
-                { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
-                { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
-                { NPCID.WallofFleshEye, 7200 },
-                { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
-                { NPCID.Spazmatism, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Retinazer, 10800 },
-                { NPCID.TheDestroyer, 10800 }, // 3:00 (180 seconds)
-                { NPCID.TheDestroyerBody, 10800 },
-                { NPCID.TheDestroyerTail, 10800 },
-                { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
-                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
-                { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
-                { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
-                { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
-                { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
-                { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
-                { NPCID.MoonLordHead, 7200 }, // 2:00 (120 seconds)
-
-                //
-                // CALAMITY BOSSES
-                //
-                { ModContent.NPCType<DesertScourgeHead>(), 5400 }, // 1:30 (90 seconds)
-                { ModContent.NPCType<DesertScourgeBody>(), 5400 },
-                { ModContent.NPCType<DesertScourgeTail>(), 5400 },
-                { ModContent.NPCType<Crabulon>(), 5400 }, // 1:30 (90 seconds)
-                { ModContent.NPCType<HiveMind>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<PerforatorHive>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<SlimeGodCore>(), 9000 }, // 2:30 (150 seconds) -- total length of Slime God fight
-                { ModContent.NPCType<EbonianPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { ModContent.NPCType<CrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { ModContent.NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
-                { ModContent.NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { ModContent.NPCType<Cryogen>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
-                { ModContent.NPCType<AquaticScourgeBody>(), 9000 },
-                { ModContent.NPCType<AquaticScourgeBodyAlt>(), 9000 },
-                { ModContent.NPCType<AquaticScourgeTail>(), 9000 },
-                { ModContent.NPCType<BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
-                { ModContent.NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<Leviathan>(), 10800 },
-                { ModContent.NPCType<AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<AstrumDeusHead>(), 7200 }, // 2:00 (120 seconds) -- first phase is 1:00
-                { ModContent.NPCType<AstrumDeusBody>(), 7200 },
-                { ModContent.NPCType<AstrumDeusTail>(), 7200 },
-                { ModContent.NPCType<PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
-                { ModContent.NPCType<Bumblefuck>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<Providence>(), 14400 }, // 4:00 (240 seconds)
-                { ModContent.NPCType<CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
-                { ModContent.NPCType<StormWeaverHead>(), 8100 }, // 2:15 (135 seconds)
-                { ModContent.NPCType<StormWeaverBody>(), 8100 },
-                { ModContent.NPCType<StormWeaverTail>(), 8100 },
-                { ModContent.NPCType<Signus>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<Polterghast>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<OldDuke>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
-                { ModContent.NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
-                { ModContent.NPCType<DevourerofGodsTail>(), 14400 },
-                { ModContent.NPCType<Yharon>(), 14700 }, // 4:05 (245 seconds) -- he spends 5 seconds invincible where you can't do anything
-                { ModContent.NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
-                { ModContent.NPCType<Artemis>(), 21600 },
-                { ModContent.NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)
-                { ModContent.NPCType<AresGaussNuke>(), 21600 },
-                { ModContent.NPCType<AresLaserCannon>(), 21600 },
-                { ModContent.NPCType<AresPlasmaFlamethrower>(), 21600 },
-                { ModContent.NPCType<AresTeslaCannon>(), 21600 },
-                { ModContent.NPCType<ThanatosHead>(), 21600 }, // 6:00 (360 seconds)
-                { ModContent.NPCType<ThanatosBody1>(), 21600 },
-                { ModContent.NPCType<ThanatosBody2>(), 21600 },
-                { ModContent.NPCType<ThanatosTail>(), 21600 },
-                { ModContent.NPCType<SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
-                { ModContent.NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
-            };
         }
         #endregion
 
