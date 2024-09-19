@@ -22,7 +22,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
-    [AutoloadBossHead]
     public class Foveanator : ModNPC
     {
         public static int phase1IconIndex;
@@ -30,16 +29,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public static Asset<Texture2D> GlowTexture;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/NormalNPCs/Foveanator_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/NormalNPCs/Foveanator_Phase2_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         public override void SetStaticDefaults()
