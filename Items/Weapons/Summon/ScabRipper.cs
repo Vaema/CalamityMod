@@ -10,6 +10,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class ScabRipper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => Item.staff[Type] = true;
+
         public override void SetDefaults()
         {
             Item.width = 66;
