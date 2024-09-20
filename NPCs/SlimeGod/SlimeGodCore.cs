@@ -225,12 +225,15 @@ namespace CalamityMod.NPCs.SlimeGod
             // Fire projectiles at level 1
             // Charge at level 2
             // Follow the player around instead of the Paladins at level 3
+            // Buff a Paladin far sooner, fire more projectiles, and charge faster at level 4
             int aggressionLevel = 0;
             if (!NPC.AnyNPCs(ModContent.NPCType<EbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<CrimulanPaladin>()))
             {
                 aggressionLevel = 1;
                 int splitPaladinCount = NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) + NPC.CountNPCS(ModContent.NPCType<SplitCrimulanPaladin>());
-                if (splitPaladinCount < 3)
+                if (splitPaladinCount < 2)
+                    aggressionLevel = 4;
+                else if (splitPaladinCount < 3)
                     aggressionLevel = 3;
                 else if (splitPaladinCount < 4)
                     aggressionLevel = 2;
@@ -434,7 +437,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.timeLeft = 1800;
 
             // Hide inside large slime
-            float hideInsideLargeSlimePhaseGateValue = phase2 ? 300f : 900f;
+            float hideInsideLargeSlimePhaseGateValue = aggressionLevel == 4 ? 120f : phase2 ? 300f : 900f;
             float hideInsideLargeSlimePhaseDuration = 600f;
             float exitLargeSlimeGateValue = hideInsideLargeSlimePhaseGateValue + hideInsideLargeSlimePhaseDuration;
             calamityGlobalNPC.newAI[2] += 1f;
@@ -520,9 +523,9 @@ namespace CalamityMod.NPCs.SlimeGod
 
             if (expertMode && aggressionLevel >= 1)
             {
-                float divisor = bossRush ? 90f : death ? 180f : revenge ? 240f : 300f;
-                divisor -= (aggressionLevel - 1) * 20f;
-                if (phase2)
+                float divisor = bossRush ? 50f : death ? 90f : revenge ? 120f : 150f;
+                divisor -= (aggressionLevel - 1) * 10f;
+                if (aggressionLevel == 4)
                     divisor *= 0.5f;
 
                 if (calamityGlobalNPC.newAI[2] % divisor == 0f)
@@ -558,12 +561,14 @@ namespace CalamityMod.NPCs.SlimeGod
 
             float flySpeed = death ? 15f : revenge ? 13.5f : expertMode ? 12f : 9f;
             flySpeed += aggressionLevel;
+            if (aggressionLevel == 4)
+                flySpeed += 3f;
             if (phase2)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.1f;
             if (bossRush)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.2f;
             if (Main.getGoodWorld)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.3f;
 
             Vector2 flyDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
             Vector2 flyDestination = GetFlyDestination(player, aggressionLevel == 3);
