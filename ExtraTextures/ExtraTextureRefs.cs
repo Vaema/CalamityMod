@@ -42,6 +42,8 @@ namespace CalamityMod.ExtraTextures
             BossHeadIndex_ChadPrime = CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
         }
 
+
+        // TODO: - Every other ExtraTextures Reference could be move in here
         public override void OnModLoad()
         {
             DestroyerHeadGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
