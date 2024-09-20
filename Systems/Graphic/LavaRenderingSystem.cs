@@ -39,7 +39,7 @@ namespace CalamityMod.Systems
             public static Asset<Texture2D>[] fall = new Asset<Texture2D>[1];
         }
 
-        public int WaterStyleMaxCount = ModContent.GetContent<ModWaterStyle>().Count() + LoaderManager.Get<WaterStylesLoader>().VanillaCount;
+        public int WaterStyleMaxCount = 0;
 
         public override void Load()
         {
@@ -48,6 +48,8 @@ namespace CalamityMod.Systems
 
         public override void OnModLoad()
         {
+            WaterStyleMaxCount = ModContent.GetContent<ModWaterStyle>().Count() + LoaderManager.Get<WaterStylesLoader>().VanillaCount;
+
             // Lava Texture
             Textures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
             Textures.slope[0] = TextureAssets.LiquidSlope[1];
