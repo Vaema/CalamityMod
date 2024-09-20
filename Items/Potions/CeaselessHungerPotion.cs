@@ -21,7 +21,6 @@ namespace CalamityMod.Items.Potions
             Item.height = 18;
             Item.useTurn = true;
             Item.maxStack = 9999;
-            Item.rare = ModContent.RarityType<PureGreen>();
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -29,7 +28,9 @@ namespace CalamityMod.Items.Potions
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<CeaselessHunger>();
             Item.buffTime = CalamityUtils.SecondsToFrames(10f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+
+            Item.value = Item.sellPrice(silver: 10);
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
 
         public override void AddRecipes()

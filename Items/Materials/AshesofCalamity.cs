@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 26;
             Item.height = 20;
             Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 4, 50, 0);
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ItemRarityID.Lime;
         }
         public override void Update(ref float gravity, ref float maxFallSpeed)

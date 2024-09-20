@@ -399,6 +399,14 @@ namespace CalamityMod.Systems
                         {
                             if (chest.item[inventoryIndex].type == ItemID.SuspiciousLookingEye)
                             {
+                                // For Mushroom Chests, Suspicious Looking Eyes are replaced with Shroomerang instead
+                                if (isMushroomChest)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ItemID.Shroomerang);
+                                    chest.item[inventoryIndex].Prefix(-1);
+                                    break;
+                                }
+
                                 // 60% chance of 3-5 Mining Potions
                                 // 20% chance of 2-3 Builder's Potions
                                 // 20% chance of 5-9 Shine Potions
@@ -430,6 +438,7 @@ namespace CalamityMod.Systems
                         if (chest.item[0].type == ItemID.PortableStool)
                         {
                             chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
+                            chest.item[0].Prefix(-1);
                         }
                     }
 

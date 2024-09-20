@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = Item.buyPrice(0, 0, 10, 0);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }
 

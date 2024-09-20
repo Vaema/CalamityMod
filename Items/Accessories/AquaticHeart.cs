@@ -1,4 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -56,6 +58,12 @@ namespace CalamityMod.Items.Accessories
         {
             player.Calamity().aquaticHeartHide = false;
             player.Calamity().aquaticHeartForce = true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string statusTooltip = this.GetLocalizedValue(NPC.downedBoss3 ? "FullTooltip" : "LockedTooltip");
+            tooltips.FindAndReplace("[STATUS]", statusTooltip);
         }
     }
 }

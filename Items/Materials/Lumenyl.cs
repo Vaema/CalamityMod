@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Materials
             Item.autoReuse = true;
             Item.consumable = true;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 80);
+            Item.value = Item.sellPrice(silver: 12);
             Item.rare = ItemRarityID.Lime;
         }
     }

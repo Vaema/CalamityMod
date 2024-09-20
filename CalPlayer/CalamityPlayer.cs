@@ -207,6 +207,7 @@ namespace CalamityMod.CalPlayer
         public int PHAThammer = 0;
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
+        public bool despoilerNerf = false;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -473,6 +474,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Permanent Buff
+        public bool spawnedPunchCard = false; // not exactly a buff, but is once per player permanent
         public bool extraAccessoryML = false;
         public bool eCore = false;
         public bool pHeart = false;
@@ -620,6 +622,7 @@ namespace CalamityMod.CalPlayer
         public bool harpyRing = false;
         public bool angelTreads = false;
         public bool harpyWingBoost = false; //harpy wings + harpy ring
+        public int harpyWingFeatherCooldown = 0;
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
         public bool depthCharm = false;
@@ -1197,6 +1200,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
         public bool ghostBracelet;
+        public bool punchCard;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -1295,6 +1299,7 @@ namespace CalamityMod.CalPlayer
         #region Saving And Loading
         public override void Initialize()
         {
+            spawnedPunchCard = false;
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
@@ -1348,6 +1353,7 @@ namespace CalamityMod.CalPlayer
         public override void SaveData(TagCompound tag)
         {
             var boost = new List<string>();
+            boost.AddWithCondition("spawnedPunchCard", spawnedPunchCard);
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
@@ -1439,6 +1445,7 @@ namespace CalamityMod.CalPlayer
         public override void LoadData(TagCompound tag)
         {
             var boost = tag.GetList<string>("boost");
+            spawnedPunchCard = boost.Contains("spawnedPunchCard");
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
@@ -2263,6 +2270,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
             ghostBracelet = false;
+            punchCard = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -2745,6 +2753,7 @@ namespace CalamityMod.CalPlayer
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
+            harpyWingFeatherCooldown = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -4344,6 +4353,12 @@ namespace CalamityMod.CalPlayer
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
+            }
+            if (punchCard)
+            {
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
             }
 
             if (snowRuffianSet)

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Rarities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,8 +18,8 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<DraedonGamerChairMount>();
 
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = Item.sellPrice(gold: 5);
+            Item.rare = ItemRarityID.Yellow;
         }
 
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.ExoChairSlowdownHotkey);

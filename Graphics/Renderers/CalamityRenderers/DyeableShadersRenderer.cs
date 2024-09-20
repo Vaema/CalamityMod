@@ -67,7 +67,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return;
 
             // Store the dye and player in the slot.
-            drawer.OwnerPlayer = self;
+            drawer.OwnerPlayer = self?.whoAmI ?? Main.maxPlayers;
             Dyes[drawer] = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
         }
 

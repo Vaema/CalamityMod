@@ -14,20 +14,15 @@ namespace CalamityMod.Items
         {
             Item.width = 20;
             Item.height = 30;
-            Item.damage = 0;
-            Item.useTime = 15;
-            Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.value = 0;
-            Item.rare = ItemRarityID.Blue;
             Item.autoReuse = true;
+            Item.useTurn = true;
+            Item.value = Item.sellPrice(silver: 1); // Same as Target Dummy
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override bool AltFunctionUse(Player player) => true;
 
         public static void DeleteDummies()
         {

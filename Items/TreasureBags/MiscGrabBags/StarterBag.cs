@@ -90,6 +90,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             };
             itemLoot.AddIf(getsHapuFruit, ModContent.ItemType<HapuFruit>());
 
+            // CIT vanity item
+            // Name specific: "CongratsIsTrash" or "CIT"
+            static bool getsSharkyPlush(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "CongratsIsTrash" || playerName == "CIT";
+            }
+            itemLoot.AddIf(getsSharkyPlush, ModContent.ItemType<SharkyPlush>());
+
             // Dandy dev item
             // Name specific: "Dandy"
             static bool getsGhostBracelet(DropAttemptInfo info)
@@ -99,6 +108,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
+
+            // Shayy dev item
+            // Name specific: "Shayy"
+            static bool getsPunchCard(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Shayy";
+            }
+
+            itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
 
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"

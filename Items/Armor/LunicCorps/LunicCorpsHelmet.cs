@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(2);
 
         // Interface stuff.
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.HaloShieldDepth;
         public bool ShaderIsDyeable => false;
 
@@ -44,7 +44,10 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                var player = OwnerPlayer;
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
+
+                var player = Main.player[OwnerPlayer];
                 if (player is null)
                     return false;
 
@@ -111,10 +114,10 @@ namespace CalamityMod.Items.Armor.LunicCorps
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            var player = OwnerPlayer;
-            if (player is null)
+            if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
                 return;
 
+            var player = Main.player[OwnerPlayer];
             if (player.outOfRange || player.dead)
                 return;
 

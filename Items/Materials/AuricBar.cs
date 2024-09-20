@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Materials
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricTeslaBar>());
-            Item.value = Item.sellPrice(gold: 60);
+            Item.value = Item.sellPrice(gold: 7);
             Item.rare = ModContent.RarityType<Violet>();
         }
 

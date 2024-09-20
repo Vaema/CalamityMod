@@ -1120,7 +1120,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.DyeTrader)
             {
-                shop.AddWithCustomValue(ItemType<DefiledFlameDye>(), Item.buyPrice(gold: 10), Condition.Hardmode)
+                shop.Add(ItemType<DefiledFlameDye>(), Condition.Hardmode)
                 .AddWithCustomValue(ItemID.DyeTradersScimitar, Item.buyPrice(gold: 15));
             }
 
