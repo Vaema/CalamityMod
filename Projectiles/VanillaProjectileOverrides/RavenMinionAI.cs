@@ -31,8 +31,10 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             Player owner = Main.player[proj.owner];
             Target = owner.Center.MinionHoming(EnemyDistanceDetection, owner);
 
+            var hasTarget = Target is not null;
+
             CheckMinionExistence(proj, owner);
-            DoAnimation(proj);
+            DoAnimation(proj, charging: hasTarget);
 
             proj.localNPCHitCooldown = 10;
             proj.friendly = true;
@@ -43,7 +45,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             proj.rotation = MathHelper.ToRadians(proj.velocity.X);
             proj.MinionAntiClump(0.5f);
 
-            if (Target is not null)
+            if (hasTarget)
             {
                 Vector2 dashDirection = proj.SafeDirectionTo(Target.Center);
 
@@ -129,12 +131,16 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 proj.timeLeft = 2;
         }
 
-        private static void DoAnimation(Projectile proj)
+        private static void DoAnimation(Projectile proj, bool charging)
         {
             proj.frameCounter++;
             if (proj.frameCounter >= 5)
             {
-                proj.frame = (proj.frame + 1) % Main.projFrames[proj.type];
+                var maxFrames = Main.projFrames[proj.type] / 2;
+                proj.frame = (proj.frame + 1) % maxFrames;
+
+                if (charging) proj.frame += maxFrames;
+
                 proj.frameCounter = 0;
             }
         }
