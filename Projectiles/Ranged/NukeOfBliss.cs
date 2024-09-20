@@ -54,13 +54,13 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (time > reachedPeakTime)
             {
-                if (rainDownTimer > 1)
+                if (rainDownTimer > 1) // Make sure the missiles are raining down from above your cursor
                 {
-                    Projectile.Center = new Vector2((targeted != null ? targeted.Center.X : Owner.Calamity().mouseWorld.X), Owner.Center.Y) + new Vector2(0, -600);
+                    Projectile.Center = new Vector2(Owner.Calamity().mouseWorld.X, Owner.Center.Y) + new Vector2(0, -600);
                 }
 
-                if (targeted == null)
-                    targeted = (rainDownTimer == 0 ? Projectile.Center : Owner.Calamity().mouseWorld).ClosestNPCAt(rainDownTimer == 0 ? 600 : 250);
+                if (targeted == null || rainDownTimer > 0)
+                    targeted = (rainDownTimer == 0 ? Projectile.Center + Projectile.velocity * 4 : Owner.Calamity().mouseWorld).ClosestNPCAt(rainDownTimer == 0 ? 350 : 250);
                 if (targeted != null && Projectile.Center.Y > targeted.Center.Y)
                     targeted = null;
 
@@ -74,7 +74,8 @@ namespace CalamityMod.Projectiles.Ranged
                         for (int i = 0; i < (isClusterRocket ? 4 : 2); i++)
                         {
                             Vector2 variance = new Vector2(80 * (isClusterRocket ? 3 : 1), 0) * Main.rand.NextFloat(-1f, 1f);
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + variance, (((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(8, 12)) + variance * 0.008f, ModContent.ProjectileType<BlissfulBombardierSplitProjectile>(), (int)(Projectile.damage * (isClusterRocket ? 0.15f : 0.3f)), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
+                            Vector2 velocity = (((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(8, 12)) + variance * 0.008f;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + variance, velocity, ModContent.ProjectileType<BlissfulBombardierSplitProjectile>(), (int)(Projectile.damage * (isClusterRocket ? 0.15f : 0.3f)), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
                         }
                     }
                 }

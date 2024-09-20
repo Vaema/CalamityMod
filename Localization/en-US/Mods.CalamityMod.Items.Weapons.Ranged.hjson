@@ -186,10 +186,10 @@ BlightSpewer: {
 BlissfulBombardier: {
 	DisplayName: Blissful Bombardier
 	Tooltip:
-'''
-Launches a large crystal missile into the sky which releases mini missiles before falling back down at your cursor
-The crystal missile homes really fucking good but the little ones dont
-'''
+		'''
+		Launches a large crystal missile into the sky which releases mini missiles before falling back down at your cursor
+		The crystal missile homes really fucking good but the little ones dont
+		'''
 }
 
 BloodBoiler: {

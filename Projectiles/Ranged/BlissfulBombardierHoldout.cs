@@ -205,10 +205,6 @@ namespace CalamityMod.Projectiles.Ranged
             base.OnSpawn(source);
             FrontArmStretch = Player.CompositeArmStretchAmount.Quarter;
             ExtraBackArmRotation = MathHelper.ToRadians(15f);
-
-            // small charge up sound
-            //SoundStyle charge = new("CalamityMod/Sounds/Item/LowHum");
-            //SoundEngine.PlaySound(charge with { Volume = 1.6f, IsLooped = true }, Projectile.Center);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -218,7 +214,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
-            //Texture2D glowTexture = Request<Texture2D>(GlowTexture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
@@ -234,7 +229,11 @@ namespace CalamityMod.Projectiles.Ranged
             if (!hasFired)
             {
                 float fade = Utils.GetLerpValue(0, Owner.itemAnimationMax, shootingTimer, true);
-                Main.EntitySpriteDraw(texture, drawPosition + (Main.rand.NextVector2Circular(12, 12) * fade), null, staticEffectsColor with { A = 0 } * fade, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 5 * fade;
+                    Main.spriteBatch.Draw(texture, drawPosition + drawOffset, null, staticEffectsColor with { A = 0 } * fade, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite, 0f);
+                }
             }
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
             Main.EntitySpriteDraw(texture2, drawPosition, null, Color.White, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);

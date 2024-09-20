@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             if (Projectile.Center.Y > Owner.Calamity().mouseWorld.Y)
                 Projectile.tileCollide = true;
 
@@ -42,10 +43,10 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.velocity *= 1.005f;
 
-            if (Projectile.timeLeft % 3 == 0)
+            if (Projectile.timeLeft % 2 == 0 && targetDist < 1400)
             {
-                LineParticle spark2 = new LineParticle(Projectile.Center - Projectile.velocity * 3, -Projectile.velocity * 0.05f, false, 5, 1.6f, effectsColor);
-                GeneralParticleHandler.SpawnParticle(spark2);
+                Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 5, 0.06f, effectsColor * 0.65f, new Vector2(1, 0.3f), true, false, 1.5f);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
             else
             {
