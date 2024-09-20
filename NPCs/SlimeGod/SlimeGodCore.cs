@@ -571,7 +571,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 flySpeed *= 1.3f;
 
             Vector2 flyDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
-            Vector2 flyDestination = GetFlyDestination(player, aggressionLevel == 3);
+            Vector2 flyDestination = aggressionLevel >= 3 ? player.Center : GetFlyDestination(player);
             Vector2 idealVelocity = (flyDestination - flyDirection).SafeNormalize(Vector2.UnitY) * flySpeed;
 
             float distanceFromFlyDestination = NPC.Distance(flyDestination);
@@ -622,7 +622,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.rotation = NPC.velocity.X * 0.05f;
         }
 
-        public Vector2 GetFlyDestination(Player target, bool targetPlayer)
+        public Vector2 GetFlyDestination(Player target)
         {
             // Find all large slimes in the world.
             // If multiple slimes are present, and they are all relatively close together, try to stay in their general area.
@@ -652,7 +652,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // If no slimes were found, don't bother doing any more calculations. Just use the player's center.
-            if (largeSlimes.Count <= 0 || targetPlayer)
+            if (largeSlimes.Count <= 0)
                 return target.Center;
 
             // Find the closest slime.
