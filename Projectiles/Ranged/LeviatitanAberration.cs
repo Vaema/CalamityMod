@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -21,10 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 40;
@@ -35,13 +33,12 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
-            Projectile.extraUpdates = 1;
             AIType = ProjectileID.Bullet;
         }
 
         public override void AI()
         {
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 150f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 16f, 8f);
 
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
@@ -56,33 +53,23 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame = 0;
             }
+            for (int i = 0; i < 3; i++)
+            {
+                int bloodDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height / 2, DustID.Blood, 0f, 0f, 100, default, 1f);
+                Main.dust[bloodDust].noGravity = true;
+                Main.dust[bloodDust].velocity *= 0.5f;
+                Main.dust[bloodDust].velocity += Projectile.velocity * 0.1f;
+            }
         }
         public override void OnSpawn(IEntitySource source)
         {
-            int dustAmt = 36;
-            for (int dustIndex = 0; dustIndex < dustAmt; dustIndex++)
+            for (int i = 0; i < 36; i++)
             {
-                int randomDust = Utils.SelectRandom(Main.rand, new int[]
-                {
-                        33,
-                        89
-                });
-                Vector2 direction = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
-                direction = direction.RotatedBy((double)((dustIndex - (dustAmt / 2f - 1f)) * MathHelper.TwoPi / dustAmt), default) + Projectile.Center;
-                Vector2 dustVel = direction - Projectile.Center;
-                int water = Dust.NewDust(direction + dustVel, 0, 0, randomDust, dustVel.X * 1.75f, dustVel.Y * 1.75f, 100, default, 1.1f);
-                Main.dust[water].noGravity = true;
-                Main.dust[water].velocity = dustVel;
+                Dust minion = Dust.NewDustPerfect(Projectile.Center, DustID.MoonBoulder);
+                minion.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 9f;
+                minion.scale = Main.rand.NextFloat(1.4f, 1.6f);
+                minion.noGravity = true;
             }
-            Particle shootPulse = new DirectionalPulseRing(Projectile.Center,
-            Vector2.Zero,
-            Color.LimeGreen * 0.7f,
-            new Vector2(0.5f, 1f),
-            Projectile.rotation,
-            0.1f,
-            0.4f,
-            20);
-            GeneralParticleHandler.SpawnParticle(shootPulse);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
