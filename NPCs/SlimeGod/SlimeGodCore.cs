@@ -220,6 +220,22 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
+            // Used to gauge how aggressive the core is, based on Paladins alive
+            // Stay near the Paladins and do nothing else at level 0
+            // Fire projectiles at level 1
+            // Charge at level 2
+            // Follow the player around instead of the Paladins at level 3
+            int aggressionLevel = 0;
+            if (!NPC.AnyNPCs(ModContent.NPCType<EbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<CrimulanPaladin>()))
+            {
+                aggressionLevel = 1;
+                int splitPaladinCount = NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) + NPC.CountNPCS(ModContent.NPCType<SplitCrimulanPaladin>());
+                if (splitPaladinCount < 3)
+                    aggressionLevel = 3;
+                else if (splitPaladinCount < 4)
+                    aggressionLevel = 2;
+            }
+
             // Enrage based on large slimes
             bool purpleSlimeAlive = false;
             bool redSlimeAlive = false;
@@ -502,11 +518,12 @@ namespace CalamityMod.NPCs.SlimeGod
             // Avoid cheap bullshit
             NPC.damage = 0;
 
-            if (expertMode)
+            if (expertMode && aggressionLevel >= 1)
             {
                 float divisor = bossRush ? 90f : death ? 180f : revenge ? 240f : 300f;
+                divisor -= (aggressionLevel - 1) * 20f;
                 if (phase2)
-                    divisor /= 2;
+                    divisor *= 0.5f;
 
                 if (calamityGlobalNPC.newAI[2] % divisor == 0f)
                 {
@@ -515,7 +532,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         if (Main.rand.NextBool())
                         {
-                            float projectileVelocity = 4f;
+                            float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                             int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
@@ -523,7 +540,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         }
                         else
                         {
-                            float projectileVelocity = 8f;
+                            float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
                             int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
@@ -540,6 +557,7 @@ namespace CalamityMod.NPCs.SlimeGod
             buffedSlime = 0;
 
             float flySpeed = death ? 15f : revenge ? 13.5f : expertMode ? 12f : 9f;
+            flySpeed += aggressionLevel;
             if (phase2)
                 flySpeed *= 1.25f;
             if (bossRush)
@@ -548,46 +566,58 @@ namespace CalamityMod.NPCs.SlimeGod
                 flySpeed *= 1.25f;
 
             Vector2 flyDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
-            Vector2 flyDestination = GetFlyDestination(player);
+            Vector2 flyDestination = GetFlyDestination(player, aggressionLevel == 3);
             Vector2 idealVelocity = (flyDestination - flyDirection).SafeNormalize(Vector2.UnitY) * flySpeed;
 
             float distanceFromFlyDestination = NPC.Distance(flyDestination);
 
-            NPC.ai[0] -= 1f;
-            if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
+            if (aggressionLevel >= 2)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
+                NPC.ai[0] -= 1f;
+                if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
+                {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
 
-                if (distanceFromFlyDestination < 200f)
-                    NPC.ai[0] = 20f;
+                    if (distanceFromFlyDestination < 200f)
+                        NPC.ai[0] = 20f;
 
-                if (NPC.velocity.X < 0f)
-                    NPC.direction = -1;
-                else
-                    NPC.direction = 1;
+                    if (NPC.velocity.X < 0f)
+                        NPC.direction = -1;
+                    else
+                        NPC.direction = 1;
 
-                NPC.rotation += NPC.direction * 0.3f;
+                    NPC.rotation += NPC.direction * 0.3f;
 
-                return;
+                    return;
+                }
             }
 
-            float inertia = 50f;
-            if (Main.getGoodWorld)
-                inertia *= 0.8f;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                inertia -= Main.rand.Next(31);
+            if (distanceFromFlyDestination < 150f && aggressionLevel < 2)
+            {
+                if (NPC.velocity.Length() > flySpeed * 0.2f)
+                    NPC.velocity *= 0.9f;
+            }
+            else
+            {
+                float inertia = 50f;
+                inertia -= aggressionLevel * 3f;
+                if (Main.getGoodWorld)
+                    inertia *= 0.8f;
+                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                    inertia *= Main.rand.NextFloat(0.2f, 1f);
 
-            NPC.velocity = (NPC.velocity * inertia + idealVelocity) / (inertia + 1f);
-            if (distanceFromFlyDestination < 350f)
-                NPC.velocity = (NPC.velocity * 10f + idealVelocity) / 11f;
-            if (distanceFromFlyDestination < 300f)
-                NPC.velocity = (NPC.velocity * 7f + idealVelocity) / 8f;
+                NPC.velocity = (NPC.velocity * inertia + idealVelocity) / (inertia + 1f);
+                if (distanceFromFlyDestination < 350f)
+                    NPC.velocity = (NPC.velocity * 10f + idealVelocity) / 11f;
+                if (distanceFromFlyDestination < 300f)
+                    NPC.velocity = (NPC.velocity * 7f + idealVelocity) / 8f;
+            }
 
             NPC.rotation = NPC.velocity.X * 0.05f;
         }
 
-        public Vector2 GetFlyDestination(Player target)
+        public Vector2 GetFlyDestination(Player target, bool targetPlayer)
         {
             // Find all large slimes in the world.
             // If multiple slimes are present, and they are all relatively close together, try to stay in their general area.
@@ -617,7 +647,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // If no slimes were found, don't bother doing any more calculations. Just use the player's center.
-            if (largeSlimes.Count <= 0)
+            if (largeSlimes.Count <= 0 || targetPlayer)
                 return target.Center;
 
             // Find the closest slime.
