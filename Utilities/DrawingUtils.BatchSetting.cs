@@ -19,28 +19,28 @@ namespace CalamityMod
             BlendState.AlphaBlend,
             SamplerState.PointClamp,
             DepthStencilState.None,
-            RasterizerState.CullCounterClockwise
+            rasterizer: null
         );
 
         public static readonly BatchSetting Additive = new(
             BlendState.Additive,
             SamplerState.PointClamp,
             DepthStencilState.None,
-            RasterizerState.CullCounterClockwise
+            rasterizer: null
         );
 
         public static readonly BatchSetting NonPremultiplied = new(
             BlendState.NonPremultiplied,
             SamplerState.PointClamp,
             DepthStencilState.None,
-            RasterizerState.CullCounterClockwise
+            rasterizer: null
         );
 
         public static readonly BatchSetting Opaque = new(
             BlendState.Opaque,
             SamplerState.PointClamp,
             DepthStencilState.None,
-            RasterizerState.CullCounterClockwise
+            rasterizer: null
         );
     }
 }
