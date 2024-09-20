@@ -28,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item83;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BabyBloodCrawler>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
             // This doesn't do anything, it's just so the item is held like a staff.
