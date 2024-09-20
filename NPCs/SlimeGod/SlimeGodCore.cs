@@ -240,46 +240,8 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Enrage based on large slimes
-            bool purpleSlimeAlive = false;
-            bool redSlimeAlive = false;
-
-            if (CalamityGlobalNPC.slimeGodPurple != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
-                {
-                    if (buffedSlime == 1)
-                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 1f;
-                    else
-                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 0f;
-
-                    calamityGlobalNPC.newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
-                    calamityGlobalNPC.newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
-
-                    // Despawn check
-                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
-
-                    purpleSlimeAlive = true;
-                }
-            }
-
-            if (CalamityGlobalNPC.slimeGodRed != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
-                {
-                    if (buffedSlime == 2)
-                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 1f;
-                    else
-                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 0f;
-
-                    NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
-                    NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
-
-                    // Despawn check
-                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
-
-                    redSlimeAlive = true;
-                }
-            }
+            bool purpleSlimeAlive = EbonianPaladinAlive(NPC);
+            bool redSlimeAlive = CrimulanPaladinAlive(NPC);
 
             // Start shooting blobs more often, move faster and buff large slimes more often if one type of large slime is dead
             bool phase2 = !purpleSlimeAlive || !redSlimeAlive;
@@ -700,7 +662,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Color drawColorAlpha = buffedSlime != 0f ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
+            Color drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 
@@ -763,7 +725,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Reset the color
-            drawColorAlpha = NPC.GetAlpha(drawColor);
+            drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
 
             // Draw the base texture
             spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
