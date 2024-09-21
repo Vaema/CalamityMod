@@ -192,21 +192,22 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
-            foreach (var renderer in RenderersToDrawThisFrame)
+            var matrix = Main.GameViewMatrix.TransformationMatrix;
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, matrix, () =>
             {
-                if (!Targets.TryGetValue(renderer, out var target))
-                    continue;
+                foreach (var renderer in RenderersToDrawThisFrame)
+                {
+                    if (!Targets.TryGetValue(renderer, out var target))
+                        continue;
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
+                    // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
+                    if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeShader))
+                        dyeShader?.Apply(null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
 
-                // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
-                if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeShader))
-                    dyeShader?.Apply(null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
-
-                // Draw the assosiated target that has been drawn to.
-                spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
-            }
+                    // Draw the assosiated target that has been drawn to.
+                    spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
+                }
+            });
         }
         #endregion
     }
