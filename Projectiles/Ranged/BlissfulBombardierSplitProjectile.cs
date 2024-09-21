@@ -54,6 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.35f, 0.55f);
                 dust.color = effectsColor;
+                dust.noLightEmittence = true;
             }
         }
 
@@ -95,6 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(1.85f, 2.45f) * blastRadius * 0.08f;
                 dust.color = Color.Goldenrod;
+                dust.noLightEmittence = true;
             }
         }
         public override bool PreDraw(ref Color lightColor)

@@ -106,6 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.8f, 2.3f));
                         dust.noGravity = true;
                         dust.color = effectsColor;
+                        dust.noLightEmittence = true;
                     }
                     else
                     {

@@ -180,6 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
                 c.scale = Main.rand.NextFloat(0.3f, 0.6f) * blastRadius * 0.3f * (i % 2 == 0 ? 2.2f : 1.8f);
                 c.noGravity = true;
                 c.color = effectsColor;
+                c.noLightEmittence = true;
             }
             for (int i = 0; i < 25; i++)
             {

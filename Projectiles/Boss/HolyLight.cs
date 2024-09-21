@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -31,12 +32,15 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnSpawn(IEntitySource source)
         {
-            SoundStyle soundStyle = SoundID.DD2_WitherBeastCrystalImpact;
-            soundStyle.MaxInstances = 10;
-            SoundEngine.PlaySound(soundStyle, Projectile.Center);
+            if (Projectile.ai[2] == 0)
+            {
+                SoundStyle soundStyle = SoundID.DD2_WitherBeastCrystalImpact;
+                soundStyle.MaxInstances = 10;
+                SoundEngine.PlaySound(soundStyle, Projectile.Center);
 
-            Color col = new Color(54, 209, 54);
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, col, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(4f, 7f), 1.5f), Vector2.Zero.AngleTo(Projectile.velocity), 1f, 0f, 30));
+                Color col = new Color(54, 209, 54);
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, col, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(4f, 7f), 1.5f), Vector2.Zero.AngleTo(Projectile.velocity), 1f, 0f, 30));
+            }
         }
 
         public override void AI()
@@ -75,9 +79,9 @@ namespace CalamityMod.Projectiles.Boss
 
             Color col = new Color(54, 209, 54);
 
-            GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity, false, 25, 1f, col);
 
-            GeneralParticleHandler.SpawnParticle(p);
+            Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.8f, false, 5, 0.06f, col * 0.85f, new Vector2(1, 0.3f), true, false, 1.5f);
+            GeneralParticleHandler.SpawnParticle(spark);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -118,32 +122,16 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 40;
-            Projectile.height = 40;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            for (int i = 0; i < 5; i++)
+            SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.3f, Volume = 0.7f }, Projectile.Center);
+            SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
+            SoundEngine.PlaySound(fireHeal with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
+            for (int i = 0; i < 15; i++)
             {
-                int holyYellow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
-                Main.dust[holyYellow].velocity *= 3f;
-                Main.dust[holyYellow].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyYellow].scale = 0.5f;
-                    Main.dust[holyYellow].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int j = 0; j < 8; j++)
-            {
-                int holyYellow2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PlatinumCoin, 0f, 0f, 100, default, 3f);
-                Main.dust[holyYellow2].noGravity = true;
-                Main.dust[holyYellow2].velocity *= 5f;
-                holyYellow2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
-                Main.dust[holyYellow2].velocity *= 2f;
-                Main.dust[holyYellow2].noGravity = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), ((new Vector2(7, 7) * Projectile.scale).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f)));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.75f, 1.05f);
+                dust.color = new Color(54, 209, 54);
+                dust.noLightEmittence = true;
             }
         }
     }
