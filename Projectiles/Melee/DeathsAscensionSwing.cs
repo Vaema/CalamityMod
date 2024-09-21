@@ -171,9 +171,9 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.ai[2] <= 0 && Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<DeathsAscensionRift>()] < 4)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(48, 48), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(48, 48), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner, ai1: Main.rand.NextFloat(0, 3f));
                 SoundEngine.PlaySound(SoundID.Item165 with { Pitch = -1 }, Projectile.Center);
-                Projectile.ai[2] = 20;
+                Projectile.ai[2] = 40;
                 float screenShakePower = 3 * Utils.GetLerpValue(1300f, 0f, target.Distance(Main.LocalPlayer.Center), true);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;

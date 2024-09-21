@@ -50,15 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
             {
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(0.05f) * Projectile.velocity.Length();
-                Projectile.ai[2]--;
-            }
-
-            // Rift scythes cant pierce once when they start homing
-            if (Projectile.ai[2] == 1)
-            {
-                Projectile.penetrate = 1;
-                Projectile.localNPCHitCooldown = 1;
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(0.1f) * 20;
             }
         }
 

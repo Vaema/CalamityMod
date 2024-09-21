@@ -86,6 +86,12 @@ namespace CalamityMod.Items.Weapons.Melee
                     float SpeedY = velocity.Y + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
                     Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI);
                 }
+
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == ModContent.ProjectileType<DeathsAscensionRift>() && p.owner == player.whoAmI)
+                        p.ai[0] = 1f;
+                }
             }
             else
             {

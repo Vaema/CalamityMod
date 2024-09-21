@@ -337,9 +337,10 @@ DeathsAscension: {
 	DisplayName: Death's Ascension
 	Tooltip:
 		'''
-		Performs powerful soul-infused swings that create rifts on enemy hits which spew out swirls of scythes
-		Up to 4 rifts can exist at once
+		Performs powerful soul-infused swings that create up to 4 rifts on enemy hits
 		Press <right> to launch a barrage of homing scythes
+		All active rifts will fire scythes along with you
+		Rift scythes orbit the rift when enemies are near and home when enemies are far
 		'It feels just right in your grip...
 		[c/660066:But the hands that wield it are not yours']
 		'''
