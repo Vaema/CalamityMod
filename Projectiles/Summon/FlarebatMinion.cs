@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[0]++;
             }
 
-            CurrentBehavior?.Invoke();
+            CurrentBehavior.Invoke();
             Projectile.rotation = Projectile.rotation.AngleTowards(MathHelper.ToRadians(Projectile.velocity.X * 3f), 0.2f);
             Projectile.spriteDirection = MathF.Sign(Projectile.velocity.X);
 
@@ -92,8 +92,6 @@ namespace CalamityMod.Projectiles.Summon
 
                 Lighting.AddLight(Projectile.Center, Color.OrangeRed.ToVector3() * 0.5f);
             }
-
-            Main.NewText(MinionIndex);
         }
 
         private void IdleBehavior()
@@ -209,13 +207,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(MinionIndex);
+            writer.Write7BitEncodedInt(MinionIndex);
             writer.Write((byte)AttackState);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            MinionIndex = reader.ReadInt32();
+            MinionIndex = reader.Read7BitEncodedInt();
             AttackState = (AttackBehaviorFlags)reader.ReadByte();
         }
 
