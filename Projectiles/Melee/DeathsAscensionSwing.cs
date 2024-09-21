@@ -1,6 +1,4 @@
-﻿using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
+﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -157,7 +155,8 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 origin = texture.Size() / new Vector2(2f, 6f) * 0.5f;
             Rectangle frame = texture.Frame(2, 6, frameX, frameY);
             SpriteEffects spriteEffects = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Main.EntitySpriteDraw(texture, position, frame, lightColor, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+            Color playerPos = Lighting.GetColor(Main.LocalPlayer.position.ToTileCoordinates());
+            Main.EntitySpriteDraw(texture, position, frame, playerPos, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
             Main.EntitySpriteDraw(glowTexture.Value, position, frame, Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
             return false;
         }
@@ -169,9 +168,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.ai[2] <= 0 && Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<DeathsAscensionRift>()] < 4)
+            int maxRifts = 1;
+            if (Projectile.ai[2] <= 0 && Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<DeathsAscensionRift>()] < maxRifts)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(48, 48), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner, ai1: Main.rand.NextFloat(0, 3f));
+                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(28, 28), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner, ai1: Main.rand.NextFloat(0, 3f));
+                Main.projectile[p].rotation = Main.rand.NextFloat(-MathHelper.TwoPi, MathHelper.TwoPi);
                 SoundEngine.PlaySound(SoundID.Item165 with { Pitch = -1 }, Projectile.Center);
                 Projectile.ai[2] = 40;
                 float screenShakePower = 3 * Utils.GetLerpValue(1300f, 0f, target.Distance(Main.LocalPlayer.Center), true);
