@@ -8,8 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.GameContent.Biomes;
 using Terraria.ID;
+using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Summon
@@ -25,12 +25,6 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreHardmodeMinionTileVision => true;
 
         public override int AnimationFrames => 8;
-
-        private bool SyncedOnSpawn
-        {
-            get => Projectile.ai[0] == 1f;
-            set => Projectile.ai[0] = value.ToInt();
-        }
 
         private Vector2 IdlePosition => Owner.MountedCenter +
             -Vector2.UnitY.RotatedBy(MathHelper.ToRadians(15f) * (Owner.ownedProjectileCounts[Type] + Owner.ownedProjectileCounts[ProjectileType<FlarebatMinion>()] - 1) - MathHelper.ToRadians(30f) * MinionIndex) * 80f;
@@ -60,12 +54,26 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void MinionAI()
         {
-            if (!SyncedOnSpawn)
+            if (Projectile.ai[0] == 0f)
             {
                 CurrentBehavior = IdleBehavior;
                 FramesUntilNextAnimationFrame = 3;
-                SyncedOnSpawn = true;
-                Projectile.netUpdate = true;
+
+                int minionIndex = 0;
+                foreach (var proj in Main.ActiveProjectiles)
+                {
+                    if ((proj.type != Type && proj.type != ProjectileType<FlarebatMinion>()) || proj.owner != Projectile.owner)
+                        continue;
+
+                    if (proj.type == Type)
+                        MinionIndex = minionIndex;
+                    else
+                        proj.ModProjectile<FlarebatMinion>().MinionIndex = minionIndex;
+
+                    minionIndex++;
+                }
+
+                Projectile.ai[0]++;
             }
 
             CurrentBehavior.Invoke();

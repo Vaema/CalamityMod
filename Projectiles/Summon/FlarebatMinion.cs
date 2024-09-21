@@ -26,12 +26,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override int AnimationFrames => 8;
 
-        private bool SyncedOnSpawn
-        {
-            get => Projectile.ai[0] == 1f;
-            set => Projectile.ai[0] = value.ToInt();
-        }
-
         private Vector2 IdlePosition => Owner.MountedCenter +
             -Vector2.UnitY.RotatedBy(MathHelper.ToRadians(15f) * (Owner.ownedProjectileCounts[Type] + Owner.ownedProjectileCounts[ProjectileType<FrostbatMinion>()] - 1) - MathHelper.ToRadians(30f) * MinionIndex) * 80f;
 
@@ -60,15 +54,29 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void MinionAI()
         {
-            if (!SyncedOnSpawn)
+            if (Projectile.ai[0] == 0f)
             {
                 CurrentBehavior = IdleBehavior;
                 FramesUntilNextAnimationFrame = 3;
-                SyncedOnSpawn = true;
-                Projectile.netUpdate = true;
+
+                int minionIndex = 0;
+                foreach (var proj in Main.ActiveProjectiles)
+                {
+                    if ((proj.type != Type && proj.type != ProjectileType<FrostbatMinion>()) || proj.owner != Projectile.owner)
+                        continue;
+
+                    if (proj.type == Type)
+                        MinionIndex = minionIndex;
+                    else
+                        proj.ModProjectile<FrostbatMinion>().MinionIndex = minionIndex;
+
+                    minionIndex++;
+                }
+
+                Projectile.ai[0]++;
             }
 
-            CurrentBehavior.Invoke();
+            CurrentBehavior?.Invoke();
             Projectile.rotation = Projectile.rotation.AngleTowards(MathHelper.ToRadians(Projectile.velocity.X * 3f), 0.2f);
             Projectile.spriteDirection = MathF.Sign(Projectile.velocity.X);
 
@@ -85,6 +93,7 @@ namespace CalamityMod.Projectiles.Summon
                 Lighting.AddLight(Projectile.Center, Color.OrangeRed.ToVector3() * 0.5f);
             }
 
+            Main.NewText(MinionIndex);
         }
 
         private void IdleBehavior()
@@ -200,13 +209,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write7BitEncodedInt(MinionIndex);
+            writer.Write(MinionIndex);
             writer.Write((byte)AttackState);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            MinionIndex = reader.Read7BitEncodedInt();
+            MinionIndex = reader.ReadInt32();
             AttackState = (AttackBehaviorFlags)reader.ReadByte();
         }
 
