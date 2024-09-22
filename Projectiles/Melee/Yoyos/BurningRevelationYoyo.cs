@@ -24,6 +24,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public bool firing = false;
         public NPC targeted;
         public float fade = 0;
+        public int hitCooldown = 0;
+
+        public float yoyoPower = 0;
+        public int yoyoPowerMax = 1000;
 
         public bool cloneYoyo = false;
         public bool setCloneDamage = false;
@@ -44,11 +48,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.width = 30;
             Projectile.height = 32;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
             Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10 * MaxUpdates;
+            Projectile.localNPCHitCooldown = 18 * MaxUpdates;
         }
 
         public override void AI()
@@ -72,24 +77,28 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             }
             if (!setCloneDamage && cloneYoyo)
             {
-                // Since the effects of the yoyo itself are nerfed if it's a clone, it gets a damage bonus to compensate a bit
-                Projectile.damage = (int)(Projectile.damage * 1.2f);
+                // Since the effects of the yoyo itself are nerfed if it's a clone, it gets a small damage bonus to compensate a bit
+                Projectile.damage = (int)(Projectile.damage * 1.1f);
                 setCloneDamage = true;
             }
             Player Owner = Main.player[Projectile.owner];
 
             Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3() * 0.9f);
 
-            fade = MathHelper.Lerp(fade, (firing ? 1 : 0), 0.02f);
+            // Fading in and out for various visuals
+            fade = MathHelper.Lerp(fade, (firing ? 1 : 0), 0.03f);
+
             if (firing)
             {
                 if (targeted == null || targeted.life <= 0)
                     targeted = Projectile.Center.ClosestNPCAt(600);
 
-                if (timer % (cloneYoyo ? 15 : 10) == 0) // Fire Holy Stars
+                if (timer % (cloneYoyo ? 20 : 10) == 0) // Fire Holy Stars
                 {
+                    int stardamage = (int)(Projectile.damage * 0.12f);
+
                     Vector2 vel = new Vector2(0, 10).RotatedBy(timer * 0.025f * (cloneYoyo ? -1 : 1));
-                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
+                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
                     damageStar.extraUpdates = 1;
                     damageStar.scale = 0.6f;
                     Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
@@ -99,28 +108,38 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
                 }
+
+                // Technically scrapped because the weapon is complex enough, but we might want to use this in the future
+                /*
                 if (timer % 60 == 0) // Fire Heal Stars at player (slightly predictive)
                 {
-                    Vector2 vel = ((Projectile.Center - Owner.Center) + Owner.velocity * 5).SafeNormalize(Vector2.UnitX) * -10;
+                    Vector2 vel = ((Projectile.Center - Owner.Center) - Owner.velocity * 8).SafeNormalize(Vector2.UnitX) * -10;
                     Projectile healStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyLight>(), 0, Projectile.knockBack, Projectile.owner, 0, cloneYoyo ? 3 : 10, 5);
                     healStar.extraUpdates = 2;
                     SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                     SoundEngine.PlaySound(fireHeal with { Volume = 0.9f, Pitch = 0.3f }, Projectile.Center);
                 }
+                */
 
                 if (timer <= 0)
                 {
                     firing = false;
                     canDamage = true;
-                    Projectile.numHits = 0;
+                    yoyoPower = 0;
                 }
                 else
                     timer--;
-
-                Projectile.timeLeft = 60;
             }
             else
             {
+                if (yoyoPower >= yoyoPowerMax)
+                {
+                    SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay");
+                    SoundEngine.PlaySound(fireHeal with { Volume = 0.9f, Pitch = 0.3f }, Projectile.Center);
+                    canDamage = false;
+                    firing = true;
+                    timer = 240;
+                }
                 if (Main.rand.NextBool(7))
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), ((new Vector2(4, 4)).RotatedByRandom(100) + Projectile.velocity) * Main.rand.NextFloat(0.2f, 1f));
@@ -129,7 +148,11 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
                     dust.noLightEmittence = true;
                 }
+                yoyoPower++;
             }
+
+            if (hitCooldown > 0)
+                hitCooldown--;
 
             if ((Projectile.Center - Main.player[Projectile.owner].Center).Length() > 3200f && !firing) // 200 blocks
                 Projectile.Kill();
@@ -137,47 +160,48 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.numHits >= 9)
+            if (hitCooldown == 0)
             {
+                hitCooldown = Projectile.localNPCHitCooldown;
+
                 targeted = target;
-                canDamage = false;
-                firing = true;
-                timer = 240;
-            }
+                yoyoPower += 15;
 
-            // Create Explosion
-            if (Projectile.owner == Main.myPlayer)
-            {
-                float power = Utils.GetLerpValue(-5, 10, Projectile.numHits, true);
-
-                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner, power);
-                if (proj.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
-
-                for (int i = 0; i < (int)(30 * power); i++)
+                // Create Explosion
+                if (Projectile.owner == Main.myPlayer)
                 {
-                    bool isSpark = Main.rand.NextBool(5);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(1.85f, 2.15f) * power * (isSpark ? 0.5f : 1);
-                    dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
-                    if (isSpark)
-                        dust.noGravity = false;
-                    else
-                        dust.noLightEmittence = true;
+                    float power = Utils.GetLerpValue(-100, yoyoPowerMax, yoyoPower, true);
+
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, power);
+                    if (proj.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
+
+                    for (int i = 0; i < (int)(30 * power); i++)
+                    {
+                        bool isSpark = Main.rand.NextBool(5);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(1.85f, 2.15f) * power * (isSpark ? 0.5f : 1);
+                        dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                        if (isSpark)
+                            dust.noGravity = false;
+                        else
+                            dust.noLightEmittence = true;
+                    }
+
+                    Particle orb1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.14f * power, 15);
+                    GeneralParticleHandler.SpawnParticle(orb1);
+
+                    Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Khaki, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 2.1f * power, 15);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+
+                    SoundStyle explode = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
+                    SoundEngine.PlaySound(explode with { Volume = 0.5f, Pitch = 0.3f * power }, Projectile.Center);
+                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
+                    SoundEngine.PlaySound(explode2 with { Volume = 0.7f, Pitch = 0.6f * power }, Projectile.Center);
                 }
-
-                Particle orb1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.14f * power, 15);
-                GeneralParticleHandler.SpawnParticle(orb1);
-
-                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Khaki, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 2.1f * power, 15);
-                GeneralParticleHandler.SpawnParticle(orb2);
-
-                SoundStyle explode = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
-                SoundEngine.PlaySound(explode with { Volume = 0.5f, Pitch = 0.3f * power }, Projectile.Center);
-                SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
-                SoundEngine.PlaySound(explode2 with { Volume = 0.7f, Pitch = 0.6f * power }, Projectile.Center);
             }
+            
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 480);
         }
         public override bool? CanDamage() => canDamage ? null : false;
@@ -189,9 +213,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
 
             // The back glow
+            float power = Utils.GetLerpValue(-100, yoyoPowerMax, yoyoPower, true);
             float randSize = Main.rand.NextFloat(0.9f, 1.1f);
-            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.Goldenrod with { A = 0 }, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.5f * randSize * (1 - fade), SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.3f * randSize * (1 - fade), SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.Goldenrod with { A = 0 }, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.65f * randSize * (1 - fade) * power, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.45f * randSize * (1 - fade) * power, SpriteEffects.None, 0);
 
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
@@ -200,10 +225,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 } * fade, lightColor, 4f * fade, texture);
 
             // The shine effect
-            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.Goldenrod with { A = 0 }, 0, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 3.25f * randSize * fade, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, 0, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 3.05f * randSize * fade, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.Goldenrod with { A = 0 }, MathHelper.PiOver2, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 3.25f * randSize * fade, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, MathHelper.PiOver2, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 3.05f * randSize * fade, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.Goldenrod with { A = 0 }, 0, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 4.25f * randSize * fade, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, 0, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 4.05f * randSize * fade, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.Goldenrod with { A = 0 }, MathHelper.PiOver2, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 4.25f * randSize * fade, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(shineTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, MathHelper.PiOver2, shineTexture.Size() * 0.5f, new Vector2(0.4f, 1f) * 4.05f * randSize * fade, SpriteEffects.None, 0);
 
             return false;
         }

@@ -54,6 +54,7 @@ BrinySpout.DisplayName: Briny Spout
 BrinyTyphoonBubble.DisplayName: Bubble
 BrokenBiomeBladeHoldout.DisplayName: Broken Biome Blade
 BurningMeteor.DisplayName: Meteor
+BurningRevelationBlast.DisplayName: Profaned Blast
 CatastropheClaymoreSparkle.DisplayName: Catastrophe Sparkle
 CausticEdgeProjectile.DisplayName: Caustic Edge
 ChainedMeatHook.DisplayName: Enchanted Meat Hook
@@ -299,4 +300,3 @@ WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
 FallenExplosionSmall.DisplayName: Fallen Hammer Blast
-BurningRevelationBlast.DisplayName: Burning Revelation Blast

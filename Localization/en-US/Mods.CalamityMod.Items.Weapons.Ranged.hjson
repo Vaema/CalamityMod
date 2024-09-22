@@ -188,7 +188,7 @@ BlissfulBombardier: {
 	Tooltip:
 		'''
 		Launches a large crystal missile into the sky which releases mini missiles before falling back down at your cursor
-		The crystal missile homes really fucking good but the little ones dont
+		The crystal missile have homing, the little ones dont, I cant be bothered to tooltip rn
 		'''
 }
 

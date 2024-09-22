@@ -66,19 +66,21 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Projectile.ai[2] != -1 && time > 20)
                 {
                     NPC targeted = Projectile.ai[2] == -1 ? null : Main.npc[(int)Projectile.ai[2]];
-                    if (targeted.life <= 0)
+                    if (targeted != null && targeted.life <= 0)
                         targeted = null;
                     else
                         Projectile.timeLeft++;
-
-                    Vector2 moveToTrackingPos = ((targeted != null ? targeted.Center : Owner.Center) - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 12 + (8 * Utils.GetLerpValue(60, 120, time, true)))
-                        Projectile.velocity += moveToTrackingPos * (0.8f + (4 * Utils.GetLerpValue(60, 120, time, true)));
-                    else
-                        Projectile.velocity *= 0.9f;
+                    if (targeted != null)
+                    {
+                        Vector2 moveToTrackingPos = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        if (Projectile.velocity.Length() < 12 + (8 * Utils.GetLerpValue(60, 120, time, true)))
+                            Projectile.velocity += moveToTrackingPos * (0.6f + (4 * Utils.GetLerpValue(60, 120, time, true)));
+                        else
+                            Projectile.velocity *= 0.9f;
+                    }
                 }
                 if (Projectile.scale < 1)
-                    Projectile.scale += 0.0033f;
+                    Projectile.scale += 0.0035f;
                 if (Projectile.scale >= 1 && !reachedMaxDamage)
                 {
                     Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.5f, 8);
@@ -167,7 +169,7 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(orb3);
 
                 // Sub projectiles spawning sub explosions... yea it needs armor pen
-                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0.75f);
+                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
                 explo.ArmorPenetration = 30;
             }
         }

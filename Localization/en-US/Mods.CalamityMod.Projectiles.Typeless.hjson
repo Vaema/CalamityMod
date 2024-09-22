@@ -68,6 +68,7 @@ GreenLabSeeker.DisplayName: Seeking Mechanism
 HeronBobber.DisplayName: Heron Bobber
 HideOfAstrumDeusExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
+HolyStarDamage.DisplayName: Holy Star
 HydrothermalSmoke.DisplayName: Smoke
 HydrothermicFlare.DisplayName: Hydrothermic Flare
 HydrothermicFlareRogue.DisplayName: Hydrothermic Flare
@@ -134,4 +135,3 @@ WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
-HolyStarDamage.DisplayName: Holy Star Damage
