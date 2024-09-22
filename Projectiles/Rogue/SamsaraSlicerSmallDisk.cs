@@ -9,6 +9,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         private double rotation = 0;
+        public Projectile Parent = null;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
@@ -19,78 +20,51 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.width = 40;
             Projectile.height = 40;
-            Projectile.alpha = 75;
             Projectile.ignoreWater = true;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.aiStyle = ProjAIStyleID.Boomerang;
-            Projectile.timeLeft = 60;
-            AIType = ProjectileID.WoodenBoomerang;
+            Projectile.aiStyle = -1;
+            Projectile.timeLeft = 200;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 6;
         }
 
         public override void AI()
         {
-            StealthStrikeAI();
-            LightingandDust();
-        }
-
-        private void StealthStrikeAI()
-        {
-            if (Projectile.aiStyle == 3)
-                return;
-
-            Projectile.rotation += 0.4f * Projectile.direction;
-
-            Projectile parent = Main.projectile[0];
-            bool active = false;
-            foreach (Projectile p in Main.ActiveProjectiles)
+            if (Projectile.Calamity().stealthStrike)
             {
-                if (p.identity == Projectile.ai[0] && p.type == ModContent.ProjectileType<SamsaraSlicerProjectile>())
+                Projectile.localNPCHitCooldown = 3;
+                Projectile.usesLocalNPCImmunity = true;
+            }
+
+            Projectile.ai[1]++;
+
+            Projectile.rotation += MathHelper.ToRadians(12f);
+
+            Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(8f));
+
+            float Vel = 15;
+            if (Projectile.Calamity().stealthStrike) Vel = 20;
+
+            float length = 10;
+            if (Projectile.Calamity().stealthStrike) length = 15;
+
+            if (Projectile.ai[1] > length && Parent != null)
+            {
+                Vel += (Projectile.ai[1] - length);
+
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.DirectionTo(Parent.Center) * Vel, Projectile.Calamity().stealthStrike ? 0.25f : 0.35f);
+
+                if (Projectile.Distance(Parent.Center) < Projectile.velocity.Length() + 3)
                 {
-                    parent = p;
-                    active = true;
-                    break;
+                    Projectile.Kill();
                 }
             }
-
-            if (active)
-            {
-                Vector2 vector = parent.Center - Projectile.Center;
-                Projectile.Center = parent.Center + new Vector2(80, 0).RotatedBy(rotation);
-                double rotateAmt = (double)Projectile.ai[1];
-                rotation += rotateAmt;
-                if (rotation >= 360)
-                {
-                    rotation = 0;
-                }
-                Projectile.velocity.X = (vector.X > 0f) ? -0.000001f : 0f;
-            }
-            else
-            {
-                Projectile.Kill();
-            }
-
-            if (!parent.active)
-            {
-                Projectile.Kill();
-            }
-        }
-
-        private void LightingandDust()
-        {
-            Lighting.AddLight(Projectile.Center, 0f, 0.75f, 0f);
-            if (!Main.rand.NextBool(5))
-                return;
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.velocity.X, Projectile.velocity.Y);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], new Color(0f, 1f, 0f, 0f), 2);
             return false;
         }
     }
