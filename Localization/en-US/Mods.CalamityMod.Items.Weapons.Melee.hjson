@@ -261,10 +261,10 @@ BurningRevelation: {
 	DisplayName: Burning Revelation
 	Tooltip:
 		'''
-A high IQ yoyo that charges power over time. hits create explosions scaling with power and greatly increase the charge.
-After reaching max charge the yoyo will discharge its charge as homing profaned stars that deal more damage the further they travel
-Stars with max damage explode for extra damage on hit
-An exceptionally agile yoyo that ignores tiles
+		A high IQ yoyo that charges power over time. hits create explosions scaling with power and greatly increase the charge.
+		After reaching max charge the yoyo will discharge its charge as homing profaned stars that deal more damage the further they travel
+		Stars with max damage explode for extra damage on hit
+		An exceptionally agile yoyo that ignores tiles
 		'''
 }
 

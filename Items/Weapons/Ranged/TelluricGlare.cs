@@ -2,6 +2,8 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,16 +12,17 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class TelluricGlare : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public int shots = 0;
         public override void SetDefaults()
         {
             Item.width = 54;
             Item.height = 92;
-            Item.damage = 216;
+            Item.damage = 108;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 5;
-            Item.useAnimation = 20;
-            Item.reuseDelay = 23;
-            Item.useLimitPerAnimation = 4;
+            Item.useTime = 2;
+            Item.useAnimation = 15;
+            Item.reuseDelay = 20;
+            Item.useLimitPerAnimation = 8;
             Item.knockBack = 7.5f;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -40,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             // Always fires Radiant Arrows regardless of ammo used
-            type = Item.shoot;
+            //type = Item.shoot;
 
             // The arrow appears from a random location "on the bow".
             // They are also moved backwards so that they have some time to build up past positions. This helps make them not appear out of thin air.
@@ -48,6 +51,21 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 offset = Vector2.Normalize(velocity.RotatedBy(MathHelper.PiOver2));
             position += offset * Main.rand.NextFloat(-19f, 19f);
             position -= 3f * velocity;
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            bool isHolyArrow = CalamityUtils.CheckWoodenAmmo(type, player);
+            if (isHolyArrow)
+                type = Item.shoot;
+            if (shots % 2 == 0)
+            {
+                SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
+                SoundEngine.PlaySound(sound with { Volume = 0.45f, Pitch = 1f }, player.Center);
+                type = Item.shoot;
+            }
+            Projectile.NewProjectile(source, position, velocity, type, (isHolyArrow ? (int)(damage * 1.2f) : damage), knockback, player.whoAmI);
+            shots++;
+            return false;
         }
     }
 }

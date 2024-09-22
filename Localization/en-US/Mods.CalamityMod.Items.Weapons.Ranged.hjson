@@ -1289,7 +1289,12 @@ Svantechnical: {
 
 TelluricGlare: {
 	DisplayName: Telluric Glare
-	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
+	Tooltip:
+'''
+Rapidly fires volleys of arrows
+Every other arrow is converted into radiant arrows
+Converts wooden arrows into colossal radiant arrows which pierce and deal increased damage
+'''
 }
 
 TheBallista: {
