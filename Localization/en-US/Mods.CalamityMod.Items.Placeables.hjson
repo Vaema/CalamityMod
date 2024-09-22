@@ -3857,3 +3857,8 @@ PyreMantleWall: {
 	DisplayName: Pyre Mantle Wall
 	Tooltip: ""
 }
+
+MediumSeaPrismCrystal: {
+	DisplayName: Medium Sea Prism Crystal
+	Tooltip: ""
+}
