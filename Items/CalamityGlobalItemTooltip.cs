@@ -1038,7 +1038,7 @@ namespace CalamityMod.Items
 
             // Lead
             if (item.type == ItemID.LeadHelmet || item.type == ItemID.LeadChainmail || item.type == ItemID.LeadGreaves)
-                AddTooltip("Increases damage reduction by 3%");
+                AddTooltip("Increases damage reduction by 2%");
 
             // Silver
             if (item.type == ItemID.SilverHelmet)
