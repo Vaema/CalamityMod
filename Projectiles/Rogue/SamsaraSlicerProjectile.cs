@@ -19,9 +19,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public float ReboundVelocity => 20;
         public float StealthReboundVelocity => 30;
+        public float StealthPauseTime => 55;
         public int ReboundTime => 20;
 
-        public int SmallDiskDamage => 12;
+        public int SmallDiskDamage => 8;
+        public int SmallDiskStealthDamage => 17;
 
         public bool initialized = false;
 
@@ -88,6 +90,19 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (Projectile.Distance(player.Center) < Projectile.velocity.Length() * 1.4f)
                     {
+                        for (int i = 0; i < Main.projectile.Length; i++)
+                        {
+                            Projectile proj = Main.projectile[i];
+
+                            if (proj.type == ModContent.ProjectileType<SamsaraSlicerSmallDisk>())
+                            {
+                                if ((proj.ModProjectile as SamsaraSlicerSmallDisk).Parent == Projectile)
+                                {
+                                    (Main.projectile[i].ModProjectile as SamsaraSlicerSmallDisk).Parent = null;
+                                }
+                            }
+                        }
+
                         Projectile.Kill();
                     }
                 }
@@ -103,8 +118,26 @@ namespace CalamityMod.Projectiles.Rogue
 
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot.WithPitchOffset(1f));
 
-                for (int i = 1; i <= 2; i++)
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, new Vector2(i == 1 ? 2 : 6, 0).RotatedBy(Projectile.velocity.ToRotation()), Color.LimeGreen, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Projectile.velocity.ToRotation(), 0.1f, 0.5f - (i * 0.1f), 20));
+
+                if (Projectile.Calamity().stealthStrike)
+                {
+                    SoundEngine.PlaySound(SoundID.Item122.WithPitchOffset(1f), Projectile.Center);
+
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, oldVelocity * MathHelper.Lerp(2f, 1f, (float)i / 3f) / 4, Color.LimeGreen, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.6f, 1f), oldVelocity.ToRotation(), 0.02f, 0.05f * i, 30));
+                    }
+
+                    for (int i = -10; i <= 20; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, new Vector2(i * 2, 0).RotatedBy(Projectile.velocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= 2; i++)
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, new Vector2(i == 1 ? 2 : 6, 0).RotatedBy(Projectile.velocity.ToRotation()), Color.LimeGreen, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Projectile.velocity.ToRotation(), 0.1f, 0.5f - (i * 0.1f), 20));
+                }
 
                 for (int i = 0; i <= 5; i++)
                     GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-10f, 10f)).RotatedBy(Projectile.velocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
@@ -125,6 +158,11 @@ namespace CalamityMod.Projectiles.Rogue
                 vel = new Vector2(18);
             }
 
+            if (Projectile.ai[2] > -150)
+            {
+                Projectile.ai[2]--;
+            }
+
             if (Projectile.ai[2] > 0)
             {
                 if (Projectile.ai[2] % 3 == 0)
@@ -135,10 +173,22 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i <= 2; i++)
                     GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center + new Vector2(25, 0).RotatedBy(oldVelocity.ToRotation()), new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-10f, 10f)).RotatedBy(oldVelocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
             }
-
+            
             if (Projectile.ai[2] > -150)
             {
-                Projectile.ai[2]--;
+                if (Projectile.Calamity().stealthStrike)
+                {
+                    float SpawnVel = 15;
+
+                    float g = Main.rand.NextFloat(360f);
+
+                    if (!Main.dedServ)
+                    {
+                        Projectile proj = Projectile.NewProjectileDirect(new EntitySource_Parent(Projectile), Projectile.Center, new Vector2(SpawnVel, 0).RotatedBy(MathHelper.ToRadians(g)),
+                        ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.Calamity().stealthStrike ? SmallDiskStealthDamage : SmallDiskDamage, 1f, Projectile.owner, Projectile.whoAmI);
+                        (proj.ModProjectile as SamsaraSlicerSmallDisk).Parent = Projectile;
+                    }
+                }
             }
 
             if (Projectile.ai[2] == 0)
@@ -176,7 +226,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.velocity != Vector2.Zero)
             {
@@ -196,13 +246,14 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[2] == -200)
             {
                 float lag = 20;
-                if (Projectile.Calamity().stealthStrike) lag = 40;
+                if (Projectile.Calamity().stealthStrike) lag = StealthPauseTime;
 
                 Projectile.ai[0] = lag;
                 Projectile.ai[2] = lag;
 
-                float g = 0f;
-                if (Main.rand.NextBool()) g = 45f;
+                Projectile.localNPCHitCooldown = (int)lag;
+
+                float g = Main.rand.NextFloat(360f);
 
                 g -= 15f;
 
@@ -215,12 +266,16 @@ namespace CalamityMod.Projectiles.Rogue
                     for (float i = g; i < g + 360f; i += Projectile.Calamity().stealthStrike ? 45f : 90f)
                     {
                         Projectile proj = Projectile.NewProjectileDirect(new EntitySource_Parent(Projectile), Projectile.Center, new Vector2(SpawnVel, 0).RotatedBy(MathHelper.ToRadians(i)),
-                            ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), SmallDiskDamage, 1f, Projectile.owner, Projectile.whoAmI);
+                            ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.Calamity().stealthStrike ? SmallDiskStealthDamage : SmallDiskDamage, 1f, Projectile.owner, Projectile.whoAmI);
                         (proj.ModProjectile as SamsaraSlicerSmallDisk).Parent = Projectile;
                         proj.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
                     }
                 }
             }
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
         }
 
         // Make it bounce on tiles.
