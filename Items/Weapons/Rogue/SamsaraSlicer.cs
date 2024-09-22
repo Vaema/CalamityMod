@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("TerraDisk")]
     public class SamsaraSlicer : RogueWeapon
     {
-        public static float Speed = 12f;
+        public static float Speed = 20f;
 
         public override void SetDefaults()
         {
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = SoundID.DD2_GoblinBomberThrow;
 
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = Speed;
         }
 
-        public override float StealthVelocityMultiplier => 0.75f;
+        public override float StealthVelocityMultiplier => 1.5f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
