@@ -20,7 +20,7 @@ AndroombaItem: {
 
 BabyCannonballJellyfishItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.BabyCannonballJellyfish.DisplayName}"
-	Tooltip: ""
+	Tooltip: "Can be fired out of cannons"
 }
 
 BabyFlakCrabItem: {

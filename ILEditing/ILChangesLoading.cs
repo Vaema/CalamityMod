@@ -86,6 +86,7 @@ namespace CalamityMod.ILEditing
             On_NPC.DoDeathEvents_CelebrateBossDeath += TripletsDefeatTextOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
+            On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
