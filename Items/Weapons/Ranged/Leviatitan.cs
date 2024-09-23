@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Build.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
