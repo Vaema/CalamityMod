@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
@@ -20,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
 {
     // TODO -- CANNOT RENAME this and True Biome Blade to "TrueBiomeBlade" and "BiomeBlade" internally without corrupting existing items
     // (Comment copied from an equivalent one on OmegaBiomeBlade from June 2022)
-    public class TrueBiomeBlade : ModItem, ILocalizedModType
+    public class TrueBiomeBlade : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;
@@ -36,7 +37,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int DefaultAttunement_BaseDamage = 105;
         public static int DefaultAttunement_SigilTime = 900;
         public static int DefaultAttunement_BeamTime = 90;
-        public static float DefaultAttunement_HomingAngle = MathHelper.PiOver4;
+        public static float DefaultAttunement_LungeDamageMult = 2f;
+        public static float DefaultAttunement_HomingAngle = MathHelper.Pi / 3f;
 
         public static int EvilAttunement_BaseDamage = 155;
         public static int EvilAttunement_Lifesteal = 2;
@@ -294,27 +296,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
             ComboResetTimer = 1f;
             return mainAttunement.Shoot(player, source, ref position, ref velocity.X, ref velocity.Y, ref type, ref damage, ref knockback, ref Combo, ref StoredLunges, ref PowerLungeCounter);
-        }
-
-
-        //This is only used for the purity sigil effect of the default attunement
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (mainAttunement == null || mainAttunement.id != AttunementID.TrueDefault || player.whoAmI != Main.myPlayer)
-                return;
-
-            foreach (Projectile proj in Main.projectile)
-            {
-                if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == player.whoAmI)
-                {
-                    //Reset the timeleft on the sigil & give it its new target (or the same, it doesnt matter really.
-                    proj.ai[0] = target.whoAmI;
-                    proj.timeLeft = DefaultAttunement_SigilTime;
-                    return;
-                }
-            }
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ProjectileType<PurityProjectionSigil>(), 0, 0, player.whoAmI, target.whoAmI);
         }
 
         internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);

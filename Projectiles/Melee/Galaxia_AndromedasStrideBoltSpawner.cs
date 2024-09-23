@@ -41,7 +41,14 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Constantly follow its target
-            Projectile.Center = Target.Center;
+            // Die if the target is no longer active
+            if (!Target.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+            else
+                Projectile.Center = Target.Center;
 
             // Spawn smoke
             if (Projectile.timeLeft < 59)
@@ -74,7 +81,6 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 starVel = (Projectile.Center - starPos).SafeNormalize(Vector2.UnitY) * 27f;
                         Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), starPos, starVel, ProjectileType<GalaxiaBolt>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, 0.75f, MathHelper.Pi / 20f);
                         star.scale = 2f;
-                        star.timeLeft = 100;
                     }
                 }
 

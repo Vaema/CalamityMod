@@ -198,16 +198,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.Center = Owner.Center + (direction * Projectile.scale * 10) + (direction * throwOutDistance * ThrowCurve());
                 Projectile.scale = (1 + Empowerment / maxEmpowerment * 1.5f) * MathHelper.Clamp(1 - retractionTimer, 0.3f, 1f);
-
-                if (snapTimer > 0f && snapTimer < 0.04f)
-                {
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, direction, ProjectileType<SwordsmithsPrideMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_MonolithDamageMult), Projectile.knockBack, Owner.whoAmI, Main.rand.Next(4), 1f, hasMadeChargeSound);
-                    if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
-                    {
-                        monolith.OriginDirection = direction;
-                        monolith.Facing = 0f;
-                    }
-                }
             }
 
             //Make the owner look like theyre holding the sword bla bla
@@ -221,6 +211,23 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<SwordsmithsPrideMonolith>()))
+            {
+                float monolithScale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+                Vector2 monolithDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10f);
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, monolithDirection, ProjectileType<SwordsmithsPrideMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_MonolithDamageMult), Projectile.knockBack, Owner.whoAmI, Main.rand.Next(4), 1f, hasMadeChargeSound);
+                if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
+                {
+                    monolith.Scale = monolithScale;
+                    monolith.OriginDirection = monolithDirection;
+                    monolith.Facing = 0f;
+                    monolith.Target = target;
+                }
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

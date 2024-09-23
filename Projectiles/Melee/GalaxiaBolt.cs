@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public ref float Hue => ref Projectile.ai[0];
         public ref float HomingStrenght => ref Projectile.ai[1];
+        public ref float ShouldDelayHoming => ref Projectile.ai[2];
 
         Particle Head;
 
@@ -56,7 +57,7 @@ namespace CalamityMod.Projectiles.Melee
             if (target == null)
                 target = Projectile.Center.ClosestNPCAt(812f, true);
 
-            else if (CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2) //Home in
+            else if (CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2 && (ShouldDelayHoming != 1f || Projectile.timeLeft < 60)) //Home in
             {
                 float idealDirection = Projectile.AngleTo(target.Center);
                 float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrenght);

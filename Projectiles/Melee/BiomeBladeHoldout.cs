@@ -117,25 +117,23 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(TrueBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert || Owner.Calamity().ZoneSunkenSea;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur || Owner.Calamity().ZoneAbyss;
-            bool heavenly = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
+            bool jungleAttune = Owner.ZoneJungle;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
+            bool heavenlyAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
             Attunement attunement = Attunement.attunementArray[(int)AttunementID.TrueDefault];
 
-            if (desert || hell)
+            if (hotAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.TrueHot];
-            if (snow)
+            if (coldAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.TrueCold];
-            if (jungle || ocean)
+            if (jungleAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.TrueTropical];
-            if (evil)
+            if (evilAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.TrueEvil];
-            if (heavenly)
+            if (heavenlyAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.Holy];
 
             //If the owner already had the attunement, break out of it (And unswap)

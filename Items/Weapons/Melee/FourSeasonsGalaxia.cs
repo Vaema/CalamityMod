@@ -86,9 +86,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 return;
 
             var effectDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[FUNC]") && x.Mod == "Terraria");
-            var passiveDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[PASS]") && x.Mod == "Terraria");
             var mainAttunementTooltip = list.FirstOrDefault(x => x.Text.Contains("[ATT]") && x.Mod == "Terraria");
-            var blessingTooltip = list.FirstOrDefault(x => x.Text.Contains("[BLE]") && x.Mod == "Terraria");
 
             //Default stuff gets skipped here. MainAttunement is set to true in SafeCheckAttunements() above
 
@@ -105,22 +103,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 effectDescTooltip.OverrideColor = mainAttunement.tooltipColor;
             }
 
-            if (passiveDescTooltip != null)
-            {
-                passiveDescTooltip.Text = mainAttunement.PassiveDesc.ToString();
-                passiveDescTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
-            }
-
             if (mainAttunementTooltip != null)
             {
                 mainAttunementTooltip.Text = mainAttunementTooltip.Text.Replace("ATT", mainAttunement.AttunementName.ToString());
                 mainAttunementTooltip.OverrideColor = Color.Lerp(mainAttunement.tooltipColor, mainAttunement.tooltipColor2, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
-            }
-
-            if (blessingTooltip != null)
-            {
-                blessingTooltip.Text = blessingTooltip.Text.Replace("BLE", mainAttunement.PassiveName.ToString());
-                blessingTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
             }
         }
         #endregion
@@ -222,15 +208,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
 
             SafeCheckAttunements();
-
             mainAttunement.ApplyStats(Item);
-
-            //Passive effects only jappen player side haha
-            if (player.whoAmI != Main.myPlayer)
-                return;
-
-            var source = player.GetSource_ItemUse(Item);
-            mainAttunement.PassiveEffect(player, source, ref UseTimer, ref OnHitProc);
 
             if (player.Calamity().mouseRight && CanUseItem(player) && player.whoAmI == Main.myPlayer && !Main.mapFullscreen)
             {
@@ -238,6 +216,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 if (Main.projectile.Any(n => n.active && n.type == ProjectileType<GalaxiaHoldout>() && n.owner == player.whoAmI))
                     return;
 
+                var source = player.GetSource_ItemUse(Item);
                 Projectile.NewProjectile(source, player.Top, Vector2.Zero, ProjectileType<GalaxiaHoldout>(), 0, 0, player.whoAmI, 0, Math.Sign(player.position.X - Main.MouseWorld.X));
             }
         }

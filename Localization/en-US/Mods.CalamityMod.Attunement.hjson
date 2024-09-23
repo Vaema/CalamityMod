@@ -1,7 +1,7 @@
 // Broken Biome Blade
 DefaultAttunement: {
 	Name: Pure Clarity
-	Function: Fires a weak projectile that crushes enemy defenses
+	Function: Fires a weak sword beam that crushes enemy defenses
 }
 
 HotAttunement: {
@@ -18,15 +18,6 @@ ColdAttunement: {
 	Function: Perform a 3 strike combo with a glacial blade, with the final strike freezing foes for a split second
 }
 
-TropicalAttunement: {
-	Name: Grovetender's Touch
-	Function:
-		'''
-		Throw out the blade on a vine whip, pulling you toward struck tiles
-		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
-		'''
-}
-
 EvilAttunement: {
 	Name: Decay's Retort
 	Function: Lunge forward with a ghostly rapier projection, bouncing away from struck targets and leeching their life
@@ -37,8 +28,9 @@ TrueDefaultAttunement: {
 	Name: Pure Clarity
 	Function:
 		'''
-		Fires a weak projectile that crushes enemy defenses
-		True melee hits mark enemies with a sigil; your projectiles home onto marked foes
+		Fires a weak sword beam that crushes enemy defenses
+		Landing three true melee hits charges a powerful lunge, unleashed when you stop swinging the sword
+		Enemies struck by the lunge are marked with a sigil that sword beams will home in on
 		'''
 }
 
@@ -100,7 +92,7 @@ WhirlwindAttunement: {
 		Once swung for long enough, releasing hurls the sword towards your cursor
 		Once pulled back, the hurled sword erupts into astral monoliths
 		'''
-	PassiveDesc: All attacks inflict the Astral Infection debuff
+	PassiveDesc: Striking enemies occasionally spawns homing astral bombers that spread the Astral Infection
 }
 
 FlailBladeAttunement: {
@@ -146,12 +138,6 @@ PhoenixAttunement: {
 		The swirling nebula constantly emits homing cosmic bolts
 		Release to hurl the sword toward the cursor alongside 6 gigantic cosmic bolts
 		'''
-	PassiveName: Capricorn's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of weakening stars around your cursor when attacking
-		The ring moves away from you, but slows down over time
-		'''
 }
 
 AriesAttunement: {
@@ -160,12 +146,6 @@ AriesAttunement: {
 		'''
 		Binds the sword to your cursor through a chain of constellations
 		Striking enemies causes nebulous explosions which spawn homing cosmic bolts
-		'''
-	PassiveName: Capricorn's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of weakening stars around your cursor when attacking
-		The ring moves away from you, but slows down over time
 		'''
 }
 
@@ -178,12 +158,6 @@ PolarisAttunement: {
 		Release to fire a powerful star directly at your cursor
 		Attacking immediately after firing the star launches you toward it, damaging enemies
 		'''
-	PassiveName: Cancer's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of lifestealing stars around you when attacking
-		The ring moves toward you, but slows down over time
-		'''
 }
 
 AndromedaAttunement: {
@@ -193,11 +167,5 @@ AndromedaAttunement: {
 		Charge a spatial lunge, release to unleash a galactic blow
 		Charging the sword periodically emits homing bolts
 		Lunging into enemies rains large homing stars from the heavens
-		'''
-	PassiveName: Cancer's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of lifestealing stars around you when attacking
-		The ring moves toward you, but slows down over time
 		'''
 }

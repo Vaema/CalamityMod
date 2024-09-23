@@ -128,26 +128,17 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(OmegaBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool heavenly = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
+            bool flailAttune = Owner.ZoneJungle || Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool pogoAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight || Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool whirlAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
             Attunement attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
-            if (desert || hell)
+            if (pogoAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
-            if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
+            if (flailAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.FlailBlade];
-            if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
-            if (marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
-            if (heavenly)
-                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check at the end so it may override hallowed variants of biomes
+            if (whirlAttune)
+                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind];
 
             //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)

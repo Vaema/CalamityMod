@@ -127,7 +127,6 @@ GaelSkull2.DisplayName: No Longer Ark of the Cosmos' Superior Cousin
 GalacticaComet.DisplayName: Galactus Comet
 GalaxiaBolt.DisplayName: Galaxia Bolt
 GalaxiaHoldout.DisplayName: Galactic Formation
-GalaxiaTropicRing.DisplayName: Star Ring
 GalaxyBlast.DisplayName: Galaxy Blast
 GalaxyBlastType2.DisplayName: Galaxy Blast
 GalaxyBlastType3.DisplayName: Galaxy Blast
@@ -197,6 +196,7 @@ PrismaticBeam.DisplayName: Prismatic Beam
 PrismaticWave.DisplayName: Prismatic Wave
 PrismRay.DisplayName: Prismatic Light
 PrismTooth.DisplayName: Photon Ripper
+PureClarity.DisplayName: Pure Clarity
 PurityProjection.DisplayName: Purity Projection
 PurityProjectionSigil.DisplayName: Purity Sigil
 PwnagehammerEcho.DisplayName: Pwnagehammer Echo
@@ -248,6 +248,7 @@ StygianShieldThrown.DisplayName: Shield of Chaos
 SulphurousGrabberBubble.DisplayName: Grabber Bubble
 SulphurousGrabberBubble2.DisplayName: Grabber Bubble
 SwordsmithsPride.DisplayName: Swordsmith's Pride
+SwordsmithsPrideAstralBomber.DisplayName: Swordsmith's Astral Bomber
 SwordsmithsPrideAstralEnergy.DisplayName: Swordsmith's Astral Energy
 SwordsmithsPrideMonolith.DisplayName: Swordsmiths Pride Monolith
 SwordsplosionBlue.DisplayName: Blue Sword
@@ -284,6 +285,7 @@ TrueBiomeBladeHoldout.DisplayName: True Biome Blade
 TrueBitingEmbrace.DisplayName: Biting Embrace
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
+TruePureClarity.DisplayName: Pure Clarity
 TruePurityProjection.DisplayName: Purity Projection
 TumbleweedRolling.DisplayName: Rolling Tumbleweed
 TyphonsGreedBubble.DisplayName: Typhon's Greed

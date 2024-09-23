@@ -807,10 +807,10 @@ namespace CalamityMod
 
                 ProjectileType<UrchinMaceProjectile>(),
                 ProjectileType<BrokenBiomeBladeHoldout>(),
+                ProjectileType<PureClarity>(),
                 ProjectileType<AridGrandeur>(),
                 ProjectileType<BitingEmbrace>(),
                 ProjectileType<DecaysRetort>(),
-                ProjectileType<GrovetendersTouch>(),
                 ProjectileType<BiomeBladeHoldout>(),
                 ProjectileType<TrueAridGrandeur>(),
                 ProjectileType<TrueBitingEmbrace>(),

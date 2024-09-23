@@ -115,7 +115,8 @@ namespace CalamityMod.Projectiles.Melee
                     // Spawn a ring of stars
                     for (int i = 0; i < 5; i++)
                     {
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
+                        Vector2 velocity = direction.RotatedByRandom(MathHelper.PiOver4) * 10f;
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, velocity, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f, 1f);
                     }
 
                     SoundEngine.PlaySound(SoundID.Item79, Projectile.Center);
@@ -146,7 +147,8 @@ namespace CalamityMod.Projectiles.Melee
                         // Spawn more stars
                         for (int i = 0; i < 9; i++)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 9f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
+                            Vector2 velocity = direction.RotatedByRandom(MathHelper.PiOver4) * 10f;
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, velocity, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f, 1f);
                         }
 
                         OverCharge = 20f;
