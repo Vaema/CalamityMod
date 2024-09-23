@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else if (hoverRotation > MathHelper.TwoPi)
                 hoverRotation -= MathHelper.TwoPi;
 
-            float rotationRate = 0.1f;
+            float rotationRate = 0.15f;
             npc.rotation = npc.rotation.AngleTowards(hoverRotation, rotationRate);
 
             if (Main.rand.NextBool(5))
@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 }
 
                                 Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 90f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -387,7 +387,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numProj = shootLaser ? 6 : 2;
                             int spread = shootLaser ? 20 : 80;
                             float rotation = MathHelper.ToRadians(spread);
-                            float offset = shootLaser ? 150f : 50f;
+                            float offset = shootLaser ? 90f : 50f;
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -535,7 +535,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 }
 
                                 Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -592,7 +592,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     }
 
                                     Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -688,7 +688,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         }
 
                                         Vector2 laserDartVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserDartSpeed;
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity.SafeNormalize(Vector2.UnitY) * 50f, laserDartVelocity, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity.SafeNormalize(Vector2.UnitY) * 60f, laserDartVelocity, type, damage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -1851,7 +1851,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 num423 += (float)Main.rand.Next(-inaccuracy, inaccuracy + 1) * 0.08f;
 
                                 Vector2 laserVelocity = new Vector2(num422, num423);
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), vector43 + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), vector43 + laserVelocity.SafeNormalize(Vector2.UnitY) * 90f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -1990,7 +1990,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 150f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 90f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                                 Main.projectile[proj].tileCollide = false;
                             }
                         }
@@ -2169,7 +2169,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num441 *= num442;
 
                     Vector2 laserVelocity = new Vector2(num440, num441);
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector45 + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector45 + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
                 }
 
                 return false;
@@ -2260,7 +2260,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num451 *= num452;
 
                     Vector2 laserVelocity = new Vector2(num450, num451);
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector46 + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector46 + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
                 }
             }
 

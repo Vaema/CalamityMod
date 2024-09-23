@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust2.scale = Main.rand.NextFloat(0.5f, 1.1f);
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath55 with { Pitch = -0.7f }, Projectile.Center);
             //DesertProwelerSkullParticle was a placeholder, but honestly it fits too well

@@ -33,30 +33,32 @@ namespace CalamityMod.Items.Accessories
         public const int maxPscAnimTime = 120;
 
         // Interface stuff.
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
-
         public bool ShaderIsDyeable => false;
 
         public bool ShouldDrawDyeableShader
         {
             get
             {
-                bool result = false;
-                foreach (Player player in Main.ActivePlayers)
-                {
-                    if (player.outOfRange || player.dead)
-                        continue;
+                if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
+                    return false;
 
-                    CalamityPlayer modPlayer = player.Calamity();
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
 
-                    // Do not render the shield if its visibility is off (or it does not exist)
-                    bool isVanityOnly = modPlayer.pSoulShieldVisible && !modPlayer.pSoulArtifact;
-                    bool shouldNotDraw = modPlayer.andromedaState >= AndromedaPlayerState.LargeRobot; //I am not dealing with drawing that :taxevasion:
-                    bool shieldExists = isVanityOnly || modPlayer.pSoulShieldDurability > 0;
-                    bool shouldntDraw = !modPlayer.pSoulShieldVisible || modPlayer.drawnAnyShieldThisFrame || shouldNotDraw || !shieldExists;
-                    result |= !shouldntDraw;
-                }
-                return result;
+                var player = Main.player[OwnerPlayer];
+                if (player is null)
+                    return false;
+
+                if (player.outOfRange || player.dead)
+                    return false;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer.drawingParameters.ProfanedShieldCharge <= 0.0f)
+                    return false;
+
+                return true;
             }
         }
 
@@ -68,7 +70,7 @@ namespace CalamityMod.Items.Accessories
             Empowered //psc but no other minions, healer guardian functionality, inherits all other functionality (except vanity) and goes even further beyond, any remaining attack changes are here
         }
 
-        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields();
+        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields(OwnerPlayer);
 
         internal static ProfanedSoulCrystalState GetPscStateFor(Player player, bool ignoreNoBuffs = false)
         {
@@ -516,9 +518,9 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<ProfanedSoulArtifact>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<DivineGeode>(50).
                 AddIngredient<UnholyEssence>(100).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<ProfanedCrucible>().
                 Register();
         }

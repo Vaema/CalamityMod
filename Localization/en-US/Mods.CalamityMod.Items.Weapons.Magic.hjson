@@ -106,7 +106,13 @@ ArtAttack: {
 
 AsteroidStaff: {
 	DisplayName: Asteroid Staff
-	Tooltip: Summons asteroids from the sky
+	Tooltip: "[GFB]"
+	TooltipNormal: Summons asteroids from the sky
+	TooltipGFB:
+		'''
+		Core Keeper Chaos Staff
+		bottom text
+		'''
 }
 
 AstralachneaStaff: {
@@ -630,8 +636,8 @@ PlasmaRifle: {
 	DisplayName: Plasma Rifle
 	Tooltip:
 		'''
-		Fires a plasma blast that explodes
-		Press <right> to rapidly fire plasma bolts
+		Fires an explosive plasma blast with pinpoint accuracy
+		Press <right> to rapidly fire non-explosive blasts
 		'''
 }
 
@@ -772,8 +778,18 @@ SHPC: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Fires plasma orbs that linger and emit massive explosions
-		Press <right> to fire powerful energy beams
+		Consumes Souls as ammo
+		Fires orbs of unstable, concentrated soulpower that linger after ejection
+		Orbs create a large explosion and emit seeking souls after collapse
+		Orbs have varying effects depending on Soul type used
+		Press Right Click to discharge all soulpower in the weapon as weak energy beams
+		'''
+	LegendaryText:
+		'''
+		[c/1FFBFF:'Though soul-powered machines were a near failure, potential remained in souls as a form of fuel.]
+		[c/1FFBFF:To avoid my last experiments' main flaw, the Soul-Harnessing Plasma Cannon was designed to expel souls as projectiles before they exert control over the weapon.]
+		[c/1FFBFF:Each soul type appears to react differently to the base plasma. Yet, lacking volunteers, obtaining potential ammunition is currently too difficult to undergo further testing.]
+		[c/1FFBFF:A shame, for a weapon that could have practically unlimited ammunition in the battlefield. Perhaps some day, its potential can be truly tested.']
 		'''
 	TooltipGFB: It scales again :)
 }
@@ -899,12 +915,12 @@ ThornBlossom: {
 		'''
 }
 
-Thunderstorm: {
-	DisplayName: Thunderstorm
+Thunderbolt: {
+	DisplayName: Thunderbolt
 	Tooltip:
 		'''
-		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky
-		'Make it rain'
+		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
+		Each ball lightning emits two additional lightning bolts before exploding
 		'''
 }
 

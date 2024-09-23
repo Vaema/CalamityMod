@@ -54,6 +54,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

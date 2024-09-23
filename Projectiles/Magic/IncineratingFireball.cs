@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 60000;
             Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
             Projectile.hide = true;
@@ -168,6 +169,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawScale = Projectile.Size / TheodoreJNoise.Size() * 1.25f;
             float rotation = Main.GlobalTimeWrappedHourly * 4.2f;
 
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(0.6f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Big fucking fireball

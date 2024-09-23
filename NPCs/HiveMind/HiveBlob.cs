@@ -20,7 +20,6 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void SetStaticDefaults()
         {
-            this.HideFromBestiary();
             NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
         }
 
@@ -48,6 +47,16 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCorruption,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HiveBlob")
+            });
         }
 
         public override void AI()

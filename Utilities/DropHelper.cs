@@ -1158,10 +1158,13 @@ namespace CalamityMod
                 {
                     NPC npc = info.npc;
                     int idx = Item.NewItem(npc.GetSource_Loot(), npc.Center, itemId, stack, true, -1);
-                    Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
-                    foreach (Player player in Main.ActivePlayers)
-                        NetMessage.SendData(MessageID.InstancedItem, player.whoAmI, -1, null, idx);
-                    Main.item[idx].active = false;
+                    if (idx < Main.maxItems)
+                    {
+                        Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
+                        foreach (Player player in Main.ActivePlayers)
+                            NetMessage.SendData(MessageID.InstancedItem, player.whoAmI, -1, null, idx);
+                        Main.item[idx].active = false;
+                    }
                 }
 
                 // Otherwise just drop the item.

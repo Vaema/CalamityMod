@@ -255,13 +255,13 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0, MaxInstances = -1 }, Projectile.Center);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + target.velocity * 32, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
                 }
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);
 
-            float minMult = 0.25f;
-            int hitsToMinMult = 8;
+            float minMult = 0.1f;
+            int hitsToMinMult = 5;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }

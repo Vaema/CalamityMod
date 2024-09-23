@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -12,84 +14,143 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
 
         private const int TimeLeft = 300;
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
+        public Vector2 storedVel;
 
         public override void SetDefaults()
         {
-            Projectile.width = 20;
-            Projectile.height = 20;
+            Projectile.width = 40;
+            Projectile.height = 40;
             Projectile.friendly = true;
+            Projectile.alpha = 255;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = TimeLeft;
             Projectile.DamageType = DamageClass.Melee;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
         {
-            if (Projectile.ai[1] == 0f)
+            Player Owner = Main.player[Projectile.owner];
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+            if (Projectile.ai[0] == 0)
             {
-                if (Projectile.Center.Y > Projectile.ai[2])
-                    Projectile.tileCollide = true;
+                if (Projectile.timeLeft == TimeLeft)
+                {
+                    storedVel = Projectile.velocity;
+                    Projectile.velocity = -Projectile.velocity;
+                }
+                if (Projectile.timeLeft > TimeLeft - 60)
+                {
+                    Projectile.velocity *= 0.95f;
+                    Projectile.rotation = storedVel.ToRotation() + MathHelper.PiOver4;
+                }
                 else
-                    Projectile.tileCollide = false;
+                {
+
+                    if (Projectile.timeLeft == TimeLeft - 60)
+                        Projectile.velocity = storedVel;
+
+                    NPC target = Projectile.Center.ClosestNPCAt(500);
+                    Vector2 moveToMouse;
+                    if (target != null)
+                        moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    else
+                        moveToMouse = Vector2.Zero;
+
+                    if (Projectile.velocity.Length() < 12 && Projectile.timeLeft > 60)
+                        Projectile.velocity += moveToMouse * 0.2f;
+                    else
+                        Projectile.velocity *= 0.9f;
+
+                    if (Main.rand.NextBool(5))
+                    {
+                        Particle spark = new GlowOrbParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.6f), true, 13, Main.rand.NextFloat(0.55f, 0.8f), Color.DarkRed * 0.8f, false, false, false);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+            }
+            else if (Projectile.ai[0] == 1)
+            {
+                NPC target = Projectile.Center.ClosestNPCAt(200);
+                Vector2 moveToMouse;
+                if (target != null)
+                    moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                else
+                    moveToMouse = Vector2.Zero;
+
+                if (Projectile.velocity.Length() < 8 && Projectile.timeLeft > 60)
+                    Projectile.velocity += moveToMouse * 0.1f;
+                else
+                    Projectile.velocity *= 0.98f;
             }
             else
             {
-                if (Projectile.Center.Y < Projectile.ai[2])
-                    Projectile.tileCollide = true;
-                else
-                    Projectile.tileCollide = false;
+                Projectile.scale = 1.2f;
+                // Spawn in a helix-style pattern
+                float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
+
+                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 8f;
+
+                float fade = Utils.GetLerpValue(255, 0, Projectile.alpha);
+                SparkParticle orb = new(Projectile.Center + offset, -Projectile.velocity * 0.05f, false, 7, 0.7f, Color.Aqua * 0.6f * fade);
+                GeneralParticleHandler.SpawnParticle(orb);
+
+                SparkParticle orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.05f, false, 7, 0.7f, Color.Aqua * 0.6f * fade);
+                GeneralParticleHandler.SpawnParticle(orb2);
+
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), 102, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 180, default, Main.rand.NextFloat(0.8f, 1.4f));
+                dust.noGravity = true;
+                dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 180);
+
+                if (Projectile.timeLeft > 130)
+                {
+                    Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 150, 130, 255, 0));
+                }
             }
 
-            Lighting.AddLight(Projectile.Center, 0.5f, 0.25f, 0f);
-
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
-
-            if (Projectile.localAI[0] == 0f)
+            if (Main.rand.NextBool())
             {
-                SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
-                Projectile.localAI[0] += 1f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), 5, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                dust.noGravity = true;
+                dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 100);
             }
-
-            int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, Main.rand.NextFloat(1.6f, 2.4f));
-            Main.dust[blood].noGravity = true;
-            Main.dust[blood].velocity *= 0.5f;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.timeLeft > TimeLeft - 5)
-                return false;
-
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.NPCDeath12, Projectile.Center);
-
-            for (int i = 4; i < 31; i++)
+            if (Projectile.timeLeft <= 60)
             {
-                float oldXPos = Projectile.oldVelocity.X * (30f / (float)i);
-                float oldYPos = Projectile.oldVelocity.Y * (30f / (float)i);
-                int killDust = Dust.NewDust(new Vector2(Projectile.oldPosition.X - oldXPos, Projectile.oldPosition.Y - oldYPos), 8, 8, DustID.Blood, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.8f);
-                Main.dust[killDust].noGravity = true;
-                Dust dust = Main.dust[killDust];
-                dust.velocity *= 0.5f;
-                killDust = Dust.NewDust(new Vector2(Projectile.oldPosition.X - oldXPos, Projectile.oldPosition.Y - oldYPos), 8, 8, DustID.Blood, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.4f);
-                dust = Main.dust[killDust];
-                dust.velocity *= 0.05f;
+                Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 0, 60, 255, 0));
+            }
+            if (Projectile.timeLeft > TimeLeft - 20)
+            {
+                Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, TimeLeft, TimeLeft - 20, 255, 0));
             }
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 90);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.ai[0] == 2) // Water tooth
+            {
+                target.AddBuff(BuffID.Wet, 300);
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
+            }
+            if (Projectile.ai[0] == 0) // "Jaw" teeth
+            {
+                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+            }
+            for (int i = 0; i <= 4; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, (Projectile.velocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
+                dust.noGravity = false;
+            }
+            for (int i = 0; i <= 2; i++)
+            {
+                Particle spark = new AltSparkParticle(Projectile.Center, (Projectile.velocity * 4.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f) + new Vector2(0, -2), true, 20, 0.5f, Color.DarkRed * 0.7f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            SoundStyle sound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
+            SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
+        }
     }
 }

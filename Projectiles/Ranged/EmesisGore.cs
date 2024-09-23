@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation += 0.01f * rotDirection * Utils.GetLerpValue(0, 800, Projectile.timeLeft);
             Projectile.velocity *= 0.9975f;
             if (Projectile.ai[0] < 20 && Projectile.timeLeft > 695 && Projectile.timeLeft < 785)
-                Projectile.velocity = Projectile.velocity.RotatedBy(0.0017f * Projectile.ai[0]);
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.0017f * Projectile.ai[0] * Projectile.ai[2]);
             Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 70, 0, 0, 255, true));
             if (targetDist < 1400f && Projectile.timeLeft > 70 && Projectile.timeLeft < 790)
             {
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 420);
-            for (int k = 0; k < 15; k++)
+            for (int k = 0; k < 7; k++)
             {
                 Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(5) ? 28 : 215, new Vector2(11, 11).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                 dust2.scale = Main.rand.NextFloat(0.75f, 1.25f);

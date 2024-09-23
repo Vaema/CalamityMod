@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,8 +32,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<AncientFossil>().
-                AddIngredient<DemonicBoneAsh>().
                 AddIngredient<AncientBoneDust>(3).
+                AddIngredient<ScorchedBone>(15).
                 AddIngredient(ItemID.Bone, 15).
                 AddTile(TileID.Anvils).
                 Register();

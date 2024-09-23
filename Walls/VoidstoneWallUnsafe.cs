@@ -11,7 +11,7 @@ namespace CalamityMod.Walls
 {
     public class VoidstoneWallUnsafe : ModWall
     {
-        internal static FramedGlowMask GlowMask;
+        internal static FramedMaskTexture GlowMask;
         public override string Texture => "CalamityMod/Walls/VoidstoneWall";
 
         public override void SetStaticDefaults()
@@ -22,6 +22,12 @@ namespace CalamityMod.Walls
 
             DustType = 187;
             AddMapEntry(new Color(0, 0, 0));
+        }
+
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
         }
 
         public override void RandomUpdate(int i, int j)
@@ -58,16 +64,18 @@ namespace CalamityMod.Walls
                 zero = Vector2.Zero;
 
             Vector2 pos = new Vector2((i * 16 - (int)Main.screenPosition.X), (j * 16 - (int)Main.screenPosition.Y)) + zero;
-            spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, Lighting.GetColor(i, j, Color.White), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Color lightColor = Lighting.GetColor(i, j, Color.White);
+
+            spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
-                brightness *= (float)MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawcolor *= brightness;
                 Color glowColor = drawcolor * 0.4f;
 

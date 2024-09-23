@@ -103,9 +103,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BlossomFlux>().
-                AddIngredient<EffulgentFeather>(12).
-                AddIngredient<YharonSoulFragment>(4).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<YharonSoulFragment>(4).
+                AddIngredient<EffulgentFeather>(12).
                 AddTile<CosmicAnvil>().
                 Register();
         }

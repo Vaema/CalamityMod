@@ -69,8 +69,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<Genesis>().
                 AddIngredient<Wingman>().
-                AddIngredient<GalacticaSingularity>(5).
                 AddIngredient<CosmiliteBar>(10).
+                AddIngredient<GalacticaSingularity>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }

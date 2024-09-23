@@ -85,8 +85,6 @@ DecaysRetortDash.DisplayName: Evisceration Lunge
 DemonBlast.DisplayName: Devil Fork
 DepthCrusherProjectile.DisplayName: Depth Crusher
 DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
-DepthOrb.DisplayName: Depth Trident
-DepthOrb2.DisplayName: Neptune's Trident
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
 DivineHatchetBoomerang.DisplayName: Scorching Seeker
 DNA.DisplayName: DNA
@@ -103,7 +101,6 @@ EarthenTidesBlast.DisplayName: Earthen Tides Blast
 EarthenTidesBlastSpawner.DisplayName: Blast Spawner
 EarthenTidesShockwave.DisplayName: Earthen Tides Shockwave
 ElementalGlassStar.DisplayName: Glass Star
-ElementBall.DisplayName: Elemental Ball
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
@@ -137,7 +134,7 @@ GalaxyBlastType3.DisplayName: Galaxy Blast
 GalaxySmasherBlast.DisplayName: Galactic Blast
 GalaxySmasherEcho.DisplayName: Galaxy Smasher Echo
 GalaxySmasherHammer.DisplayName: Galaxy Smasher
-GalaxySmasherMini.DisplayName: Galaxy Smasher
+GalaxySmasherMini.DisplayName: Cosmic Shard
 GalileosMoon.DisplayName: Crescent Moon
 GalileosPlanet.DisplayName: Planet
 GayBeam.DisplayName: Iridescent Beam
@@ -241,6 +238,7 @@ StarofJudgement.DisplayName: Star of Judgement
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt
 StellarContemptHammer.DisplayName: Stellar Contempt
+StellarStrikerMeteor.DisplayName: Stellar Striker Meteor
 StormBeam.DisplayName: Storm Beam
 StormMark.DisplayName: Storm Mark
 StormRulerProj.DisplayName: Storm Ruler
@@ -303,3 +301,4 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+FallenExplosionSmall.DisplayName: Fallen Hammer Blast

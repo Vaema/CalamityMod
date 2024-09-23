@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
@@ -31,7 +32,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot;
+                Main.SceneMetrics.ActiveFountainColor = BasaltGullyWater.Type;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

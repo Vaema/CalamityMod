@@ -12,19 +12,7 @@ namespace CalamityMod.Items.Placeables
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Wood;
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 12;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Driftwood>();
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Driftwood>());
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {

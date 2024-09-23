@@ -303,6 +303,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Chease", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -847,7 +848,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Mechanic:
-                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
+                        chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.HasPortalGun");
+                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
@@ -928,9 +931,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Steampunker:
-                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
-                        chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.HasPortalGun");
-                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneAstral)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.Astral");
@@ -1119,7 +1120,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.DyeTrader)
             {
-                shop.AddWithCustomValue(ItemType<DefiledFlameDye>(), Item.buyPrice(gold: 10), Condition.Hardmode)
+                shop.Add(ItemType<DefiledFlameDye>(), Condition.Hardmode)
                 .AddWithCustomValue(ItemID.DyeTradersScimitar, Item.buyPrice(gold: 15));
             }
 

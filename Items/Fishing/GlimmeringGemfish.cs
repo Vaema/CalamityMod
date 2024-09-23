@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Fishing
             Item.height = 30;
             Item.maxStack = 9999;
             Item.consumable = true;
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
-            Item.value = Item.sellPrice(silver: 50);
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

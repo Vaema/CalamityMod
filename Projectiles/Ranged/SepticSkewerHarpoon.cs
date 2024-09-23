@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -68,7 +69,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 1;
@@ -86,10 +86,13 @@ namespace CalamityMod.Projectiles.Ranged
                 pullingTarget = false;
             }
             if (Projectile.ai[1] > 0)
-                Projectile.extraUpdates = (int)(MathHelper.Clamp(Projectile.ai[1], 1, 18));
+                Projectile.extraUpdates = (int)(MathHelper.Clamp(Projectile.ai[1], 1, 50));
 
             if (!stuckInTarget && (!hasHitTile && !returning))
                 storedVelocity = Projectile.velocity;
+
+            if (Projectile.velocity.Length() < 7)
+                collideWithTiles = false;
 
             if (Main.zenithWorld)
             {
@@ -253,7 +256,7 @@ namespace CalamityMod.Projectiles.Ranged
                                     closestTarget = Main.npc[index];
                                 }
                             }
-                            if (Main.zenithWorld && Main.npc[index] != null && Main.rand.NextBool(15) && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Projectile.type] < 80)
+                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Projectile.type] < 80)
                             {
                                 closestTarget = Main.npc[index];
                                 Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
@@ -403,7 +406,7 @@ namespace CalamityMod.Projectiles.Ranged
                 target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
         public override bool? CanDamage() => canDamage ? null : false;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25 * (!spawnPullBlood ? 4 : 1), targetHitbox);
 
         public override bool PreDraw(ref Color lightColor)
         {

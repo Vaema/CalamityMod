@@ -48,6 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<PrimordialEarth>().
                 AddIngredient<CosmiliteBar>(8).
+                AddIngredient<EndothermicEnergy>(20).
                 AddTile(TileID.Bookcases).
                 Register();
         }

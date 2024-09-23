@@ -198,8 +198,8 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<Excelsus>().
                 AddIngredient<CosmicViperEngine>().
                 AddIngredient(ItemID.WingsVortex).
-                AddIngredient<CosmiliteBar>(40).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CosmiliteBar>(40).
                 AddTile<DraedonsForge>().
                 Register();
         }

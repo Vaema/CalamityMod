@@ -80,7 +80,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Seadragon>().
-                AddIngredient(ItemID.SoulofFright, 30).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

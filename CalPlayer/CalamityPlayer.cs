@@ -45,11 +45,15 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.Liquid;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -66,6 +70,7 @@ namespace CalamityMod.CalPlayer
         #region No Category
         public static bool areThereAnyDamnBosses = false;
         public static bool areThereAnyDamnEvents = false;
+        public float calamityBonusLuck = 0f;
         public bool potionSick = false;
         public int timePotionSick;
         public bool drawBossHPBar = true;
@@ -202,6 +207,7 @@ namespace CalamityMod.CalPlayer
         public int PHAThammer = 0;
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
+        public bool despoilerNerf = false;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -468,6 +474,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Permanent Buff
+        public bool spawnedPunchCard = false; // not exactly a buff, but is once per player permanent
         public bool extraAccessoryML = false;
         public bool eCore = false;
         public bool pHeart = false;
@@ -615,6 +622,7 @@ namespace CalamityMod.CalPlayer
         public bool harpyRing = false;
         public bool angelTreads = false;
         public bool harpyWingBoost = false; //harpy wings + harpy ring
+        public int harpyWingFeatherCooldown = 0;
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
         public bool depthCharm = false;
@@ -818,6 +826,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int VoidCooldown = 0;
         public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
@@ -1127,6 +1136,8 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
+        public bool FlarebatBool = false;
+        public bool FrostbatBool = false;
         #endregion
 
         #region Biome
@@ -1189,6 +1200,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
         public bool ghostBracelet;
+        public bool punchCard;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -1287,6 +1299,7 @@ namespace CalamityMod.CalPlayer
         #region Saving And Loading
         public override void Initialize()
         {
+            spawnedPunchCard = false;
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
@@ -1340,6 +1353,7 @@ namespace CalamityMod.CalPlayer
         public override void SaveData(TagCompound tag)
         {
             var boost = new List<string>();
+            boost.AddWithCondition("spawnedPunchCard", spawnedPunchCard);
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
@@ -1431,6 +1445,7 @@ namespace CalamityMod.CalPlayer
         public override void LoadData(TagCompound tag)
         {
             var boost = tag.GetList<string>("boost");
+            spawnedPunchCard = boost.Contains("spawnedPunchCard");
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
@@ -1578,6 +1593,8 @@ namespace CalamityMod.CalPlayer
 
             ResetRogueStealth();
 
+            calamityBonusLuck = 0f;
+
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);
 
@@ -1601,7 +1618,6 @@ namespace CalamityMod.CalPlayer
             noLifeRegen = false;
 
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            drawnAnyShieldThisFrame = false;
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
             if (!lunicCorpsSet)
@@ -2220,6 +2236,8 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
+            FlarebatBool = false;
+            FrostbatBool = false;
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
@@ -2252,6 +2270,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
             ghostBracelet = false;
+            punchCard = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -2342,6 +2361,8 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            calamityBonusLuck = 0f;
+
             #region Defense Damage
             totalDefenseDamage = 0;
             defenseDamageRecoveryFrames = 0;
@@ -2382,6 +2403,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            VoidCooldown = 0;
             ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
@@ -2731,6 +2753,7 @@ namespace CalamityMod.CalPlayer
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
+            harpyWingFeatherCooldown = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -3961,6 +3984,13 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region Modify Luck
+        public override void ModifyLuck(ref float luck)
+        {
+            luck += calamityBonusLuck;
+        }
+        #endregion
+
         #region Modify Mana Cost
         public override void ModifyManaCost(Item item, ref float reduce, ref float mult)
         {
@@ -4323,6 +4353,12 @@ namespace CalamityMod.CalPlayer
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
+            }
+            if (punchCard)
+            {
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
             }
 
             if (snowRuffianSet)

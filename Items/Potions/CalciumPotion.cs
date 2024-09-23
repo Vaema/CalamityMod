@@ -20,8 +20,6 @@ namespace CalamityMod.Items.Potions
             Item.height = 18;
             Item.useTurn = true;
             Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 20, 0);
-            Item.rare = ItemRarityID.Blue;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -29,6 +27,9 @@ namespace CalamityMod.Items.Potions
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<CalciumBuff>();
             Item.buffTime = CalamityUtils.SecondsToFrames(1200f);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Blue;
         }
 
         public override void AddRecipes()
@@ -42,7 +43,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(10).
+                AddIngredient<BloodOrb>(5).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

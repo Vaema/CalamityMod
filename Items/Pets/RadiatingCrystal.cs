@@ -12,9 +12,7 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.WispinaBottle);
-            Item.shoot = ModContent.ProjectileType<RadiatorPet>();
-            Item.buffType = ModContent.BuffType<RadiatorBuff>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<RadiatorPet>(), ModContent.BuffType<RadiatorBuff>());
             Item.value = Item.sellPrice(silver: 20);
             Item.rare = ItemRarityID.Orange;
         }

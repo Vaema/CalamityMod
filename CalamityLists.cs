@@ -843,7 +843,9 @@ namespace CalamityMod
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<MajesticGuardHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
-                ProjectileType<PhangasmBow>(),
+                ProjectileType<RiftburstBow>(),
+                ProjectileType<CometQuasherHoldout>(),
+                ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
                 ProjectileType<DrataliornusBow>(),
@@ -1504,7 +1506,7 @@ namespace CalamityMod
                 ItemType<Leviatitan>(),
                 ItemType<Atlantis>(),
                 ItemType<AnahitasArpeggio>(),
-                ItemType<BrackishFlask>(),
+                ItemType<Whitewater>(),
                 ItemType<LeviathanTeeth>(),
                 ItemType<GastricBelcherStaff>(),
                 ItemType<PearlofEnthrallment>(),
@@ -1709,7 +1711,7 @@ namespace CalamityMod
                 ItemType<SHPC>(),
                 ItemType<TeslaCannon>(),
                 ItemType<TheSwarmer>(),
-                ItemType<Thunderstorm>(),
+                ItemType<Thunderbolt>(),
                 ItemType<Wingman>(),
                 ItemID.BeeGun,
                 ItemID.BubbleGun,
@@ -1772,7 +1774,8 @@ namespace CalamityMod
                 NPCID.SmallBaldZombie,
                 NPCID.BigZombie,
                 NPCID.SmallZombie,
-                NPCID.MaggotZombie
+                NPCID.MaggotZombie,
+                NPCType<BucketZombie>()
                 // halloween zombies not included because they don't drop shackles or zombie arms
             };
 
@@ -1977,6 +1980,7 @@ namespace CalamityMod
                 ProjectileType<BasherHoldout>(),
                 ProjectileType<BlushieStaffProj>(),
                 ProjectileType<BonebreakerProjectile>(),
+                ProjectileType<CometQuasherHoldout>(),
                 ProjectileType<DarkSparkBeam>(),
                 ProjectileType<DevilsSunriseCyclone>(),
                 ProjectileType<DevilsSunriseProj>(),
@@ -2021,6 +2025,7 @@ namespace CalamityMod
                 ProjectileType<SparklingLaser>(),
                 ProjectileType<SpiritCongregation>(),
                 ProjectileType<StarmageddonBinaryStarCenter>(),
+                ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<StickyBol>(),
                 ProjectileType<SulphuricBlast>(),
                 ProjectileType<TaserHook>(),

@@ -138,7 +138,11 @@ Ataraxia: {
 
 Avalanche: {
 	DisplayName: Avalanche
-	Tooltip: Spawns ice bombs that explode after 3 seconds into ice shards on hit
+	Tooltip:
+		'''
+		Hitting enemies spawns orbiting ice bombs
+		After 2 seconds, ice bombs explode into gravity-affected ice shards
+		'''
 }
 
 Azathoth: {
@@ -328,7 +332,8 @@ DeathsAscension: {
 	Tooltip:
 		'''
 		Press <right> to launch a barrage of homing scythes
-		You can feel the hands of Death himself onto yours
+		'It feels just right in your grip...
+		[c/660066:But the hands that wield it are not yours']
 		'''
 }
 
@@ -369,11 +374,6 @@ DevilsDevastation: {
 DevilsSunrise: {
 	DisplayName: Devil's Sunrise
 	Tooltip: Balls? Smalls.
-}
-
-DiseasedPike: {
-	DisplayName: Diseased Pike
-	Tooltip: Fires plague seekers on hit
 }
 
 DraconicDestruction: {
@@ -428,15 +428,6 @@ EarthenPike: {
 		'''
 }
 
-ElementalLance: {
-	DisplayName: Elemental Lance
-	Tooltip:
-		'''
-		Fires a lance beam that splits multiple times as it travels
-		'Rend the cosmos asunder!'
-		'''
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -444,11 +435,19 @@ EmpyreanKnives: {
 
 EntropicClaymore: {
 	DisplayName: Entropic Claymore
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Fires a spread of living plasma that swims though the air
 		Plasma will track your cursor or enemies near it, prioritizing which is closest
 		The plasma pierces, but will stop tracking after hitting the first enemy
+		'''
+	TooltipGFB:
+		'''
+		Fires a spread of dead tapeworms that swim throuh the air
+		Tapeworms will track your cursor or enemies near it, prioritizing which is closest
+		The tapeworms pierce, but will stop tracking after hitting the first enemy
+		[c/FF0000:'Go my tapeworms, make their balls itch']
 		'''
 }
 
@@ -499,7 +498,7 @@ FallenPaladinsHammer: {
 	DisplayName: Fallen Paladin's Hammer
 	Tooltip:
 		'''
-		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
+		Throws a heavy, gravity-affected hammer that will explode and return to you after striking an enemy
 		After returning three times, a homing spectral hammer is summoned with devastating impact
 		'''
 }
@@ -598,7 +597,7 @@ GalaxySmasher: {
 	Tooltip:
 		'''
 		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
-		Consecutive hits summon more and more cosmic hammers
+		Consecutive hits summon more and more cosmic shards
 		After hitting eight times, the hammer supercharges itself with galactic energies,
 		delivering an apocalyptic strike that reverberates through space and time
 		'''
@@ -667,7 +666,11 @@ GreatswordofJudgement: {
 
 Greentide: {
 	DisplayName: Greentide
-	Tooltip: Summons teeth to chomp your foes on hit
+	Tooltip:
+		'''
+		Launches a spread of four teeth with one stronger piercing tooth in the center
+		Hitting with the blade creates two jaws of teeth to chomp on the enemy closest to your cursor
+		'''
 }
 
 HellfireFlamberge: {
@@ -691,7 +694,7 @@ Hellkite: {
 		'''
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
-		Holding <right> while swinging will begin charging a strengthened swing
+		Holding <right> will begin charging a strengthened swing
 		Releasing <right> while fully charged will unleash a devastating slash
 		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
@@ -941,11 +944,6 @@ PhotonRipper: {
 		This weapon and its projectiles function as a chainsaw
 		Press <right> to use without chopping down trees
 		'''
-}
-
-PlagueKeeper: {
-	DisplayName: Plague Keeper
-	Tooltip: Fires a plague and bee cloud
 }
 
 PrismaticBreaker: {
@@ -1419,6 +1417,15 @@ UrchinFlail: {
 UrchinMace: {
 	DisplayName: Urchin Mace
 	Tooltip: Throws out a whirlpool when released at full charge
+}
+
+VanishingPoint: {
+	DisplayName: Vanishing Point
+	Tooltip:
+		'''
+		Fires a lance beam that splits multiple times as it travels
+		'Rend the cosmos asunder!'
+		'''
 }
 
 VeinBurster: {

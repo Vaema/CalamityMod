@@ -12,17 +12,15 @@ namespace CalamityMod.Items.Mounts
         {
             Item.width = 34;
             Item.height = 36;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
-
-            Item.value = Item.sellPrice(gold: 20);
-            Item.rare = ItemRarityID.Purple;
-            Item.Calamity().donorItem = true;
-
             Item.UseSound = SoundID.NPCHit51;
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<BUMBLEDOGE>();
+
+            Item.value = Item.sellPrice(gold: 5);
+            Item.rare = ItemRarityID.Yellow;
+            Item.Calamity().donorItem = true;
         }
     }
 }

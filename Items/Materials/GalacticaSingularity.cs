@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 28;
             Item.height = 28;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 96);
+            Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Red;
         }
         public override void AddRecipes()
@@ -30,8 +30,8 @@ namespace CalamityMod.Items.Materials
             CreateRecipe().
                 AddIngredient(ItemID.FragmentSolar).
                 AddIngredient(ItemID.FragmentVortex).
-                AddIngredient(ItemID.FragmentStardust).
                 AddIngredient(ItemID.FragmentNebula).
+                AddIngredient(ItemID.FragmentStardust).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

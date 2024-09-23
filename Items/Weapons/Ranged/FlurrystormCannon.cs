@@ -49,9 +49,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SnowballCannon).
                 AddIngredient(ItemID.IllegalGunParts).
                 AddIngredient<AerialiteBar>(10).
-                AddIngredient(ItemID.Bone, 50).
-                AddIngredient<PearlShard>(25).
-                AddIngredient(ItemID.WaterBucket, 3).
+                AddIngredient(ItemID.Bone, 10).
+                AddIngredient<PearlShard>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }

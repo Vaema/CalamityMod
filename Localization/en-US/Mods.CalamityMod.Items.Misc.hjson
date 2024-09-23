@@ -143,6 +143,11 @@ SeaMinnowGoldItem: {
 	Tooltip: ""
 }
 
+ShroombleItem: {
+	DisplayName: "{$Mods.CalamityMod.NPCs.Shroomble.DisplayName}"
+	Tooltip: ""
+}
+
 TwinklerItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Twinkler.DisplayName}"
 	Tooltip: ""
@@ -325,6 +330,11 @@ ExhumeShortTooltip:
 	'''
 	[c/C61B40:'Ah, are you curious what I saw within this item?']
 	[c/BABABA:Press "Left Shift" to listen]
+	'''
+LegendaryShortTooltip:
+	'''
+	[c/FF6F00:Tales of legends past radiate around you...]
+	[c/BABABA:Press "Left Shift" to listen closer]
 	'''
 
 AlicornonaStick: {

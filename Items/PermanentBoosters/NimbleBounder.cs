@@ -13,9 +13,10 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 20;
             Item.height = 20;
-            Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
+            // Same price as Frog Leg, which is used to shimmer into it
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<HotPink>();
-            Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Zombie13; // frog sfx
             Item.consumable = true;

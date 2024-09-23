@@ -2557,7 +2557,7 @@ namespace CalamityMod.CalPlayer
                     var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, AerospecBreastplate.FeatherEntitySourceContext);
                     for (int n = 0; n < 4; n++)
                     {
-                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(35);
+                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
                         featherDamage = Player.ApplyArmorAccDamageBonusesTo(featherDamage);
 
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);

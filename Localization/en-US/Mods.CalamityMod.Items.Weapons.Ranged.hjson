@@ -468,6 +468,8 @@ FetidEmesis: {
 		'''
 		Fires an accelerating stream of bullets until the barrel overheats
 		When the barrel overheats, a spread of fetid chunks is vomited out
+		Holding <right> while firing will hold in the chunks
+		If held in for long enough, more chunks will be fired
 		After firing, the gun must cool back down before it can be used again
 		75% chance to save ammo
 		'''
@@ -775,15 +777,6 @@ MineralMortar: {
 		'''
 }
 
-MolecularManipulator: {
-	DisplayName: Molecular Manipulator
-	Tooltip:
-		'''
-		Fires a fast null bullet that distorts NPC stats
-		'Is it nullable or not? Let's find out!'
-		'''
-}
-
 MonolithBow: {
 	DisplayName: Monolith Bow
 	Tooltip: ""
@@ -831,8 +824,27 @@ NullificationPistol: {
 	DisplayName: Nullification Pistol
 	Tooltip:
 		'''
-		Fires a fast null bullet that distorts NPC stats
-		'Is it nullable or not? Let's find out!'
+		Fires discrete bolts of polarized energy. <right> to swap modes
+		Positive energy splits into three piercing beams
+		Negative energy shoots rapidly and homes in on enemies
+		All shots blow away enemies at close range
+		Each mode weakens with continuous use and resets to full power when swapped
+		'Weaponizing alien tech? Now that's what I like to hear!'
+		'''
+}
+
+OntologicalDespoiler: {
+	DisplayName: Ontological Despoiler
+	Tooltip:
+		'''
+		Condenses chargeable pockets of concentrated unreality. <right> to swap modes
+		Unstable condensate shots trifurcate and pierce enemies
+		Null condensate shots fire rapidly and home in on enemies
+		At 50% charge or higher, rate of fire significantly increases
+		Fully charged unstable condensate lobs a homing disruption sphere
+		Fully charged null condensate emits a hitscan null-annihilation beam
+		Each mode charges slower when used repeatedly and resets to full speed when swapped
+		'Rob them of continuity and the laws of physics they hold so dear.'
 		'''
 }
 
@@ -898,15 +910,6 @@ PearlGod: {
 PestilentDefiler: {
 	DisplayName: Pestilent Defiler
 	Tooltip: Converts musket balls into plague rounds that explode and split apart on hit
-}
-
-Phangasm: {
-	DisplayName: Phangasm
-	Tooltip:
-		'''
-		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
-		66% chance to save ammo
-		'''
 }
 
 Photoviscerator: {
@@ -1006,17 +1009,26 @@ ReedBlowgun: {
 		'''
 }
 
+Riftburst: {
+	DisplayName: Riftburst
+	Tooltip:
+		'''
+		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
+		66% chance to save ammo
+		'''
+}
+
 RubicoPrime: {
 	DisplayName: Rubico Prime
 	Tooltip:
 		'''
-		Semi-automatic sniper that fires in 5 second bursts
-		Fires impact rounds that have an increased crit multiplier
+		A powerful sniper rifle that must reload after 5 shots
+		Fires impact rounds that deal increased critical damage
 		'''
 }
 
-SandstormGun: {
-	DisplayName: Sandstorm
+Sandblaster: {
+	DisplayName: Sandblaster
 	Tooltip:
 		'''
 		Fires sand bullets that explode and slow enemies on hit

@@ -12,16 +12,8 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<PlagueHumidifierTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<PlagueHumidifierTile>());
+            Item.value = Item.sellPrice(gold: 12);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
             Item.vanity = true;

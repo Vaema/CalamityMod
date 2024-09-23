@@ -13,6 +13,7 @@ using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -301,14 +302,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-            packet.Write((byte)npc.whoAmI);
-
-            for (int i = 0; i < npc.Calamity().newAI.Length; i++)
-                packet.Write(npc.Calamity().newAI[i]);
-
-            packet.Send();
+            SyncCalamityNPCAIArrayPacket.Send(npc);
         }
 
         /// <summary>
@@ -321,14 +315,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncVanillaNPCLocalAIArray);
-            packet.Write((byte)npc.whoAmI);
-
-            for (int i = 0; i < NPC.maxAI; i++)
-                packet.Write(npc.localAI[i]);
-
-            packet.Send();
+            SyncVanillaNPCLocalAIArrayPacket.Send(npc);
         }
 
         /// <summary>
@@ -340,22 +327,12 @@ namespace CalamityMod
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SyncNPCMotionDataToServer);
-            netMessage.Write(npc.whoAmI);
-            netMessage.WriteVector2(npc.Center);
-            netMessage.WriteVector2(npc.velocity);
-            netMessage.Send();
+            SyncNPCMotionDataToServerPacket.Send(npc);
         }
 
         public static void SyncNPCPosAndRotOnly(this NPC npc)
         {
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncNPCPosAndRotOnly);
-            packet.Write((byte)npc.whoAmI);
-            packet.WriteVector2(npc.position);
-            packet.Write((Half)npc.rotation);
-            packet.Send();
+            SyncNPCPosAndRotOnlyPacket.Send(npc);
         }
 
         /// <summary>
@@ -368,11 +345,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncDestroyerLaserColor);
-            packet.Write((byte)npc.whoAmI);
-            packet.Write(npc.Calamity().destroyerLaserColor);
-            packet.Send();
+            SyncDestroyerLaserColorPacket.Send(npc);
         }
         #endregion
 
@@ -763,7 +736,7 @@ namespace CalamityMod
             if (CalamityPlayer.areThereAnyDamnBosses)
                 ignoreKBImmune = false;
             bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune ? true : target.knockBackResist > 0))
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune || target.knockBackResist > 0))
                 return true;
             return false;
         }

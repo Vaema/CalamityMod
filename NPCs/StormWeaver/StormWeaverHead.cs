@@ -990,7 +990,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     ModContent.ItemType<TheStorm>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Thunderstorm>(), 10);
+                normalOnly.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));

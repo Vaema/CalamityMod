@@ -82,6 +82,7 @@ using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 
 namespace CalamityMod.NPCs
 {
@@ -1104,7 +1105,7 @@ namespace CalamityMod.NPCs
             // Static Discharge
             if (staticDischarge > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
+                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
                 ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
@@ -7520,7 +7521,7 @@ namespace CalamityMod.NPCs
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Color currentColor = npc.GetAlpha(drawColor);
-                            float opacityScale = 1f - MathHelper.Lerp(0.3f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
+                            float opacityScale = 1f - MathHelper.Lerp(0.34f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
                             float opacity = Main.getGoodWorld ? 0.7f : opacityScale;
 
                             opacity = MathHelper.Clamp(opacity, 0f, 1f);
@@ -8326,33 +8327,32 @@ namespace CalamityMod.NPCs
                         // has an owner, hence the MyPlayer check.
                         if (Main.myPlayer == projectile.owner)
                         {
+                            if (!player.active || player.dead)
+                                return;
+
+                            Projectile proj = null;
+                            foreach (Projectile p in Main.ActiveProjectiles)
+                            {
+                                proj = p;
+                                if (p.bobber && p.owner == player.whoAmI)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (proj is null)
+                                return;
+
+                            var spawnPosX = (int)proj.Center.X;
+                            var spawnPosY = (int)proj.Center.Y + 100;
                             if (Main.netMode == NetmodeID.SinglePlayer)
                             {
-                                if (!player.active || player.dead)
-                                    return;
-
-                                Projectile proj = null;
-                                foreach (Projectile p in Main.ActiveProjectiles)
-                                {
-                                    proj = p;
-                                    if (p.bobber && p.owner == player.whoAmI)
-                                    {
-                                        break;
-                                    }
-                                }
-
-                                if (proj is null)
-                                    return;
-
-                                int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), (int)proj.Center.X, (int)proj.Center.Y + 100, NPCType<OldDuke.OldDuke>());
+                                int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>());
                                 CalamityUtils.BossAwakenMessage(oldDuke);
                             }
-                            else
+                            else if (Main.netMode == NetmodeID.MultiplayerClient)
                             {
-                                var netMessage = CalamityMod.Instance.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.ServersideSpawnOldDuke);
-                                netMessage.Write((byte)player.whoAmI);
-                                netMessage.Send();
+                                SpawnBossOnPositionPacket.Send(spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>(), player);
                             }
                         }
                     }

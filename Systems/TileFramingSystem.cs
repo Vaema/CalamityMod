@@ -112,8 +112,8 @@ namespace CalamityMod.Systems
         private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = [];
 
         #region Plant Stuff
-        private static ushort[] PlantTypes = new ushort[]
-        {
+        private static ushort[] PlantTypes =
+        [
             TileID.Plants,
             TileID.CorruptPlants,
             TileID.JunglePlants,
@@ -132,8 +132,9 @@ namespace CalamityMod.Systems
             (ushort)ModContent.TileType<TenebrisRemnant>(),
             (ushort)ModContent.TileType<PhoviamareHalm>(),
             (ushort)ModContent.TileType<SmallCorals>(),
-        };
-        private static int[][] PlantCheckAgainst;
+        ];
+
+        private static int[][] PlantValidGrounds;
         private static Dictionary<ushort, ushort> VineToGrass;
         #endregion
 
@@ -142,24 +143,24 @@ namespace CalamityMod.Systems
         // All tiles from all mods are guaranteed to be loaded by the execution time of this hook.
         public override void PostAddRecipes()
         {
-            PlantCheckAgainst = new int[TileLoader.TileCount][];
-            PlantCheckAgainst[TileID.Plants] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
-            PlantCheckAgainst[TileID.CorruptPlants] = new int[1] { TileID.CorruptGrass };
-            PlantCheckAgainst[TileID.JunglePlants] = new int[1] { TileID.JungleGrass };
-            PlantCheckAgainst[TileID.MushroomPlants] = new int[1] { TileID.MushroomGrass };
-            PlantCheckAgainst[TileID.Plants2] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
-            PlantCheckAgainst[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
-            PlantCheckAgainst[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
-            PlantCheckAgainst[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
-            PlantCheckAgainst[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
-            PlantCheckAgainst[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
-            PlantCheckAgainst[ModContent.TileType<SulphurTentacleCorals>()] = new int[1] { ModContent.TileType<SulphurousShale>() };
-            PlantCheckAgainst[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
-            PlantCheckAgainst[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
-            PlantCheckAgainst[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
-            PlantCheckAgainst[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
+            PlantValidGrounds = new int[TileLoader.TileCount][];
+            PlantValidGrounds[TileID.Plants] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
+            PlantValidGrounds[TileID.CorruptPlants] = new int[1] { TileID.CorruptGrass };
+            PlantValidGrounds[TileID.JunglePlants] = new int[1] { TileID.JungleGrass };
+            PlantValidGrounds[TileID.MushroomPlants] = new int[1] { TileID.MushroomGrass };
+            PlantValidGrounds[TileID.Plants2] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
+            PlantValidGrounds[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
+            PlantValidGrounds[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
+            PlantValidGrounds[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
+            PlantValidGrounds[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
+            PlantValidGrounds[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
+            PlantValidGrounds[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
+            PlantValidGrounds[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
+            PlantValidGrounds[ModContent.TileType<SulphurTentacleCorals>()] = new int[1] { ModContent.TileType<SulphurousShale>() };
+            PlantValidGrounds[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
+            PlantValidGrounds[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
+            PlantValidGrounds[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
+            PlantValidGrounds[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
 
             VineToGrass = new Dictionary<ushort, ushort>
             {
@@ -199,7 +200,7 @@ namespace CalamityMod.Systems
 
         public override void Unload()
         {
-            PlantCheckAgainst = null;
+            PlantValidGrounds = null;
 
             VineToGrass?.Clear();
             VineToGrass = null;
@@ -211,6 +212,112 @@ namespace CalamityMod.Systems
 
             cachedBlendSheets?.Clear();
             cachedBlendSheets = null;
+        }
+        #endregion
+
+        #region Tile Variation Helpers
+        public static int GetVariation4x4_012_Low0(int i, int j)
+        {
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 2,
+                    2 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 2,
+                    _ => 2
+                }),
+                2 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 1,
+                    _ => 2
+                }),
+                _ => (yRel switch
+                {
+                    0 => 1,
+                    1 => 2,
+                    2 => 0,
+                    _ => 2
+                }),
+            };
+            return output;
+        }
+
+        public static int GetVariation4x4_01_Low0(int i, int j)
+        {
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                1 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                2 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 0,
+                    _ => 1
+                }),
+                _ => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    2 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
+        }
+
+        public static int GetVariation3x3_01234_Low3(int i, int j)
+        {
+            int xRel = i % 3;
+            int yRel = j % 3;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 3,
+                    _ => 4
+                }),
+                _ => (yRel switch
+                {
+                    0 => 4,
+                    1 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
         }
         #endregion
 
@@ -289,82 +396,73 @@ namespace CalamityMod.Systems
         {
             if (x < 0 || x >= Main.maxTilesX)
                 return;
+
             if (y < 0 || y >= Main.maxTilesY)
                 return;
+
+            // If the tile below is off the bottom of the map, then assume it's invalid placement
             var tile = Main.tile[x, y];
-            var checkType = -1;
             int plantType = tile.TileType;
-
-            // If the tile below is off the bottom of the map, then assume it's the same tile type.
             if (y + 1 >= Main.maxTilesY)
-                checkType = plantType;
-            else
             {
-                var below = Main.tile[x, y + 1];
-                if (below != null && below.HasUnactuatedTile && !below.IsHalfBlock && below.Slope == 0)
-                    checkType = below.TileType;
+                WorldGen.KillTile(x, y);
+                return;
             }
 
-            // Sub function to determine whether the plant needs an update
-            static bool PlantNeedsUpdate(int plant, int check)
+            // If tile below is not elligible for growing plants, we kill the tile immediately
+            var below = Main.tile[x, y + 1];
+            if (!below.HasTile || !below.HasUnactuatedTile || below.IsHalfBlock || below.Slope != SlopeType.Solid)
             {
-                if (PlantCheckAgainst[plant] is null)
-                    return false;
-
-                for (var i = 0; i < PlantCheckAgainst[plant].Length; ++i)
-                {
-                    if (PlantCheckAgainst[plant][i] == check)
-                        return false;
-                }
-
-                return true;
+                WorldGen.KillTile(x, y);
+                return;
             }
 
-            // If no valid below tile type could be determined, then don't do anything.
-            // Additionally, don't do anything if the plant doesn't need a framing update.
-            if (checkType == -1 || !PlantNeedsUpdate(plantType, checkType))
+            // Check if tile below is valid for given grass type, If so we don't need to update this
+            var belowTileType = (int)below.TileType;
+            if (PlantValidGrounds[plantType] is not null && PlantValidGrounds[plantType].Contains(belowTileType))
                 return;
 
-            if ((plantType == TileID.Plants || plantType == TileID.Plants2) && checkType != TileID.Grass && tile.TileFrameX >= 162)
+            var newPlantType = plantType;
+
+            if ((plantType == TileID.Plants || plantType == TileID.Plants2) && belowTileType != TileID.Grass && tile.TileFrameX >= 162)
             {
                 Main.tile[x, y].TileFrameX = 126;
             }
-            if (plantType == TileID.JunglePlants2 && checkType != TileID.JungleGrass && tile.TileFrameX >= 162)
+            if (plantType == TileID.JunglePlants2 && belowTileType != TileID.JungleGrass && tile.TileFrameX >= 162)
             {
                 Main.tile[x, y].TileFrameX = 126;
             }
 
-            if (checkType == TileID.CorruptGrass)
+            #region Biome Grass Replacements
+            if (belowTileType == TileID.CorruptGrass)
             {
-                plantType = TileID.CorruptPlants;
+                newPlantType = TileID.CorruptPlants;
                 if (tile.TileFrameX >= 162)
                 {
                     Main.tile[x, y].TileFrameX = 126;
                 }
             }
-            else if (checkType == TileID.Grass)
+            else if (belowTileType == TileID.Grass)
             {
-                plantType = plantType == TileID.HallowedPlants2 ? TileID.Plants2 : TileID.Plants;
+                newPlantType = (plantType == TileID.HallowedPlants2 ? TileID.Plants2 : TileID.Plants);
             }
-            else if (checkType == TileID.HallowedGrass)
+            else if (belowTileType == TileID.HallowedGrass)
             {
-                plantType = plantType == TileID.Plants2 ? TileID.HallowedPlants2 : TileID.HallowedPlants;
+                newPlantType = (plantType == TileID.Plants2 ? TileID.HallowedPlants2 : TileID.HallowedPlants);
             }
-            else if (checkType == TileID.CrimsonGrass)
+            else if (belowTileType == TileID.CrimsonGrass)
             {
-                plantType = TileID.CrimsonPlants;
+                newPlantType = TileID.CrimsonPlants;
             }
-            else if (checkType == TileID.MushroomGrass)
+            else if (belowTileType == TileID.MushroomGrass)
             {
-                plantType = TileID.MushroomPlants;
+                newPlantType = TileID.MushroomPlants;
                 while (Main.tile[x, y].TileFrameX > 72)
                 {
                     Main.tile[x, y].TileFrameX -= 72;
                 }
             }
-
-            // Astral grass and plant behavior
-            else if (checkType == ModContent.TileType<AstralGrass>())
+            else if (belowTileType == ModContent.TileType<AstralGrass>())
             {
                 var isShortPlant = plantType == TileID.Plants ||
                     plantType == TileID.CorruptPlants ||
@@ -372,14 +470,15 @@ namespace CalamityMod.Systems
                     plantType == TileID.HallowedPlants ||
                     plantType == TileID.MushroomPlants ||
                     plantType == TileID.JunglePlants;
-                plantType = isShortPlant ? ModContent.TileType<AstralShortPlants>() : ModContent.TileType<AstralTallPlants>();
+                newPlantType = isShortPlant ? ModContent.TileType<AstralShortPlants>() : ModContent.TileType<AstralTallPlants>();
             }
+            #endregion
 
             // If the tile type is not the same as the plant type, then set it equal. Otherwise, destroy it.
-            if (Main.tile[x, y].TileType != plantType)
-                Main.tile[x, y].TileType = (ushort)plantType;
-            else
-                WorldGen.KillTile(x, y, false, false, false);
+            if (plantType != newPlantType)
+            {
+                Main.tile[x, y].TileType = (ushort)newPlantType;
+            }
         }
 
         internal static void VineFrame(int x, int y)
@@ -1301,57 +1400,48 @@ namespace CalamityMod.Systems
             #endregion
         }
 
-        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
+        internal static void SlopedGlowmask(ref readonly Tile tile, int i, int j, Texture2D texture, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
         {
-            var tile = Main.tile[i, j];
+            int frameX = tile.TileFrameX;
+            int frameY = tile.TileFrameY;
 
-            int TileFrameX = tile.TileFrameX;
-            int TileFrameY = tile.TileFrameY;
-
-            if (overrideTileFrame)
-            {
-                TileFrameX = 0;
-                TileFrameY = 0;
-            }
-
-            var width = 16;
-            var height = 16;
+            int width = 16;
+            int height = 16;
 
             if (sourceRectangle != null)
             {
-                TileFrameX = ((Rectangle)sourceRectangle).X;
-                TileFrameY = ((Rectangle)sourceRectangle).Y;
+                frameX = ((Rectangle)sourceRectangle).X;
+                frameY = ((Rectangle)sourceRectangle).Y;
             }
 
-            var iX16 = i * 16;
-            var jX16 = j * 16;
-            var location = new Vector2(iX16, jX16);
-            var zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
+            int iX16 = i * 16;
+            int jX16 = j * 16;
 
-            var offsets = -Main.screenPosition + zero + positionOffset;
-            var drawCoordinates = location + offsets;
-            if (tile.Slope == 0 && !tile.IsHalfBlock || Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType]) //second one should be for platforms
+            Vector2 location = new Vector2(iX16, jX16);
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+            Vector2 offsets = -Main.screenPosition + zero + positionOffset;
+            Vector2 drawCoordinates = location + offsets;
+
+            if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
             {
-                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(frameX, frameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else if (tile.IsHalfBlock)
             {
-                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(frameX, frameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {
-                var b = (byte)tile.Slope;
+                byte b = (byte)tile.Slope;
                 Rectangle TileFrame;
                 Vector2 drawPos;
                 if (b == 1 || b == 2)
                 {
                     int length;
                     int height2;
-                    for (var a = 0; a < 8; ++a)
+                    for (int a = 0; a < 8; ++a)
                     {
-                        var aX2 = a * 2;
+                        int aX2 = a * 2;
                         if (b == 2)
                         {
                             length = 16 - aX2 - 2;
@@ -1363,12 +1453,12 @@ namespace CalamityMod.Systems
                             height2 = 14 - length;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16 + aX2) + offsets;
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
-                    TileFrame = new Rectangle(TileFrameX, TileFrameY + 14, 16, 2);
+                    TileFrame = new Rectangle(frameX, frameY + 14, 16, 2);
                     drawPos = new Vector2(iX16, jX16 + 14) + offsets;
                     Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                 }
@@ -1376,9 +1466,9 @@ namespace CalamityMod.Systems
                 {
                     int length;
                     int height2;
-                    for (var a = 0; a < 8; ++a)
+                    for (int a = 0; a < 8; ++a)
                     {
-                        var aX2 = a * 2;
+                        int aX2 = a * 2;
                         if (b == 3)
                         {
                             length = aX2;
@@ -1390,15 +1480,15 @@ namespace CalamityMod.Systems
                             height2 = 16 - aX2;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY + 16 - height2, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY + 16 - height2, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16) + offsets;
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
                     drawPos = new Vector2(iX16, jX16) + offsets;
-                    if (tile.TileType != ModContent.TileType<EutrophicGlass>())
+                    if (tile.TileType != EutrophicGlass.TypeCache)
                     {
-                        TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
+                        TileFrame = new Rectangle(frameX, frameY, 16, 2);
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
                 }

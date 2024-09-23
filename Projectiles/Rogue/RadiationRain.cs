@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
             Projectile.ArmorPenetration = 30;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
@@ -107,6 +108,13 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.9f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 60, targetHitbox);
     }

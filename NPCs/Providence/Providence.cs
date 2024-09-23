@@ -24,6 +24,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
@@ -2453,13 +2454,14 @@ namespace CalamityMod.NPCs.Providence
                 shieldEffect.Parameters["shieldColor"].SetValue(color.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-
-                // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
-                Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
-                Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                {
+                    // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
+                    Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+                    Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                });
             }
             return false;
         }
@@ -2584,11 +2586,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2624,11 +2622,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(challenge);
-                        netMessage.Send();
+                        PSCChallengeSyncPacket.Send(this);
                     }
                 }
             }
@@ -2644,11 +2638,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2659,11 +2649,7 @@ namespace CalamityMod.NPCs.Providence
 
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    var netMessage = Mod.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                    netMessage.Write((byte)NPC.whoAmI);
-                    netMessage.Write(challenge);
-                    netMessage.Send();
+                    PSCChallengeSyncPacket.Send(this);
                 }
             }
         }

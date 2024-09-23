@@ -20,7 +20,6 @@ namespace CalamityMod.Items.Potions
             Item.height = 30;
             Item.useTurn = true;
             Item.maxStack = 9999;
-            Item.rare = ItemRarityID.Orange;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -28,7 +27,9 @@ namespace CalamityMod.Items.Potions
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<Omniscience>();
             Item.buffTime = CalamityUtils.SecondsToFrames(900f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Orange;
         }
 
         public override void AddRecipes()

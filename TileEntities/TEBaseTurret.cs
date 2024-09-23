@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Packets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -197,51 +198,19 @@ namespace CalamityMod.TileEntities
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.Turret);
-            packet.Write(ID);
-            packet.Write(FiringTime);
-            packet.Write(Angle);
-            packet.WriteVector2(TargetPos);
-            WriteExtraData(packet);
-            packet.Send(-1, -1);
-        }
 
-        protected internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the turret doesn't exist for whatever reason.
-            int firingTime = reader.ReadInt32();
-            float angle = reader.ReadSingle();
-            Vector2 targetVec = reader.ReadVector2();
-
-            if (exists && te is TEBaseTurret turret)
-            {
-                turret.FiringTime = firingTime;
-                turret.Angle = angle;
-                turret.TargetPos = targetVec;
-                turret.ReadExtraData(mod, reader);
-                return true;
-            }
-            else
-            {
-                // Otherwise, discard the fixed extra bytes so the message stream doesn't go haywire.
-                _ = reader.ReadBytes(NumExtraBytes);
-                return false;
-            }
+            TETurretPacket.Send(this);
         }
 
         // Subclasses cannot override SendSyncPacket, but they can override these functions to sync their own extra data.
         // Due to the limitations of TML packets, this data must be exactly 16 bytes in size.
         // The default implementations here write 16 bytes of zeroes and dump all 16 bytes when read.
         public const int NumExtraBytes = 16;
-        protected virtual void WriteExtraData(BinaryWriter writer)
+        public virtual void WriteExtraTurretData(BinaryWriter writer)
         {
             writer.Write(0Lu);
             writer.Write(0Lu);
         }
-        protected virtual void ReadExtraData(Mod mod, BinaryReader reader) => _ = reader.ReadBytes(NumExtraBytes);
+        public virtual void ReadExtraTurretData(BinaryReader reader) => _ = reader.ReadBytes(NumExtraBytes);
     }
 }

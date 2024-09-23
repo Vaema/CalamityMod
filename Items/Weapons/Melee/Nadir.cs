@@ -48,10 +48,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalLance>().
+                AddIngredient<VanishingPoint>().
                 AddIngredient<AuricBar>(5).
-                AddIngredient<TwistingNether>(5).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<TwistingNether>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 36;
+            Item.width = 50;
+            Item.height = 58;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.accessory = true;

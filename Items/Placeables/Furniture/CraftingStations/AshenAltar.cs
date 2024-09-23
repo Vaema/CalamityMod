@@ -10,18 +10,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 28;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.rare = ItemRarityID.Orange;
-            Item.value = 0;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.AshenAltar>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.AshenAltar>());
+            Item.value = Item.sellPrice(gold: 2);
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -33,7 +23,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlag>(10).
-                AddIngredient<DemonicBoneAsh>(5).
+                AddIngredient<ScorchedBone>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }
