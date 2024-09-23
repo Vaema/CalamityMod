@@ -19,13 +19,14 @@ namespace CalamityMod.Projectiles.Ranged
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
+        public static int Lifetime = 600;
         public override void SetDefaults()
         {
             Projectile.width = 38;
             Projectile.height = 38;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = Lifetime;
             Projectile.DamageType = DamageClass.Ranged;
         }
 
@@ -35,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity.Y += 0.12f;
             Projectile.rotation += Projectile.velocity.X * 0.05f;
 
-            if (Projectile.timeLeft <= 594)
+            if (Projectile.timeLeft <= Lifetime - 6)
             {
                 if (Main.rand.NextBool(3))
                 {

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 28;
             Item.damage = 121;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 18; //Try not to change this if you can help it
+            Item.useTime = Item.useAnimation = 18; //Try not to change this if you can help it.
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;

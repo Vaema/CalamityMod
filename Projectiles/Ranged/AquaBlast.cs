@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.projFrames[Projectile.type] = 20;
         }
         public int spreadDust = 0;
+        public static int Lifetime = 600;
 
         public override void SetDefaults()
         {
@@ -30,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = Lifetime;
             Projectile.extraUpdates = 2;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
@@ -57,28 +58,29 @@ namespace CalamityMod.Projectiles.Ranged
 
 
             Lighting.AddLight(Projectile.Center, Color.AliceBlue.ToVector3() * 0.5f);
-            if (Projectile.timeLeft <= 593)
+            //Trailing effects
+            if (Projectile.timeLeft <= Lifetime - 7)
             {
                 for (int i = 0; i < 2; i++)
                 {
                     SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity / 0.18f, Projectile.velocity * 0.01f, false, 5, 1.9f, Color.SeaGreen, true);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
-                if (Main.rand.NextBool(2))
-                {
-                    Gore bubble = Gore.NewGorePerfect(Projectile.GetSource_FromAI(), Projectile.position, Projectile.velocity * 0.2f + Main.rand.NextVector2Circular(1f, 1f), 411);
-                    bubble.timeLeft = 6 + Main.rand.Next(7);
-                    bubble.scale = Main.rand.NextFloat(0.6f, 0.8f);
-                    bubble.type = Main.rand.NextBool(3) ? 412 : 411;
-                }
-                if (Main.rand.NextBool())
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(6 + spreadDust, 6 + spreadDust), !Main.rand.NextBool(5) ? 278 : 267, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.35f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
-                    dust.noGravity = true;
-                    dust.color = !Main.rand.NextBool(5) ? Color.Aquamarine : Color.Aqua;
-                    if (dust.type == 278)
-                        dust.scale *= 0.7f;
-                }
+            }
+            if (Main.rand.NextBool(2))
+            {
+                Gore bubble = Gore.NewGorePerfect(Projectile.GetSource_FromAI(), Projectile.position, Projectile.velocity * 0.2f + Main.rand.NextVector2Circular(1f, 1f), 411);
+                bubble.timeLeft = 6 + Main.rand.Next(7);
+                bubble.scale = Main.rand.NextFloat(0.6f, 0.8f);
+                bubble.type = Main.rand.NextBool(3) ? 412 : 411;
+            }
+            if (Main.rand.NextBool())
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(6 + spreadDust, 6 + spreadDust), !Main.rand.NextBool(5) ? 278 : 267, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.35f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                dust.noGravity = true;
+                dust.color = !Main.rand.NextBool(5) ? Color.Aquamarine : Color.Aqua;
+                if (dust.type == 278)
+                    dust.scale *= 0.7f;
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
