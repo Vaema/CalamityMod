@@ -165,7 +165,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[2] > 0)
             {
-                if (Projectile.ai[2] % 3 == 0)
+                if (Projectile.ai[2] % (Projectile.Calamity().stealthStrike ? 3 : 5) == 0)
                 {
                     SoundEngine.PlaySound(SoundID.Item23.WithPitchOffset(MathHelper.Lerp(1f, 0f, Projectile.ai[2] / 30)).WithVolumeScale(0.8f));
                 }
@@ -232,8 +232,6 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.ai[0] <= -200)
                     oldVelocity = Projectile.velocity * 1.5f;
-                else if (Projectile.ai[1] < ReboundTime)
-                    oldVelocity = Projectile.velocity * 0.8f;
                 else
                     oldVelocity = Projectile.velocity;
             }

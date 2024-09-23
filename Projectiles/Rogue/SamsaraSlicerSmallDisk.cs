@@ -33,6 +33,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            if (Parent != null)
+            {
+                if (!Parent.active) Parent = null;
+            }
+
             Player player = Main.player[Projectile.owner];
 
             if (Projectile.Calamity().stealthStrike)
@@ -72,7 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
                 else returning = true;
             }
 
-            if (Parent != null)
+            if (Parent != null && Parent.active)
             {
                 Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(8f));
             }
@@ -80,11 +85,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (Parent != null && !returning)
             {
                 Projectile.position += Parent.velocity;
-            }
-
-            if (Parent != null)
-            {
-                if (!Parent.active) Parent = null;
             }
 
             if (Parent == null)
