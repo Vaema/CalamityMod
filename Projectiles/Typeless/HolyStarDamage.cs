@@ -169,11 +169,11 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(orb3);
 
                 // Sub projectiles spawning sub explosions... yea it needs armor pen
-                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
+                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
                 explo.ArmorPenetration = 30;
             }
         }
-        public override bool? CanDamage() => (time > 20 || Projectile.ai[1] != 5) ? null : false;
+        public override bool? CanDamage() => time > 15 ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 50, targetHitbox);
     }
 }

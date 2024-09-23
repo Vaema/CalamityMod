@@ -1,7 +1,12 @@
 ﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using Terraria;
+using static Terraria.ModLoader.ModContent;
+
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -38,6 +43,10 @@ namespace CalamityMod.Items.Weapons.Melee
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
+        }
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>(Texture + "Glow").Value);
         }
     }
 }

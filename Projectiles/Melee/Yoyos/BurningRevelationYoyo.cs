@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 {
                     float power = Utils.GetLerpValue(-100, yoyoPowerMax, yoyoPower, true);
 
-                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningRevelationBlast>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, power);
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, power);
                     if (proj.WithinBounds(Main.maxProjectiles))
                         Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
 

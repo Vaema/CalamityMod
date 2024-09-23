@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BurningRevelationBlast : ModProjectile, ILocalizedModType
+    public class BurningHolyBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
+                Projectile.damage = (int)(Projectile.damage * 0.97f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

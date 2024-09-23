@@ -719,7 +719,14 @@ Hellkite: {
 
 HolyCollider: {
 	DisplayName: Holy Collider
-	Tooltip: Striking enemies will cause them to explode into holy fire
+	Tooltip:
+'''
+Swings a massive holy sword that can be charged for higher damage
+Charged swings create four holy flares that float around the point of impact
+Flares can be stuck by the blade and will gain increased liftime from uncharged hits
+Charged swings can empower flares, turning them into massive fireballs on hit and launching them to your cursor
+Holding <right> while swinging will do repeated uncharged slashes that create spreads of flame on hit
+'''
 }
 
 IllustriousKnives: {
