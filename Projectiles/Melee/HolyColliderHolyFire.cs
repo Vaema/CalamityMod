@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
         }
 
-        public override bool? CanDamage() => (time > 10 || isLaunched) ? null : false;
+        public override bool? CanDamage() => ((time > 10 && !isLaunched) || (isLaunched && !setStats)) ? null : false;
 
         public override void AI()
         {
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity = vel;
                         Projectile.penetrate = 1;
                         // This has reduced damage on spawn so this isn't as high as it seems
-                        Projectile.damage *= 13;
+                        Projectile.damage *= 15; // 13 old
                         time = 0;
                         setStats = false;
                     }
@@ -165,7 +165,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle spark = new SparkParticle(Projectile.Center, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 1f), true, 55, 0.85f, Main.rand.NextBool() ? Color.Goldenrod : Color.OrangeRed);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 0.25), Projectile.knockBack, Projectile.owner, 1.8f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 0.35), Projectile.knockBack, Projectile.owner, 1.8f);
             }
         }
         public override bool PreDraw(ref Color lightColor)
