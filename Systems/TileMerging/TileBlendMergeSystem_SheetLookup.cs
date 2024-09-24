@@ -3,12 +3,15 @@ using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
-using static CalamityMod.Systems.MergeSideFlags;
+using static CalamityMod.Systems.BlendSideFlags;
 
 namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
+        // Welcome to Hardcoded hell
+        // Do NOT change anything in here unless you understand absolutely everything
+
         #region Sheet Rects
         // I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME
         // I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME I HATE THIS GAME
@@ -103,7 +106,7 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Sheet Lookup
-        private static readonly Dictionary<MergeSideFlags, Rectangle[]> _ShapeLookup = new()
+        private static readonly Dictionary<BlendSideFlags, Rectangle[]> _ShapeLookup = new()
         {
             // Special Shapes: 5
             [Shape_AllSide] = _AllClosed,
@@ -180,14 +183,14 @@ namespace CalamityMod.Systems
 
         #region Shape Lookup
 
-        private static readonly IReadOnlyCollection<MergeSideFlags> _Corner_Shapes = [
+        private static readonly IReadOnlyCollection<BlendSideFlags> _Corner_Shapes = [
             ShapeCorner_UpLeft,
             ShapeCorner_UpRight,
             ShapeCorner_DownLeft,
             ShapeCorner_DownRight
         ];
 
-        private static readonly IReadOnlyCollection<MergeSideFlags> _I_Shapes = [
+        private static readonly IReadOnlyCollection<BlendSideFlags> _I_Shapes = [
             ShapeI_Up,
             ShapeI_Up_End,
             ShapeI_Up_LeftEnd,
@@ -209,7 +212,7 @@ namespace CalamityMod.Systems
             ShapeI_Right_DownEnd,
         ];
 
-        private static readonly IReadOnlyCollection<MergeSideFlags> _L_Shapes = [
+        private static readonly IReadOnlyCollection<BlendSideFlags> _L_Shapes = [
             ShapeL_UpLeft,
             ShapeL_UpLeft_End,
             ShapeL_UpLeft_RightEnd,
@@ -231,7 +234,7 @@ namespace CalamityMod.Systems
             ShapeL_DownRight_UpEnd
         ];
 
-        private static readonly IReadOnlyCollection<MergeSideFlags> _U_Shapes = [
+        private static readonly IReadOnlyCollection<BlendSideFlags> _U_Shapes = [
             ShapeU_UpEmpty,
             ShapeU_UpEmpty_End,
             ShapeU_UpEmpty_LeftEnd,
@@ -254,6 +257,7 @@ namespace CalamityMod.Systems
         ];
         #endregion
 
+        #region Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Rectangle CreateRect(int sheetX, int sheetY)
         {
@@ -277,5 +281,6 @@ namespace CalamityMod.Systems
                 CreateRect(topSheetX, topSheetY + (2 * increment))
             ];
         }
+        #endregion
     }
 }

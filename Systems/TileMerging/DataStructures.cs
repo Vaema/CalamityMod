@@ -20,7 +20,7 @@ namespace CalamityMod.Systems
     //
     //  SE  S   SW
 
-    public enum MergeSideFlags : byte
+    public enum BlendSideFlags : byte
     {
         None = 0,
 
@@ -104,15 +104,13 @@ namespace CalamityMod.Systems
         ShapeU_LeftEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Right,
 
         ShapeU_RightEmpty = ShapeI_Up | ShapeI_Down | ShapeI_Left,
-        ShapeU_RightEmpty_End = ShapeI_Up | ShapeI_Down | ShapeI_Left,
+        ShapeU_RightEmpty_End = ShapeI_Up_End | ShapeI_Down_End | ShapeI_Left,
         ShapeU_RightEmpty_UpEnd = ShapeI_Up_End | ShapeI_Down | ShapeI_Left,
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
     }
 
-    public enum MergeTextureID : byte
+    public enum BlendTextureID : byte
     {
-        Everything = 0,
-
         AbyssGravel,
         Ash,
         AstralDirt,
@@ -138,7 +136,9 @@ namespace CalamityMod.Systems
         SulphurousSand,
         SulphurousSandstone,
         SulphurousShale,
-        Voidstone
+        Voidstone,
+
+        None = byte.MaxValue,
     }
 
     public struct TileBlendingData : ITileData
@@ -226,6 +226,18 @@ namespace CalamityMod.Systems
                 7 => SheetIndex7,
                 _ => throw new IndexOutOfRangeException()
             };
+        }
+
+        public void Set(int idx, byte sheetIdx, byte data)
+        {
+            SetSheetIndex(idx, sheetIdx);
+            SetData(idx, data);
+        }
+
+        public readonly void Get(int idx, out byte sheetIdx, out byte data)
+        {
+            sheetIdx = GetSheetIndex(idx);
+            data = GetData(idx);
         }
     }
 }
