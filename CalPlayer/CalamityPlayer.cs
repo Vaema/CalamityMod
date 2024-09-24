@@ -622,6 +622,7 @@ namespace CalamityMod.CalPlayer
         public bool harpyRing = false;
         public bool angelTreads = false;
         public bool harpyWingBoost = false; //harpy wings + harpy ring
+        public int harpyWingFeatherCooldown = 0;
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
         public bool depthCharm = false;
@@ -2752,6 +2753,7 @@ namespace CalamityMod.CalPlayer
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
+            harpyWingFeatherCooldown = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;

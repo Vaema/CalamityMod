@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool Positive => Projectile.ai[2] < 5;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }

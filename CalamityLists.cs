@@ -1777,7 +1777,8 @@ namespace CalamityMod
                 NPCID.SmallBaldZombie,
                 NPCID.BigZombie,
                 NPCID.SmallZombie,
-                NPCID.MaggotZombie
+                NPCID.MaggotZombie,
+                NPCType<BucketZombie>()
                 // halloween zombies not included because they don't drop shackles or zombie arms
             };
 

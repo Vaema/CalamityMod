@@ -438,7 +438,7 @@ CorruptFlask: {
 	DisplayName: Corrupt Flask
 	Tooltip:
 		'''
-		Incerases damage reduction by 4% and defense by 6 while in the corruption
+		Increases damage reduction by 4% and defense by 6 while in the corruption
 		Immunity to Brain Rot
 		'''
 }
@@ -1648,7 +1648,7 @@ StatisVoidSash: {
 	Tooltip:
 		'''
 		32% increased jump speed, allows auto-jump, and negates fall damage
-		Can climb walls, dash, and dodge attacks
+		Can swim, climb walls, dash, and dodge attacks
 		'''
 	HoldShiftTooltip:
 		'''
@@ -2071,4 +2071,9 @@ PunchCard: {
 	SpawnText1: it's late
 	SpawnText1Alt: its late
 	SpawnText2: go to bed
+}
+
+SharkyPlush: {
+	DisplayName: Sharky Plush
+	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
 }

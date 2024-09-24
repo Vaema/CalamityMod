@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,15 +29,9 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (Projectile.frameCounter++ % 4 == 0)
-            {
-                Projectile.frame++;
-            }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
-            {
-                Projectile.frame = 0;
-            }
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.01f / 255f);
+            Projectile.frameCounter++;
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Lighting.AddLight(Projectile.Center, 0.25f, 0.2f, 0.01f);
             if (Projectile.wet && !Projectile.lavaWet)
             {
                 Projectile.Kill();
@@ -48,17 +43,18 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(4))
             {
-                int forbid = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 16 : 174, 0f, 0f);
-                Main.dust[forbid].noGravity = true;
-                Main.dust[forbid].velocity *= 0f;
+                Dust fire = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 16 : 174);
+                fire.noGravity = true;
+                fire.velocity *= 0f;
             }
         }
 
         public override void OnKill(int timeLeft)
         {
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<ForbiddenSunburst>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ForbiddenSunburst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
         }
 

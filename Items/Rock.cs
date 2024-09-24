@@ -17,16 +17,8 @@ namespace CalamityMod.Items
 
         public override void SetDefaults()
         {
-            Item.width = 20;
-            Item.height = 20;
-            Item.value = Item.buyPrice(0, 0, 0, 1);
-            Item.createTile = ModContent.TileType<PlacedRock>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true; // This item cannot be researched/duped.
+            Item.DefaultToPlaceableTile(ModContent.TileType<PlacedRock>());
+            Item.value = Item.sellPrice(copper: 1);
         }
     }
 }

@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 24;
             Item.height = 20;
-            Item.value = Item.buyPrice(0, 8, 0, 0);
             Item.vanity = true;
+            Item.value = Item.buyPrice(gold: 8); // Sold by Clothier
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 

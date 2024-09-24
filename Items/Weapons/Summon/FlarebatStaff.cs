@@ -31,22 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile flarebatMinion = Projectile.NewProjectileDirect(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-
-            int minionIndex = 0;
-            foreach (var proj in Main.ActiveProjectiles)
-            {
-                if ((proj.type != flarebatMinion.type && proj.type != ModContent.ProjectileType<FrostbatMinion>()) || proj.owner != flarebatMinion.owner)
-                    continue;
-
-                if (proj.type == flarebatMinion.type)
-                    proj.ModProjectile<FlarebatMinion>().MinionIndex = minionIndex;
-                else
-                    proj.ModProjectile<FrostbatMinion>().MinionIndex = minionIndex;
-
-                minionIndex++;
-            }
-
+            Projectile.NewProjectileDirect(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             return false;
         }
     }

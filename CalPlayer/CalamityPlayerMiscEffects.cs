@@ -1543,6 +1543,8 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
+            if (harpyWingFeatherCooldown > 0)
+                harpyWingFeatherCooldown--;
             if (burningSeaBurnOut > 0)
             {
                 burningSeaBurnOut--;

@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.DashID = StatisVoidSashDash.ID;
             player.dashType = 0;
             player.spikedBoots = 2;
+            player.accFlipper = true;
         }
 
         public override void AddRecipes()

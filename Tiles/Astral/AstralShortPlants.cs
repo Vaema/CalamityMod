@@ -22,6 +22,7 @@ namespace CalamityMod.Tiles.Astral
             Main.tileFrameImportant[Type] = true;
             TileID.Sets.ReplaceTileBreakUp[Type] = true;
             TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileID.Sets.IgnoredByGrowingSaplings[Type] = true;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             DustType = ModContent.DustType<AstralBasic>();
