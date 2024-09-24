@@ -79,10 +79,10 @@ namespace CalamityMod.Systems
         #region Sealed Global Tile
         private sealed class MergeableTileGlobalTile : GlobalTile
         {
-            public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
-            {
-                DrawUniversalMergeFrames(i, j, GetOrCreateTileAdjacencies(type));
-            }
+            //public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
+            //{
+            //    DrawUniversalMergeFrames(i, j, GetOrCreateTileAdjacencies(type));
+            //}
 
             public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
             {
@@ -98,8 +98,8 @@ namespace CalamityMod.Systems
                 if (type == TileID.Vines || type == TileID.CrimsonVines || type == TileID.HallowedVines || type == ModContent.TileType<AstralVines>())
                     VineFrame(i, j);
 
-                foreach (var adjacency in GetOrCreateTileAdjacencies(type))
-                    GetAdjacencyData(i, j, adjacency);
+                //foreach (var adjacency in GetOrCreateTileAdjacencies(type))
+                    //GetAdjacencyData(i, j, adjacency);
 
                 return base.TileFrame(i, j, type, ref resetFrame, ref noBreak);
             }
