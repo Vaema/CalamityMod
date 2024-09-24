@@ -63,6 +63,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
+            AnimationProgress = Animation % useAnim;
             DrawUnconditionally = false;
 
             if (CanHit || postSwing)

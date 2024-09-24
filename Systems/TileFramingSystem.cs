@@ -112,8 +112,8 @@ namespace CalamityMod.Systems
         private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = [];
 
         #region Plant Stuff
-        private static ushort[] PlantTypes = new ushort[]
-        {
+        private static ushort[] PlantTypes =
+        [
             TileID.Plants,
             TileID.CorruptPlants,
             TileID.JunglePlants,
@@ -132,8 +132,9 @@ namespace CalamityMod.Systems
             (ushort)ModContent.TileType<TenebrisRemnant>(),
             (ushort)ModContent.TileType<PhoviamareHalm>(),
             (ushort)ModContent.TileType<SmallCorals>(),
-        };
-        private static int[][] PlantCheckAgainst;
+        ];
+
+        private static int[][] PlantValidGrounds;
         private static Dictionary<ushort, ushort> VineToGrass;
         #endregion
 
@@ -142,24 +143,24 @@ namespace CalamityMod.Systems
         // All tiles from all mods are guaranteed to be loaded by the execution time of this hook.
         public override void PostAddRecipes()
         {
-            PlantCheckAgainst = new int[TileLoader.TileCount][];
-            PlantCheckAgainst[TileID.Plants] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
-            PlantCheckAgainst[TileID.CorruptPlants] = new int[1] { TileID.CorruptGrass };
-            PlantCheckAgainst[TileID.JunglePlants] = new int[1] { TileID.JungleGrass };
-            PlantCheckAgainst[TileID.MushroomPlants] = new int[1] { TileID.MushroomGrass };
-            PlantCheckAgainst[TileID.Plants2] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
-            PlantCheckAgainst[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
-            PlantCheckAgainst[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
-            PlantCheckAgainst[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
-            PlantCheckAgainst[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
-            PlantCheckAgainst[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
-            PlantCheckAgainst[ModContent.TileType<SulphurTentacleCorals>()] = new int[1] { ModContent.TileType<SulphurousShale>() };
-            PlantCheckAgainst[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
-            PlantCheckAgainst[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
-            PlantCheckAgainst[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
-            PlantCheckAgainst[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
+            PlantValidGrounds = new int[TileLoader.TileCount][];
+            PlantValidGrounds[TileID.Plants] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
+            PlantValidGrounds[TileID.CorruptPlants] = new int[1] { TileID.CorruptGrass };
+            PlantValidGrounds[TileID.JunglePlants] = new int[1] { TileID.JungleGrass };
+            PlantValidGrounds[TileID.MushroomPlants] = new int[1] { TileID.MushroomGrass };
+            PlantValidGrounds[TileID.Plants2] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
+            PlantValidGrounds[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
+            PlantValidGrounds[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
+            PlantValidGrounds[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
+            PlantValidGrounds[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
+            PlantValidGrounds[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
+            PlantValidGrounds[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
+            PlantValidGrounds[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
+            PlantValidGrounds[ModContent.TileType<SulphurTentacleCorals>()] = new int[1] { ModContent.TileType<SulphurousShale>() };
+            PlantValidGrounds[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
+            PlantValidGrounds[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
+            PlantValidGrounds[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
+            PlantValidGrounds[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
 
             VineToGrass = new Dictionary<ushort, ushort>
             {
@@ -199,7 +200,7 @@ namespace CalamityMod.Systems
 
         public override void Unload()
         {
-            PlantCheckAgainst = null;
+            PlantValidGrounds = null;
 
             VineToGrass?.Clear();
             VineToGrass = null;
@@ -395,82 +396,73 @@ namespace CalamityMod.Systems
         {
             if (x < 0 || x >= Main.maxTilesX)
                 return;
+
             if (y < 0 || y >= Main.maxTilesY)
                 return;
+
+            // If the tile below is off the bottom of the map, then assume it's invalid placement
             var tile = Main.tile[x, y];
-            var checkType = -1;
             int plantType = tile.TileType;
-
-            // If the tile below is off the bottom of the map, then assume it's the same tile type.
             if (y + 1 >= Main.maxTilesY)
-                checkType = plantType;
-            else
             {
-                var below = Main.tile[x, y + 1];
-                if (below != null && below.HasUnactuatedTile && !below.IsHalfBlock && below.Slope == 0)
-                    checkType = below.TileType;
+                WorldGen.KillTile(x, y);
+                return;
             }
 
-            // Sub function to determine whether the plant needs an update
-            static bool PlantNeedsUpdate(int plant, int check)
+            // If tile below is not elligible for growing plants, we kill the tile immediately
+            var below = Main.tile[x, y + 1];
+            if (!below.HasTile || !below.HasUnactuatedTile || below.IsHalfBlock || below.Slope != SlopeType.Solid)
             {
-                if (PlantCheckAgainst[plant] is null)
-                    return false;
-
-                for (var i = 0; i < PlantCheckAgainst[plant].Length; ++i)
-                {
-                    if (PlantCheckAgainst[plant][i] == check)
-                        return false;
-                }
-
-                return true;
+                WorldGen.KillTile(x, y);
+                return;
             }
 
-            // If no valid below tile type could be determined, then don't do anything.
-            // Additionally, don't do anything if the plant doesn't need a framing update.
-            if (checkType == -1 || !PlantNeedsUpdate(plantType, checkType))
+            // Check if tile below is valid for given grass type, If so we don't need to update this
+            var belowTileType = (int)below.TileType;
+            if (PlantValidGrounds[plantType] is not null && PlantValidGrounds[plantType].Contains(belowTileType))
                 return;
 
-            if ((plantType == TileID.Plants || plantType == TileID.Plants2) && checkType != TileID.Grass && tile.TileFrameX >= 162)
+            var newPlantType = plantType;
+
+            if ((plantType == TileID.Plants || plantType == TileID.Plants2) && belowTileType != TileID.Grass && tile.TileFrameX >= 162)
             {
                 Main.tile[x, y].TileFrameX = 126;
             }
-            if (plantType == TileID.JunglePlants2 && checkType != TileID.JungleGrass && tile.TileFrameX >= 162)
+            if (plantType == TileID.JunglePlants2 && belowTileType != TileID.JungleGrass && tile.TileFrameX >= 162)
             {
                 Main.tile[x, y].TileFrameX = 126;
             }
 
-            if (checkType == TileID.CorruptGrass)
+            #region Biome Grass Replacements
+            if (belowTileType == TileID.CorruptGrass)
             {
-                plantType = TileID.CorruptPlants;
+                newPlantType = TileID.CorruptPlants;
                 if (tile.TileFrameX >= 162)
                 {
                     Main.tile[x, y].TileFrameX = 126;
                 }
             }
-            else if (checkType == TileID.Grass)
+            else if (belowTileType == TileID.Grass)
             {
-                plantType = plantType == TileID.HallowedPlants2 ? TileID.Plants2 : TileID.Plants;
+                newPlantType = (plantType == TileID.HallowedPlants2 ? TileID.Plants2 : TileID.Plants);
             }
-            else if (checkType == TileID.HallowedGrass)
+            else if (belowTileType == TileID.HallowedGrass)
             {
-                plantType = plantType == TileID.Plants2 ? TileID.HallowedPlants2 : TileID.HallowedPlants;
+                newPlantType = (plantType == TileID.Plants2 ? TileID.HallowedPlants2 : TileID.HallowedPlants);
             }
-            else if (checkType == TileID.CrimsonGrass)
+            else if (belowTileType == TileID.CrimsonGrass)
             {
-                plantType = TileID.CrimsonPlants;
+                newPlantType = TileID.CrimsonPlants;
             }
-            else if (checkType == TileID.MushroomGrass)
+            else if (belowTileType == TileID.MushroomGrass)
             {
-                plantType = TileID.MushroomPlants;
+                newPlantType = TileID.MushroomPlants;
                 while (Main.tile[x, y].TileFrameX > 72)
                 {
                     Main.tile[x, y].TileFrameX -= 72;
                 }
             }
-
-            // Astral grass and plant behavior
-            else if (checkType == ModContent.TileType<AstralGrass>())
+            else if (belowTileType == ModContent.TileType<AstralGrass>())
             {
                 var isShortPlant = plantType == TileID.Plants ||
                     plantType == TileID.CorruptPlants ||
@@ -478,14 +470,15 @@ namespace CalamityMod.Systems
                     plantType == TileID.HallowedPlants ||
                     plantType == TileID.MushroomPlants ||
                     plantType == TileID.JunglePlants;
-                plantType = isShortPlant ? ModContent.TileType<AstralShortPlants>() : ModContent.TileType<AstralTallPlants>();
+                newPlantType = isShortPlant ? ModContent.TileType<AstralShortPlants>() : ModContent.TileType<AstralTallPlants>();
             }
+            #endregion
 
             // If the tile type is not the same as the plant type, then set it equal. Otherwise, destroy it.
-            if (Main.tile[x, y].TileType != plantType)
-                Main.tile[x, y].TileType = (ushort)plantType;
-            else
-                WorldGen.KillTile(x, y, false, false, false);
+            if (plantType != newPlantType)
+            {
+                Main.tile[x, y].TileType = (ushort)newPlantType;
+            }
         }
 
         internal static void VineFrame(int x, int y)
