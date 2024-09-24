@@ -1,12 +1,15 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -28,6 +31,8 @@ namespace CalamityMod.Projectiles.Ranged
         float placementDistance;
         public Vector2 storedVelocity;
         Vector2 placementVelocity;
+
+        public ref float RocketID => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -52,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            float power = 4;
+            float power = 3;
             vibrate = Main.rand.NextVector2Circular(power, power);
             // Home in on enemies if not sticking to anything.
             if (!stuckInTarget)
@@ -69,29 +74,18 @@ namespace CalamityMod.Projectiles.Ranged
 
                     Particle gas = new MediumMistParticle(gasSpawnPosition, gasVelocity, color, fadeColor, Main.rand.NextFloat(0.5f, 1f), 205 - Main.rand.Next(50), 0.02f);
                     GeneralParticleHandler.SpawnParticle(gas);
-                    if (Projectile.timeLeft <= 590)
+                    for (int i = 0; i < 2; i++)
                     {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity, false, 8, 0.13f * (i == 0 ? 0.2f : 0.5f), Color.Lerp(Color.SeaGreen, Color.PaleGreen, 0.25f) * 0.5f, new Vector2(0.3f, 1f), false, false, 0.8f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Color bubbleColor = Main.rand.NextBool() ? Color.SeaGreen : Color.YellowGreen;
-                            Vector2 bubbleSpawnPos = Projectile.Center + Main.rand.NextVector2Circular(50, 50);
-                            Vector2 bubbleVelocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f);
-                            Particle bubble = new DirectionalPulseRing(bubbleSpawnPos, bubbleVelocity, bubbleColor, new Vector2(0.8f, 1), 0, 0.1f, 0f, 75);
-                            GeneralParticleHandler.SpawnParticle(bubble);
-                        }
-                    }                                   
-                    //Firing Effects
-                    if (Projectile.timeLeft <= 595)
+                        Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity, false, 8, 0.13f * (i == 0 ? 0.2f : 0.5f), Color.Lerp(Color.SeaGreen, Color.PaleGreen, 0.25f) * 0.5f, new Vector2(0.3f, 1f), false, false, 0.8f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    for (int i = 0; i < 2; i++)
                     {
-                        Particle pulse = new DirectionalPulseRing(Projectile.Center, Projectile.velocity / 100f, Color.Aqua, new Vector2(1f, 2.5f), Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2, 0.2f, 0.03f, 20);
-                        GeneralParticleHandler.SpawnParticle(pulse);
-                        Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Projectile.velocity / 90f, Color.DodgerBlue, new Vector2(1f, 2.5f), Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2, 0.1f, 0.025f, 35);
-                        GeneralParticleHandler.SpawnParticle(pulse2);
+                        Color bubbleColor = Main.rand.NextBool() ? Color.SeaGreen : Color.YellowGreen;
+                        Vector2 bubbleSpawnPos = Projectile.Center + Main.rand.NextVector2Circular(50, 50);
+                        Vector2 bubbleVelocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f);
+                        Particle bubble = new DirectionalPulseRing(bubbleSpawnPos, bubbleVelocity, bubbleColor, new Vector2(0.8f, 1), 0, 0.1f, 0f, 75);
+                        GeneralParticleHandler.SpawnParticle(bubble);
                     }
                 }
             }
@@ -137,21 +131,44 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            float rotation = Projectile.velocity.ToRotation();
+            Particle pulse = new DirectionalPulseRing(Projectile.Center, Projectile.velocity / 2, Color.Gray, new Vector2(1f, 3f), rotation, 0.08f, 0.2f, 15);
+            GeneralParticleHandler.SpawnParticle(pulse);
+        }
+
         public override void OnKill(int timeLeft)
         {
             SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom", 4);
+            var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)
+            {
+                // Since we use our own spawning method for the cluster rockets, we don't need them to shoot anything,
+                // we'll do it ourselves.
+                clusterProjectileID = ProjectileID.None,
+                destructiveClusterProjectileID = ProjectileID.None,
+            };
+            bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
             SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = -0.3f }, Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SulphuricAcidCannonExplosion>(), (int)(Projectile.damage * 2), Projectile.knockBack, Projectile.owner, ai1: 160f);
+                //The explosion has a different damage scaling depending on which rocket type you have. Left is Cluster Rocket, right is Non-Cluster.
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SulphuricAcidCannonExplosion>(), (int)(Projectile.damage * (isClusterRocket ? 1.5f : 2)), Projectile.knockBack, Projectile.owner);
+                if (isClusterRocket)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WrathwingCinder>(), (int)(Projectile.damage * 2), Projectile.knockBack, Projectile.owner, RocketID);
+                    }
+                }
             }
             // Circular spread of clouds and bubbles for impact
             for (int i = 0; i < 35; i++)
             {
                 Vector2 smokeVel = Main.rand.NextVector2Unit() * Main.rand.NextVector2Circular(32f, 32f);
                 Color smokeColor = Main.rand.NextBool() ? Color.SeaGreen : Color.PaleGreen;
-                Particle smoke = new MediumMistParticle(Projectile.Center, smokeVel, smokeColor, Color.Black, Main.rand.NextFloat(1.4f, 4f), 200 - Main.rand.Next(60), 0.08f);
+                Particle smoke = new MediumMistParticle(Projectile.Center, smokeVel, smokeColor, Color.Black, Main.rand.NextFloat(1.4f, 4f), (200 - Main.rand.Next(60)), 0.08f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
             for (int i = 0; i < 8; i++)
@@ -177,10 +194,24 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int projFrame = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
-            int y6 = projFrame * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + vibrate, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, projFrame)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)projFrame / 2f), Projectile.scale, SpriteEffects.None, 0);
+            float glowOutwardness = MathHelper.SmoothStep(3f, 0f, Utils.GetLerpValue(90f, 270f, stuckTimer, true));
+            Texture2D Texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = Texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Vector2 drawPosition;
+            Vector2 origin = frame.Size() * 0.5f;
+            Color glowColor = Color.Lerp(Color.YellowGreen, Color.Lime, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 5f) * 0.5f + 0.5f);
+            glowColor.A = 0;
+
+            if (stuckInTarget)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    drawPosition = Projectile.Center + (MathHelper.TwoPi * i / 8f + Main.GlobalTimeWrappedHourly * 4f).ToRotationVector2() * glowOutwardness - Main.screenPosition;
+                    Main.EntitySpriteDraw(Texture, drawPosition, frame, Projectile.GetAlpha(glowColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+                }
+            }
+            drawPosition = Projectile.Center - Main.screenPosition;
+            Main.EntitySpriteDraw(Texture, drawPosition + vibrate, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
     }

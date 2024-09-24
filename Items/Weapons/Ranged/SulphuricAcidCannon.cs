@@ -41,10 +41,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            //Slight randomization
-            float SpeedX = velocity.X + (float)Main.rand.Next(-40, 41) * 0.05f;
-            float SpeedY = velocity.Y + (float)Main.rand.Next(-40, 41) * 0.05f;
-            Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, Item.shoot, damage, knockback, player.whoAmI);
+            // Reposition to the gun's tip + add some inaccuracy
+            Vector2 newPos = position + new Vector2(78f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(10f));
+
+            //Find which rocket type the player will be using.
+            player.PickAmmo(player.HeldItem, out _, out _, out _, out _, out int rocketType);
+            Projectile.NewProjectile(source, newPos, newVel, Item.shoot, damage, knockback, player.whoAmI,rocketType);
             return false;
         }
 
@@ -75,8 +78,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
-            if (animProgress < 0.4f)
-                rotation += (player.altFunctionUse == 2 ? -0.15f : 0) * (float)Math.Pow((0.6f - animProgress) / 0.6f, 2) * player.direction;
 
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
