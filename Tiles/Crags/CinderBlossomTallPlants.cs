@@ -60,9 +60,9 @@ namespace CalamityMod.Tiles.Crags
             height = 48;
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            if (Main.rand.NextBool(20))
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(20))
             {
                 Item.NewItem(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16f, ModContent.ItemType<Items.Placeables.CinderBlossomSeeds>());
             }
