@@ -1164,8 +1164,8 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
                 .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron)
-                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard);
+                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode); // Vanilla sells these in Hardmode, we just make them available at all times
             }
 
             if (type == NPCID.GoblinTinkerer)
