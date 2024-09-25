@@ -45,9 +45,11 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
@@ -81,8 +83,6 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.Packets;
 
 namespace CalamityMod.NPCs
 {
@@ -8943,17 +8943,89 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Bestiary
-        public override void SetBestiary(NPC npc, Terraria.GameContent.Bestiary.BestiaryDatabase database, Terraria.GameContent.Bestiary.BestiaryEntry bestiaryEntry)
+        public override void SetBestiary(NPC npc, BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            // Create a string array containing all an NPC's debuff resistances
-            string[] elements = new string[5]
+            // Replace vanilla bestiary flavor text for certain NPCs
+            // These are ordered by their order in the bestiary, if you're wondering why it seems so arbitrary lmao
+            switch (npc.netID)
             {
+                case NPCID.Dryad:
+                case NPCID.Mechanic:
+                case NPCID.EmpressButterfly:
+                case NPCID.DemonEye:
+                case NPCID.CataractEye:
+                case NPCID.DialatedEye:
+                case NPCID.SleepyEye:
+                case NPCID.GreenEye:
+                case NPCID.PurpleEye:
+                case NPCID.Wraith:
+                case NPCID.BloodNautilus:
+                case NPCID.DiggerHead:
+                case NPCID.GraniteGolem:
+                case NPCID.GreekSkeleton:
+                case NPCID.DesertBeast:
+                case NPCID.DuneSplicerHead:
+                case NPCID.SandShark:
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                case NPCID.SandsharkHallow:
+                case NPCID.MeteorHead:
+                case NPCID.AngryBones:
+                case NPCID.AngryBonesBig:
+                case NPCID.AngryBonesBigMuscle:
+                case NPCID.AngryBonesBigHelmet:
+                case NPCID.BlueArmoredBones:
+                case NPCID.BlueArmoredBonesMace:
+                case NPCID.BlueArmoredBonesNoPants:
+                case NPCID.BlueArmoredBonesSword:
+                case NPCID.HellArmoredBones:
+                case NPCID.HellArmoredBonesSpikeShield:
+                case NPCID.HellArmoredBonesMace:
+                case NPCID.HellArmoredBonesSword:
+                case NPCID.RustyArmoredBonesAxe:
+                case NPCID.RustyArmoredBonesFlail:
+                case NPCID.RustyArmoredBonesSword:
+                case NPCID.RustyArmoredBonesSwordNoArmor:
+                case NPCID.SkeletonSniper:
+                case NPCID.TacticalSkeleton:
+                case NPCID.SkeletonCommando:
+                case NPCID.BoneLee:
+                case NPCID.Paladin:
+                case NPCID.DiabolistRed:
+                case NPCID.DiabolistWhite:
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                case NPCID.RaggedCaster:
+                case NPCID.RaggedCasterOpenCoat:
+                case NPCID.DungeonGuardian:
+                case NPCID.BoneSerpentHead:
+                case NPCID.Demon:
+                case NPCID.VoodooDemon:
+                case NPCID.RedDevil:
+                case NPCID.WyvernHead:
+                case NPCID.SeekerHead:
+                case NPCID.DesertDjinn:
+                case NPCID.ChaosElemental:
+                case NPCID.MartianSaucerCore:
+                case NPCID.TorchGod:
+                    FlavorTextBestiaryInfoElement f = new("Hi CS0120");
+                    bestiaryEntry.Info.RemoveAll(i => i.GetType() == f.GetType());
+                    bestiaryEntry.Info.Add(new FlavorTextBestiaryInfoElement(CalamityUtils.GetTextValue($"Bestiary.Vanilla.{Lang.GetNPCName(npc.netID).Key}")));
+                    break;
+                default:
+                    break;
+
+            }
+
+            // Create a string array containing all an NPC's debuff resistances
+            string[] elements =
+            [
                 NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToCold, CalamityUtils.GetTextValue("UI.DebuffSystem.Cold")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToElectricity, CalamityUtils.GetTextValue("UI.DebuffSystem.Electricity")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToWater, CalamityUtils.GetTextValue("UI.DebuffSystem.Water"))
-            };
+            ];
 
             // Insert the debuff info into the NPC's bestiary entry
             bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
