@@ -49,11 +49,12 @@ NPCName: {
 	RaggedCaster: "{$CommonEntries.RaggedCaster}"
 	RaggedCasterOpenCoat: "{$CommonEntries.RaggedCaster}"
 	DungeonGuardian: The Old Man is cursed to never leave nor enter the Dungeon, much less die. Whoever crosses paths with him and dares to descend into those halls shall not pass!
-	BoneSerpentHead: A primitive necromantic construct built by Demons using stolen magic by Azafure. They protect the Demon's territory fiercely.
+	BoneSerpentHead: Mighty serpents once ruled hell, but long ago shed their obsidian scales and became naught but skeletal husks. Subdued by Demons with stolen Azafurian spells, they now protect the demonic territory fiercely.
 	Demon: Despite being a primitive civilization, demons populate most of the underworld. Unlike their lesser brothers, they cast shadow magic rather than hell magic.
 	VoodooDemon: Demons have several religious practices, specially sacrifices. They worship the Wall of Flesh ever since it started roaming the underworld, using offerings to draw it closer.
 	RedDevil: Conjuring potent spears of dark magic, these elite demons look after the adventurer that destroyed their perceived deity.
 	WyvernHead: Deeply in tune with the magic of the world, these serpentine dragons guard the skyward ruins of Chrysadia on behalf of the Storm Dragon. Now, their duty calls louder as divine essence surges through the land.
+    Harpy: Winged, demi-human creatures from distant southward mountains who came to inhabit Chrysadia after its tragic downfall. They defend their new territory fiercely against invaders with their razor-sharp feathers.
 	SeekerHead: Godly magicks have unleashed the dark influences that gave birth to the Eater of Worlds, producing smaller, but just as deadly worms.
 	DesertDjinn: Buried in these caves lie cryptic artifacts older than Ilmeris, their origins swept away by the sands of time. Corrupted by divine magicks, the once friendly djinns within them now reemerge, full of hostility.
 	ChaosElemental: Manifestations of the unstable Essence of the Hallow, they erratically make chase with an uncontrollable surge of luminous power.

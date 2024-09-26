@@ -9015,6 +9015,7 @@ namespace CalamityMod.NPCs
                 case NPCID.VoodooDemon:
                 case NPCID.RedDevil:
                 case NPCID.WyvernHead:
+                case NPCID.Harpy:
                 case NPCID.SeekerHead:
                 case NPCID.DesertDjinn:
                 case NPCID.ChaosElemental:
