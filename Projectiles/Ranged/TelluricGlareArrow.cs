@@ -119,14 +119,10 @@ namespace CalamityMod.Projectiles.Ranged
             RestrictLifetime();
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-            //SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.4f, Volume = 0.5f }, Projectile.Center);
-            SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ProvidenceHurt");
-            SoundEngine.PlaySound(sound with { Volume = 0.3f, Pitch = 0.5f }, Projectile.Center);
-
             // Explode into a bunch of holy fire.
             for (int i = 0; i < 3; i++)
             {
-                LineParticle spark2 = new LineParticle(Projectile.Center + Main.rand.NextVector2Circular(13, 13), Projectile.velocity * Main.rand.NextFloat(0.5f, 1.8f), false, 12, 1.1f, colorAlt ? (Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod) : (Main.rand.NextBool(5) ? Color.Goldenrod : Color.DarkGoldenrod));
+                LineParticle spark2 = new LineParticle(Projectile.Center + Main.rand.NextVector2Circular(13, 13), Projectile.velocity * Main.rand.NextFloat(0.5f, 2.1f), false, 12, 1.1f, colorAlt ? (Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod) : (Main.rand.NextBool(5) ? Color.Goldenrod : Color.DarkGoldenrod));
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
         }

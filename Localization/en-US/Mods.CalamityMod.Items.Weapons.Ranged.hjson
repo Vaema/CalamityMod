@@ -1300,6 +1300,7 @@ TelluricGlare: {
 		Rapidly fires volleys of arrows
 		Every other arrow is converted into radiant arrows
 		Converts wooden arrows into colossal radiant arrows which pierce and deal increased damage
+		75% chance to save ammo
 		'''
 }
 
