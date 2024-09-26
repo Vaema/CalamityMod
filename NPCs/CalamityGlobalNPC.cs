@@ -9021,6 +9021,17 @@ namespace CalamityMod.NPCs
                 case NPCID.ChaosElemental:
                 case NPCID.MartianSaucerCore:
                 case NPCID.TorchGod:
+                case NPCID.EyeofCthulhu:
+                case NPCID.BrainofCthulhu:
+                case NPCID.SkeletronHead:
+                case NPCID.WallofFlesh:
+                case NPCID.QueenSlimeBoss:
+                case NPCID.Retinazer:
+                case NPCID.Spazmatism:
+                case NPCID.TheDestroyer:
+                case NPCID.SkeletronPrime:
+                case NPCID.Plantera:
+                case NPCID.HallowBoss:
                     FlavorTextBestiaryInfoElement f = new("Hi CS0120");
                     bestiaryEntry.Info.RemoveAll(i => i.GetType() == f.GetType());
                     bestiaryEntry.Info.Add(new FlavorTextBestiaryInfoElement(CalamityUtils.GetTextValue($"Bestiary.Vanilla.{Lang.GetNPCName(npc.netID).Key}")));
