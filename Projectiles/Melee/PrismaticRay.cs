@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee
         public override float Lifetime => 360f;
         public override Color LaserOverlayColor => Main.DiscoColor;
 
-        public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/ExobladeDashImpact") with { Volume = 0.9f };
+        public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/ExobladeDashImpact") with { Volume = 0.8f };
         public int HitSoundCooldown = 0;
 
         public override void SetStaticDefaults()

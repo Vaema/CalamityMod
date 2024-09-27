@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float Timer => ref Projectile.ai[0];
         public const float LaserChargeTime = 300f;
         public const float LaserAimLag = 0.94f; // Last Prism-esque aim lag. Higher = Slower. Last Prism is 0.92f.
-        public const float LaserDamageMult = 2.5f;
+        public const float LaserDamageMult = 2f;
         public const float LaserLifetime = 360f;
 
         public float StarTimer = 0f;
@@ -43,11 +43,11 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     StarTimer = 0f;
                     SoundEngine.PlaySound(SoundID.Item43 with { Volume = 0.6f }, Projectile.Center);
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         float clampedChargeTime = MathHelper.Clamp(Timer / LaserChargeTime, 0f, 1f);
-                        float starOffset = MathHelper.Lerp(MathHelper.PiOver4, 0f, clampedChargeTime);
-                        Vector2 velocity = Vector2.Normalize(Projectile.velocity).RotatedByRandom(starOffset) * 16f;
+                        float starOffset = MathHelper.Lerp(MathHelper.Pi / 6f, 0f, clampedChargeTime);
+                        Vector2 velocity = Vector2.Normalize(Projectile.velocity).RotatedByRandom(starOffset) * 17f;
 
                         float randomRotationSpeed = Main.rand.NextFloat(MathHelper.Pi / 60f, MathHelper.Pi / 12f) * Main.rand.NextBool().ToDirectionInt();
                         Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<PrismaticWave>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, Main.rand.Next(12), randomRotationSpeed);
@@ -58,10 +58,28 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (Timer == LaserChargeTime - 100f)
-                SoundEngine.PlaySound(CrystylCrusher.ChargeSound, Projectile.Center);
+                SoundEngine.PlaySound(CrystylCrusher.ChargeSound, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
             if (Timer == LaserChargeTime && Main.myPlayer == Projectile.owner)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity, ModContent.ProjectileType<PrismaticMagicCircle>(), (int)(Projectile.damage * LaserDamageMult), Projectile.knockBack, Projectile.owner);
+            }
+        }
+
+        public override void ManageHoldout()
+        {
+            Vector2 storedVelocity = Projectile.velocity;
+            base.ManageHoldout();
+
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<PrismaticMagicCircle>()] > 0)
+            {
+                Vector2 aimVector = (Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true)).SafeNormalize(Vector2.UnitY);
+                aimVector = Vector2.Normalize(Vector2.Lerp(aimVector, Vector2.Normalize(storedVelocity), LaserAimLag));
+
+                if (aimVector != storedVelocity)
+                    Projectile.netUpdate = true;
+                Projectile.velocity = aimVector;
+
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
         }
 
