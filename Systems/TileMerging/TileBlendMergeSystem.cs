@@ -24,7 +24,6 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.NPCs.SunkenSea.PolypPanasea;
 
 namespace CalamityMod.Systems
 {
