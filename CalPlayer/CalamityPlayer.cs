@@ -208,6 +208,7 @@ namespace CalamityMod.CalPlayer
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
         public bool despoilerNerf = false;
+        public int amputatorBuff = 0;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -4725,6 +4726,10 @@ namespace CalamityMod.CalPlayer
 
             // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
             if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+                playerUsingWeapon = false;
+
+            // Molten Amputator consumes stealth in a special way
+            if (it.type == ModContent.ItemType<MoltenAmputator>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.
