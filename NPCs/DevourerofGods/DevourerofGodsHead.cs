@@ -168,7 +168,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 Scale = 0.6f,
                 PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/DevourerofGods_Bestiary",
                 PortraitPositionXOverride = 60,
                 PortraitPositionYOverride = 40
             };
@@ -2633,7 +2632,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
             if (NPC.IsABestiaryIconDummy)
-                NPC.frame = texture2D15.Frame();
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, texture2D15, DevourerofGodsBody.Phase2Texture.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
+            }
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;

@@ -133,9 +133,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.position.Y = NPC.position.Y + targetYDirection;
 
                 if (targetXDirection < 0f)
-                    NPC.spriteDirection = 1;
-                else if (targetXDirection > 0f)
                     NPC.spriteDirection = -1;
+                else if (targetXDirection > 0f)
+                    NPC.spriteDirection = 1;
             }
         }
 

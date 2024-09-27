@@ -809,6 +809,60 @@ namespace CalamityMod
             }
         }
 
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D bodyTexture, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0)
+        {
+            DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, headTexture, [bodyTexture], segmentCount, segmentSpacing, rotationStrength, baseOffset, animationSpeed, range, headOffset, headSpeedOffset);
+            return false;
+        }
+
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D bodyTexture, Texture2D bodyTextureAlt, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0)
+        {
+            DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, headTexture, [bodyTexture, bodyTextureAlt], segmentCount, segmentSpacing, rotationStrength, baseOffset, animationSpeed, range, headOffset, headSpeedOffset);
+            return false;
+        }
+
+        /// <summary>
+        /// Draws animated wiggly worms for the Bestiary
+        /// </summary>
+        /// <param name="spriteBatch">The PreDraw's SpriteBatch</param>
+        /// <param name="npc">The NPC to draw</param>
+        /// <param name="drawColor">The NPC's drawColor</param>
+        /// <param name="headTexture">The worm's head texture</param>
+        /// <param name="bodyTextures">The worm's body textures</param>
+        /// <param name="segmentCount">The amount of segments that should be added</param>
+        /// <param name="segmentSpacing">The spacing between segments</param>
+        /// <param name="rotationStrength">How strongly the worm rotates. Higher values cause it to make sharper turns</param>
+        /// <param name="baseOffset">Moves around the position of the worm</param>
+        /// <param name="animationSpeed">How fast the worm moves</param>
+        /// <param name="range">How far up and down the worm moves</param>
+        /// <param name="headOffset">How far to bash (move) the head horizontally in case the automated math is too off or the worm's head extends past its neck joint</param>
+        /// <param name="headSpeedOffset">Offsets the animation progression for the head. Meant to pair with headOffset</param>
+        /// <returns></returns>
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D[] bodyTextures, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0)
+        {
+            npc.frame = headTexture.Frame();
+            // Buffers the segment position and rotations
+            float offset = -0.2f;
+            float startX = baseOffset.X;
+            float startY = baseOffset.Y;
+            // Draw the body segments
+            for (int i = segmentCount; i > 0; i--)
+            {
+                // The first segment is slightly closer to keep up with the head
+                float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                // If there's only one texture passed in, use it for all segments
+                // If two are passed in, alternate between them
+                // If more are passed in, each iteration must correspond to a texture
+                Texture2D toUse = bodyTextures.Length == 1 ? bodyTextures[0] : bodyTextures.Length == 2 ? (i % 2 == 0 ? bodyTextures[0] : bodyTextures[1]) : bodyTextures[i - 1];
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, SpriteEffects.None, 0f);
+            }
+            // Draw the head
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, SpriteEffects.None, 0f);
+
+            return false;
+        }
+
         #region Boss Spawning
         /// <summary>
         /// Shortcut for the generic boss summon message.
@@ -824,7 +878,7 @@ namespace CalamityMod
             }
             else if (Main.netMode == NetmodeID.Server)
             {
-                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", new object[] { Main.npc[npcIndex].GetTypeNetName() }), new Color(175, 75, 255));
+                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", [Main.npc[npcIndex].GetTypeNetName()]), new Color(175, 75, 255));
             }
         }
 

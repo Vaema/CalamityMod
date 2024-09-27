@@ -144,7 +144,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             {
                 Scale = 0.65f,
                 PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/Thanatos_Bestiary",
                 PortraitPositionXOverride = 40
             };
             value.Position.X += 52f;
@@ -1115,6 +1114,31 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+
+            // Reimplementation of CalamityUtils.DrawAnimatedBestiaryWorm but tweaked due to Thanatos' animations
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.frame = texture.Frame();
+                // Buffers the segment position and rotations
+                float offset = -0.2f;
+                float startX = 60;
+                float startY = 70;
+                int segmentSpacing = 40;
+                int animationSpeed = 5;
+                // Draw the body segments
+                for (int i = 3; i > 0; i--)
+                {
+                    // The first segment is slightly closer to keep up with the head
+                    float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                    Texture2D toUse = i % 2 == 1 ? TextureAssets.Npc[ModContent.NPCType<ThanatosBody1>()].Value : TextureAssets.Npc[ModContent.NPCType<ThanatosBody2>()].Value;
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Width / 10), NPC.scale, SpriteEffects.None, 0f);
+                }
+                // Draw the head
+                spriteBatch.Draw(texture, NPC.position + new Vector2(startX + 24, MathF.Sin(Main.GlobalTimeWrappedHourly * animationSpeed) * 2 + startY), texture.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(Main.GlobalTimeWrappedHourly * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(texture.Width * 0.5f, texture.Height / 5), NPC.scale, SpriteEffects.None, 0f);
+
+                return false;
+            }
 
             Vector2 center = NPC.Center - screenPos;
             center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
