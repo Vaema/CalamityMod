@@ -55,13 +55,10 @@ namespace CalamityMod.Systems
 
         private static void SetupMergeData()
         {
-            Main.QueueMainThreadAction(() =>
+            foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
             {
-                foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
-                {
-                    blendTexture.BakeBlendTexture(blendTexture.TextureAsset.Value);
-                }
-            });
+                blendTexture.BakeBlendTexture(blendTexture.TextureAsset.Value);
+            }
         }
 
         public override void Unload()

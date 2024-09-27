@@ -15,6 +15,15 @@ namespace CalamityMod.Systems
         #region Sheet Baking Process
         public void BakeBlendTexture(Texture2D texture)
         {
+            // It's baking moment
+            Main.QueueMainThreadAction(() =>
+            {
+                BakeBlendTexture_Inner(texture);
+            });
+        }
+
+        private void BakeBlendTexture_Inner(Texture2D texture)
+        {
             if (texture == null)
                 throw new ArgumentNullException(nameof(texture), "Texture is Null!");
 

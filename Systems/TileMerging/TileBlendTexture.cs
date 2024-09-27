@@ -50,7 +50,15 @@ namespace CalamityMod.Systems
             Main.QueueMainThreadAction(() =>
             {
                 for (int v = 0; v < VariantCount; v++)
-                    BlendTextures[v] = new(Main.instance.GraphicsDevice, BlendTextureWidth, BlendTextureHeight);
+                    BlendTextures[v] = new(
+                        Main.instance.GraphicsDevice,
+                        BlendTextureWidth,
+                        BlendTextureHeight,
+                        mipMap: false,
+                        preferredFormat: SurfaceFormat.Color,
+                        preferredDepthFormat: DepthFormat.None,
+                        preferredMultiSampleCount: 0,
+                        usage: RenderTargetUsage.PreserveContents);
             });
         }
 
@@ -61,22 +69,25 @@ namespace CalamityMod.Systems
 
         public sealed override void Unload()
         {
-            if (BlendTextures is not null)
+            Main.QueueMainThreadAction(() =>
             {
-                foreach (var rt in BlendTextures)
+                if (BlendTextures is not null)
                 {
-                    if (rt is null)
-                        continue;
+                    foreach (var rt in BlendTextures)
+                    {
+                        if (rt is null)
+                            continue;
 
-                    if (rt.IsDisposed)
-                        continue;
+                        if (rt.IsDisposed)
+                            continue;
 
-                    rt.Dispose();
+                        rt.Dispose();
+                    }
+
+                    Array.Clear(BlendTextures);
+                    BlendTextures = null;
                 }
-
-                Array.Clear(BlendTextures);
-                BlendTextures = null;
-            }
+            });
 
             PostUnload();
         }
@@ -91,16 +102,8 @@ namespace CalamityMod.Systems
 
         public void RebuildBlendSheet(Texture2D texture = null)
         {
-            if (texture is null)
-            {
-                texture = TextureAsset.Value;
-            }
-
-            // It's baking moment
-            Main.QueueMainThreadAction(() =>
-            {
-                BakeBlendTexture(texture);
-            });
+            texture ??= TextureAsset.Value;
+            BakeBlendTexture(texture);
         }
     }
 }
