@@ -32,20 +32,22 @@ namespace CalamityMod.Systems
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
         private static bool[,] _TileBlendable; // dimension: [TileTypeCount, AllBlendTextureCount]
-        private static byte[] _TileTypeBlendTexture; // dimension: [TileTypeCount]
+        private static byte[] _TileTypeToBlendTextureSlot; // dimension: [TileTypeCount]
 
         #region Load/Unload
         public override void OnModLoad()
         {
             var tileCount = TileLoader.TileCount;
             var blendTextureCount = TileBlendTextureLoader.Count;
-            _TileBlendable = new bool[tileCount, TileBlendTextureLoader.Count];
-            _TileTypeBlendTexture = new byte[tileCount];
+            _TileBlendable = new bool[tileCount, blendTextureCount];
+            _TileTypeToBlendTextureSlot = new byte[tileCount];
+
+            Array.Fill(_TileTypeToBlendTextureSlot, (byte)TileBlendTextureLoader.EmptySlot);
 
             for (int i = 0; i<blendTextureCount; i++)
             {
                 var blendTexture = TileBlendTextureLoader.Registry[i];
-                _TileTypeBlendTexture[blendTexture.TileType] = (byte)i;
+                _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)i;
             }
 
             // Draw Code
@@ -76,17 +78,17 @@ namespace CalamityMod.Systems
             if (myType == blendTileType)
                 return;
 
-            if (!_TileTypeBlendTexture.IndexInRange(myType))
+            if (!_TileTypeToBlendTextureSlot.IndexInRange(myType))
                 return;
 
-            if (!_TileTypeBlendTexture.IndexInRange(blendTileType))
+            if (!_TileTypeToBlendTextureSlot.IndexInRange(blendTileType))
                 return;
 
-            var blendTextureID = _TileTypeBlendTexture[blendTileType];
-            if (blendTextureID == 0)
+            var blendTextureSlot = _TileTypeToBlendTextureSlot[blendTileType];
+            if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
                 return;
 
-            _TileBlendable[myType, blendTextureID] = true;
+            _TileBlendable[myType, blendTextureSlot] = true;
             CalamityUtils.SetMerge(myType, blendTileType, true);
         }
 
@@ -95,10 +97,10 @@ namespace CalamityMod.Systems
             if (blendTexture == null)
                 return;
 
-            if (blendTexture.Slot <= 0)
+            if (blendTexture.Slot < 0)
                 return;
 
-            if (!_TileTypeBlendTexture.IndexInRange(myType))
+            if (!_TileTypeToBlendTextureSlot.IndexInRange(myType))
                 return;
 
             var blendTileType = blendTexture.TileType;

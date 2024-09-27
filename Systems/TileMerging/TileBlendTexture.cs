@@ -25,16 +25,22 @@ namespace CalamityMod.Systems
         public const int BlendTextureHeight = 18 * BlendTextureYCount;
         #endregion
 
+
+
         #region Properties
         public Asset<Texture2D> TextureAsset { get; private set; }
         public int Slot { get; private set; }
         public RenderTarget2D[] BlendTextures { get; private set; } // dimension: [3]
         #endregion
 
+
+
         #region Overrides
         public abstract int TileType { get; }
         #endregion
 
+
+        #region Setups
         protected sealed override void Register()
         {
             Slot = TileBlendTextureLoader.Register(this);
@@ -79,9 +85,17 @@ namespace CalamityMod.Systems
         {
 
         }
+        #endregion
 
-        public void ReplaceBlendSheet(Texture2D texture)
+
+
+        public void RebuildBlendSheet(Texture2D texture = null)
         {
+            if (texture is null)
+            {
+                texture = TextureAsset.Value;
+            }
+
             // It's baking moment
             Main.QueueMainThreadAction(() =>
             {

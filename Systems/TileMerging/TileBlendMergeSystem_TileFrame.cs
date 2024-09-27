@@ -70,7 +70,7 @@ namespace CalamityMod.Systems
             if (hasLeft && HasLeftMerge(centerTile, leftTile))
             {
                 leftMerged = true;
-                if (_TileTypeBlendTexture[leftType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[leftType] == blendingWith)
                 {
                     flags |= BlendSideFlags.Left;
                 }
@@ -80,7 +80,7 @@ namespace CalamityMod.Systems
             if (hasRight && HasRightMerge(centerTile, rightTile))
             {
                 rightMerged = true;
-                if (_TileTypeBlendTexture[rightType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[rightType] == blendingWith)
                 {
                     flags |= BlendSideFlags.Right;
                 }
@@ -90,7 +90,7 @@ namespace CalamityMod.Systems
             if (hasUp && HasUpMerge(centerTile, upTile))
             {
                 upMerged = true;
-                if (_TileTypeBlendTexture[upType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[upType] == blendingWith)
                 {
                     flags |= BlendSideFlags.Up;
                 }
@@ -100,7 +100,7 @@ namespace CalamityMod.Systems
             if (hasDown && HasDownMerge(centerTile, downTile))
             {
                 downMerged = true;
-                if (_TileTypeBlendTexture[downType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[downType] == blendingWith)
                 {
                     flags |= BlendSideFlags.Down;
                 }
@@ -113,7 +113,7 @@ namespace CalamityMod.Systems
             bool hasUpLeft = TryGetTile(i - 1, j - 1, out var upLeftTile, out var upLeftType);
             if (hasUpLeft && upMerged && leftMerged && HasRightMerge(upLeftTile, upTile) && HasDownMerge(upLeftTile, leftTile))
             {
-                if (_TileTypeBlendTexture[upLeftType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[upLeftType] == blendingWith)
                 {
                     flags |= BlendSideFlags.UpLeft;
                 }
@@ -122,7 +122,7 @@ namespace CalamityMod.Systems
             bool hasUpRight = TryGetTile(i + 1, j - 1, out var upRightTile, out var upRightType);
             if (hasUpRight && upMerged && rightMerged && HasLeftMerge(upRightTile, upTile) && HasDownMerge(upRightTile, leftTile))
             {
-                if (_TileTypeBlendTexture[upRightType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[upRightType] == blendingWith)
                 {
                     flags |= BlendSideFlags.UpRight;
                 }
@@ -131,7 +131,7 @@ namespace CalamityMod.Systems
             bool hasDownLeft = TryGetTile(i - 1, j + 1, out var downLeftTile, out var downLeftType);
             if (hasDownLeft && downMerged && leftMerged && HasRightMerge(downLeftTile, downTile) && HasUpMerge(downLeftTile, leftTile))
             {
-                if (_TileTypeBlendTexture[downLeftType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[downLeftType] == blendingWith)
                 {
                     flags |= BlendSideFlags.DownLeft;
                 }
@@ -140,7 +140,7 @@ namespace CalamityMod.Systems
             bool hasDownRight = TryGetTile(i + 1, j + 1, out var downRightTile, out var downRightType);
             if (hasDownRight && downMerged && rightMerged && HasLeftMerge(downRightTile, downTile) && HasUpMerge(downLeftTile, leftTile))
             {
-                if (_TileTypeBlendTexture[downRightType] == blendingWith)
+                if (_TileTypeToBlendTextureSlot[downRightType] == blendingWith)
                 {
                     flags |= BlendSideFlags.DownRight;
                 }
@@ -259,7 +259,7 @@ namespace CalamityMod.Systems
                 if (type < 0)
                     continue;
 
-                var blendTextureID = _TileTypeBlendTexture[type];
+                var blendTextureID = _TileTypeToBlendTextureSlot[type];
                 if (blendTextureID != TileBlendTextureLoader.EmptySlot)
                     hashSet.Add(blendTextureID);
             }
