@@ -387,6 +387,7 @@ namespace CalamityMod
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
+            TileType<Stohne>(),
         });
 
         /// <summary>

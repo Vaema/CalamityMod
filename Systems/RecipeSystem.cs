@@ -258,7 +258,8 @@ namespace CalamityMod.Systems
                 ItemID.EbonstoneBlock,
                 ItemID.CrimstoneBlock,
                 ItemID.PearlstoneBlock,
-                ItemType<AstralStone>()
+                ItemType<AstralStone>(),
+                ItemType<Stohne>()
             });
             AnyStoneBlock = RecipeGroup.RegisterGroup("AnyStoneBlock", group);
 
@@ -500,6 +501,12 @@ namespace CalamityMod.Systems
                 AddIngredient(ItemID.Lens).
                 AddIngredient(ItemID.BlackDye).
                 AddTile(TileID.DyeVat).
+                Register();
+
+            // Stohne smelts into Lihzahrd Bricks
+            Recipe.Create(ItemID.LihzahrdBrick).
+                AddIngredient(ItemType<Stohne>()).
+                AddTile(TileID.LihzahrdFurnace).
                 Register();
 
             // Earlier Rocket Is for early rocket weapons
