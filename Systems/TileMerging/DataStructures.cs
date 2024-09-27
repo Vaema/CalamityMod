@@ -109,38 +109,6 @@ namespace CalamityMod.Systems
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
     }
 
-    public enum BlendTextureID : byte
-    {
-        AbyssGravel,
-        Ash,
-        AstralDirt,
-        AstralSand,
-        AstralSandstone,
-        AstralSnow,
-        BrimstoneSlag,
-        Cloud,
-        Dirt,
-        EutrophicSand,
-        HardenedSand,
-        HardenedSulphurousSandstone,
-        Luminite,
-        Mud,
-        Navystone,
-        PyreMantle,
-        RainCloud,
-        Sand,
-        Sandstone,
-        SnowCloud,
-        Snow,
-        Stone,
-        SulphurousSand,
-        SulphurousSandstone,
-        SulphurousShale,
-        Voidstone,
-
-        None = byte.MaxValue,
-    }
-
     public struct TileBlendingData : ITileData
     {
         private byte SheetIndex0;
@@ -166,7 +134,7 @@ namespace CalamityMod.Systems
             for (int i = 0; i<8; i++)
             {
                 SetData(i, 0);
-                SetSheetIndex(i, TileBlendMergeSystem.EmptySheetIndex);
+                SetSheetIndex(i, TileBlendTextureLoader.EmptySlot);
             }
         }
 

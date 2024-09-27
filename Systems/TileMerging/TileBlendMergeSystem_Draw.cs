@@ -31,12 +31,13 @@ namespace CalamityMod.Systems
                 blendingData.Get(idx, out var sheetIdx, out var data);
 
                 // Break here as standard for TileBlendingData is 0->Count fill, so further fields should be also Invalid
-                if (sheetIdx == EmptySheetIndex)
+                if (sheetIdx == TileBlendTextureLoader.EmptySlot)
                     break;
 
-                var rect = SideDataToSheetRect(data);
+                var rect = TileBlendTexture.SideDataToSheetRect(data);
+                var texture = TileBlendTextureLoader.Registry[sheetIdx];
                 var variant = Math.Clamp(tile.TileFrameNumber, 0, 2);
-                Main.spriteBatch.Draw(_BlendTextures[sheetIdx, variant], drawPos, rect, drawColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
+                Main.spriteBatch.Draw(texture.BlendTextures[variant], drawPos, rect, drawColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
             }
         }
     }

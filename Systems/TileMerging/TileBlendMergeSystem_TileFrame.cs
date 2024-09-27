@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Items.Potions.Alcohol;
+using Extensions;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -43,16 +45,7 @@ namespace CalamityMod.Systems
                     continue;
 
                 BlendSideFlags sideFlags = BlendSideFlags.None;
-
-                CalculateSide(tileType, left, blendTextureID, BlendSideFlags.Left, ref sideFlags, out var leftMerged);
-                CalculateSide(tileType, right, blendTextureID, BlendSideFlags.Right, ref sideFlags, out var rightMerged);
-                CalculateSide(tileType, up, blendTextureID, BlendSideFlags.Up, ref sideFlags, out var upMerged);
-                CalculateSide(tileType, down, blendTextureID, BlendSideFlags.Down, ref sideFlags, out var downMerged);
-
-                if (upMerged && leftMerged) CalculateSide(tileType, upLeft, blendTextureID, BlendSideFlags.UpLeft, ref sideFlags, out _);
-                if (upMerged && rightMerged) CalculateSide(tileType, upRight, blendTextureID, BlendSideFlags.UpRight, ref sideFlags, out _);
-                if (downMerged && leftMerged) CalculateSide(tileType, downLeft, blendTextureID, BlendSideFlags.DownLeft, ref sideFlags, out _);
-                if (downMerged && rightMerged) CalculateSide(tileType, downRight, blendTextureID, BlendSideFlags.DownRight, ref sideFlags, out _);
+                CalculateSides(blendTextureID, i, j, ref sideFlags);
 
                 if (sideFlags != BlendSideFlags.None)
                 {
@@ -62,40 +55,212 @@ namespace CalamityMod.Systems
             }
         }
 
-        private static void CalculateSide(int type, int sideType, BlendTextureID blendingWith, BlendSideFlags flagToAdd, ref BlendSideFlags flags, out bool sideMerged)
+        private static void CalculateSides(int blendingWith, int i, int j, ref BlendSideFlags flags)
         {
-            sideMerged = false;
+            var hasCenter = TryGetTile(i, j, out var centerTile, out var center);
 
-            if (sideType < 0)
-                return;
+            bool leftMerged = false;
+            bool rightMerged = false;
+            bool upMerged = false;
+            bool downMerged = false;
 
-            var canBeMerged = Main.tileMerge[type][sideType];
+            #region Basic 4 Direction Merges
+
+            bool hasLeft = TryGetTile(i - 1, j, out var leftTile, out var leftType);
+            if (hasLeft && HasLeftMerge(centerTile, leftTile))
+            {
+                leftMerged = true;
+                if (_TileTypeBlendTexture[leftType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.Left;
+                }
+            }
+
+            bool hasRight = TryGetTile(i + 1, j, out var rightTile, out var rightType);
+            if (hasRight && HasRightMerge(centerTile, rightTile))
+            {
+                rightMerged = true;
+                if (_TileTypeBlendTexture[rightType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.Right;
+                }
+            }
+
+            bool hasUp = TryGetTile(i, j - 1, out var upTile, out var upType);
+            if (hasUp && HasUpMerge(centerTile, upTile))
+            {
+                upMerged = true;
+                if (_TileTypeBlendTexture[upType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.Up;
+                }
+            }
+
+            bool hasDown = TryGetTile(i, j + 1, out var downTile, out var downType);
+            if (hasDown && HasDownMerge(centerTile, downTile))
+            {
+                downMerged = true;
+                if (_TileTypeBlendTexture[downType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.Down;
+                }
+            }
+
+            #endregion
+
+            #region Diagonal Direction Merges
+
+            bool hasUpLeft = TryGetTile(i - 1, j - 1, out var upLeftTile, out var upLeftType);
+            if (hasUpLeft && upMerged && leftMerged && HasRightMerge(upLeftTile, upTile) && HasDownMerge(upLeftTile, leftTile))
+            {
+                if (_TileTypeBlendTexture[upLeftType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.UpLeft;
+                }
+            }
+
+            bool hasUpRight = TryGetTile(i + 1, j - 1, out var upRightTile, out var upRightType);
+            if (hasUpRight && upMerged && rightMerged && HasLeftMerge(upRightTile, upTile) && HasDownMerge(upRightTile, leftTile))
+            {
+                if (_TileTypeBlendTexture[upRightType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.UpRight;
+                }
+            }
+
+            bool hasDownLeft = TryGetTile(i - 1, j + 1, out var downLeftTile, out var downLeftType);
+            if (hasDownLeft && downMerged && leftMerged && HasRightMerge(downLeftTile, downTile) && HasUpMerge(downLeftTile, leftTile))
+            {
+                if (_TileTypeBlendTexture[downLeftType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.DownLeft;
+                }
+            }
+
+            bool hasDownRight = TryGetTile(i + 1, j + 1, out var downRightTile, out var downRightType);
+            if (hasDownRight && downMerged && rightMerged && HasLeftMerge(downRightTile, downTile) && HasUpMerge(downLeftTile, leftTile))
+            {
+                if (_TileTypeBlendTexture[downRightType] == blendingWith)
+                {
+                    flags |= BlendSideFlags.DownRight;
+                }
+            }
+
+            #endregion
+        }
+
+
+
+        private static bool HasLeftMerge(Tile tileOnCenter, Tile tileOnLeft)
+        {
+            if (!IsMergable(tileOnCenter.TileType, tileOnLeft.TileType)) return false;
+            if (!HasLeftSolid(tileOnCenter)) return false;
+            if (!HasRightSolid(tileOnLeft)) return false;
+
+            return true;
+        }
+
+        private static bool HasRightMerge(Tile tileOnCenter, Tile tileOnRight)
+        {
+            if (!IsMergable(tileOnCenter.TileType, tileOnRight.TileType)) return false;
+            if (!HasRightSolid(tileOnCenter)) return false;
+            if (!HasLeftSolid(tileOnRight)) return false;
+
+            return true;
+        }
+
+        private static bool HasUpMerge(Tile tileOnCenter, Tile tileOnUp)
+        {
+            if (!IsMergable(tileOnCenter.TileType, tileOnUp.TileType)) return false;
+            if (!HasUpSolid(tileOnCenter)) return false;
+            if (!HasDownSolid(tileOnUp)) return false;
+
+            return true;
+        }
+
+        private static bool HasDownMerge(Tile tileOnCenter, Tile tileOnDown)
+        {
+            if (!IsMergable(tileOnCenter.TileType, tileOnDown.TileType)) return false;
+            if (!HasDownSolid(tileOnCenter)) return false;
+            if (!HasUpSolid(tileOnDown)) return false;
+
+            return true;
+        }
+
+        private static bool HasLeftSolid(Tile tile)
+        {
+            return tile.BlockType switch
+            {
+                BlockType.Solid => true,
+                BlockType.SlopeUpLeft => true,
+                BlockType.SlopeDownLeft => true,
+                _ => false
+            };
+        }
+
+        private static bool HasRightSolid(Tile tile)
+        {
+            return tile.BlockType switch
+            {
+                BlockType.Solid => true,
+                BlockType.SlopeUpRight => true,
+                BlockType.SlopeDownRight => true,
+                _ => false
+            };
+        }
+
+        private static bool HasUpSolid(Tile tile)
+        {
+            return tile.BlockType switch
+            {
+                BlockType.Solid => true,
+                BlockType.HalfBlock => true,
+                BlockType.SlopeUpLeft => true,
+                BlockType.SlopeUpRight => true,
+                _ => false
+            };
+        }
+
+        private static bool HasDownSolid(Tile tile)
+        {
+            return tile.BlockType switch
+            {
+                BlockType.Solid => true,
+                BlockType.SlopeDownLeft => true,
+                BlockType.SlopeDownRight => true,
+                _ => false
+            };
+        }
+
+        private static bool IsMergable(int type, int otherType)
+        {
+            if (type < 0 || otherType < 0)
+                return false;
+
+            if (type == otherType)
+                return true;
+
+            var canBeMerged = Main.tileMerge[type][otherType];
             if (Main.tileBlendAll[type])
             {
-                sideMerged = canBeMerged && !TileID.Sets.BlockMergesWithMergeAllBlock[sideType];
+                return canBeMerged && !TileID.Sets.BlockMergesWithMergeAllBlock[otherType];
             }
             else
             {
-                sideMerged = canBeMerged;
-            }
-
-            var blendTextureID = _TileTypeBlendTexture[sideType];
-            if (sideMerged && (blendTextureID == blendingWith))
-            {
-                flags |= flagToAdd;
+                return canBeMerged;
             }
         }
 
-        private static HashSet<BlendTextureID> PopulateBlendTileTypes(params int[] types)
+        private static HashSet<int> PopulateBlendTileTypes(params int[] types)
         {
-            var hashSet = new HashSet<BlendTextureID>();
+            var hashSet = new HashSet<int>();
             foreach (var type in types)
             {
                 if (type < 0)
                     continue;
 
                 var blendTextureID = _TileTypeBlendTexture[type];
-                if (blendTextureID != BlendTextureID.None)
+                if (blendTextureID != TileBlendTextureLoader.EmptySlot)
                     hashSet.Add(blendTextureID);
             }
             return hashSet;
@@ -111,6 +276,27 @@ namespace CalamityMod.Systems
                 return -1;
 
             return tile.TileType;
+        }
+
+        private static bool TryGetTile(int i, int j, out Tile tile, out int type)
+        {
+            if (!WorldGen.InWorld(i, j))
+            {
+                tile = default;
+                type = -1;
+                return false;
+            }     
+
+            tile = Main.tile[i, j];
+            if (!tile.HasTile)
+            {
+                tile = default;
+                type = -1;
+                return false;
+            }
+
+            type = tile.TileType;
+            return true;
         }
     }
 }

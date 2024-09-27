@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
@@ -7,7 +11,7 @@ using static CalamityMod.Systems.BlendSideFlags;
 
 namespace CalamityMod.Systems
 {
-    public sealed partial class TileBlendMergeSystem : ModSystem
+    public abstract partial class TileBlendTexture : ModTexturedType
     {
         // Welcome to Hardcoded hell
         // Do NOT change anything in here unless you understand absolutely everything
@@ -141,12 +145,12 @@ namespace CalamityMod.Systems
             [ShapeL_UpLeft_End] = _L_UpLeft_End,
             [ShapeL_UpLeft_RightEnd] = _L_UpLeft_RightEnd,
             [ShapeL_UpLeft_DownEnd] = _L_UpLeft_DownEnd,
-            
+
             [ShapeL_UpRight] = _L_UpRight,
             [ShapeL_UpRight_End] = _L_UpRight_End,
             [ShapeL_UpRight_LeftEnd] = _L_UpRight_LeftEnd,
             [ShapeL_UpRight_DownEnd] = _L_UpRight_DownEnd,
-            
+
             [ShapeL_DownLeft] = _L_DownLeft,
             [ShapeL_DownLeft_End] = _L_DownLeft_End,
             [ShapeL_DownLeft_RightEnd] = _L_DownLeft_RightEnd,
