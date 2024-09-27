@@ -108,6 +108,12 @@ namespace CalamityMod.Systems
             _TileBlendable[myType, blendTexture.Slot] = true;
             CalamityUtils.SetMerge(myType, blendTileType, true);
         }
+
+        public static void RegisterMerge<T>(int myType) where T : TileBlendTexture
+        {
+            var blendTexture = ModContent.GetInstance<T>();
+            RegisterMerge(myType, blendTexture);
+        }
         #endregion
     }
 }

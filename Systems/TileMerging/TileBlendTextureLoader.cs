@@ -29,6 +29,7 @@ namespace CalamityMod.Systems
         public override void Unload()
         {
             Registry = null;
+            _UniqueSlot = 0;
         }
 
         internal static int Register(TileBlendTexture sheet)
