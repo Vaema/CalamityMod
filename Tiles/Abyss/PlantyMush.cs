@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
-using CalamityMod.Tiles.Merges;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,15 +33,9 @@ namespace CalamityMod.Tiles.Abyss
             AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.PlantyMush>());
             HitSound = MineSound;
 
-            // Old Syntax
-            //this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            //this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            //this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-
-            // New Syntax
-            TileBlendMergeSystem.RegisterMerge<DirtMerge>(Type);
-            TileBlendMergeSystem.RegisterMerge<StoneMerge>(Type);
-            TileBlendMergeSystem.RegisterMerge<AbyssGravelMerge>(Type);
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
         }
 
         int animationFrameWidth = 234;
