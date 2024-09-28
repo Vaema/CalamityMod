@@ -13,7 +13,7 @@ namespace CalamityMod.Systems
     public abstract partial class TileBlendTexture : ModTexturedType
     {
         #region Sheet Baking Process
-        public void BakeBlendTexture(Texture2D texture)
+        internal void BakeBlendTexture(Texture2D texture)
         {
             // It's baking moment
             Main.QueueMainThreadAction(() =>
