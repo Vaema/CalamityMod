@@ -390,7 +390,7 @@ namespace CalamityMod
                 "Spider region",
                 "WinterTire",
                 "Nycro",
-                "Bewearium",
+                "Vyster", // previously "Bewearium"
                 "William",
                 "HellGoat2",
                 "116taj",

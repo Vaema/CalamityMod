@@ -244,7 +244,7 @@ namespace CalamityMod.NPCs
             "Merasmus", // <@!288066987819663360> (spiderprovidence)
             "Habolo", // <@!163028025494077441> (hellgoat2)
             "Ortho", // <@!264984390910738432> (worcuus)
-            "Chris Tallballs", // <@!770211589076418571> (bewearium)
+            "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
         };
@@ -1164,8 +1164,8 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
                 .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron)
-                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard);
+                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode); // Vanilla sells these in Hardmode, we just make them available at all times
             }
 
             if (type == NPCID.GoblinTinkerer)

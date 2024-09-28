@@ -387,6 +387,7 @@ namespace CalamityMod
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
+            TileType<Stohne>(),
         });
 
         /// <summary>
@@ -559,6 +560,7 @@ namespace CalamityMod
             SetMerge(type, TileID.MarbleBlock);
             SetMerge(type, TileID.GraniteBlock);
             //Calam
+            SetMerge(type, TileType<AncientSmoothNavystone>());
             SetMerge(type, TileType<SmoothNavystone>());
             SetMerge(type, TileType<SmoothBrimstoneSlag>());
             SetMerge(type, TileType<SmoothAbyssGravel>());
