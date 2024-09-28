@@ -77,17 +77,14 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.localAI[1] += (Projectile.velocity.Length() / 20);
 
             Color col = ProvUtils.GetProjectileColor(255);
-
             float vel = MathHelper.Clamp(Projectile.velocity.Length() / 5, 0, 1.5f);
-
             GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity + new Vector2(Main.rand.NextFloat(vel * 2), 0).RotatedByRandom(MathHelper.TwoPi), false, 4, 1f, col);
-
             GeneralParticleHandler.SpawnParticle(p);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs((float)Math.Sin(Projectile.localAI[1] / 10f)));
+            float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
             
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
