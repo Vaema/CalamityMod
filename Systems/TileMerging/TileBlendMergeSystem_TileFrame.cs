@@ -172,12 +172,12 @@ namespace CalamityMod.Systems
                 // Up
                 if (sides.HasFlag(BlendSideFlags.Up))
                 {
-                    if (leftMerged && upLeftMerged && _TileBlendable[leftType, slot] && _TileBlendable[upLeftType, slot])
+                    if (leftMerged && upLeftMerged && IsBlendableOrSame(leftType, slot) && IsBlendableOrSame(upLeftType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.UpLeft;
                     }
 
-                    if (rightMerged && upRightMerged && _TileBlendable[rightType, slot] && _TileBlendable[upRightType, slot])
+                    if (rightMerged && upRightMerged && IsBlendableOrSame(rightType, slot) && IsBlendableOrSame(upRightType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.UpRight;
                     }
@@ -186,12 +186,12 @@ namespace CalamityMod.Systems
                 // Down
                 if (sides.HasFlag(BlendSideFlags.Down))
                 {
-                    if (leftMerged && downLeftMerged && _TileBlendable[leftType, slot] && _TileBlendable[downLeftType, slot])
+                    if (leftMerged && downLeftMerged && IsBlendableOrSame(leftType, slot) && IsBlendableOrSame(downLeftType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.DownLeft;
                     }
 
-                    if (rightMerged && downRightMerged && _TileBlendable[rightType, slot] && _TileBlendable[downRightType, slot])
+                    if (rightMerged && downRightMerged && IsBlendableOrSame(rightType, slot) && IsBlendableOrSame(downRightType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.DownRight;
                     }
@@ -200,12 +200,12 @@ namespace CalamityMod.Systems
                 // Left
                 if (sides.HasFlag(BlendSideFlags.Left))
                 {
-                    if (upLeftMerged && upMerged && _TileBlendable[upLeftType, slot] && _TileBlendable[upType, slot])
+                    if (upLeftMerged && upMerged && IsBlendableOrSame(upLeftType, slot) && IsBlendableOrSame(upType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.UpLeft;
                     }
 
-                    if (downLeftMerged && downMerged && _TileBlendable[downLeftType, slot] && _TileBlendable[downType, slot])
+                    if (downLeftMerged && downMerged && IsBlendableOrSame(downLeftType, slot) && IsBlendableOrSame(downType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.DownLeft;
                     }
@@ -214,12 +214,12 @@ namespace CalamityMod.Systems
                 // Right
                 if (sides.HasFlag(BlendSideFlags.Right))
                 {
-                    if (upRightMerged && upMerged && _TileBlendable[upRightType, slot] && _TileBlendable[upType, slot])
+                    if (upRightMerged && upMerged && IsBlendableOrSame(upRightType, slot) && IsBlendableOrSame(upType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.UpRight;
                     }
 
-                    if (downRightMerged && downMerged && _TileBlendable[downRightType, slot] && _TileBlendable[downType, slot])
+                    if (downRightMerged && downMerged && IsBlendableOrSame(downRightType, slot) && IsBlendableOrSame(downType, slot))
                     {
                         blendSidesReg[slot] |= BlendSideFlags.DownRight;
                     }
@@ -229,6 +229,13 @@ namespace CalamityMod.Systems
         }
 
         #region Merge Utilities
+        private static bool IsBlendableOrSame(int tileType, int blendTextureSlot)
+        {
+            if (_TileBlendable[tileType, blendTextureSlot]) return true;
+            if (_TileTypeToBlendTextureSlot[tileType] == blendTextureSlot) return true;
+            return false;
+        }
+
         private static bool HasLeftMerge(Tile tileOnCenter, Tile tileOnLeft)
         {
             if (!IsMergable(tileOnCenter.TileType, tileOnLeft.TileType)) return false;
