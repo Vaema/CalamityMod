@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -259,6 +261,19 @@ namespace CalamityMod.Systems
             ShapeU_RightEmpty_UpEnd,
             ShapeU_RightEmpty_DownEnd
         ];
+
+        /// <summary>
+        /// An Descend Ordered Consume Lookup Table
+        /// [U -> L -> I -> Corner] Order
+        /// [Most flags -> Least flags] Order
+        /// </summary>
+        private static readonly IReadOnlyCollection<IReadOnlyCollection<BlendSideFlags>> _ShapeConsumeMap = [
+            _U_Shapes.OrderByDescending(HotFlagCount).ToImmutableArray(),
+            _L_Shapes.OrderByDescending(HotFlagCount).ToImmutableArray(),
+            _I_Shapes.OrderByDescending(HotFlagCount).ToImmutableArray(),
+            // I shape includes up, down, left, right. So we don't need to consume them manually
+            _Corner_Shapes,
+        ];
         #endregion
 
         #region Utils
@@ -284,6 +299,20 @@ namespace CalamityMod.Systems
                 CreateRect(topSheetX, topSheetY + (1 * increment)),
                 CreateRect(topSheetX, topSheetY + (2 * increment))
             ];
+        }
+
+        private static int HotFlagCount(BlendSideFlags flags)
+        {
+            var count = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                var flag = (BlendSideFlags)(1 << i);
+                if (flag == (flags & flag))
+                {
+                    count++;
+                }
+            }
+            return count;
         }
         #endregion
     }

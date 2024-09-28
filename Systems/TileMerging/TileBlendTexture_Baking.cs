@@ -71,16 +71,9 @@ namespace CalamityMod.Systems
             if (sideFlags == BlendSideFlags.None)
                 yield break;
 
-            IEnumerable<IEnumerable<BlendSideFlags>> shapes = [
-                _U_Shapes,
-                _L_Shapes,
-                _I_Shapes, // I shape includes up, down, left, right
-                _Corner_Shapes
-            ];
-
-            foreach (var shapeGroup in shapes)
+            foreach (var shapeGroup in _ShapeConsumeMap)
             {
-                foreach (var shape in shapeGroup.OrderByDescending(HotFlagCount))
+                foreach (var shape in shapeGroup)
                 {
                     if ((shape & sideFlags) == shape)
                     {
@@ -98,20 +91,6 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Utils
-        private static int HotFlagCount(BlendSideFlags flags)
-        {
-            var count = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                var flag = (BlendSideFlags)(1 << i);
-                if (flag == (flags & flag))
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
         public static Rectangle SideFlagsToSheetRect(byte data)
         {
             int y = Math.DivRem(data, 16, out int x);
