@@ -71,6 +71,15 @@ NPCName: {
 	SkeletronPrime: Built with the express purpose of inciting fear into the hearts of any god worshiper, this machine has more arms than ever before, and a variety of fierce weapons.
 	Plantera: A creation of the Vernal Pass meant to replace Braelor in his absence. They harnessed dead animal souls to give it life, but the span of such magic was far larger than anticipated. It didn't take long for the Plantera to grow out of control and slaughter its masters.
 	HallowBoss: Despite their parentage, children of gods do not inherit a shred of their power. The Empress chose to claim power for herself by siphoning it from other places and beings. She found a perfect candidate in the Hallow due to its unstable nature, and is now transformed into a mighty fae.
+	Golem: A remarkable display of ingenuity constructed by the Lihzahrd race. Seeking light after they hid away in their temple out of shame for driving their goddess away, they built this construct. Powered by solar energy cells, it is ready to guard the Temple.
+	DukeFishron: An aquatic-evolved species which lives in isolation in the depths of the ocean. Despite their shortcomings, they still share blood with the dragons of old, claiming near complete dominion over the oceans. Legends claim it only surfaces in search of a rare, savory type of worm.
+	CultistBoss: The fanatical leader of the Dragon Cult, hell-bent on resurrecting a dragon. He upholds their sacred duty of keeping the cosmic behemoth sealed far away on the moon, an oath he swore to long ago when he pledged himself in their service.
+	CultistDevote: Utterly devoted, Lunatic Devotees are so paranoid over the prospect of their ritual failing that they stay unflinching even when threatened with death. Fear only makes them work harder.
+	LunarTowerNebula: The second pillar, created to spawn beings from beyond that filled the Minds of all with gloom. These troops specialized in disabling the enemy's intelligence, ensuring no countermeasures could be planned against the dominator.
+	LunarTowerSolar: The fourth and last pillar, created as Sunlight bled and marked doom. A miniscule shard of its power was used to make it, and yet its spawns accompanied the dominator directly in his conquest against the dragons.
+	LunarTowerVortex: The first pillar, created as black Storm clouds on the horizon loomed. While the dominator fought the mightiest of dragons, the spawns of this pillar focused on exterminating any mundane life they could find, appearing in seemingly infinite droves.
+	LunarTowerStardust: The third Pillar, created as Life rose to fight, but was given no room. Its spawns found particular utility in searching and picking off stronger beings that could pose a threat to the creatures of the Vortex.
+	MoonLordCore: The cosmic behemoth that brought Terraria to its knees 800 years ago, freed from its lunar prison in a weakened state. It had the power to siphon and dominate souls, including those possessed by dragons, permanently wounding them. It hails from an incomprehensible fissure of broken spacetime which leeches energy from our dimension to sustain itself.
 }
 
 CommonEntries: {

@@ -9032,6 +9032,15 @@ namespace CalamityMod.NPCs
                 case NPCID.SkeletronPrime:
                 case NPCID.Plantera:
                 case NPCID.HallowBoss:
+                case NPCID.Golem:
+                case NPCID.DukeFishron:
+                case NPCID.CultistBoss:
+                case NPCID.CultistDevote:
+                case NPCID.LunarTowerNebula:
+                case NPCID.LunarTowerSolar:
+                case NPCID.LunarTowerVortex:
+                case NPCID.LunarTowerStardust:
+                case NPCID.MoonLordCore:
                     FlavorTextBestiaryInfoElement f = new("Hi CS0120");
                     bestiaryEntry.Info.RemoveAll(i => i.GetType() == f.GetType());
                     bestiaryEntry.Info.Add(new FlavorTextBestiaryInfoElement(CalamityUtils.GetTextValue($"Bestiary.Vanilla.{Lang.GetNPCName(npc.netID).Key}")));
