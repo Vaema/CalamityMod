@@ -41,7 +41,7 @@ namespace CalamityMod.Systems
                 {
                     for (int i = 0; i < 256; i++)
                     {
-                        var drawPos = SideDataToPositionInSheet((byte)i);
+                        var drawPos = SideFlagsToPositionInSheet((byte)i);
                         var mergeSides = (BlendSideFlags)i;
 
                         // Easy cases, It match on Shape Lookup Sheet Directly
@@ -112,13 +112,13 @@ namespace CalamityMod.Systems
             return count;
         }
 
-        public static Rectangle SideDataToSheetRect(byte data)
+        public static Rectangle SideFlagsToSheetRect(byte data)
         {
             int y = Math.DivRem(data, 16, out int x);
             return new Rectangle(x * 18, y * 18, 16, 16);
         }
 
-        public static Vector2 SideDataToPositionInSheet(byte data)
+        public static Vector2 SideFlagsToPositionInSheet(byte data)
         {
             int y = Math.DivRem(data, 16, out int x);
             return new Vector2(x * 18, y * 18);

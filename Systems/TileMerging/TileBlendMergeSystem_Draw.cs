@@ -25,8 +25,8 @@ namespace CalamityMod.Systems
                 return;
 
             Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
-            var blendingData = tile.Get<TileBlendingData>();
-            for (int idx = 0; idx < 8; idx++)
+            var blendingData = tile.Get<TileBlendingData>(); // Since we are not editing the value, we can just copy the values from here
+            for (int idx = 0; idx < TileBlendingData.Length; idx++)
             {
                 blendingData.Get(idx, out var sheetIdx, out var data);
 
@@ -34,7 +34,7 @@ namespace CalamityMod.Systems
                 if (sheetIdx == TileBlendTextureLoader.EmptySlot)
                     break;
 
-                var rect = TileBlendTexture.SideDataToSheetRect(data);
+                var rect = TileBlendTexture.SideFlagsToSheetRect(data);
                 var texture = TileBlendTextureLoader.Registry[sheetIdx];
                 var variant = Math.Clamp(tile.TileFrameNumber, 0, 2);
                 Main.spriteBatch.Draw(texture.BlendTextures[variant], drawPos, rect, drawColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);

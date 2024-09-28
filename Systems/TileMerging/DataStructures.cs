@@ -111,6 +111,8 @@ namespace CalamityMod.Systems
 
     public struct TileBlendingData : ITileData
     {
+        public const int Length = 8;
+
         private byte SheetIndex0;
         private byte SheetIndex1;
         private byte SheetIndex2;
@@ -131,7 +133,7 @@ namespace CalamityMod.Systems
 
         public void Clear()
         {
-            for (int i = 0; i<8; i++)
+            for (int i = 0; i<Length; i++)
             {
                 SetData(i, 0);
                 SetSheetIndex(i, TileBlendTextureLoader.EmptySlot);
