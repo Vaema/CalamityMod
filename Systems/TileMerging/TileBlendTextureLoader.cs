@@ -34,6 +34,12 @@ namespace CalamityMod.Systems
 
         internal static int Register(TileBlendTexture sheet)
         {
+            if (sheet.Slot >= 0)
+                throw new ArgumentException("Argument has already registered to System", nameof(sheet));
+
+            if (_UniqueSlot >= EmptySlot)
+                throw new InvalidOperationException($"Slots are all used up to {EmptySlot}, We can't allocate more!");
+
             var slot = _UniqueSlot++;
             Registry[slot] = sheet;
             return slot;

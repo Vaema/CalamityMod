@@ -26,13 +26,11 @@ namespace CalamityMod.Systems
         #endregion
 
 
-
         #region Properties
         public Asset<Texture2D> TextureAsset { get; private set; }
-        public int Slot { get; private set; }
+        public int Slot { get; private set; } = -1;
         public RenderTarget2D[] BlendTextures { get; private set; } // dimension: [3]
         #endregion
-
 
 
         #region Overrides
@@ -99,11 +97,12 @@ namespace CalamityMod.Systems
         #endregion
 
 
-
+        #region Public API
         public void RebuildBlendSheet(Texture2D texture = null)
         {
             texture ??= TextureAsset.Value;
             BakeBlendTexture(texture);
         }
+        #endregion
     }
 }
