@@ -10,6 +10,8 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using BlendSidesReg = System.Collections.Generic.Dictionary<int, CalamityMod.Systems.BlendSideFlags>;
+
 namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
@@ -20,42 +22,30 @@ namespace CalamityMod.Systems
                 return;
 
             var tile = Main.tile[i, j];
+            tile.Get<TileBlendingData>().Clear();
+
             if (!tile.HasTile) // Is this even possible? But I'm doing this for sanity check anyways
                 return;
 
-            tile.Get<TileBlendingData>().Clear();
-
-            int tileType =  tile.TileType;
-            int left =      GetTileType(i - 1, j);
-            int right =     GetTileType(i + 1, j);
-
-            int up =        GetTileType(i, j - 1);
-            int upLeft =    GetTileType(i - 1, j - 1);
-            int upRight =   GetTileType(i + 1, j - 1);
-
-            int down =      GetTileType(i, j + 1);
-            int downLeft =  GetTileType(i - 1, j + 1);
-            int downRight = GetTileType(i + 1, j + 1);
-
-            var blendTexturesSurrounding = PopulateBlendTileTypes(left, right, up, upLeft, upRight, down, downLeft, downRight);
             var blendDataUniqueIndex = 0;
-            foreach (var blendTextureID in blendTexturesSurrounding)
-            {
-                if (!_TileBlendable[tileType, (int)blendTextureID])
-                    continue;
+            var blendSidesReg = PopulateBlendSidesReg(i, j, tile.TileType);
 
-                BlendSideFlags sideFlags = BlendSideFlags.None;
-                CalculateSides(blendTextureID, i, j, ref sideFlags);
+            CalculateSides(i, j, in blendSidesReg);
+
+            foreach (var pair in blendSidesReg)
+            {
+                var blendTextureSlot = pair.Key;
+                var sideFlags = pair.Value;
 
                 if (sideFlags != BlendSideFlags.None)
                 {
-                    tile.Get<TileBlendingData>().Set(blendDataUniqueIndex, (byte)blendTextureID, (byte)sideFlags);
+                    tile.Get<TileBlendingData>().Set(blendDataUniqueIndex, (byte)blendTextureSlot, (byte)sideFlags);
                     blendDataUniqueIndex++;
                 }
             }
         }
 
-        private static void CalculateSides(int blendingWith, int i, int j, ref BlendSideFlags flags)
+        private static void CalculateSides(int i, int j, in BlendSidesReg blendSidesReg)
         {
             var hasCenter = TryGetTile(i, j, out var centerTile, out var center);
 
@@ -70,9 +60,11 @@ namespace CalamityMod.Systems
             if (hasLeft && HasLeftMerge(centerTile, leftTile))
             {
                 leftMerged = true;
-                if (_TileTypeToBlendTextureSlot[leftType] == blendingWith)
+
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[leftType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.Left;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.Left;
                 }
             }
 
@@ -80,9 +72,11 @@ namespace CalamityMod.Systems
             if (hasRight && HasRightMerge(centerTile, rightTile))
             {
                 rightMerged = true;
-                if (_TileTypeToBlendTextureSlot[rightType] == blendingWith)
+
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[rightType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.Right;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.Right;
                 }
             }
 
@@ -90,9 +84,11 @@ namespace CalamityMod.Systems
             if (hasUp && HasUpMerge(centerTile, upTile))
             {
                 upMerged = true;
-                if (_TileTypeToBlendTextureSlot[upType] == blendingWith)
+
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[upType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.Up;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.Up;
                 }
             }
 
@@ -100,9 +96,11 @@ namespace CalamityMod.Systems
             if (hasDown && HasDownMerge(centerTile, downTile))
             {
                 downMerged = true;
-                if (_TileTypeToBlendTextureSlot[downType] == blendingWith)
+
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[downType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.Down;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.Down;
                 }
             }
 
@@ -113,44 +111,47 @@ namespace CalamityMod.Systems
             bool hasUpLeft = TryGetTile(i - 1, j - 1, out var upLeftTile, out var upLeftType);
             if (hasUpLeft && upMerged && leftMerged && HasRightMerge(upLeftTile, upTile) && HasDownMerge(upLeftTile, leftTile))
             {
-                if (_TileTypeToBlendTextureSlot[upLeftType] == blendingWith)
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[upLeftType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.UpLeft;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.UpLeft;
                 }
             }
 
             bool hasUpRight = TryGetTile(i + 1, j - 1, out var upRightTile, out var upRightType);
             if (hasUpRight && upMerged && rightMerged && HasLeftMerge(upRightTile, upTile) && HasDownMerge(upRightTile, leftTile))
             {
-                if (_TileTypeToBlendTextureSlot[upRightType] == blendingWith)
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[upRightType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.UpRight;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.UpRight;
                 }
             }
 
             bool hasDownLeft = TryGetTile(i - 1, j + 1, out var downLeftTile, out var downLeftType);
             if (hasDownLeft && downMerged && leftMerged && HasRightMerge(downLeftTile, downTile) && HasUpMerge(downLeftTile, leftTile))
             {
-                if (_TileTypeToBlendTextureSlot[downLeftType] == blendingWith)
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[downLeftType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.DownLeft;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.DownLeft;
                 }
             }
 
             bool hasDownRight = TryGetTile(i + 1, j + 1, out var downRightTile, out var downRightType);
             if (hasDownRight && downMerged && rightMerged && HasLeftMerge(downRightTile, downTile) && HasUpMerge(downLeftTile, leftTile))
             {
-                if (_TileTypeToBlendTextureSlot[downRightType] == blendingWith)
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[downRightType];
+                if (blendSidesReg.ContainsKey(blendTextureSlot))
                 {
-                    flags |= BlendSideFlags.DownRight;
+                    blendSidesReg[blendTextureSlot] |= BlendSideFlags.DownRight;
                 }
             }
 
             #endregion
         }
 
-
-
+        #region Merge Utilities
         private static bool HasLeftMerge(Tile tileOnCenter, Tile tileOnLeft)
         {
             if (!IsMergable(tileOnCenter.TileType, tileOnLeft.TileType)) return false;
@@ -251,19 +252,48 @@ namespace CalamityMod.Systems
             }
         }
 
-        private static HashSet<int> PopulateBlendTileTypes(params int[] types)
+        private static BlendSidesReg PopulateBlendSidesReg(int i, int j, int centerType)
         {
-            var hashSet = new HashSet<int>();
-            foreach (var type in types)
-            {
-                if (type < 0)
-                    continue;
+            var reg = new BlendSidesReg();
 
-                var blendTextureID = _TileTypeToBlendTextureSlot[type];
-                if (blendTextureID != TileBlendTextureLoader.EmptySlot)
-                    hashSet.Add(blendTextureID);
+            int left = GetTileType(i - 1, j);
+            int right = GetTileType(i + 1, j);
+
+            int up = GetTileType(i, j - 1);
+            int upLeft = GetTileType(i - 1, j - 1);
+            int upRight = GetTileType(i + 1, j - 1);
+
+            int down = GetTileType(i, j + 1);
+            int downLeft = GetTileType(i - 1, j + 1);
+            int downRight = GetTileType(i + 1, j + 1);
+
+            void Populate(int sideType)
+            {
+                if (sideType < 0)
+                    return;
+
+                var blendTextureSlot = _TileTypeToBlendTextureSlot[sideType];
+                if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
+                    return;
+
+                if (_TileBlendable[centerType, blendTextureSlot])
+                {
+                    reg[blendTextureSlot] = BlendSideFlags.None;
+                }
             }
-            return hashSet;
+
+            Populate(left);
+            Populate(right);
+
+            Populate(up);
+            Populate(upLeft);
+            Populate(upRight);
+
+            Populate(down);
+            Populate(downLeft);
+            Populate(downRight);
+
+            return reg;
         }
 
         private static int GetTileType(int i, int j)
@@ -298,5 +328,6 @@ namespace CalamityMod.Systems
             type = tile.TileType;
             return true;
         }
+        #endregion
     }
 }

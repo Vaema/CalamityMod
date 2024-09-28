@@ -23,7 +23,7 @@ namespace CalamityMod.Systems
 
         public override void Load()
         {
-            Registry = new TileBlendTexture[256];
+            Registry = new TileBlendTexture[EmptySlot + 1];
         }
 
         public override void Unload()
