@@ -459,7 +459,7 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.IsABestiaryIconDummy)
             {
                 NPC.Opacity = 1f;
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PerforatorBodyMedium>()].Value, 5, 30, 0.6f, Vector2.Zero, 5, 10);
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PerforatorBodyMedium>()].Value, 5, 34, 0.3f, Vector2.Zero, 5, 6);
             }
 
             SpriteEffects spriteEffects = SpriteEffects.None;

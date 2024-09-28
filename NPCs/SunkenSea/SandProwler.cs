@@ -52,7 +52,6 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SeaSerpent_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 20
             };
@@ -583,6 +582,29 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D segmentSprite = TextureAssets.Npc[Type].Value;
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.frame = segmentSprite.Frame();
+                // Buffers the segment position and rotations
+                float offset = -0.2f;
+                float startX = 0;
+                float startY = 0;
+                int segmentSpacing = 16;
+                int animationSpeed = 5;
+                // Draw the body segments
+                for (int i = 7; i > 0; i--)
+                {
+                    // The first segment is slightly closer to keep up with the head
+                    float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                    Texture2D toUse = i == 1 ? BodySprite1.Value : i == 2 ? BodySprite2.Value : i % 2 == 0 ? BodySprite3.Value : BodySprite4.Value;
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, 1, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Width / 2), NPC.scale, SpriteEffects.None, 0f);
+                }
+                // Draw the head
+                spriteBatch.Draw(segmentSprite, NPC.position + new Vector2(startX, MathF.Sin(Main.GlobalTimeWrappedHourly * animationSpeed) * 2 + startY), segmentSprite.Frame(1, 11, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(Main.GlobalTimeWrappedHourly * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(segmentSprite.Width * 0.5f, segmentSprite.Height / 11), NPC.scale, SpriteEffects.None, 0f);
+
+                return false;
+            }
             switch (NPC.ai[3])
             {
                 case 0:

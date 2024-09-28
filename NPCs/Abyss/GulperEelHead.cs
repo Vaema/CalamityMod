@@ -343,7 +343,7 @@ namespace CalamityMod.NPCs.Abyss
             if (NPC.IsABestiaryIconDummy)
             {
                 Texture2D mainBody = TextureAssets.Npc[ModContent.NPCType<GulperEelBodyAlt>()].Value;
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, [TextureAssets.Npc[ModContent.NPCType<GulperEelBody>()].Value, mainBody, mainBody], 3, 26, 0.4f, new Vector2(0, 20), 3, 10);
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, [TextureAssets.Npc[ModContent.NPCType<GulperEelBody>()].Value, mainBody, mainBody], 3, 26, 0.3f, new Vector2(0, 20), 3, 10, 0, 0.1f);
             }
             return true;
         }

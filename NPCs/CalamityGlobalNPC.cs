@@ -6964,6 +6964,28 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (npc.IsABestiaryIconDummy)
+            {
+                switch (npc.netID)
+                {
+                    case NPCID.DiggerHead:
+                    case NPCID.GiantWormHead:
+                    case NPCID.EaterofWorldsHead:
+                    case NPCID.WyvernHead:
+                    case NPCID.StardustWormHead:
+                    case NPCID.SolarCrawltipedeHead:
+                    case NPCID.CultistDragonHead:
+                    case NPCID.TheDestroyer:
+                    case NPCID.LeechHead:
+                    case NPCID.DevourerHead:
+                    case NPCID.TombCrawlerHead:
+                    case NPCID.DuneSplicerHead:
+                    case NPCID.BloodEelHead:
+                    case NPCID.BoneSerpentHead:
+                    case NPCID.SeekerHead:
+                        return DrawVanillaBestiaryWorms(spriteBatch, npc, drawColor);
+                }
+            }
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
                 if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
@@ -7356,7 +7378,7 @@ namespace CalamityMod.NPCs
             }
 
             // Destroyer drawing and laser telegraphs
-            else if (CalamityLists.DestroyerIDs.Contains(npc.type))
+            else if (CalamityLists.DestroyerIDs.Contains(npc.type) && !npc.IsABestiaryIconDummy)
             {
                 Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
                 int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
@@ -8036,6 +8058,91 @@ namespace CalamityMod.NPCs
             newColor.B = (byte)((float)newColor.B * B);
             newColor.A = (byte)((float)newColor.A * A);
             return newColor;
+        }
+
+        public static bool DrawVanillaBestiaryWorms(SpriteBatch spriteBatch, NPC npc, Color drawColor)
+        {
+            npc.Opacity = 1;
+            int segments = 6;
+            int spacing = 20;
+            int bashLength = 0;
+            float bashSpeed = 0f;
+            int speed = 3;
+            float rotation = 0.6f;
+            Texture2D wyvernArm = TextureAssets.Npc[NPCID.WyvernLegs].Value;
+            Texture2D wyvernBody = TextureAssets.Npc[NPCID.WyvernBody].Value;
+            switch (npc.netID)
+            {
+                case NPCID.DiggerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 24, 0.4f, Vector2.Zero, speed, 10, 10, 0.2f);
+                case NPCID.GiantWormHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
+                case NPCID.EaterofWorldsHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 34, 0.2f, new Vector2(30, 0), speed, 10, 16, 0.24f);
+                case NPCID.WyvernHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, [wyvernArm, wyvernBody, wyvernBody, wyvernBody], 4, 28, 0.1f, new Vector2(36, 0), speed, 6, 50, 0.3f, true);
+                case NPCID.StardustWormHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, rotation, new Vector2(0, 10), 4, 10, 6, 0.18f);
+                case NPCID.SolarCrawltipedeHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, 6, 10, 16, 0.22f);
+                case NPCID.CultistDragonHead:
+                    return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
+                case NPCID.TheDestroyer:
+                    return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
+                case NPCID.LeechHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
+                case NPCID.DevourerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
+                case NPCID.TombCrawlerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 14, rotation, Vector2.Zero, speed, 20, 6, 0.14f);
+                case NPCID.DuneSplicerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 28, 0.4f, Vector2.Zero, speed, 10, bashLength, bashSpeed);
+                case NPCID.BloodEelHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 6, 22, 0.1f, Vector2.Zero, speed, 6, 20, 0.2f, true);
+                case NPCID.BoneSerpentHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 16, rotation, Vector2.Zero, speed, 10, 30, 0.4f);
+                case NPCID.SeekerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
+            }
+            return true;
+        }
+
+        public static bool DrawSpecialBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor)
+        {
+            // This is solely for The Destroyer and the Phantasm Dragon due to having more than 1 frame each but only for specific segments
+            bool dragon = npc.type == NPCID.CultistDragonHead;
+            Texture2D headTexture = TextureAssets.Npc[npc.type].Value;
+            // Dragon head has 3 frames, Destroyer has 1
+            int frameAmt = dragon ? 3 : 1;
+            npc.frame = TextureAssets.Npc[npc.type].Frame(1, frameAmt, 0, 0);
+            Vector2 baseOffset = new Vector2(dragon ? 0 : 20, dragon ? 0 : 20);
+            // Buffers the segment position and rotations
+            float offset = -0.2f;
+            float startX = baseOffset.X;
+            float startY = baseOffset.Y;
+            int segmentSpacing = dragon ? 32 : 38;
+            int animationSpeed = 3;
+            int range = 10;
+            int headOffset = dragon ? 40 : 20;
+            float headSpeedOffset = dragon ? 0.2f : 0.16f;
+            float rotationStrength = 0.2f;
+            // Draw the body segments
+            for (int i = 4; i > 0; i--)
+            {
+                // The first segment is slightly closer to keep up with the head
+                float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                // Second dragon segment uses the arm, rest use the normal body
+                Texture2D toUse = i == 2 ? TextureAssets.Npc[NPCID.CultistDragonBody1].Value : TextureAssets.Npc[NPCID.CultistDragonBody2].Value;
+                // If it's The Destroyer instead use his texture and increase the frame count to two
+                if (!dragon)
+                    toUse = TextureAssets.Npc[NPCID.TheDestroyerBody].Value;
+                int bodyFrameAmt = dragon ? 1 : 2;
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, bodyFrameAmt, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(toUse.Width * 0.5f, toUse.Height * 0.5f / bodyFrameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+            }
+            // Draw the head
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height / (float)frameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+            return false;
         }
         #endregion
 
@@ -9081,6 +9188,28 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.TruffleWorm)
             {
                 bestiaryEntry.AddTags(BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom);
+            }
+
+            // Remove the static portraits from vanilla worms so that Calamity's worm movement can be added in PreDraw
+            switch (npc.netID)
+            {
+                case NPCID.DiggerHead:
+                case NPCID.GiantWormHead:
+                case NPCID.EaterofWorldsHead:
+                case NPCID.WyvernHead:
+                case NPCID.StardustWormHead:
+                case NPCID.SolarCrawltipedeHead:
+                case NPCID.CultistDragonHead:
+                case NPCID.TheDestroyer:
+                case NPCID.LeechHead:
+                case NPCID.DevourerHead:
+                case NPCID.TombCrawlerHead:
+                case NPCID.DuneSplicerHead:
+                case NPCID.BloodEelHead:
+                case NPCID.BoneSerpentHead:
+                case NPCID.SeekerHead:
+                    NPCID.Sets.NPCBestiaryDrawOffset[npc.type] = NPCID.Sets.NPCBestiaryDrawOffset[npc.type] with { CustomTexturePath = null };
+                    break;
             }
         }
 
