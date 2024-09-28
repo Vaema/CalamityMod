@@ -1125,6 +1125,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 float startY = 70;
                 int segmentSpacing = 40;
                 int animationSpeed = 5;
+                float wormTimer = NPC.Calamity().bestiaryWormTimer;
                 // Draw the body segments
                 for (int i = 3; i > 0; i--)
                 {
@@ -1132,10 +1133,10 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
 
                     Texture2D toUse = i % 2 == 1 ? TextureAssets.Npc[ModContent.NPCType<ThanatosBody1>()].Value : TextureAssets.Npc[ModContent.NPCType<ThanatosBody2>()].Value;
-                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Width / 10), NPC.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Width / 10), NPC.scale, SpriteEffects.None, 0f);
                 }
                 // Draw the head
-                spriteBatch.Draw(texture, NPC.position + new Vector2(startX + 24, MathF.Sin(Main.GlobalTimeWrappedHourly * animationSpeed) * 2 + startY), texture.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(Main.GlobalTimeWrappedHourly * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(texture.Width * 0.5f, texture.Height / 5), NPC.scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture, NPC.position + new Vector2(startX + 24, MathF.Sin(wormTimer * animationSpeed) * 2 + startY), texture.Frame(1, 5, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(wormTimer * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(texture.Width * 0.5f, texture.Height / 5), NPC.scale, SpriteEffects.None, 0f);
 
                 return false;
             }

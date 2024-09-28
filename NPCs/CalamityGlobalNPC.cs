@@ -395,6 +395,9 @@ namespace CalamityMod.NPCs
 
         // Variable for if enemy has been recently hit by an ArcZap
         public int arcZapCooldown = 0;
+
+        // Animates worms in the bestiary but only when their entry is being looked at
+        public float bestiaryWormTimer = 0;
         #endregion
 
         #region Instance Per Entity and TML 1.4 Cloning
@@ -6642,6 +6645,16 @@ namespace CalamityMod.NPCs
                 if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                     npc.frameCounter = 0D;
             }
+            // Increment the bestiary worm timer when hovering over the NPC or having their entry open. Pauses otherwise
+            if (npc.IsABestiaryIconDummy)
+            {
+                bestiaryWormTimer += 0.02f;
+                // Resets after an hour. No sane human being is looking at a bestiary entry for an hour straight
+                if (bestiaryWormTimer > 4320)
+                {
+                    bestiaryWormTimer = 0;
+                }
+            }
         }
 
         // Debuff visuals. Alphabetical order as per usual, please
@@ -8112,6 +8125,7 @@ namespace CalamityMod.NPCs
             // This is solely for The Destroyer and the Phantasm Dragon due to having more than 1 frame each but only for specific segments
             bool dragon = npc.type == NPCID.CultistDragonHead;
             Texture2D headTexture = TextureAssets.Npc[npc.type].Value;
+            float wormTimer = npc.Calamity().bestiaryWormTimer;
             // Dragon head has 3 frames, Destroyer has 1
             int frameAmt = dragon ? 3 : 1;
             npc.frame = TextureAssets.Npc[npc.type].Frame(1, frameAmt, 0, 0);
@@ -8138,10 +8152,10 @@ namespace CalamityMod.NPCs
                 if (!dragon)
                     toUse = TextureAssets.Npc[NPCID.TheDestroyerBody].Value;
                 int bodyFrameAmt = dragon ? 1 : 2;
-                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, bodyFrameAmt, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(toUse.Width * 0.5f, toUse.Height * 0.5f / bodyFrameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, bodyFrameAmt, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(toUse.Width * 0.5f, toUse.Height * 0.5f / bodyFrameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
             }
             // Draw the head
-            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height / (float)frameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height / (float)frameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
             return false;
         }
         #endregion

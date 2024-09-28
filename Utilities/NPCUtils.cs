@@ -847,6 +847,7 @@ namespace CalamityMod
             float startX = baseOffset.X;
             float startY = baseOffset.Y;
             SpriteEffects fx = flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            float wormTimer = npc.Calamity().bestiaryWormTimer;
             // Draw the body segments
             for (int i = segmentCount; i > 0; i--)
             {
@@ -857,10 +858,10 @@ namespace CalamityMod
                 // If two are passed in, alternate between them
                 // If more are passed in, each iteration must correspond to a texture
                 Texture2D toUse = bodyTextures.Length == 1 ? bodyTextures[0] : bodyTextures.Length == 2 ? (i % 2 == 0 ? bodyTextures[0] : bodyTextures[1]) : bodyTextures[i - 1];
-                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, fx, 0f);
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, fx, 0f);
             }
             // Draw the head
-            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((Main.GlobalTimeWrappedHourly - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, fx, 0f);
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, fx, 0f);
 
             return false;
         }
