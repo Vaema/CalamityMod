@@ -44,8 +44,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Arrow;
             Item.Calamity().canFirePointBlankShots = true;
         }
-
         public override Vector2? HoldoutOffset() => new Vector2(-14f, 0f);
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() < 0.25f;
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Texture2D texture;

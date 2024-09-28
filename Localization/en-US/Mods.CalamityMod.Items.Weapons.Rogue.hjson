@@ -729,8 +729,10 @@ MoltenAmputator: {
 	DisplayName: Molten Amputator
 	Tooltip:
 		'''
-		Throws a scythe that emits molten globs on enemy hits
-		Stealth strikes spawn molten globs periodically in flight and more on-hit
+Throw a spinning scythe, that lingers at your cursor, press right to recall it
+If a scythe is recalled while it's on an enemy it will amputate them, dealing very high damage to the enemy it hits
+With full stealth, press right to buff yourself and increase your attack speed for your next few  attacks
+You cannot recall scythes thrown while buffed
 		'''
 }
 
@@ -954,16 +956,6 @@ SandDollar: {
 		'''
 }
 
-Sandslasher: {
-	DisplayName: Sandslasher
-	Tooltip:
-		'''
-		Throws a huge shuriken made out of fused sand unaffected by gravity which slowly accelerates horizontally
-		It does more damage depending on how fast it goes horizontally and how long it has been flying for
-		Stealth strikes periodically release sand clouds
-		'''
-}
-
 ScarletDevil: {
 	DisplayName: Scarlet Devil
 	Tooltip:
@@ -1160,7 +1152,7 @@ StarofDestruction: {
 		'''
 		Throws a fan of cosmic bolts that meld together into a star of destruction
 		The explosive star will slowly follow your cursor until it expires or hits an enemy
-		      Upon running out of time, the star will burst into a huge explosion that deals increased damage
+		Upon running out of time, the star will burst into a huge explosion that deals increased damage
 		Stealth strikes throw additional bolts that converge into faster star that can pierce, exploding on every hit
 		'''
 }

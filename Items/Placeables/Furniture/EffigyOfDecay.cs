@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<EffigyOfDecayPlaceable>());
             Item.value = Item.sellPrice(silver: 10);
-            Item.rare = ItemRarityID.Orange;
+            Item.rare = ItemRarityID.Blue;
         }
         public override void AddRecipes()
         {

@@ -80,15 +80,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
 
-            // Find the Frog Leg jump speed bonus and reduce it to 1.2f.
-            // I don't know if this fucking does anything anymore, but I'm leaving it in just in case.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(2.4f)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Frog Leg jump speed boost value.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 1.2f); // Decrease to 1.2f.
+            // CIT 22SEP2024: Removed the edit intended to decrease Frog Leg's jump speed boost,
+            // as it was not doing anything due to vanilla changing how Frog Leg's jump speed boost is applied.
 
             // Remove the jump height addition from the Werewolf buff (Moon Charm).
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))

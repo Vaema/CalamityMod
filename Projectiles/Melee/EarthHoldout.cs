@@ -61,6 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
+            AnimationProgress = Animation % useAnim;
             DrawUnconditionally = false;
 
             float rate = Main.GlobalTimeWrappedHourly * 19;

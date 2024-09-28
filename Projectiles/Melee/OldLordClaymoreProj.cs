@@ -331,5 +331,10 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         public override void OnKill(int timeLeft) => Owner.fullRotation = 0f;
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
+        }
     }
 }

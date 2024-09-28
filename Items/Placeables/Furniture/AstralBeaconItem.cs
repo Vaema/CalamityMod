@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AstralBeacon>());
             Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Cyan;
         }
 
         public override void AddRecipes()

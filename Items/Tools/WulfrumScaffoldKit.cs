@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.channel = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 10);
             storedScrap = 0;
             Item.shoot = ModContent.ProjectileType<WulfrumScaffoldKitHoldout>();
             TileTime = 6 * 60;

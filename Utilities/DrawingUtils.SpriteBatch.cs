@@ -104,7 +104,8 @@ namespace CalamityMod
             spriteBatch.SafeAction(() =>
             {
                 spriteBatch.TryEnd();
-                spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState, effect, transformMatrix);
+                var rasterizer = settings.rasterizerState ?? Main.Rasterizer;
+                spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, rasterizer, effect, transformMatrix);
                 batchCallback?.Invoke();
             });
         }

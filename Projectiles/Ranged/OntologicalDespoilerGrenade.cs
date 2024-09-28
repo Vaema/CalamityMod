@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Color color4 = Color.BlueViolet;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }

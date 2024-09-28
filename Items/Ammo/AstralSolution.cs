@@ -14,18 +14,7 @@ namespace CalamityMod.Items.Ammo
             ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 10;
-            Item.height = 12;
-            Item.ammo = AmmoID.Solution;
-            Item.shoot = ModContent.ProjectileType<AstralSpray>() - ProjectileID.PureSpray;
-            Item.value = Item.buyPrice(silver: 15);
-            Item.rare = ItemRarityID.Orange;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            return;
-        }
+        public override void SetDefaults() => Item.DefaultToSolution(ModContent.ProjectileType<AstralSpray>());
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {

@@ -845,6 +845,7 @@ namespace CalamityMod
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<MajesticGuardHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
+                ProjectileType<HolyColliderHoldout>(),
                 ProjectileType<RiftburstBow>(),
                 ProjectileType<CometQuasherHoldout>(),
                 ProjectileType<StellarStrikerHoldout>(),
@@ -1776,7 +1777,8 @@ namespace CalamityMod
                 NPCID.SmallBaldZombie,
                 NPCID.BigZombie,
                 NPCID.SmallZombie,
-                NPCID.MaggotZombie
+                NPCID.MaggotZombie,
+                NPCType<BucketZombie>()
                 // halloween zombies not included because they don't drop shackles or zombie arms
             };
 
@@ -2000,6 +2002,7 @@ namespace CalamityMod
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<HellbornHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
+                ProjectileType<HolyColliderHoldout>(),
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),

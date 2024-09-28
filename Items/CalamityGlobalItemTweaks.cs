@@ -126,7 +126,7 @@ namespace CalamityMod.Items
                 { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
                 { ItemID.Gungnir, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(92), ShootSpeedRatio(1.25f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
-                { ItemID.Handgun, Do(PointBlank, UseExact(22)) },
+                { ItemID.Handgun, Do(PointBlank, UseExact(20)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
                 { ItemID.HiveFive, Do(AutoReuse, DamageExact(27)) },

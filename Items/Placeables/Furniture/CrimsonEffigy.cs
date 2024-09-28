@@ -9,7 +9,12 @@ namespace CalamityMod.Items.Placeables.Furniture
     {
         public new string LocalizationCategory => "Items.Placeables";
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
+        public override void SetDefaults()
+        {
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
+        }
 
         public override void AddRecipes()
         {

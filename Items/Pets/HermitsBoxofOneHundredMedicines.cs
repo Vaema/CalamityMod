@@ -15,18 +15,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.width = 36;
-            Item.height = 30;
-            Item.damage = 0;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
+            Item.DefaultToVanitypet(ModContent.ProjectileType<ThirdSage>(), ModContent.BuffType<ThirdSageBuff>());
             Item.UseSound = SoundID.Item3;
-            Item.shoot = ModContent.ProjectileType<ThirdSage>();
-            Item.buffType = ModContent.BuffType<ThirdSageBuff>();
-
-            Item.value = Item.buyPrice(gold: 5);
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().devItem = true;
         }

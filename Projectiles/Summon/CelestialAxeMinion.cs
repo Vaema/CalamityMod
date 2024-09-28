@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 52;
-            Projectile.height = 52;
+            Projectile.width = 100;
+            Projectile.height = 110;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 1;
+            Projectile.scale = 0.75f;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
             Projectile.DamageType = DamageClass.Summon;
@@ -66,11 +67,6 @@ namespace CalamityMod.Projectiles.Summon
                 var prismTooth = new PrismTooth(); // Grrrr CS0120
                 prismTooth.AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
             }
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
