@@ -8975,6 +8975,8 @@ namespace CalamityMod.NPCs
                 case NPCID.DiggerHead:
                 case NPCID.GraniteGolem:
                 case NPCID.GreekSkeleton:
+                case NPCID.UndeadViking:
+                case NPCID.IcyMerman:
                 case NPCID.DesertBeast:
                 case NPCID.DuneSplicerHead:
                 case NPCID.SandShark:
@@ -9016,9 +9018,14 @@ namespace CalamityMod.NPCs
                 case NPCID.RedDevil:
                 case NPCID.WyvernHead:
                 case NPCID.Harpy:
+                case NPCID.MartianProbe:
                 case NPCID.SeekerHead:
                 case NPCID.DesertDjinn:
                 case NPCID.ChaosElemental:
+                case NPCID.GoblinThief:
+                case NPCID.GoblinSummoner:
+                case NPCID.GoblinSorcerer:
+                case NPCID.PirateCaptain:
                 case NPCID.MartianSaucerCore:
                 case NPCID.TorchGod:
                 case NPCID.EyeofCthulhu:
