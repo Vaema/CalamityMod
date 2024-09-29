@@ -464,6 +464,34 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Reduce Eater of Worlds Grenade Resist
+        private static void ReduceEoWGrenadeResist(ILContext il)
+        {
+            // Reduce Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            var cursor = new ILCursor(il);
+
+            // Of course, this is 800 lines into Projectile.Damage, so we must do funky things.
+            for (int f = 0; f < 2; f++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(1002)))
+                {
+                    LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchDiv()))
+            {
+                LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                return;
+            }
+
+            // Remove the instruction dividing by 5, and replace it with an instruction multiplying by 0.4.
+            cursor.RemoveRange(2);
+            cursor.EmitLdcR4(0.4f);
+            cursor.EmitMul();
+        }
+        #endregion
+
         #region Terrarian Projectile Limitation for Extra Updates
         private static void LimitTerrarianProjectiles(ILContext il)
         {

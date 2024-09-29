@@ -2205,7 +2205,8 @@ namespace CalamityMod
                 ProjectileID.Bee,
                 ProjectileID.GiantBee,
                 ProjectileType<AeroExplosive>(),
-                ProjectileID.ScarabBomb
+                ProjectileID.ScarabBomb,
+                ProjectileID.TNTBarrel
             };
 
             ZeroContactDamageNPCList = new List<int>
