@@ -1996,7 +1996,7 @@ namespace CalamityMod.ILEditing
             }
             #endregion
 
-            #region GlowMask PlamTree Trunk
+            #region GlowMask Palm Tree Trunk
             else if (type == TileID.PalmTree)
             {
                 var xPos = drawData.tileFrameX + drawData.addFrX;
@@ -2135,7 +2135,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region GlowMask Patch Tree SubParts
+        #region GlowMask Patch Tree Sub Parts
         private static void ApplyTreeGlowMaskSubParts<PlantType>(
             ILCursor cursor,
             string debugSubpartName,
@@ -2203,7 +2203,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region GlowMask Patch PalmTree SubParts
+        #region GlowMask Patch Palm Tree Sub Parts
         private static void ApplyPalmTreeGlowMaskSubParts<PlantType>(
             ILCursor cursor,
             string debugSubpartName,
