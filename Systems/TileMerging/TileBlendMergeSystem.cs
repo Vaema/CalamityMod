@@ -31,6 +31,7 @@ namespace CalamityMod.Systems
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
         private static bool[,] _TileBlendable; // dimension: [TileTypeCount, AllBlendTextureCount]
+        private static bool[,] _TileBlendLooselyFillDiagonal; // dimension: [TileTypeCount, AllBlendTextureCount]
         private static byte[] _TileTypeToBlendTextureSlot; // dimension: [TileTypeCount]
 
         #region Load/Unload
@@ -39,6 +40,7 @@ namespace CalamityMod.Systems
             var tileCount = TileLoader.TileCount;
             var blendTextureCount = TileBlendTextureLoader.Count;
             _TileBlendable = new bool[tileCount, blendTextureCount];
+            _TileBlendLooselyFillDiagonal = new bool[tileCount, blendTextureCount];
             _TileTypeToBlendTextureSlot = new byte[tileCount];
 
             Array.Fill(_TileTypeToBlendTextureSlot, (byte)TileBlendTextureLoader.EmptySlot);
@@ -68,9 +70,8 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Public API
-        public static void RegisterMerge(int myType, int blendTileType)
+        public static void RegisterMerge(int myType, int blendTileType, bool looselyFillDiagonal = false)
         {
-
             if (myType == blendTileType)
                 return;
 
@@ -85,10 +86,11 @@ namespace CalamityMod.Systems
                 return;
 
             _TileBlendable[myType, blendTextureSlot] = true;
+            _TileBlendLooselyFillDiagonal[myType, blendTextureSlot] = looselyFillDiagonal;
             CalamityUtils.SetMerge(myType, blendTileType, true);
         }
 
-        public static void RegisterMerge(int myType, TileBlendTexture blendTexture)
+        public static void RegisterMerge(int myType, TileBlendTexture blendTexture, bool looselyFillDiagonal = false)
         {
             if (blendTexture == null)
                 return;
@@ -104,13 +106,14 @@ namespace CalamityMod.Systems
                 return;
 
             _TileBlendable[myType, blendTexture.Slot] = true;
+            _TileBlendLooselyFillDiagonal[myType, blendTexture.Slot] = looselyFillDiagonal;
             CalamityUtils.SetMerge(myType, blendTileType, true);
         }
 
-        public static void RegisterMerge<T>(int myType) where T : TileBlendTexture
+        public static void RegisterMerge<T>(int myType, bool looselyFillDiagonal = false) where T : TileBlendTexture
         {
             var blendTexture = ModContent.GetInstance<T>();
-            RegisterMerge(myType, blendTexture);
+            RegisterMerge(myType, blendTexture, looselyFillDiagonal);
         }
         #endregion
     }

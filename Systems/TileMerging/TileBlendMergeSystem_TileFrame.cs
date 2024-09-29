@@ -232,7 +232,7 @@ namespace CalamityMod.Systems
         private static bool IsBlendableOrSame(int tileType, int blendTextureSlot)
         {
             if (_TileBlendable[tileType, blendTextureSlot]) return true;
-            if (_TileTypeToBlendTextureSlot[tileType] == blendTextureSlot) return true;
+            if (!_TileBlendLooselyFillDiagonal[tileType, blendTextureSlot] && _TileTypeToBlendTextureSlot[tileType] == blendTextureSlot) return true;
             return false;
         }
 
