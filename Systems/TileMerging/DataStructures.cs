@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CalamityMod.Systems
 {
@@ -113,23 +114,8 @@ namespace CalamityMod.Systems
     {
         public const int Length = 8;
 
-        private byte SheetIndex0;
-        private byte SheetIndex1;
-        private byte SheetIndex2;
-        private byte SheetIndex3;
-        private byte SheetIndex4;
-        private byte SheetIndex5;
-        private byte SheetIndex6;
-        private byte SheetIndex7;
-
-        private byte Data0;
-        private byte Data1;
-        private byte Data2;
-        private byte Data3;
-        private byte Data4;
-        private byte Data5;
-        private byte Data6;
-        private byte Data7;
+        private ulong SheetIndexPacked; // 8 bytes
+        private ulong DataPacked; // 8 bytes
 
         public void Clear()
         {
@@ -142,60 +128,42 @@ namespace CalamityMod.Systems
 
         public void SetData(int idx, byte data)
         {
-            if (idx == 0) Data0 = data;
-            else if (idx == 1) Data1 = data;
-            else if (idx == 2) Data2 = data;
-            else if (idx == 3) Data3 = data;
-            else if (idx == 4) Data4 = data;
-            else if (idx == 5) Data5 = data;
-            else if (idx == 6) Data6 = data;
-            else if (idx == 7) Data7 = data;
-            else throw new IndexOutOfRangeException();
+            if (idx < 0 || idx >= Length)
+                throw new IndexOutOfRangeException();
+
+            var shift = idx * 8;
+            ulong value = (ulong)(data << shift);
+            ulong mask = (ulong)(0xFF << shift);
+            DataPacked = (DataPacked ^ (mask & DataPacked)) | value;
         }
 
         public readonly byte GetData(int idx)
         {
-            return idx switch
-            {
-                0 => Data0,
-                1 => Data1,
-                2 => Data2,
-                3 => Data3,
-                4 => Data4,
-                5 => Data5,
-                6 => Data6,
-                7 => Data7,
-                _ => throw new IndexOutOfRangeException()
-            };
+            if (idx < 0 || idx >= Length)
+                throw new IndexOutOfRangeException();
+
+            var shift = idx * 8;
+            return (byte)((DataPacked >> shift) & 0xFF);
         }
 
         public void SetSheetIndex(int idx, byte sheetIdx)
         {
-            if (idx == 0) SheetIndex0 = sheetIdx;
-            else if (idx == 1) SheetIndex1 = sheetIdx;
-            else if (idx == 2) SheetIndex2 = sheetIdx;
-            else if (idx == 3) SheetIndex3 = sheetIdx;
-            else if (idx == 4) SheetIndex4 = sheetIdx;
-            else if (idx == 5) SheetIndex5 = sheetIdx;
-            else if (idx == 6) SheetIndex6 = sheetIdx;
-            else if (idx == 7) SheetIndex7 = sheetIdx;
-            else throw new IndexOutOfRangeException();
+            if (idx < 0 || idx >= Length)
+                throw new IndexOutOfRangeException();
+
+            var shift = idx * 8;
+            ulong value = (ulong)(sheetIdx << shift);
+            ulong mask = (ulong)(0xFF << shift);
+            SheetIndexPacked = (SheetIndexPacked ^ (mask & SheetIndexPacked)) | value;
         }
 
         public readonly byte GetSheetIndex(int idx)
         {
-            return idx switch
-            {
-                0 => SheetIndex0,
-                1 => SheetIndex1,
-                2 => SheetIndex2,
-                3 => SheetIndex3,
-                4 => SheetIndex4,
-                5 => SheetIndex5,
-                6 => SheetIndex6,
-                7 => SheetIndex7,
-                _ => throw new IndexOutOfRangeException()
-            };
+            if (idx < 0 || idx >= Length)
+                throw new IndexOutOfRangeException();
+
+            var shift = idx * 8;
+            return (byte)((SheetIndexPacked >> shift) & 0xFF);
         }
 
         public void Set(int idx, byte sheetIdx, byte data)
