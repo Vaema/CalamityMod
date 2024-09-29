@@ -66,6 +66,8 @@ namespace CalamityMod.Systems
         public override void Unload()
         {
             _TileBlendable = null;
+            _TileBlendLooselyFillDiagonal = null;
+            _TileTypeToBlendTextureSlot = null;
         }
         #endregion
 
