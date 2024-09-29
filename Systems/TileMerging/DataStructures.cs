@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CalamityMod.Systems
 {
