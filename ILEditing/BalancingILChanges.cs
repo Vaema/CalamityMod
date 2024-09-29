@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Balancing;
-using CalamityMod.Items.Accessories;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -16,8 +15,8 @@ namespace CalamityMod.ILEditing
 
         private static bool AdjustShimmerRequirements(On_ShimmerTransforms.orig_IsItemTransformLocked orig, int type)
         {
-            //Rod of Harmony / psc requires Draedong and SCal dead instead of Moon Lord.
-            if (type == ItemID.RodofDiscord || type == ModContent.ItemType<ProfanedSoulCrystal>())
+            //Rod of Harmony requires Draedong and SCal dead instead of Moon Lord.
+            if (type == ItemID.RodofDiscord)
             {
                 return !DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs;
             }
