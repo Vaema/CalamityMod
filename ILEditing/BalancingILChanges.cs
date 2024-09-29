@@ -478,14 +478,15 @@ namespace CalamityMod.ILEditing
                     return;
                 }
             }
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchDiv()))
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchDiv()))
             {
                 LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
                 return;
             }
 
-            // Remove the instruction dividing by 5, and replace it with an instruction multiplying by 0.4.
-            cursor.RemoveRange(2);
+            // Remove the division instruction, then pop the 5 off the stack to destroy it. Replace it with loading a 0.4 and then multiplying by it.
+            cursor.Remove();
+            cursor.EmitPop();
             cursor.EmitLdcR4(0.4f);
             cursor.EmitMul();
         }
