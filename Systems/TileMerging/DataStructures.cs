@@ -131,8 +131,8 @@ namespace CalamityMod.Systems
                 throw new IndexOutOfRangeException();
 
             var shift = idx * 8;
-            ulong value = (ulong)(data << shift);
-            ulong mask = (ulong)(0xFF << shift);
+            ulong value = ((ulong)data) << shift;
+            ulong mask = ((ulong)0xFF) << shift;
             DataPacked = (DataPacked ^ (mask & DataPacked)) | value;
         }
 
@@ -151,8 +151,8 @@ namespace CalamityMod.Systems
                 throw new IndexOutOfRangeException();
 
             var shift = idx * 8;
-            ulong value = (ulong)(sheetIdx << shift);
-            ulong mask = (ulong)(0xFF << shift);
+            ulong value = ((ulong)sheetIdx) << shift;
+            ulong mask = ((ulong)0xFF) << shift;
             SheetIndexPacked = (SheetIndexPacked ^ (mask & SheetIndexPacked)) | value;
         }
 
