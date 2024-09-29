@@ -14,8 +14,8 @@ NPCName: {
 	DiggerHead: Exposure to the effects of godly magicks flowing throughout the cracks of the world causes unusual rapid growths in giant worms.
 	GraniteGolem: These strong magicked constructs were utilized in mines for carrying heavy ores and machinery. They continue to inhabit the mines deep below, even after their abandonment.
 	GreekSkeleton: Marble caves were used as arenas during the Deific Era. Fighters looking for glory flocked to them, but now only their bodies populate the area.
-    UndeadViking: After the Crusade left the continent in shambles, many factions attempted to conquer it. These vikings were one such group, but the icy winds of the tundra made short work of them.
-    IcyMerman: Mermen rarely stray far from the ocean, favoring the vast waters where their revered Elemental now lives in. Those that do can become lost, wander into cold caverns, and become icy undead fish men.
+	UndeadViking: After the Crusade left the continent in shambles, many factions attempted to conquer it. These vikings were one such group, but the icy winds of the tundra made short work of them.
+	IcyMerman: Mermen rarely stray far from the ocean, favoring the vast waters where their revered Elemental now lives in. Those that do can become lost, wander into cold caverns, and become icy undead fish men.
 	DesertBeast: Minor draconic offshoots who thrive in arid climates, the Basilisk's hardened bodies make them formidable threats.
 	DuneSplicerHead: The largest worm native to the Desert. Even strengthened by divine magicks, they fall short of the Scourge, and run amok in a hunger-induced frenzy.
 	SandShark: "{$CommonEntries.SandShark}"
@@ -57,14 +57,14 @@ NPCName: {
 	RedDevil: Conjuring potent spears of dark magic, these elite demons look after the adventurer that destroyed their perceived deity.
 	WyvernHead: Deeply in tune with the magic of the world, these serpentine dragons guard the skyward ruins of Chrysadia on behalf of the Storm Dragon. Now, their duty calls louder as divine essence surges through the land.
 	Harpy: Winged, demi-human creatures from distant southward mountains who came to inhabit Chrysadia after its tragic downfall. They defend their new territory fiercely against invaders with their razor-sharp feathers.
-    MartianProbe: Sensing growing power on the planet, otherworldly beings send space-age technology to scan for valuable resources.
+	MartianProbe: Sensing growing power on the planet, otherworldly beings send space-age technology to scan for valuable resources.
 	SeekerHead: Godly magicks have unleashed the dark influences that gave birth to the Eater of Worlds, producing smaller, but just as deadly worms.
 	DesertDjinn: Buried in these caves lie cryptic artifacts older than Ilmeris, their origins swept away by the sands of time. Corrupted by divine magicks, the once friendly djinns within them now reemerge, full of hostility.
 	ChaosElemental: Manifestations of the unstable Essence of the Hallow, they erratically make chase with an uncontrollable surge of luminous power.
-    GoblinThief: Thieves forcefully conscripted in the Goblin Army in exchange for freedom, these pesky foes specialize in nimble movement and close-quarters combat.
-    GoblinSummoner: Goblins that reach such a mastery over the arcane are treated like royalty, prize jewels of their society. Warlocks in particular conjure unfathomable shadowflame ghasts through a powerful hex.
-    GoblinSorcerer: Goblins struggle to manipulate magic, only scantily capable of conjuring the simplest of spells. Those that can have the potential for manipulating magicked shadow energy through a form of hexing.
-    PirateCaptain: A pirate captain's love for riches is only rivaled by his desire to explore! Word that the Crusade had seemingly ended spread fast across the world, and abundances to plunder in this continent attracted this sea dweller and his motley crew.
+	GoblinThief: Thieves forcefully conscripted in the Goblin Army in exchange for freedom, these pesky foes specialize in nimble movement and close-quarters combat.
+	GoblinSummoner: Goblins that reach such a mastery over the arcane are treated like royalty, prize jewels of their society. Warlocks in particular conjure unfathomable shadowflame ghasts through a powerful hex.
+	GoblinSorcerer: Goblins struggle to manipulate magic, only scantily capable of conjuring the simplest of spells. Those that can have the potential for manipulating magicked shadow energy through a form of hexing.
+	PirateCaptain: A pirate captain's love for riches is only rivaled by his desire to explore! Word that the Crusade had seemingly ended spread fast across the world, and abundances to plunder in this continent attracted this sea dweller and his motley crew.
 	MartianSaucerCore: Following the destruction of their planet by otherworldly creatures, the Martians' military evolved at an unprecedented rate. They were prepared to fight back any future threats, and also pillage any other worlds they could find.
 	TorchGod: An unknown entity responsible for a torch's eternal flicker, however easily angered by the unsightly, ungrateful abuse of torch placement.
 	EyeofCthulhu: A gargantuan monster of unknown origins, responsible for plaguing the night with Demon Eyes. It was given the title of "Cthulhu", which means "Great Beast" in the language of dragons.
