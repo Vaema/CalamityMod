@@ -9,7 +9,6 @@ using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
     public class VanillaArmorChangeManager : ModSystem
     {
         internal static List<VanillaArmorChange> ArmorChanges;

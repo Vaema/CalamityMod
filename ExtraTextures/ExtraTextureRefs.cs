@@ -33,7 +33,7 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> FlyingCarpetAuric;
 
         // Boss Heads
-        // I know it's not exactly the "Texture" but it belongs to ExtraTextures so 🤷
+        // I know it's not exactly a Texture2D but it belongs to ExtraTextures.
         public static int BossHeadIndex_ChadPrime;
 
         public override void Load()
