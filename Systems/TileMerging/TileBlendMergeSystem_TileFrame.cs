@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Potions.Alcohol;
-using Extensions;
+﻿using System.Runtime.CompilerServices;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -272,49 +265,36 @@ namespace CalamityMod.Systems
             return true;
         }
 
-        private static bool HasLeftSolid(Tile tile)
-        {
-            return tile.BlockType switch
-            {
-                BlockType.Solid => true,
-                BlockType.SlopeUpLeft => true,
-                BlockType.SlopeDownLeft => true,
-                _ => false
-            };
-        }
+        // BlockType.Solid, BlockType.SlopeUpLeft, BlockType.SlopeDownLeft
+        // 024
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool HasLeftSolid(Tile tile) => ((int)tile.BlockType & 1) == 0;
 
+        // BlockType.Solid, BlockType.DownRight, BlockType.SlopeUpRight
+        // 035 (there is no way to optimize this)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool HasRightSolid(Tile tile)
         {
-            return tile.BlockType switch
-            {
-                BlockType.Solid => true,
-                BlockType.SlopeUpRight => true,
-                BlockType.SlopeDownRight => true,
-                _ => false
-            };
+            int b = (int)tile.BlockType;
+            return b == 0 || b == 3 || b == 5;
         }
 
+        // BlockType.Solid, BlockType.HalfBlock, BlockType.SlopeUpLeft, BlockType.SlopeUpRight
+        // 0145
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool HasUpSolid(Tile tile)
         {
-            return tile.BlockType switch
-            {
-                BlockType.Solid => true,
-                BlockType.HalfBlock => true,
-                BlockType.SlopeUpLeft => true,
-                BlockType.SlopeUpRight => true,
-                _ => false
-            };
+            int b = (int)tile.BlockType;
+            return b < 2 || b > 3;
         }
 
+        // BlockType.Solid, BlockType.SlopeDownLeft, BlockType.SlopeDownRight
+        // 023
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool HasDownSolid(Tile tile)
         {
-            return tile.BlockType switch
-            {
-                BlockType.Solid => true,
-                BlockType.SlopeDownLeft => true,
-                BlockType.SlopeDownRight => true,
-                _ => false
-            };
+            int b = (int)tile.BlockType;
+            return (b & 4) == 0 && b != 1;
         }
 
         private static bool IsMergable(int type, int otherType)
