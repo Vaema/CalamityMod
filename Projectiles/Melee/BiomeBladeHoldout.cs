@@ -127,15 +127,15 @@ namespace CalamityMod.Projectiles.Melee
             Attunement attunement = AttunementSystem.FindOrNull(AttunementID.TrueDefault);
 
             if (hotAttune)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueHot];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueHot);
             if (coldAttune)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueCold];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueCold);
             if (jungleAttune)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueTropical];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueTropical);
             if (evilAttune)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueEvil];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueEvil);
             if (heavenlyAttune)
-                attunement = Attunement.attunementArray[(int)AttunementID.Holy];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Holy);
 
             //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)

@@ -225,8 +225,8 @@ namespace CalamityMod.Items.Weapons.Melee
             if (input < (int)AttunementID.TrueDefault)
                 return (int)AttunementID.TrueDefault;
 
-            if (input > (int)AttunementID.Marine)
-                return (int)AttunementID.Marine;
+            if (input > (int)AttunementID.Holy)
+                return (int)AttunementID.Holy;
 
             return input;
         }
