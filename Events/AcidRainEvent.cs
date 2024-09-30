@@ -60,7 +60,7 @@ namespace CalamityMod.Events
 
         public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = new();
 
-        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).ToList().Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
+        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
 
         public static bool AnyRainMinibosses
         {
@@ -331,7 +331,7 @@ namespace CalamityMod.Events
                         DownedBossSystem.downedAquaticScourgeAcidRain = DownedBossSystem.downedAquaticScourge;
                     }
                     HasTriedToSummonOldDuke = false;
-                    CalamityMod.StopRain();
+                    CalamityWorld.StopRain();
                 }
                 CalamityNetcode.SyncWorld();
 

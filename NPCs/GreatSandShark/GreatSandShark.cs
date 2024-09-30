@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.GreatSandShark
 
             if (!Terraria.GameContent.Events.Sandstorm.Happening)
             {
-                CalamityUtils.StartSandstorm();
+                CalamityWorld.StartSandstorm();
                 CalamityNetcode.SyncWorld();
             }
 

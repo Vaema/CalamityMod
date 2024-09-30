@@ -2,6 +2,7 @@
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -126,23 +127,23 @@ namespace CalamityMod.Projectiles.Melee
             bool hell = Owner.ZoneUnderworldHeight;
             bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Default];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Default);
 
             if (desert || hell)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Hot];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Hot);
             }
             if (snow)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Cold];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Cold);
             }
             if (jungle || ocean)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Tropical];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Tropical);
             }
             if (evil)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Evil];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Evil);
             }
 
             //If the owner already had the attunement , break out of it (And unswap)

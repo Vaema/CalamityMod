@@ -15,7 +15,7 @@ namespace CalamityMod.Items
     public partial class CalamityGlobalItem : GlobalItem
     {
         // 02AUG2023: Ozzatron: Having Overhaul enabled turns off all scaling changes, per direct request from Mirsario on 8/2/23.
-        private static bool DisableScalingForOverhaul => CalamityMod.Instance.overhaul is not null;
+        private static bool DisableScalingForOverhaul => ExternalMods.overhaul is not null;
 
         #region Database and Initialization
         internal static SortedDictionary<int, IItemTweak[]> currentTweaks = null;

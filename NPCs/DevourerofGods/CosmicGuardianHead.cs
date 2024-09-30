@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 Scale = 0.75f,
                 PortraitScale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/CosmicGuardian_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
@@ -364,6 +363,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+
+
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, texture2D15, TextureAssets.Npc[ModContent.NPCType<CosmicGuardianBody>()].Value, 8, 26, 0.2f, new Vector2(-10, 0), 4, 5);
+            }
 
             Vector2 distFromHead3 = NPC.Center - screenPos;
             distFromHead3 -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;

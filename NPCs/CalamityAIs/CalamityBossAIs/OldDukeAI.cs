@@ -70,9 +70,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             Lighting.AddLight((int)((npc.position.X + (npc.width / 2)) / 16f), (int)((npc.position.Y + (npc.height / 2)) / 16f), redLight, greenLight, 0f);
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             // Adjust stats
             int setDamage = npc.defDamage;

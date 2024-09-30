@@ -568,7 +568,7 @@ namespace CalamityMod.World
                 contents.Insert(8, new ChestItem(ItemID.CrimsonPlanterBox, WorldGen.genRand.Next(5, 9 + 1)));
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is not null)
             {
                 var marineKelpPlanterBox = thorium.Find<ModItem>("MarineKelpPlanterBox");

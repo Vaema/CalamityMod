@@ -18,8 +18,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 15;
             Item.knockBack = 12;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
