@@ -6,6 +6,10 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.GameContent;
+using Terraria.ModLoader.Core;
+using Terraria.ModLoader;
+using System.Collections;
+using CalamityMod.Particles;
 
 namespace CalamityMod
 {
@@ -57,6 +61,50 @@ namespace CalamityMod
             gen.Emit(OpCodes.Ret);
 
             return (Func<T, ValueType>)getterMethod.CreateDelegate(typeof(Func<T, ValueType>));
+        }
+
+        public static IEnumerable<Type> GetEveryModsTypes()
+        {
+            return ModLoader.Mods.SelectMany(mod => AssemblyManager.GetLoadableTypes(mod.Code));
+        }
+
+        public static void IterateEveryModsTypes<T>(bool includeBaseType = false, Action<Type> action = null)
+        {
+            // WHY????
+            if (action is null)
+                return;
+
+            Type baseType = typeof(T);
+            var types = GetEveryModsTypes();
+            foreach (var type in types)
+            {
+                if (type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType))
+                {
+                    action.Invoke(type);
+                }
+            }
+        }
+
+        public static IEnumerable<Type> GetCalamityTypes()
+        {
+            return AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+        }
+
+        public static void IterateCalamityTypes<T>(bool includeBaseType = false, Action<Type> action = null)
+        {
+            // WHY????
+            if (action is null)
+                return;
+
+            Type baseType = typeof(T);
+            var types = GetCalamityTypes();
+            foreach (var type in types)
+            {
+                if (type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType))
+                {
+                    action.Invoke(type);
+                }
+            }
         }
     }
 }

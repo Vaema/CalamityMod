@@ -1,4 +1,5 @@
 ﻿
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,23 +12,29 @@ namespace CalamityMod.Tiles.FurnitureEutrophic
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeSmoothTiles(Type);
             CalamityUtils.MergeDecorativeTiles(Type);
+            CalamityUtils.MergeWithAbyss(Type);
             CalamityUtils.MergeWithDesert(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
             HitSound = SoundID.Tink;
-            AddMapEntry(new Color(39, 48, 53));
+            DustType = 96;
+            AddMapEntry(new Color(44, 57, 64));
         }
 
-        public override bool CreateDust(int i, int j, ref int type)
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.SnowBlock, 0f, 0f, 1, new Color(54, 69, 72), 1f);
-            return false;
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
         }
     }
 }

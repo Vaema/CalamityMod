@@ -41,7 +41,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/EidolonWyrm_Bestiary",
                 PortraitPositionXOverride = 40
             };
             value.Position.X += 40;
@@ -419,8 +418,19 @@ namespace CalamityMod.NPCs.Abyss
             return null;
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<EidolonWyrmBody>()].Value, TextureAssets.Npc[ModContent.NPCType<EidolonWyrmBodyAlt>()].Value, 2, 26, 0.6f, new Vector2(70, 30), 2, 20);
+            }
+            return true;
+        }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
             {

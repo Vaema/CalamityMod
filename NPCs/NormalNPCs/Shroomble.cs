@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[NPC.type] = 8;
             Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.velocity.X == 0f)
                     {
-                        NPC.frame.Y = frameHeight * 1;
+                        NPC.frame.Y = 0;
                         NPC.frameCounter = 0.0;
                         return;
                     }

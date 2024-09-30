@@ -81,6 +81,7 @@ DarklightGreatswordSlashCreator.DisplayName: Darklight Greatsword Slash Creator
 DarkMasterBeam.DisplayName: Dark Master Beam
 DarkMasterClone.DisplayName: Dark Terrarian
 DeathsAscensionProjectile.DisplayName: Ascended Scythe
+DeathsAscensionRift.DisplayName: Rift
 DecaysRetort.DisplayName: Decay's Retort
 DecaysRetortDash.DisplayName: Evisceration Lunge
 DemonBlast.DisplayName: Devil Fork
@@ -112,6 +113,7 @@ Exoboom.DisplayName: Exoplasma Explosion
 ExtantAbhorrence.DisplayName: Extant Abhorrence
 ExtantAbhorrenceMonolith.DisplayName: Abhorrent Monolith
 FallenBlast.DisplayName: Fallen Paladin's Wrath
+FallenExplosionSmall.DisplayName: Fallen Hammer Blast
 FallenPaladinsHammerEcho.DisplayName: Fallen Paladin's Hammer Echo
 FallenPaladinsHammerProj.DisplayName: Fallen Paladin's Hammer
 Feather.DisplayName: Feather
@@ -299,4 +301,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-FallenExplosionSmall.DisplayName: Fallen Hammer Blast

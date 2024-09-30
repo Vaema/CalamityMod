@@ -873,7 +873,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void AddShops()
         {
-            Mod musicMod = CalamityMod.Instance.musicMod;
+            Mod musicMod = ExternalMods.musicMod;
             musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
             musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
             musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
