@@ -957,9 +957,9 @@ PrismaticBreaker: {
 	DisplayName: Prismatic Breaker
 	Tooltip:
 		'''
-		Fire to charge for a powerful rainbow laser
-		Press <right> to instead swing the sword and fire rainbow colored waves
-		The sword is boosted by both melee and ranged damage
+		Fires several bursts of magic stars as the weapon charges up
+		After charging up, a massive rainbow laser is unleashed to devastate your foes
+		This weapon is boosted by both melee and ranged damage
 		Seems to belong to a certain magical girl. Radiates with intense cosmic energy
 		'''
 }
