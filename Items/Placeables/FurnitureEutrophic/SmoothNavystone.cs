@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Placeables.FurnitureEutrophic
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AncientSmoothNavystone>();
         }
 
         public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureEutrophic.SmoothNavystone>());

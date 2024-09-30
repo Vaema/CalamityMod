@@ -943,7 +943,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 CalamityUtils.DisplayLocalizedText(key2, messageColor2);
 
                 if (!Terraria.GameContent.Events.Sandstorm.Happening)
-                    CalamityUtils.StartSandstorm();
+                    CalamityWorld.StartSandstorm();
             }
 
             // Mark Desert Scourge as dead.

@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Fishing
             itemLoot.Add(ItemID.Amber, 8, gemMin, gemMax);
 
             // Add Thorium gems if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is null)
                 return;
 

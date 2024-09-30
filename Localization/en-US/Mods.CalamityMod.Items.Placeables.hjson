@@ -1691,6 +1691,11 @@ CosmiliteWorkBench: {
 	Tooltip: ""
 }
 
+AncientSmoothNavystone: {
+	DisplayName: Ancient Smooth Navystone
+	Tooltip: ""
+}
+
 EutrophicBathtub: {
 	DisplayName: Eutrophic Bathtub
 	Tooltip: ""
@@ -3318,6 +3323,11 @@ SeaPrismBrick: {
 SpineSapling: {
 	DisplayName: Small Spine
 	Tooltip: Plants Giant Spine saplings on Brimstone Slag
+}
+
+Stohne: {
+	DisplayName: Stohne
+	Tooltip: ""
 }
 
 SulphurousSand: {

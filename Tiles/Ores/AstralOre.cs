@@ -74,7 +74,12 @@ namespace CalamityMod.Tiles.Ores
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
             if (!DownedBossSystem.downedAstrumDeus)
-                yield return new Item(ModContent.ItemType<StarblightSoot>(), Main.rand.Next(1, 2 + 1));
+            {
+                if (Main.rand.NextBool())
+                    yield return new Item(ModContent.ItemType<StarblightSoot>());
+                else
+                    yield return new Item(0);
+            }
             else
                 yield return new Item(ModContent.ItemType<Items.Placeables.Ores.AstralOre>());
         }

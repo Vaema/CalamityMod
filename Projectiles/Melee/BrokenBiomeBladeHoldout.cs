@@ -2,6 +2,7 @@
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -123,19 +124,19 @@ namespace CalamityMod.Projectiles.Melee
             bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
             bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Default];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Default);
 
             if (hotAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Hot];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Hot);
             }
             if (coldAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Cold];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Cold);
             }
             if (evilAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Evil];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Evil);
             }
 
             //If the owner already had the attunement , break out of it (And unswap)

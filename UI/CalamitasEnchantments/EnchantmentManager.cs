@@ -16,8 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI.CalamitasEnchants
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class EnchantmentManager
+    public sealed class EnchantmentManager : ModSystem
     {
         internal const int ClearEnchantmentID = -18591774;
         internal const string ExhumedNamePath = "UI.Exhumed.DisplayName";
@@ -145,7 +144,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             EnchantmentList.Add(new Enchantment(name, description, id, iconTexturePathElement, creationEffect, holdEffect, requirement));
         }
 
-        internal static void LoadAllEnchantments()
+        public override void OnModLoad()
         {
             EnchantmentList = new List<Enchantment>
             {
@@ -322,7 +321,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             };
         }
 
-        internal static void UnloadAllEnchantments()
+        public override void Unload()
         {
             EnchantmentList = null;
             ItemUpgradeRelationship = null;

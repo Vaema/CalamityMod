@@ -2,6 +2,7 @@
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -123,7 +124,7 @@ namespace CalamityMod.Projectiles.Melee
             bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
             bool heavenlyAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.TrueDefault];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.TrueDefault);
 
             if (hotAttune)
                 attunement = Attunement.attunementArray[(int)AttunementID.TrueHot];

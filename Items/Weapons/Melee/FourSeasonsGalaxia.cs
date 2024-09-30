@@ -6,6 +6,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -153,17 +154,17 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             int attunement1 = tag.GetInt("mainAttunement");
 
-            mainAttunement = Attunement.attunementArray[attunement1 != -1 ? attunement1 : Attunement.attunementArray.Length - 1];
+            mainAttunement = AttunementSystem.FindOrNull(attunement1);
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : Attunement.attunementArray.Length - 1);
+            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : AttunementSystem.EmptyID);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            mainAttunement = Attunement.attunementArray[reader.ReadInt32()];
+            mainAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
         }
 
         #endregion
@@ -187,10 +188,21 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             else
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.Phoenix, (float)AttunementID.Andromeda)];
+                mainAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)mainAttunement.id));
+        }
+
+        private static int ClampAttunementRange(int input)
+        {
+            if (input < (int)AttunementID.Phoenix)
+                return (int)AttunementID.Phoenix;
+
+            if (input > (int)AttunementID.Andromeda)
+                return (int)AttunementID.Andromeda;
+
+            return input;
         }
 
         public override void HoldItem(Player player)
@@ -240,7 +252,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             Texture2D itemTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDusk" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawn").Value;
             Texture2D outlineTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDuskOutline" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawnOutline").Value;
@@ -264,7 +276,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             Texture2D itemTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDusk" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawn").Value;
             Texture2D outlineTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDuskOutline" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawnOutline").Value;

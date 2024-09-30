@@ -5,6 +5,7 @@ using Terraria.Graphics.Effects;
 using Terraria;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using CalamityMod.Skies;
 
 namespace CalamityMod.Backgrounds
 {
@@ -80,7 +81,7 @@ namespace CalamityMod.Backgrounds
                 var bgParallax = 0.4;
                 var bgTopY = (int)(backgroundTopMagicNumber * 1800.0 + 1500.0) + (int)scAdj + pushBGTopHack;
                 bgScale *= bgGlobalScaleMultiplier;
-                var bgWidthScaled = (int)((float)CalamityMod.AstralDesertSurfaceMiddle.Width * bgScale);
+                var bgWidthScaled = (int)((float)SkyTextureRefs.AstralDesertSurfaceMiddle.Value.Width * bgScale);
                 SkyManager.Instance.DrawToDepth(Main.spriteBatch, 1.2f / (float)bgParallax);
                 var bgStartX = (int)(0.0 - Math.IEEERemainder((double)Main.screenPosition.X * bgParallax, bgWidthScaled) - (double)(bgWidthScaled / 2));
                 if (Main.gameMenu)
@@ -91,7 +92,7 @@ namespace CalamityMod.Backgrounds
                 {
                     for (int i = 0; i < bgLoops; i++)
                     {
-                        Main.spriteBatch.Draw(CalamityMod.AstralDesertSurfaceMiddle, new Vector2(bgStartX + bgWidthScaled * i, bgTopY + MiddleBGYOffset), new Rectangle(0, 0, CalamityMod.AstralDesertSurfaceMiddle.Width, CalamityMod.AstralDesertSurfaceMiddle.Height), ColorOfSurfaceBackgroundsModified, 0f, default(Vector2), bgScale, SpriteEffects.None, 0f);
+                        Main.spriteBatch.Draw(SkyTextureRefs.AstralDesertSurfaceMiddle.Value, new Vector2(bgStartX + bgWidthScaled * i, bgTopY + MiddleBGYOffset), new Rectangle(0, 0, SkyTextureRefs.AstralDesertSurfaceMiddle.Value.Width, SkyTextureRefs.AstralDesertSurfaceMiddle.Value.Height), ColorOfSurfaceBackgroundsModified, 0f, default(Vector2), bgScale, SpriteEffects.None, 0f);
                     }
                 }
 
@@ -99,7 +100,7 @@ namespace CalamityMod.Backgrounds
                 bgParallax = 0.43;
                 bgTopY = (int)(backgroundTopMagicNumber * 1950.0 + 1750.0) + (int)scAdj + pushBGTopHack;
                 bgScale *= bgGlobalScaleMultiplier;
-                bgWidthScaled = (int)((float)CalamityMod.AstralDesertSurfaceClose.Width * bgScale);
+                bgWidthScaled = (int)((float)SkyTextureRefs.AstralDesertSurfaceClose.Value.Width * bgScale);
                 SkyManager.Instance.DrawToDepth(Main.spriteBatch, 1f / (float)bgParallax);
                 bgStartX = (int)(0.0 - Math.IEEERemainder((double)Main.screenPosition.X * bgParallax, bgWidthScaled) - (double)(bgWidthScaled / 2));
                 if (Main.gameMenu)
@@ -113,7 +114,7 @@ namespace CalamityMod.Backgrounds
                 {
                     for (int i = 0; i < bgLoops; i++)
                     {
-                        Main.spriteBatch.Draw(CalamityMod.AstralDesertSurfaceClose, new Vector2(bgStartX + bgWidthScaled * i, bgTopY + CloseBGYOffset), new Rectangle(0, 0, CalamityMod.AstralDesertSurfaceClose.Width, CalamityMod.AstralDesertSurfaceClose.Height), ColorOfSurfaceBackgroundsModified, 0f, default(Vector2), bgScale, SpriteEffects.None, 0f);
+                        Main.spriteBatch.Draw(SkyTextureRefs.AstralDesertSurfaceClose.Value, new Vector2(bgStartX + bgWidthScaled * i, bgTopY + CloseBGYOffset), new Rectangle(0, 0, SkyTextureRefs.AstralDesertSurfaceClose.Value.Width, SkyTextureRefs.AstralDesertSurfaceClose.Value.Height), ColorOfSurfaceBackgroundsModified, 0f, default(Vector2), bgScale, SpriteEffects.None, 0f);
                     }
                 }
             }

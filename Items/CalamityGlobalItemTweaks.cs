@@ -15,7 +15,7 @@ namespace CalamityMod.Items
     public partial class CalamityGlobalItem : GlobalItem
     {
         // 02AUG2023: Ozzatron: Having Overhaul enabled turns off all scaling changes, per direct request from Mirsario on 8/2/23.
-        private static bool DisableScalingForOverhaul => CalamityMod.Instance.overhaul is not null;
+        private static bool DisableScalingForOverhaul => ExternalMods.overhaul is not null;
 
         #region Database and Initialization
         internal static SortedDictionary<int, IItemTweak[]> currentTweaks = null;
@@ -126,7 +126,7 @@ namespace CalamityMod.Items
                 { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
                 { ItemID.Gungnir, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(92), ShootSpeedRatio(1.25f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
-                { ItemID.Handgun, Do(PointBlank, UseExact(22)) },
+                { ItemID.Handgun, Do(PointBlank, UseExact(20)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
                 { ItemID.HiveFive, Do(AutoReuse, DamageExact(27)) },

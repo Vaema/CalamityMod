@@ -26,8 +26,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Balancing
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class BalancingChangesManager
+    public sealed class BalancingChangesManager : ModSystem
     {
         internal static List<IBalancingRule[]> UniversalBalancingChanges = null;
         internal static List<NPCBalancingChange> NPCSpecificBalancingChanges = null;
@@ -36,7 +35,7 @@ namespace CalamityMod.Balancing
         // For ease of change, changes that are not exclusive to one specific weapon are not bundled into one line if they share the same resistance factor.
         // To give an example of this, Thanatos having a 50% resist to Chicken Cannon and Prismatic Breaker should be two distinct lines with a 0.5x factor instead of hamfisting them all
         // into one single resist that may have to be split later.
-        internal static void Load()
+        public override void SetStaticDefaults()
         {
             // Dirty shorthand for true melee resists, because they're super common and other class resists aren't.
             IBalancingRule ResistTrueMelee(float f) => new ClassResistBalancingRule(f, TrueMeleeDamageClass.Instance);
@@ -522,7 +521,7 @@ namespace CalamityMod.Balancing
             #endregion
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             UniversalBalancingChanges = null;
             NPCSpecificBalancingChanges = null;

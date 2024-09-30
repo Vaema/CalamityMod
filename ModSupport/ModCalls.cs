@@ -719,9 +719,9 @@ namespace CalamityMod
         // Sets the damage reduction for an NPC type
         public static float SetDamageReduction(int npcID, float dr)
         {
-            CalamityMod.DRValues.TryGetValue(npcID, out float oldDR);
-            CalamityMod.DRValues.Remove(npcID);
-            CalamityMod.DRValues.Add(npcID, dr);
+            CalamityGlobalNPC.DRValues.TryGetValue(npcID, out float oldDR);
+            CalamityGlobalNPC.DRValues.Remove(npcID);
+            CalamityGlobalNPC.DRValues.Add(npcID, dr);
             return oldDR;
         }
         // Sets a specific NPC's damage reduction

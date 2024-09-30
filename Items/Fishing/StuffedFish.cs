@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Fishing
             itemLoot.AddIf(() => Main.hardMode, ItemID.HallowedSeeds, 20, seedMin, seedMax);
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is null)
                 return;
 
