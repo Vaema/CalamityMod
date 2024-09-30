@@ -2150,10 +2150,15 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            cursor.Index -= 3; // 3 Instruction Backward should be TreeStyle LdLoc
-            if (!cursor.Next.MatchLdloc(out var treeStyleLocaIdx))
+            if (!cursor.TryGotoPrev([x => x.MatchLdcI4(out var styleEq) && styleEq == 14, x => x.MatchBneUn(out _)]))
             {
-                LogFailure("GlowMask Tree Rendering", $"Could not locate Ldloc for TreeStyleIndex ({debugSubpartName})");
+                LogFailure("GlowMask Tree Rendering", $"Could not locate Bne.Un for TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.Prev.MatchLdloc(out var treeStyleLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Prev Instruction is not a LdLoc. Cannot locate TreeStyleIndex ({debugSubpartName})");
                 return;
             }
 
