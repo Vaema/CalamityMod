@@ -439,7 +439,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = setDamage;
 
-                    float sporeGasDashGateValue = death ? 4f : 6f;
+                    float sporeGasDashGateValue = death ? 6f : 9f;
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
                         int projectileType = ModContent.ProjectileType<SporeGasPlantera>();
@@ -528,7 +528,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         // Vomit spread of spore gas
-                        int totalProjectiles = secondCharge ? 6 : masterMode ? 18 : 12;
+                        int totalProjectiles = secondCharge ? 6 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
                         int damage = npc.GetProjectileDamage(type);
@@ -1168,6 +1168,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Set Plantera to a variable
             int plantBoss = NPC.plantBoss;
 
+            // Retract to be near Plantera while she's charging
+            bool planteraIsCharging = Main.npc[plantBoss].ai[3] <= -2f;
+
             // Become free if Plantera gets sick of your shit
             if (Main.npc[plantBoss].ai[2] == -1f && npc.ai[2] != 1f)
             {
@@ -1177,14 +1180,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
             }
 
-            // 3 seconds of resistance and no damage to prevent spawn killing and unfair hits
-            if (npc.localAI[0] < 90f)
+            // 3 seconds of extending from Plantera to max length to prevent unfair hits
+            float extendTime = 180f;
+            if (planteraIsCharging)
             {
                 npc.damage = 0;
-                npc.localAI[0] += 1f;
+
+                if (npc.localAI[0] > 0f)
+                {
+                    npc.localAI[0] = 0f;
+                    npc.SyncExtraAI();
+                }
             }
-            else
+            else if (npc.localAI[0] < extendTime)
+            {
                 npc.damage = npc.defDamage;
+                npc.localAI[0] += 1f;
+                if (npc.localAI[0] >= extendTime)
+                    npc.SyncExtraAI();
+            }
 
             // Movement variables
             int maxOffset = 100;
@@ -1201,19 +1215,26 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Velocity and acceleration
             float tentacleAcceleration = death ? 2.4f : 1.6f;
             float extendedDistanceFromPlantera = Math.Abs(npc.ai[0] + npc.ai[1]) / maxOffset;
-            float tentacleVelocity = 100f + (extendedDistanceFromPlantera * 300f);
+            float tentacleDistance = MathHelper.Lerp(50f, 100f + (extendedDistanceFromPlantera * 300f), npc.localAI[0] / extendTime);
             float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);
 
             if (masterMode)
             {
                 tentacleAcceleration *= 1.2f;
                 extendedDistanceFromPlantera *= 1.1f;
-                tentacleVelocity *= 1.2f;
+                tentacleDistance *= 1.2f;
                 deceleration *= 0.75f;
             }
 
             if (Main.getGoodWorld)
                 tentacleAcceleration += 4f;
+
+            // Fast retraction
+            if (planteraIsCharging)
+            {
+                tentacleAcceleration *= 2f;
+                deceleration *= 0.5f;
+            }
 
             // Despawn if Plantera is gone
             if (!Main.npc[plantBoss].active)
@@ -1229,7 +1250,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float plantXDist = plantXOffset - planteraCenter.X;
             float plantYDist = plantYOffset - planteraCenter.Y;
             float plantTotalDist = (float)Math.Sqrt(plantXDist * plantXDist + plantYDist * plantYDist);
-            plantTotalDist = tentacleVelocity / plantTotalDist;
+            plantTotalDist = tentacleDistance / plantTotalDist;
             plantXDist *= plantTotalDist;
             plantYDist *= plantTotalDist;
 
@@ -1259,6 +1280,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             float velocityLimit = 12f + 6f * extendedDistanceFromPlantera;
+            if (planteraIsCharging)
+                velocityLimit *= 1.5f;
             if (npc.velocity.X > velocityLimit)
                 npc.velocity.X = velocityLimit;
             if (npc.velocity.X < -velocityLimit)
