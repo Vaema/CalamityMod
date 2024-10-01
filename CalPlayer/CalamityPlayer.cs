@@ -4605,52 +4605,49 @@ namespace CalamityMod.CalPlayer
 
         public override void ModifyNursePrice(NPC nurse, int health, bool removeDebuffs, ref int price)
         {
-            // Nurse costs scale as the game progresses.
-            // Base:            300     3 silver
-            // EoC:             900     9 silver
-            // Skeletron:       1200    12 silver
-            // Hardmode:        2400    24 silver
-            // Any Mech Boss:   4000    40 silver
-            // Plantera/Cal:    6000    60 silver
-            // Golem:           9000    90 silver
-            // Fish/PBG/Rav:    12000   1 gold 20 silver
-            // Moon Lord:       20000   2 gold
-            // Providence:      32000   3 gold 20 silver
-            // DoG:             60000   6 gold
-            // Yharon:          90000   9 gold
+            // Seemlessly apply progression scaling on top of vanilla's scaling logic
+            // In order to do this, we need to cancel out vanilla's currently active multiplier to account for possible non-linearity
+            // Golem (vanilla): 200x    2 gold (per 100 HP or 1 debuff)
+            // Moon Lord:       250x    2 gold 50 silver
+            // Providence:      300x    3 gold
+            // DoG:             400x    4 gold
+            // Yharon:          500x    5 gold
+            // Exo Mechs/SCal:  600x    6 gold
 
             if (price > 0)
             {
-                // start with a vanilla cost of zero instead of 3 silver
-                price -= Item.buyPrice(0, 0, 3, 0);
-
-                if (DownedBossSystem.downedYharon)
-                    price += Item.buyPrice(0, 9, 0, 0);
-                else if (DownedBossSystem.downedDoG)
-                    price += Item.buyPrice(0, 6, 0, 0);
-                else if (DownedBossSystem.downedProvidence)
-                    price += Item.buyPrice(0, 3, 20, 0);
-                else if (NPC.downedMoonlord)
-                    price += Item.buyPrice(0, 2, 0, 0);
-                else if (NPC.downedFishron || DownedBossSystem.downedPlaguebringer || DownedBossSystem.downedRavager)
-                    price += Item.buyPrice(0, 1, 20, 0);
-                else if (NPC.downedGolemBoss)
-                    price += Item.buyPrice(0, 0, 90, 0);
-                else if (NPC.downedPlantBoss || DownedBossSystem.downedCalamitasClone)
-                    price += Item.buyPrice(0, 0, 60, 0);
-                else if (NPC.downedMechBossAny)
-                    price += Item.buyPrice(0, 0, 40, 0);
-                else if (Main.hardMode)
-                    price += Item.buyPrice(0, 0, 24, 0);
-                else if (NPC.downedBoss3)
-                    price += Item.buyPrice(0, 0, 12, 0);
-                else if (NPC.downedBoss1)
-                    price += Item.buyPrice(0, 0, 6, 0);
-                else
-                    price += Item.buyPrice(0, 0, 3, 0);
-
                 if (areThereAnyDamnBosses)
                     price *= 5;
+
+                if (DownedBossSystem.downedExoMechs || DownedBossSystem.downedCalamitas)
+                    price *= 600;
+                else if (DownedBossSystem.downedYharon)
+                    price *= 500;
+                else if (DownedBossSystem.downedDoG)
+                    price *= 400;
+                else if (DownedBossSystem.downedProvidence)
+                    price *= 300;
+                else if (NPC.downedMoonlord)
+                    price *= 250;
+                else // If none of Calamity's scaling logic applies, do not do any calculations to cancel off vanilla's price multiplier
+                    return;
+
+                int vanillaPriceMult = 1;
+                if (NPC.downedGolemBoss)
+                    vanillaPriceMult = 200;
+                else if (NPC.downedPlantBoss)
+                    vanillaPriceMult = 150;
+                else if (NPC.downedMechBossAny)
+                    vanillaPriceMult = 100;
+                else if (Main.hardMode)
+                    vanillaPriceMult = 60;
+                else if (NPC.downedBoss3 || NPC.downedQueenBee)
+                    vanillaPriceMult = 25;
+                else if (NPC.downedBoss2)
+                    vanillaPriceMult = 10;
+                else if (NPC.downedBoss1)
+                    vanillaPriceMult = 3;
+                price /= vanillaPriceMult;
             }
         }
         #endregion
