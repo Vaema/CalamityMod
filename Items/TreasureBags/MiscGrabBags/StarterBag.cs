@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             itemLoot.Add(ItemID.Chest, 1, 3, 3);
 
             // Calamity title theme music box (if music mod is enabled)
-            Mod musicMod = CalamityMod.Instance.musicMod;
+            Mod musicMod = ExternalMods.musicMod;
             if (musicMod is not null)
                 itemLoot.Add(musicMod.Find<ModItem>("CalamityMusicbox").Type);
 

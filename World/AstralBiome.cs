@@ -75,7 +75,7 @@ namespace CalamityMod.World
 
         public static void PlaceAstralMeteor()
         {
-            Mod ancientsAwakened = CalamityMod.Instance.ancientsAwakened;
+            Mod ancientsAwakened = ExternalMods.ancientsAwakened;
 
             // This flag is also used to determine whether players are nearby.
             bool meteorDropped = true;
@@ -222,7 +222,7 @@ namespace CalamityMod.World
             // Pre-cache a list of Magic Storage tiles to avoid, for performance reasons
             // It is plausible that only StorageComponent and StorageConnector are needed, but I aint gonna risk corrupting worlds
             // or crashes as containers can do some serious shit as seen with the Abyss chests - Shade
-            Mod magicStorage = CalamityMod.Instance.magicStorage;
+            Mod magicStorage = ExternalMods.magicStorage;
             IList<ushort> MSTilesToAvoid = new List<ushort>(16);
             if (magicStorage is not null)
             {

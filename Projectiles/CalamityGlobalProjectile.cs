@@ -8,6 +8,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.EntitySources;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
@@ -4570,7 +4571,7 @@ namespace CalamityMod.Projectiles
                 if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
                     return true;
 
-                Texture2D texture = CalamityMod.WallOfFleshDemonSickleTexture.Value;
+                Texture2D texture = ExtraTextureRefs.WallOfFleshDemonSickleTexture.Value;
                 int frameHeight = texture.Height / Main.projFrames[projectile.type];
                 int frameY = frameHeight * projectile.frame;
                 Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);

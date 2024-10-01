@@ -634,7 +634,7 @@ namespace CalamityMod.NPCs.Providence
 
             // Prevent lag by stopping rain
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
 
             // Set target biome type
             if (biomeType == 0)

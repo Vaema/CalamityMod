@@ -47,8 +47,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Projectile.ownerHitCheck = true;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 8;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
             Projectile.frameCounter = 0;
         }
 
@@ -112,6 +112,8 @@ namespace CalamityMod.Projectiles.Melee
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
+
+            Projectile.ai[2]--;            
         }
 
         // This hurt my soul to do, but because the swing is done with a sprite animation, tracking specific visual rotation of the weapon is nigh impossible
@@ -153,7 +155,8 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 origin = texture.Size() / new Vector2(2f, 6f) * 0.5f;
             Rectangle frame = texture.Frame(2, 6, frameX, frameY);
             SpriteEffects spriteEffects = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Main.EntitySpriteDraw(texture, position, frame, lightColor, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+            Color playerPos = Lighting.GetColor(Main.LocalPlayer.position.ToTileCoordinates());
+            Main.EntitySpriteDraw(texture, position, frame, playerPos, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
             Main.EntitySpriteDraw(glowTexture.Value, position, frame, Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
             return false;
         }
@@ -162,5 +165,20 @@ namespace CalamityMod.Projectiles.Melee
 
         // Deal damage only once it starts swinging down and then going back up 
         public override bool? CanDamage() => ((frameX == 0 && frameY >= 3) || frameX == 1);
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            int maxRifts = 1;
+            if (Projectile.ai[2] <= 0 && Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<DeathsAscensionRift>()] < maxRifts)
+            {
+                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + Main.rand.NextVector2Circular(28, 28), Vector2.Zero, ModContent.ProjectileType<DeathsAscensionRift>(), Projectile.damage, Projectile.knockBack, Projectile.owner, ai1: Main.rand.NextFloat(0, 3f));
+                Main.projectile[p].rotation = Main.rand.NextFloat(-MathHelper.TwoPi, MathHelper.TwoPi);
+                SoundEngine.PlaySound(SoundID.Item165 with { Pitch = -1 }, Projectile.Center);
+                Projectile.ai[2] = 40;
+                float screenShakePower = 3 * Utils.GetLerpValue(1300f, 0f, target.Distance(Main.LocalPlayer.Center), true);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+            }
+        }
     }
 }
