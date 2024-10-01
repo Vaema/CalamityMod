@@ -113,16 +113,8 @@ namespace CalamityMod.CalPlayer
 
         private void CounterScarfDodge()
         {
-            if (evasionScarf)
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.EvasionScarf.ID, duration);
-            }
-            else
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.CounterScarf.ID, duration);
-            }
+            int duration = CalamityUtils.SecondsToFrames(30);
+            Player.AddCooldown(ScarfCooldown.ID, duration, true, evasionScarf ? "evasionscarf" : "counterscarf");
 
             // 17APR2024: Ozzatron: Counter Scarf is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
             int counterScarfIFrames = Player.ComputeDodgeIFrames();
@@ -1238,7 +1230,7 @@ namespace CalamityMod.CalPlayer
             // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
