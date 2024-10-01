@@ -72,11 +72,19 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f));
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(0.85f, 1.15f);
-                    dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
-                    dust.noLightEmittence = true;
+                    if (i < 3)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.85f, 1.15f);
+                        dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                        dust.noLightEmittence = true;
+                    }
+                    else
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center, (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.3f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.3f, 0.4f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
 
                     Particle spark2 = new GlowSparkParticle(Projectile.Center, (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f), false, 9, 0.017f, Color.Goldenrod, new Vector2(1.5f, 0.7f), true, false, 1.3f);
                     GeneralParticleHandler.SpawnParticle(spark2);

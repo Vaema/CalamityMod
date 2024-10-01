@@ -50,25 +50,10 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 25 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 35 * Projectile.MaxUpdates;
             Projectile.timeLeft = 900;
             Projectile.extraUpdates = 4;
             Projectile.DamageType = RogueDamageClass.Instance;
-        }
-
-        private void SpawnBlobs(int blobCount)
-        {
-            for (int i = 0; i < blobCount; i++)
-            {
-                Vector2 iAmSpeed = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                while (iAmSpeed.X == 0f && iAmSpeed.Y == 0f)
-                {
-                    iAmSpeed = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                }
-                iAmSpeed.Normalize();
-                iAmSpeed *= (float)Main.rand.Next(70, 101) * 0.1f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, iAmSpeed.X, iAmSpeed.Y, ModContent.ProjectileType<MoltenBlobThrown>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner, 0f, 0f);
-            }
         }
         public override void AI()
         {
@@ -229,7 +214,6 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
-
             time++;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -237,38 +221,44 @@ namespace CalamityMod.Projectiles.Rogue
             Player Owner = Main.player[Projectile.owner];
             if (Projectile.Calamity().stealthStrike)
             {
-                SoundStyle fire = new("CalamityMod/Sounds/Item/BlazingCoreParryActivate");
-                SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.6f, 0.75f) }, Projectile.Center);
-
-                int numParts = 6;
-                for (int i = 0; i < numParts; i++)
+                if (Projectile.numHits == 0)
                 {
-                    float fade = 4;
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                    SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = Main.rand.NextFloat(0.4f, 0.85f), MaxInstances = -1 }, Projectile.Center);
+                }
 
-                    float rot = fakeRot + (MathHelper.TwoPi * i / numParts);
-                    Vector2 vel = (new Vector2(0, -130).RotatedBy(rot).RotatedBy(-1.3f * direction));
-
-                    Particle spark2 = new CustomSpark(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), (vel * 4).RotatedByRandom(1.4f) * fade, "CalamityMod/Particles/ProvidenceMarkParticle", false, 24, Main.rand.NextFloat(1.15f, 1.3f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.4f, 0.5f));
-                    GeneralParticleHandler.SpawnParticle(spark2);
-
-                    BloodParticle blood = new BloodParticle(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), (vel * 4).RotatedByRandom(1.4f) * fade, Main.rand.Next(13, 24 + 1), Main.rand.NextFloat(0.85f, 1.2f), Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
-                    GeneralParticleHandler.SpawnParticle(blood);
-
-                    if (Main.rand.NextBool(6))
+                if (Projectile.numHits < 8)
+                {
+                    int numParts = 2;
+                    for (int i = 0; i < numParts; i++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), Main.rand.NextBool(4) ? 278 : ModContent.DustType<LightDust>());
-                        dust2.noGravity = true;
-                        dust2.scale = dust2.type == 278 ? 0.95f : 1.2f;
-                        dust2.color = Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f));
-                        dust2.velocity = (vel * 4).RotatedByRandom(1.4f) * fade;
-                    }
-                    else
-                    {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), Main.rand.NextBool(4) ? 278 : ModContent.DustType<LightDust>());
-                        dust.noGravity = true;
-                        dust.scale = dust.type == 278 ? 0.75f : 0.9f;
-                        dust.color = Main.rand.NextBool(4) ? Color.Khaki : Color.Goldenrod;
-                        dust.velocity = (vel * 4).RotatedByRandom(1.4f) * fade;
+                        float fade = 4;
+
+                        float rot = fakeRot + (MathHelper.TwoPi * i / numParts) * 0.4f + Projectile.numHits * 5;
+                        Vector2 vel = (new Vector2(0, -130).RotatedBy(rot).RotatedBy(-1.3f * direction)) * squash.X;
+
+                        Particle spark2 = new CustomSpark(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), (vel * 0.02f).RotatedByRandom(1.4f) * fade, "CalamityMod/Particles/GlowSpark", false, 18, Main.rand.NextFloat(0.015f, 0.025f), Color.Goldenrod, new Vector2(2f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.6f, 0.7f));
+                        GeneralParticleHandler.SpawnParticle(spark2);
+
+                        BloodParticle blood = new BloodParticle(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), (vel * 0.04f).RotatedByRandom(1.4f) * fade, Main.rand.Next(13, 24 + 1), Main.rand.NextFloat(0.85f, 1.2f), Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(blood);
+
+                        if (Main.rand.NextBool(6))
+                        {
+                            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), Main.rand.NextBool(4) ? 278 : ModContent.DustType<LightDust>());
+                            dust2.noGravity = true;
+                            dust2.scale = dust2.type == 278 ? 0.95f : 1.2f;
+                            dust2.color = Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f));
+                            dust2.velocity = (vel * 0.04f).RotatedByRandom(1.4f) * fade;
+                        }
+                        else
+                        {
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -70 * squash.X).RotatedBy(rot), Main.rand.NextBool(4) ? 278 : ModContent.DustType<LightDust>());
+                            dust.noGravity = true;
+                            dust.scale = dust.type == 278 ? 0.75f : 0.9f;
+                            dust.color = Main.rand.NextBool(4) ? Color.Khaki : Color.Goldenrod;
+                            dust.velocity = (vel * 0.04f).RotatedByRandom(1.4f) * fade;
+                        }
                     }
                 }
             }

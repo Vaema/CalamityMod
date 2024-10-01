@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
                         SoundEngine.PlaySound(fire with { Volume = 0.45f, Pitch = (0 - 0.3f * Utils.GetLerpValue(0, 300, rainDownTimer, true)) }, Projectile.Center);
                         for (int i = 0; i < (isClusterRocket ? 4 : 2); i++)
                         {
-                            Vector2 variance = new Vector2(80 * (isClusterRocket ? 3 : 1), 0) * Main.rand.NextFloat(-1f, 1f);
+                            Vector2 variance = (i % 2 == 0 ? 0.2f : 1) * (new Vector2(80 * (isClusterRocket ? 3 : 1), 0) * Main.rand.NextFloat(-1f, 1f));
                             Vector2 velocity = (((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(8, 12)) + variance * 0.008f;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + variance, velocity, ModContent.ProjectileType<BlissfulBombardierSplitProjectile>(), (int)(Projectile.damage * (isClusterRocket ? 0.15f : 0.3f)), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
                         }
@@ -184,11 +184,19 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 25; i++)
             {
-                Dust l = Dust.NewDustPerfect(Projectile.Center, 278);
-                l.velocity = new Vector2(5, 5).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.4f, 1f);
-                l.scale = Main.rand.NextFloat(0.6f, 0.8f) * blastRadiusVisual * 0.2f * (i % 2 == 0 ? 2.2f : 1.8f);
-                l.noGravity = false;
-                l.color = staticEffectsColor;
+                if (i < 14)
+                {
+                    Particle spark = new CustomSpark(Projectile.Center, new Vector2(4, 4).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.3f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(2.45f, 2.7f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.35f, 0.4f));
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                else
+                {
+                    Dust l = Dust.NewDustPerfect(Projectile.Center, 278);
+                    l.velocity = new Vector2(5, 5).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.4f, 1f);
+                    l.scale = Main.rand.NextFloat(0.6f, 0.8f) * blastRadiusVisual * 0.2f * (i % 2 == 0 ? 2.2f : 1.8f);
+                    l.noGravity = false;
+                    l.color = staticEffectsColor;
+                }
             }
             for (int i = 0; i < 15; i++)
             {
@@ -210,7 +218,7 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/NukeOfBliss").Value;
 
             float fade2 = rainDownTimer > 0 ? Utils.GetLerpValue(reachedPeakTime, reachedPeakTime * 0.7f, time) : 1;
-            Projectile.DrawProjectileWithBackglow(staticEffectsColor with { A = 0 } * fade2, Color.Lerp(lightColor, Color.Goldenrod with { A = 0 }, Utils.GetLerpValue(0, reachedPeakTime, time, true)) * fade2, 6f * Utils.GetLerpValue(0, reachedPeakTime, time, true), texture);
+            Projectile.DrawProjectileWithBackglow(staticEffectsColor with { A = 0 } * fade2, lightColor * fade2, 6f * Utils.GetLerpValue(0, reachedPeakTime, time, true), texture);
             return false;
         }
     }

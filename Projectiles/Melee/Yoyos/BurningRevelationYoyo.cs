@@ -178,15 +178,23 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
                     for (int i = 0; i < (int)(30 * power); i++)
                     {
-                        bool isSpark = Main.rand.NextBool(5);
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(1.85f, 2.15f) * power * (isSpark ? 0.5f : 1);
-                        dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
-                        if (isSpark)
-                            dust.noGravity = false;
+                        if (Main.rand.NextBool())
+                        {
+                            Particle spark = new CustomSpark(Projectile.Center, ((new Vector2(19, 19) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(1.15f, 1.3f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
                         else
-                            dust.noLightEmittence = true;
+                        {
+                            bool isSpark = Main.rand.NextBool(5);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(1.85f, 2.15f) * power * (isSpark ? 0.5f : 1);
+                            dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                            if (isSpark)
+                                dust.noGravity = false;
+                            else
+                                dust.noLightEmittence = true;
+                        }
                     }
 
                     Particle orb1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.14f * power, 15);

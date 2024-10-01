@@ -98,6 +98,11 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.color = Color.Goldenrod;
                 dust.noLightEmittence = true;
             }
+            for (int i = 0; i < 4; i++)
+            {
+                Particle spark = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(10, 10), (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 15, Main.rand.NextFloat(1.35f, 1.6f), Main.rand.NextBool(4) ? Color.Khaki : effectsColor, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.45f, 0.55f));
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
         }
         public override bool PreDraw(ref Color lightColor)
         {

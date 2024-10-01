@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void HoldoutAI()
         {
             // If there's no player, or the player is the server, or the owner's stunned, there'll be no holdout.
-            if (Owner.CantUseHoldout() && PostFireCooldown <= 0)
+            if (Owner.CantUseHoldout() && PostFireCooldown <= 0 && shootingTimer < (int)(Owner.itemAnimationMax * 0.8f))
             {
                 Projectile.Kill();
             }

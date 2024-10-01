@@ -10,6 +10,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.Graphics.Renderers;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -255,10 +256,18 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 particleVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction) * Main.rand.NextFloat(0.3f, 1f)).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                                 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                                Dust dust2 = Dust.NewDustPerfect(particlePos, ModContent.DustType<LightDust>(), -particleVel.RotatedByRandom(0.3f));
-                                dust2.scale = Main.rand.NextFloat(0.95f, 1.45f);
-                                dust2.noGravity = true;
-                                dust2.color = Main.rand.NextBool(3) ? mainColor2 : mainColor1;
+                                if (i < 2)
+                                {
+                                    Dust dust2 = Dust.NewDustPerfect(particlePos, ModContent.DustType<LightDust>(), -particleVel.RotatedByRandom(0.3f));
+                                    dust2.scale = Main.rand.NextFloat(0.95f, 1.45f);
+                                    dust2.noGravity = true;
+                                    dust2.color = Main.rand.NextBool(3) ? mainColor2 : mainColor1;
+                                }
+                                else
+                                {
+                                    Particle spark = new CustomSpark(particlePos, (-particleVel * 0.2f).RotatedByRandom(0.3f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(0.9f, 1.1f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                                    GeneralParticleHandler.SpawnParticle(spark);
+                                }
                             }
                         }
                     }
@@ -284,6 +293,11 @@ namespace CalamityMod.Projectiles.Melee
                                 float randRot = Main.rand.NextFloat(-10, -45);
                                 Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
                                 GeneralParticleHandler.SpawnParticle(new CustomSpark(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot)).RotatedByRandom(0.4f)), -dustVel * Main.rand.NextFloat(0.4f, 0.7f), "CalamityMod/Particles/LargeBloom", false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.35f), (Main.rand.NextBool(4) ? Color.DarkGoldenrod : Color.Goldenrod), new Vector2(1f, 1.2f), true, false, 0, false, false, 0.45f));
+                                if (i % 3 == 0)
+                                {
+                                    Particle spark = new CustomSpark(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot)).RotatedByRandom(0.4f)), -dustVel * Main.rand.NextFloat(0.4f, 0.7f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(1.15f, 1.3f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                                    GeneralParticleHandler.SpawnParticle(spark);
+                                }
                             }
                             for (int i = 0; i < 6; i++)
                             {

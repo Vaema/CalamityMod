@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 19;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 25;
-            Item.knockBack = 25f;
+            Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<MoltenAmputatorProj>();
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
         public override bool CanUseItem(Player player) => player.altFunctionUse == 2 || true; //|| player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool AltFunctionUse(Player player) => true;
-        public override float StealthDamageMultiplier => 1.07f;
+        public override float StealthDamageMultiplier => 0.4f;
         public override float UseSpeedMultiplier(Player player)
         {
             if (player.altFunctionUse == 2)
@@ -49,6 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool fastToss = player.Calamity().amputatorBuff > 0;
             if (player.altFunctionUse == 2)
             {
                 if (player.Calamity().StealthStrikeAvailable())
@@ -85,8 +86,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = (player.Calamity().amputatorBuff > 0 ? -0.4f + (player.Calamity().amputatorBuff * 0.02f) : Main.rand.NextFloat(-0.4f, -0.65f)) }, position);
                 // Since the positioning of the scythe is important, its velocity is based on your mouse position
                 Vector2 staticSpeed = Utils.DirectionTo(position, position + velocity) * Utils.Distance(position, player.Calamity().mouseWorld) * 0.022f;
-                Projectile scythe = Projectile.NewProjectileDirect(source, position, staticSpeed.RotatedByRandom((player.Calamity().amputatorBuff > 0 ? 0.8f : 0)), type, damage, knockback, player.whoAmI, 0, 0, 0);
-                if (player.Calamity().amputatorBuff > 0)
+                Projectile scythe = Projectile.NewProjectileDirect(source, position, staticSpeed.RotatedByRandom((player.Calamity().amputatorBuff > 0 ? 0.7f : 0)), type, (int)(damage * (fastToss ? 0.65f : 1)), knockback, player.whoAmI, 0, 0, 0);
+                if (fastToss)
                 {
                     scythe.extraUpdates = 6;
                     scythe.Calamity().stealthStrike = true;

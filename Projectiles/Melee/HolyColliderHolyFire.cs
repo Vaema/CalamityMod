@@ -103,9 +103,17 @@ namespace CalamityMod.Projectiles.Melee
                         dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Goldenrod;
                         dust.noLightEmittence = true;
                     }
-
-                    Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), false, 11, 0.9f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    if (Main.rand.NextBool())
+                    {
+                        Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), false, 11, 0.9f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    else
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(1.15f, 1.3f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    
                 }
             }
             else

@@ -168,6 +168,12 @@ namespace CalamityMod.Projectiles.Typeless
                 Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.65f, 15, true);
                 GeneralParticleHandler.SpawnParticle(orb3);
 
+                for (int i = 0; i < 4; i++)
+                {
+                    Particle spark = new CustomSpark(Projectile.Center, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.3f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.3f, 0.4f));
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+
                 // Sub projectiles spawning sub explosions... yea it needs armor pen
                 Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
                 explo.ArmorPenetration = 30;

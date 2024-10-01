@@ -729,10 +729,10 @@ MoltenAmputator: {
 	DisplayName: Molten Amputator
 	Tooltip:
 		'''
-Throw a spinning scythe, that lingers at your cursor, press right to recall it
-If a scythe is recalled while it's on an enemy it will amputate them, dealing very high damage to the enemy it hits
-With full stealth, press right to buff yourself and increase your attack speed for your next few  attacks
-You cannot recall scythes thrown while buffed
+		Throw a spinning scythe, that lingers at your cursor, press right to recall it
+		If a scythe is recalled while it's on an enemy it will amputate them, dealing very high damage to the enemy it hits
+		With full stealth, press right to buff yourself and increase your attack speed for your next few  attacks
+		You cannot recall scythes thrown while buffed
 		'''
 }
 
