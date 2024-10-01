@@ -75,7 +75,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            // TODO -- This dust was an invalid dust. Replaced with a random dust.
             int dustType = 91;
             for (int k = 0; k < 5; k++)
             {
