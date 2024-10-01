@@ -279,11 +279,11 @@ namespace CalamityMod.NPCs
 
                 // Shark
                 // Shark Tooth Necklace @ 4% Normal, 6.67% Expert+
-                // Joyful Heart @ 4% Normal, 6.67% Expert+
+                // Joyful Heart @ 5%
                 // Sharky Plush @ 1%
                 case NPCID.Shark:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.SharkToothNecklace, 25, 15));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<JoyfulHeart>(), 25, 15));
+                    npcLoot.Add(ModContent.ItemType<JoyfulHeart>(), 20);
                     npcLoot.Add(ModContent.ItemType<SharkyPlush>(), 100);
                     break;
 

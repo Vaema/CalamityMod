@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<ThirdSage>(), ModContent.BuffType<ThirdSageBuff>());
             Item.UseSound = SoundID.Item3;
-            Item.value = Item.sellPrice(gold: 1);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().devItem = true;
         }
