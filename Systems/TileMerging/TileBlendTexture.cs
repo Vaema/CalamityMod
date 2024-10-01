@@ -19,10 +19,20 @@ namespace CalamityMod.Systems
         public const byte EmptySheetIndex = byte.MaxValue;
         public const int VariantCount = 3;
 
+        public const int BlendTextureFrameMargin = 0;
+
         public const int BlendTextureXCount = 16;
         public const int BlendTextureYCount = 16;
-        public const int BlendTextureWidth = 18 * BlendTextureXCount;
-        public const int BlendTextureHeight = 18 * BlendTextureYCount;
+
+        // FA: 2024/OCT/01
+        // Removing Margin as I believe artifacts never happens on Terraria
+        // And built sheets are not meant to be edited/viewed by human.
+        // But if graphic artifact happens, Please set these value to 18 and remove this comment
+        public const int BlendTextureFrameWidth = 16;
+        public const int BlendTextureFrameHeight = 16;
+
+        public const int BlendTextureWidth = BlendTextureFrameWidth * BlendTextureXCount;
+        public const int BlendTextureHeight = BlendTextureFrameHeight * BlendTextureYCount;
         #endregion
 
 
