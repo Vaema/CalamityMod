@@ -19,8 +19,6 @@ namespace CalamityMod.Systems
         public const byte EmptySheetIndex = byte.MaxValue;
         public const int VariantCount = 3;
 
-        public const int BlendTextureFrameMargin = 0;
-
         public const int BlendTextureXCount = 16;
         public const int BlendTextureYCount = 16;
 
