@@ -74,6 +74,9 @@ namespace CalamityMod.Systems
         #region Public API
         public static void RegisterMerge(int myType, int blendTileType, bool looselyFillDiagonal = false)
         {
+            if (Main.dedServ)
+                return;
+
             if (myType == blendTileType)
                 return;
 
@@ -94,6 +97,9 @@ namespace CalamityMod.Systems
 
         public static void RegisterMerge(int myType, TileBlendTexture blendTexture, bool looselyFillDiagonal = false)
         {
+            if (Main.dedServ)
+                return;
+
             if (blendTexture == null)
                 return;
 
@@ -114,6 +120,9 @@ namespace CalamityMod.Systems
 
         public static void RegisterMerge<T>(int myType, bool looselyFillDiagonal = false) where T : TileBlendTexture
         {
+            if (Main.dedServ)
+                return;
+
             var blendTexture = ModContent.GetInstance<T>();
             RegisterMerge(myType, blendTexture, looselyFillDiagonal);
         }
