@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.BaseTiles
         public abstract int AnimationFrameCount { get; }
         public abstract int AnimationDelay { get; }
         public abstract int CursorItemType { get; }
-        public int EnabledFrameY => TileHeight * 18;
+        public int EnabledFrameY => AnimationFrameHeight;
 
         /// <summary>
         /// GlowMask to use for Monolith
@@ -55,7 +55,7 @@ namespace CalamityMod.Tiles.BaseTiles
         {
             var tile = Main.tile[i, j];
             var width = 18 * TileWidth;
-            var height = 18 * TileHeight;
+            var height = AnimationFrameHeight;
             var leftTopI = i - ((tile.TileFrameX % width) / 18);
             var leftTopJ = j - ((tile.TileFrameY % height) / 18);
             var enabled = tile.TileFrameY >= height;
@@ -122,7 +122,7 @@ namespace CalamityMod.Tiles.BaseTiles
             var drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + zero;
 
             var animateFrameOffset = (tile.TileFrameY >= EnabledFrameY) ? Main.tileFrame[Type] * AnimationFrameHeight : 0;
-            var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, 16);
+            var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 18, 18);
 
             var drawColor = Lighting.GetColor(i, j);
             var glowColor = GetGlowMaskDrawColor(i, j);
