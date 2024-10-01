@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
     {
         public override int TileWidth => 3;
         public override int TileHeight => 5;
-        public override int AnimationFrameCount => 6;
+        public override int AnimationFrameCount => 13;
         public override int AnimationDelay => 8;
         public override int CursorItemType => ModContent.ItemType<ExoObelisk>();
 
