@@ -1,0 +1,143 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
+using Terraria;
+using Terraria.ModLoader;
+using ReLogic.Content;
+using Terraria.Audio;
+using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
+using Microsoft.Xna.Framework;
+
+namespace CalamityMod.Tiles.BaseTiles
+{
+    public abstract class BaseMonolith : ModTile
+    {
+        public abstract int TileWidth { get; }
+        public abstract int TileHeight { get; }
+        public abstract int AnimationFrameCount { get; }
+        public abstract int AnimationDelay { get; }
+        public abstract int CursorItemType { get; }
+        public int EnabledFrameY => TileHeight * 18;
+
+        /// <summary>
+        /// GlowMask to use for Monolith
+        /// </summary>
+        public Asset<Texture2D> GlowMask;
+
+        /// <summary>
+        /// Sound to play on right-clicked by player
+        /// </summary>
+        public SoundStyle? RightClickSound = SoundID.Mech;
+
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+
+        public override void MouseOver(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = CursorItemType != 0;
+            player.cursorItemIconID = CursorItemType;
+        }
+
+        public override bool RightClick(int i, int j)
+        {
+            ToggleMonolith(i, j);
+            SoundEngine.PlaySound(RightClickSound, new Vector2(i * 16, j * 16));
+            return true;
+        }
+
+        public override void HitWire(int i, int j)
+        {
+            ToggleMonolith(i, j);
+        }
+
+        private void ToggleMonolith(int i, int j)
+        {
+            var tile = Main.tile[i, j];
+            var width = 18 * TileWidth;
+            var height = 18 * TileHeight;
+            var leftTopI = i - ((tile.TileFrameX % width) / 18);
+            var leftTopJ = j - ((tile.TileFrameY % height) / 18);
+            var enabled = tile.TileFrameY >= height;
+
+            for (int o = 0; o < TileWidth; o++)
+            {
+                for (int p = 0; p < TileHeight; p++)
+                {
+                    var relI = leftTopI + o;
+                    var relJ = leftTopJ + p;
+                    var relTile = Main.tile[relI, relJ];
+
+                    if (enabled)    relTile.TileFrameY -= (short)height;
+                    else            relTile.TileFrameY += (short)height;
+
+                    if (Wiring.running)
+                    {
+                        Wiring.SkipWire(relI, relJ);
+                    }
+                }
+            }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+            {
+                NetMessage.SendTileSquare(-1, leftTopI, leftTopJ, TileWidth, TileHeight);
+            }
+        }
+
+        public sealed override void NearbyEffects(int i, int j, bool closer)
+        {
+            var enabled = Main.tile[i, j].TileFrameY >= EnabledFrameY;
+            NearbyEffects(i, j, closer, enabled, Main.LocalPlayer);
+        }
+
+        public virtual void NearbyEffects(int i, int j, bool closer, bool monolithEnabled, Player localPlayer)
+        {
+
+        }
+
+        public virtual Color GetGlowMaskDrawColor(int i, int j)
+        {
+            return Color.White;
+        }
+
+        public override void AnimateTile(ref int frame, ref int frameCounter)
+        {
+            frameCounter++;
+            if (frameCounter >= AnimationDelay)
+            {
+                frameCounter = 0;
+                if (++frame >= AnimationFrameCount)
+                {
+                    frame = 0;
+                }
+            }
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            var tile = Main.tile[i, j];
+            var texture = TextureAssets.Tile[Type].Value;
+
+            var zero = Main.drawToScreen ? Vector2.Zero : new(Main.offScreenRange, Main.offScreenRange);
+            var drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + zero;
+
+            var animateFrameOffset = (tile.TileFrameY >= EnabledFrameY) ? Main.tileFrame[Type] * AnimationFrameHeight : 0;
+            var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, 16);
+
+            var drawColor = Lighting.GetColor(i, j);
+            var glowColor = GetGlowMaskDrawColor(i, j);
+
+            Main.spriteBatch.Draw(texture, drawPos, rect, drawColor, 0f, default, 1f, SpriteEffects.None, 0f);
+            if (GlowMask != null)
+                Main.spriteBatch.Draw(GlowMask.Value, drawPos, rect, glowColor, 0f, default, 1f, SpriteEffects.None, 0f);
+
+            DrawExtra(drawPos, rect, drawColor);
+            return false;
+        }
+
+        public virtual void DrawExtra(Vector2 drawPos, Rectangle rect, Color tileColor)
+        {
+
+        }
+    }
+}
