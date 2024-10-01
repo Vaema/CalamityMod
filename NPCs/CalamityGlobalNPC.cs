@@ -9340,6 +9340,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Wraith:
                 case NPCID.BloodNautilus:
                 case NPCID.DiggerHead:
+                case NPCID.UndeadMiner:
                 case NPCID.GraniteGolem:
                 case NPCID.GreekSkeleton:
                 case NPCID.UndeadViking:
@@ -9393,6 +9394,7 @@ namespace CalamityMod.NPCs
                 case NPCID.GoblinSummoner:
                 case NPCID.GoblinSorcerer:
                 case NPCID.PirateCaptain:
+                case NPCID.Scutlix:
                 case NPCID.MartianSaucerCore:
                 case NPCID.TorchGod:
                 case NPCID.EyeofCthulhu:
