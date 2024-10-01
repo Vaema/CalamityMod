@@ -17,6 +17,7 @@ namespace CalamityMod.Tiles.BaseTiles
         public abstract int AnimationFrameCount { get; }
         public abstract int AnimationDelay { get; }
         public abstract int CursorItemType { get; }
+        public virtual bool HasBottomTile18PixelsHeight => true;
         public int EnabledFrameY => AnimationFrameHeight;
 
         /// <summary>
@@ -122,7 +123,10 @@ namespace CalamityMod.Tiles.BaseTiles
             var drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + zero;
 
             var animateFrameOffset = (tile.TileFrameY >= EnabledFrameY) ? Main.tileFrame[Type] * AnimationFrameHeight : 0;
-            var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 18, 18);
+            var isHeight18Pixels = HasBottomTile18PixelsHeight && (tile.TileFrameY % AnimationFrameHeight) >= (18 * (TileHeight - 1));
+            var height = isHeight18Pixels ? 18 : 16;
+
+            var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height);
 
             var drawColor = Lighting.GetColor(i, j);
             var glowColor = GetGlowMaskDrawColor(i, j);
