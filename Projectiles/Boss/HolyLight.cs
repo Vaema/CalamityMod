@@ -123,12 +123,21 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.3f, Volume = 0.7f }, Projectile.Center);
             SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
             SoundEngine.PlaySound(fireHeal with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
-            for (int i = 0; i < 15; i++)
+            Color particleColor =  new Color(54, 209, 54);
+            Color smokeColor = Color.Lerp(particleColor, Color.DarkSlateGray, 0.5f);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, smokeColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.06f, 18);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            for (int i = 0; i < 7; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), ((new Vector2(7, 7) * Projectile.scale).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f)));
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(7f), smokeColor, 30, Main.rand.NextFloat(0.6f, 1f), 0.5f, Main.rand.NextFloat(-0.03f, 0.03f), true);
+                GeneralParticleHandler.SpawnParticle(smoke);
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(1.8f, 10f));
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.75f, 1.05f);
-                dust.color = new Color(54, 209, 54);
+                dust.scale = Main.rand.NextFloat(1f, 1.8f);
+                dust.color = particleColor;
                 dust.noLightEmittence = true;
             }
         }

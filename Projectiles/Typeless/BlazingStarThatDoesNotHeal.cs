@@ -2,7 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -83,11 +83,19 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            for (int i = 0; i < 15; i++)
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, ColorFunction(0f), "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.04f, 15);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            Color smokeColor = Color.Lerp(ColorFunction(0f), Color.DarkSlateGray, 0.5f);
+            for (int i = 0; i < 7; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), ((new Vector2(7, 7) * Projectile.scale).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f)));
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(7f), smokeColor, 30, Main.rand.NextFloat(0.4f, 1f), 0.5f, Main.rand.NextFloat(-0.03f, 0.03f), true);
+                GeneralParticleHandler.SpawnParticle(smoke);
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(1.8f, 10f));
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.75f, 1.05f);
+                dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
                 dust.color = ColorFunction(0f);
                 dust.noLightEmittence = true;
             }
