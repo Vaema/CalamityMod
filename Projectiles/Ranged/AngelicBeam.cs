@@ -1,6 +1,16 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class AngelicBeam : ModProjectile, ILocalizedModType
@@ -8,57 +18,92 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        // Due to how far/fast this thing moves, it'd require way too many points for a smooth long trail using oldPos
+        public List<Vector2> TrailPos = new List<Vector2>();
+        public static int Lifetime = 300;
+        public static int Fadetime = 60;
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.DrawScreenCheckFluff[Type] = 2000;
+
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
-            Projectile.alpha = 255;
 
-            // Hitscan laser with a long range
-            Projectile.timeLeft = 200;
-            Projectile.extraUpdates = 200;
+            // Effectively hitscan
+            Projectile.timeLeft = Lifetime;
+            Projectile.MaxUpdates = Lifetime;
 
             Projectile.penetrate = -1;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 20;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            // Actual laser dust
-            for (int i = 0; i < 7; ++i)
+            // Begin fading once the laser is fully spawned in
+            if (Projectile.ai[0] > 0f)
             {
-                int dustType = 262; // Main.rand.NextBool() ? 244 : 246;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType);
-
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].position -= i * 0.1666f * Projectile.velocity;
-                Main.dust[idx].velocity *= 1f;
-                float scale = Main.rand.NextFloat(0.8f, 1.4f);
-                Main.dust[idx].scale = scale;
+                Projectile.Opacity = Utils.GetLerpValue(0f, Fadetime, Projectile.timeLeft, true);
+                return;
+            }
+            else if (Projectile.timeLeft == 1)
+            {
+                Projectile.ai[0] = 1f;
+                Projectile.MaxUpdates = 1;
+                Projectile.timeLeft = Fadetime;
             }
 
-            // Sparkles "burning off" of the laser beam
-            if (Main.rand.NextBool())
+            if (Projectile.FinalExtraUpdate() || Projectile.numUpdates % 30 == 29 || TrailPos == null)
             {
-                int dustType = Main.rand.NextBool() ? 244 : 246;
-                int idx = Dust.NewDust(Projectile.position, 1, 1, dustType);
+                // Initialize 10 points immediately
+                if (TrailPos == null)
+                {
+                    TrailPos = new List<Vector2>(10);
+                    for (int i = 0; i < 10; ++i)
+                        TrailPos.Add(Projectile.Center);
+                }
 
-                Main.dust[idx].noGravity = true;
-                float ySpeed = Main.rand.NextFloat(3.0f, 5.6f);
-                Main.dust[idx].velocity.Y -= ySpeed;
-                float scale = Main.rand.NextFloat(0.4f, 0.8f);
-                Main.dust[idx].scale = scale;
+                TrailPos.Insert(0, Projectile.Center);
+
+                while (TrailPos.Count > 10)
+                    TrailPos.RemoveAt(TrailPos.Count - 1);
             }
+
+            // Trail sparks in the laser's path
+            Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(12f * Projectile.scale, 12f * Projectile.scale), Projectile.velocity * 4f, false, 5, Main.rand.NextFloat(0.5f, 1.5f), LaserColor(Projectile.timeLeft / (float)Lifetime));
+            GeneralParticleHandler.SpawnParticle(spark);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+
+            for (int i = 0; i < 5; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(1.2f, 2.5f);
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.66f);
+                dust.noLightEmittence = true;
+            }
+        }
+
+        public Color LaserColor(float completionRatio) => Main.hslToRgb(0.08f + 0.05f * completionRatio + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f) * Projectile.Opacity;
+        public float LaserWidth(float completionRatio) => 32f * Projectile.Opacity * Projectile.scale;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (TrailPos == null)
+                return false;
+
+            GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
+            GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.5f);
+            PrimitiveRenderer.RenderTrail(TrailPos, new(LaserWidth, LaserColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 20);
+            return false;
         }
     }
 }

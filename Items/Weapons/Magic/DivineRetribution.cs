@@ -46,8 +46,8 @@ namespace CalamityMod.Items.Weapons.Magic
             // 5 projectiles total
             for (int i = -2; i < 3; i++)
             {
-                Vector2 newPos = new Vector2(Main.MouseWorld.X + Main.rand.NextFloat(8f, 64f) * i, player.MountedCenter.Y + Main.rand.NextFloat(640f, 800f));
-                Vector2 newVel = (Main.MouseWorld + Main.rand.NextVector2CircularEdge(4f, 4f) - newPos).SafeNormalize(Vector2.Zero) * velocity.Length() * Main.rand.NextFloat(1f, 1.25f);
+                Vector2 newPos = new Vector2(player.ClampedMouseWorld().X + Main.rand.NextFloat(8f, 64f) * i, player.MountedCenter.Y + Main.rand.NextFloat(640f, 800f));
+                Vector2 newVel = (player.ClampedMouseWorld() + Main.rand.NextVector2CircularEdge(4f, 4f) - newPos).SafeNormalize(Vector2.Zero) * velocity.Length() * Main.rand.NextFloat(1f, 1.25f);
                 float velScale = 1f + Main.rand.NextFloat(0.02f, 0.08f) * i;
                 Projectile.NewProjectile(source, newPos, newVel, type, damage, knockback, player.whoAmI, velScale);
             }

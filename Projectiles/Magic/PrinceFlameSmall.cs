@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.Lerp(lightColor, Color.White, 0.8f);
-            lightColor.A *= 0.5f;
+            lightColor.A /= 2;
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
@@ -69,16 +69,16 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 60);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 60);
 
+        public override void OnKill(int timeLeft)
+        {
             for (int i = 0; i < 5; i++)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
-                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.05f, 0.15f), 1f, 0.66f);
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.66f);
                 dust.noLightEmittence = true;
             }
         }

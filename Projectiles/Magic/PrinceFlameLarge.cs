@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 velocity = (i + offsetAngle + MathHelper.ToRadians(45f)).ToRotationVector2() * (0.5f + (MathF.Sin(6f * i) + 1f) * 8f);
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), velocity);
                 dust.noGravity = true;
-                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.08f, 0.12f), 1f, 0.66f);
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.05f, 0.15f), 1f, 0.66f);
             }
             for (int i = 0; i < ThePrince.FlameSplitCount; i++)
             {
