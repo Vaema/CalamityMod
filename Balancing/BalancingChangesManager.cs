@@ -195,8 +195,8 @@ namespace CalamityMod.Balancing
             // 20% vulnerability to The Hive's bees.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileSpecificRequirementBalancingRule(1.2f, HiveBeeFilter))));
 
-            // 35% vulnerability to Resurrection Butterfly.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileResistBalancingRule(1.35f, ProjectileType<SakuraBullet>(), ProjectileType<PurpleButterfly>()))));
+            // 25% vulnerability to Resurrection Butterfly.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileResistBalancingRule(1.25f, ProjectileType<SakuraBullet>(), ProjectileType<PurpleButterfly>()))));
             #endregion
 
             #region Empress of Light
@@ -245,9 +245,6 @@ namespace CalamityMod.Balancing
 
             // 20% resist to Nightglow.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.CultistBoss, Do(new ProjectileResistBalancingRule(0.8f, ProjectileID.FairyQueenMagicItemShot))));
-
-            // 20% resist to Resurrection Butterfly.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.CultistBoss, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<SakuraBullet>(), ProjectileType<PurpleButterfly>()))));
             #endregion
 
             #region Astrum Deus
