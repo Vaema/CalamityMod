@@ -3353,7 +3353,6 @@ namespace CalamityMod.NPCs
                 case NPCID.DD2WyvernT1:
                 case NPCID.DD2WyvernT2:
                 case NPCID.DD2WyvernT3:
-                case NPCID.AncientCultistSquidhead:
                 case NPCID.SlimeSpiked:
 
                     // Buff enemy HP by 25%
@@ -3368,6 +3367,17 @@ namespace CalamityMod.NPCs
                         npc.defDamage = npc.damage;
                     }
 
+                    break;
+
+                case NPCID.AncientCultistSquidhead:
+                    // This guy only gets Master Mode nerfs
+                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
+                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
+                    if (Main.masterMode)
+                    {
+                        AdjustMasterModeStatScaling(npc);
+                        npc.defDamage = npc.damage;
+                    }
                     break;
 
                 case NPCID.KingSlime:
