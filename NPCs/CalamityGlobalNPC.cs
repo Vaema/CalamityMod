@@ -681,7 +681,8 @@ namespace CalamityMod.NPCs
                     npc.AddBuff(BuffType<Irradiated>(), 2);
             }
 
-            // Special venom debuff case for the Lionfish and certain other projectiles.
+            #region Stacking Debuff Effects
+            // Lionfish, Leviathan Teeth, and Jaws of Oblivion debuff stacking
             if (npc.venom)
             {
                 if (npc.lifeRegen > 0)
@@ -706,6 +707,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Bonebreaker debuff stacking
             if (npc.javelined)
             {
                 if (npc.lifeRegen > 0)
@@ -730,6 +732,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Shellfish Staff (and Mollusk armor) debuff stacking
             if (shellfishVore > 0)
             {
                 int projectileCount = 0;
@@ -759,6 +762,7 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(projectileCount * totalDamage, projectileCount * totalDisplayedDamage, ref npc.lifeRegen, ref damage);
             }
 
+            // Snap Clam debuff stacking
             if (clamDebuff > 0)
             {
                 int projectileCount = 0;
@@ -776,6 +780,7 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(projectileCount * 15, projectileCount * 3, ref npc.lifeRegen, ref damage);
             }
 
+            // Parasitic Scepter debuff stacking
             if (irradiated > 0)
             {
                 int projectileCount = 0;
@@ -793,10 +798,12 @@ namespace CalamityMod.NPCs
                 else
                     ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
             }
+            #endregion
 
             // Debuff vulnerabilities and resistances.
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
+            #region Debuff System Multiplier Calculations
             bool wormBoss = CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type) ||
                 CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.AstrumDeusIDs.Contains(npc.type) || CalamityLists.StormWeaverIDs.Contains(npc.type);
             bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
@@ -880,7 +887,93 @@ namespace CalamityMod.NPCs
             double vanillaHeatDamageMult = heatDamageMult - BaseDoTDamageMult;
             double vanillaColdDamageMult = coldDamageMult - BaseDoTDamageMult;
             double vanillaSicknessDamageMult = sicknessDamageMult - BaseDoTDamageMult;
+            #endregion
 
+            // Oiled
+            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
+            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
+            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
+            {
+                double multiplier = 1D;
+                if (hasColdOil)
+                    multiplier *= vanillaColdDamageMult;
+                if (hasHotOil || (hasModHotOil && hasColdOil))
+                    multiplier *= vanillaHeatDamageMult;
+                if (hasModHotOil && !hasColdOil && !hasHotOil)
+                    multiplier *= heatDamageMult;
+
+                int baseOiledDoTValue = (int)(50 * multiplier);
+                npc.lifeRegen -= baseOiledDoTValue;
+                if (damage < baseOiledDoTValue / 4)
+                    damage = baseOiledDoTValue / 4;
+            }
+
+            #region Cold Debuffs
+            // Frostburn
+            if (npc.onFrostBurn)
+            {
+                int baseFrostBurnDoTValue = (int)(16 * vanillaColdDamageMult);
+                npc.lifeRegen -= baseFrostBurnDoTValue;
+                if (damage < baseFrostBurnDoTValue / 4)
+                    damage = baseFrostBurnDoTValue / 4;
+            }
+
+            // Frostbite
+            if (npc.onFrostBurn2)
+            {
+                int baseFrostBiteDoTValue = (int)(50 * vanillaColdDamageMult);
+                npc.lifeRegen -= baseFrostBiteDoTValue;
+                if (damage < baseFrostBiteDoTValue / 4)
+                    damage = baseFrostBiteDoTValue / 4;
+            }
+
+            // Nightwither
+            if (nightwither > 0)
+            {
+                int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
+                ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Voidfrost
+            if (voidfrost > 0)
+            {
+                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
+                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Electricity Debuffs
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
+            // Electrified
+            if (electrified > 0)
+            {
+                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
+                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
+            }
+
+            // Vermillion Flux
+            if (vermillionFlux > 0)
+            {
+                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Heat Debuffs
             // On Fire
             if (npc.onFire)
             {
@@ -888,6 +981,15 @@ namespace CalamityMod.NPCs
                 npc.lifeRegen -= baseOnFireDoTValue;
                 if (damage < baseOnFireDoTValue / 4)
                     damage = baseOnFireDoTValue / 4;
+            }
+
+            // Hellfire
+            if (npc.onFire3)
+            {
+                int baseHellfireDoTValue = (int)(30 * vanillaHeatDamageMult);
+                npc.lifeRegen -= baseHellfireDoTValue;
+                if (damage < baseHellfireDoTValue / 4)
+                    damage = baseHellfireDoTValue / 4;
             }
 
             // Cursed Inferno
@@ -899,13 +1001,13 @@ namespace CalamityMod.NPCs
                     damage = baseCursedInfernoDoTValue / 4;
             }
 
-            // Hellfire
-            if (npc.onFire3)
+            // Shadowflame
+            if (npc.shadowFlame)
             {
-                int baseHellfireDoTValue = (int)(30 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseHellfireDoTValue;
-                if (damage < baseHellfireDoTValue / 4)
-                    damage = baseHellfireDoTValue / 4;
+                int baseShadowFlameDoTValue = (int)(60 * vanillaHeatDamageMult);
+                npc.lifeRegen -= baseShadowFlameDoTValue;
+                if (damage < baseShadowFlameDoTValue / 4)
+                    damage = baseShadowFlameDoTValue / 4;
             }
 
             // Daybroken
@@ -931,15 +1033,6 @@ namespace CalamityMod.NPCs
                 npc.lifeRegen -= baseDaybreakDoTValue;
                 if (damage < baseDaybreakDoTValue / 4)
                     damage = baseDaybreakDoTValue / 4;
-            }
-
-            // Shadowflame
-            if (npc.shadowFlame)
-            {
-                int baseShadowFlameDoTValue = (int)(60 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseShadowFlameDoTValue;
-                if (damage < baseShadowFlameDoTValue / 4)
-                    damage = baseShadowFlameDoTValue / 4;
             }
 
             // Brimstone Flames
@@ -970,13 +1063,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Banishing Fire
-            if (banishingFire > 0)
-            {
-                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * heatDamageMult);
-                ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
             // Vulnerability Hex
             if (vulnerabilityHex > 0)
             {
@@ -991,102 +1077,15 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
-            // Frostburn
-            if (npc.onFrostBurn)
+            // Banishing Fire
+            if (banishingFire > 0)
             {
-                int baseFrostBurnDoTValue = (int)(16 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBurnDoTValue;
-                if (damage < baseFrostBurnDoTValue / 4)
-                    damage = baseFrostBurnDoTValue / 4;
+                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * heatDamageMult);
+                ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
+            #endregion
 
-            // Frostbite
-            if (npc.onFrostBurn2)
-            {
-                int baseFrostBiteDoTValue = (int)(50 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBiteDoTValue;
-                if (damage < baseFrostBiteDoTValue / 4)
-                    damage = baseFrostBiteDoTValue / 4;
-            }
-
-            // Oiled
-            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
-            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
-            if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
-            {
-                double multiplier = 1D;
-                if (hasColdOil)
-                    multiplier *= vanillaColdDamageMult;
-                if (hasHotOil || (hasModHotOil && hasColdOil))
-                    multiplier *= vanillaHeatDamageMult;
-                if (hasModHotOil && !hasColdOil && !hasHotOil)
-                    multiplier *= heatDamageMult;
-
-                int baseOiledDoTValue = (int)(50 * multiplier);
-                npc.lifeRegen -= baseOiledDoTValue;
-                if (damage < baseOiledDoTValue / 4)
-                    damage = baseOiledDoTValue / 4;
-            }
-
-            // Nightwither
-            if (nightwither > 0)
-            {
-                int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
-                ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Voidfrost
-            if (voidfrost > 0)
-            {
-                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
-                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Plague
-            if (pFlames > 0)
-            {
-                int basePlagueDoTValue = (int)(100 * sicknessDamageMult);
-                ApplyDPSDebuff(basePlagueDoTValue, basePlagueDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Astral Infection
-            if (astralInfection > 0)
-            {
-                int baseAstralInfectionDoTValue = (int)(75 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAstralInfectionDoTValue, baseAstralInfectionDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Sulphuric Poisoning
-            if (sulphurPoison > 0)
-            {
-                int baseSulphurPoisonDoTValue = (int)(240 * sicknessDamageMult);
-                ApplyDPSDebuff(baseSulphurPoisonDoTValue, baseSulphurPoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Sage Poison
-            if (sagePoisonTime > 0)
-            {
-                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
-                // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
-                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Kami Debuff from Yanmei's Knife
-            if (kamiFlu > 0)
-            {
-                int baseKamiFluDoTValue = (int)(250 * sicknessDamageMult);
-                ApplyDPSDebuff(baseKamiFluDoTValue, baseKamiFluDoTValue / 10, ref npc.lifeRegen, ref damage);
-            }
-
-            //Absorber Affliction
-            if (absorberAffliction > 0)
-            {
-                int baseAbsorberDoTValue = (int)(400 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAbsorberDoTValue, baseAbsorberDoTValue / 65, ref npc.lifeRegen, ref damage);
-            }
-
+            #region Sickness Debuffs
             // Poisoned
             if (npc.poisoned)
             {
@@ -1105,32 +1104,71 @@ namespace CalamityMod.NPCs
                     damage = baseVenomDoTValue / 4;
             }
 
-            // Electrified
-            if (electrified > 0)
+            // Burning Blood
+            if (bBlood > 0)
             {
-                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
-                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
+                int baseBurningBloodDoTValue = (int)(40 * sicknessDamageMult);
+                ApplyDPSDebuff(baseBurningBloodDoTValue, baseBurningBloodDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Vermillion Flux
-            if (vermillionFlux > 0)
+            // Brain Rot
+            if (brainRot > 0)
             {
-                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
-                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+                int baseBrainRotDoTValue = (int)(40 * sicknessDamageMult);
+                ApplyDPSDebuff(baseBrainRotDoTValue, baseBrainRotDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Auric Rebuke
-            if (auricRebuke > 0)
+            // Sage Poison
+            if (sagePoisonTime > 0)
             {
-                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
-                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
+                // See SageNeedle.cs for details
+                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
+                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Static Discharge
-            if (staticDischarge > 0)
+            // Astral Infection
+            if (astralInfection > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
-                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+                int baseAstralInfectionDoTValue = (int)(75 * sicknessDamageMult);
+                ApplyDPSDebuff(baseAstralInfectionDoTValue, baseAstralInfectionDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Plague
+            if (pFlames > 0)
+            {
+                int basePlagueDoTValue = (int)(100 * sicknessDamageMult);
+                ApplyDPSDebuff(basePlagueDoTValue, basePlagueDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Sulphuric Poisoning
+            if (sulphurPoison > 0)
+            {
+                int baseSulphurPoisonDoTValue = (int)(240 * sicknessDamageMult);
+                ApplyDPSDebuff(baseSulphurPoisonDoTValue, baseSulphurPoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Kami Debuff from Yanmei's Knife
+            if (kamiFlu > 0)
+            {
+                int baseKamiFluDoTValue = (int)(250 * sicknessDamageMult);
+                ApplyDPSDebuff(baseKamiFluDoTValue, baseKamiFluDoTValue / 10, ref npc.lifeRegen, ref damage);
+            }
+
+            //Absorber Affliction
+            if (absorberAffliction > 0)
+            {
+                int baseAbsorberDoTValue = (int)(400 * sicknessDamageMult);
+                ApplyDPSDebuff(baseAbsorberDoTValue, baseAbsorberDoTValue / 65, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Water Debuffs
+            // Riptide
+            if (rTide > 0)
+            {
+                int baseRiptideDoTValue = (int)(30 * waterDamageMult);
+                ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
             }
 
             // Crush Depth
@@ -1139,13 +1177,7 @@ namespace CalamityMod.NPCs
                 int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
                 ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
             }
-
-            //Riptide
-            if (rTide > 0)
-            {
-                int baseRiptideDoTValue = (int)(30 * waterDamageMult);
-                ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
-            }
+            #endregion
 
             if (npc.dryadBane)
             {
@@ -1189,10 +1221,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (bBlood > 0)
-                ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
-            if (brainRot > 0)
-                ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
             if (laceration > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
@@ -5625,7 +5653,7 @@ namespace CalamityMod.NPCs
                 // Slowing debuffs which set a velocity hard cap take priority first.
                 if (vulnerabilityHex > 0)
                     npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
-                else if (kamiFlu > 300)
+                else if (kamiFlu > 360)
                     npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
 
                 // Then debuffs which apply a multiplier to velocity.
@@ -7762,7 +7790,7 @@ namespace CalamityMod.NPCs
                         }
                     }
 
-                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerHeadGlowmask.Value : TextureAssets.Dest[0].Value;
+                    Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerHeadGlowmask.Value : TextureAssets.Dest[0].Value;
                     switch (npc.type)
                     {
                         default:
@@ -7770,11 +7798,11 @@ namespace CalamityMod.NPCs
                             break;
 
                         case NPCID.TheDestroyerBody:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
+                            glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
                             break;
 
                         case NPCID.TheDestroyerTail:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
+                            glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
                             break;
                     }
 
@@ -7784,7 +7812,7 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.NewVanillaTextures)
+            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.EnableVanillaTextureEdits)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
                 Texture2D glowTexture = ExtraTextureRefs.ProbeGlowmask.Value;
@@ -8098,7 +8126,7 @@ namespace CalamityMod.NPCs
                     float eyeTelegraphGateValue = WallOfFleshAI.LaserShootGateValue - WallOfFleshAI.LaserShootTelegraphTime;
                     if (npc.localAI[1] > eyeTelegraphGateValue || npc.localAI[2] > 0f || enraged)
                     {
-                        Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                        Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
                         Vector2 halfSize = npc.frame.Size() / 2;
                         SpriteEffects spriteEffects = SpriteEffects.None;
                         if (npc.spriteDirection == 1)
@@ -9340,6 +9368,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Wraith:
                 case NPCID.BloodNautilus:
                 case NPCID.DiggerHead:
+                case NPCID.UndeadMiner:
                 case NPCID.GraniteGolem:
                 case NPCID.GreekSkeleton:
                 case NPCID.UndeadViking:
@@ -9393,6 +9422,7 @@ namespace CalamityMod.NPCs
                 case NPCID.GoblinSummoner:
                 case NPCID.GoblinSorcerer:
                 case NPCID.PirateCaptain:
+                case NPCID.Scutlix:
                 case NPCID.MartianSaucerCore:
                 case NPCID.TorchGod:
                 case NPCID.EyeofCthulhu:
@@ -9427,10 +9457,10 @@ namespace CalamityMod.NPCs
             // Create a string array containing all an NPC's debuff resistances
             string[] elements =
             [
-                NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
-                NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToCold, CalamityUtils.GetTextValue("UI.DebuffSystem.Cold")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToElectricity, CalamityUtils.GetTextValue("UI.DebuffSystem.Electricity")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToWater, CalamityUtils.GetTextValue("UI.DebuffSystem.Water"))
             ];
 

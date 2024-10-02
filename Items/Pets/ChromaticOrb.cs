@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<BendyPet>(), ModContent.BuffType<Dreamfog>());
-            Item.value = Item.sellPrice(gold: 3);
+            Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;
         }

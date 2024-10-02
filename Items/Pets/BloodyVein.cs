@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<PerforaMini>(), ModContent.BuffType<BloodBound>());
             Item.UseSound = SoundID.NPCHit9;
-            Item.value = Item.sellPrice(silver: 80);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
         }
