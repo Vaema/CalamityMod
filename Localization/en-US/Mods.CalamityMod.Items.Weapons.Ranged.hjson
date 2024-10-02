@@ -34,7 +34,7 @@ AngelicShotgun: {
 	Tooltip:
 		'''
 		Each shot casts a radiant beam of holy light from the sky
-		Converts musket balls into hallow-point rounds
+		Musket balls convert into hallow-point rounds which also empower the beam
 		'Fighting 'til the war's won'
 		'''
 }

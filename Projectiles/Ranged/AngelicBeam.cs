@@ -5,7 +5,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -21,7 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         // Due to how far/fast this thing moves, it'd require way too many points for a smooth long trail using oldPos
         public List<Vector2> TrailPos = new List<Vector2>();
         public static int Lifetime = 300;
-        public static int Fadetime = 60;
+        public static int Fadetime = 30;
 
         public override void SetStaticDefaults() => ProjectileID.Sets.DrawScreenCheckFluff[Type] = 2000;
 
@@ -74,26 +73,38 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Trail sparks in the laser's path
-            Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(12f * Projectile.scale, 12f * Projectile.scale), Projectile.velocity * 4f, false, 5, Main.rand.NextFloat(0.5f, 1.5f), LaserColor(Projectile.timeLeft / (float)Lifetime));
-            GeneralParticleHandler.SpawnParticle(spark);
+            if (Main.rand.NextBool())
+            {
+                Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(10f * Projectile.scale, 10f * Projectile.scale), Projectile.velocity, false, 15, Main.rand.NextFloat(1f, 1.2f) * Projectile.scale, Color.White);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+
+            if (Main.rand.NextBool(4))
+            {
+                Color fireColor = Main.hslToRgb(Main.rand.NextFloat(0.08f, 0.13f) + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f);
+                Particle fire = new GlowOrbParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * (Main.rand.NextFloat(1f, 3f) + 3f * Projectile.scale), false, 9, Main.rand.NextFloat(1f, 1.2f), fireColor);
+                GeneralParticleHandler.SpawnParticle(fire);
+            }
         }
+
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) => hitbox.Inflate((int)(Projectile.width * (Projectile.scale - 1f)), (int)(Projectile.width * (Projectile.scale - 1f)));
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 6; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
+                Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(1.2f, 2.5f);
+                dust.scale = Main.rand.NextFloat(1.2f, 2.5f) * Projectile.scale;
                 dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.66f);
                 dust.noLightEmittence = true;
             }
         }
 
-        public Color LaserColor(float completionRatio) => Main.hslToRgb(0.08f + 0.05f * completionRatio + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f) * Projectile.Opacity;
-        public float LaserWidth(float completionRatio) => 32f * Projectile.Opacity * Projectile.scale;
+        public Color LaserColor(float completionRatio) => Main.hslToRgb(0.08f + 0.05f * completionRatio + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f) * 0.8f * Projectile.Opacity;
+        public float LaserWidth(float completionRatio) => 30f * Projectile.Opacity * Projectile.scale;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -102,7 +113,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.5f);
-            PrimitiveRenderer.RenderTrail(TrailPos, new(LaserWidth, LaserColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 20);
+            PrimitiveRenderer.RenderTrail(TrailPos, new(LaserWidth, LaserColor, shader: GameShaders.Misc["CalamityMod:Flame"]), 10);
             return false;
         }
     }

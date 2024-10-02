@@ -67,13 +67,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Spawn a beam from the sky ala Deathhail Staff or Lunar Flare
             bool empowered = type == ModContent.ProjectileType<HallowPointRoundProj>();
             float laserSpeed = 8f;
-            int laserDamage = (int)(damage * (empowered ? 4f : 2.5f));
+            int laserDamage = (int)(damage * (empowered ? 3f : 2f));
             float laserKB = knockback * 1.6f;
 
             Vector2 newPos = new Vector2(player.ClampedMouseWorld().X + Main.rand.NextFloat(-160f, 160f), player.MountedCenter.Y - 1200f);
             Vector2 newVel = (player.ClampedMouseWorld() + Main.rand.NextVector2CircularEdge(8f, 8f) - newPos).SafeNormalize(Vector2.Zero) * laserSpeed;
             Projectile laser = Projectile.NewProjectileDirect(source, newPos, newVel, Item.shoot, laserDamage, laserKB, player.whoAmI);
-            laser.scale = empowered ? 2f : 1f;
+            laser.scale = empowered ? 1.5f : 1f;
 
             // Play the sound of the laser beam
             SoundEngine.PlaySound(SoundID.Item72, player.Center);
