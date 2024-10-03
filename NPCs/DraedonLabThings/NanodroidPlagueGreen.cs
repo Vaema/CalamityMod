@@ -52,6 +52,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
                     break;
                 }
             }
+            // The only purpose of this is to make them not take forever to appear when shimmering Plagued Containment Brick
+            if (NPC.shimmerTransparency > 0f)
+                NPC.shimmerTransparency -= 0.05f;
         }
 
         public override bool? CanBeHitByItem(Player player, Item item) => null;

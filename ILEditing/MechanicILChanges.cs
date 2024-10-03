@@ -12,11 +12,13 @@ using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
+using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
@@ -1712,6 +1714,38 @@ namespace CalamityMod.ILEditing
                     NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
                 }
                 AchievementsHelper.NotifyProgressionEvent(27);
+            }
+            // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
+            else if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            {
+                if (NPC.downedGolemBoss)
+                    orig(self);
+                else
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int nanodroidType = Main.rand.NextBool() ? ModContent.NPCType<NanodroidPlagueGreen>() : ModContent.NPCType<NanodroidPlagueRed>();
+                        NPC droids = NPC.NewNPCDirect(self.GetSource_FromThis(), (int)self.Center.X, (int)self.Center.Y, nanodroidType);
+                        droids.velocity = -self.velocity.RotatedByRandom(MathHelper.Pi / 20f) * 2f;
+                        droids.netUpdate = true;
+                        droids.shimmerTransparency = 1f;
+                        NetMessage.SendData(146, -1, -1, null, 2, droids.whoAmI);
+                    }
+
+                    self.TurnToAir();
+                    self.shimmerWet = true;
+                    self.wet = true;
+                    self.velocity *= 0.1f;
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        Item.ShimmerEffect(self.Center);
+                    }
+                    else
+                    {
+                        NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                        NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                    }
+                }
             }
             else
             {
