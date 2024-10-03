@@ -82,12 +82,13 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.rand.NextBool(4))
             {
                 Color fireColor = Main.hslToRgb(Main.rand.NextFloat(0.08f, 0.13f) + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f);
-                Particle fire = new GlowOrbParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * (Main.rand.NextFloat(1f, 3f) + 3f * Projectile.scale), false, 9, Main.rand.NextFloat(1f, 1.2f), fireColor);
+                Particle fire = new GlowOrbParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * (Main.rand.NextFloat(1f, 3f) + 3f * Projectile.scale), false, 9, Main.rand.NextFloat(1f, 1.2f) * Projectile.scale, fireColor);
                 GeneralParticleHandler.SpawnParticle(fire);
             }
         }
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox) => hitbox.Inflate((int)(Projectile.width * (Projectile.scale - 1f)), (int)(Projectile.width * (Projectile.scale - 1f)));
+        // Hitbox size does not normally scale with Projectile.scale for some reason so this is done manually
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) => hitbox.Inflate((int)(Projectile.width * (Projectile.scale - 1f)), (int)(Projectile.height * (Projectile.scale - 1f)));
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -97,8 +98,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(1.2f, 2.5f) * Projectile.scale;
-                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.66f);
+                dust.scale = Main.rand.NextFloat(1f, 2.4f) * Projectile.scale;
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.7f);
                 dust.noLightEmittence = true;
             }
         }

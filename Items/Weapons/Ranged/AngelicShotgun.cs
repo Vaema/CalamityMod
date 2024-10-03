@@ -61,10 +61,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             for (int i = 0; i < NumBullets; ++i)
             {
                 Vector2 randomVelocity = baseVelocity.RotatedByRandom(MathHelper.ToRadians(12.5f)) * Main.rand.NextFloat(0.88f, 1.12f);
-                Projectile.NewProjectile(source, position, randomVelocity, type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position + velocity.SafeNormalize(Vector2.Zero) * 16f, randomVelocity, type, damage, knockback, player.whoAmI);
             }
 
             // Spawn a beam from the sky ala Deathhail Staff or Lunar Flare
+            // This is more powerful if Hallow-Point Rounds (either naturally used or converted) are fired
             bool empowered = type == ModContent.ProjectileType<HallowPointRoundProj>();
             float laserSpeed = 8f;
             int laserDamage = (int)(damage * (empowered ? 3f : 2f));

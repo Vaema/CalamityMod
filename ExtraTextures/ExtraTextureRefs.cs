@@ -32,6 +32,12 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> FlyingCarpetVanilla;
         public static Asset<Texture2D> FlyingCarpetAuric;
 
+        // Particles
+        public static Asset<Texture2D> CircularSmear;
+        public static Asset<Texture2D> CircularSmearFire1;
+        public static Asset<Texture2D> CircularSmearFire2;
+        public static Asset<Texture2D> CircularSmearFire3;
+
         // Boss Heads
         // I know it's not exactly a Texture2D but it belongs to ExtraTextures.
         public static int BossHeadIndex_ChadPrime;
@@ -60,6 +66,11 @@ namespace CalamityMod.ExtraTextures
 
             FlyingCarpetVanilla = TextureAssets.FlyingCarpet;
             FlyingCarpetAuric = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AuricCarpet", AssetRequestMode.AsyncLoad);
+
+            CircularSmear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmear", AssetRequestMode.AsyncLoad);
+            CircularSmearFire1 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire1", AssetRequestMode.AsyncLoad);
+            CircularSmearFire2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire2", AssetRequestMode.AsyncLoad);
+            CircularSmearFire3 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire3", AssetRequestMode.AsyncLoad);
         }
 
         public override void Unload()
