@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Armor.Astral
             var modPlayer = player.Calamity();
             modPlayer.astralStarRain = true;
             modPlayer.omniscience = true;
-            player.moveSpeed += 0.05f;
             player.GetDamage<GenericDamageClass>() += 0.1f;
             player.maxMinions += 3;
             player.GetCritChance<GenericDamageClass>() += 10;
