@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<DannyDevitoPet>(), ModContent.BuffType<DannyDevito>());
             Item.UseSound = SoundID.NPCDeath13;
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Pink;
+            Item.value = Item.sellPrice(gold: 1); // "Common drop" pet price (Monster Meat)
+            Item.rare = ItemRarityID.Orange;
             Item.Calamity().devItem = true;
         }
 

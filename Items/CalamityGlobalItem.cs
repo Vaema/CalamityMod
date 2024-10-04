@@ -274,7 +274,7 @@ namespace CalamityMod.Items
             {
                 // Calculate how much damage to deal based on how much mana was consumed
                 int remainingMana = player.statMana;
-                int damagePerManaConsumed = 80; // TODO -- may not be balanced, but eating 150 mana to do 12,000 base damage seems okay
+                int damagePerManaConsumed = 80;
                 int monsterDamage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(remainingMana * damagePerManaConsumed);
 
                 // Spawn the Mana Monster
@@ -1006,6 +1006,8 @@ namespace CalamityMod.Items
             {
                 player.setBonus = CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.CrystalAssassin");
                 modPlayer.DashID = string.Empty;
+                modPlayer.rogueStealthMax += 0.9f;
+                modPlayer.wearingRogueArmor = true;
             }
             else if (set == "SquireTier2")
             {

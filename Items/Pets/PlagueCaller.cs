@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<PlaguebringerBab>(), ModContent.BuffType<PlaguebringerBabBuff>());
-            Item.value = Item.sellPrice(gold: 3);
-            Item.rare = ItemRarityID.Lime;
+            Item.value = Item.sellPrice(gold: 5);
+            Item.rare = ItemRarityID.Yellow;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

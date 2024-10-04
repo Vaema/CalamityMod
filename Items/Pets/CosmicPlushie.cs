@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<ChibiiDoggo>(), ModContent.BuffType<ChibiiDoGBuff>());
             Item.UseSound = SoundID.Meowmere;
-            Item.value = Item.sellPrice(gold: 7);
+            Item.value = Item.sellPrice(gold: 7); // Terry reference
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().devItem = true;
         }

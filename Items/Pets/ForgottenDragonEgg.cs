@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<Akato>(), ModContent.BuffType<AkatoBuff>());
-            Item.value = Item.sellPrice(gold: 30);
+            Item.value = Item.sellPrice(gold: 20);
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }

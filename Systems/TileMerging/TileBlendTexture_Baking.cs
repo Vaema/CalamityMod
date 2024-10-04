@@ -94,13 +94,13 @@ namespace CalamityMod.Systems
         public static Rectangle SideFlagsToSheetRect(byte data)
         {
             int y = Math.DivRem(data, 16, out int x);
-            return new Rectangle(x * 18, y * 18, 16, 16);
+            return new Rectangle(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, 16, 16);
         }
 
         public static Vector2 SideFlagsToPositionInSheet(byte data)
         {
             int y = Math.DivRem(data, 16, out int x);
-            return new Vector2(x * 18, y * 18);
+            return new Vector2(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight);
         }
         #endregion
     }

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<RotomPet>(), ModContent.BuffType<ElectricTroublemaker>());
             Item.UseSound = SoundID.Item113;
-            Item.value = Item.sellPrice(silver: 80);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().devItem = true;
         }
