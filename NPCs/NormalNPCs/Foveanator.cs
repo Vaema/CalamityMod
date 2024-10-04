@@ -586,7 +586,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     // Fire flamethrower for x seconds
                     NPC.ai[2] += (retAlive && spazAlive) ? 1f : 2f;
-                    float phaseGateValue = NPC.IsMechQueenUp ? 1350f : 270f - (death ? 90f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float phaseGateValue = NPC.IsMechQueenUp ? 1350f : 360f - (death ? 90f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                     if (NPC.ai[2] >= phaseGateValue)
                     {
                         // Go to charge phase or fire large barrage of lasers and energy bombs if in final phase
@@ -597,7 +597,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
 
                     // Fire fireballs and flamethrower
-                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                    else if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
                         // Play flame sound on timer
                         NPC.localAI[2] += 1f;
@@ -615,12 +615,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.localAI[1] = 0f;
 
                                 float foveanatorFlamethrowerSpeed = 4f + 2f * enrageScale;
-                                float timeForFlamethrowerToReachMaxVelocity = 60f;
+                                float timeForFlamethrowerToReachMaxVelocity = (retAlive && spazAlive) ? 120f : 60f;
                                 float flamethrowerSpeedScalar = MathHelper.Clamp(NPC.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
                                 foveanatorFlamethrowerSpeed = MathHelper.Lerp(0.1f, foveanatorFlamethrowerSpeed, flamethrowerSpeedScalar);
 
-                                // TODO - Change this to Foveanator's flamethrower when it's done
-                                int type = ModContent.ProjectileType<Shadowflamethrower>();
+                                int type = ModContent.ProjectileType<FoveanatorFlamethrower>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -639,7 +638,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 if (NPC.IsMechQueenUp)
                                     flamethrowerVelocity = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * foveanatorFlamethrowerSpeed + NPC.velocity * 0.5f;
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 40f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 100f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }

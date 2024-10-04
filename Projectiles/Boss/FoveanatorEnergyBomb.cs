@@ -96,10 +96,9 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Explosion has brighter light.
-            float redLight = explode ? 1.2f : 0.6f;
-            float greenLight = explode ? 0.3f : 0.15f;
-            float blueLight = (Main.DiscoB / 255f) * (explode ? 1.5f : 0.75f);
-            Lighting.AddLight(Projectile.Center, redLight, greenLight, blueLight);
+            Color lightColor = Color.Lerp(new Color(25, 25, 128), new Color(100, 25, 128), Main.DiscoR / 255f);
+            float divisor = explode ? 128f : 255f;
+            Lighting.AddLight(Projectile.Center, lightColor.R / divisor, lightColor.G / divisor, lightColor.B / divisor);
         }
 
         public override bool PreDraw(ref Color lightColor) => false;
