@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

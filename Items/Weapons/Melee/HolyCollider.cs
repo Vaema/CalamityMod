@@ -1,15 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.BaseItems;
-using Microsoft.Xna.Framework.Graphics;
 using static Terraria.ModLoader.ModContent;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Weapons.Melee
 {

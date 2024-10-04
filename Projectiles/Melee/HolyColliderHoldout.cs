@@ -10,7 +10,6 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.Graphics.Renderers;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -442,17 +441,6 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 Main.EntitySpriteDraw(tex.Value, generalDrawPos, tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, flipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
-
-                if (chargeTimer > 0)
-                {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        Color auraColor = (Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 5, i)) * 0.4f * fadeIn) with { A = 0 };
-                        Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
-                        rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 13f) * 0.5f);
-                        //Main.EntitySpriteDraw(glowTex.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset + new Vector2(0, Owner.gfxOffY), glowTex.Value.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, flipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
-                    }
-                }
                 Main.EntitySpriteDraw(glowTex.Value, generalDrawPos, glowTex.Frame(1, FrameCount, 0, Frame), Color.White, Projectile.rotation + RotationOffset + r, flipAsSword ? new Vector2(glowTex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
             }
             else

@@ -1,15 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Graphics;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
-using Humanizer;
-using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -309,7 +302,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation;
-            //float fade = Utils.GetLerpValue(4, 2, Projectile.velocity.Length(), true);
 
             Asset<Texture2D> p = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire2");
             Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire3");
@@ -319,11 +311,10 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.EntitySpriteDraw(p.Value, drawPosition, null, Color.Orange with { A = 0 } * 0.35f * effectScale, fakeRot * (Main.rand.NextFloat(1.1f, 1.15f) * (i * 0.5f + 0.2f)), p.Size() * 0.5f, 0.9f * effectScale, direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
             }
 
-            Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MoltenAmputatorSHIT");
+            Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MoltenAmputatorAnimated");
             Rectangle frame = tex3.Frame(1, 8, 0, Projectile.frame);
             Vector2 rotationPoint = frame.Size() * 0.5f;
             Main.EntitySpriteDraw(tex3.Value, drawPosition, frame, lightColor, drawRotation, rotationPoint, squash * Projectile.scale, direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
-            //Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 } * fade, lightColor, 5.5f * fade, tex3.Value, frame, direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, squash * Projectile.scale);
             return false;
         }
     }

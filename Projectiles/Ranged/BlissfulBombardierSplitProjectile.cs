@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity * -4).RotatedByRandom(0.2) * Main.rand.NextFloat(0.2f, 1f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.35f, 0.55f);
-                dust.color = effectsColor;
+                dust.color = Main.rand.NextBool(3) ? Color.Orange : Color.Goldenrod;
                 dust.noLightEmittence = true;
             }
         }
@@ -84,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1;
             Projectile.Damage();
 
-            Particle orb5 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.025f * blastRadius, 13);
+            Particle orb5 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orange, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.025f * blastRadius, 13);
             GeneralParticleHandler.SpawnParticle(orb5);
 
             Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, staticEffectsColor, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.22f * blastRadius, 10, true);

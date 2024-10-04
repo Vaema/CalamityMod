@@ -5,13 +5,11 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Items.Weapons.Ranged.BlissfulBombardier;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -105,14 +103,14 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.8f, 2.3f));
                         dust.noGravity = true;
-                        dust.color = effectsColor;
+                        dust.color = Main.rand.NextBool(3) ? Color.Orange : effectsColor;
                         dust.noLightEmittence = true;
                     }
                     else
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, 278, (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
                         dust.noGravity = false;
-                        dust.color = staticEffectsColor;
+                        dust.color = Main.rand.NextBool(3) ? Color.Orange : staticEffectsColor;
                     }
                 }
 

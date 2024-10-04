@@ -6,7 +6,6 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,9 +18,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private const int Lifetime = 180;
-        private static Color ShaderColorOne = new Color(237, 194, 66);
-        private static Color ShaderColorTwo = new Color(235, 227, 117);
-        private static Color ShaderEndColor = new Color(199, 153, 26);
 
         public int time = 0;
         public int fadeTime = 22;
@@ -54,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, ShaderColorOne.ToVector3());
+            Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3());
             if (time % 8 == 0 && time > 6)
             {
                 bool isSpark = Main.rand.NextBool(3);
@@ -177,10 +173,6 @@ namespace CalamityMod.Projectiles.Ranged
             int numPoints = 92;
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), numPoints);
             return false;
-        }
-        public override void OnKill(int timeLeft)
-        {
-
         }
     }
 }

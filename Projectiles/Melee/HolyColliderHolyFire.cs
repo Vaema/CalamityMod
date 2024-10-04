@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -8,7 +7,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 namespace CalamityMod.Projectiles.Melee
 {
     public class HolyColliderHolyFire : ModProjectile, ILocalizedModType
@@ -86,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity = vel;
                         Projectile.penetrate = 1;
                         // This has reduced damage on spawn so this isn't as high as it seems
-                        Projectile.damage *= 15; // 13 old
+                        Projectile.damage *= 15;
                         time = 0;
                         setStats = false;
                     }
