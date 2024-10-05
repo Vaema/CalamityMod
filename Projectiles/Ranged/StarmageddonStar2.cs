@@ -138,7 +138,6 @@ namespace CalamityMod.Projectiles.Ranged
                             {
                                 ModContent.ProjectileType<PlasmaBlast>(),
                                 ModContent.ProjectileType<AstralStar>(),
-                                ModContent.ProjectileType<GalacticaComet>(),
                                 ProjectileID.StarCannonStar,
                                 ProjectileID.Starfury
                             });
@@ -146,7 +145,7 @@ namespace CalamityMod.Projectiles.Ranged
                             int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, speed, type, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
                             if (star.WithinBounds(Main.maxProjectiles))
                             {
-                                if (type == ModContent.ProjectileType<PlasmaBlast>() || type == ModContent.ProjectileType<AstralStar>() || type == ModContent.ProjectileType<GalacticaComet>())
+                                if (type == ModContent.ProjectileType<PlasmaBlast>() || type == ModContent.ProjectileType<AstralStar>())
                                     Main.projectile[star].ai[0] = 1f;
 
                                 Main.projectile[star].extraUpdates += 4;
