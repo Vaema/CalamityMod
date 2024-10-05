@@ -49,8 +49,7 @@ namespace CalamityMod.Projectiles.Melee
                         float starOffset = MathHelper.Lerp(MathHelper.Pi / 6f, 0f, clampedChargeTime);
                         Vector2 velocity = Vector2.Normalize(Projectile.velocity).RotatedByRandom(starOffset) * 17f;
 
-                        float randomRotationSpeed = Main.rand.NextFloat(MathHelper.Pi / 60f, MathHelper.Pi / 12f) * Main.rand.NextBool().ToDirectionInt();
-                        Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<PrismaticWave>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, Main.rand.Next(12), randomRotationSpeed);
+                        Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<PrismaticWave>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, Main.rand.Next(12));
                         star.scale = MathHelper.Lerp(0.75f, 1f, clampedChargeTime);
                     }
                     StarFrequency -= 4f;

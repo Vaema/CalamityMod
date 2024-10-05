@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -62,10 +63,15 @@ namespace CalamityMod.Projectiles.Melee
                 Main.dust[rainbow].noGravity = true;
             }
 
+            // Determine random star rotation
+            if (Projectile.localAI[0] == 0f)
+                Projectile.localAI[0] = Main.rand.NextFloat(MathHelper.Pi / 60f, MathHelper.Pi / 12f) * Main.rand.NextBool().ToDirectionInt();
+
+            // Draw the star
             if (starEffect == null)
             {
                 Color projColor = Color.Lerp(Color.White, colors[(int)Projectile.ai[1]], 0.4f);
-                starEffect = new GenericSparkle(Projectile.Center + Projectile.velocity * 1.5f, Vector2.Zero, projColor, colors[(int)Projectile.ai[1]], Projectile.scale * 2.5f, 2, Timer * Projectile.ai[2]);
+                starEffect = new GenericSparkle(Projectile.Center + Projectile.velocity * 1.5f, Vector2.Zero, projColor, colors[(int)Projectile.ai[1]], Projectile.scale * 2.5f, 2, Timer * Projectile.localAI[0]);
                 GeneralParticleHandler.SpawnParticle(starEffect);
             }
             else
@@ -73,11 +79,14 @@ namespace CalamityMod.Projectiles.Melee
                 starEffect.Time = 0;
                 starEffect.Position = Projectile.Center + Projectile.velocity * 1.5f;
             }
+
+            // Home in if it's from Cosmic Rainbow
+            if (Projectile.ai[2] == 1f)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 400f, 18f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.Size / 2f, Projectile.scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
             return false;
         }
@@ -92,18 +101,6 @@ namespace CalamityMod.Projectiles.Melee
                 int rainbow = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.RainbowMk2, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, alpha, Main.rand.Next(colors));
                 Main.dust[rainbow].noGravity = true;
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
-            target.AddBuff(BuffID.Daybreak, 150);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
-            target.AddBuff(BuffID.Daybreak, 150);
         }
     }
 }

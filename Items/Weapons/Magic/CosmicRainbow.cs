@@ -1,7 +1,7 @@
-﻿using System;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 26;
             Item.height = 64;
-            Item.damage = 162;
+            Item.damage = 117;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 10;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<CosmicRainbowFront>();
             Item.shootSpeed = 18f;
 
-            Item.UseSound = SoundID.Item67 with { Volume = 0.75f };
+            Item.UseSound = SoundID.Item67 with { Volume = 0.7f };
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -33,10 +33,17 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.Red;
         }
 
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            position = player.Center + (Vector2.Normalize(velocity) * Main.rand.NextFloat(-36f, 36f)).RotatedBy(MathHelper.PiOver2);
-            velocity = Vector2.Normalize(Main.MouseWorld - position) * Item.shootSpeed;
+            Vector2 rainbowPos = player.Center + (Vector2.Normalize(velocity) * Main.rand.NextFloat(-36f, 36f)).RotatedBy(MathHelper.PiOver2);
+            Vector2 rainbowVel = Vector2.Normalize(Main.MouseWorld - rainbowPos) * Item.shootSpeed;
+            Projectile.NewProjectile(source, rainbowPos, rainbowVel, type, damage, knockback, Main.myPlayer);
+
+            double rotationOffset = Math.Sin(Main.GlobalTimeWrappedHourly * (MathHelper.Pi / 1.5f)) * 0.4f;
+            Projectile star = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(rotationOffset), ModContent.ProjectileType<PrismaticWave>(), damage, knockback, Main.myPlayer, 0f, Main.rand.Next(12), 1f);
+            star.DamageType = DamageClass.Magic;
+            star.scale = 0.7f;
+            return false;
         }
 
         public override void AddRecipes()
