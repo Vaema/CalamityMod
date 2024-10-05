@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         private const int TimeLeft = 300;
-        private const int ExplodeTime = TimeLeft - FrameTimer * ExplodeFrames;
+        private const int ExplosionDuration = FrameTimer * ExplodeFrames;
 
         private const float ExplodeDistance = 50f;
 
@@ -53,20 +53,20 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Get a target and calculate distance from it.
             int target = Player.FindClosest(Projectile.Center, 1, 1);
-            float distanceFromTarget = (Main.player[target].Center - Projectile.Center).Length();
+            float distanceFromTarget = Projectile.Distance(Main.player[target].Center);
 
             // Explode when within a certain distance of the target.
-            if (distanceFromTarget <= ExplodeDistance && Projectile.timeLeft > ExplodeTime)
-                Projectile.timeLeft = ExplodeTime;
+            if (distanceFromTarget <= ExplodeDistance && Projectile.timeLeft > ExplosionDuration)
+                Projectile.timeLeft = ExplosionDuration;
 
-            bool explode = Projectile.timeLeft <= ExplodeTime;
+            bool explode = Projectile.timeLeft <= ExplosionDuration;
 
             // Stop immediately if explosion is triggered.
             if (explode && Projectile.velocity.Length() > 0f)
                 Projectile.velocity = Vector2.Zero;
 
             // Reset the frame counter and frameY when explosion is triggered.
-            if (Projectile.timeLeft == ExplodeTime)
+            if (Projectile.timeLeft == ExplosionDuration)
             {
                 Projectile.frameCounter = 0;
                 frameY = 0;
@@ -119,13 +119,13 @@ namespace CalamityMod.Projectiles.Boss
             Main.EntitySpriteDraw(texture, position, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None);
         }
 
-        public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= ExplodeTime && frameY >= ExplodeDamageStartFrame;
+        public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= ExplosionDuration && frameY >= ExplodeDamageStartFrame;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplodeDistance, targetHitbox);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (Projectile.timeLeft <= ExplodeTime)
+            if (Projectile.timeLeft <= ExplosionDuration)
                 target.AddBuff(BuffID.Frostburn, 180);
         }
     }
