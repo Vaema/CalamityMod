@@ -2118,6 +2118,7 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;
             mWorm = false;
@@ -2240,6 +2241,7 @@ namespace CalamityMod.CalPlayer
             LiliesOfFinalityBool = false;
             FlarebatBool = false;
             FrostbatBool = false;
+            #endregion
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
