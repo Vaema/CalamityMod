@@ -7,6 +7,7 @@ using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using CalamityMod.Items.Placeables.FurnitureEutrophic;
 using CalamityMod.Items.Placeables.FurnitureExo;
+using CalamityMod.Items.Placeables.FurnitureMarnite;
 using CalamityMod.Items.Placeables.FurnitureMonolith;
 using CalamityMod.Items.Placeables.FurnitureOtherworldly;
 using CalamityMod.Items.Placeables.FurniturePlagued;
@@ -20,6 +21,7 @@ using CalamityMod.Items.Placeables.FurnitureWulfrum;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -30,16 +32,8 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 34;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<ThaumaticChairTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<ThaumaticChairTile>());
+            Item.value = Item.sellPrice(gold: 10);
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }
@@ -55,6 +49,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             AddIngredient<CosmiliteChair>().
             AddIngredient<EutrophicChair>().
             AddIngredient<ExoChair>().
+            AddIngredient<MarniteChair>().
             AddIngredient<MonolithChair>().
             AddIngredient<SacrilegiousChair>().
             AddIngredient<OtherworldlyChair>().

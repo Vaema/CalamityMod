@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -127,11 +128,9 @@ namespace CalamityMod.Projectiles.Magic
         }
         public void ExplosionEffect(NPC target, Player player)
         {
-            // Apply damage to the target and register it to the owner's DPS meter.
-            // TODO -- why does Eternity directly StrikeNPC with its own damage variance instead of using a DirectStrike
-            int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(Eternity.ExplosionDamage * Main.rand.NextFloat(0.9f, 1.1f));
-            player.addDPS(damage);
-            target.StrikeNPC(target.CalculateHitInfo(damage, 0, false, 0f));
+            // Apply damage to the target.
+            int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(Eternity.ExplosionDamage);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Projectile.owner, target.whoAmI);
 
             Vector2 randomCirclePointVector = Vector2.UnitY.RotatedBy(Projectile.rotation);
 

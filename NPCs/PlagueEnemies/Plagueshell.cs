@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.width = 46;
             NPC.height = 32;
             NPC.defense = 32;
-            NPC.lifeMax = 800;
+            NPC.lifeMax = 1000;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.GiantTortoise;
             NPC.value = Item.buyPrice(0, 0, 20, 0);

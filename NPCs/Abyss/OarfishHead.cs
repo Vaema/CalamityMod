@@ -5,7 +5,9 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,6 +15,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class OarfishHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -27,7 +30,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/Oarfish_Bestiary",
                 PortraitPositionYOverride = 20
             };
             value.Position.X += 20;
@@ -41,7 +43,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 59;
             NPC.height = 38;
             NPC.defense = 10;
-            NPC.lifeMax = 4000;
+            NPC.lifeMax = 5000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -363,6 +365,15 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (hurtInfo.Damage > 0)
                 target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 90);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<OarfishBody>()].Value, 11, 10, 0.6f, Vector2.Zero, 3, 10);
+            }
+            return true;
         }
     }
 }

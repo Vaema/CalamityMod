@@ -24,6 +24,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
@@ -34,7 +35,6 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
-using rail;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
@@ -633,8 +633,8 @@ namespace CalamityMod.NPCs.Providence
             NPC.chaseable = normalAttackRate;
 
             // Prevent lag by stopping rain
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
 
             // Set target biome type
             if (biomeType == 0)
@@ -831,7 +831,9 @@ namespace CalamityMod.NPCs.Providence
             {
                 // Slowly drift down when spawning
                 if (spawnAnimation)
+                {
                     NPC.velocity = Vector2.Zero;
+                }
                 else
                 {
                     // Slows down while firing Holy Rays. It would've not slowed down for the Zenith seed but apparently it was too fast (shockers).
@@ -1176,8 +1178,10 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                            Vector2 predictionAmount = player.velocity * 100f;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1463,8 +1467,10 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                            Vector2 predictionAmount = player.velocity * 100f;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -2215,7 +2221,7 @@ namespace CalamityMod.NPCs.Providence
                     float Brightness = 0.5f; // Ranges from 0 (full vibrance) to 1 (pure white)
                     int maxAfterimages = 5;
 
-                    if (CalamityConfig.Instance.Afterimages)
+                    if (CalamityClientConfig.Instance.Afterimages)
                     {
                         for (int i = 1; i < maxAfterimages; i += 2)
                         {
@@ -2236,7 +2242,8 @@ namespace CalamityMod.NPCs.Providence
                     Vector2 BasePosition = NPC.Center - screenPos;
                     BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
                     BasePosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
-                    spriteBatch.Draw(texture, BasePosition, NPC.frame, (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                    Color finalDrawColor = NPC.IsABestiaryIconDummy ? Color.White : (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity;
+                    spriteBatch.Draw(texture, BasePosition, NPC.frame, finalDrawColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
                     // Draw the glowmask textures + their afterimages
                     // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
@@ -2289,7 +2296,7 @@ namespace CalamityMod.NPCs.Providence
 
                     Color GlowWingColor = ProvUtils.GetProjectileColor(NPC.GetAlpha(drawColor), true);
 
-                    if (CalamityConfig.Instance.Afterimages)
+                    if (CalamityClientConfig.Instance.Afterimages)
                     {
                         for (int j = 1; j < maxAfterimages; j++)
                         {
@@ -2447,13 +2454,14 @@ namespace CalamityMod.NPCs.Providence
                 shieldEffect.Parameters["shieldColor"].SetValue(color.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-
-                // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
-                Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
-                Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                {
+                    // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
+                    Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+                    Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                });
             }
             return false;
         }
@@ -2578,11 +2586,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2618,11 +2622,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(challenge);
-                        netMessage.Send();
+                        PSCChallengeSyncPacket.Send(this);
                     }
                 }
             }
@@ -2638,11 +2638,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2653,11 +2649,7 @@ namespace CalamityMod.NPCs.Providence
 
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    var netMessage = Mod.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                    netMessage.Write((byte)NPC.whoAmI);
-                    netMessage.Write(challenge);
-                    netMessage.Send();
+                    PSCChallengeSyncPacket.Send(this);
                 }
             }
         }
@@ -2737,7 +2729,7 @@ namespace CalamityMod.NPCs.Providence
 
         private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
-            if (npc.type == ModContent.NPCType<Providence>())
+            if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
             {
                 Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
             }

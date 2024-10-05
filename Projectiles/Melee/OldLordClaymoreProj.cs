@@ -41,6 +41,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults(); // DO NOT REMOVE THIS
+
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
         }
@@ -331,5 +333,10 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         public override void OnKill(int timeLeft) => Owner.fullRotation = 0f;
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
+        }
     }
 }

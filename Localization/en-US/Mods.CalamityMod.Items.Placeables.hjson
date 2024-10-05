@@ -512,8 +512,9 @@ CorruptionEffigy: {
 	DisplayName: Corruption Effigy
 	Tooltip:
 		'''
-		When placed down, nearby players have their movement speed and crit chance increased by 10%
-		Nearby players also suffer a 5% decrease to their damage reduction
+		<right> when placed to gain 10% increased movement speed and critical strike chance
+		However, this comes at a cost of 5% damage reduction
+		This cannot be stacked with Crimson Effigy
 		'''
 }
 
@@ -605,8 +606,9 @@ CrimsonEffigy: {
 	DisplayName: Crimson Effigy
 	Tooltip:
 		'''
-		When placed down nearby players have their damage increased by 15% and defense by 10
-		Nearby players also suffer a 10% decrease to their maximum health
+		<right> when placed to gain 15% damage and 10 defense
+		However, this comes at a cost of 10% maximum health
+		This cannot be stacked with Corruption Effigy
 		'''
 }
 
@@ -695,9 +697,24 @@ ExoObelisk: {
 	Tooltip: "'Energize the atmosphere with exo energy.'"
 }
 
+ForgottenNobleStatue: {
+	DisplayName: Forgotten Noble Statue
+	Tooltip: ""
+}
+
+ForgottenScholarStatue: {
+	DisplayName: Forgotten Scholar Statue
+	Tooltip: ""
+}
+
 FrigidMonolith: {
 	DisplayName: Frigid Monolith
 	Tooltip: "'Enchant the sky with frosty auroras.'"
+}
+
+OtonilouStatue: {
+	DisplayName: Otonilou Memorial
+	Tooltip: ""
 }
 
 PlagueHumidifier: {
@@ -760,6 +777,11 @@ SpitefulCandle: {
 SulphurousTorch: {
 	DisplayName: Sulphurous Torch
 	Tooltip: Can be placed in water
+}
+
+SunkenIdol: {
+	DisplayName: Sunken Idol
+	Tooltip: ""
 }
 
 ThaumaticChair: {
@@ -1668,6 +1690,11 @@ CosmiliteTable: {
 
 CosmiliteWorkBench: {
 	DisplayName: Cosmilite Work Bench
+	Tooltip: ""
+}
+
+AncientSmoothNavystone: {
+	DisplayName: Ancient Smooth Navystone
 	Tooltip: ""
 }
 
@@ -3300,6 +3327,11 @@ SpineSapling: {
 	Tooltip: Plants Giant Spine saplings on Brimstone Slag
 }
 
+Stohne: {
+	DisplayName: Stohne
+	Tooltip: ""
+}
+
 SulphurousSand: {
 	DisplayName: Sulphurous Sand
 	Tooltip: ""
@@ -3830,5 +3862,10 @@ PeatMossItem: {
 
 ScintillatingBloom: {
 	DisplayName: Scintillating Bloom
+	Tooltip: ""
+}
+
+PyreMantleWall: {
+	DisplayName: Pyre Mantle Wall
 	Tooltip: ""
 }

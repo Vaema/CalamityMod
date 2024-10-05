@@ -11,18 +11,9 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 15;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<PowerCellFactory>();
-
+            Item.DefaultToPlaceableTile(ModContent.TileType<PowerCellFactory>());
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.value = Item.buyPrice(gold: 50);
         }
     }
 }

@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync(SyncWith = typeof(OarfishHead))]
     public class OarfishTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.OarfishHead.DisplayName");
@@ -21,7 +22,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 14; //28
             NPC.height = 16; //28
             NPC.defense = 30;
-            NPC.lifeMax = 4000;
+            NPC.lifeMax = 5000;
             NPC.aiStyle = -1; //new
             AIType = -1; //new
             NPC.knockBackResist = 0f;

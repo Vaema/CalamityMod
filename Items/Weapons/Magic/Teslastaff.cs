@@ -23,19 +23,20 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 166;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAnimation = Item.useTime = 10;
+            Item.reuseDelay = 60;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<Teslabeam>();
+            Item.shootSpeed = 30f;
+
             Item.UseSound = CommonCalamitySounds.LightningSound with { Pitch = 1.1f };
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.channel = true;
-            Item.knockBack = 0f;
+
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
-            Item.shoot = ModContent.ProjectileType<Teslabeam>();
-            Item.shootSpeed = 30f;
-            Item.reuseDelay = 60;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -45,8 +46,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.ThunderStaff).
                 AddRecipeGroup("AnyCopperBar", 20).
-                AddIngredient<ArmoredShell>(2).
                 AddIngredient<CoreofSunlight>(6).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

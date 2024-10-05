@@ -6,6 +6,8 @@ using CalamityMod.Projectiles.Ranged;
 using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -20,7 +22,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/AbyssBlade";
 
-        public int Time = 0;
+        public int Time = 9000;
         public int ChargeupTime = 25;
         public int Lifetime = 300;
         public int startDamage;
@@ -136,12 +138,6 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.velocity.Y > 0)
                     Projectile.velocity.X *= 0.975f;
 
-                Vector2 particlePosition = Projectile.Center + new Vector2(13.5f * Projectile.direction, 0) + Projectile.velocity * 0.5f;
-                if (Time % 3 == 0)
-                {
-                    Particle Smear = new CircularSmearVFX(particlePosition, Color.DeepSkyBlue * Main.rand.NextFloat(0.78f, 0.85f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(0.8f, 0.9f));
-                    GeneralParticleHandler.SpawnParticle(Smear);
-                }
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 40f;
@@ -166,20 +162,18 @@ namespace CalamityMod.Projectiles.Melee
                     Time = 0;
 
                     bool foundTarget = false;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(5000);
+                    if (target != null)
                     {
-                        if (Main.npc[i].CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                            NPCDestination = Main.npc[i].Center + Main.npc[i].velocity * 5f;
-
-                        if (NPCDestination == new Vector2(0, 0))
-                            foundTarget = false;
-                        else
-                            foundTarget = true;
+                        NPCDestination = target.Center + target.velocity * 5f;
+                        foundTarget = true;
                     }
+                    else
+                        foundTarget = false;
 
                     if (!foundTarget)
                     {
-                        Projectile.velocity = (-Projectile.velocity).SafeNormalize(Vector2.UnitX * Projectile.direction) * 25;
+                        Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Projectile.direction) * 25;
                     }
                     else
                     {
@@ -244,6 +238,18 @@ namespace CalamityMod.Projectiles.Melee
                 dust.scale = Main.rand.NextFloat(1.6f, 2.5f) - dustMulti;
                 dust.velocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f) * dustMulti;
             }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Asset<Texture2D> p = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
+            Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SemiCircularSmearSwipe");
+            Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
+            if (spinMode && Time < 9000)
+            {
+                Main.EntitySpriteDraw(p2.Value, generalDrawPos, null, Color.Blue with { A = 0 } * 0.55f, Projectile.rotation * Main.rand.NextFloat(1.6f, 1.7f), p2.Size() * 0.5f, 1.1f * Main.rand.NextFloat(0.8f, 1.15f), SpriteEffects.None);
+                Main.EntitySpriteDraw(p.Value, generalDrawPos, null, Color.DodgerBlue with { A = 0 } * 0.75f, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f), p.Size() * 0.5f, 0.85f, SpriteEffects.None);
+            }
+            return true;
         }
     }
 }

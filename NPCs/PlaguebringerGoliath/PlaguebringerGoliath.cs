@@ -1267,7 +1267,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             Vector2 posOffset = new Vector2(charging ? 175 : 125, 0);
             int chargeAfterimageAmount = 10;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
@@ -1292,7 +1292,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             Color redLerpColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
@@ -1363,7 +1363,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 int[] weapons = new int[]
                 {
                     ModContent.ItemType<Virulence>(),
-                    ModContent.ItemType<DiseasedPike>(),
                     ModContent.ItemType<TheHive>(),
                     ModContent.ItemType<BlightSpewer>(),
                     ModContent.ItemType<PlagueStaff>(),

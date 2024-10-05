@@ -16,30 +16,24 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.width = 86;
             Item.height = 32;
             Item.damage = 27;
-            Item.noMelee = true;
             Item.DamageType = DamageClass.Magic;
-            Item.channel = true;
-            Item.useTime = 19;
-            Item.useAnimation = 19;
+            Item.mana = 10;
+            Item.useAnimation = Item.useTime = 19;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<LightningArc>();
+            Item.shootSpeed = 14f;
+
             Item.UseSound = SoundID.Item13;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.mana = 10;
+            Item.autoReuse = true;
+            Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
-
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<LightningArc>();
-            Item.shootSpeed = 14f;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position + velocity * 4.5f, velocity, ModContent.ProjectileType<LightningArc>(), damage, knockback, player.whoAmI);
-
-            return false;
-        }
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => position += velocity.SafeNormalize(Vector2.UnitX) * 56f;
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {

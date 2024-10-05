@@ -116,10 +116,19 @@ namespace CalamityMod
         /// <summary>
         /// Settles all liquids in the world.
         /// </summary>
-        public static void SettleWater()
+        public static void SettleWater(bool convertToLava = true)
         {
             Liquid.worldGenTilesIgnoreWater(true);
-            Liquid.QuickWater(3);
+            if (convertToLava)
+                Liquid.QuickWater(3);
+            else
+            {
+                int storedWaterLine = GenVars.waterLine;
+                GenVars.waterLine = Main.maxTilesY;
+                Liquid.QuickWater(3);
+                GenVars.waterLine = storedWaterLine;
+            }
+            
             WorldGen.WaterCheck();
 
             Liquid.quickSettle = true;
@@ -207,7 +216,7 @@ namespace CalamityMod
             paddedArea.Inflate(padding, padding);
 
             // If Fargo's Mutant Mod is loaded, add to their Indestructible Rectangle list, which prevents structures from being trashed by Fargo's terrain tools.
-            Mod fargos = CalamityMod.Instance.fargos;
+            Mod fargos = ExternalMods.fargos;
             fargos?.Call("AddIndestructibleRectangle", paddedArea);
         }
     }

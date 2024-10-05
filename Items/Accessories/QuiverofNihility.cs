@@ -25,14 +25,6 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            if (player.Calamity().voidField)
-                return false;
-
-            return true;
-        }
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetCritChance<RangedDamageClass>() += 5;
@@ -54,18 +46,14 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddRecipeGroup("AnyQuiver").
-                AddIngredient<DarkPlasma>(3).
                 AddIngredient<GalacticaSingularity>(5).
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            // This item doesn't follow many of the guidelines
-            // for this method.
-            // But I (nalyddd) saw the sprite in-game and felt extremely 
-            // sad about how EXTREMELY squished it was.
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,

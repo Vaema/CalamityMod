@@ -44,6 +44,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [LongDistanceNetSync]
     public class DevourerofGodsHead : ModNPC
     {
         public static int phase1IconIndex;
@@ -55,16 +56,13 @@ namespace CalamityMod.NPCs.DevourerofGods
         public static Asset<Texture2D> Phase2Texture_Glow;
         public static Asset<Texture2D> Phase2Texture_Glow2;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         // Laser velocity
@@ -167,7 +165,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 Scale = 0.6f,
                 PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/DevourerofGods_Bestiary",
                 PortraitPositionXOverride = 60,
                 PortraitPositionYOverride = 40
             };
@@ -353,8 +350,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             CalamityGlobalNPC.DoGP2 = -1;
 
             // Stop rain
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
 
             // Get a target (time is checked in the second check to ensure a new target isn't being set constantly)
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -2632,7 +2629,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
             if (NPC.IsABestiaryIconDummy)
-                NPC.frame = texture2D15.Frame();
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, texture2D15, DevourerofGodsBody.Phase2Texture.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
+            }
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;

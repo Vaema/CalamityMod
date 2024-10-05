@@ -331,4 +331,6 @@ WulfrumEnergyBurst.DisplayName: Wulfrum Bolt
 WulfrumFusionBolt.DisplayName: Fusion Bolt
 YharonMinionFireball.DisplayName: Dragon Fireball
 EnchantedBladeSummon.DisplayName: Enchanted Blade Summon
-EnchantedBladeStaffProjectile.DisplayName: Enchanted Blade Staff Projectile
+EnchantedBladeStaffProjectile.DisplayName: Enchanted Blade Beam
+FlarebatMinion.DisplayName: Flarebat
+FrostbatMinion.DisplayName: Frostbat

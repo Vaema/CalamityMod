@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.accessory = true;
             
             // Same as Fabsol's Vodka, due to the obtainment method being shimmering Fabsol's Vodka.
-            Item.value = Item.buyPrice(0, 2, 60, 0);
+            Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
 
             Item.vanity = true;

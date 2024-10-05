@@ -155,10 +155,12 @@ namespace CalamityMod.NPCs
             "Farsni",
             "Fanny", // <@!799749125720637460> (zombiewolf511)
             "Mausi", // <@!194156349347594241> (sadouken)
+            "Fiona", // <@!475216964168450048> (thatgayguy69)
         };
         private static readonly string[] PainterNames =
         {
             "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
+            "Bew", // <@!232291351167893505> (dmshi)
         };
         private static readonly string[] PartyGirlNames =
         {
@@ -180,6 +182,7 @@ namespace CalamityMod.NPCs
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
+            "Hael", // <@!641747280944431156> (kalebtull)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -196,6 +199,8 @@ namespace CalamityMod.NPCs
             "Vorbis",
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
+            "Linn", // <@!277983612383526913> (duckycolors)
+            "Eira", // <@!1166136068408623234> (taela_gemetha)
         };
         private static readonly string[] StylistNames =
         {
@@ -218,6 +223,7 @@ namespace CalamityMod.NPCs
         {
             "Stan Pines",
             "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =
         {
@@ -239,7 +245,7 @@ namespace CalamityMod.NPCs
             "Merasmus", // <@!288066987819663360> (spiderprovidence)
             "Habolo", // <@!163028025494077441> (hellgoat2)
             "Ortho", // <@!264984390910738432> (worcuus)
-            "Chris Tallballs", // <@!770211589076418571> (bewearium)
+            "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
         };
@@ -298,6 +304,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Chease", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -678,7 +685,7 @@ namespace CalamityMod.NPCs
 
         public void TownNPCAlertSystem(NPC npc, Mod mod, SpriteBatch spriteBatch)
         {
-            if (CalamityConfig.Instance.ShopNewAlert && npc.townNPC)
+            if (CalamityClientConfig.Instance.ShopNewAlert && npc.townNPC)
             {
                 for (int i = 0; i < npcAlertList.Count; i++)
                 {
@@ -798,6 +805,8 @@ namespace CalamityMod.NPCs
                 case NPCID.Demolitionist:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG)
                         chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.DoGDefeated");
+                    else if (Main.rand.NextBool(10))
+                        chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.MentionSkynamite");
                     break;
 
                 case NPCID.Dryad:
@@ -840,7 +849,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Mechanic:
-                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
+                        chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.HasPortalGun");
+                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
@@ -921,9 +932,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Steampunker:
-                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
-                        chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.HasPortalGun");
-                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneAstral)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.Astral");
@@ -1112,7 +1121,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.DyeTrader)
             {
-                shop.AddWithCustomValue(ItemType<DefiledFlameDye>(), Item.buyPrice(gold: 10), Condition.Hardmode)
+                shop.Add(ItemType<DefiledFlameDye>(), Condition.Hardmode)
                 .AddWithCustomValue(ItemID.DyeTradersScimitar, Item.buyPrice(gold: 15));
             }
 
@@ -1156,8 +1165,8 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
                 .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron)
-                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard);
+                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode); // Vanilla sells these in Hardmode, we just make them available at all times
             }
 
             if (type == NPCID.GoblinTinkerer)

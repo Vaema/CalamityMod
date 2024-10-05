@@ -3,8 +3,10 @@ using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +22,6 @@ namespace CalamityMod.Projectiles.Summon
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
@@ -137,7 +138,21 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Color drawColor = Projectile.GetAlpha(lightColor);
+
+            if (CalamityClientConfig.Instance.Afterimages)
+            {
+                for (int i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Color trailColor = Color.Lerp(drawColor, Color.Transparent, i / (float)Projectile.oldPos.Length);
+                    Vector2 trailPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    Main.EntitySpriteDraw(tex, trailPos, frame, trailColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+                }
+            }
+
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, drawColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

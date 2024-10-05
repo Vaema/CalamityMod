@@ -113,16 +113,8 @@ namespace CalamityMod.CalPlayer
 
         private void CounterScarfDodge()
         {
-            if (evasionScarf)
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.EvasionScarf.ID, duration);
-            }
-            else
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.CounterScarf.ID, duration);
-            }
+            int duration = CalamityUtils.SecondsToFrames(30);
+            Player.AddCooldown(ScarfCooldown.ID, duration, true, evasionScarf ? "evasionscarf" : "counterscarf");
 
             // 17APR2024: Ozzatron: Counter Scarf is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
             int counterScarfIFrames = Player.ComputeDodgeIFrames();
@@ -315,8 +307,8 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 2;
-                        Player.HealEffect(Player.statLifeMax2 / 2);
+                        Player.statLife += Player.statLifeMax2 / 3;
+                        Player.HealEffect(Player.statLifeMax2 / 3);
 
                         if (Player.statLife > Player.statLifeMax2)
                             Player.statLife = Player.statLifeMax2;
@@ -536,7 +528,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -644,7 +636,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -848,6 +840,9 @@ namespace CalamityMod.CalPlayer
                 modifiers.SourceDamage *= damageReductionFromWhisperingDeath;
             }
 
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
+
             //
             // At this point, the player is guaranteed to be hit if there is no dodge.
             // The amount of damage that will be dealt is yet to be determined.
@@ -1025,6 +1020,9 @@ namespace CalamityMod.CalPlayer
                 pro.Kill();
                 projectileDamageReduction += 0.2;
             }
+
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
 
             if (auralisAuroraCounter >= 300)
             {
@@ -1232,7 +1230,7 @@ namespace CalamityMod.CalPlayer
             // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -1588,6 +1586,10 @@ namespace CalamityMod.CalPlayer
             // 22AUG2023: Ozzatron: god slayer damage resistance removed due to it being strong enough to godmode rev yharon
             // If the incoming damage is somehow less than 1 (TML doesn't allow this, but...), the hit is completely ignored.
             if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
+                return true;
+
+            // Silva armor revive provides complete immunity.
+            if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
                 return true;
 
             // If this hit was marked to be completely ignored due to shield absorption, then process Adrenaline changes and ignore it.
@@ -2131,11 +2133,14 @@ namespace CalamityMod.CalPlayer
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
             // Bloodflare Core makes every hit deal defense damage (to enable its function).
-            // Defense damage is not applied if the player has iframes.
-            // This function will be ignored if the player is wearing Chalice, as it handles its defense damage elsewhere.
+            // Defense damage is not applied if the player has iframes or godmode.
             bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
-            if (hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode)
+            // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+
+            if (defenseDamageShouldApply && externalFlagsAppropriate)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
@@ -2286,8 +2291,6 @@ namespace CalamityMod.CalPlayer
 
                 if (evilSmasherBoost > 0)
                     evilSmasherBoost -= 1;
-
-                hellbornBoost = 0;
 
                 if (trinketOfChi)
                     chiBuffTimer = 0;
@@ -2546,7 +2549,7 @@ namespace CalamityMod.CalPlayer
                     var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, AerospecBreastplate.FeatherEntitySourceContext);
                     for (int n = 0; n < 4; n++)
                     {
-                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(35);
+                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
                         featherDamage = Player.ApplyArmorAccDamageBonusesTo(featherDamage);
 
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);
@@ -2615,7 +2618,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 300 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
                         effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
 
@@ -2724,7 +2727,7 @@ namespace CalamityMod.CalPlayer
                         var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, DemonshadeHelm.ShadowScytheEntitySourceContext);
                         for (int l = 0; l < 2; l++)
                         {
-                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(3000);
+                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
                             shadowbeamDamage = Player.ApplyArmorAccDamageBonusesTo(shadowbeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
@@ -2737,7 +2740,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int l = 0; l < 5; l++)
                         {
-                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(5000);
+                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
                             scytheDamage = Player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);
@@ -2958,11 +2961,16 @@ namespace CalamityMod.CalPlayer
             ApplyDefenseDamageInternal(defenseDamageTaken);
         }
 
-        // Actually applies defense damage. Cannot be called externally.
+        // Actually applies defense damage. Really should not be called externally.
         private void ApplyDefenseDamageInternal(int defenseDamage, bool showVisuals = true)
         {
             // If zero defense damage is being dealt, don't waste your time or display a grey 0.
             if (defenseDamage <= 0)
+                return;
+
+            // There are two flags which disable the application of defense damage. If either is true, don't do anything.
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+            if (!externalFlagsAppropriate)
                 return;
             
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.

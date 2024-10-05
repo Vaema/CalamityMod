@@ -16,6 +16,6 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual) => player.luck += 0.2f;
+        public override void UpdateAccessory(Player player, bool hideVisual) => player.Calamity().calamityBonusLuck += 0.2f;
     }
 }

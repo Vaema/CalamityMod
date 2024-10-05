@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -9,6 +11,13 @@ namespace CalamityMod.Projectiles.Magic
     public class BlueBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public Color mainColor;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -47,12 +56,36 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
             if (Projectile.timeLeft < 90)
+            {
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 400f, 8f, 20f);
+                if (Main.rand.NextBool(10))
+                {
+                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                    trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                    trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
+                    trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;
+                    trailDust.noGravity = true;
+                }
+            }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/BlueBubble").Value;
+
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Color drawColor = Color.Lerp(mainColor, Color.White, 0.2f) with { A = 0 };
+            float drawRotation = Projectile.rotation;
+            Vector2 rotationPoint = texture.Size() * 0.5f;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], drawColor, 1, texture, true, true);
+            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            return false;
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
+            Particle Star = new CritSpark(Projectile.Center, Vector2.Zero, Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(1f, 1.1f), 30, 0.1f, 3f);
+            GeneralParticleHandler.SpawnParticle(Star);
             int num190 = Main.rand.Next(5, 9);
             for (int i = 0; i < num190; i++)
             {

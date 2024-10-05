@@ -62,16 +62,18 @@ namespace CalamityMod.Graphics.Metaballs
                 Particles[i].Update();
             Particles.RemoveAll(p => p.Size <= 2f);
 
-            if (Time % 10 == 0)
+            List<Color> eColors = new List<Color>()
             {
-                sparkColor = Main.rand.Next(4) switch
-                {
-                    0 => Color.Red,
-                    1 => Color.MediumTurquoise,
-                    2 => Color.Orange,
-                    _ => Color.LawnGreen,
-                };
-            }
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
         }
 
         // Copied from Rancor Lava metaballs, since these need to be additive metaballs.

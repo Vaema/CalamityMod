@@ -79,7 +79,6 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.knockBackResist = 0.5f;
-            //AnimationType = NPCID.Guide;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -94,17 +93,6 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void FindFrame(int frameHeight)
         {
             int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[NPC.type] : 0);
-            /*if (false && !Main.dedServ && TownNPCProfiles.Instance.GetProfile(this, out var profile))
-            {
-                Asset<Texture2D> textureNPCShouldUse = profile.GetTextureNPCShouldUse(this);
-                if (textureNPCShouldUse.IsLoaded)
-                {
-                    num = textureNPCShouldUse.Height() / Main.npcFrameCount[type];
-                    frame.Width = textureNPCShouldUse.Width();
-                    frame.Height = num;
-                }
-            }*/
-
             if (NPC.velocity.Y == 0f)
             {
                 if (NPC.direction == 1)
@@ -885,7 +873,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void AddShops()
         {
-            Mod musicMod = CalamityMod.Instance.musicMod;
+            Mod musicMod = ExternalMods.musicMod;
             musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
             musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
             musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
@@ -939,14 +927,14 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
         {
-            damage = 15;
+            damage = 60;
             knockback = 2f;
         }
 
         public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
         {
-            cooldown = 180;
-            randExtraCooldown = 60;
+            cooldown = 60;
+            randExtraCooldown = 15;
         }
 
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)

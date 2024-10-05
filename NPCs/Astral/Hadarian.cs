@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.damage = 50;
             NPC.defense = 8;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 330;
+            NPC.lifeMax = 420;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.75f;
             NPC.value = Item.buyPrice(0, 0, 15, 0);
@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 80;
                 NPC.defense = 18;
                 NPC.knockBackResist = 0.65f;
-                NPC.lifeMax = 500;
+                NPC.lifeMax = 630;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

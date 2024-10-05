@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.Ravager
             bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
             if (fireProjectiles && Vector2.Distance(NPC.Center, player.Center) > 80f)
             {
-                int type = ModContent.ProjectileType<ScavengerLaser>();
+                int type = ModContent.ProjectileType<HomingLaserDart>();
                 int damage = NPC.GetProjectileDamage(type);
                 float projectileVelocity = death ? 8f : 6f;
 

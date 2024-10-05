@@ -197,8 +197,8 @@ namespace CalamityMod.NPCs.Yharon
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Stop rain
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
 
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
@@ -2773,7 +2773,7 @@ namespace CalamityMod.NPCs.Yharon
             else
                 color = drawColor;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += afterimageIncrement)
                 {
@@ -2822,7 +2822,7 @@ namespace CalamityMod.NPCs.Yharon
                 afterimageScale = 20f;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int k = 0; k < additionalAfterimageAmt; k++)
                 {
@@ -2899,7 +2899,7 @@ namespace CalamityMod.NPCs.Yharon
                     blueGlowColor *= teleportGlowColorScaler;
                 }
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int l = 1; l < afterimageAmt; l += afterimageIncrement)
                     {

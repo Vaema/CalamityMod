@@ -1,8 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.World;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
+using SandstormEvent = Terraria.GameContent.Events.Sandstorm;
+
 namespace CalamityMod.Items.Tools.ClimateChange
 {
+    
+
     public class AridArtifact : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Tools";
@@ -27,13 +33,17 @@ namespace CalamityMod.Items.Tools.ClimateChange
             return DownedBossSystem.downedDesertScourge || Main.hardMode;
         }
 
-        // this is extremely ugly and has to be fully qualified because we add an item called Sandstorm
         public override bool? UseItem(Player player)
         {
-            if (Terraria.GameContent.Events.Sandstorm.Happening)
-                CalamityUtils.StopSandstorm();
+            // Only SinglePlayer and Server need to sync those parameters
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return true;
+
+            if (SandstormEvent.Happening)
+                CalamityWorld.StopSandstorm();
             else
-                CalamityUtils.StartSandstorm();
+                CalamityWorld.StartSandstorm();
+
             return true;
         }
 

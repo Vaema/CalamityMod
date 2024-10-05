@@ -670,6 +670,24 @@ namespace CalamityMod
                 p.Calamity().externalAbyssLight += add;
         }
 
+        public static void AddBreathLossMult(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalBreathLossMultBoost += add;
+        }
+
+        public static void AddBreathTick(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalBreathTickBoost += add;
+        }
+
+        public static void AddFlightTimeMult(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalFlightTimeMultBoost += add;
+        }
+
         public static void ToggleInfiniteFlight(Player p, bool enabled)
         {
             if (p != null)
@@ -692,17 +710,18 @@ namespace CalamityMod
                 p.Calamity().WearingPostMLSummonerSet = enabled;
         }
 
-        public static bool MakeColdImmune(Player p) => p is null ? false : (p.Calamity().externalColdImmunity = true);
-        public static bool MakeHeatImmune(Player p) => p is null ? false : (p.Calamity().externalHeatImmunity = true);
+        public static bool SetPlayerColdImmune(Player p, bool cold) => p is not null && (p.Calamity().externalColdImmunity = cold);
+        public static bool SetPlayerHeatImmune(Player p, bool heat) => p is not null && (p.Calamity().externalHeatImmunity = heat);
+        public static bool SetPlayerDefenseDamageImmune(Player p, bool dd) => p is not null && (p.Calamity().externalDefenseDamageImmunity = dd);
         #endregion
 
         #region NPC Damage Reduction
         // Sets the damage reduction for an NPC type
         public static float SetDamageReduction(int npcID, float dr)
         {
-            CalamityMod.DRValues.TryGetValue(npcID, out float oldDR);
-            CalamityMod.DRValues.Remove(npcID);
-            CalamityMod.DRValues.Add(npcID, dr);
+            CalamityGlobalNPC.DRValues.TryGetValue(npcID, out float oldDR);
+            CalamityGlobalNPC.DRValues.Remove(npcID);
+            CalamityGlobalNPC.DRValues.Add(npcID, dr);
             return oldDR;
         }
         // Sets a specific NPC's damage reduction
@@ -1222,7 +1241,6 @@ namespace CalamityMod
                         return null;
                     }
 
-
                 case "GetLight":
                 case "GetLightLevel":
                 case "GetLightStrength":
@@ -1250,6 +1268,51 @@ namespace CalamityMod
                     if (!isValidPlayerArg(args[1]))
                         return new ArgumentException("ERROR: The first argument to \"AddLightStrength\" must be a Player or an int.");
                     AddAbyssLightStrength(castPlayer(args[1]), light);
+                    return null;
+
+                case "BreathMult":
+                case "BreathLossMult":
+                case "AddBreathMult":
+                case "AddBreathLossMult":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and breath loss mult change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify breath loss mult change as a float.");
+                    if (!(args[2] is float breathLossMult))
+                        return new ArgumentException("ERROR: The second argument to \"AddBreathLossMult\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddBreathLossMult\" must be a Player or an int.");
+                    AddBreathLossMult(castPlayer(args[1]), breathLossMult);
+                    return null;
+
+                case "BreathTick":
+                case "AbyssBreathTick":
+                case "AddBreathTick":
+                case "AddAbyssBreathTick":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and Abyss breath tick change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify Abyss breath tick change as a float.");
+                    if (!(args[2] is float breathTick))
+                        return new ArgumentException("ERROR: The second argument to \"AddBreathTick\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddBreathTick\" must be a Player or an int.");
+                    AddBreathTick(castPlayer(args[1]), breathTick);
+                    return null;
+
+                case "FlightMult":
+                case "FlightTimeMult":
+                case "AddFlightMult":
+                case "AddFlightTimeMult":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and flight mult change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify flight mult change as a float.");
+                    if (!(args[2] is float flightMult))
+                        return new ArgumentException("ERROR: The second argument to \"AddFlightMult\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddFlightMult\" must be a Player or an int.");
+                    AddFlightTimeMult(castPlayer(args[1]), flightMult);
                     return null;
 
                 case "InfiniteFlight":
@@ -1864,6 +1927,18 @@ namespace CalamityMod
                         return new ArgumentException("ERROR: The first argument to \"SetFirePointBlank\" must be an Item or an int.");
                     return SetFirePointBlank(castItem(args[1]), firePointBlank);
 
+
+                case "GetPointBlankDuration":
+                case "GetProjectilePointBlank":
+                case "GetProjectilePointBlankDuration":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
+                        if (!isValidProjectileArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"GetPointBlankDuration\" must be a Projectile.");
+                        return GetPointBlankDuration(castProjectile(args[1]));
+                    }
+
                 case "SetPointBlankDuration":
                 case "SetProjectilePointBlank":
                 case "SetProjectilePointBlankDuration":
@@ -1881,17 +1956,6 @@ namespace CalamityMod
                         return null;
                     }
 
-                case "GetPointBlankDuration":
-                case "GetProjectilePointBlank":
-                case "GetProjectilePointBlankDuration":
-                    {
-                        if (args.Length < 2)
-                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
-                        if (!isValidProjectileArg(args[1]))
-                            return new ArgumentException("ERROR: The first argument to \"GetPointBlankDuration\" must be a Projectile.");
-                        return GetPointBlankDuration(castProjectile(args[1]));
-                    }
-
                 case "NoDodges":
                 case "DodgesDisabled":
                 case "GetDodgesDisabled":
@@ -1903,6 +1967,45 @@ namespace CalamityMod
                     if (args.Length < 2 || !(args[1] is bool disableDodges))
                         return new ArgumentNullException("ERROR: Must specify a bool.");
                     return DisableAllDodges(disableDodges);
+
+                case "SetPlayerColdImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to Death Mode cold effects as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to Death Mode cold effects as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerColdImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerColdImmune\" must be a Player or an int.");
+                    bool coldImmune = (bool)args[2];
+                    SetPlayerColdImmune(castPlayer(args[1]), coldImmune);
+                    return null;
+
+                case "SetPlayerHeatImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to Death Mode heat effects as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to Death Mode heat effects as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerHeatImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerHeatImmune\" must be a Player or an int.");
+                    bool heatImmune = (bool)args[2];
+                    SetPlayerHeatImmune(castPlayer(args[1]), heatImmune);
+                    return null;
+
+                case "SetPlayerDefenseDamageImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to defense damage as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to defense damage as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerDefenseDamageImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerDefenseDamageImmune\" must be a Player or an int.");
+                    bool defenseDamageImmune = (bool)args[2];
+                    SetPlayerDefenseDamageImmune(castPlayer(args[1]), defenseDamageImmune);
+                    return null;
 
                 case "AcidRainActive":
                 case "IsAcidRainActive":
@@ -2180,7 +2283,7 @@ namespace CalamityMod
                 case "GetBossHealthBoost":
                 case "BossHealthMultiplier":
                 case "GetBossHealthMultiplier":
-                    return CalamityConfig.Instance.BossHealthBoost;
+                    return CalamityServerConfig.Instance.BossHealthBoost;
 
                 case "HasPermanentPowerup":
                 case "GetPermanentPowerup":

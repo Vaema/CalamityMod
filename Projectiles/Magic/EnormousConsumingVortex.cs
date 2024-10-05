@@ -218,6 +218,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 scale = Projectile.Size / worleyNoise.Size() * 2f;
             float spinRotation = Main.GlobalTimeWrappedHourly * 2.4f;
 
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(1f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Draw the vortex.

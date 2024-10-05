@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void OnSpawn(IEntitySource source)

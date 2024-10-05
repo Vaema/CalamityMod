@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 15f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = Item.useAnimation = 27;
+            Item.useAnimation = Item.useTime = 27;
             Item.UseSound = SoundID.Item92;
             Item.shoot = ModContent.ProjectileType<StarfleetMK2Gun>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -58,9 +58,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Starfleet>().
                 AddIngredient<StarSputter>().
-                AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<ExodiumCluster>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }

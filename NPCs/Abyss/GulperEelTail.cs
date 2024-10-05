@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync(SyncWith = typeof(GulperEelHead))]
     public class GulperEelTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.GulperEelHead.DisplayName");
@@ -132,9 +133,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.position.Y = NPC.position.Y + targetYDirection;
 
                 if (targetXDirection < 0f)
-                    NPC.spriteDirection = 1;
-                else if (targetXDirection > 0f)
                     NPC.spriteDirection = -1;
+                else if (targetXDirection > 0f)
+                    NPC.spriteDirection = 1;
             }
         }
 

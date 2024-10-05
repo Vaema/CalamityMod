@@ -32,6 +32,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DesertScourge
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class DesertScourgeHead : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
@@ -942,7 +943,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 CalamityUtils.DisplayLocalizedText(key2, messageColor2);
 
                 if (!Terraria.GameContent.Events.Sandstorm.Happening)
-                    CalamityUtils.StartSandstorm();
+                    CalamityWorld.StartSandstorm();
             }
 
             // Mark Desert Scourge as dead.

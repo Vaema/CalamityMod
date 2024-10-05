@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Magic
         public float scaleVariance = 1;
 
         public bool launched = false;
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 8;

@@ -164,7 +164,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override void SetDefaults()
         {
             Projectile.width = 56;
-            Projectile.DamageType = DamageClass.Melee;  //Dictates whether this is a melee-class weapon.
+            Projectile.DamageType = TrueMeleeDamageClass.Instance;  //Dictates whether this is a melee-class weapon.
             Projectile.timeLeft = Lifetime;
             Projectile.height = 56;
             Projectile.friendly = true;

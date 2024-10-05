@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Balancing;
-using CalamityMod.Items.Accessories;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -16,8 +15,8 @@ namespace CalamityMod.ILEditing
 
         private static bool AdjustShimmerRequirements(On_ShimmerTransforms.orig_IsItemTransformLocked orig, int type)
         {
-            //Rod of Harmony / psc requires Draedong and SCal dead instead of Moon Lord.
-            if (type == ItemID.RodofDiscord || type == ModContent.ItemType<ProfanedSoulCrystal>())
+            //Rod of Harmony requires Draedong and SCal dead instead of Moon Lord.
+            if (type == ItemID.RodofDiscord)
             {
                 return !DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs;
             }
@@ -80,15 +79,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
 
-            // Find the Frog Leg jump speed bonus and reduce it to 1.2f.
-            // I don't know if this fucking does anything anymore, but I'm leaving it in just in case.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(2.4f)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Frog Leg jump speed boost value.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 1.2f); // Decrease to 1.2f.
+            // CIT 22SEP2024: Removed the edit intended to decrease Frog Leg's jump speed boost,
+            // as it was not doing anything due to vanilla changing how Frog Leg's jump speed boost is applied.
 
             // Remove the jump height addition from the Werewolf buff (Moon Charm).
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))
@@ -114,7 +106,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
         }
         #endregion
 
@@ -440,7 +432,7 @@ namespace CalamityMod.ILEditing
             }
 
             if (item.prefix == PrefixID.Lucky)
-                self.luck += 0.05f;
+                self.Calamity().calamityBonusLuck += 0.05f;
         }
         #endregion
 
@@ -468,6 +460,35 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_I4_M1); // Replace the 1000 with -1, no NPC can have less than -1 HP on spawn, so it fails to run.
+        }
+        #endregion
+
+        #region Reduce Eater of Worlds Grenade Resist
+        private static void ReduceEoWGrenadeResist(ILContext il)
+        {
+            // Reduce Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            var cursor = new ILCursor(il);
+
+            // Of course, this is 800 lines into Projectile.Damage, so we must do funky things.
+            for (int f = 0; f < 2; f++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(1002)))
+                {
+                    LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchDiv()))
+            {
+                LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                return;
+            }
+
+            // Remove the division instruction, then pop the 5 off the stack to destroy it. Replace it with loading a 0.4 and then multiplying by it.
+            cursor.Remove();
+            cursor.EmitPop();
+            cursor.EmitLdcR4(0.4f);
+            cursor.EmitMul();
         }
         #endregion
 

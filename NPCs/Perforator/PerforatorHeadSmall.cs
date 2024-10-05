@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class PerforatorHeadSmall : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
@@ -34,7 +36,6 @@ namespace CalamityMod.NPCs.Perforator
             {
                 Scale = 0.8f,
                 PortraitScale = 0.8f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/PerforatorSmall_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 60
             };
@@ -490,7 +491,10 @@ namespace CalamityMod.NPCs.Perforator
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PerforatorBodySmall>()].Value, 5, 22, 0.6f, new Vector2(-20, -20), 4, 10);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)

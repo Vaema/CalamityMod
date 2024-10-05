@@ -571,7 +571,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 int damage = NPC.GetProjectileDamage(type);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
                                     Main.projectile[proj].timeLeft = projTimeLeft;
                                 }
                             }
@@ -705,10 +705,25 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
                         }
                     }
-                    else
+                    else if (NPC.localAI[2] == 1f)
                     {
                         inertia *= 1.5f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
+
+                        // Stop charging towards the player when within a certain distance
+                        if (NPC.Distance(player.Center) < 160f * NPC.scale)
+                            NPC.localAI[2] = 2f;
+                    }
+                    else
+                    {
+                        // Slow down
+                        if (NPC.Distance(player.Center) >= 240f * NPC.scale || NPC.localAI[2] == 3f)
+                        {
+                            if (NPC.localAI[2] != 3f)
+                                NPC.localAI[2] = 3f;
+
+                            NPC.velocity *= 0.98f;
+                        }
                     }
 
                     // Throw down holy fire while charging
@@ -1017,7 +1032,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -1055,7 +1070,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (colorOverride != null)
                     timeBasedColorLerp = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
@@ -1185,20 +1200,20 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 shieldEffect.Parameters["shieldColor"].SetValue(color.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
+                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale2 * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale2 * scaleMult * 0.95f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale * scaleMult * 0.95f, SpriteEffects.None, 0f);
 
-                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-
-                // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
-                Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
-                Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                {
+                    // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
+                    Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+                    Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                });
             }
 
             return false;

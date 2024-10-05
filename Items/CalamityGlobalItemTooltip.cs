@@ -488,7 +488,7 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text += ", including Mighty Wind");
 
             // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
-            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
                 EditTooltipByNum(0, (line) => line.Text += "\nDemon Altars now drop Souls of Night instead of generating ores when destroyed" +
                 "\nHardmode ores now generate after defeating Mechanical Bosses for the first time");
 
@@ -1038,7 +1038,7 @@ namespace CalamityMod.Items
 
             // Lead
             if (item.type == ItemID.LeadHelmet || item.type == ItemID.LeadChainmail || item.type == ItemID.LeadGreaves)
-                AddTooltip("Increases damage reduction by 3%");
+                AddTooltip("Increases damage reduction by 2%");
 
             // Silver
             if (item.type == ItemID.SilverHelmet)
@@ -1147,7 +1147,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.SquireGreatHelm)
                 EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 1 and grants +2 HP/s life regen");
             if (item.type == ItemID.SquirePlating)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion and melee damage");
+                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and 15% increased melee damage");
             if (item.type == ItemID.SquireGreaves)
                 EditTooltipByNum(0, (line) => line.Text = "5% increased minion damage and melee critical strike chance\n" +
                 "15% increased movement speed");

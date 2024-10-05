@@ -24,7 +24,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float swirlCosine = sin(swirlRotation + 1.5707);
     float2x2 swirlRotationMatrix = float2x2(swirlCosine, -swirlSine, swirlSine, swirlCosine);
     float2 swirlCoordinates = mul(centeredCoords, swirlRotationMatrix) + 0.5;
-    return tex2D(uImage0, swirlCoordinates) * sampleColor * swirlColorFade;
+    return tex2D(uImage0, swirlCoordinates) * float4(sampleColor.rgb, uOpacity) * swirlColorFade;
 }
 technique Technique1
 {

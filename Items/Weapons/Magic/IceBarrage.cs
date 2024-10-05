@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Item.damage = 2250;
             Item.knockBack = 6f;
-            Item.useTime = Item.useAnimation = 300;
+            Item.useAnimation = Item.useTime = 300;
             Item.reuseDelay = 60;
             Item.useLimitPerAnimation = 1;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
@@ -70,7 +70,6 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<IcicleStaff>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CryonicBar>(18).
                 AddTile(TileID.IceMachine).
                 Register();
         }

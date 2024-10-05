@@ -6,18 +6,22 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Chat;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -298,14 +302,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-            packet.Write((byte)npc.whoAmI);
-
-            for (int i = 0; i < npc.Calamity().newAI.Length; i++)
-                packet.Write(npc.Calamity().newAI[i]);
-
-            packet.Send();
+            SyncCalamityNPCAIArrayPacket.Send(npc);
         }
 
         /// <summary>
@@ -318,14 +315,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncVanillaNPCLocalAIArray);
-            packet.Write((byte)npc.whoAmI);
-
-            for (int i = 0; i < NPC.maxAI; i++)
-                packet.Write(npc.localAI[i]);
-
-            packet.Send();
+            SyncVanillaNPCLocalAIArrayPacket.Send(npc);
         }
 
         /// <summary>
@@ -337,12 +327,12 @@ namespace CalamityMod
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SyncNPCMotionDataToServer);
-            netMessage.Write(npc.whoAmI);
-            netMessage.WriteVector2(npc.Center);
-            netMessage.WriteVector2(npc.velocity);
-            netMessage.Send();
+            SyncNPCMotionDataToServerPacket.Send(npc);
+        }
+
+        public static void SyncNPCPosAndRotOnly(this NPC npc)
+        {
+            SyncNPCPosAndRotOnlyPacket.Send(npc);
         }
 
         /// <summary>
@@ -355,11 +345,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = CalamityMod.Instance.GetPacket();
-            packet.Write((byte)CalamityModMessageType.SyncDestroyerLaserColor);
-            packet.Write((byte)npc.whoAmI);
-            packet.Write(npc.Calamity().destroyerLaserColor);
-            packet.Send();
+            SyncDestroyerLaserColorPacket.Send(npc);
         }
         #endregion
 
@@ -750,7 +736,7 @@ namespace CalamityMod
             if (CalamityPlayer.areThereAnyDamnBosses)
                 ignoreKBImmune = false;
             bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune ? true : target.knockBackResist > 0))
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune || target.knockBackResist > 0))
                 return true;
             return false;
         }
@@ -823,6 +809,63 @@ namespace CalamityMod
             }
         }
 
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D bodyTexture, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0, bool flip = false)
+        {
+            DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, headTexture, [bodyTexture], segmentCount, segmentSpacing, rotationStrength, baseOffset, animationSpeed, range, headOffset, headSpeedOffset, flip);
+            return false;
+        }
+
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D bodyTexture, Texture2D bodyTextureAlt, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0, bool flip = false)
+        {
+            DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, headTexture, [bodyTexture, bodyTextureAlt], segmentCount, segmentSpacing, rotationStrength, baseOffset, animationSpeed, range, headOffset, headSpeedOffset, flip);
+            return false;
+        }
+
+        /// <summary>
+        /// Draws animated wiggly worms for the Bestiary
+        /// </summary>
+        /// <param name="spriteBatch">The PreDraw's SpriteBatch</param>
+        /// <param name="npc">The NPC to draw</param>
+        /// <param name="drawColor">The NPC's drawColor</param>
+        /// <param name="headTexture">The worm's head texture</param>
+        /// <param name="bodyTextures">The worm's body textures</param>
+        /// <param name="segmentCount">The amount of segments that should be added</param>
+        /// <param name="segmentSpacing">The spacing between segments</param>
+        /// <param name="rotationStrength">How strongly the worm rotates. Higher values cause it to make sharper turns</param>
+        /// <param name="baseOffset">Moves around the position of the worm</param>
+        /// <param name="animationSpeed">How fast the worm moves</param>
+        /// <param name="range">How far up and down the worm moves</param>
+        /// <param name="headOffset">How far to bash (move) the head horizontally in case the automated math is too off or the worm's head extends past its neck joint</param>
+        /// <param name="headSpeedOffset">Offsets the animation progression for the head. Meant to pair with headOffset</param>
+        /// <param name="flip">If the sprites should be flipped. Used for worms viewed from the side like Wyverns</param>
+        /// <returns></returns>
+        public static bool DrawAnimatedBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor, Texture2D headTexture, Texture2D[] bodyTextures, int segmentCount, int segmentSpacing, float rotationStrength, Vector2 baseOffset, int animationSpeed, float range, float headOffset = 0, float headSpeedOffset = 0, bool flip = false)
+        {
+            npc.frame = headTexture.Frame();
+            // Buffers the segment position and rotations
+            float offset = -0.2f;
+            float startX = baseOffset.X;
+            float startY = baseOffset.Y;
+            SpriteEffects fx = flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            float wormTimer = npc.Calamity().bestiaryWormTimer;
+            // Draw the body segments
+            for (int i = segmentCount; i > 0; i--)
+            {
+                // The first segment is slightly closer to keep up with the head
+                float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                // If there's only one texture passed in, use it for all segments
+                // If two are passed in, alternate between them
+                // If more are passed in, each iteration must correspond to a texture
+                Texture2D toUse = bodyTextures.Length == 1 ? bodyTextures[0] : bodyTextures.Length == 2 ? (i % 2 == 0 ? bodyTextures[0] : bodyTextures[1]) : bodyTextures[i - 1];
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, fx, 0f);
+            }
+            // Draw the head
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, fx, 0f);
+
+            return false;
+        }
+
         #region Boss Spawning
         /// <summary>
         /// Shortcut for the generic boss summon message.
@@ -838,7 +881,7 @@ namespace CalamityMod
             }
             else if (Main.netMode == NetmodeID.Server)
             {
-                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", new object[] { Main.npc[npcIndex].GetTypeNetName() }), new Color(175, 75, 255));
+                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", [Main.npc[npcIndex].GetTypeNetName()]), new Color(175, 75, 255));
             }
         }
 
@@ -873,6 +916,103 @@ namespace CalamityMod
             }
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Spawn Boss Method for Using Spawn Items
+        /// <para>NOTE: This method use vanilla's spawn position behaviour!</para>
+        /// </summary>
+        /// <param name="player">Player who used Item</param>
+        /// <param name="npcType">Boss's NPCType to spawn</param>
+        /// <param name="spawnSound">Sound to play when spawn, it play on used player's position</param>
+        public static void SpawnBossUsingItem(Player player, int npcType, in SoundStyle? spawnSound = null)
+        {
+            SoundEngine.PlaySound(spawnSound, player.Center);
+
+            if (player.whoAmI != Main.myPlayer)
+                return;
+
+            // NOTE: MP netcode can be simplified by directly spawn npc like SpawnBossOnPosUsingItem does
+            // but leaving this as vanilla's standard now
+            switch (Main.netMode)
+            {
+                // SP: Spawn Boss Immediately
+                case NetmodeID.SinglePlayer:
+                    NPC.SpawnOnPlayer(player.whoAmI, npcType);
+                    break;
+
+                // MP: Ask server to spawn one
+                case NetmodeID.MultiplayerClient:
+                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, npcType);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Spawn Boss Method for Using Spawn Items
+        /// <para>NOTE: This method use vanilla's spawn position behaviour!</para>
+        /// </summary>
+        /// <typeparam name="BossType">Boss's NPCType to spawn</typeparam>
+        /// <param name="player">Player who used Item</param>
+        /// <param name="spawnSound">Sound to play when spawn, it play on used player's position</param>
+        public static void SpawnBossUsingItem<BossType>(Player player, in SoundStyle? spawnSound = null) where BossType : ModNPC
+        {
+            SpawnBossUsingItem(player, NPCType<BossType>(), spawnSound);
+        }
+
+        /// <summary>
+        /// Spawn Boss Method for Using Spawn Items
+        /// <para>NOTE: This method can override spawn position to anywhere you want</para>
+        /// </summary>
+        /// <param name="player">Player who used Item</param>
+        /// <param name="npcType">Boss's NPCType to spawn</param>
+        /// <param name="worldX">Spawn Position X</param>
+        /// <param name="worldY">Spawn Position Y</param>
+        /// <param name="spawnSound">Sound to play when spawn, it play on used player's position</param>
+        /// <returns>Spawned NPC Instance, null on MultiplayerClient</returns>
+        public static NPC SpawnBossOnPosUsingItem(Player player, int npcType, int worldX, int worldY, in SoundStyle? spawnSound = null)
+        {
+            SoundEngine.PlaySound(spawnSound, player.Center);
+
+            // SP or SERVER: Spawn Boss Immediately
+            // This will ensure NPC to be spawned only once on Item.UseItem
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                int spawnedNPCIdx = NPC.NewNPC(new EntitySource_BossSpawn(target: player), worldX, worldY, npcType, Start: 1);
+
+                // 200 is invalid Index
+                if (spawnedNPCIdx >= 200)
+                    return null;
+
+                BossAwakenMessage(spawnedNPCIdx);
+                NPC npc = Main.npc[spawnedNPCIdx];
+                npc.timeLeft *= 20;
+                
+                // Server Exclusive: Sync NPC Data
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
+                }
+
+                return npc;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Spawn Boss Method for Using Spawn Items
+        /// <para>NOTE: This method can override spawn position to anywhere you want</para>
+        /// </summary>
+        /// <typeparam name="BossType"></typeparam>
+        /// <param name="player">Player who used Item</param>
+        /// <param name="worldX">Spawn Position X</param>
+        /// <param name="worldY">Spawn Position Y</param>
+        /// <param name="spawnSound">Sound to play when spawn, it play on used player's position</param>
+        /// <returns>Spawned NPC Instance, null on MultiplayerClient</returns>
+        public static NPC SpawnBossOnPosUsingItem<BossType>(Player player, int worldX, int worldY, in SoundStyle? spawnSound = null) where BossType : ModNPC
+        {
+            return SpawnBossOnPosUsingItem(player, NPCType<BossType>(), worldX, worldY, spawnSound);
         }
 
         /// <summary>

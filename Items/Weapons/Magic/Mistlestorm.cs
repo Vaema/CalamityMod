@@ -60,8 +60,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Razorpine).
                 AddIngredient(ItemID.LeafBlower).
-                AddIngredient<UelibloomBar>(7).
-                AddIngredient<DarkPlasma>().
+                AddIngredient<UelibloomBar>(5).
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

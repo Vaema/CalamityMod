@@ -22,14 +22,15 @@ namespace CalamityMod.Items.Potions
             Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
-            Item.rare = ItemRarityID.Lime;
             Item.useStyle = ItemUseStyleID.EatFood;
             Item.healMana = 200;
             Item.UseSound = SoundID.Item3;
             Item.consumable = true;
-            Item.value = Item.buyPrice(0, 4, 50, 0);
             Item.buffType = BuffID.MagicPower;
             Item.buffTime = CalamityUtils.SecondsToFrames(360f);
+
+            Item.value = Item.sellPrice(silver: 50); // Based on material cost rather than potion cost
+            Item.rare = ItemRarityID.Lime;
         }
 
         public override void OnConsumeItem(Player player)

@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.BubbleGun).
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<SeaPrism>(15).
+                AddIngredient(ItemID.ShimmerBlock, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

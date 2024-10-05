@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -761,14 +762,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Manually sync newAI because there is no GlobalNPC.SendExtraAI
             if (npc.active && npc.netUpdate && Main.netMode == NetmodeID.Server)
             {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                packet.Write((byte)npc.whoAmI);
-                packet.Write(calamityGlobalNPC.newAI[0]);
-                packet.Write(calamityGlobalNPC.newAI[1]);
-                packet.Write(calamityGlobalNPC.newAI[2]);
-                packet.Write(calamityGlobalNPC.newAI[3]);
-                packet.Send(-1, -1);
+                SyncCalamityNPCAIArrayPacket.Send(npc);
             }
 
             return false;

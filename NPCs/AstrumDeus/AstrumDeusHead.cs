@@ -17,6 +17,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
@@ -34,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumDeus
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class AstrumDeusHead : ModNPC
     {
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSpawn");
@@ -56,8 +58,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.70f,
-                PortraitScale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/AstrumDeus_Bestiary"
+                PortraitScale = 0.75f
             };
             value.Position.X += 55f;
             value.Position.Y += 23f;
@@ -156,7 +157,10 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<AstrumDeusBody>()].Value, AstrumDeusBody.AltTexture.Value, 7, 26, 0.3f, new Vector2(0, 10), 5, 10, 4);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)

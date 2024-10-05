@@ -226,24 +226,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static Asset<Texture2D> ForcefieldTexture;
 
         // TODO -- This is cumbersome. Change it to be better in 1.4.
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string hoodedIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodedHeadIcon";
             string hoodlessIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodlessHeadIcon";
             string cirrusIconPath = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon";
             string cirrusIconP2Path = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon2";
-
-            CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
-            hoodedHeadIconIndex = ModContent.GetModBossHeadSlot(hoodedIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
-            hoodlessHeadIconIndex = ModContent.GetModBossHeadSlot(hoodlessIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(cirrusIconPath, -1);
-            cirrusHeadIconIndex = ModContent.GetModBossHeadSlot(cirrusIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(cirrusIconP2Path, -1);
-            cirrusHeadIconP2Index = ModContent.GetModBossHeadSlot(cirrusIconP2Path);
+            
+            hoodedHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
+            hoodlessHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
+            cirrusHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(cirrusIconPath, -1);
+            cirrusHeadIconP2Index = CalamityMod.Instance.AddBossHeadTexture(cirrusIconP2Path, -1);
         }
 
         public override void SetStaticDefaults()
@@ -456,8 +449,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 CalamityNetcode.SyncWorld();
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
@@ -700,7 +693,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region Enrage and DR
             if ((spawnArena && !player.Hitbox.Intersects(safeBox)) || bossRush)
             {
-                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.5f;
+                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.35f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
                 protectionBoost = !bossRush;
                 if (!player.Hitbox.Intersects(safeBox))
@@ -3632,7 +3625,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
             ponyPos += ponyOrigin * NPC.scale + new Vector2(-20, NPC.gfxOffY);
 
-            if (CalamityConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
+            if (CalamityClientConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {

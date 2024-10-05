@@ -13,6 +13,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.Perforator;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -28,6 +29,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.PrimordialWyrm
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class PrimordialWyrmHead : ModNPC
     {
         public enum Phase
@@ -92,7 +94,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 Scale = 0.50f,
                 PortraitScale = 0.6f,
                 PortraitPositionXOverride = 40,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/PrimordialWyrm_Bestiary"
             };
             value.Position.X += 55;
             value.Position.Y += 5;
@@ -1425,7 +1426,10 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBody>()].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBodyAlt>()].Value, 3, 18, 0.4f, new Vector2(130, 60), 3, 10);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)

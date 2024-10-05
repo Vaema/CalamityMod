@@ -15,18 +15,10 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 
         public override void SetDefaults()
         {
+            Item.DefaultToPlaceableTile(ModContent.TileType<ThankYouPaintingTile>());
             Item.width = 96;
             Item.height = 64;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = Item.buyPrice(0, 2, 0, 0); ;
-            Item.rare = ItemRarityID.White;
-            Item.createTile = ModContent.TileType<ThankYouPaintingTile>();
+            Item.value = Item.sellPrice(silver: 40);
             Item.Calamity().donorItem = true;
         }
 
@@ -74,6 +66,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Dia",
             "enamoured",
             "ENNWAY",
+            "Flowaria",
             "Fluffi",
             "HaguriHat",
             "Heart Plus Up!",
@@ -155,7 +148,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "MarieArk",
             "Minecat",
             "Mrrp",
-            "Mr.Small",
             "Nao",
             "Neverglide",
             "Nincity",

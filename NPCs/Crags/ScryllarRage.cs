@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 10;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 75;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.9f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
@@ -255,17 +255,6 @@ namespace CalamityMod.NPCs.Crags
         {
             if (hurtInfo.Damage > 0)
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
-        }
-
-        public override void OnKill()
-        {
-            // Increase the kill count of Scryllars for the Bestiary
-            if (NPC.GetWereThereAnyInteractions())
-            {
-                NPC nPC = new NPC();
-                nPC.SetDefaults(ModContent.NPCType<Scryllar>());
-                Main.BestiaryTracker.Kills.RegisterKill(nPC);
-            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)

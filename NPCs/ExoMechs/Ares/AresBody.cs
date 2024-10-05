@@ -1242,7 +1242,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
             int numAfterimages = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {
@@ -1262,7 +1262,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             texture = GlowTexture.Value;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {

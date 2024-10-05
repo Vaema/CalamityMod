@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 
 namespace CalamityMod.DataStructures
 {
@@ -13,6 +14,11 @@ namespace CalamityMod.DataStructures
         public const float ProfanedSoulShieldDepth = 3f;
         public const float SpongeShieldDepth = 4f;
         #endregion
+
+        /// <summary>
+        /// Owner of this Renderer Item
+        /// </summary>
+        public int OwnerPlayer { get; set; }
 
         /// <summary>
         /// The draw depth of the renderer. This is used to draw them in descending order; higher values are drawn first.

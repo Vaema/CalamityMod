@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -194,7 +196,7 @@ namespace CalamityMod.Projectiles.Melee
                 Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, 261);
                 rainbowSpark.velocity = Projectile.velocity * 3f + Main.rand.NextVector2CircularEdge(1.5f, 1.5f);
                 rainbowSpark.noGravity = true;
-                rainbowSpark.color = Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.6f);
+                rainbowSpark.color = Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f);
                 rainbowSpark.scale = Main.rand.NextFloat(0.9f, 1.25f);
             }
         }
@@ -240,6 +242,22 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 start = Projectile.Center;
             Vector2 end = Projectile.Center + Projectile.velocity * 70f;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, width, ref _);
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 500);
+            SoundStyle fire = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2);
+            SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.1f }, Projectile.Center);
+            for (int i = 0; i < 20; i++)
+            {
+                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(0.55) * Main.rand.NextFloat(0.3f, 1f), false, 20, Main.rand.NextFloat(0.3f, 1.2f), Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f));
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f), "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.4f, 0.9f * Main.rand.NextFloat(0.9f, 1.1f), 12, true);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+            }
         }
     }
 }

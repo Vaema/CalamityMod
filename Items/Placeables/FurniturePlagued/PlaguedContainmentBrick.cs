@@ -15,27 +15,16 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 12;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurniturePlaguedPlate.PlaguedPlate>();
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurniturePlaguedPlate.PlaguedPlate>());
 
         public override void AddRecipes()
         {
+            // Plagued Containment Brick does not have a direct decraft condition
+            // Instead, it turns into Nanodroids when shimmered before defeating Golem
             CreateRecipe(50).
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<PlagueCellCanister>().
                 AddTile<PlagueInfuser>().
-                AddDecraftCondition(Condition.DownedGolem).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlateWall>(4).

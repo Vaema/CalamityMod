@@ -3,6 +3,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -138,17 +139,17 @@ namespace CalamityMod.Projectiles.Melee
             bool astral = Owner.Calamity().ZoneAstral;
             bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind);
             if (desert || hell)
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
+                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
             if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
-                attunement = Attunement.attunementArray[(int)AttunementID.FlailBlade];
+                attunement = AttunementSystem.FindOrNull(AttunementID.FlailBlade);
             if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
+                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
             if (astral || marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Shockwave);
             if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check  at the end so it may override hallowed variants of biomes
+                attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind); //Putting holy check  at the end so it may override hallowed variants of biomes
 
             //If the owner already had the attunement , break out of it (And unswap)
             if (item.secondaryAttunement == attunement)

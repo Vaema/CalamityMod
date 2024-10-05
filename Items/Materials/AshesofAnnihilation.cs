@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 54;
             Item.height = 56;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 66, silver: 66, copper: 66);
+            Item.value = Item.sellPrice(gold: 6, silver: 66, copper: 66);
             Item.rare = ModContent.RarityType<Violet>();
         }
         public void DrawPulsingAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, float baseScale)

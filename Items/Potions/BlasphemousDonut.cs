@@ -15,8 +15,6 @@ namespace CalamityMod.Items.Potions
         {
             Item.width = 40;
             Item.height = 26;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
-            Item.rare = ItemRarityID.Purple;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.useAnimation = 17;
@@ -26,6 +24,9 @@ namespace CalamityMod.Items.Potions
             Item.useTurn = true;
             Item.buffType = BuffID.WellFed2;
             Item.buffTime = CalamityUtils.SecondsToFrames(3600f);
+
+            Item.value = Item.sellPrice(silver: 60);
+            Item.rare = ItemRarityID.Purple;
         }
     }
 }

@@ -49,13 +49,12 @@ namespace CalamityMod.Tiles.Crags.Tree
         {
             if (WorldGen.genRand.NextBool(20))
             {
-                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-
-                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
-                {
-                    SpineTree.Spawn(i, j + 1, 22, 28, true);
-                }
+                // if below tile is somewhat not sappling (only possible if it's from below part)
+                if (Main.tile[i, j + 1].TileType != Type)
+                    SpineTree.Spawn(i, j, 22, 28, true);
             }
         }
+
+        public override bool CanDrop(int i, int j) => false;
     }
 }

@@ -244,7 +244,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             Color whiteColor = Color.White;
             int afterimageAmt = 10;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -267,7 +267,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             texture2D15 = GlowTexture.Value;
             Color afterimageColorLerp = Color.Lerp(Color.White, Color.Orange, 0.5f) * NPC.Opacity;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {

@@ -41,11 +41,6 @@ namespace CalamityMod.Projectiles.Boss
                     {
                         Main.player[playerTracker].statLife = Main.player[playerTracker].statLifeMax2;
                     }
-                    // TODO -- but why
-                    if (Main.player[playerTracker].statLife < 0)
-                    {
-                        Main.player[playerTracker].KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProvidenceAntiHealing").Format(Main.player[playerTracker].name)), 1000.0, 0, false);
-                    }
                     NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, playerTracker, (float)healAmount, 0f, 0f, 0, 0, 0);
                 }
                 Projectile.Kill();

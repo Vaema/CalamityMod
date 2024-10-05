@@ -4,6 +4,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
+using CalamityMod.Packets;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -22,6 +23,7 @@ using ArtemisBoss = CalamityMod.NPCs.ExoMechs.Artemis.Artemis;
 
 namespace CalamityMod.NPCs.ExoMechs
 {
+    [LongDistanceNetSync]
     public class Draedon : ModNPC
     {
         public int KillReappearTextCountdown;
@@ -221,12 +223,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 CalamityWorld.DraedonMechdusa = false;
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.CodebreakerSummonStuff);
-                    netMessage.Write(CalamityWorld.DraedonSummonCountdown);
-                    netMessage.WriteVector2(CalamityWorld.DraedonSummonPosition);
-                    netMessage.Write(CalamityWorld.DraedonMechdusa);
-                    netMessage.Send();
+                    CodebreakerSummonStuffPacket.Send();
                 }
             }
 
@@ -335,10 +332,7 @@ namespace CalamityMod.NPCs.ExoMechs
 
                             if (Main.netMode != NetmodeID.SinglePlayer)
                             {
-                                var netMessage = CalamityMod.Instance.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.ExoMechSelection);
-                                netMessage.Write((int)CalamityWorld.DraedonMechToSummon);
-                                netMessage.Send();
+                                ExoMechSelectionPacket.Send();
                             }
                         }
                     }
@@ -539,7 +533,6 @@ namespace CalamityMod.NPCs.ExoMechs
             }
         }
 
-        // TODO -- Make this work in conjunction with exo mech transitions. This requires that the exo mech AIs be finished.
         public void FlyAroundInGamerChair()
         {
             // Define a hover destination offset if one hasn't been decided yet.
@@ -687,7 +680,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 ShouldStartStandingUp = true;
 
             // Different text if Exo Mechdusa
-            if (exoMechdusa)
+            if (exoMechdusa && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (DefeatTimer == DelayBeforeDefeatStandup + 50f)
                     CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DraedonMechdusaEndText1", TextColor);
@@ -696,7 +689,7 @@ namespace CalamityMod.NPCs.ExoMechs
                     CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DraedonMechdusaEndText2", TextColor);
             }
             // Otherwise do normal text
-            else
+            else if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (DefeatTimer == DelayBeforeDefeatStandup + 50f)
                     CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DraedonEndText1", TextColor);

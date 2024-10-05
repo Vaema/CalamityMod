@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         // This is ONLY the direct DPS of having the cursor over the enemy, not the damage from the flames debuff.
         // The debuff is VulnerabilityHex, check that file for its DPS.
         public const int BaseDamage = 320;
-        public const int HitsPerSecond = 12;
+        public const int FramesPerHit = 5;
 
         public override void SetStaticDefaults()
         {

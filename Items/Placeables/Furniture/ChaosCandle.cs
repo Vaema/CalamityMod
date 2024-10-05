@@ -13,25 +13,19 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = 500;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.Furniture.ChaosCandle>(), 0, false);
+            Item.value = Item.sellPrice(silver: 1);
             Item.rare = ItemRarityID.Blue;
-            Item.createTile = ModContent.TileType<Tiles.Furniture.ChaosCandle>();
-            Item.flame = true;
-            Item.holdStyle = 1;
         }
 
         public override void HoldItem(Player player)
         {
             player.Calamity().chaosCandle = true;
+
+            // Do not make light if wet
+            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir) || Item.wet)
+                return;
+
             if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
                 Dust.NewDust(new Vector2(player.itemLocation.X + 12f * player.direction, player.itemLocation.Y - 10f * player.gravDir), 4, 4, (int)CalamityDusts.Brimstone);
@@ -43,16 +37,16 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void PostUpdate()
         {
-            Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 0.85f, 0.25f, 0.25f);
+            if (!Item.wet)
+                Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 0.85f, 0.25f, 0.25f);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.WaterCandle, 3).
-                AddIngredient(ItemID.SoulofNight, 3).
-                AddIngredient<CoreofHavoc>(2).
+                AddIngredient(ItemID.WaterCandle).
                 AddIngredient<ZergPotion>().
+                AddIngredient<CoreofHavoc>(2).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 50;
             Item.damage = 699;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 13;
+            Item.useAnimation = Item.useTime = 13;
             Item.useTurn = true;
             Item.DamageType = MeleeRangedHybridDamageClass.Instance;
             Item.knockBack = 7f;
@@ -131,8 +131,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<CosmicRainbow>().
                 AddIngredient<SolsticeClaymore>().
-                AddIngredient<LifeAlloy>(3).
                 AddIngredient<CosmiliteBar>(8).
+                AddIngredient<LifeAlloy>(3).
                 AddIngredient<EndothermicEnergy>(20).
                 AddTile<CosmicAnvil>().
                 Register();

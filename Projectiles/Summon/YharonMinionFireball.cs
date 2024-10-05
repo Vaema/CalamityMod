@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
         }
@@ -64,7 +65,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.spriteDirection == -1)
                 direction = SpriteEffects.FlipHorizontally;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

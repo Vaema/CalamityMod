@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
         }
@@ -229,7 +230,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
             }
-            else if (CalamityConfig.Instance.Afterimages)
+            else if (CalamityClientConfig.Instance.Afterimages)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
 
             return true;

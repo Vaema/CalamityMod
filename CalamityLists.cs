@@ -77,8 +77,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class CalamityLists
+    public sealed class CalamityLists : ModSystem
     {
         public static IList<string> donatorList;
         public static List<int> projectileDestroyExceptionList;
@@ -158,7 +157,7 @@ namespace CalamityMod
 
         public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
 
-        public static void LoadLists()
+        public override void OnModLoad()
         {
             donatorList = new List<string>()
             {
@@ -390,7 +389,7 @@ namespace CalamityMod
                 "Spider region",
                 "WinterTire",
                 "Nycro",
-                "Bewearium",
+                "Vyster", // previously "Bewearium"
                 "William",
                 "HellGoat2",
                 "116taj",
@@ -817,6 +816,7 @@ namespace CalamityMod
                 ProjectileType<TrueDecaysRetort>(),
                 ProjectileType<TrueGrovetendersTouch>(),
                 ProjectileType<HeavensMight>(),
+                ProjectileType<HellbornHoldout>(),
                 ProjectileType<ExtantAbhorrence>(),
                 ProjectileType<TrueBiomeBladeHoldout>(),
                 ProjectileType<LamentationsOfTheChained>(),
@@ -844,7 +844,9 @@ namespace CalamityMod
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<MajesticGuardHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
-                ProjectileType<PhangasmBow>(),
+                ProjectileType<RiftburstBow>(),
+                ProjectileType<CometQuasherHoldout>(),
+                ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
                 ProjectileType<DrataliornusBow>(),
@@ -1505,7 +1507,7 @@ namespace CalamityMod
                 ItemType<Leviatitan>(),
                 ItemType<Atlantis>(),
                 ItemType<AnahitasArpeggio>(),
-                ItemType<BrackishFlask>(),
+                ItemType<Whitewater>(),
                 ItemType<LeviathanTeeth>(),
                 ItemType<GastricBelcherStaff>(),
                 ItemType<PearlofEnthrallment>(),
@@ -1710,7 +1712,7 @@ namespace CalamityMod
                 ItemType<SHPC>(),
                 ItemType<TeslaCannon>(),
                 ItemType<TheSwarmer>(),
-                ItemType<Thunderstorm>(),
+                ItemType<Thunderbolt>(),
                 ItemType<Wingman>(),
                 ItemID.BeeGun,
                 ItemID.BubbleGun,
@@ -1773,7 +1775,8 @@ namespace CalamityMod
                 NPCID.SmallBaldZombie,
                 NPCID.BigZombie,
                 NPCID.SmallZombie,
-                NPCID.MaggotZombie
+                NPCID.MaggotZombie,
+                NPCType<BucketZombie>()
                 // halloween zombies not included because they don't drop shackles or zombie arms
             };
 
@@ -1978,6 +1981,7 @@ namespace CalamityMod
                 ProjectileType<BasherHoldout>(),
                 ProjectileType<BlushieStaffProj>(),
                 ProjectileType<BonebreakerProjectile>(),
+                ProjectileType<CometQuasherHoldout>(),
                 ProjectileType<DarkSparkBeam>(),
                 ProjectileType<DevilsSunriseCyclone>(),
                 ProjectileType<DevilsSunriseProj>(),
@@ -1994,6 +1998,7 @@ namespace CalamityMod
                 ProjectileType<GodsParanoiaProj>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),
+                ProjectileType<HellbornHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
@@ -2021,6 +2026,7 @@ namespace CalamityMod
                 ProjectileType<SparklingLaser>(),
                 ProjectileType<SpiritCongregation>(),
                 ProjectileType<StarmageddonBinaryStarCenter>(),
+                ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<StickyBol>(),
                 ProjectileType<SulphuricBlast>(),
                 ProjectileType<TaserHook>(),
@@ -2198,7 +2204,8 @@ namespace CalamityMod
                 ProjectileID.Bee,
                 ProjectileID.GiantBee,
                 ProjectileType<AeroExplosive>(),
-                ProjectileID.ScarabBomb
+                ProjectileID.ScarabBomb,
+                ProjectileID.TNTBarrel
             };
 
             ZeroContactDamageNPCList = new List<int>
@@ -2708,7 +2715,7 @@ namespace CalamityMod
             };
         }
 
-        public static void UnloadLists()
+        public override void Unload()
         {
             donatorList = null;
             projectileDestroyExceptionList = null;

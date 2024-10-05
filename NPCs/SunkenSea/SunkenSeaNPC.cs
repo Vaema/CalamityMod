@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 PreviousBehavior = _currentBehavior;
                 PathfindingPoints = null;
-                PathTimer = 0f;
+                PathPointIndex = 0;
                 OnBehaviorChange(value);
                 _currentBehavior = value;
                 NetUpdate();
@@ -158,13 +158,8 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         protected List<Vector2> PathfindingPoints { get; set; }
 
-        /// <summary>
-        /// To decide how to follow the <see cref="PathfindingPoints"/>, we use this timer that iteratres through all the points.<br/>
-        /// Depending on the speed given to the timer, it'll follow the path faster or slower.
-        /// </summary>
-        protected float PathTimer { get; set; }
-
-        protected Vector2 CurrentlyFollowedPathPoint { get; private set; }
+        
+        protected int PathPointIndex { get; set; }
 
         private bool _hasSpawned;
 
@@ -228,6 +223,12 @@ namespace CalamityMod.NPCs.SunkenSea
         /// A method that is triggered when this NPC's behavior is changed.
         /// </summary>
         protected virtual void OnBehaviorChange(Action newBehavior) { }
+
+        /// <summary>
+        /// A custom method for when this NPC is hit by another NPC.
+        /// </summary>
+        /// <param name="attacker"></param>
+        public virtual void OnHitByNPC(NPC attacker) { }
 
         /// <summary>
         /// A method that is triggered when this creature has detected a prey.
@@ -319,47 +320,34 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Helper Methods
 
-        /// <summary>
-        /// A quickhand method to make a path with the A* pathfidning algorithm.
-        /// </summary>
-        protected void MakePath(Vector2 destination, float? range = null)
-        {
-            range ??= DetectionDistance;
-            var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, (float)range);
+        protected bool HasPath => PathfindingPoints is not null;
 
-            if (!grid.Contains(destination.ToTileCoordinates()))
-                return;
+        protected bool IsPointAbleToNavigate(Point point) =>
+            Main.tile[point].LiquidAmount > 125 && Main.tile[point].LiquidType == LiquidID.Water && NPC.DoesEntityFitInPath(point, fluffX: 16, fluffY: 16);
 
-            PathfindingPoints = CalamityUtils.AStar.GetPath(grid, NPC.Center, destination);
-            NetUpdate();
-        }
+        protected void SunkenSeaPathfinding(Vector2 goal) => PathfindingPoints = NPC.Center.DoPathfinding(goal, IsPointAbleToNavigate);
 
-        /// <summary>
-        /// A quickhand method to make a path with the A* pathfidning algorithm.
-        /// </summary>
-        protected void MakePath(Vector2 destination, List<Point> grid)
-        {
-            if (!grid.Contains(destination.ToTileCoordinates()))
-                return;
-
-            PathfindingPoints = CalamityUtils.AStar.GetPath(grid, NPC.Center, destination);
-            NetUpdate();
-        }
+        protected void SunkenSeaPathfinding() => PathfindingPoints = NPC.Center.DoPathfinding(tileValidation: IsPointAbleToNavigate);
 
         /// <summary>
         /// A quickhand method to follow a path found.
         /// </summary>
-        protected void GenericPathFollowing(float acceleration, float pathFollowingSpeed, bool conditionToFinishFollowing)
+        protected void GenericPathFollowing(float acceleration)
         {
-            CurrentlyFollowedPathPoint = PathfindingPoints[(int)MathF.Floor(PathTimer)];
-            NPC.velocity += NPC.DirectionTo(CurrentlyFollowedPathPoint) * acceleration;
-            PathTimer += pathFollowingSpeed;
-            PathTimer = MathF.Min(PathTimer, PathfindingPoints.Count - 1);
-            if (conditionToFinishFollowing)
+            Vector2 currentlyFollowedPathPoint = PathfindingPoints[PathPointIndex];
+
+            NPC.velocity += NPC.DirectionTo(currentlyFollowedPathPoint) * acceleration;
+
+            if (NPC.DistanceSQ(currentlyFollowedPathPoint) < 48f * 48f)
             {
+                PathPointIndex++;
+                PathPointIndex = (int)MathHelper.Clamp(PathPointIndex, 0, PathfindingPoints.Count - 1);
+            }
+
+            if (PathPointIndex == PathfindingPoints.Count - 1)
+            {
+                PathPointIndex = 0;
                 PathfindingPoints = null;
-                PathTimer = 0f;
-                NetUpdate();
             }
         }
 
@@ -367,15 +355,6 @@ namespace CalamityMod.NPCs.SunkenSea
         /// A quick method to check whether this NPC has line of sight with something.
         /// </summary>
         protected bool HasLineOfSight(Vector2 position) => Collision.CanHitLine(NPC.Center, 0, 0, position, 0, 0);
-
-        /// <summary>
-        /// A quickhand method to check if the NPC has finished following the path.
-        /// </summary>
-        /// <returns></returns>
-        protected bool FinishedPathfinding()
-            => NPC.DistanceSQ(PathfindingPoints[^1]) < 80f * 80f ||
-            NPC.DistanceSQ(CurrentlyFollowedPathPoint) > 240f * 240f ||
-            PathfindingPoints[^1] == CurrentlyFollowedPathPoint && NPC.velocity == Vector2.Zero;
 
         /// <summary>
         /// Spawns an emote particle.
@@ -428,7 +407,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write7BitEncodedInt(PathfindingPoints.Count);
             foreach (var point in PathfindingPoints)
                 writer.WritePackedVector2(point);
-            writer.Write(PathTimer);
+            writer.Write7BitEncodedInt(PathPointIndex);
 
             writer.Write(_hasSpawned);
 
@@ -450,7 +429,7 @@ namespace CalamityMod.NPCs.SunkenSea
             int count = reader.Read7BitEncodedInt();
             for (int i = 0; i < count; i++)
                 PathfindingPoints.Add(reader.ReadPackedVector2());
-            PathTimer = reader.ReadSingle();
+            PathPointIndex = reader.Read7BitEncodedInt();
 
             _hasSpawned = reader.ReadBoolean();
 

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Ammo
             Item.DamageType = DamageClass.Ranged;
             Item.consumable = true;
             Item.knockBack = 2f;
-            Item.value = Item.buyPrice(0, 0, 0, 80);
+            Item.value = Item.buyPrice(copper: 80); // Sold by Archmage
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<HailstormBulletProj>();
             Item.shootSpeed = 0.3f;

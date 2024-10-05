@@ -22,8 +22,6 @@ namespace CalamityMod.Items.Potions
             Item.height = 18;
             Item.useTurn = true;
             Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 1, 0, 0);
-            Item.rare = ItemRarityID.Green;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -31,19 +29,23 @@ namespace CalamityMod.Items.Potions
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<SulphurskinBuff>();
             Item.buffTime = CalamityUtils.SecondsToFrames(150f);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Green;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<SulphurousSand>(15).
+                AddIngredient<SulphurousSand>().
+                AddIngredient(ItemID.Waterleaf).
                 AddTile(TileID.Bottles).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(10).
+                AddIngredient<BloodOrb>(5).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

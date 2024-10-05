@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.NPCs.Other;
@@ -22,7 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 18;
-            NPC.lifeMax = 300;
+            NPC.lifeMax = 375;
             NPC.knockBackResist = 0.95f;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.HitSound = SoundID.NPCHit7;
@@ -99,6 +100,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.LihzahrdBrick, 1, 10, 26);
+            npcLoot.Add(ModContent.ItemType<Stohne>(), 1, 10, 26);
             npcLoot.Add(ItemID.LunarTabletFragment, 7, 10, 26);
             npcLoot.Add(ItemID.LihzahrdPowerCell, 50);
             npcLoot.AddIf(() => DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && Main.zenithWorld, ModContent.ItemType<NO>(), 2, ui: false);

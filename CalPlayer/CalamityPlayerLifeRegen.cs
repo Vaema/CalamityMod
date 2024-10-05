@@ -109,6 +109,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(hFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
             ApplyDoTDebuff(vHex, 35);
+            ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
@@ -170,6 +171,8 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
+            // NOTE: This massive if chain is also referenced in CalamityPlayer.PostNurseHeal
+            // TODO -- Change this into any kind of organized data list in order to eliminate these two if chains
             if (vodka)
             {
                 alcoholPoisonLevel++;
@@ -280,8 +283,9 @@ namespace CalamityMod.CalPlayer
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
 
+                // This has to last over 60 frames for the nurse to count the debuff, so...
                 if (Player.whoAmI == Main.myPlayer)
-                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 2, false);
+                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 61, false);
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

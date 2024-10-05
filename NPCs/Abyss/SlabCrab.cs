@@ -4,6 +4,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Packets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -53,7 +54,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.height = 30;
 
             NPC.damage = BaseAttack;
-            NPC.lifeMax = 300;
+            NPC.lifeMax = 375;
 
             NPC.aiStyle = AIType = -1;
 
@@ -290,11 +291,7 @@ namespace CalamityMod.NPCs.Abyss
             }
             else
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.SyncSlabCrabAI);
-                netMessage.Write(NPC.whoAmI);
-                netMessage.Write((int)phase);
-                netMessage.Send();
+                SyncSlabCrabAIPacket.Send(this, phase: (int)phase);
             }
         }
 

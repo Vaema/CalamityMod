@@ -24,18 +24,19 @@ namespace CalamityMod.Items.Potions
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.UseSound = SoundID.Item3;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
-            Item.rare = ItemRarityID.LightRed;
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<PhotosynthesisBuff>();
             Item.buffTime = CalamityUtils.SecondsToFrames(480f);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<TrapperBulb>().
+                AddIngredient(ItemID.Daybloom, 3).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
@@ -44,7 +45,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(40).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
                 Register()

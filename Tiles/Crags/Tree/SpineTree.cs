@@ -62,13 +62,6 @@ namespace CalamityMod.Tiles.Crags.Tree
 
         public static bool Spawn(int i, int j, int minSize = 5, int maxSize = 18, bool saplingExists = false)
         {
-            //if this tree grew from a sapling, then kill the sapling its growing from
-            if (saplingExists)
-            {
-                WorldGen.KillTile(i, j, false, false, true);
-                WorldGen.KillTile(i, j - 1, false, false, true);
-            }
-
             //set the minimum and maximum height the tree can grow to
             int height = Main.rand.Next(minSize, maxSize);
             for (int k = 1; k < height; ++k)
@@ -83,6 +76,20 @@ namespace CalamityMod.Tiles.Crags.Tree
             if (height < minSize)
             {
                 return false;
+            }
+
+            // something is blocking from growing the tree...
+            var sapplingType = ModContent.TileType<SpineSapling>();
+            if (!WorldGen.EmptyTileCheck(i - 2, i + 2, j - height, j, sapplingType))
+            {
+                return false;
+            }
+
+            //if this tree grew from a sapling, then kill the sapling its growing from
+            if (saplingExists)
+            {
+                WorldGen.KillTile(i, j, false, false, true);
+                WorldGen.KillTile(i, j - 1, false, false, true);
             }
 
             //make sure the block is valid for the tree to place on

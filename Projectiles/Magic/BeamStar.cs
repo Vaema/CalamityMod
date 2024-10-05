@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

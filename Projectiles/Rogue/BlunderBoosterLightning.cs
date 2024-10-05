@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -26,7 +27,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 1;
             Projectile.timeLeft = 120;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;

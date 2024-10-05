@@ -1,5 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +14,8 @@ namespace CalamityMod.Projectiles.Magic
         public bool devourer = DownedBossSystem.downedDoG;
         public static int TotalSegments = 16;
         public float damageMultiplier = 1f;
+        public int time = 0;
+        public float fade = 1;
 
         public override void SetDefaults()
         {
@@ -48,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
                     // Spawn the next segment
                     if (Main.myPlayer == Projectile.owner && Projectile.ai[0] < TotalSegments)
                     {
-                        int nextSegment = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0] + 1f);
+                        int nextSegment = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0] + 1f, 0f, 5f);
                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, nextSegment);
                     }
                 }
@@ -57,21 +62,20 @@ namespace CalamityMod.Projectiles.Magic
             {
                 int AlphaPerFrame = 12;
                 Projectile.alpha += AlphaPerFrame;
-                if (Projectile.alpha == AlphaPerFrame * 14)
-                {
-                    for (int i = 0; i < 8; i++)
-                    {
-                        Dust blue = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f, 200, default, 1f);
-                        blue.noGravity = true;
-                        blue.velocity *= 0.5f;
-                    }
-                }
 
                 if (Projectile.alpha >= 255)
                     Projectile.Kill();
             }
-            if (Main.rand.NextBool(4))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f);
+            if (Main.rand.NextBool(7))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 0.5f, 278, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.03f, 0.18f));
+                dust.scale = Main.rand.NextFloat(0.3f, 0.5f);
+                dust.color = Main.rand.NextBool() ? Color.CornflowerBlue : Color.LightBlue;
+                dust.noGravity = true;
+            }
+            time++;
+
+            fade = Utils.GetLerpValue(25, 12, time, true);
         }
 
         // This is essential for Vilethorn-type projectiles, as velocity is a stored parameter and isn't supposed to actually move the projectile
@@ -88,9 +92,16 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 3; k++)
+            if (Projectile.ai[2] == 5)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.oldVelocity.X * 0.005f, Projectile.oldVelocity.Y * 0.005f);
+                for (int k = 0; k < 2; k++)
+                {
+                    Particle spark = new SparkParticle(Projectile.Center + Projectile.velocity * 0.5f, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.1f, 0.6f), false, 23, Main.rand.NextFloat(0.7f, 1.1f), Color.LightBlue * 0.6f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                    Particle spark2 = new PointParticle(Projectile.Center + Projectile.velocity * 0.5f, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.1f, 0.6f), false, 23, Main.rand.NextFloat(0.7f, 1.1f), Color.LightBlue * 0.6f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+                SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.3f, Pitch = (Projectile.ai[0] * -0.02f) - 0.1f }, Projectile.Center);
             }
 
             // Prevent recursion: the segments that are being spawned here will deliberately be set higher than total segments
@@ -103,8 +114,17 @@ namespace CalamityMod.Projectiles.Magic
             for (int i = 0; i < numProj; i++)
             {
                 Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numProj - 1)));
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, TotalSegments + 1f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, TotalSegments + 1f, 0, i);
             }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            
+            if (time > 0)
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor) * fade, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
         }
     }
 }

@@ -25,11 +25,12 @@ namespace CalamityMod.Items.Potions
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.UseSound = SoundID.Item3;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
-            Item.rare = ItemRarityID.LightRed;
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<Zerg>();
             Item.buffTime = CalamityUtils.SecondsToFrames(900f);
+
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()
@@ -37,14 +38,14 @@ namespace CalamityMod.Items.Potions
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient<PurifiedGel>(2).
-                AddIngredient<DemonicBoneAsh>().
+                AddIngredient(ItemID.Fireblossom, 2).
                 AddTile(TileID.AlchemyTable).
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(20).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<PurifiedGel>(2).
                 AddTile(TileID.AlchemyTable).
                 Register()

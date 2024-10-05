@@ -14,6 +14,7 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -31,21 +32,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [LongDistanceNetSync]
     public class StormWeaverHead : ModNPC
     {
         public static int normalIconIndex;
         public static int vulnerableIconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string normalIconPath = "CalamityMod/NPCs/StormWeaver/StormWeaverHead_Head_Boss";
             string vulnerableIconPath = "CalamityMod/NPCs/StormWeaver/StormWeaverHeadNaked_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
-            normalIconIndex = ModContent.GetModBossHeadSlot(normalIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(vulnerableIconPath, -1);
-            vulnerableIconIndex = ModContent.GetModBossHeadSlot(vulnerableIconPath);
+            
+            normalIconIndex = CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
+            vulnerableIconIndex = CalamityMod.Instance.AddBossHeadTexture(vulnerableIconPath, -1);
         }
 
         private const float BoltAngleSpread = 280;
@@ -69,7 +68,6 @@ namespace CalamityMod.NPCs.StormWeaver
             {
                 Scale = 0.85f,
                 PortraitScale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/StormWeaver_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
@@ -176,10 +174,10 @@ namespace CalamityMod.NPCs.StormWeaver
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
 
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
             else if (!Main.raining && !bossRush)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -816,7 +814,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || bossRush)
                     return;
 
-                CalamityUtils.StartRain(true, true);
+                CalamityWorld.StartRain(true, true);
                 calamityGlobalNPC.newAI[1] = 1f;
             }
         }
@@ -824,7 +822,10 @@ namespace CalamityMod.NPCs.StormWeaver
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<StormWeaverBody>()].Value, 6, 24, 0.8f, Vector2.Zero, 3, 26, 10, 0.15f);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
@@ -989,7 +990,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     ModContent.ItemType<TheStorm>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Thunderstorm>(), 10);
+                normalOnly.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));

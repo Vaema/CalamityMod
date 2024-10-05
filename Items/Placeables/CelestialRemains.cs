@@ -13,23 +13,11 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 200;
+            ItemID.Sets.ExtractinatorMode[Type] = Type;
             ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 16;
-            Item.height = 16;
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
-            Item.createTile = ModContent.TileType<Tiles.AstralDesert.CelestialRemains>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.AstralDesert.CelestialRemains>());
 
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {
@@ -132,22 +120,22 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 85.03f)
             {
-                resultType = CalamityConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.CobaltOre : ItemID.MythrilOre) : ItemID.MythrilOre;
+                resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.CobaltOre : ItemID.MythrilOre) : ItemID.MythrilOre;
                 resultStack = Main.rand.Next(1, 17);
             }
             else if (val < 87.03f)
             {
-                resultType = CalamityConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.PalladiumOre : ItemID.OrichalcumOre) : ItemID.OrichalcumOre;
+                resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.PalladiumOre : ItemID.OrichalcumOre) : ItemID.OrichalcumOre;
                 resultStack = Main.rand.Next(1, 17);
             }
             else if (val < 88.78f)
             {
-                resultType = CalamityConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.CobaltOre : !twoMechsDowned ? ItemID.MythrilOre : ItemID.AdamantiteOre) : ItemID.AdamantiteOre;
+                resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.CobaltOre : !twoMechsDowned ? ItemID.MythrilOre : ItemID.AdamantiteOre) : ItemID.AdamantiteOre;
                 resultStack = Main.rand.Next(1, 17);
             }
             else if (val < 89.53f)
             {
-                resultType = CalamityConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.PalladiumOre : !twoMechsDowned ? ItemID.OrichalcumOre : ItemID.TitaniumOre) : ItemID.TitaniumOre;
+                resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? (!NPC.downedMechBossAny ? ItemID.PalladiumOre : !twoMechsDowned ? ItemID.OrichalcumOre : ItemID.TitaniumOre) : ItemID.TitaniumOre;
                 resultStack = Main.rand.Next(1, 17);
             }
             else if (DownedBossSystem.downedAstrumDeus)

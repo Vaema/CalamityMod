@@ -13,20 +13,14 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles
 {
-    public class GiantPlanteraBulb : ModTile
+    public class GiantPlanteraBulb : GlowMaskTile
     {
-        public static Asset<Texture2D> Glow { get; private set; }
+        public override string GlowMaskAsset => $"{Texture}Glow";
 
-        public override void Load()
+        public override void SetupStatic()
         {
-            if (!Main.dedServ)
-            {
-                Glow = ModContent.Request<Texture2D>($"{Texture}Glow");
-            }
-        }
+            GlowMaskPaintInteraction = PaintColorTint.None;
 
-        public override void SetStaticDefaults()
-        {
             // Tile can provide light
             Main.tileLighted[Type] = true;
 
@@ -63,12 +57,6 @@ namespace CalamityMod.Tiles
 
             DustType = DustID.PlanteraBulb;
             HitSound = SoundID.Grass;
-        }
-
-        public override void Unload()
-        {
-            // Textures are auto disposed by tModLoader, all we need to do is get rid of the asset wrapper reference
-            Glow = null;
         }
 
         // Use the second map entry in Hardmode
@@ -201,16 +189,9 @@ namespace CalamityMod.Tiles
             }
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            var tile = Main.tile[i, j];
-
-            spriteBatch.Draw(
-                Glow.Value,
-                new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + CalamityUtils.TileDrawOffset,
-                new Rectangle(tile.TileFrameX, tile.TileFrameY + AnimationFrameHeight * Main.tileFrame[Type], 16, 16),
-                Color.Yellow
-            );
+            return Color.Yellow;
         }
     }
 }

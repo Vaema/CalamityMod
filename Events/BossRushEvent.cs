@@ -34,10 +34,12 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Skies;
 using CalamityMod.Systems;
 using CalamityMod.UI.DraedonSummoning;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -50,8 +52,7 @@ using ArtemisBoss = CalamityMod.NPCs.ExoMechs.Artemis.Artemis;
 
 namespace CalamityMod.Events
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class BossRushEvent
+    public sealed class BossRushEvent : ModSystem
     {
         public enum TimeChangeContext
         {
@@ -135,7 +136,7 @@ namespace CalamityMod.Events
         public static readonly SoundStyle VictorySound = new("CalamityMod/Sounds/Custom/BossRush/BossRushVictory");
 
         #region Loading and Unloading
-        public static void Load()
+        public override void OnModLoad()
         {
             BossIDsAfterDeath = new Dictionary<int, int[]>();
 
@@ -454,7 +455,7 @@ namespace CalamityMod.Events
             };
         }
 
-        public static void Unload()
+        public override void Unload()
         {
             Bosses = null;
             BossIDsAfterDeath = null;
@@ -488,7 +489,7 @@ namespace CalamityMod.Events
                     return -1;
                 }
                 int tier = CurrentTier;
-                if (CalamityMod.Instance.MusicAvailable)
+                if (ExternalMods.MusicAvailable)
                 {
                     // Boss Rush music for tier 5 doesn't exist
                     if (tier > 4)
@@ -542,10 +543,7 @@ namespace CalamityMod.Events
 
                 if (Main.netMode == NetmodeID.Server)
                 {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.BRHostileProjKillSync);
-                    netMessage.Write(HostileProjectileKillCounter);
-                    netMessage.Send();
+                    BRHostileProjKillSyncPacket.Send();
                 }
             }
         }
@@ -561,10 +559,7 @@ namespace CalamityMod.Events
                     BossRushStage = 0;
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        var netMessage = CalamityMod.Instance.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.BossRushStage);
-                        netMessage.Write(BossRushStage);
-                        netMessage.Send();
+                        BossRushStagePacket.Send();
                     }
                 }
                 return;
@@ -595,7 +590,7 @@ namespace CalamityMod.Events
 
                     // Change time as necessary.
                     if (Bosses[BossRushStage].ToChangeTimeTo != TimeChangeContext.None)
-                        CalamityUtils.ChangeTime(Bosses[BossRushStage].ToChangeTimeTo == TimeChangeContext.Day);
+                        CalamityWorld.ResetTime(Bosses[BossRushStage].ToChangeTimeTo == TimeChangeContext.Day);
 
                     // Play a special boss roar sound by default.
                     if (!Bosses[BossRushStage].UsesSpecialSound)
@@ -633,9 +628,7 @@ namespace CalamityMod.Events
             }
             else
             {
-                var netMessage = CalamityMod.Instance.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.EndBossRush);
-                netMessage.Send();
+                EndBossRushPacket.Send();
             }
         }
 
@@ -665,18 +658,9 @@ namespace CalamityMod.Events
             CalamityNetcode.SyncWorld();
             if (Main.netMode == NetmodeID.Server)
             {
-                var netMessage = CalamityMod.Instance.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.BossRushStage);
-                netMessage.Write(BossRushStage);
-                netMessage.Send();
-                var netMessage2 = CalamityMod.Instance.GetPacket();
-                netMessage2.Write((byte)CalamityModMessageType.BossRushStartTimer);
-                netMessage2.Write(StartTimer);
-                netMessage2.Send();
-                var netMessage3 = CalamityMod.Instance.GetPacket();
-                netMessage3.Write((byte)CalamityModMessageType.BossRushEndTimer);
-                netMessage3.Write(EndTimer);
-                netMessage3.Send();
+                BossRushStagePacket.Send();
+                BossRushStartTimerPacket.Send();
+                BossRushEndTimerPacket.Send();
             }
         }
 
@@ -763,14 +747,8 @@ namespace CalamityMod.Events
             // Sync the stage and progress of Boss Rush whenever a relevant boss dies.
             if (Main.netMode == NetmodeID.Server)
             {
-                var netMessage = mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.BossRushStage);
-                netMessage.Write(BossRushStage);
-                netMessage.Send();
-                var netMessage2 = mod.GetPacket();
-                netMessage2.Write((byte)CalamityModMessageType.BRHostileProjKillSync);
-                netMessage2.Write(HostileProjectileKillCounter);
-                netMessage2.Send();
+                BossRushStagePacket.Send();
+                BRHostileProjKillSyncPacket.Send();
             }
 
             BossRushSky.CurrentInterest = 0.85f;
@@ -801,10 +779,7 @@ namespace CalamityMod.Events
             if (Main.netMode != NetmodeID.Server)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.BossRushStartTimer);
-            netMessage.Write(StartTimer);
-            netMessage.Send();
+            BossRushStartTimerPacket.Send();
         }
 
         public static void SyncEndTimer(int time)
@@ -813,10 +788,7 @@ namespace CalamityMod.Events
             if (Main.netMode != NetmodeID.Server)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.BossRushEndTimer);
-            netMessage.Write(EndTimer);
-            netMessage.Send();
+            BossRushEndTimerPacket.Send();
         }
         #endregion
     }

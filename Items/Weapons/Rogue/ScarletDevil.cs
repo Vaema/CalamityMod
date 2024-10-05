@@ -49,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<Wrathwing>().
                 AddIngredient<RealityRupture>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<BloodstoneCore>(15).
                 AddIngredient(ItemID.SoulofNight, 15).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

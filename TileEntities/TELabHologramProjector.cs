@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using CalamityMod.CalPlayer;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -95,27 +96,8 @@ namespace CalamityMod.TileEntities
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.LabHologramProjector);
-            packet.Write(ID);
-            packet.Write(PoppingUp);
-            packet.Send(-1, -1);
-        }
 
-        internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the projector doesn't exist for whatever reason.
-            bool pop = reader.ReadBoolean();
-
-            if (exists && te is TELabHologramProjector projector)
-            {
-                projector.PoppingUp = pop;
-                return true;
-            }
-            return false;
+            TELabHologramProjectorPacket.Send(this, PoppingUp);
         }
     }
 }

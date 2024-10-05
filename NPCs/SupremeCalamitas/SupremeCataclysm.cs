@@ -475,7 +475,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 origin = NPC.frame.Size() * 0.5f;
             int afterimageCount = 4;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageCount; i += 2)
                 {
@@ -492,7 +492,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Color primarycolor = Main.zenithWorld ? Color.Blue : Color.Red; // why? because blue fire is awesome!!
             Color baseGlowmaskColor = NPC.IsABestiaryIconDummy ? Color.White : Color.Lerp(Color.White, primarycolor, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageCount; i++)
                 {

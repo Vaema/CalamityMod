@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,7 +9,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class SunkenSeaReefsBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaReefsWater");
+        public override ModWaterStyle WaterStyle => SunkenSeaReefsWater.Instance;
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/SunkenSeaBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<NavyPrismTorch>();
         public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;
@@ -23,7 +24,7 @@ namespace CalamityMod.BiomeManagers
             bool MoreThanBurrows = BiomeTileCounterSystem.SunkenSeaReefsTiles > BiomeTileCounterSystem.SunkenSeaBurrowsTiles;
             bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaReefsTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
 
-            return BiomeTileCounterSystem.SunkenSeaReefsTiles > 500 && MoreThanBurrows && MoreThanPolyp;
+            return BiomeTileCounterSystem.SunkenSeaReefsTiles > 1000 && MoreThanBurrows && MoreThanPolyp;
         }
     }
 }

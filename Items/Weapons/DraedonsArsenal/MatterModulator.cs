@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.DamageType = DamageClass.Ranged;
             Item.damage = 100;
             Item.knockBack = 11f;
-            Item.useTime = Item.useAnimation = 33;
+            Item.useAnimation = Item.useTime = 33;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;

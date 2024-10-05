@@ -43,17 +43,17 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.GoldBroadsword).
                 AddRecipeGroup("AnyMythrilBar", 15).
-                AddIngredient<EssenceofEleum>(3).
-                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
+                AddIngredient<EssenceofEleum>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.PlatinumBroadsword).
                 AddRecipeGroup("AnyMythrilBar", 15).
-                AddIngredient<EssenceofEleum>(3).
-                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
+                AddIngredient<EssenceofEleum>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -280,7 +280,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 color = altColor;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += afterimageIncrement)
                 {
@@ -333,7 +333,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 }
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 0; j < extraAfterimageAmt; j++)
                 {
@@ -375,7 +375,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                     glowmaskColor *= glowmaskDampener;
                 }
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int k = 1; k < afterimageAmt; k += afterimageIncrement)
                     {
