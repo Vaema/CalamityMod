@@ -1572,3 +1572,8 @@ FrostbatBuff: {
 	DisplayName: Frostbat
 	Description: The construct of ice will protect you
 }
+
+AmphibiansGuitarBuff: {
+	DisplayName: Amphibian's Guitars
+	Description: Worthless human...
+}
