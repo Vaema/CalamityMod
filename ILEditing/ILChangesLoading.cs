@@ -202,6 +202,7 @@ namespace CalamityMod.ILEditing
             IL_Player.Update += PreventUFODismountInWater;
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
+            IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
 

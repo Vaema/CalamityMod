@@ -200,6 +200,7 @@ namespace CalamityMod.NPCs
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
+            "Eira", // <@!1166136068408623234> (taela_gemetha)
         };
         private static readonly string[] StylistNames =
         {
