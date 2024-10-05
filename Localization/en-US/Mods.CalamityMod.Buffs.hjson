@@ -1565,7 +1565,8 @@ Voidfrost: {
 
 EnchantedBladeStaffBuff: {
 	DisplayName: Enchanted Blade Staff Buff
-	Description: Mods.CalamityMod.Buffs.EnchantedBladeStaffBuff.Description
+	Description: Guh
+}
 
 FlarebatBuff: {
 	DisplayName: Flarebat

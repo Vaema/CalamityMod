@@ -888,6 +888,7 @@ YharonsKindleStaff: {
 EnchantedBladeStaff: {
 	DisplayName: Enchanted Blade Staff
 	Tooltip: ""
+}
 
 FlarebatStaff: {
 	DisplayName: Flarebat Staff

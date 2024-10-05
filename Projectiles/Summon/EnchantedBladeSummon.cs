@@ -70,6 +70,8 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             CurrentState.Invoke();
+
+            Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.4f);
         }
 
         private void GoToOwnerState()
