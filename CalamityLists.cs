@@ -2015,7 +2015,7 @@ namespace CalamityMod
                 ProjectileType<PhotonRipperProjectile>(),
                 ProjectileType<PlaguedFuelPackCloud>(),
                 ProjectileType<PlantationStaffSporeCloud>(),
-                ProjectileType<PrismaticBeam>(),
+                ProjectileType<PrismaticRay>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
                 ProjectileType<RespiteblockHoldout>(),
