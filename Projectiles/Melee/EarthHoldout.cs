@@ -179,7 +179,10 @@ namespace CalamityMod.Projectiles.Melee
                                 GeneralParticleHandler.SpawnParticle(sparker);
                             }
                             else
-                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomSpark(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, "CalamityMod/Particles/LargeBloom", false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.35f), mainColor * 0.65f, new Vector2(1f, 1.2f), true, false, 0, false, false, 0.45f));
+                                //GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
+                            }
                         }
                     }
                     else
@@ -228,13 +231,7 @@ namespace CalamityMod.Projectiles.Melee
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
             }
 
-            if (Projectile.ai[1] == -1 && spawnBoom)
-            {
-                Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, 2);
-                spawnBoom = false;
-            }
-            if (Projectile.numHits == 0)
+            if (spawnBoom)
             {
                 pause = 6;
                 for (int i = 0; i < 5; i++)
@@ -250,12 +247,19 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 SoundStyle hit2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
                 SoundEngine.PlaySound(hit2 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, Projectile.Center);
-            }
+                SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
+                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.2f }, Projectile.Center);
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
-            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-            SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.2f }, Projectile.Center);
-            SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
-            SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
+                if (Projectile.ai[1] == -1)
+                {
+                    Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, 2);
+                }
+
+                spawnBoom = false;
+            }
 
             int heal = (int)(MathHelper.Clamp(80 - Projectile.numHits * 40, 1, 80));
             if (Projectile.numHits < 30)
