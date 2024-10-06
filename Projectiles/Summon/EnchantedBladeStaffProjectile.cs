@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Summon
                 trailDust.noGravity = true;
                 trailDust.noLight = true;
                 trailDust.noLightEmittence = true;
+
+                Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.2f);
             }
         }
 
