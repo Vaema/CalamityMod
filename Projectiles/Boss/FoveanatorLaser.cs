@@ -59,7 +59,8 @@ namespace CalamityMod.Projectiles.Boss
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            Lighting.AddLight(Projectile.Center, 0.4f * Projectile.Opacity, 0.1f * Projectile.Opacity, (Main.DiscoB / 255f) * 0.5f * Projectile.Opacity);
+            Color lightColor = Color.Lerp(new Color(25, 25, 128), new Color(100, 25, 128), Main.DiscoR / 255f);
+            Lighting.AddLight(Projectile.Center, lightColor.R / 255f, lightColor.G / 255f, lightColor.B / 255f);
 
             if (Projectile.timeLeft < FadeOutTime)
             {

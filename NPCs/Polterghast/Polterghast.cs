@@ -39,17 +39,14 @@ namespace CalamityMod.NPCs.Polterghast
     {
         public static int phase1IconIndex;
         public static int phase3IconIndex;
-
-        internal static void LoadHeadIcons()
+        
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/Polterghast/Polterghast_Head_Boss";
             string phase3IconPath = "CalamityMod/NPCs/Polterghast/Necroplasm_Head_Boss";
 
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase3IconPath, -1);
-            phase3IconIndex = ModContent.GetModBossHeadSlot(phase3IconPath);
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath);
+            phase3IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase3IconPath);
         }
 
         private const int DespawnTimerMax = 900;
@@ -308,7 +305,7 @@ namespace CalamityMod.NPCs.Polterghast
 
             // Stop rain
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
 
             // Set time left
             if (NPC.timeLeft < 1800)

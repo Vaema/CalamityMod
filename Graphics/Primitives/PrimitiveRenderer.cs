@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Primitives
 {
@@ -19,7 +20,8 @@ namespace CalamityMod.Graphics.Primitives
     /// If you wish to use pixelation, you <b>MUST</b> make the NPC/Projectile inherit <see cref="IPixelatedPrimitiveRenderer"/> and use <see cref="IPixelatedPrimitiveRenderer.RenderPixelatedPrimitives"/> instead of predraw..<br/>
     /// You can also optionally specify a render layer with <see cref="IPixelatedPrimitiveRenderer.LayerToRenderTo"/>. It is <see cref="PixelationPrimitiveLayer.BeforeNPCs"/> by default.
     /// </summary>
-    public static class PrimitiveRenderer
+    [Autoload(Side = ModSide.Client)]
+    public sealed class PrimitiveRenderer : ModSystem
     {
         #region Static Members
         private static DynamicVertexBuffer VertexBuffer;
@@ -46,7 +48,7 @@ namespace CalamityMod.Graphics.Primitives
 
         private static short IndicesIndex;
 
-        internal static void Initialize()
+        public override void OnModLoad()
         {
             Main.QueueMainThreadAction(() =>
             {

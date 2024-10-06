@@ -279,11 +279,11 @@ namespace CalamityMod.NPCs
 
                 // Shark
                 // Shark Tooth Necklace @ 4% Normal, 6.67% Expert+
-                // Joyful Heart @ 4% Normal, 6.67% Expert+
+                // Joyful Heart @ 5%
                 // Sharky Plush @ 1%
                 case NPCID.Shark:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.SharkToothNecklace, 25, 15));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<JoyfulHeart>(), 25, 15));
+                    npcLoot.Add(ModContent.ItemType<JoyfulHeart>(), 20);
                     npcLoot.Add(ModContent.ItemType<SharkyPlush>(), 100);
                     break;
 
@@ -1767,9 +1767,6 @@ DukeEditFailed:
             if (npc.AnyInteractions())
                 SplittingWormBestiaryUpdate(npc);
 
-            // Check whether bosses should be spawned naturally as a result of this NPC's death.
-            CheckBossSpawn(npc);
-
             // Determine whether this NPC is the second Twin killed in a fight, regardless of which Twin it is.
             bool lastTwinStanding = false;
             if (npc.type == NPCID.Retinazer)
@@ -2136,89 +2133,6 @@ DukeEditFailed:
             }
 
             return true;
-        }
-        #endregion
-
-        #region Check Boss Spawn
-        // TODO -- not loot code, should be moved eventually
-        private void CheckBossSpawn(NPC npc)
-        {
-            if ((npc.type == ModContent.NPCType<PhantomSpirit>() || npc.type == ModContent.NPCType<PhantomSpiritS>() || npc.type == ModContent.NPCType<PhantomSpiritM>() ||
-                npc.type == ModContent.NPCType<PhantomSpiritL>()) && !NPC.AnyNPCs(ModContent.NPCType<Polterghast.Polterghast>()) && !DownedBossSystem.downedPolterghast)
-            {
-                CalamityMod.ghostKillCount++;
-                if (CalamityMod.ghostKillCount == 10)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
-                    Color messageColor = Color.Cyan;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                else if (CalamityMod.ghostKillCount == 20)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
-                    Color messageColor = Color.Cyan;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-
-                if (CalamityMod.ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int lastPlayer = npc.lastInteraction;
-
-                    if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                    {
-                        lastPlayer = npc.FindClosestPlayer();
-                    }
-
-                    if (lastPlayer >= 0)
-                    {
-                        SoundEngine.PlaySound(Polterghast.Polterghast.SpawnSound, Main.player[lastPlayer].Center);
-                        NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<Polterghast.Polterghast>());
-                        CalamityMod.ghostKillCount = 0;
-                    }
-                }
-            }
-
-            bool normalShark = npc.type == NPCID.SandShark || npc.type == NPCID.SandsharkHallow || npc.type == NPCID.SandsharkCorrupt || npc.type == NPCID.SandsharkCrimson;
-            if (NPC.downedPlantBoss && (normalShark || (npc.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld)) && !NPC.AnyNPCs(ModContent.NPCType<GreatSandShark.GreatSandShark>()))
-            {
-                CalamityMod.sharkKillCount++;
-                if (CalamityMod.sharkKillCount == 4)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
-                    Color messageColor = Color.Goldenrod;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                else if (CalamityMod.sharkKillCount == 8)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
-                    Color messageColor = Color.Goldenrod;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                if (CalamityMod.sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    {
-                        SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
-                    }
-
-                    int lastPlayer = npc.lastInteraction;
-
-                    if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                    {
-                        lastPlayer = npc.FindClosestPlayer();
-                    }
-
-                    if (lastPlayer >= 0)
-                    {
-                        NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<GreatSandShark.GreatSandShark>());
-                        CalamityMod.sharkKillCount = -5;
-                    }
-                }
-            }
         }
         #endregion
     }

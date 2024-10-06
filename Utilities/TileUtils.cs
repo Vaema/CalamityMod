@@ -317,9 +317,11 @@ namespace CalamityMod
 
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
+        [Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
-            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
         /// <summary>
@@ -387,6 +389,7 @@ namespace CalamityMod
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
+            TileType<Stohne>(),
         });
 
         /// <summary>
@@ -559,6 +562,7 @@ namespace CalamityMod
             SetMerge(type, TileID.MarbleBlock);
             SetMerge(type, TileID.GraniteBlock);
             //Calam
+            SetMerge(type, TileType<AncientSmoothNavystone>());
             SetMerge(type, TileType<SmoothNavystone>());
             SetMerge(type, TileType<SmoothBrimstoneSlag>());
             SetMerge(type, TileType<SmoothAbyssGravel>());

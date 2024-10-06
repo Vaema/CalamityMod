@@ -198,7 +198,7 @@ namespace CalamityMod.NPCs.Yharon
 
             // Stop rain
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
 
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;

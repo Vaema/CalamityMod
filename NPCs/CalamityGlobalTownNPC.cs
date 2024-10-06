@@ -200,6 +200,7 @@ namespace CalamityMod.NPCs
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
+            "Eira", // <@!1166136068408623234> (taela_gemetha)
         };
         private static readonly string[] StylistNames =
         {
@@ -244,7 +245,7 @@ namespace CalamityMod.NPCs
             "Merasmus", // <@!288066987819663360> (spiderprovidence)
             "Habolo", // <@!163028025494077441> (hellgoat2)
             "Ortho", // <@!264984390910738432> (worcuus)
-            "Chris Tallballs", // <@!770211589076418571> (bewearium)
+            "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
         };

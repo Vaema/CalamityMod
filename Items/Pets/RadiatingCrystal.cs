@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<RadiatorPet>(), ModContent.BuffType<RadiatorBuff>());
-            Item.value = Item.sellPrice(silver: 20);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
         }
 

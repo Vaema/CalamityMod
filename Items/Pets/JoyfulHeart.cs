@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<LadShark>(), ModContent.BuffType<LadBuff>());
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Pink;
+            Item.value = Item.sellPrice(gold: 1); // "Common drop" pet price (Monster Meat)
+            Item.rare = ItemRarityID.Orange;
             Item.Calamity().devItem = true;
         }
 

@@ -19,11 +19,12 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
 
         public override void AddRecipes()
         {
+            // Plagued Containment Brick does not have a direct decraft condition
+            // Instead, it turns into Nanodroids when shimmered before defeating Golem
             CreateRecipe(50).
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<PlagueCellCanister>().
                 AddTile<PlagueInfuser>().
-                AddDecraftCondition(Condition.DownedGolem).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlateWall>(4).

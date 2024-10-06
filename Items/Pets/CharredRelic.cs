@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<BrimlingPet>(), ModContent.BuffType<BrimlingBuff>());
             Item.UseSound = SoundID.NPCHit51;
-            Item.value = Item.sellPrice(gold: 4);
-            Item.rare = ItemRarityID.Red;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Pink;
             Item.Calamity().devItem = true;
         }
 

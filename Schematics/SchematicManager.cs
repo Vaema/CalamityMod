@@ -10,8 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Schematics
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class SchematicManager
+    public sealed class SchematicManager : ModSystem
     {
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
@@ -96,7 +95,7 @@ namespace CalamityMod.Schematics
         public delegate void PilePlacementFunction(int x, int y, Rectangle placeInArea);
 
         #region Load/Unload
-        internal static void Load()
+        public override void OnModLoad()
         {
             PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
             TileMaps = new Dictionary<string, SchematicMetaTile[,]>
@@ -152,7 +151,8 @@ namespace CalamityMod.Schematics
                 ["Sulphurous Scrap 7"] = CalamitySchematicIO.LoadSchematic("Schematics/SulphurousScrap7.csch").ShaveOffEdge(),
             };
         }
-        internal static void Unload()
+
+        public override void Unload()
         {
             TileMaps = null;
             PilePlacementMaps = null;

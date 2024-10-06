@@ -1055,6 +1055,25 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
+        #region Remove Lihzahrd Power Cells Requiring Plantera Defeated
+        private static void RemovePowerCellPlanteraLock(ILContext il)
+        {
+            // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<NPC>("downedPlantBoss")))
+            {
+                LogFailure("Remove Power Cell Plantera Lock", "Could not locate the downed Plantera bool.");
+                return;
+            }
+
+            // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
+            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4_1);
+        }
+        #endregion
+
         #region Celestial Sigil Non-Linearity Change
         private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
@@ -1086,6 +1105,7 @@ namespace CalamityMod.ILEditing
 
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property
+        [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]
         private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);
