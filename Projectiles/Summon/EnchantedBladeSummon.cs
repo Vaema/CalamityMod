@@ -28,7 +28,6 @@ namespace CalamityMod.Projectiles.Summon
             {
                 OnStateChange(value);
                 _currentState = value;
-                NetUpdate();
             }
         }
         private Action _currentState;
@@ -63,7 +62,8 @@ namespace CalamityMod.Projectiles.Summon
             if (!HasSpawned)
             {
                 TrailCacheLength = 4;
-                DashTimer = Main.rand.Next(120);
+                DashTimer = Main.rand.Next(30);
+                Projectile.velocity = Projectile.DirectionFrom(Owner.Center);
                 CurrentState = GoToOwnerState;
                 HasSpawned = true;
                 NetUpdate();
@@ -71,7 +71,10 @@ namespace CalamityMod.Projectiles.Summon
 
             CurrentState.Invoke();
 
-            Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.4f);
+            Projectile.MinionAntiClump(0.25f);
+
+            if (!Main.dedServ)
+                Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.4f);
         }
 
         private void GoToOwnerState()
@@ -134,14 +137,12 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);
-                NetUpdate();
             }
 
-            if (DashTimer >= 60f)
+            if (DashTimer >= DashCooldown)
             {
-                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, 10f);
+                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, DashSpeed);
                 DashTimer = 0f;
-                NetUpdate();
             }
 
             SwingTimer += 1f * SwingDirection;
@@ -154,13 +155,16 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             if (Projectile.DistanceSQ(Target.Center) > 320f * 320f)
-                DashTimer += Main.rand.NextBool(120) ? 2 : 1;
+                DashTimer += Main.rand.NextBool((int)DashCooldown) ? 2 : 1;
         }
 
         private void OnStateChange(Action newState)
         {
             if (newState == IdleState)
+            {
                 RandomRotationOffset = Main.rand.NextFloat(MathHelper.TwoPi);
+                NetUpdate();
+            }
 
             if (newState == AttackState)
             {
@@ -183,6 +187,8 @@ namespace CalamityMod.Projectiles.Summon
                 SwingDirection = Main.rand.NextBool().ToDirectionInt();
                 int totalSwingTime = (int)(2f * SwingWait + SwingTime);
                 SwingTimer = SwingDirection == 1 ? Main.rand.Next(-30, -2) : Main.rand.Next(totalSwingTime + 1, totalSwingTime + 30 + 1);
+
+                NetUpdate();
 
                 if (!Main.dedServ)
                 {
@@ -234,27 +240,15 @@ namespace CalamityMod.Projectiles.Summon
 
         #region Syncing
 
-        private void NetUpdate()
+        private void NetUpdate(int netSpam = 0)
         {
             Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.netSpam = netSpam;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.WritePackedVector2(SwingCenter);
-            writer.Write(RandomRotationOffset);
-            writer.Write(HasStartedSwinging);
-            writer.Write(HasSpawned);
-        }
+        public override void SendExtraAI(BinaryWriter writer) => writer.WriteVector2(SwingCenter);
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            SwingCenter = reader.ReadPackedVector2();
-            RandomRotationOffset = reader.ReadSingle();
-            HasStartedSwinging = reader.ReadBoolean();
-            HasSpawned = reader.ReadBoolean();
-        }
+        public override void ReceiveExtraAI(BinaryReader reader) => SwingCenter = reader.ReadVector2();
 
         #endregion
     }

@@ -12,8 +12,12 @@ namespace CalamityMod.Items.Weapons.Summon
         public static float SwingTime = 20f;
         public static float SwingWait = 10f;
         public static float ProjectileSpeed = 15f;
-        
+        public static float DashCooldown = 30f;
+        public static float DashSpeed = 16f;
+
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => Item.staff[Type] = true;
 
         public override void SetDefaults()
         {
@@ -33,19 +37,14 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item8;
 
+            // Does nothing mechanical. Just makes Item.staff[] work.
             Item.shootSpeed = 1f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            var minion = Projectile.NewProjectileDirect(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            minion.velocity = minion.DirectionFrom(player.Center);
+            Projectile.NewProjectileDirect(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            base.AddRecipes();
         }
     }
 }

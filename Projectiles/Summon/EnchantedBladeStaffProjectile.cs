@@ -26,7 +26,22 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 300;
         }
 
-        public override void OnSpawn(IEntitySource source) => Projectile.rotation = Projectile.velocity.ToRotation();
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            Projectile.netUpdate = true;
+        }
+
+        public override void AI()
+        {
+            if (!Main.dedServ)
+            {
+                Dust trailDust = Dust.NewDustDirect(Projectile.Center, Projectile.width, Projectile.height, DustID.BlueFairy);
+                trailDust.noGravity = true;
+                trailDust.noLight = true;
+                trailDust.noLightEmittence = true;
+            }
+        }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.timeLeft = 3;
 
@@ -34,7 +49,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Color drawColor = Color.Cyan * 0.6f;
+            Color drawColor = Color.Cyan with { A = 0 } * 1.2f;
             float drawRotation = Projectile.rotation + MathHelper.PiOver2;
             Vector2 anchorPoint = texture.Size() * 0.5f;
 
