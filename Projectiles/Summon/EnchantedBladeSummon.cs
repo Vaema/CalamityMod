@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -67,6 +68,13 @@ namespace CalamityMod.Projectiles.Summon
                 CurrentState = GoToOwnerState;
                 HasSpawned = true;
                 NetUpdate();
+            }
+            if (Main.rand.NextBool(6))
+            {
+                Vector2 vel = new Vector2(2, 2).RotatedByRandom(100);
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + vel * Main.rand.NextFloat(0.5f, 3f), Main.rand.NextBool() ? Main.rand.NextBool() ? 57 : 58 : 15, vel * Main.rand.NextFloat(0.5f, 1f));
+                trailDust.noGravity = true;
+                trailDust.scale = Main.rand.NextFloat(0.6f, 1.1f);
             }
 
             CurrentState.Invoke();

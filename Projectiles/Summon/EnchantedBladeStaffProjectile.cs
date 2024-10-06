@@ -34,12 +34,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            if (!Main.dedServ)
+            if (!Main.dedServ && Projectile.timeLeft % 2 == 0)
             {
-                Dust trailDust = Dust.NewDustDirect(Projectile.Center, Projectile.width, Projectile.height, DustID.BlueFairy);
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(6, 6), Main.rand.NextBool() ? Main.rand.NextBool() ? 57 : 58 : 15, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f));
                 trailDust.noGravity = true;
-                trailDust.noLight = true;
-                trailDust.noLightEmittence = true;
+                trailDust.scale = Main.rand.NextFloat(0.8f, 1.5f);
 
                 Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.2f);
             }
