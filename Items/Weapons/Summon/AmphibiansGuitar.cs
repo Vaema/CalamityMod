@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 20;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<AmphibiansGuitarHoldout>();
 
@@ -35,7 +35,8 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.Frog).
                 AddIngredient<CoreofCalamity>(3).
                 AddIngredient<LivingShard>(8).
-                AddTile(ItemID.MythrilAnvil);
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

@@ -3,6 +3,7 @@ using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             SpawnTimer++;
-            if (SpawnTimer > 15f && Owner.ownedProjectileCounts[MinionType] < 8)
+            if (SpawnTimer > 19f && Owner.ownedProjectileCounts[MinionType] < 8)
             {
                 Projectile.NewProjectileDirect(
                     Projectile.GetSource_FromThis(),
