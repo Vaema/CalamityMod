@@ -10,6 +10,7 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
+using Terraria.Graphics.Renderers;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -154,8 +155,8 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits <= 0)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 4f;
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+                Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                 for (int i = 0; i < 20; i++)
                 {
                     randomColor = Main.rand.Next(3) switch
@@ -168,14 +169,20 @@ namespace CalamityMod.Projectiles.Melee
                     dust2.scale = Main.rand.NextFloat(0.85f, 1.15f);
                     dust2.noGravity = false;
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.5f);
+
+                    Particle sparker = new CustomSpark(target.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20), "CalamityMod/Particles/Sparkle", false, 38, Main.rand.NextFloat(2.2f, 4.8f), randomColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
+                    GeneralParticleHandler.SpawnParticle(sparker);
                 }
 
-                Particle bolt2 = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.5f, 19);
-                GeneralParticleHandler.SpawnParticle(bolt2);
-                Particle bolt3 = new CustomPulse(target.Center, Vector2.Zero, Color.MediumTurquoise, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.35f, 17);
-                GeneralParticleHandler.SpawnParticle(bolt3);
-                Particle bolt4 = new CustomPulse(target.Center, Vector2.Zero, Color.LawnGreen, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.2f, 15);
-                GeneralParticleHandler.SpawnParticle(bolt4);
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle bolt2 = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.5f - i * 0.05f, 19 - i * 4);
+                    GeneralParticleHandler.SpawnParticle(bolt2);
+                    Particle bolt3 = new CustomPulse(target.Center, Vector2.Zero, Color.MediumTurquoise, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.35f - i * 0.05f, 17 - i * 4);
+                    GeneralParticleHandler.SpawnParticle(bolt3);
+                    Particle bolt4 = new CustomPulse(target.Center, Vector2.Zero, Color.LawnGreen, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.2f - i * 0.05f, 15 - i * 4);
+                    GeneralParticleHandler.SpawnParticle(bolt4);
+                }
 
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/EarthMeteor");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.9f }, target.Center);
