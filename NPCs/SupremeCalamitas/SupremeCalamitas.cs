@@ -291,6 +291,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCalamitas")
             });
         }

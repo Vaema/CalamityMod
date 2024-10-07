@@ -107,8 +107,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCataclysm")
-            });
+            }); 
         }
 
         public override void SendExtraAI(BinaryWriter writer)
