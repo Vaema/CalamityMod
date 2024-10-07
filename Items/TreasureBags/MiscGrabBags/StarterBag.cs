@@ -124,7 +124,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             static bool getsXyksBlessing(DropAttemptInfo info)
             {
                 string playerName = info.player.name;
-                return playerName == "Xyk"; //.Contains("Xyk"); // Any name containing "Xyk" will work
+                return playerName.Contains("Xyk"); // Any name containing "Xyk" will work
             }
 
             itemLoot.AddIf(getsXyksBlessing, ModContent.ItemType<XyksBlessingBlue>());

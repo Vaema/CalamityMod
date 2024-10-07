@@ -645,6 +645,7 @@ namespace CalamityMod.CalPlayer
         public bool baroclaw = false;
         public bool HasReducedDashFirstFrame = false;
         public bool HasIncreasedDashFirstFrame = false;
+        public bool IsFirstDashFrame = false;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -657,6 +658,8 @@ namespace CalamityMod.CalPlayer
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
         public bool Pauldron = false;
+        public bool XykVisualsBlue = false;
+        public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
         public bool royalGel = false;
         public bool handWarmer = false;
@@ -1829,6 +1832,8 @@ namespace CalamityMod.CalPlayer
             normalityRelocator = false;
             flameLickedShell = false;
             Pauldron = false;
+            XykVisualsBlue = false;
+            XykVisualsOrange = false;
             manaOverloader = false;
             royalGel = false;
             handWarmer = false;

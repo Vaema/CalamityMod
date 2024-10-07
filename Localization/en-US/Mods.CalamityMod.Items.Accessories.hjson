@@ -2080,9 +2080,10 @@ SharkyPlush: {
 }
 
 XyksBlessingBlue: {
-	DisplayName: Xyks Blessing (Blue)
+	DisplayName: Xyk's Blessing (Blue)
 	Tooltip:
 		'''
+		Applies visual effects to your dashes and deaths
 		<right> to transform
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
@@ -2090,11 +2091,12 @@ XyksBlessingBlue: {
 }
 
 XyksBlessingOrange: {
-	DisplayName: Xyks Blessing (Orange)
+	DisplayName: Xyk's Blessing (Orange)
 	Tooltip:
 		'''
+		Applies visual effects to your dashes and deaths
 		<right> to transform
-		'Even so, the passage of time will not wait. Recall the fulfilment of back then, and show the world.
+		'Even so, the march of time waits for none. Recall that feeling of fulfilment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
 }

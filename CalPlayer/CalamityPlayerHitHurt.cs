@@ -245,6 +245,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // Xyk vanity death animation
+            if (XykVisualsBlue || XykVisualsOrange)
+            {
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), Main.zenithWorld ? Main.rand.Next(5000, 50000 + 1) : 0, 0, Player.whoAmI);
+            }
+
             if (hInferno)
             {
                 foreach (NPC n in Main.ActiveNPCs)

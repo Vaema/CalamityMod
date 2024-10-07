@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
@@ -48,7 +49,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.accessory = true;
             Item.consumable = true;
             Item.vanity = true;
-            Item.rare = ModContent.RarityType<CalamityRed>();
+            Item.rare = ModContent.RarityType<DarkOrange>();
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.Calamity().devItem = true;
         }
@@ -61,6 +62,8 @@ namespace CalamityMod.Items.Accessories.Vanity
         public override void UpdateVanity(Player player)
         {
             player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.XykVisualsOrange = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -68,6 +71,8 @@ namespace CalamityMod.Items.Accessories.Vanity
             if (!hideVisual)
             {
                 player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
+                CalamityPlayer modPlayer = player.Calamity();
+                modPlayer.XykVisualsOrange = true;
             }
         }
     }

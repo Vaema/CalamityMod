@@ -71,6 +71,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Events;
 using Terraria.GameInput;
+using Terraria.Graphics.Renderers;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -321,6 +322,91 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                     HasReducedDashFirstFrame = false;
+            }
+
+            if (XykVisualsBlue || XykVisualsOrange)
+            {
+                if (Player.statLife > 30)
+                    Player.statLife = 30;
+
+                bool Orange = XykVisualsOrange;
+                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
+
+                float rate = Main.GlobalTimeWrappedHourly * 22;
+                List<Color> eColors = new List<Color>()
+                {
+                    Orange ? Color.OrangeRed : Color.DodgerBlue,
+                    Orange ? Color.Gold : Color.Cyan,
+                    Orange ? Color.Orange : Color.RoyalBlue
+                };
+
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                if (Player.dashDelay == -1)
+                {
+                    if (IsFirstDashFrame)
+                    {
+                        SoundStyle dash = new("CalamityMod/Sounds/Item/DashSound");
+                        SoundEngine.PlaySound(dash with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (Orange ? 0 : 0.2f) }, Player.Center);
+                        if (Orange)
+                        {
+                            Particle spark1 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0.45f, 0.25f, 47);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+
+                            Particle spark2 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0, 0.8f, 17);
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                        }
+                        else
+                        {
+                            Particle spark1 = new CustomPulse(Player.Center, Player.velocity * 0.3f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Player.velocity.ToRotation(), 0, 1f, 24);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+
+                            Particle spark2 = new CustomPulse(Player.Center, Player.velocity * 0.5f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Player.velocity.ToRotation(), 0, 0.75f, 17);
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                        }
+                        IsFirstDashFrame = false;
+                    }
+                    
+                    float sparkscale1 = MathF.Min(Player.velocity.X * Player.direction * 0.08f, 1.2f);
+                    Vector2 SparkVelocity1 = -Player.velocity.SafeNormalize(Vector2.UnitX) * 5;
+
+                    if (!Orange)
+                    {
+                        float sine = (float)Math.Sin(Player.miscCounter * 0.875f / MathHelper.Pi);
+
+                        Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 17f;
+
+                        Particle spark1 = new GlowSparkParticle(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(0.8f, 0.3f), true, false, 0.4f);
+                        GeneralParticleHandler.SpawnParticle(spark1);
+                        Particle spark2 = new GlowSparkParticle(Player.Center - offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(1, 0.3f), true, false, 0.4f);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                    }
+                    else
+                    {
+                        float sparkscale2 = MathF.Min(Player.velocity.X * Player.direction * 0.07f, 1.1f);
+                        Vector2 SparkVelocity2 = Player.velocity.RotatedBy(Player.direction * 2.5f, default) * 0.1f - Player.velocity / 2f;
+                        Particle spark = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(2f * Player.direction) * 1.5f, SparkVelocity2, false, 10, sparkscale2, effectColor);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                        Vector2 SparkVelocity3 = Player.velocity.RotatedBy(Player.direction * -2.5f, default) * 0.1f - Player.velocity / 2f;
+                        Particle spark2 = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(-2f * Player.direction) * 1.5f, SparkVelocity3, false, 10, sparkscale2, effectColor);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                    }
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 267, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.7f, 1.1f) * sparkscale1);
+                        dust.noGravity = true;
+                        dust.color = effectColor;
+
+                        Dust dust2 = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 10, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.9f, 1.4f) * sparkscale1);
+                        dust2.noGravity = true;
+                    }
+                }
+                else
+                    IsFirstDashFrame = true;
             }
 
             if (tortShell)
