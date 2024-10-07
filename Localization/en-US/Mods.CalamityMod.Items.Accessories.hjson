@@ -2078,3 +2078,23 @@ SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
 }
+
+XyksBlessingBlue: {
+	DisplayName: Xyks Blessing (Blue)
+	Tooltip:
+		'''
+		<right> to transform
+		'It's simply too much to turn back now; passion and time have long since stained it.
+		[c/5f8ae1:Have I always been so selfish?']
+		'''
+}
+
+XyksBlessingOrange: {
+	DisplayName: Xyks Blessing (Orange)
+	Tooltip:
+		'''
+		<right> to transform
+		'Even so, the passage of time will not wait. Recall the fulfilment of back then, and show the world.
+		[c/E1B65F:Prove that it was never a waste.']
+		'''
+}

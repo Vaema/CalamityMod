@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
@@ -130,6 +131,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ItemID.Amethyst, 1, 2, 4);
             npcLoot.Add(ModContent.ItemType<ScuttlersJewel>(), 6);
+            npcLoot.Add(ModContent.ItemType<XyksBlessingBlue>(), 25);
         }
     }
 }

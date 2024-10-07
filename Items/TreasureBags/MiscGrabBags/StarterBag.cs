@@ -119,6 +119,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
 
+            // Xyk dev item
+            // Name specific: "Xyk"
+            static bool getsXyksBlessing(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Xyk"; //.Contains("Xyk"); // Any name containing "Xyk" will work
+            }
+
+            itemLoot.AddIf(getsXyksBlessing, ModContent.ItemType<XyksBlessingBlue>());
+
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"
             static bool getsOracleHeadphones(DropAttemptInfo info)
