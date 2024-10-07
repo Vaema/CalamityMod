@@ -3,6 +3,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Rarities;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -47,7 +48,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.accessory = true;
             Item.consumable = true;
             Item.vanity = true;
-            Item.rare = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.rare = ModContent.RarityType<CalamityRed>();
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.Calamity().devItem = true;
         }
