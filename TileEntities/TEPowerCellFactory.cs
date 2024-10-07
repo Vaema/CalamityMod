@@ -73,11 +73,15 @@ namespace CalamityMod.TileEntities
 
         public override void Update()
         {
-            ++Time;
-            int maxCellStack = ModContent.GetModItem(ModContent.ItemType<DraedonPowerCell>()).Item.maxStack;
-            if (IsCellFrame && CellStack < maxCellStack)
-                // The property setter will automatically send the necessary packet.
-                CellStack++;
+            // CIT 7OCT2024: Power Cell Factories now produce power cells faster when sleeping or using Journey's time rate multiplier.
+            for (int t = 0; t < Main.desiredWorldTilesUpdateRate; t++)
+            {
+                ++Time;
+                int maxCellStack = ModContent.GetModItem(ModContent.ItemType<DraedonPowerCell>()).Item.maxStack;
+                if (IsCellFrame && CellStack < maxCellStack)
+                    // The property setter will automatically send the necessary packet.
+                    CellStack++;
+            }
         }
 
         // This code is called as a hook when the player places the Power Cell Factory tile so that the tile entity may be placed.
