@@ -495,21 +495,20 @@ DaawnlightSpiritOrigin: {
 	DisplayName: Daawnlight Spirit Origin
 	Tooltip:
 		'''
-		Places bullseyes on enemies and bosses that can be hit for extra critical strike chance
-		Extra critical strike chance quickly vanishes and is harder to get the more you have
-		All ranged weapons can supercrit if its critical strike chance is over 100%
+		All ranged weapons can supercrit when critical strike chance is over 100%
+		Marks enemies and bosses with bullseyes which boost critical strike chance when hit
+		Extra critical strike chance quickly fades over time
 		Summons a heroic spirit from another world if visibility is on or in vanity slots
 		'''
 	HoldShiftTooltip:
 		'''
-		All nearby enemies and bosses are marked with bullseyes
-		All ranged attacks that hit a bullseye increase critical strike chance
-		Struck bullseyes vanish shortly after and a new one appears elsewhere
-		Explosions and large projectiles cannot hit bullseyes
-		Shots ricocheted off of tossed coins deal less bullseye damage
-		All ranged weapons can supercrit if its critical strike chance is over 100%
-		Extra critical strike chance quickly vanishes and is harder to get the more you have
-		Ranged weapons that are slow to use gain more extra critcal strike chance
+		All ranged weapons can supercrit when critical strike chance is over 100%
+		Marks nearby enemies and bosses with bullseyes which disappear shortly after being hit
+		Ranged attacks which strike bullseyes boost critical strike chance
+		Large projectiles and explosions cannot strike bullseyes
+		Slower weapons give a larger critical strike chance boost on hit
+		Extra critical strike chance quickly fades over time
+		The higher the boost, the more quickly it fades away
 		Summons a heroic spirit from another world if visibility is on or in vanity slots
 		'''
 	FlavorTooltip: "'A strand of a lost cosmos remains, waiting for its master'"
