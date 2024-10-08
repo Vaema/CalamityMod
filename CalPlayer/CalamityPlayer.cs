@@ -244,7 +244,6 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
-        public int spiritOriginBullseyeShootCountdown = 0;
         public int RustyMedallionCooldown = 0;
         public int MiniSwamerCooldown = 0;
         public float SulphWaterPoisoningLevel;
@@ -254,7 +253,6 @@ namespace CalamityMod.CalPlayer
         public bool ragePulse = false;
         public int ragePulseVisualTimer = 0;
         public int ragePulseTimer = 0;
-        public int SpiritOrginCritChanceIncrease = 0;
 
         private const int DashDisableCooldown = 12;
 
@@ -640,6 +638,7 @@ namespace CalamityMod.CalPlayer
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
+        public int spiritOriginCritBoost = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
@@ -1905,7 +1904,7 @@ namespace CalamityMod.CalPlayer
             oceanCrest = false;
             aquaticEmblem = false;
             if (!spiritOrigin)
-                SpiritOrginCritChanceIncrease = 0;
+                spiritOriginCritBoost = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
 
@@ -2378,7 +2377,7 @@ namespace CalamityMod.CalPlayer
             bloodflareCoreRemainingHealOverTime = 0;
             #endregion
 
-            #region Debuffs
+            #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
             arsenalCooldown = 0;
@@ -2398,7 +2397,7 @@ namespace CalamityMod.CalPlayer
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
-            SpiritOrginCritChanceIncrease = 0;
+            spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0f;

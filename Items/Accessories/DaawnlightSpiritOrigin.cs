@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Pets;
+﻿using System;
+using CalamityMod.Buffs.Pets;
+using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -32,43 +35,21 @@ namespace CalamityMod.Items.Accessories
         public const int BullseyeHitLifetime = 90;
 
         /// <summary>
-        /// The minimum amount of critcal strike chance lost per decrease.
+        /// The amount of critical strike chance bonus where crit starts decaying faster.<br/>
+        /// When the crit bonus reaches this value, the decay rate increases by one tier.
         /// </summary>
-        public const int MinCritLossPerFrame = 1;
+        public static readonly int CritDecayThreshold = 60;
 
         /// <summary>
-        /// The minimum rate at which the extra critcal strike chance decreases.<br/>
-        /// This means that it'll decrease every X frames.<br/>
-        /// <br/>
-        /// When there's no critical strike chance, this will be the loss rate,<br/>
-        /// and it'll linearly scale to <see cref="MaximumLossRate"/>.
+        /// When the critical strike chance bonus has exceeded <see cref="CritDecayThreshold"/>, it continues to decay faster for every <see cref="CritDecayEchelon"/> more.
         /// </summary>
-        public const int MinimumLossRate = 4;
+        public static readonly int CritDecayEchelon = 10;
 
         /// <summary>
-        /// The maximum rate at which the extra critcal strike chance decreases.<br/>
-        /// This means that it'll decrease every X frames.<br/>
-        /// <br/>
-        /// When the extra critical strike chance reaches <see cref="ExtraCritHardCap"/>,<br/>
-        /// this value will be the loss rate.
+        /// By default, critical strike chance is lost at 15% per second (1% every 4 frames). This is the first value to which decay echelons are applied.<br/>
+        /// Once this value reaches 1, the player instead starts losing multiple % of crit every frame.
         /// </summary>
-        public const int MaximumLossRate = 1;
-
-        /// <summary>
-        /// The amount of extra critcal strike chance at which the hard scaling starts applying.
-        /// </summary>
-        public const int ExtraCritHardCap = 75;
-
-        /// <summary>
-        /// When the extra critical strike chance is past <see cref="ExtraCritHardCap"/>,<br/>
-        /// every <see cref="CritHardCapScalingInterval"/> more, it'll start decreasing by <see cref="CritLossPerFrameIncreasePerInterval"/> more.
-        /// </summary>
-        public const int CritHardCapScalingInterval = 25;
-
-        /// <summary>
-        /// The amount of extra critical strike chance lost every <see cref="CritLossPerFrameIncreasePerInterval"/> past <see cref="ExtraCritHardCap"/>.
-        /// </summary>
-        public const int CritLossPerFrameIncreasePerInterval = 4;
+        public static readonly int CritDecayBaseRate = 4;
 
         // These were very carefully calculated, please don't change them.
         internal const float RegularEnemyBullseyeRadius = 8f;
@@ -92,7 +73,8 @@ namespace CalamityMod.Items.Accessories
         // The pet is purely visual and does not affect the functionality of the item.
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().spiritOrigin = true;
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.spiritOrigin = true;
 
             // If visibility is disabled, despawn the pet.
             if (hideVisual)
@@ -100,12 +82,49 @@ namespace CalamityMod.Items.Accessories
                 if (player.FindBuffIndex(ModContent.BuffType<ArcherofLunamoon>()) != -1)
                     player.ClearBuff(ModContent.BuffType<ArcherofLunamoon>());
             }
+
             // If visibility is enabled, spawn the pet.
             else if (player.whoAmI == Main.myPlayer)
             {
                 if (player.FindBuffIndex(ModContent.BuffType<ArcherofLunamoon>()) == -1)
                     player.AddBuff(ModContent.BuffType<ArcherofLunamoon>(), 18000, true);
             }
+
+            // Update the current crit boost.
+            int currentCritBoost = modPlayer.spiritOriginCritBoost;
+
+            // Calculate how many tiers / echelons of decay are currently affecting the crit boost.
+            int decayRateEchelons = 0;
+            if (currentCritBoost >= CritDecayThreshold)
+                decayRateEchelons = 1 + ((currentCritBoost - CritDecayThreshold) / CritDecayEchelon);
+
+            // This is the current decay rate. Crit is lost once every this many frames.
+            int decayRate = Math.Max(1, CritDecayBaseRate - decayRateEchelons);
+            int percentToDecay = 1;
+
+            // If enough echelons have been reached that crit is already draining once per frame,
+            // then start removing multiple percent crit per frame as well.
+            if (decayRateEchelons >= CritDecayBaseRate)
+                percentToDecay += decayRateEchelons - CritDecayBaseRate;
+
+            // Actually decay the crit chance boost.
+            if (player.miscCounter % decayRate == 0 && currentCritBoost > 0)
+                currentCritBoost -= percentToDecay;
+
+            // Write out the new value to the tracked stat on the player.
+            modPlayer.spiritOriginCritBoost = currentCritBoost;
+
+            // Actually give the crit boost as a direct increase to ranged critical strike chance.
+            player.GetCritChance<RangedDamageClass>() += modPlayer.spiritOriginCritBoost;
+
+            // Display the current crit boost on a cooldown.
+            if (modPlayer.cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
+            {
+                int displayedCritOnCooldown = Math.Max(0, CritDecayThreshold - currentCritBoost);
+                cooldown.timeLeft = displayedCritOnCooldown;
+            }
+            else
+                player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, CritDecayThreshold);
         }
 
         public override void UpdateVanity(Player player)

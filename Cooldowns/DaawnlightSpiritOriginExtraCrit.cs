@@ -15,13 +15,13 @@ namespace CalamityMod.Cooldowns
         // If the player doesn't have DSO, this cooldown should not appear.
         public override bool ShouldDisplay => instance.player.GetModPlayer<CalamityPlayer>().spiritOrigin;
 
-        private float ExtraCritChance => instance.player.GetModPlayer<CalamityPlayer>().SpiritOrginCritChanceIncrease;
+        private float ExtraCritChance => instance.player.GetModPlayer<CalamityPlayer>().spiritOriginCritBoost;
 
         private float TextXOffset => (ExtraCritChance > 99 ? -24 : ExtraCritChance > 9 ? -20 : -16) * TextScale;
         private Vector2 TextPosition => new(TextXOffset , 25);
-        private Color TextColor => Color.Lerp(Color.White , Color.Tomato , Utils.GetLerpValue(ExtraCritHardCap - 10 , ExtraCritHardCap , instance.player.GetModPlayer<CalamityPlayer>().SpiritOrginCritChanceIncrease , false));
+        private Color TextColor => Color.Lerp(Color.White , Color.Tomato , Utils.GetLerpValue(CritDecayThreshold - 10 , CritDecayThreshold , instance.player.GetModPlayer<CalamityPlayer>().spiritOriginCritBoost , false));
         private Color TextBorderColor = Color.Black;
-        private float TextScale => Utils.Remap(ExtraCritChance, 0, ExtraCritHardCap, 1f, 1.5f);
+        private float TextScale => Utils.Remap(ExtraCritChance, 0, CritDecayThreshold, 1f, 1.5f);
 
         public override bool CanTickDown => false;
 

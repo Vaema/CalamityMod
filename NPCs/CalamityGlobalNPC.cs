@@ -6150,7 +6150,9 @@ namespace CalamityMod.NPCs
                     // If a bullseye is triggered, set it as hit.
                     if (willStrikeBullseye)
                     {
-                        Main.player[projectile.owner].Calamity().SpiritOrginCritChanceIncrease += Main.player[projectile.owner].ActiveItem().useTime;
+                        // 08OCT2024: Ozzatron: this can be abused by firing a ton of shots then hotswapping to AMR while they are in flight
+                        // we will need IEntitySource item use time provenance to fix this, and even that is unreliable with holdouts
+                        modPlayer.spiritOriginCritBoost += player.ActiveItem().useTime;
 
                         if (bullseye.ai[2] == 0f)
                         {

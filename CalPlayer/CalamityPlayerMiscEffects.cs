@@ -188,26 +188,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            int dsoCritHardCap       = DaawnlightSpiritOrigin.ExtraCritHardCap;
-            int dsoCritCapExtra      = DaawnlightSpiritOrigin.CritHardCapScalingInterval;
-            int dsoMinLossRate       = DaawnlightSpiritOrigin.MinimumLossRate;
-            int dsoMaxLossRate       = DaawnlightSpiritOrigin.MaximumLossRate;
-            int dsoMinLossPerFrame   = DaawnlightSpiritOrigin.MinCritLossPerFrame;
-            int dsoLossPerFrameExtra = DaawnlightSpiritOrigin.CritLossPerFrameIncreasePerInterval;
-            if (spiritOrigin)
-            {
-                if (Player.Calamity().cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
-                    cooldown.timeLeft = Math.Max(0, DaawnlightSpiritOrigin.ExtraCritHardCap - SpiritOrginCritChanceIncrease);
-                else
-                    Player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, DaawnlightSpiritOrigin.ExtraCritHardCap);
-            }
-
-            int critChanceDecreaseRate = (int)Utils.Remap(SpiritOrginCritChanceIncrease, 0, dsoCritHardCap, dsoMinLossRate, dsoMaxLossRate);
-            int perFrameCritChanceDecrease = SpiritOrginCritChanceIncrease <= dsoCritHardCap ? dsoMinLossPerFrame :
-                (int)Utils.Remap(SpiritOrginCritChanceIncrease, dsoCritHardCap, dsoCritHardCap + dsoCritCapExtra, dsoMinLossPerFrame, dsoLossPerFrameExtra, clamped: false);
-            if (SpiritOrginCritChanceIncrease > 0 && Player.miscCounter % critChanceDecreaseRate == 0)
-                SpiritOrginCritChanceIncrease -= perFrameCritChanceDecrease;
-
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
@@ -923,7 +903,7 @@ namespace CalamityMod.CalPlayer
 
                         foreach (var proj in Main.ActiveProjectiles)
                         {
-                            if (proj.owner != Player.whoAmI && proj.type != ModContent.ProjectileType<DaawnlightSpiritOriginMinion>())
+                            if (proj.owner != Player.whoAmI || proj.type != ModContent.ProjectileType<DaawnlightSpiritOriginMinion>())
                                 continue;
 
                             DaawnlightSpiritOriginMinion dsoPet = proj.ModProjectile<DaawnlightSpiritOriginMinion>();
@@ -1482,8 +1462,6 @@ namespace CalamityMod.CalPlayer
                 plagueTaintedSMGDroneCooldown--;
             if (momentumCapacitorTime > 0)
                 --momentumCapacitorTime;
-            if (spiritOriginBullseyeShootCountdown > 0)
-                spiritOriginBullseyeShootCountdown--;
             if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)
                 phantomicHeartRegen--;
             if (phantomicBulwarkCooldown > 0)
