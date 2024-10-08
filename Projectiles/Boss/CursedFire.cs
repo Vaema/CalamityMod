@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class Shadowflamethrower : ModProjectile, ILocalizedModType
+    public class CursedFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/FireProj";
@@ -35,26 +36,9 @@ namespace CalamityMod.Projectiles.Boss
             Time++;
             if (Time < Fadetime && Main.rand.NextBool(6))
             {
-                int dustType = Main.rand.Next(4);
-                switch (dustType)
-                {
-                    default:
-                    case 0:
-                    case 1:
-                        dustType = 27;
-                        break;
-
-                    case 2:
-                        dustType = 112;
-                        break;
-
-                    case 3:
-                        dustType = 173;
-                        break;
-                }
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(6f, 12f, Time, true);
-                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, dustType, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
+                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, 75, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
                 if (Main.rand.NextBool(3))
                 {
                     cinder.scale *= 2f;
@@ -68,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
             if (MistType == -1)
                 MistType = Main.rand.Next(3);
 
-            Lighting.AddLight(Projectile.Center, 0.5f, 0.05f, 0.6f);
+            Lighting.AddLight(Projectile.Center, 0.15f, 0.75f, 0.15f);
         }
 
         // Keeping the flames in place when hitting a block
@@ -102,7 +86,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+            target.AddBuff(BuffID.CursedInferno, 120);
 
             // Cook you up (still scales with player size in case it's manipulated)
             int smokeCount = 4 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);
@@ -121,10 +105,10 @@ namespace CalamityMod.Projectiles.Boss
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through
-            Color color1 = new Color(200, 10, 255, 200);
-            Color color2 = new Color(200, 50, 180, 70);
-            Color color3 = new Color(200, 30, 255, 100);
-            Color color4 = new Color(80, 0, 100, 100);
+            Color color1 = new Color(100, 255, 20, 200);
+            Color color2 = new Color(100, 128, 10, 70);
+            Color color3 = new Color(100, 240, 20, 100);
+            Color color4 = new Color(80, 80, 0, 100);
             float length = ((Time > Fadetime - 10f) ? 0.1f : 0.15f);
             float vOffset = Math.Min(Time, 20f);
             float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);

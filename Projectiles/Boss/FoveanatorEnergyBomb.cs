@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Events;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -34,6 +36,7 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         private const int TimeLeft = 300;
+        private const int SlowDownTime = TimeLeft / 2;
         private const int ExplosionDuration = FrameTimer * ExplodeFrames;
 
         private const float ExplodeDistance = 50f;
@@ -51,6 +54,10 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            // If moving, decelerate.
+            if (Projectile.velocity.Length() > 0f && Projectile.timeLeft <= SlowDownTime)
+                Projectile.velocity *= 0.95f;
+
             // Get a target and calculate distance from it.
             int target = Player.FindClosest(Projectile.Center, 1, 1);
             float distanceFromTarget = Projectile.Distance(Main.player[target].Center);
@@ -90,7 +97,33 @@ namespace CalamityMod.Projectiles.Boss
                 // Kill the projectile when the explosion animation is done.
                 if (explode && frameY >= ExplodeFrames)
                 {
+                    if (Projectile.ai[0] > 0f)
+                    {
+                        if (Projectile.owner == Main.myPlayer)
+                        {
+                            float laserSpeed = 2f;
+                            int type = ModContent.ProjectileType<FoveanatorLaser>();
+                            int damage = (int)Math.Round(Projectile.damage * 0.85);
+                            Vector2 laserVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 16f, laserVelocity, type, damage, 0f, Main.myPlayer);
+
+                            if (Projectile.ai[0] == 2f)
+                            {
+                                Vector2 projectileVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed * 0.75f;
+                                int numProj = 2;
+                                int spread = 30;
+                                float rotation = MathHelper.ToRadians(spread);
+                                for (int i = 0; i < numProj; i++)
+                                {
+                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 16f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                }
+                            }
+                        }
+                    }
+
                     Projectile.Kill();
+                    
                     return;
                 }
             }
