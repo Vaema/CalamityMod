@@ -74,7 +74,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
-using static CalamityMod.Items.Accessories.DaawnlightSpiritOrigin;
 using CalamityMod.Projectiles.Pets;
 
 namespace CalamityMod.CalPlayer
@@ -189,17 +188,23 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            int dsoCritHardCap       = DaawnlightSpiritOrigin.ExtraCritHardCap;
+            int dsoCritCapExtra      = DaawnlightSpiritOrigin.CritHardCapScalingInterval;
+            int dsoMinLossRate       = DaawnlightSpiritOrigin.MinimumLossRate;
+            int dsoMaxLossRate       = DaawnlightSpiritOrigin.MaximumLossRate;
+            int dsoMinLossPerFrame   = DaawnlightSpiritOrigin.MinCritLossPerFrame;
+            int dsoLossPerFrameExtra = DaawnlightSpiritOrigin.CritLossPerFrameIncreasePerInterval;
             if (spiritOrigin)
             {
                 if (Player.Calamity().cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
-                    cooldown.timeLeft = Math.Max(0, ExtraCritHardCap - SpiritOrginCritChanceIncrease);
+                    cooldown.timeLeft = Math.Max(0, DaawnlightSpiritOrigin.ExtraCritHardCap - SpiritOrginCritChanceIncrease);
                 else
-                    Player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, ExtraCritHardCap);
+                    Player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, DaawnlightSpiritOrigin.ExtraCritHardCap);
             }
 
-            int critChanceDecreaseRate = (int)Utils.Remap(SpiritOrginCritChanceIncrease, 0, ExtraCritHardCap, MinimumLossRate, MaximumLossRate);
-            int perFrameCritChanceDecrease = SpiritOrginCritChanceIncrease <= ExtraCritHardCap ? MinCritLossPerFrame :
-                (int)Utils.Remap(SpiritOrginCritChanceIncrease, ExtraCritHardCap, ExtraCritHardCap + CritHardCapScalingInterval, MinCritLossPerFrame, CritLossPerFrameIncreasePerInterval, clamped: false);
+            int critChanceDecreaseRate = (int)Utils.Remap(SpiritOrginCritChanceIncrease, 0, dsoCritHardCap, dsoMinLossRate, dsoMaxLossRate);
+            int perFrameCritChanceDecrease = SpiritOrginCritChanceIncrease <= dsoCritHardCap ? dsoMinLossPerFrame :
+                (int)Utils.Remap(SpiritOrginCritChanceIncrease, dsoCritHardCap, dsoCritHardCap + dsoCritCapExtra, dsoMinLossPerFrame, dsoLossPerFrameExtra, clamped: false);
             if (SpiritOrginCritChanceIncrease > 0 && Player.miscCounter % critChanceDecreaseRate == 0)
                 SpiritOrginCritChanceIncrease -= perFrameCritChanceDecrease;
 
