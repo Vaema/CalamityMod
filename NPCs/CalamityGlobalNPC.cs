@@ -9385,6 +9385,7 @@ namespace CalamityMod.NPCs
             // These are ordered by their order in the bestiary, if you're wondering why it seems so arbitrary lmao
             switch (npc.netID)
             {
+                case NPCID.Guide:
                 case NPCID.Dryad:
                 case NPCID.Mechanic:
                 case NPCID.EmpressButterfly:
