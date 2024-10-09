@@ -1,4 +1,5 @@
-﻿using Terraria.Graphics;
+﻿using Terraria;
+using Terraria.Graphics;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -34,18 +35,35 @@ namespace CalamityMod.Systems
     {
         internal static void ModifyLightSetup(ref readonly Tile tile, int i, int j, int type, ref float r, ref float g, ref float b)
         {
-            if (LoaderManager.Get<WaterStylesLoader>().Get(type) is CalamityModWaterStyle styles)
+            if (TryGetCalamityWaterStyle(type, out var styles))
             {
-                styles?.ModifyLight(in tile, i, j, ref r, ref g, ref b);
+                styles.ModifyLight(in tile, i, j, ref r, ref g, ref b);
             }
         }
 
         internal static void DrawColorSetup(int x, int y, int type, ref VertexColors liquidColor, bool isSlope = false)
         {
-            if (LoaderManager.Get<WaterStylesLoader>().Get(type) is CalamityModWaterStyle styles)
+            if (TryGetCalamityWaterStyle(type, out var styles))
             {
-                styles?.DrawColor(x, y, ref liquidColor, isSlope);
+                styles.DrawColor(x, y, ref liquidColor, isSlope);
             }
+        }
+
+        internal static bool TryGetCalamityWaterStyle(int type, out CalamityModWaterStyle waterStyle)
+        {
+            waterStyle = GetCalamityWaterStyle(type);
+            return waterStyle != null;
+        }
+
+        internal static CalamityModWaterStyle GetCalamityWaterStyle(int type)
+        {
+            var modWaterStyle = LoaderManager.Get<WaterStylesLoader>().Get(type);
+            if (modWaterStyle is CalamityModWaterStyle calWaterStyle)
+            {
+                return calWaterStyle;
+            }
+
+            return null;
         }
     }
 }
