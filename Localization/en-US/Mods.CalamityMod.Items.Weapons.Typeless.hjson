@@ -11,7 +11,7 @@ EyeofMagnus: {
 	DisplayName: Eye of Magnus
 	Tooltip:
 		'''
-		Fires seeking cosmic masses that restores health and mana on hit
+		Fires seeking cosmic masses that restore health and mana on hit
 		Explodes into a nebula cloud which reduces enemy protection
 		This weapon scales with the average of all your damage stats
 		'''
