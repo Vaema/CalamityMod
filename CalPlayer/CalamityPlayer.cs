@@ -1140,6 +1140,7 @@ namespace CalamityMod.CalPlayer
         public bool LiliesOfFinalityBool = false;
         public bool FlarebatBool = false;
         public bool FrostbatBool = false;
+        public bool AmphibiansGuitarBool = false;
         #endregion
 
         #region Biome
@@ -2243,6 +2244,7 @@ namespace CalamityMod.CalPlayer
             LiliesOfFinalityBool = false;
             FlarebatBool = false;
             FrostbatBool = false;
+            AmphibiansGuitarBool = false;
             #endregion
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
