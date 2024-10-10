@@ -12,6 +12,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items;
@@ -541,9 +542,7 @@ namespace CalamityMod.CalPlayer
                 // 26AUG2024: Ozzatron: Cut Draedon's Heart healing in half by making it heal every other frame.
                 if (draedonsHeart && Player.miscCounter % 2 == 1)
                 {
-                    Player.statLife += DraedonsHeart.NanomachinesHealPerFrame;
-                    if (Player.statLife >= Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(DraedonsHeart.NanomachinesHealPerFrame, HealTextType.None);
 
                     // Old Draedon's Heart dust effect from its standing still regen. Works just fine.
                     int dustID = DustID.TerraBlade;
@@ -1280,10 +1279,7 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.statLife += 15;
-                        Player.HealEffect(15);
-                        if (Player.statLife > Player.statLifeMax2)
-                            Player.statLife = Player.statLifeMax2;
+                        Player.HealPlayer(15);
 
                         if (profanedCrystal)
                         {
@@ -1622,10 +1618,7 @@ namespace CalamityMod.CalPlayer
                 --silverMedkitTimer;
                 if (silverMedkitTimer == 0)
                 {
-                    Player.HealEffect(SilverArmorSetChange.SetBonusHealAmount, true);
-                    Player.statLife += SilverArmorSetChange.SetBonusHealAmount;
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(SilverArmorSetChange.SetBonusHealAmount);
 
                     SilverArmorSetChange.OnHealEffects(Player);
                 }
@@ -2847,10 +2840,7 @@ namespace CalamityMod.CalPlayer
             // Bloodflare Core's heal over time
             if (bloodflareCore && bloodflareCoreRemainingHealOverTime > 0 && Player.miscCounter % BloodflareCore.HealFrameCooldown == 0)
             {
-                Player.statLife += 1;
-                Player.HealEffect(1, false);
-                if (Player.statLife > Player.statLifeMax2)
-                    Player.statLife = Player.statLifeMax2;
+                Player.HealPlayer(1, HealTextType.Local);
 
                 // Produce an implosion of blood themed dust so it's obvious an effect is occurring
                 for (int i = 0; i < 3; ++i)
