@@ -1,12 +1,6 @@
-﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Pets;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -92,7 +86,6 @@ namespace CalamityMod.Items.Accessories.Vanity
             {
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
-                //Player.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
             }
         }
     }
