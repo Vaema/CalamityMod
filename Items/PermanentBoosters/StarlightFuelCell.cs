@@ -12,24 +12,16 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 20;
             Item.height = 20;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.Lime;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item122;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item122;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Lime;
             Item.SetRevExclusive();
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.adrenalineBoostTwo)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanUseItem(Player player) => !player.Calamity().adrenalineBoostTwo;
 
         public override bool? UseItem(Player player)
         {
