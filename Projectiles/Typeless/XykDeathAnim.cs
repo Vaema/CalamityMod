@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 32;
-            Projectile.scale = 0.55f; // Normally we dont put scale here, but it doesn't matter this time
+            Projectile.scale = 0.55f; // Normally we don't put scale here, but it doesn't matter this time
         }
 
         public override void AI()
