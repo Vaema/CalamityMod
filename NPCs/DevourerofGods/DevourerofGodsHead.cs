@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(6, 0, 0, 0);
+            NPC.value = Item.buyPrice(2, 0, 0, 0);
             NPC.Opacity = 0f;
             NPC.behindTiles = true;
             NPC.noGravity = true;

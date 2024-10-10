@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 430;
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<MantisBanner>();

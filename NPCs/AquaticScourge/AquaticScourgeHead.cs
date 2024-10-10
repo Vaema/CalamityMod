@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
             NPC.behindTiles = true;
             NPC.chaseable = false;
             NPC.noGravity = true;

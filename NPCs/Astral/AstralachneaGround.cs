@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 630;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.38f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.timeLeft = NPC.activeTime * 2;
             AnimationType = NPCID.WallCreeper;
             Banner = ModContent.NPCType<AstralachneaWall>();

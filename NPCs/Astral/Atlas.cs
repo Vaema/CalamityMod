@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.08f;
-            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.value = Item.buyPrice(0, 0, 50, 0);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
             NPC.rarity = 1;

@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<AstrumDeusBossBar>();
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(0, 50, 0, 0);
             NPC.alpha = 255;
             NPC.behindTiles = true;
             NPC.noGravity = true;
