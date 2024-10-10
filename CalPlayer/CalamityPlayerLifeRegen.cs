@@ -396,7 +396,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -423,7 +423,7 @@ namespace CalamityMod.CalPlayer
                     bloodfinTimer = 30;
 
                     if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -752,7 +752,7 @@ namespace CalamityMod.CalPlayer
                 reaverRegenCooldown = 0;
 
                 if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.statLife += 1;
+                    Player.HealPlayer(1, HealTextType.None);
             }
 
             if (BloomStoneRegen)

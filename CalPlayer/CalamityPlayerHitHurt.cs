@@ -2251,15 +2251,13 @@ namespace CalamityMod.CalPlayer
                 if (daedalusAbsorb && Main.rand.NextBool(10))
                 {
                     int healAmt = (int)(hurtInfo.Damage / 2D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (absorber)
                 {
                     int healAmt = (int)(hurtInfo.Damage / 20D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (witheringDamageDone > 0)
@@ -2268,8 +2266,7 @@ namespace CalamityMod.CalPlayer
                     if (healCompenstationRatio > 1D)
                         healCompenstationRatio = 1D;
                     int healCompensation = (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.statLife += (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.HealEffect(healCompensation);
+                    Player.HealPlayer((int)(healCompenstationRatio * hurtInfo.Damage));
                     Player.AddBuff(ModContent.BuffType<Withered>(), 1080);
                     witheringDamageDone = 0;
                 }

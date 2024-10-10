@@ -616,9 +616,7 @@ namespace CalamityMod.Items
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
-                    player.statLife += 5;
-                    if (Main.myPlayer == player.whoAmI)
-                        player.HealEffect(5, true);
+                    player.HealPlayer(5);
                 }
             }
             return true;
