@@ -591,6 +591,16 @@ namespace CalamityMod
             return Color.Lerp(currentColor, nextColor, increment * colors.Length % 1f);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static bool IsAnyChannelGreaterThan(this Color a, Color b, bool includeAlpha = false)
+        {
+            if (a.R > b.R) return true;
+            if (a.G > b.G) return true;
+            if (a.B > b.B) return true;
+            if (includeAlpha && a.A > b.B) return true;
+            return false;
+        }
+
         // Cached for efficiency purposes.
         internal static readonly FieldInfo UImageFieldMisc0 = typeof(MiscShaderData).GetField("_uImage0", BindingFlags.NonPublic | BindingFlags.Instance);
         internal static readonly FieldInfo UImageFieldMisc1 = typeof(MiscShaderData).GetField("_uImage1", BindingFlags.NonPublic | BindingFlags.Instance);
