@@ -83,6 +83,10 @@ namespace CalamityMod.Projectiles.Ranged
             // If the holdout hasn't reached any charge and the player's isn't holding the weapon anymore: kill it.
             if (State == AIState.Level0 && Owner.CantUseHoldout())
                 Projectile.Kill();
+
+            // At all times, don't allow the holdout to persist if the player dies or is no longer active.
+            if (!Owner.active || Owner.dead)
+                Projectile.Kill();
         }
 
         public override void HoldoutAI()
@@ -135,7 +139,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 GunTipPosition,
                                 Projectile.velocity,
                                 ProjectileType<TauCannonBeam>(),
-                                (int)(Projectile.damage * 8f),
+                                (int)(Projectile.damage * 13f),
                                 Projectile.knockBack * 3,
                                 Projectile.owner,
                                 ai1: Projectile.whoAmI);
@@ -161,13 +165,13 @@ namespace CalamityMod.Projectiles.Ranged
                                     GunTipPosition + Projectile.velocity * 25f,
                                     Projectile.velocity,
                                     ProjectileType<TauCannonBeam>(),
-                                    (int)(Projectile.damage * 0.5f),
+                                    (int)(Projectile.damage * 0.7f),
                                     Projectile.knockBack * 5,
                                     Projectile.owner,
                                     ai1: Projectile.whoAmI,
                                     ai2: 1f);
 
-                                int randomPortalAmount = Main.rand.Next(4, 7);
+                                int randomPortalAmount = Main.rand.Next(4, 5+1);
                                 for (int i = 0; i < randomPortalAmount; i++)
                                 {
                                     Projectile.NewProjectileDirect(
@@ -181,7 +185,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 }
                             }
 
-                            modItem.Charge -= 3.5f;
+                            modItem.Charge -= 2.5f;
 
                             HasShotBeam = true;
                         }

@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public Color color1 = Color.MediumTurquoise;
-        public Color color2 = Color.Coral;
+        public Color turquoiseColor = Color.MediumTurquoise;
+        public Color coralColor = Color.Coral;
 
         public override void SetStaticDefaults()
         {
@@ -42,14 +42,14 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 278, Scale: Main.rand.NextFloat(0.5f, 0.8f));
                 trailDust.noGravity = true;
-                trailDust.color = Main.rand.NextBool(3) ? color2 : color1;
+                trailDust.color = Main.rand.NextBool(3) ? coralColor : turquoiseColor;
             }
 
-            Particle orb = new CustomSpark(Projectile.Center, Projectile.velocity, "CalamityMod/Projectiles/StarProj",false, 2, 1f, Color.Lerp(color1, Color.White, 0.7f), new Vector2(1f, 1f));
+            Particle orb = new CustomSpark(Projectile.Center, Projectile.velocity, "CalamityMod/Projectiles/StarProj",false, 2, 1f, Color.Lerp(turquoiseColor, Color.White, 0.7f), new Vector2(1f, 1f));
             GeneralParticleHandler.SpawnParticle(orb);
 
             if (Projectile.ai[2] == 5)
-                CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 12, 70f);
+                CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 15f, 50f);
         }
 
         public override void OnKill(int timeLeft)
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust boomDust = Dust.NewDustPerfect(Projectile.Center, 278, (MathHelper.TwoPi / dustAmount * i).ToRotationVector2() * Main.rand.NextFloat(5f, 8f), Scale: Main.rand.NextFloat(0.6f, 1f));
                 boomDust.noGravity = true;
-                boomDust.color = Main.rand.NextBool(3) ? color2 : color1;
+                boomDust.color = Main.rand.NextBool(3) ? coralColor : turquoiseColor;
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         private float WidthFunction(float completionRatio) => Projectile.scale * 32f * CalamityUtils.Convert01To010(completionRatio);
 
-        private Color ColorFunction(float completionRatio) => Color.Lerp(color1, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
+        private Color ColorFunction(float completionRatio) => Color.Lerp(turquoiseColor, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
         public override bool PreDraw(ref Color lightColor)
         {

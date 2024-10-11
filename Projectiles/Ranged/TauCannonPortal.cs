@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Player Owner = Main.player[Projectile.owner];
                 Vector2 moveTotarget = (Owner.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 25)
+                if (Projectile.velocity.Length() < 15)
                     Projectile.velocity += moveTotarget * 0.05f;
                 else
                     Projectile.velocity *= 0.98f;
@@ -69,18 +69,18 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
-                int randomBoltAmount = Main.rand.Next(8, 13);
+                int randomBoltAmount = Main.rand.Next(9, 12+1);
                 float starterAngle = Main.rand.NextFloat(MathHelper.TwoPi);
                 for (int i = 0; i < randomBoltAmount; i++)
                 {
                     float angle = starterAngle + (MathHelper.TwoPi / randomBoltAmount * i);
-                    Vector2 velocity = angle.ToRotationVector2() * 15f;
+                    Vector2 velocity = angle.ToRotationVector2() * 14f;
                     Projectile.NewProjectileDirect(
                         Projectile.GetSource_FromThis(),
                         Projectile.Center,
                         velocity,
                         ModContent.ProjectileType<TauCannonBolt>(),
-                        Projectile.damage,
+                        (int)(Projectile.damage * 0.65f),
                         Projectile.knockBack,
                         Projectile.owner, 0, 0, 5);
                 }

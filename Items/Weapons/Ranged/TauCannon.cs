@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = 592;
+            Item.damage = 620;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 180;
             Item.shoot = ModContent.ProjectileType<TauCannonHoldout>();
@@ -39,14 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool AltFunctionUse(Player player) => false;
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityGlobalItem modItem = Item.Calamity();
-            if (player.ownedProjectileCounts[Item.shoot] == 0 && modItem.Charge > 0)
-                return true;
-            else
-                return false;
-        }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0 && Item.Calamity().Charge > 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
