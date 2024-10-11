@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.DataStructures;
 using Terraria;
@@ -11,17 +7,16 @@ using Microsoft.Xna.Framework;
 using Terraria.GameContent.Drawing;
 using System.Reflection;
 using Terraria.ID;
-using System.Runtime.CompilerServices;
 
 namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
-        private readonly static BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
-        private readonly static BindingFlags NonPublicInstance = BindingFlags.NonPublic | BindingFlags.Instance;
+        private static readonly BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
+        private static readonly BindingFlags NonPublicInstance = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        private readonly static FastField<TileDrawing, Color> MediumQualityLightRequirement = new("_mediumQualityLightingRequirement", NonPublicInstance);
-        private readonly static FastField<TileDrawing, Color> HighQualityLightRequirement = new("_highQualityLightingRequirement", NonPublicInstance);
+        private static readonly FastField<TileDrawing, Color> MediumQualityLightRequirement = new("_mediumQualityLightingRequirement", NonPublicInstance);
+        private static readonly FastField<TileDrawing, Color> HighQualityLightRequirement = new("_highQualityLightingRequirement", NonPublicInstance);
 
         private readonly static Rectangle[] Rects9Slice = [
             new Rectangle(x: 0, y: 0, width: 4, height: 4),
@@ -142,7 +137,7 @@ namespace CalamityMod.Systems
         private static MethodInfo ShouldTileShineMethod;
         private static bool ShouldTileShine(ushort type, short frameX)
         {
-            ShouldTileShineMethod ??= typeof(TileDrawing).GetMethod("ShouldTileShine", BindingFlags.NonPublic | BindingFlags.Static);
+            ShouldTileShineMethod ??= typeof(TileDrawing).GetMethod("ShouldTileShine", NonPublicStatic);
             return (bool)ShouldTileShineMethod.Invoke(null, [type, frameX]);
         }
     }
