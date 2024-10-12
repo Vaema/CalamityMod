@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Armor.Silva
                 AddIngredient<EffulgentFeather>(5).
                 AddIngredient<AscendantSpiritEssence>(2).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SilvaArmor>()).
                 Register();
         }
     }

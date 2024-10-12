@@ -82,6 +82,7 @@ namespace CalamityMod.Items.Armor.Demonshade
             CreateRecipe().
                 AddIngredient<ShadowspecBar>(12).
                 AddTile<DraedonsForge>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DemonshadeBreastplate>()).
                 Register();
         }
 

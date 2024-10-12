@@ -69,6 +69,7 @@ namespace CalamityMod.Items.Armor.Mollusk
                 AddIngredient<MolluskHusk>(6).
                 AddIngredient<SeaPrism>(15).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<MolluskShelleggings>()).
                 Register();
         }
     }

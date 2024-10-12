@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
                 AddIngredient<PlagueCellCanister>(29).
                 AddIngredient(ItemID.Nanites, 19).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PlagueReaperStriders>()).
                 Register();
         }
     }
