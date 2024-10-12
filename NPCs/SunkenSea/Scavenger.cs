@@ -168,6 +168,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // If an item was found, go after it
                         if (curDist != 0)
                         {
+                            NPC.netUpdate = true;
                             Phase = (int)PhaseType.FoundItem;
                         }
                     }
@@ -181,6 +182,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // If the item is no longer valid, go back to idle behaviour
                         if (HeldItemIndex <= -1)
                         {
+                            NPC.netUpdate = true;
                             Phase = (int)PhaseType.Idle;
                             return;
                         }
@@ -189,6 +191,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         Item targetItem = Main.item[HeldItemIndex];
                         if (!targetItem.active || !currencies.ContainsKey(targetItem.type))
                         {
+                            NPC.netUpdate = true;
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Idle;
@@ -203,6 +206,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Grab the item if close enough
                         if (targetItem.Distance(NPC.Center) < 20)
                         {
+                            NPC.netUpdate = true;
                             NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Bartering;
                             // If the item's stack is 1, despawn the item. Otherwise decrement its stack by 1.
@@ -230,12 +234,14 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Calculate the reward
                         if (TradeTimer == 132)
                         {
+                            NPC.netUpdate = true;
                             HeldItemType = CalculateReward();
                         }
 
                         // After some time, spit out a reward and go back to idle with a cooldown
                         if (TradeTimer > (50 * 2) + 100)
                         {
+                            NPC.netUpdate = true;
                             HeldItemIndex = -1;
                             Phase = (int)PhaseType.Idle;
                             // This timer increments during its idle phase so it's set to a negative value
