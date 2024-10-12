@@ -56,37 +56,20 @@ namespace CalamityMod.Systems
             Color tileLight = drawData.tileLight;
             if (tileLight.R <= 0 && tileLight.G <= 0 && tileLight.B <= 0)
                 return;
-            
+
+            // Generic Drawing Parameter
+            Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+            var tileRandomFrame = Math.Clamp(tile.TileFrameNumber, 0, 2);
+            var isFullBright = tile.IsTileFullbright;
+
+            // Sliced Rendering
+            var sliceRenderingPrepared = false;
             var slices = drawData.colorSlices;
             int sliceLength = 0;
             var sliceRects = Array.Empty<Rectangle>();
             var sliceState = SliceState.None;
             var shouldTileShine = ShouldTileShine(tileType, (short)(drawData.tileFrameX + drawData.addFrX));
 
-            // Is HalfBlock condition is also in vanilla, so we follow that
-            if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
-            {
-                var midQualityThreshold = MediumQualityLightRequirement.Get(self);
-                var highQualityThreshold = HighQualityLightRequirement.Get(self);
-                if (tileLight.IsAnyChannelGreaterThan(highQualityThreshold))
-                {
-                    sliceLength = 9;
-                    sliceState = SliceState.Slice_9;
-                    sliceRects = Rects9Slice;
-                    Lighting.GetColor9Slice(tileX, tileY, ref slices);
-                }
-                else if (tileLight.IsAnyChannelGreaterThan(midQualityThreshold))
-                {
-                    sliceLength = 4;
-                    sliceState = SliceState.Slice_4;
-                    sliceRects = Rects4Slice;
-                    Lighting.GetColor4Slice(tileX, tileY, ref slices);
-                }
-            }
-
-            Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
-            var tileRandomFrame = Math.Clamp(tile.TileFrameNumber, 0, 2);
-            var isFullBright = tile.IsTileFullbright;
             var blendingData = tile.Get<TileBlendingData>(); // Since we are not editing the value, we can just copy the values from here
             for (int idx = 0; idx < TileBlendingData.Length; idx++)
             {
@@ -99,12 +82,39 @@ namespace CalamityMod.Systems
                 var rect = TileBlendTexture.SideFlagsToSheetRect(data);
                 var texture = TileBlendTextureLoader.Registry[sheetIdx].BlendTextures[tileRandomFrame];
 
+                // Prepare Slice Rendering
+                if (!sliceRenderingPrepared)
+                {
+                    // Is HalfBlock condition is also in vanilla, so we follow that
+                    if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
+                    {
+                        var midQualityThreshold = MediumQualityLightRequirement.Get(self);
+                        var highQualityThreshold = HighQualityLightRequirement.Get(self);
+                        if (tileLight.IsAnyChannelGreaterThan(highQualityThreshold))
+                        {
+                            sliceLength = 9;
+                            sliceState = SliceState.Slice_9;
+                            sliceRects = Rects9Slice;
+                            Lighting.GetColor9Slice(tileX, tileY, ref slices);
+                        }
+                        else if (tileLight.IsAnyChannelGreaterThan(midQualityThreshold))
+                        {
+                            sliceLength = 4;
+                            sliceState = SliceState.Slice_4;
+                            sliceRects = Rects4Slice;
+                            Lighting.GetColor4Slice(tileX, tileY, ref slices);
+                        }
+                    }
+
+                    sliceRenderingPrepared = true;
+                }
+
                 // No Slice Drawing
                 if (sliceState == SliceState.None || isFullBright)
                 {
                     var drawColor = isFullBright ? Color.White : tileLight;
                     Main.spriteBatch.Draw(texture, drawPos, rect, drawColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
-                    return;
+                    continue;
                 }
 
                 // Sliced Drawing
