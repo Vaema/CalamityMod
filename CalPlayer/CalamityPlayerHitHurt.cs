@@ -245,6 +245,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // Xyk vanity death animation
+            if (XykVisualsBlue || XykVisualsOrange)
+            {
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), Main.zenithWorld ? Main.rand.Next(5000, 50000 + 1) : 0, 0, Player.whoAmI);
+            }
+
             if (hInferno)
             {
                 foreach (NPC n in Main.ActiveNPCs)
@@ -278,12 +284,7 @@ namespace CalamityMod.CalPlayer
                     chaliceBleedoutBuffer = 0D;
                     chaliceDamagePointPartialProgress = 0D;
                 }
-
-                Player.statLife += 100;
-                Player.HealEffect(100);
-
-                if (Player.statLife > Player.statLifeMax2)
-                    Player.statLife = Player.statLifeMax2;
+                Player.HealPlayer(100);
 
                 Player.AddCooldown(Cooldowns.NebulousCore.ID, CalamityUtils.SecondsToFrames(90));
                 return false;
@@ -307,11 +308,7 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 3;
-                        Player.HealEffect(Player.statLifeMax2 / 3);
-
-                        if (Player.statLife > Player.statLifeMax2)
-                            Player.statLife = Player.statLifeMax2;
+                        Player.HealPlayer(Player.statLifeMax2 / 3);
                     }
                 }
 
@@ -528,7 +525,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -636,7 +633,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -2260,15 +2257,13 @@ namespace CalamityMod.CalPlayer
                 if (daedalusAbsorb && Main.rand.NextBool(10))
                 {
                     int healAmt = (int)(hurtInfo.Damage / 2D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (absorber)
                 {
                     int healAmt = (int)(hurtInfo.Damage / 20D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (witheringDamageDone > 0)
@@ -2277,8 +2272,7 @@ namespace CalamityMod.CalPlayer
                     if (healCompenstationRatio > 1D)
                         healCompenstationRatio = 1D;
                     int healCompensation = (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.statLife += (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.HealEffect(healCompensation);
+                    Player.HealPlayer((int)(healCompenstationRatio * hurtInfo.Damage));
                     Player.AddBuff(ModContent.BuffType<Withered>(), 1080);
                     witheringDamageDone = 0;
                 }
@@ -2727,7 +2721,7 @@ namespace CalamityMod.CalPlayer
                         var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, DemonshadeHelm.ShadowScytheEntitySourceContext);
                         for (int l = 0; l < 2; l++)
                         {
-                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(3000);
+                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
                             shadowbeamDamage = Player.ApplyArmorAccDamageBonusesTo(shadowbeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
@@ -2740,7 +2734,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int l = 0; l < 5; l++)
                         {
-                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(5000);
+                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
                             scytheDamage = Player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);

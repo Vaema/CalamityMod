@@ -640,12 +640,12 @@ namespace CalamityMod
                     234 } }, // 176 in rapid fire
                 { new Tuple<int, int>(NPCID.Retinazer, ModContent.ProjectileType<HomingLaserDart>()), new int[] { 70, 120, 136, 152, 228 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ProjectileID.CursedFlameHostile), new int[] { 50, 100, 120, 140, 210 } },
-                { new Tuple<int, int>(NPCID.Spazmatism, ProjectileID.EyeFire), new int[] { 60, 120, 148, 176, 264 } },
+                { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<CursedFire>()), new int[] { 60, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<Shadowflamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 60, 100, 128, 156, 234 } },
                 { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorLaser>()), new int[] { 50, 108, 132, 156, 234 } },
                 { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorEnergyBomb>()), new int[] { 70, 120, 148, 176, 264 } },
-                //{ new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveaFlamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
+                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorFlamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SulphuricAcidMist>()), new int[] { 60, 100, 120, 140, 210 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SandPoisonCloud>()), new int[] { 70, 120, 136, 152, 228 } },

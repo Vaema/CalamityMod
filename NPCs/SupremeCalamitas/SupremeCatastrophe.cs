@@ -6,7 +6,6 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -16,7 +15,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -46,6 +44,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public ref float ElapsedVerticalDistance => ref NPC.ai[3];
         public ref float AttackDelayTimer => ref NPC.localAI[0];
         public ref float BigAttackTimer => ref NPC.localAI[1];
+
+        public bool isDeathmode = (CalamityWorld.death || BossRushEvent.BossRushActive);
 
         public static Asset<Texture2D> GlowTexture;
 
@@ -99,6 +99,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCatastrophe")
             });
         }
@@ -167,7 +168,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && Main.masterMode && !broIsAlive)
+            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && isDeathmode && !broIsAlive)
             {
                 if (NPC.life > (NPC.lifeMax * 0.65f))
                     NPC.life = (int)(NPC.lifeMax * 0.65f);
@@ -588,7 +589,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
                     {
                         NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && Main.masterMode && !broIsAlive)
+                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && isDeathmode && !broIsAlive)
                         {
                             for (int i = 0; i < 45; i++)
                             {

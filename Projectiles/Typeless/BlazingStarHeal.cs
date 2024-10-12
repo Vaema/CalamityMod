@@ -2,6 +2,7 @@
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -64,10 +65,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (!player.immune && playerDist < 30f * Projectile.scale && Projectile.timeLeft <= 190)
             {
                 int healAmt = Utils.Clamp((200 - Projectile.timeLeft) / 10, 1, 10); //min heal is 5, max heal is 10, achievable after 2 seconds
-                player.HealEffect(healAmt, false);
-                player.statLife += healAmt;
-                if (player.statLife > player.statLifeMax2)
-                    player.statLife = player.statLifeMax2;
+                player.HealPlayer(healAmt, HealTextType.Local);
 
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, index, healAmt);
 

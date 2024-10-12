@@ -76,15 +76,7 @@ namespace CalamityMod.Projectiles.Pets
                             {
                                 continue;
                                 //Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1);
-                                //player.statLife += 20;
-                                //if (Main.myPlayer == player.whoAmI)
-                                //{
-                                //    player.HealEffect(20, true);
-                                //}
-                                //if (player.statLife > player.statLifeMax2)
-                                //{
-                                //    player.statLife = player.statLifeMax2;
-                                //}
+                                //player.HealPlayer(20);
                                 //Main.item[itemIndex] = new Item();
                                 //if (Main.netMode == 1)
                                 //{

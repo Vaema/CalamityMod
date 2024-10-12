@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.08f;
-            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.value = Item.buyPrice(0, 0, 50, 0);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
             NPC.rarity = 1;
@@ -658,7 +658,7 @@ namespace CalamityMod.NPCs.Astral
         {
             npcLoot.Add(ModContent.ItemType<TitanHeart>());
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 6, 8, 7, 9));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 7);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 10);
         }
     }
 }

@@ -616,9 +616,7 @@ namespace CalamityMod.Items
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
-                    player.statLife += 5;
-                    if (Main.myPlayer == player.whoAmI)
-                        player.HealEffect(5, true);
+                    player.HealPlayer(5);
                 }
             }
             return true;
@@ -1006,6 +1004,8 @@ namespace CalamityMod.Items
             {
                 player.setBonus = CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.CrystalAssassin");
                 modPlayer.DashID = string.Empty;
+                modPlayer.rogueStealthMax += 0.9f;
+                modPlayer.wearingRogueArmor = true;
             }
             else if (set == "SquireTier2")
             {

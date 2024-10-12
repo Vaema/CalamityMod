@@ -13,25 +13,17 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 20;
             Item.height = 20;
+            Item.consumable = true;
             Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Zombie13; // frog sfx
+            Item.useStyle = ItemUseStyleID.HoldUp;
             // Same price as Frog Leg, which is used to shimmer into it
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<HotPink>();
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Zombie13; // frog sfx
-            Item.consumable = true;
             Item.Calamity().devItem = true;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.nimbleBounderBoost)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanUseItem(Player player) => !player.Calamity().nimbleBounderBoost;
 
         public override bool? UseItem(Player player)
         {

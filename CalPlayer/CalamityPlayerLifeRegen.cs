@@ -4,6 +4,7 @@ using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
@@ -171,6 +172,8 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
+            // NOTE: This massive if chain is also referenced in CalamityPlayer.PostNurseHeal
+            // TODO -- Change this into any kind of organized data list in order to eliminate these two if chains
             if (vodka)
             {
                 alcoholPoisonLevel++;
@@ -281,8 +284,9 @@ namespace CalamityMod.CalPlayer
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
 
+                // This has to last over 60 frames for the nurse to count the debuff, so...
                 if (Player.whoAmI == Main.myPlayer)
-                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 2, false);
+                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 61, false);
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;
@@ -392,7 +396,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -419,7 +423,7 @@ namespace CalamityMod.CalPlayer
                     bloodfinTimer = 30;
 
                     if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -737,9 +741,7 @@ namespace CalamityMod.CalPlayer
                 if (pinkCandleHealFraction >= 1D)
                 {
                     pinkCandleHealFraction = 0D;
-
-                    if (Player.statLife < Player.statLifeMax2)
-                        Player.statLife++;
+                    Player.HealPlayer(1, HealTextType.None);
                 }
             }
             else
@@ -750,7 +752,7 @@ namespace CalamityMod.CalPlayer
                 reaverRegenCooldown = 0;
 
                 if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.statLife += 1;
+                    Player.HealPlayer(1, HealTextType.None);
             }
 
             if (BloomStoneRegen)

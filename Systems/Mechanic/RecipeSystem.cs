@@ -1375,15 +1375,6 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Gelatin Crystal (Queen Slime summon)
-            r = Recipe.Create(ItemID.QueenSlimeCrystal);
-            r.AddIngredient(ItemID.CrystalShard, 10);
-            r.AddIngredient(ItemID.PinkGel, 5);
-            r.AddIngredient(ItemID.SoulofLight, 5);
-            r.AddTile(TileID.Solidifier);
-            r.Register();
-            r.DisableDecraft();
-
             // Temple Key
             r = Recipe.Create(ItemID.TempleKey);
             r.AddIngredient(ItemID.JungleSpores, 15);

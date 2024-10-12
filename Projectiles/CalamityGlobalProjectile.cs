@@ -16,6 +16,7 @@ using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -187,15 +188,23 @@ namespace CalamityMod.Projectiles
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
+            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
+            // which is way too early, the projectile's own initialization isn't even done yet
+            
             CreatedByPlayerDash = source is ProjectileSource_PlayerDashHit;
 
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
             if (sourceItem != null)
                 extorterBoost = true;
 
-            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
-            // which is way too early, the projectile's own initialization isn't even done yet
+            // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
+            if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
+            {
+                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
+                projectile.Calamity().supercritHits = -1;
+            }
         }
+
         #endregion On Spawn
 
         #region Set Defaults
@@ -2656,8 +2665,9 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.ThornBall && !projectile.tileCollide)
+                else if (projectile.type == ProjectileID.ThornBall && projectile.ai[2] != 0)
                 {
+                    projectile.tileCollide = false;
                     if (projectile.alpha > 0)
                     {
                         projectile.alpha -= 30;

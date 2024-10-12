@@ -1077,7 +1077,6 @@ namespace CalamityMod
             bossChecklist.Call("SubmitEntrySpawnItems", calamity, new Dictionary<string, object>()
             {
                 { "Terraria Plantera", ItemType<Portabulb>() },
-                { "Terraria Golem", ItemType<OldPowerCell>() },
                 { "Terraria CultistBoss", ItemType<EidolonTablet>() }
             });
 
