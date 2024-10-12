@@ -210,8 +210,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<PolypLauncher>())
                 .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
                 .AddWithCustomValue(ModContent.ItemType<BloodwormItem>(), Item.buyPrice(gold: 40), downedOldDuke)
-                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.InBeach)
-                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnough, Condition.InBeach, Condition.DownedEyeOfCthulhu)
+                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.InBeach)
+                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons, Condition.InBeach, Condition.DownedEyeOfCthulhu)
                 .Register();
         }
 
