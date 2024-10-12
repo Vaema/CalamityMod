@@ -309,14 +309,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Syncing
 
-        protected override void SendMoreExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer)
         {
+            base.SendExtraAI(writer);
             writer.Write7BitEncodedInt(AnimationFrames);
             writer.Write7BitEncodedInt(TimePerAnimationFrame);
         }
 
-        protected override void ReceiveMoreExtraAI(BinaryReader reader)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
+            base.ReceiveExtraAI(reader);
             AnimationFrames = reader.Read7BitEncodedInt();
             TimePerAnimationFrame = reader.Read7BitEncodedInt();
         }
