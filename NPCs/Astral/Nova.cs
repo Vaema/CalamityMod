@@ -298,10 +298,10 @@ namespace CalamityMod.NPCs.Astral
 
             // 2-3 Stardust (3-4 Expert+)
             exploded.OnFailedConditions(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 2, 3, 3, 4));
-            exploded.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedAstrumAureus), ModContent.ItemType<StellarCannon>(), 7));
+            exploded.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedAstrumAureus), ModContent.ItemType<StellarCannon>(), 10));
 
             // If exploded, then have a chance to drop Glorious End and nothing else
-            exploded.Add(ModContent.ItemType<GloriousEnd>(), 7);
+            exploded.Add(ModContent.ItemType<GloriousEnd>(), 10);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

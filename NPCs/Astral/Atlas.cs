@@ -658,7 +658,7 @@ namespace CalamityMod.NPCs.Astral
         {
             npcLoot.Add(ModContent.ItemType<TitanHeart>());
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 6, 8, 7, 9));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 7);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 10);
         }
     }
 }
