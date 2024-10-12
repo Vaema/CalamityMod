@@ -1147,20 +1147,25 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Biome
-        public bool ZoneCalamity => Player.InModBiome(GetInstance<BrimstoneCragsBiome>());
-        public bool ZoneAstral => Player.InModBiome(GetInstance<BiomeManagers.AstralInfectionBiome>()) && !ZoneAbyss;
-        public bool ZoneSunkenSea => ZoneSunkenBurrows || ZoneSunkenSeaReefs || ZoneSunkenSeaPolyp || ZoneSunkenSeaShores;
-        public bool ZoneSunkenBurrows => Player.InModBiome(GetInstance<SunkenSeaBurrowsBiome>());
-        public bool ZoneSunkenSeaReefs => Player.InModBiome(GetInstance<SunkenSeaReefsBiome>());
-        public bool ZoneSunkenSeaPolyp => Player.InModBiome(GetInstance<SunkenSeaPolypBiome>());
-        public bool ZoneSunkenSeaShores => Player.InModBiome(GetInstance<SunkenSeaShoresBiome>());
-        public bool ZoneSulphur => Player.InModBiome(GetInstance<SulphurousSeaBiome>());
+        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneBasaltGully;
+        public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
+        public bool ZonePolypForest => Player.InModBiome<PolypForestBiome>();
+        public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
+        public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
+        public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
+        
+        public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();
         public bool ZoneAbyss => ZoneAbyssLayer1 || ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4;
-        public bool ZoneAbyssLayer1 => Player.InModBiome(GetInstance<AbyssLayer1Biome>());
-        public bool ZoneAbyssLayer2 => Player.InModBiome(GetInstance<AbyssLayer2Biome>());
-        public bool ZoneAbyssLayer3 => Player.InModBiome(GetInstance<AbyssLayer3Biome>());
-        public bool ZoneAbyssLayer4 => Player.InModBiome(GetInstance<AbyssLayer4Biome>());
-        public bool ZoneFloralParadise => Player.InModBiome(GetInstance<FloralParadiseBiome>());
+        public bool ZoneAbyssLayer1 => Player.InModBiome<AbyssLayer1Biome>();
+        public bool ZoneAbyssLayer2 => Player.InModBiome<AbyssLayer2Biome>();
+        public bool ZoneAbyssLayer3 => Player.InModBiome<AbyssLayer3Biome>();
+        public bool ZoneAbyssLayer4 => Player.InModBiome<AbyssLayer4Biome>();
+        
+        public bool ZoneFloralParadise => Player.InModBiome<FloralParadiseBiome>();
+        
+        public bool ZoneCalamity => Player.InModBiome<BrimstoneCragsBiome>();
+        
+        public bool ZoneAstral => Player.InModBiome<AstralInfectionBiome>() && !ZoneAbyss;
 
         public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
 
