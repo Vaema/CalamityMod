@@ -326,7 +326,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 Animation = AnimationState.Explosion;
 
             // Resets the timer when it needs to use it again.
-            if (newBehavior == RecoveringBehavior || PreviousBehavior == RecoveringBehavior)
+            if (newBehavior == RecoveringBehavior || CurrentBehavior == RecoveringBehavior)
                 RecoverTimer = 0f;
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
