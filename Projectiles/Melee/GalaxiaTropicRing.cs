@@ -31,8 +31,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Mode == 0f && Main.rand.NextFloat() < FourSeasonsGalaxia.CancerPassiveLifeStealProc)
             {
-                Owner.statLife += FourSeasonsGalaxia.CancerPassiveLifeSteal;
-                Owner.HealEffect(FourSeasonsGalaxia.CancerPassiveLifeSteal);
+                Owner.HealPlayer(FourSeasonsGalaxia.CancerPassiveLifeSteal);
             }
             else
             {

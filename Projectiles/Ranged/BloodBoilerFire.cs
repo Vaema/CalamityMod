@@ -207,10 +207,7 @@ namespace CalamityMod.Projectiles.Ranged
                             }
 
                             Main.player[Main.myPlayer].lifeSteal -= heal;
-                            player.statLife += heal;
-                            player.HealEffect(heal);
-                            if (Main.player[Projectile.owner].statLife > Main.player[Projectile.owner].statLifeMax2)
-                                Main.player[Projectile.owner].statLife = Main.player[Projectile.owner].statLifeMax2;
+                            player.HealPlayer(heal);
                         }
 
                         Projectile.Kill();

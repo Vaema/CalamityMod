@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<CryogenBossBar>();
             NPC.noGravity = true;

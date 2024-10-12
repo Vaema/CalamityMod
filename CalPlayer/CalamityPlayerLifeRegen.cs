@@ -4,6 +4,7 @@ using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
@@ -395,7 +396,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -422,7 +423,7 @@ namespace CalamityMod.CalPlayer
                     bloodfinTimer = 30;
 
                     if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -740,9 +741,7 @@ namespace CalamityMod.CalPlayer
                 if (pinkCandleHealFraction >= 1D)
                 {
                     pinkCandleHealFraction = 0D;
-
-                    if (Player.statLife < Player.statLifeMax2)
-                        Player.statLife++;
+                    Player.HealPlayer(1, HealTextType.None);
                 }
             }
             else
@@ -753,7 +752,7 @@ namespace CalamityMod.CalPlayer
                 reaverRegenCooldown = 0;
 
                 if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.statLife += 1;
+                    Player.HealPlayer(1, HealTextType.None);
             }
 
             if (BloomStoneRegen)

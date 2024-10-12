@@ -56,7 +56,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.DR_NERD(0.05f);
             }
 
-            NPC.value = Item.buyPrice(0, 0, 3, 65);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

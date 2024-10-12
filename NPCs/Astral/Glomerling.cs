@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 50;

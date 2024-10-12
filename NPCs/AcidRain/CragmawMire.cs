@@ -76,17 +76,18 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.damage = 66;
             NPC.lifeMax = 4000;
             NPC.defense = 25;
+            NPC.value = Item.buyPrice(0, 2, 0, 0);
 
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.damage = 160;
                 NPC.lifeMax = 80630;
                 NPC.defense = 80;
+                NPC.value *= 10f;
             }
 
             NPC.behindTiles = true;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 3, 60, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;

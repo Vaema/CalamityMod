@@ -269,7 +269,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.width = NPC.height = 44;
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
-            NPC.value = Item.buyPrice(30, 0, 0, 0);
+            NPC.value = Item.buyPrice(3, 0, 0, 0);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
@@ -291,6 +291,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCalamitas")
             });
         }

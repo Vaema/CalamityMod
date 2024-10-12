@@ -12,6 +12,7 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
@@ -244,8 +245,6 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
-        public int spiritOriginBullseyeShootCountdown = 0;
-        public int spiritOriginConvertedCrit = 0;
         public int RustyMedallionCooldown = 0;
         public int MiniSwamerCooldown = 0;
         public float SulphWaterPoisoningLevel;
@@ -640,11 +639,13 @@ namespace CalamityMod.CalPlayer
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
+        public int spiritOriginCritBoost = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
         public bool HasReducedDashFirstFrame = false;
         public bool HasIncreasedDashFirstFrame = false;
+        public bool IsFirstDashFrame = false;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -657,6 +658,8 @@ namespace CalamityMod.CalPlayer
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
         public bool Pauldron = false;
+        public bool XykVisualsBlue = false;
+        public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
         public bool royalGel = false;
         public bool handWarmer = false;
@@ -1140,6 +1143,7 @@ namespace CalamityMod.CalPlayer
         public bool LiliesOfFinalityBool = false;
         public bool FlarebatBool = false;
         public bool FrostbatBool = false;
+        public bool AmphibiansGuitarBool = false;
         #endregion
 
         #region Biome
@@ -1828,6 +1832,8 @@ namespace CalamityMod.CalPlayer
             normalityRelocator = false;
             flameLickedShell = false;
             Pauldron = false;
+            XykVisualsBlue = false;
+            XykVisualsOrange = false;
             manaOverloader = false;
             royalGel = false;
             handWarmer = false;
@@ -1904,9 +1910,11 @@ namespace CalamityMod.CalPlayer
             lumenousAmulet = false;
             oceanCrest = false;
             aquaticEmblem = false;
+            if (!spiritOrigin)
+                spiritOriginCritBoost = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
-            spiritOriginConvertedCrit = 0;
+
 
             astralStarRain = false;
 
@@ -2241,6 +2249,7 @@ namespace CalamityMod.CalPlayer
             LiliesOfFinalityBool = false;
             FlarebatBool = false;
             FrostbatBool = false;
+            AmphibiansGuitarBool = false;
             #endregion
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
@@ -2376,7 +2385,7 @@ namespace CalamityMod.CalPlayer
             bloodflareCoreRemainingHealOverTime = 0;
             #endregion
 
-            #region Debuffs
+            #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
             arsenalCooldown = 0;
@@ -2396,7 +2405,7 @@ namespace CalamityMod.CalPlayer
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
-            spiritOriginConvertedCrit = 0;
+            spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0f;
@@ -2893,10 +2902,7 @@ namespace CalamityMod.CalPlayer
                     int damage = Player.ApplyArmorAccDamageBonusesTo(proj.damage / 10);
 
                     Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), damage, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
-                    Player.statLife += 2;
-                    Player.HealEffect(2);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(2);
                 }
             }
             if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Cooldowns.SandCloak.ID))

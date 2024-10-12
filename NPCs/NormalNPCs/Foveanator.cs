@@ -314,7 +314,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float laserSpeed = 3f + 1.5f * enrageScale;
+                                float laserSpeed = 6f + 1.5f * enrageScale;
                                 int type = ModContent.ProjectileType<FoveanatorLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
 
@@ -478,7 +478,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            float projectileSpeed = shootLaser ? (3f + 1.5f * enrageScale) : 16f;
+                            float projectileSpeed = shootLaser ? (6f + 1.5f * enrageScale) : 16f;
+                            float ai0 = shootLaser ? 0f : (death ? 1f : 0f);
                             Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                             int numProj = shootLaser ? 4 : 2;
                             int spread = shootLaser ? 15 : 30;
@@ -486,7 +487,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, ai0);
                             }
                         }
                     }
@@ -737,7 +738,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer, death ? 2f : 1f);
                             }
                         }
 
@@ -837,7 +838,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, death ? 1f : 0f);
                                 }
                             }
 
@@ -863,7 +864,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                float projectileSpeed = 4f + 2f * enrageScale;
+                                float projectileSpeed = 8f + 2f * enrageScale;
                                 Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                                 int numProj = 4;
                                 int spread = 40;
