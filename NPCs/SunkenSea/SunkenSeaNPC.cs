@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 using static Terraria.Utilities.NPCUtils;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -19,6 +21,36 @@ namespace CalamityMod.NPCs.SunkenSea
     /// </summary>
     public abstract class SunkenSeaNPC : ModNPC
     {
+        #region Biome Designation
+
+        [Flags]
+        protected enum BiomeFlags : byte
+        {
+            None = 0,
+            UndergroundDesert = 1,
+            TimelessShores = 2,
+            RadiantReefs = 4,
+            PolypForest = 8,
+            GleamingBurrows = 16,
+            BasaltGully = 32,
+        }
+
+        protected abstract BiomeFlags BiomeDesignation { get; }
+
+        protected readonly Dictionary<BiomeFlags, (Func<NPCSpawnInfo, bool> SpawnCondition, int BiomeType)> BiomeCorrespondentValues = new()
+        {
+            { BiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
+            { BiomeFlags.TimelessShores, (spawnInfo => spawnInfo.Player.Calamity().ZoneTimelessShores, GetInstance<TimelessShoresBiome>().Type) },
+            { BiomeFlags.RadiantReefs, (spawnInfo => spawnInfo.Player.Calamity().ZoneRadiantReefs, GetInstance<RadiantReefsBiome>().Type) },
+            { BiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
+            { BiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
+            { BiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
+        };
+
+        protected List<Func<NPCSpawnInfo, bool>> BiomeSpawnConditions { get; private set; } = new();
+
+        #endregion
+
         #region Fields & Properties
 
         /// <summary>
@@ -30,6 +62,8 @@ namespace CalamityMod.NPCs.SunkenSea
         /// A list which stores the NPC's IDs that this creature avoids.
         /// </summary>
         protected abstract List<int> AvoidNPCs { get; }
+
+        protected abstract float SpawningChance { get; }
 
         /// <summary>
         /// Since a lot of these NPCs change behaviors a lot, this abstract class provides an <see cref="Action"/> property to store and trigger behaviors.<br/>
@@ -158,7 +192,6 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         protected List<Vector2> PathfindingPoints { get; set; }
 
-        
         protected int PathPointIndex { get; set; }
 
         private bool _hasSpawned;
@@ -167,29 +200,42 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region ModNPC Overrides
 
-        public sealed override void SetStaticDefaults()
+        public override void SetStaticDefaults()
         {
             NPCID.Sets.UsesNewTargetting[Type] = true;
             NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
-            ExtraSetStaticDefaults();
         }
 
-        public sealed override void OnSpawn(IEntitySource source) { }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        public override void SetDefaults()
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            List<int> biomeTypes = [];
+            foreach (var flag in Enum.GetValues<BiomeFlags>())
             {
-                new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")
-            });
+                if (flag == BiomeFlags.None || !BiomeDesignation.HasFlag(flag))
+                    continue;
+                BiomeSpawnConditions.Add(BiomeCorrespondentValues[flag].SpawnCondition);
+                if (flag == BiomeFlags.UndergroundDesert)
+                    continue;
+                biomeTypes.Add(BiomeCorrespondentValues[flag].BiomeType);
+            }
+            SpawnModBiomes = [.. biomeTypes];
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) => bestiaryEntry.Info.AddRange([new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")]);
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (BiomeSpawnConditions.Any(f => f.Invoke(spawnInfo)) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+                return SpawningChance;
+            return 0f;
         }
 
         public sealed override void AI()
         {
             if (!_hasSpawned)
             {
-                CreatureOnSpawn();
                 _coneDetectionDirection = Vector2.UnitX * NPC.direction;
+                BehaviorOnSpawn();
                 _hasSpawned = true;
                 NetUpdate();
             }
@@ -204,15 +250,9 @@ namespace CalamityMod.NPCs.SunkenSea
         #region Methods
 
         /// <summary>
-        /// Same function as <see cref="SetStaticDefaults"/>, and since that one's <see langword="sealed"/> for safety purposes,<br/>
-        /// this method serves the same.
+        /// Same function as OnSpawn, but this one actually syncs to the server.
         /// </summary>
-        protected virtual void ExtraSetStaticDefaults() { }
-
-        /// <summary>
-        /// Same function as <see cref="OnSpawn(IEntitySource)"/>, but this one actually syncs to the server.
-        /// </summary>
-        protected virtual void CreatureOnSpawn() { }
+        protected virtual void BehaviorOnSpawn() { }
 
         /// <summary>
         /// A method that is called on <see cref="AI"/> every frame, to put your actual enemy AI.
