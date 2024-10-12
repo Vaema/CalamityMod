@@ -5,17 +5,10 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,49 +18,74 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class Scavenger : ModNPC
     {
-        public static List<(int, int)> itemValues = new List<(int, int)>()
-        {
-            (ItemID.CopperCoin, 1),
-            (ItemID.SilverCoin, 5),
-            (ItemID.GoldCoin, 10),
-            (ItemID.PlatinumCoin, 20),
-            (ItemID.WhitePearl, 5),
-            (ItemID.BlackPearl, 10),
-            (ItemID.PinkPearl, 20),
-        };
+        // Items that can be given to the Scavenger
+        public static Dictionary<int, int> currencies = new Dictionary<int, int>();
 
-        public static List<(int, float)> rewards = new List<(int, float)>();
+        // Items that can be received form the Scavenger
+        public static Dictionary<int, float> rewards = new Dictionary<int, float>();
 
+        // Ditto the above but in a different format that allows for clean rng rolls
+        public static WeightedRandom<int> rewardsRoll = new WeightedRandom<int>();
+
+        // The in world index of the item the crab is going after
         public int HeldItemIndex
         {
             get => (int)NPC.ai[1] - 1;
             set => NPC.ai[1] = value + 1;
         }
 
-        public bool AcceptableItem(int type)
+        // The type of currency the crab is currently holding
+        public int HeldItemType
         {
-            if (type <= 0)
-                return false;
-            foreach (var v in itemValues)
-            {
-                if (v.Item1 == type)
-                    return true;
-            }
-            return false;
+            get => (int)NPC.ai[2];
+            set => NPC.ai[2] = value;
+        }
+
+        // The crab's current behaviour
+        public ref float Phase => ref NPC.ai[0];
+
+        // Used during trading and as a cooldown
+        public ref float TradeTimer => ref NPC.ai[3];
+
+        public enum PhaseType
+        {
+            Idle = 0,
+            FoundItem = 1,
+            Bartering = 2
         }
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
 
-            rewards.Add((ModContent.ItemType<Baroclaw>(), 1 / 10f));
-            rewards.Add((ModContent.ItemType<PearlShard>(), 1 / 2f));
-            rewards.Add((ModContent.ItemType<HalibutCannon>(), 1 / 20f));
-            rewards.Add((ModContent.ItemType<PrismShard>(), 1f));
-            rewards.Add((ModContent.ItemType<Navystone>(), 1f));
-            rewards.Add((ModContent.ItemType<AmidiasSpark>(), 1 / 5f));
-            rewards.Add((ModContent.ItemType<Earth>(), 1 / 100f));
-            rewards.Add((ModContent.ItemType<AbandonedWulfrumHelmet>(), 1 / 10f));
+            // Fill the currency list
+            // The key is the item type, the value is how many rolls the item provides
+            currencies.Add((int)ItemID.CopperCoin, 1);
+            currencies.Add((int)ItemID.SilverCoin, 5);
+            currencies.Add((int)ItemID.GoldCoin, 10);
+            currencies.Add((int)ItemID.PlatinumCoin, 20);
+            currencies.Add((int)ItemID.WhitePearl, 5);
+            currencies.Add((int)ItemID.BlackPearl, 10);
+            currencies.Add((int)ItemID.PinkPearl, 20);
+
+            // Fill the rewards list
+            // The key is the item type, the value is the item's rarity
+            rewards.Add(ModContent.ItemType<Baroclaw>(), 10f);
+            rewards.Add(ModContent.ItemType<PearlShard>(), 2f);
+            rewards.Add(ModContent.ItemType<HalibutCannon>(), 20f);
+            rewards.Add(ModContent.ItemType<PrismShard>(), 1f);
+            rewards.Add(ModContent.ItemType<Navystone>(), 1f);
+            rewards.Add(ModContent.ItemType<AmidiasSpark>(), 5f);
+            rewards.Add(ModContent.ItemType<Earth>(), 100f);
+            rewards.Add(ModContent.ItemType<AbandonedWulfrumHelmet>(), 10f);
+
+            // Fill the drop pool
+            foreach (var v in rewards)
+            {
+                // Have the value act as a divisor since WeightedRandom prioritizes higher values
+                rewardsRoll.Add(v.Key, 1 / v.Value);
+            }
         }
 
         public override void SetDefaults()
@@ -104,22 +122,25 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            NPCID.Sets.CantTakeLunchMoney[Type] = true;
+            // Check to make sure the target item still exists
             if (HeldItemIndex > 0)
             {
                 Item targetItem = Main.item[HeldItemIndex];
+                // If the item doesn't exist, reset its held item
                 if (targetItem == null || !targetItem.active)
                 {
                     HeldItemIndex = -1;
                 }
             }
 
-            switch (NPC.ai[0])
+            switch (Phase)
             {
-                case 0:
+                // Do idle stuff, actual behavior not determined rn
+                case (int)PhaseType.Idle:
                     NPC.noGravity = false;
                     NPC.noTileCollide = false;
-                    if (NPC.ai[3] >= 0 && HeldItemIndex <= -1)
+                    // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
+                    if (TradeTimer >= 0 && HeldItemIndex <= -1)
                     {
                         bool foundItem = false;
                         foreach (Item i in Main.ActiveItems)
@@ -133,65 +154,84 @@ namespace CalamityMod.NPCs.SunkenSea
                             if (i.Distance(NPC.Center) > 460)
                                 continue;
 
-                            if (AcceptableItem(i.type))
+                            // If a valid item is found, go after it
+                            if (currencies.ContainsKey(i.type))
                             {
                                 HeldItemIndex = i.whoAmI;
-                                NPC.ai[0] = 1;
+                                Phase = (int)PhaseType.FoundItem;
                                 break;
                             }
                         }
                     }
-                    if (NPC.ai[3] < 0)
-                        NPC.ai[3]++;
+                    // Increment the trade timer back to zero if it is below zero
+                    if (TradeTimer < 0)
+                        TradeTimer++;
                     break;
-                case 1:
+                // Go to the item
+                case (int)PhaseType.FoundItem:
                     {
+                        // If the item is no longer valid, go back to idle behaviour
                         if (HeldItemIndex <= -1)
                         {
-                            NPC.ai[0] = 0;
+                            Phase = (int)PhaseType.Idle;
                             return;
                         }
+                        
+                        // If the item is suddenly no longer valid for some reason, go back to idle behaviur
                         Item targetItem = Main.item[HeldItemIndex];
-                        if (!AcceptableItem(targetItem.type))
+                        if (!currencies.ContainsKey(targetItem.type))
                         {
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
-                            NPC.ai[0] = 0;
+                            Phase = (int)PhaseType.Idle;
                             break;
                         }
+
+                        // Movement goes here
                         NPC.noGravity = true;
                         NPC.noTileCollide = true;
                         NPC.velocity = NPC.DirectionTo(targetItem.Center) * 10;
 
+                        // Grab the item if close enough
                         if (targetItem.Distance(NPC.Center) < 20)
                         {
                             NPC.velocity = Vector2.Zero;
-                            NPC.ai[0] = 2;
+                            Phase = (int)PhaseType.Bartering;
+                            // If the item's stack is 1, despawn the item. Otherwise decrement its stack by 1.
                             if (targetItem.stack == 1)
                                 targetItem.active = false;
                             else
                                 targetItem.stack--;
-                            NPC.ai[2] = targetItem.type;
+                            // Set the crab's held item type
+                            HeldItemType = targetItem.type;
                         }
                     }
                     break;
-                case 2:
+                // Ponder the held item then give a reward back
+                case (int)PhaseType.Bartering:
                     {
                         NPC.noGravity = false;
                         NPC.noTileCollide = false;
-                        NPC.ai[3]++;
-                        if (NPC.ai[3] % 40 == 0 && NPC.ai[3] < (50 * 2))
+                        TradeTimer++;
+                        // Do little hops (placeholder?)
+                        if (TradeTimer % 40 == 0 && TradeTimer < (50 * 2))
                         {
                             NPC.velocity.Y = -4;
                         }
 
-                        if (NPC.ai[3] > (50 * 2) + 100)
+                        // After some time, spit out a reward and go back to idle with a cooldown
+                        if (TradeTimer > (50 * 2) + 100)
                         {
                             HeldItemIndex = -1;
-                            NPC.ai[0] = 0;
-                            NPC.ai[3] = -CalamityUtils.SecondsToFrames(8);
-                            int itemResult = CalculateGivenItem();
-                            NPC.ai[2] = 0;
+                            Phase = (int)PhaseType.Idle;
+                            // This timer increments during its idle phase so it's set to a negative value
+                            // Once the value hits zero, the crab will be able to trade again
+                            TradeTimer = -CalamityUtils.SecondsToFrames(8);
+
+                            // Calculate the reward
+                            int itemResult = CalculateReward();
+                            HeldItemType = 0;
+                            // Spawn the reward
                             if (itemResult > 0)
                             {
                                 int i = Item.NewItem(NPC.GetSource_FromThis(), NPC.getRect(), itemResult);
@@ -203,51 +243,41 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
         
-        public int CalculateGivenItem()
+        public int CalculateReward()
         {
-            int type = (int)NPC.ai[2];
-            int value = 0;
-            foreach (var v in itemValues)
+            // Make sure the held item type is valid
+            if (currencies.TryGetValue(HeldItemType, out int value))
             {
-                if (type == v.Item1)
-                {
-                    value = v.Item2;
-                    break;
-                }
-            }
-            if (value == 0)
-                return 0;
+                // If the held item has no roll value, immediately return
+                if (value == 0)
+                    return 0;
 
-            int currentItem = 0;
-            float currentValue = 0;
+                // The reward's item type
+                int currentItem = 0;
+                // The rarity value of the reward
+                float currentValue = 0;
 
-            WeightedRandom<int> rewardsRoll = new WeightedRandom<int>();
-            foreach (var v in rewards)
-            {
-                rewardsRoll.Add(v.Item1, v.Item2);
-            }
-            for (int i = 0; i < value; i++)
-            {
-                int newItem = rewardsRoll.Get();
-                float newValue = 0;
-                foreach (var v in rewards)
+                // Roll based on the held item's roll value
+                for (int i = 0; i < value; i++)
                 {
-                    if (v.Item1 == newItem)
+                    // Grab an item from the pool and its value
+                    int newItem = rewardsRoll.Get();
+                    float newValue = rewards[newItem];
+                    // If the rarity of the reward is larger than the current reward, have it take priority
+                    // This also applies if currentValue is at its default
+                    if (newValue > currentValue || currentValue == 0)
                     {
-                        newValue = v.Item2;
-                        break;
+                        currentValue = newValue;
+                        currentItem = newItem;
                     }
                 }
-                if (newValue < currentValue || currentValue == 0)
-                {
-                    currentValue = newValue;
-                    currentItem = newItem;
-                }
+                return currentItem;
             }
-            return currentItem;
+            else
+            {
+                return 0;
+            }
         }
-
-
 
         public override void FindFrame(int frameHeight)
         {
