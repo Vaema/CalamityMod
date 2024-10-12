@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -58,6 +59,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
+            Main.npcFrameCount[Type] = 4;
 
             // Fill the currency list
             // The key is the item type, the value is how many rolls the item provides
@@ -93,7 +95,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noGravity = true;
             NPC.damage = 20;
             NPC.width = 48;
-            NPC.height = 46;
+            NPC.height = 69;
             NPC.defense = 5;
             NPC.lifeMax = 350;
             NPC.aiStyle = -1;
@@ -142,25 +144,31 @@ namespace CalamityMod.NPCs.SunkenSea
                     // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
                     if (TradeTimer >= 0 && HeldItemIndex <= -1)
                     {
-                        bool foundItem = false;
+                        float curDist = 0;
                         foreach (Item i in Main.ActiveItems)
                         {
-                            if (foundItem)
-                                break;
                             if (!i.active)
                                 continue;
                             if (i.beingGrabbed)
                                 continue;
-                            if (i.Distance(NPC.Center) > 460)
+                            float distance = i.Distance(NPC.Center);
+                            if (distance > 460)
                                 continue;
 
-                            // If a valid item is found, go after it
+                            // Check if the item is a valid currency and is the closest possible currency
                             if (currencies.ContainsKey(i.type))
                             {
-                                HeldItemIndex = i.whoAmI;
-                                Phase = (int)PhaseType.FoundItem;
-                                break;
+                                if (distance < curDist || curDist == 0)
+                                {
+                                    HeldItemIndex = i.whoAmI;
+                                }
+                                curDist = distance;
                             }
+                        }
+                        // If an item was found, go after it
+                        if (curDist != 0)
+                        {
+                            Phase = (int)PhaseType.FoundItem;
                         }
                     }
                     // Increment the trade timer back to zero if it is below zero
@@ -179,7 +187,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         
                         // If the item is suddenly no longer valid for some reason, go back to idle behaviur
                         Item targetItem = Main.item[HeldItemIndex];
-                        if (!currencies.ContainsKey(targetItem.type))
+                        if (!targetItem.active || !currencies.ContainsKey(targetItem.type))
                         {
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
@@ -219,6 +227,12 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.velocity.Y = -4;
                         }
 
+                        // Calculate the reward
+                        if (TradeTimer == 132)
+                        {
+                            HeldItemType = CalculateReward();
+                        }
+
                         // After some time, spit out a reward and go back to idle with a cooldown
                         if (TradeTimer > (50 * 2) + 100)
                         {
@@ -228,15 +242,13 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Once the value hits zero, the crab will be able to trade again
                             TradeTimer = -CalamityUtils.SecondsToFrames(8);
 
-                            // Calculate the reward
-                            int itemResult = CalculateReward();
-                            HeldItemType = 0;
                             // Spawn the reward
-                            if (itemResult > 0)
+                            if (HeldItemType > 0)
                             {
-                                int i = Item.NewItem(NPC.GetSource_FromThis(), NPC.getRect(), itemResult);
+                                int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X, (int)NPC.Center.Y - 80, NPC.width, NPC.height), HeldItemType);
                                 Main.item[i].velocity = new Vector2(Main.rand.NextFloat(-4f, 4f), -4);
                             }
+                            HeldItemType = 0;
                         }
                     }
                     break;
@@ -281,6 +293,17 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void FindFrame(int frameHeight)
         {
+            if (Phase != (int)PhaseType.Bartering)
+                NPC.frame.Y = 0;
+            else
+            {
+                if (TradeTimer < 66)
+                    NPC.frame.Y = frameHeight;
+                else if (TradeTimer < 133)
+                    NPC.frame.Y = frameHeight * 2;
+                else
+                    NPC.frame.Y = frameHeight * 3;
+            }
             /*NPC.frameCounter += 0.15f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
@@ -318,7 +341,23 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            return true;
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (NPC.spriteDirection == 1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 npcOffset = NPC.Center - screenPos;
+            npcOffset -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+
+            Texture2D item = TextureAssets.Item[HeldItemType].Value;
+            Vector2 itemOffset = TradeTimer > 133 ? new Vector2(0, -40) : new Vector2(-8, 30);
+            if (TradeTimer < 66 || TradeTimer > 133)
+                spriteBatch.Draw(item, npcOffset + itemOffset, null, drawColor, 0, new Vector2(item.Width / 2, item.Height), 1f, spriteEffects, 0);
+
+            return false;
         }
     }
 }
