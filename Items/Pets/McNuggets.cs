@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<YharonSonPet>(), ModContent.BuffType<YharonSonBuff>());
-            Item.value = Item.sellPrice(gold: 30);
+            Item.value = Item.sellPrice(gold: 20);
             Item.rare = ModContent.RarityType<Violet>();
         }
 

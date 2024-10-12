@@ -268,10 +268,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
 
                         int heal = 25;
-                        Owner.statLife += heal;
-                        Owner.HealEffect(heal);
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
+                        Owner.HealPlayer(heal);
 
                         spawnPullBlood = false;
                     }

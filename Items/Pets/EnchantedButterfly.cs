@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<Sparks>(), ModContent.BuffType<SparksBuff>());
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Pink;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
         }
 

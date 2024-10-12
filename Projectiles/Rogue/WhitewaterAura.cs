@@ -40,10 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (targetDist < 200f * areaScale && time % 6 == 0)
                 {
-                    player.statLife += 1;
-                    player.HealEffect(1);
-                    if (player.statLife > player.statLifeMax2)
-                        player.statLife = player.statLifeMax2;
+                    player.HealPlayer(1);
                 }
             }
 

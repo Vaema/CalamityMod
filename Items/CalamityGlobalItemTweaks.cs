@@ -229,7 +229,7 @@ namespace CalamityMod.Items
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
                 { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
                 { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
-                { ItemID.SolarEruption, Do(DamageExact(157)) },
+                { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
                 { ItemID.SpaceGun, Do(DamageExact(25)) },
                 { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageExact(14)) },

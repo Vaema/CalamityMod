@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.lavaImmune = true;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(0, 0, 75, 0);
             NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ScornEaterBanner>();

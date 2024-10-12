@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool spawnBoom = true;
         public Color mainColor = Color.OrangeRed;
         public bool finalFlip = false;
+        public int pause = 0;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
-            Projectile.ai[1] = -1;
+            Projectile.ai[1] = 1;
             base.OnSpawn(source);
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -61,6 +62,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
+            if (pause > 0)
+            {
+                pause--;
+                Animation--;
+                return;
+            }
+
             AnimationProgress = Animation % useAnim;
             DrawUnconditionally = false;
 
@@ -171,7 +179,10 @@ namespace CalamityMod.Projectiles.Melee
                                 GeneralParticleHandler.SpawnParticle(sparker);
                             }
                             else
-                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomSpark(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, "CalamityMod/Particles/LargeBloom", false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.35f), mainColor * 0.65f, new Vector2(1f, 1.2f), true, false, 0, false, false, 0.45f));
+                                //GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
+                            }
                         }
                     }
                     else
@@ -220,25 +231,40 @@ namespace CalamityMod.Projectiles.Melee
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
             }
 
-            if (Projectile.ai[1] == -1 && spawnBoom)
+            if (spawnBoom)
             {
-                Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0, 0, 2);
+                pause = 6;
+                for (int i = 0; i < 5; i++)
+                {
+                    Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (-25), false, 12, 0.12f - i * 0.025f, mainColor, new Vector2(3.75f, 0.9f), true, false, 1.15f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                for (int i = 0; i < 15; i++)
+                {
+                    float power = Main.rand.NextFloat(0, 0.6f);
+                    Particle sparker = new CustomSpark(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY).RotatedByRandom(power) * (-Main.rand.NextFloat(18.5f, 50) * (1 - power)), "CalamityMod/Particles/Sparkle", false, 38, Main.rand.NextFloat(2.2f, 4.8f), mainColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
+                    GeneralParticleHandler.SpawnParticle(sparker);
+                }
+                SoundStyle hit2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                SoundEngine.PlaySound(hit2 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, Projectile.Center);
+                SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
+                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.2f }, Projectile.Center);
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
+
+                if (Projectile.ai[1] == -1)
+                {
+                    Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, 2);
+                }
+
                 spawnBoom = false;
             }
-
-            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-            SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.2f }, Projectile.Center);
-            SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
-            SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
             int heal = (int)(MathHelper.Clamp(80 - Projectile.numHits * 40, 1, 80));
             if (Projectile.numHits < 30)
             {
-                Owner.statLife += heal;
-                Owner.HealEffect(heal);
-                if (Owner.statLife > Owner.statLifeMax2)
-                    Owner.statLife = Owner.statLifeMax2;
+                Owner.HealPlayer(heal);
             }
 
             if (Projectile.numHits <= 2)
@@ -265,10 +291,8 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
                 {
-                    Particle mini = new CustomPulse(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 1f), mainColor, "CalamityMod/Particles/HealingPlus", Vector2.One, Main.rand.NextFloat(-10, 10), Main.rand.NextFloat(0.8f, 1.4f) * scaleFactor, 0.2f * scaleFactor, 35, true);
-                    GeneralParticleHandler.SpawnParticle(mini);
-
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.7f));
+                    float power = Main.rand.NextFloat(0.2f, 0.8f);
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, (Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld)).RotatedByRandom(power) * (Main.rand.NextFloat(10f, 35f) * ( 1 - power)));
                     dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * scaleFactor;
                     dust2.noGravity = true;
                     dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);

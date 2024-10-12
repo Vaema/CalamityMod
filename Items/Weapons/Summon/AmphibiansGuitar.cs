@@ -1,0 +1,42 @@
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Summon;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Items.Weapons.Summon
+{
+    public class AmphibiansGuitar : ModItem, ILocalizedModType
+    {
+        public override string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetDefaults()
+        {
+            Item.damage = 200;
+            Item.DamageType = DamageClass.Summon;
+            Item.shoot = ModContent.ProjectileType<AmphibiansGuitarHoldout>();
+
+            (Item.width, Item.height) = (72, 64);
+            Item.useAnimation = Item.useTime = 15;
+            Item.mana = 10;
+            Item.noMelee = true;
+            Item.autoReuse = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.TheAxe).
+                AddIngredient(ItemID.Frog).
+                AddIngredient<CoreofCalamity>(3).
+                AddIngredient<LivingShard>(8).
+                AddTile(TileID.MythrilAnvil).
+                Register();
+        }
+    }
+}

@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(6, 0, 0, 0);
+            NPC.value = Item.buyPrice(2, 0, 0, 0);
             NPC.Opacity = 0f;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -2921,7 +2921,31 @@ namespace CalamityMod.NPCs.DevourerofGods
                 });
                 Color messageColor = Color.Cyan;
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
+
+                // Speak in Wingdings if the Punch Card is equipped
+                if (target.Calamity().punchCard && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+                {
+                    Vector2 vector = DoGWingdings.Wingdings.MeasureString(Language.GetTextValue(text));
+                    // This is how normal combat text spawn positioning is handled
+                    float positionX = (float)location.X + (float)location.Width * 0.5f - vector.X * 0.5f + Main.rand.Next(-(int)((double)location.Width * 0.5), (int)((double)location.Width * 0.5) + 1);
+                    float positionY = (float)location.Y + (float)location.Height * 0.25f - vector.Y * 0.5f + Main.rand.Next(-(int)((double)location.Height * 0.5), (int)((double)location.Height * 0.5) + 1);
+                    if (target.gravDir == -1f)
+                    {
+                        positionY = (float)location.Y + (float)location.Height * 0.75f + vector.Y * 0.5f;
+                    }
+                    // Spawn a projectile that mimmicks combat text behaviour
+                    int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f , - 14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
+                    Projectile proj = Main.projectile[p];
+                    proj.rotation = proj.velocity.X < 0 ? -0.06f : 0.06f;
+
+                    // Pass the spoken dialogue into it
+                    DoGWingdings wingdings = Main.projectile[p].ModProjectile<DoGWingdings>();
+                    wingdings.dialogue = Language.GetTextValue(text);
+                }
+                else
+                {
+                    CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
+                }
                 target.Calamity().dogTextCooldown = 60;
             }
         }

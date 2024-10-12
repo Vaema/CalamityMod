@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
@@ -29,7 +30,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 170;
             NPC.knockBackResist = 0.45f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 60);
             NPC.HitSound = SoundID.NPCHit33;
             NPC.DeathSound = SoundID.NPCDeath36;
             Banner = NPC.type;
@@ -130,6 +131,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ItemID.Ruby, 1, 2, 4);
             npcLoot.Add(ModContent.ItemType<ScuttlersJewel>(), 6);
+            npcLoot.Add(ModContent.ItemType<XyksBlessingBlue>(), 25);
         }
     }
 }

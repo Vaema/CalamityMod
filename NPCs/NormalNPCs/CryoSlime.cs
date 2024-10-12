@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 180;
             NPC.knockBackResist = 0.6f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -75,7 +75,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            // TODO -- This dust was an invalid dust. Replaced with a random dust.
             int dustType = 91;
             for (int k = 0; k < 5; k++)
             {

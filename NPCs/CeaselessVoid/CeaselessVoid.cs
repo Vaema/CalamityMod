@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             CalamityGlobalNPC global = NPC.Calamity();
             global.DR = 0.5f;
             NPC.LifeMaxNERB(65000, 78000, 72000);
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

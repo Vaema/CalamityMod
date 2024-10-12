@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Enums;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
@@ -508,8 +509,7 @@ namespace CalamityMod.DataStructures
             {
                 if (!player.moonLeech)
                 {
-                    player.statLife += OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal;
-                    player.HealEffect(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
+                    player.HealPlayer(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
                 }
 
                 Procced = false;

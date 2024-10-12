@@ -2013,7 +2013,7 @@ namespace CalamityMod
                 ProjectileType<PhotonRipperProjectile>(),
                 ProjectileType<PlaguedFuelPackCloud>(),
                 ProjectileType<PlantationStaffSporeCloud>(),
-                ProjectileType<PrismaticBeam>(),
+                ProjectileType<PrismaticRay>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
                 ProjectileType<RespiteblockHoldout>(),
@@ -2594,25 +2594,27 @@ namespace CalamityMod
                 // 9.5 minutes in total for vanilla Boss Rush bosses
             };
 
+            // NOTE: This does not account for Calamity's base value increases
             BossValues = new SortedDictionary<int, int>
             {
-                { NPCID.KingSlime, Item.buyPrice(0, 5) },
-                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10) },
-                { NPCID.QueenBee, Item.buyPrice(0, 15) },
-                { NPCID.SkeletronHead, Item.buyPrice(0, 20) },
-                { NPCID.Deerclops, Item.buyPrice(0, 20) },
-                { NPCID.WallofFlesh, Item.buyPrice(0, 25) },
-                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30) },
-                { NPCID.Spazmatism, Item.buyPrice(0, 40) },
-                { NPCID.Retinazer, Item.buyPrice(0, 40) },
-                { NPCID.TheDestroyer, Item.buyPrice(0, 40) },
-                { NPCID.SkeletronPrime, Item.buyPrice(0, 40) },
-                { NPCID.Plantera, Item.buyPrice(0, 50) },
-                { NPCID.HallowBoss, Item.buyPrice(0, 60) },
-                { NPCID.Golem, Item.buyPrice(0, 60) },
-                { NPCID.DukeFishron, Item.buyPrice(0, 75) },
-                { NPCID.CultistBoss, Item.buyPrice(1) },
-                { NPCID.MoonLordCore, Item.buyPrice(1, 50) }
+                { NPCID.KingSlime, Item.buyPrice(0, 2) },
+                { NPCID.EyeofCthulhu, Item.buyPrice(0, 2) },
+                // Evil bosses drop 5 gold in vanilla; unmodified
+                { NPCID.QueenBee, Item.buyPrice(0, 8) },
+                { NPCID.Deerclops, Item.buyPrice(0, 8) },
+                { NPCID.SkeletronHead, Item.buyPrice(0, 12) },
+                { NPCID.WallofFlesh, Item.buyPrice(0, 12) },
+                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 16) },
+                { NPCID.Spazmatism, Item.buyPrice(0, 16) },
+                { NPCID.Retinazer, Item.buyPrice(0, 16) },
+                { NPCID.TheDestroyer, Item.buyPrice(0, 16) },
+                { NPCID.SkeletronPrime, Item.buyPrice(0, 16) },
+                { NPCID.Plantera, Item.buyPrice(0, 20) },
+                { NPCID.Golem, Item.buyPrice(0, 25) },
+                { NPCID.HallowBoss, Item.buyPrice(0, 30) },
+                { NPCID.DukeFishron, Item.buyPrice(0, 30) },
+                { NPCID.CultistBoss, Item.buyPrice(0, 50) }
+                // Moon Lord drops 1 plat in vanilla; unmodified
             };
 
             bossTypes = new SortedDictionary<int, int>()

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<LordePet>(), ModContent.BuffType<LordeBuff>());
-            Item.value = Item.sellPrice(gold: 5, silver: 50);
+            Item.value = Item.sellPrice(gold: 5); // Master Mode pet price (not Master but close enough)
             Item.rare = ItemRarityID.Master;
         }
 

@@ -95,7 +95,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 0, 0);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();

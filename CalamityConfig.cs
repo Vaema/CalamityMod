@@ -7,6 +7,7 @@ using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
 using Terraria;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace CalamityMod
@@ -65,7 +66,7 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool NewVanillaTextures { get; set; }
+        public bool EnableVanillaTextureEdits { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;

@@ -34,6 +34,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.5f;
 
         /// <summary>
+        /// A value from 0 to 1 that defines how fast the weapon turns to the mouse.<br/>
+        /// Defaults to 0.2.
+        /// </summary>
+        public virtual float WeaponTurnSpeed => 0.2f;
+
+        /// <summary>
         /// How fast <see cref="OffsetLengthFromArm"/> returns back to <see cref="MaxOffsetLengthFromArm"/>.<br/>
         /// In consequence, this is how fast the holdout goes back to its position.<br/>
         /// Defaults to 0.3f.
@@ -200,7 +206,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Vector2 lengthOffset = Projectile.rotation.ToRotationVector2() * OffsetLengthFromArm;
             Vector2 armOffset = new Vector2(Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetXUpwards : OffsetXDownwards) * direction, BaseOffsetY * Owner.gravDir + Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetYUpwards : OffsetYDownwards) * Owner.gravDir);
             Projectile.Center = armPosition + lengthOffset + armOffset;
-            Projectile.velocity = holdoutDirection.AngleTowards(ownerToMouse.ToRotation(), 0.2f).ToRotationVector2();
+            Projectile.velocity = holdoutDirection.AngleTowards(ownerToMouse.ToRotation(), WeaponTurnSpeed).ToRotationVector2();
             Projectile.rotation = holdoutDirection;
 
             Projectile.spriteDirection = direction;
