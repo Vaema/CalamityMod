@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 using static Terraria.Utilities.NPCUtils;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -22,16 +24,6 @@ namespace CalamityMod.NPCs.SunkenSea
         #region Fields & Properties
 
         /// <summary>
-        /// A list which stores the NPC's IDs that this creature hunts.
-        /// </summary>
-        protected abstract List<int> HuntNPCs { get; }
-
-        /// <summary>
-        /// A list which stores the NPC's IDs that this creature avoids.
-        /// </summary>
-        protected abstract List<int> AvoidNPCs { get; }
-
-        /// <summary>
         /// Since a lot of these NPCs change behaviors a lot, this abstract class provides an <see cref="Action"/> property to store and trigger behaviors.<br/>
         /// Automatically resets <see cref="PathfindingPoints"/> and <see cref="PathTimer"/> to not cause errors.
         /// </summary>
@@ -40,11 +32,14 @@ namespace CalamityMod.NPCs.SunkenSea
             get => _currentBehavior;
             set
             {
-                PreviousBehavior = _currentBehavior;
+                OnBehaviorChange(value);
+
                 PathfindingPoints = null;
                 PathPointIndex = 0;
-                OnBehaviorChange(value);
+
+                PreviousBehavior = _currentBehavior;
                 _currentBehavior = value;
+
                 NetUpdate();
             }
         }
@@ -54,6 +49,34 @@ namespace CalamityMod.NPCs.SunkenSea
         /// The previous behavior that was used for <see cref="CurrentBehavior"/>.
         /// </summary>
         protected Action PreviousBehavior { get; private set; }
+
+        /// <summary>
+        /// A lot of these Sunken Sea creatures use the <see cref="CalamityUtils.AStar"/> pathfinding algorithm,<br/>
+        /// so this abstract class provides a <see cref="List{T}"/> so you can store the paths.<br/>
+        /// Defaults to <see langword="null"/>.
+        /// </summary>
+        protected List<Vector2> PathfindingPoints { get; set; }
+
+        /// <summary>
+        /// The probablity that this Sunken Sea NPC spawns given the conditions.
+        /// </summary>
+        protected abstract float SpawningChance { get; }
+
+        protected int PathPointIndex { get; set; }
+
+        private bool _hasSpawned;
+
+        #region Targetting
+
+        /// <summary>
+        /// A list which stores the NPC's IDs that this creature hunts.
+        /// </summary>
+        protected abstract List<int> HuntNPCs { get; }
+
+        /// <summary>
+        /// A list which stores the NPC's IDs that this creature avoids.
+        /// </summary>
+        protected abstract List<int> AvoidNPCs { get; }
 
         /// <summary>
         /// The current NPC that this creature has detected as prey.
@@ -109,11 +132,6 @@ namespace CalamityMod.NPCs.SunkenSea
         protected Entity NearestEntity { get; private set; }
 
         /// <summary>
-        /// Whether or not the creature has detected anything at all.
-        /// </summary>
-        protected bool HasAnyTargets => CurrentPrey != null || CurrentPredator != null || CurrentPlayer != null;
-
-        /// <summary>
         /// The distance detection radius.<br/>
         /// Defaults to 300 pixels.
         /// </summary>
@@ -148,48 +166,97 @@ namespace CalamityMod.NPCs.SunkenSea
         /// Defaults to 3 seconds.
         /// </summary>
         protected virtual float PermanenceSenseTime => CalamityUtils.SecondsToFrames(3f);
-
         private int _permanenceSenseTimer;
 
         /// <summary>
-        /// A lot of these Sunken Sea creatures use the <see cref="CalamityUtils.AStar"/> pathfinding algorithm,<br/>
-        /// so this abstract class provides a <see cref="List{T}"/> so you can store the paths.<br/>
-        /// Defaults to <see langword="null"/>.
+        /// Whether or not the creature has detected anything at all.
         /// </summary>
-        protected List<Vector2> PathfindingPoints { get; set; }
+        protected bool HasAnyTargets => CurrentPrey != null || CurrentPredator != null || CurrentPlayer != null;
 
-        
-        protected int PathPointIndex { get; set; }
+        #endregion
 
-        private bool _hasSpawned;
+        #region Biome Designation
+
+        /// <summary>
+        /// The flags corresponding for the possible spawns for a Sunken Sea NPC.
+        /// </summary>
+        [Flags]
+        protected enum BiomeFlags : byte
+        {
+            None = 0,
+            UndergroundDesert = 1,
+            TimelessShores = 2,
+            RadiantReefs = 4,
+            PolypForest = 8,
+            GleamingBurrows = 16,
+            BasaltGully = 32,
+        }
+
+        /// <summary>
+        /// The biomes that this Sunken Sea NPC belongs to.
+        /// </summary>
+        protected abstract BiomeFlags BiomeDesignation { get; }
+
+        /// <summary>
+        /// Each biome has a correspoding spawn condition boolean value and a biome type.
+        /// </summary>
+        protected readonly Dictionary<BiomeFlags, (Func<NPCSpawnInfo, bool> SpawnCondition, int BiomeType)> BiomeCorrespondentValues = new()
+        {
+            { BiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
+            { BiomeFlags.TimelessShores, (spawnInfo => spawnInfo.Player.Calamity().ZoneTimelessShores, GetInstance<TimelessShoresBiome>().Type) },
+            { BiomeFlags.RadiantReefs, (spawnInfo => spawnInfo.Player.Calamity().ZoneRadiantReefs, GetInstance<RadiantReefsBiome>().Type) },
+            { BiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
+            { BiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
+            { BiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
+        };
+
+        /// <summary>
+        /// The spawn conditions for each biome that this Sunken Sea NPC belongs to.
+        /// </summary>
+        protected List<Func<NPCSpawnInfo, bool>> BiomeSpawnConditions { get; private set; } = new();
+
+        #endregion
 
         #endregion
 
         #region ModNPC Overrides
 
-        public sealed override void SetStaticDefaults()
+        public override void SetStaticDefaults()
         {
             NPCID.Sets.UsesNewTargetting[Type] = true;
             NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
-            ExtraSetStaticDefaults();
         }
 
-        public sealed override void OnSpawn(IEntitySource source) { }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        public override void SetDefaults()
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            List<int> biomeTypes = [];
+            foreach (var flag in Enum.GetValues<BiomeFlags>())
             {
-                new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")
-            });
+                if (flag == BiomeFlags.None || !BiomeDesignation.HasFlag(flag))
+                    continue;
+                BiomeSpawnConditions.Add(BiomeCorrespondentValues[flag].SpawnCondition);
+                if (flag == BiomeFlags.UndergroundDesert)
+                    continue;
+                biomeTypes.Add(BiomeCorrespondentValues[flag].BiomeType);
+            }
+            SpawnModBiomes = [.. biomeTypes];
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) => bestiaryEntry.Info.AddRange([new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")]);
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (BiomeSpawnConditions.Any(f => f.Invoke(spawnInfo)) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+                return SpawningChance;
+            return 0f;
         }
 
         public sealed override void AI()
         {
             if (!_hasSpawned)
             {
-                CreatureOnSpawn();
                 _coneDetectionDirection = Vector2.UnitX * NPC.direction;
+                BehaviorOnSpawn();
                 _hasSpawned = true;
                 NetUpdate();
             }
@@ -204,15 +271,9 @@ namespace CalamityMod.NPCs.SunkenSea
         #region Methods
 
         /// <summary>
-        /// Same function as <see cref="SetStaticDefaults"/>, and since that one's <see langword="sealed"/> for safety purposes,<br/>
-        /// this method serves the same.
+        /// Same function as OnSpawn, but this one actually syncs to the server.
         /// </summary>
-        protected virtual void ExtraSetStaticDefaults() { }
-
-        /// <summary>
-        /// Same function as <see cref="OnSpawn(IEntitySource)"/>, but this one actually syncs to the server.
-        /// </summary>
-        protected virtual void CreatureOnSpawn() { }
+        protected virtual void BehaviorOnSpawn() { }
 
         /// <summary>
         /// A method that is called on <see cref="AI"/> every frame, to put your actual enemy AI.
@@ -392,7 +453,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.netSpam = netSpam;
         }
 
-        public sealed override void SendExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write7BitEncodedInt(CurrentPrey.whoAmI);
             writer.Write7BitEncodedInt(CurrentPredator.whoAmI);
@@ -410,11 +471,9 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write7BitEncodedInt(PathPointIndex);
 
             writer.Write(_hasSpawned);
-
-            SendMoreExtraAI(writer);
         }
 
-        public sealed override void ReceiveExtraAI(BinaryReader reader)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
             CurrentPrey.whoAmI = reader.Read7BitEncodedInt();
             CurrentPredator.whoAmI = reader.Read7BitEncodedInt();
@@ -432,21 +491,7 @@ namespace CalamityMod.NPCs.SunkenSea
             PathPointIndex = reader.Read7BitEncodedInt();
 
             _hasSpawned = reader.ReadBoolean();
-
-            ReceiveMoreExtraAI(reader);
         }
-
-        /// <summary>
-        /// Same function as <see cref="SendExtraAI(BinaryWriter)"/>, but since that one already sends information and to avoid accidents,<br/>
-        /// <see cref="SendExtraAI(BinaryWriter)"/> is <see langword="sealed"/> and instead this is available.
-        /// </summary>
-        protected virtual void SendMoreExtraAI(BinaryWriter writer) { }
-
-        /// <summary>
-        /// Same function as <see cref="ReceiveExtraAI(BinaryReader)"/>, but since that one already sends information and to avoid accidents,<br/>
-        /// <see cref="ReceiveExtraAI(BinaryReader)"/> is <see langword="sealed"/> and instead this is available.
-        /// </summary>
-        protected virtual void ReceiveMoreExtraAI(BinaryReader reader) { }
 
         #endregion
     }

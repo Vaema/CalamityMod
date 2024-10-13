@@ -880,7 +880,7 @@ namespace CalamityMod.NPCs.TownNPCs
             musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
             NPCShop shop = new(Type);
-            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnough)
+            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
                 .AddWithCustomValue(ModContent.ItemType<RedWine>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Whiskey>(), Item.buyPrice(gold: 3))
@@ -916,9 +916,9 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
                 .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
                 .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods)
-                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnough, Condition.InHallow)
-                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
-                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnough, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
+                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
+                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
                 .Register();
         }
 
