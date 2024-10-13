@@ -2942,10 +2942,10 @@ namespace CalamityMod.CalPlayer
                 --bloodflareCoreRemainingHealOverTime;
             }
 
-            // 50% movement speed bonus so that you don't feel like a snail in the early game
+            // Multiplies base movement speed by 1.5x so that you don't feel like a snail in the early game
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
             if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
-                Player.moveSpeed += BalancingConstants.DefaultMoveSpeedBoost;
+                Player.maxRunSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
 
             // Reduce how slow Chilled makes the player, because it's cancerous right now
             // The moveSpeed multiplier for Chilled in vanilla is 0.75, so we just multiply by 1.166667 here to make it 0.875, effectively cutting the reduction in half
