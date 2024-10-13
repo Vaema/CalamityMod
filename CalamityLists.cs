@@ -62,7 +62,6 @@ using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
@@ -165,122 +164,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            projectileDestroyExceptionList = new List<int>()
-            {
-                //holdout projectiles
-                ProjectileID.Phantasm,
-                ProjectileID.VortexBeater,
-                ProjectileID.DD2PhoenixBow,
-                ProjectileID.LastPrism,
-                ProjectileID.LastPrismLaser,
-                ProjectileID.LaserMachinegun,
-                ProjectileID.ChargedBlasterCannon,
-                ProjectileID.MedusaHead,
-
-                ProjectileType<UrchinMaceProjectile>(),
-                ProjectileType<BrokenBiomeBladeHoldout>(),
-                ProjectileType<AridGrandeur>(),
-                ProjectileType<BitingEmbrace>(),
-                ProjectileType<DecaysRetort>(),
-                ProjectileType<GrovetendersTouch>(),
-                ProjectileType<BiomeBladeHoldout>(),
-                ProjectileType<TrueAridGrandeur>(),
-                ProjectileType<TrueBitingEmbrace>(),
-                ProjectileType<TrueDecaysRetort>(),
-                ProjectileType<TrueGrovetendersTouch>(),
-                ProjectileType<HeavensMight>(),
-                ProjectileType<HellbornHoldout>(),
-                ProjectileType<ExtantAbhorrence>(),
-                ProjectileType<TrueBiomeBladeHoldout>(),
-                ProjectileType<LamentationsOfTheChained>(),
-                ProjectileType<ChainedMeatHook>(),
-                ProjectileType<SwordsmithsPride>(),
-                ProjectileType<SanguineFury>(),
-                ProjectileType<MercurialTides>(),
-                ProjectileType<GalaxiaHoldout>(),
-                ProjectileType<PhoenixsPride>(),
-                ProjectileType<PolarisGaze>(),
-                ProjectileType<AndromedasStride>(),
-                ProjectileType<AriesWrath>(),
-                ProjectileType<ArkoftheAncientsSwungBlade>(),
-                ProjectileType<ArkoftheAncientsParryHoldout>(),
-                ProjectileType<TrueArkoftheAncientsSwungBlade>(),
-                ProjectileType<TrueArkoftheAncientsParryHoldout>(),
-                ProjectileType<TrueAncientBlast>(),
-                ProjectileType<ArkoftheElementsSwungBlade>(),
-                ProjectileType<ArkoftheElementsParryHoldout>(),
-                ProjectileType<ArkoftheCosmosSwungBlade>(),
-                ProjectileType<ArkoftheCosmosParryHoldout>(),
-                ProjectileType<BasherHoldout>(),
-                ProjectileType<GrandDadHoldout>(),
-                ProjectileType<GrandGuardianHoldout>(),
-                ProjectileType<EarthHoldout>(),
-                ProjectileType<MajesticGuardHoldout>(),
-                ProjectileType<HellkiteHoldout>(),
-                ProjectileType<RiftburstBow>(),
-                ProjectileType<CometQuasherHoldout>(),
-                ProjectileType<StellarStrikerHoldout>(),
-                ProjectileType<ContagionBow>(),
-                ProjectileType<DaemonsFlameBow>(),
-                ProjectileType<DrataliornusBow>(),
-                ProjectileType<FlakKrakenHoldout>(),
-                ProjectileType<BuzzkillHoldout>(),
-                ProjectileType<StarfleetMK2Gun>(),
-                ProjectileType<SuperradiantSlaughtererHoldout>(),
-                ProjectileType<NorfleetCannon>(),
-                ProjectileType<FlurrystormCannonShooting>(),
-                ProjectileType<ChickenCannonHeld>(),
-                ProjectileType<PumplerHoldout>(),
-                ProjectileType<ClockworkBowHoldout>(),
-                ProjectileType<UltimaBowProjectile>(),
-                ProjectileType<CondemnationHoldout>(),
-                ProjectileType<SurgeDriverHoldout>(),
-                ProjectileType<StarmageddonHeld>(),
-
-                ProjectileType<NanoPurgeHoldout>(),
-                ProjectileType<AetherfluxCannonHoldout>(),
-                ProjectileType<YharimsCrystalPrism>(),
-                ProjectileType<DarkSparkPrism>(),
-                ProjectileType<YharimsCrystalBeam>(),
-                ProjectileType<DarkSparkBeam>(),
-                ProjectileType<GhastlyVisageProj>(),
-                ProjectileType<ApotheosisWorm>(),
-                ProjectileType<SpiritCongregation>(),
-                ProjectileType<RancorLaserbeam>(),
-                ProjectileType<NebulousCataclysm_Held>(),
-
-                ProjectileType<FlakKrakenProjectile>(),
-                ProjectileType<InfernadoFriendly>(),
-                ProjectileType<DragonRageStaff>(),
-                ProjectileType<MurasamaSlash>(),
-                ProjectileType<PhaseslayerProjectile>(),
-                ProjectileType<TaintedBladeSlasher>(),
-                ProjectileType<PhotonRipperProjectile>(),
-                ProjectileType<SpineOfThanatosProjectile>(),
-
-                ProjectileType<FinalDawnProjectile>(),
-                ProjectileType<FinalDawnThrow>(),
-                ProjectileType<FinalDawnHorizontalSlash>(),
-                ProjectileType<FinalDawnFireSlash>(),
-
-                // Some hostile boss projectiles
-                ProjectileID.SaucerDeathray,
-                ProjectileID.PhantasmalDeathray,
-
-                ProjectileType<BrimstoneMonster>(),
-                ProjectileType<InfernadoRevenge>(),
-                ProjectileType<OverlyDramaticDukeSummoner>(),
-                ProjectileType<ProvidenceHolyRay>(),
-                ProjectileType<OldDukeVortex>(),
-                ProjectileType<BrimstoneRay>(),
-                ProjectileType<AresDeathBeamStart>(),
-                ProjectileType<AresGaussNukeProjectileBoom>(),
-                ProjectileType<AresLaserBeamStart>(),
-                ProjectileType<ArtemisSpinLaserbeam>(),
-                ProjectileType<BirbAura>(),
-                ProjectileType<ThanatosBeamStart>()
-            };
-
             enemyImmunityList = new List<int>()
             {
                 NPCID.KingSlime,
@@ -2103,7 +1986,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            projectileDestroyExceptionList = null;
             enemyImmunityList = null;
             confusionEnemyList = null;
             dungeonEnemyBuffList = null;

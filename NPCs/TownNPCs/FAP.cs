@@ -842,7 +842,7 @@ namespace CalamityMod.NPCs.TownNPCs
             else if (deaths > 100)
                 text += " " + this.GetLocalizedValue("Death100");
 
-            text += "\n\n" + this.GetLocalization("DonorShoutout").Format(DonatorNameList.GetRandomDonors());
+            text += "\n\n" + this.GetLocalization("DonorShoutout").Format(DonatorsNameList.GetRandomDonors());
 
             return text;
         }

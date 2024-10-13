@@ -7,13 +7,13 @@ namespace CalamityMod.Systems.Collections
     /// <summary>
     /// A <see cref="ModSystem"/> that stores all of Calamity's Patreon donator's usernames.
     /// </summary>
-    public sealed class DonatorNameList : ModSystem
+    public sealed class DonatorsNameList : ModSystem
     {
-        private static List<string> _donatorNames;
+        public static IList<string> List { get; private set; }
 
         public override void OnModLoad()
         {
-            _donatorNames =
+            List =
             [
                 "Vorbis",
                 "SoloMael",
@@ -647,14 +647,14 @@ namespace CalamityMod.Systems.Collections
             ];
         }
 
-        public override void Unload() => _donatorNames = null;
+        public override void Unload() => List = null;
 
         /// <summary>
         /// Returns 25 random donator usernames.
         /// </summary>
         public static string[] GetRandomDonors()
         {
-            List<string> donorList = new(_donatorNames);
+            List<string> donorList = new(List);
             const int maxDonorsListed = 25;
             string[] donors = new string[maxDonorsListed];
             for (int i = 0; i < maxDonorsListed; i++)
