@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 125;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 3, 0);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = Main.zenithWorld ? AresGaussNuke.NukeExplosionSound : DeathSound;
             NPC.knockBackResist = 0.7f;

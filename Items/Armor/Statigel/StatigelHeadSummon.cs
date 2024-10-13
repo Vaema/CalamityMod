@@ -76,6 +76,7 @@ namespace CalamityMod.Items.Armor.Statigel
                 AddIngredient<PurifiedGel>(5).
                 AddIngredient<BlightedGel>(5).
                 AddTile<StaticRefiner>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelHeadRogue>()).
                 Register();
         }
     }

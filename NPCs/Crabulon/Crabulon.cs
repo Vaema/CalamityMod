@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.noTileCollide = false;
             NPC.boss = true;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 10, 0, 0);
+            NPC.value = Item.buyPrice(0, 5, 0, 0);
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;

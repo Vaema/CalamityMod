@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -76,10 +77,7 @@ namespace CalamityMod.Projectiles.Healing
             if (playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
                 int heal = 10;
-                player.HealEffect(heal, false);
-                player.statLife += heal;
-                if (player.statLife > player.statLifeMax2)
-                    player.statLife = player.statLifeMax2;
+                player.HealPlayer(heal, HealTextType.Local);
 
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/OrbHeal", 5) { Volume = 0.15f }, Projectile.Center);
 

@@ -17,11 +17,11 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 42;
             Item.height = 44;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item122;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item122;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.SetRevExclusive();
         }

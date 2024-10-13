@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
@@ -10,7 +9,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
@@ -152,6 +150,10 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         private bool IsExploding => CurrentBehavior == ExplodingBehavior;
 
+        protected override BiomeFlags BiomeDesignation => BiomeFlags.RadiantReefs;
+
+        protected override float SpawningChance => SpawnCondition.CaveJellyfish.Chance * 0.9f;
+
         /// <summary>
         /// The squish of this NPC while drawing.
         /// </summary>
@@ -161,10 +163,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Other Overridden Methods
 
-        protected override void ExtraSetStaticDefaults() => Main.npcFrameCount[Type] = 16;
+        public override void SetStaticDefaults()
+        {
+            base.SetStaticDefaults();
+            Main.npcFrameCount[Type] = 16;
+        }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             NPC.damage = 20;
             NPC.lifeMax = 350;
             NPC.defense = 5;
@@ -183,21 +191,10 @@ namespace CalamityMod.NPCs.SunkenSea
             // Banner = NPC.type;
             // BannerItem = ModContent.ItemType<SharkoonBanner>();
 
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-        }
-
-        public override float SpawnChance(NPCSpawnInfo spawnInfo)
-        {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
-            {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
-            }
-            return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -245,7 +242,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region AI
 
-        protected override void CreatureOnSpawn()
+        protected override void BehaviorOnSpawn()
         {
             CurrentBehavior = IdlingBehavior;
 
@@ -329,7 +326,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 Animation = AnimationState.Explosion;
 
             // Resets the timer when it needs to use it again.
-            if (newBehavior == RecoveringBehavior || PreviousBehavior == RecoveringBehavior)
+            if (newBehavior == RecoveringBehavior || CurrentBehavior == RecoveringBehavior)
                 RecoverTimer = 0f;
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
@@ -617,8 +614,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Syncing
 
-        protected override void SendMoreExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer)
         {
+            base.SendExtraAI(writer);
             writer.Write7BitEncodedInt(AnimationFrames);
             writer.Write7BitEncodedInt(TimePerAnimationFrame);
             writer.Write(AnimationLoop);
@@ -626,8 +624,9 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write7BitEncodedInt(RandomIdleMovementUnlikeliness);
         }
 
-        protected override void ReceiveMoreExtraAI(BinaryReader reader)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
+            base.ReceiveExtraAI(reader);
             AnimationFrames = reader.Read7BitEncodedInt();
             TimePerAnimationFrame = reader.Read7BitEncodedInt();
             AnimationLoop = reader.ReadBoolean();

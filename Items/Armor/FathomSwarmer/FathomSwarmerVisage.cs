@@ -70,6 +70,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
                 AddIngredient<PlantyMush>(6).
                 AddIngredient<DepthCells>(3).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<FathomSwarmerBreastplate>()).
                 Register();
         }
     }

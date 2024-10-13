@@ -7,9 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.BiomeManagers
 {
-    public class SunkenSeaBurrowsBiome : ModBiome
+    public class TimelessShoresBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => SunkenSeaBurrowsWater.Instance;
+        public override ModWaterStyle WaterStyle => SunkenSeaShoresWater.Instance;
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/SunkenSeaBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<NavyPrismTorch>();
         public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;
@@ -21,10 +21,10 @@ namespace CalamityMod.BiomeManagers
 
         public override bool IsBiomeActive(Player player)
         {
-            bool MoreThanReefs = BiomeTileCounterSystem.SunkenSeaBurrowsTiles > BiomeTileCounterSystem.SunkenSeaReefsTiles;
-            bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaBurrowsTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
+            bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaShoresTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
+            bool MoreThanReefs = BiomeTileCounterSystem.SunkenSeaShoresTiles > BiomeTileCounterSystem.SunkenSeaReefsTiles;
 
-            return BiomeTileCounterSystem.SunkenSeaBurrowsTiles > 1000 && MoreThanReefs && MoreThanPolyp;
+            return BiomeTileCounterSystem.SunkenSeaShoresTiles > 1000 && MoreThanPolyp && MoreThanReefs;
         }
     }
 }

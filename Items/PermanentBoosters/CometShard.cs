@@ -28,11 +28,11 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 24;
             Item.height = 46;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 6);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedManaCrystals == Player.ManaCrystalMax;

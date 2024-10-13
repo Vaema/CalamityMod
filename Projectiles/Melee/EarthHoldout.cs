@@ -264,10 +264,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(80 - Projectile.numHits * 40, 1, 80));
             if (Projectile.numHits < 30)
             {
-                Owner.statLife += heal;
-                Owner.HealEffect(heal);
-                if (Owner.statLife > Owner.statLifeMax2)
-                    Owner.statLife = Owner.statLifeMax2;
+                Owner.HealPlayer(heal);
             }
 
             if (Projectile.numHits <= 2)

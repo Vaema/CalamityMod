@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
                 AddIngredient<Acidwood>(10).
                 AddIngredient<SulphuricScale>(10).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SulphurousBreastplate>()).
                 Register();
         }
     }

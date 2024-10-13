@@ -3670,8 +3670,6 @@ namespace CalamityMod.NPCs
                 calcDR *= 0.5f;
             if (absorberAffliction > 0)
                 calcDR *= 0.8f;
-            if (npc.betsysCurse)
-                calcDR *= 0.66f;
             if (npc.Calamity().kamiFlu > 0)
                 calcDR *= KamiFlu.MultiplicativeDamageReduction;
             if (npc.Calamity().aCrunch > 0)
@@ -3706,7 +3704,6 @@ namespace CalamityMod.NPCs
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             FlatEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            FlatEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             FlatEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -3725,7 +3722,6 @@ namespace CalamityMod.NPCs
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             MultEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            MultEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             MultEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -6118,7 +6114,6 @@ namespace CalamityMod.NPCs
 
                 // Don't allow large hitbox projectiles or explosions to "snipe" enemies.
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
-                bool hitBullseye = false;
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
                 if (bullseye != null && acceptableVelocity && acceptableHitbox)
@@ -6149,19 +6144,39 @@ namespace CalamityMod.NPCs
                     bool willStrikeBullseye = dotCenter > dotOne && dotCenter > dotTwo;
 
                     // If a bullseye is triggered, set it as hit.
-                    if (willStrikeBullseye && bullseye.ai[1] == 0f)
+                    if (willStrikeBullseye)
                     {
-                        modifiers.SetCrit();
-                        hitBullseye = true;
-                        bullseye.ai[1] = 1f; // Make the bullseye disappear immediately.
+                        // 08OCT2024: Ozzatron: this can be abused by firing a ton of shots then hotswapping to AMR while they are in flight
+                        // we will need IEntitySource item use time provenance to fix this, and even that is unreliable with holdouts
+                        modPlayer.spiritOriginCritBoost += player.ActiveItem().useTime;
+
+                        if (bullseye.ai[2] == 0f)
+                        {
+                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime; 
+                            bullseye.ai[2] = 1f;
+                        }
+
+                        if (Main.rand.NextBool(5))
+                        {
+                            int randomStarAmount = Main.rand.Next(3, 6);
+                            float randomCircleRotation = Main.rand.NextFloat(MathHelper.TwoPi);
+                            for (int i = 0 ; i < randomStarAmount ; i++)
+                            {
+                                Particle fancyStars = new FancyStars(
+                                bullseye.Center,
+                                Main.rand.NextFloat(MathHelper.TwoPi) * Main.rand.NextBool().ToDirectionInt(),
+                                Main.rand.NextFloat(0.42f, 0.63f),
+                                (MathHelper.TwoPi / randomStarAmount * i).ToRotationVector2().RotatedBy(randomCircleRotation).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(7f, 12f),
+                                Main.rand.NextFloat(0.1f, 0.5f),
+                                55,
+                                new Color(Main.rand.Next(256), Main.rand.Next(256), Main.rand.Next(256)) * 1.2f);
+                                GeneralParticleHandler.SpawnParticle(fancyStars);
+                            } 
+                        }
+
                         bullseye.netUpdate = true;
                     }
                 }
-
-                // The bonus provided by Daawnlight Spirit Origin can be computed as a complete replacement to regular crits.
-                // As such, it is subtracted by the base critical strike damage boost of 200%
-                float bonus = DaawnlightSpiritOrigin.GetDamageMultiplier(player, modPlayer, hitBullseye, cgp.forcedCrit) - 2f;
-                modifiers.CritDamage += bonus;
             }
 
             if (!projectile.npcProj && !projectile.trap)
@@ -9366,6 +9381,7 @@ namespace CalamityMod.NPCs
             // These are ordered by their order in the bestiary, if you're wondering why it seems so arbitrary lmao
             switch (npc.netID)
             {
+                case NPCID.Guide:
                 case NPCID.Dryad:
                 case NPCID.Mechanic:
                 case NPCID.EmpressButterfly:

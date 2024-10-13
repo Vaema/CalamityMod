@@ -7,6 +7,8 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
@@ -118,10 +120,7 @@ namespace CalamityMod.CalPlayer
 
                     int heal = 2;
                     Player.lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(heal);
 
                     break;
 
@@ -259,10 +258,7 @@ namespace CalamityMod.CalPlayer
 
                     int heal = 2;
                     Main.player[Main.myPlayer].lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(heal);
 
                     break;
 

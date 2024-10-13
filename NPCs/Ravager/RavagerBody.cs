@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.width = 332;
             NPC.height = 214;
             NPC.defense = 55;
-            NPC.value = Item.buyPrice(0, 75, 0, 0);
+            NPC.value = Item.buyPrice(0, 30, 0, 0);
             NPC.DR_NERD(0.35f);
             NPC.LifeMaxNERB(45000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.damage = (int)(NPC.damage * 1.5);
                 NPC.defense *= 2;
                 NPC.lifeMax *= 4;
-                NPC.value *= 1.5f;
+                NPC.value *= 3f;
             }
             NPC.knockBackResist = 0f;
             AIType = -1;

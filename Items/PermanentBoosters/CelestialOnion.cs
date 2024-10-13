@@ -14,20 +14,16 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 28;
             Item.height = 28;
-            Item.rare = ItemRarityID.Red;
-            Item.maxStack = 9999;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item4;
             Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item4;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Red;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            return !Main.masterMode && !modPlayer.extraAccessoryML;
-        }
+        public override bool CanUseItem(Player player) => !Main.masterMode && !player.Calamity().extraAccessoryML;
 
         public override bool? UseItem(Player player)
         {

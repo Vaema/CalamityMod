@@ -57,8 +57,7 @@ namespace CalamityMod.Projectiles.Typeless
                         continue;
 
                     int healQuantity = (int)owner.GetBestClassDamage().ApplyTo(ChlorophyteArmorSetChange.AmountToHealPerPulse);
-                    player.statLife += healQuantity;
-                    player.HealEffect(healQuantity);
+                    player.HealPlayer(healQuantity);
                     player.Calamity().ChlorophyteHealDelay = ChlorophyteArmorSetChange.DelayBetweenHeals;
                 }
             }

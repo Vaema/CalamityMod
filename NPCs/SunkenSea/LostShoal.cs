@@ -335,7 +335,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
             {
                 return 0.125f;
             }

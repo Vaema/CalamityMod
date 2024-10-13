@@ -64,10 +64,7 @@ namespace CalamityMod.Projectiles.Rogue
                         }
 
                         Main.player[Main.myPlayer].lifeSteal -= heal;
-                        Owner.HealEffect(heal);
-                        Owner.statLife += heal;
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
+                        Owner.HealPlayer(heal);
                     }
 
                     Projectile.Kill();

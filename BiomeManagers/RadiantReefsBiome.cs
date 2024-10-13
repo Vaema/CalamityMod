@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.BiomeManagers
 {
-    public class SunkenSeaReefsBiome : ModBiome
+    public class RadiantReefsBiome : ModBiome
     {
         public override ModWaterStyle WaterStyle => SunkenSeaReefsWater.Instance;
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/SunkenSeaBGStyle");

@@ -3,8 +3,6 @@ using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -17,7 +15,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -47,6 +44,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public int doublePunchCounter = 0;
         public bool setMovement = true;
         public bool broIsAlive = true;
+
+        public bool isDeathmode = (CalamityWorld.death || BossRushEvent.BossRushActive);
 
         public Player Target => Main.player[NPC.target];
         public ref float PunchCounter => ref NPC.ai[1];
@@ -175,7 +174,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && Main.masterMode && !broIsAlive)
+            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && isDeathmode && !broIsAlive)
             {
                 if (NPC.life > (NPC.lifeMax * 0.65f))
                     NPC.life = (int)(NPC.lifeMax * 0.65f);
@@ -554,7 +553,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
                     {
                         NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && Main.masterMode && !broIsAlive)
+                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && isDeathmode && !broIsAlive)
                         {
                             for (int i = 0; i < 45; i++)
                             {

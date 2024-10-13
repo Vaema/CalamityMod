@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.lifeMax = Main.hardMode ? 500 : 150;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 50, 0) : Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.knockBackResist = 0.5f;
