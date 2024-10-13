@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
@@ -150,7 +151,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         private bool IsExploding => CurrentBehavior == ExplodingBehavior;
 
-        protected override BiomeFlags BiomeDesignation => BiomeFlags.RadiantReefs;
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
         protected override float SpawningChance => SpawnCondition.CaveJellyfish.Chance * 0.9f;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -74,7 +75,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        protected override BiomeFlags BiomeDesignation => BiomeFlags.RadiantReefs;
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
         protected override float SpawningChance => 0f;
 

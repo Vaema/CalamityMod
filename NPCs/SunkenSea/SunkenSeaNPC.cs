@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,7 +10,7 @@ using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
+using static CalamityMod.CalamityLists;
 using static Terraria.Utilities.NPCUtils;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -178,42 +178,14 @@ namespace CalamityMod.NPCs.SunkenSea
         #region Biome Designation
 
         /// <summary>
-        /// The flags corresponding for the possible spawns for a Sunken Sea NPC.
-        /// </summary>
-        [Flags]
-        protected enum BiomeFlags : byte
-        {
-            None = 0,
-            UndergroundDesert = 1,
-            TimelessShores = 2,
-            RadiantReefs = 4,
-            PolypForest = 8,
-            GleamingBurrows = 16,
-            BasaltGully = 32,
-        }
-
-        /// <summary>
         /// The biomes that this Sunken Sea NPC belongs to.
         /// </summary>
-        protected abstract BiomeFlags BiomeDesignation { get; }
-
-        /// <summary>
-        /// Each biome has a correspoding spawn condition boolean value and a biome type.
-        /// </summary>
-        protected readonly Dictionary<BiomeFlags, (Func<NPCSpawnInfo, bool> SpawnCondition, int BiomeType)> BiomeCorrespondentValues = new()
-        {
-            { BiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
-            { BiomeFlags.TimelessShores, (spawnInfo => spawnInfo.Player.Calamity().ZoneTimelessShores, GetInstance<TimelessShoresBiome>().Type) },
-            { BiomeFlags.RadiantReefs, (spawnInfo => spawnInfo.Player.Calamity().ZoneRadiantReefs, GetInstance<RadiantReefsBiome>().Type) },
-            { BiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
-            { BiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
-            { BiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
-        };
+        protected abstract SunkenSeaBiomeFlags BiomeDesignation { get; }
 
         /// <summary>
         /// The spawn conditions for each biome that this Sunken Sea NPC belongs to.
         /// </summary>
-        protected List<Func<NPCSpawnInfo, bool>> BiomeSpawnConditions { get; private set; } = new();
+        protected List<Func<NPCSpawnInfo, bool>> BiomeSpawnConditions { get; private set; } = [];
 
         #endregion
 
@@ -230,14 +202,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetDefaults()
         {
             List<int> biomeTypes = [];
-            foreach (var flag in Enum.GetValues<BiomeFlags>())
+            foreach (var flag in Enum.GetValues<SunkenSeaBiomeFlags>())
             {
-                if (flag == BiomeFlags.None || !BiomeDesignation.HasFlag(flag))
+                if (flag == SunkenSeaBiomeFlags.None || !BiomeDesignation.HasFlag(flag))
                     continue;
-                BiomeSpawnConditions.Add(BiomeCorrespondentValues[flag].SpawnCondition);
-                if (flag == BiomeFlags.UndergroundDesert)
+                BiomeSpawnConditions.Add(SunkenSeaBiomeCorrespondentValues[flag].SpawnCondition);
+                if (flag == SunkenSeaBiomeFlags.UndergroundDesert)
                     continue;
-                biomeTypes.Add(BiomeCorrespondentValues[flag].BiomeType);
+                biomeTypes.Add(SunkenSeaBiomeCorrespondentValues[flag].BiomeType);
             }
             SpawnModBiomes = [.. biomeTypes];
         }
