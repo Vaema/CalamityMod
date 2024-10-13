@@ -3113,13 +3113,6 @@ namespace CalamityMod.CalPlayer
             if (shatteredCommunity)
                 flightTimeMult += 0.2f;
 
-            if (profanedCrystalBuffs)
-            {
-                bool offenseBuffs = pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Buffs || (Main.dayTime && !Player.wet) || Player.lavaWet;
-                if (offenseBuffs || pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered)
-                    flightTimeMult += 0.1;
-            }
-
             // Reaver Tank set nuke flight time
             if (reaverDefense)
                 flightTimeMult -= 0.3f;
@@ -3552,38 +3545,44 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (profanedCrystalBuffs)
+            if (profanedCrystal)
             {
-                if (Player.whoAmI == Main.myPlayer)
+                ProfanedSoulCrystal.DetermineTransformationEligibility(Player);
+                var calPlayer = Player.Calamity();
+                bool vanity = calPlayer.pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Vanity;
+                if (!vanity)
                 {
-                    bool empowered = pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
+
+                    bool empowered = calPlayer.pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
+                    bool night = empowered || calPlayer.pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Enraged;
+                    bool day = empowered || calPlayer.pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Buffs;
+
                     Player.lavaImmune = true;
                     Player.fireWalk = true;
-                    Player.buffImmune[ModContent.BuffType<HolyFlames>()] = Main.dayTime || empowered;
+                    Player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
                     Player.buffImmune[BuffID.OnFire] = true;
                     Player.buffImmune[BuffID.Burning] = true;
                     Player.buffImmune[BuffID.Daybreak] = true;
-                    bool offenseBuffs = (Main.dayTime && !Player.wet) || Player.lavaWet || empowered;
-                    if (offenseBuffs)
+
+                    if (Player.wingTimeMax > 0)
+                        Player.wingTimeMax = (int)(Player.wingTimeMax * 1.1D);
+                    Player.GetDamage<SummonDamageClass>() += 0.15f;
+                    if (day)
                     {
-                        Player.GetDamage<SummonDamageClass>() += 0.15f;
                         Player.GetKnockback<SummonDamageClass>() += 0.15f;
                         Player.moveSpeed += 0.1f;
-                        if (!empowered)
-                            Player.statDefense -= 15;
                         Player.ignoreWater = true;
                         Player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) += 1f; //this only ever affects psc whip and should not be problematic
                     }
-                    else if (empowered || !offenseBuffs)
+                    else if (night)
                     {
                         Player.endurance += 0.05f;
                         Player.statDefense += 15;
                         Player.lifeRegen += 5;
                     }
-                    bool enrage = pscState >= (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Enraged;
-                    if (!ZoneAbyss) //No abyss memes.
-                        Lighting.AddLight(Player.Center, enrage ? 1.2f : offenseBuffs ? 1f : 0.2f, enrage ? 0.21f : offenseBuffs ? 0.2f : 0.01f, 0);
 
+                    if (!calPlayer.ZoneAbyss) //No abyss memes.
+                        Lighting.AddLight(Player.Center, night ? 1.2f : day ? 1f : 0.2f, night ? 0.21f : day ? 0.2f : 0.01f, 0);
                 }
             }
 
