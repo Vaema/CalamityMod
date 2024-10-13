@@ -468,9 +468,9 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 10);
                     break;
 
-                // Ghost Bracelet @ 10% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
+                // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
                 case NPCID.Ghost:
-                    npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 10);
+                    npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
                     break;
                 #endregion
 
