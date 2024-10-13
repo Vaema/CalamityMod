@@ -6615,11 +6615,6 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 1.1);
                 maxSpawns = (int)(maxSpawns * 0.9f);
             }
-            if (player.calmed)
-            {
-                spawnRate = (int)(spawnRate * 1.2);
-                maxSpawns = (int)(maxSpawns * 0.8f);
-            }
             if (player.Calamity().tranquilityCandle)
             {
                 spawnRate = (int)(spawnRate * 1.4);
