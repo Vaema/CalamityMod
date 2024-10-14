@@ -117,6 +117,13 @@ namespace CalamityMod.NPCs.AcidRain
             int bloodwormAmt = NPC.CountNPCS(NPC.type);
             float spawnMult = bloodwormAmt > 5 ? 1f : (float)(0.16 * Math.Pow(5 - bloodwormAmt, 2)) + 1f;
             float baseSpawnRate = DownedBossSystem.downedBoomerDuke ? 0.1f : AcidRainEvent.OldDukeHasBeenEncountered ? 0.4f : 0.2f;
+
+            float luck = spawnInfo.Player.luck;
+            if (luck > 0f && Main.rand.NextFloat() < luck)
+                spawnMult *= Main.rand.NextFloat(1f, 2f);
+            if (luck < 0f && Main.rand.NextFloat() < -luck)
+                spawnMult *= Main.rand.NextFloat(0.5f, 1f);
+
             float spawnRate = baseSpawnRate * spawnMult;
 
             return spawnRate;

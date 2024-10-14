@@ -6354,9 +6354,10 @@ namespace CalamityMod.NPCs
                 NPC.downedMoonlord &&
                 Main.player[npc.target].ZoneDungeon)
             {
-                int maxValue = Main.expertMode ? 4 : 6;
+                // This value can change by (on average) 0.75x or 1.25x depending on your having positive or negative luck
+                int baseValue = Main.expertMode ? 4 : 6;
 
-                if (Main.rand.NextBool(maxValue) && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
+                if (Main.player[npc.target].RollLuck(baseValue) == 0 && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
                 {
                     int randomType = Utils.SelectRandom(Main.rand, new int[]
                     {
