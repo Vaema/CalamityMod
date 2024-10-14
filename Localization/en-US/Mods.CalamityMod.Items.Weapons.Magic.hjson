@@ -678,7 +678,7 @@ PrimordialEarth: {
 
 PurgeGuzzler: {
 	DisplayName: Purge Guzzler
-	Tooltip: Emits three beams of holy energy in a tight spread
+	Tooltip: Fires a barrage of converging holy lasers, ending with two stronger crossing beams
 }
 
 RainbowPartyCannon: {

@@ -8,229 +8,142 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    internal class VitriolicViperHoldout : BaseGunHoldoutProjectile
+    internal class PurgeGuzzlerHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<VitriolicViper>();
-        public override float MaxOffsetLengthFromArm => 40f;
+        public override int AssociatedItemID => ModContent.ItemType<PurgeGuzzler>();
+        public override float MaxOffsetLengthFromArm => 20f;
         public override float BaseOffsetY => 0f;
         public override float RecoilResolveSpeed => 0.4f;
-        public override string Texture => "CalamityMod/Items/Weapons/Magic/VitriolicViper";
-        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * -20;
-        
-        private ref float CurrentChargingFrames => ref Projectile.ai[0];
-        private ref float CurrentOverchargeFrames => ref Projectile.ai[2];
-        public int FirstChargeFrames = 30;
-        public int FullyChargedFrames = 30;
-        private bool FirstCharge => CurrentChargingFrames >= FirstChargeFrames;
-        private bool FullCharge => CurrentOverchargeFrames >= FullyChargedFrames;
-        public SlotId ChargeSlot;
-        public static float BulletSpeed = 15f;
-        public int time = 0;
-        public float chargePower = 0;
-        public float overchargePower = 0;
-        public Color bColor = Color.Chartreuse; // Base color
+        public override float WeaponTurnSpeed => cooldownTimer > 0 ? 0.02f : 0.06f;
+        public override string Texture => "CalamityMod/Items/Weapons/Magic/PurgeGuzzler";
+        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * -10;
+        public ref float revFrames => ref Projectile.ai[0];
+        public ref float cooldownTimer => ref Projectile.ai[1];
+        public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
+        public bool isOnCooldown => cooldownTimer > 0;
+        public float revSpeed = 1;
+        public int shotsFired = 0;
 
-        public float vortexRotation = 0;
-
+        public Color color1 = Color.Goldenrod;
+        public Color color2 = Color.Orange;
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type))
                 Projectile.Kill();
         }
 
         public override void HoldoutAI()
         {
-            if (SoundEngine.TryGetActiveSound(ChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
-                ChargeSound.Position = Projectile.Center;
-
-            chargePower = Utils.GetLerpValue(0, FirstChargeFrames, CurrentChargingFrames, true) * (FullCharge ? 1.3f : 1);
-            if (CurrentOverchargeFrames < FullyChargedFrames)
-                overchargePower = MathHelper.Clamp(Utils.GetLerpValue(FullyChargedFrames * 2, 0, CurrentOverchargeFrames, true), 0.5f, 1);
-            else
-                overchargePower = MathHelper.Lerp(overchargePower, 1, 0.09f);
-
-            vortexRotation += 0.4f * chargePower;
-
-            // Fire if the owner stops channeling or otherwise cannot use the weapon.
-            if (Owner.CantUseHoldout())
+            if (!isOnCooldown && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
+                cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 120, true));
+            if (isOnCooldown)
             {
-                KeepRefreshingLifetime = false;
-
-                if (Projectile.ai[1] != 1f)
-                {
-                    Projectile.timeLeft = 30;
-
-                    ChargeSound?.Stop();
-
-                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                    if (FullCharge)
-                    {
-                        OffsetLengthFromArm -= 25;
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/ViperSpit");
-                        SoundEngine.PlaySound(fire with { Pitch = -0.3f + Main.rand.NextFloat(-0.1f, 0.1f) + (FirstCharge ? 0.2f : 0) }, Projectile.Center);
-                        SoundStyle fire2 = new("CalamityMod/Sounds/Item/MeldShoot");
-                        SoundEngine.PlaySound(fire2 with { Pitch = -0.3f, Volume = 0.5f }, Projectile.Center);
-
-                        // Vipers can apparently have 33 teeth or something like that
-                        Owner.Calamity().GeneralScreenShakePower = 4f;
-                        for (int i = 0; i < 33; i++)
-                        {
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity * 2).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<VitriolicViperFang>(), Projectile.damage / 10, Projectile.knockBack, Projectile.owner, 0);
-                        }
-
-                        Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, bColor, "CalamityMod/Particles/HighResFoggyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 14);
-                        GeneralParticleHandler.SpawnParticle(pulse);
-
-                        for (int i = 0; i < 17; i++)
-                        {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
-                            chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
-                            chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
-                            chargefull.noGravity = true;
-                            chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);
-                        }
-
-                        Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
-                        for (int i = 0; i <= 18; i++)
-                        {
-                            Vector2 sparkVelocity = shootVelocity / 2f;
-
-                            float sparkScale1 = Main.rand.NextFloat(0.3f, 0.8f);
-                            Vector2 sparkvelocity1 = sparkVelocity.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.5f, 0.7f);
-                            Particle spark1 = new LineParticle(GunTipPosition, sparkvelocity1, false, 40, sparkScale1, Main.rand.NextBool() ? bColor : Color.Green);
-                            GeneralParticleHandler.SpawnParticle(spark1);
-
-                            float sparkScale2 = Main.rand.NextFloat(0.4f, 1f);
-                            Vector2 sparkvelocity2 = sparkVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.9f, 1.6f);
-                            Particle spark2 = new LineParticle(GunTipPosition, sparkvelocity2, false, 40, sparkScale2, Main.rand.NextBool() ? bColor : Color.Green);
-                            GeneralParticleHandler.SpawnParticle(spark2);
-                        }
-                    }
-                    else
-                    {
-                        OffsetLengthFromArm -= 15;
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/ViperSpit");
-                        SoundEngine.PlaySound(fire with { Pitch = (chargePower * 0.3f) + Main.rand.NextFloat(-0.1f, 0.1f), Volume = 0.5f }, Projectile.Center);
-
-                        Projectile hiss = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * MathHelper.Clamp(chargePower, 0.3f, 1), ModContent.ProjectileType<VitriolicViperSpit>(), (int)(Projectile.damage * MathHelper.Clamp(chargePower, 0.3f, 1)), Projectile.knockBack, Projectile.owner, 0, 0, chargePower);
-                        hiss.extraUpdates = (int)(Utils.Remap(chargePower, 0, 1, 2, 13, true));
-                        for (int i = 0; i < 17; i++)
-                        {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
-                            chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
-                            chargefull.scale = Main.rand.NextFloat(0.55f, 0.75f) * chargePower + 0.1f;
-                            chargefull.noGravity = true;
-                            chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);
-                        }
-
-                        Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
-                        Particle pulse3 = new GlowSparkParticle(GunTipPosition, shootDirection * 18, false, 6, 0.057f * chargePower, bColor, new Vector2(1.7f, 0.8f), true);
-                        GeneralParticleHandler.SpawnParticle(pulse3);
-                    }
-                    Projectile.ai[1] = 1f;
-                }
-            }
-            else
-            {
-                if (Projectile.ai[1] != 1f)
-                {
-                    if (!FirstCharge)
-                        CurrentChargingFrames++;
-                    else
-                        CurrentOverchargeFrames++;
-                }
-
-                // Charge-up visuals
-                if (CurrentChargingFrames >= 10)
-                {
-                    if (FirstCharge)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Vector2 dustPos = GunTipPosition + (i * MathHelper.Pi + vortexRotation * 0.35f + MathHelper.PiOver2).ToRotationVector2() * 20f * chargePower * overchargePower;
-                            Dust dust = Dust.NewDustPerfect(dustPos, (int)CalamityDusts.SulphurousSeaAcid, (i * MathHelper.Pi + vortexRotation * 0.35f * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 4);
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.85f, 0.9f);
-                        }
-                    }
-                    else
-                    {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, (int)CalamityDusts.SulphurousSeaAcid, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) * chargePower * overchargePower);
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.6f, 0.7f);
-                    }
-                }
-
-                // Full charge effects
-                if (CurrentChargingFrames == FirstChargeFrames && CurrentOverchargeFrames == 0)
-                {
-                    SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
-                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
-                    for (int i = 0; i < 18; i++)
-                    {
-                        Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
-                        dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
-                        dust2.noGravity = true;
-                        dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? bColor : Color.Green, 0.7f);
-                    }
-                }
-                if (CurrentOverchargeFrames == FullyChargedFrames)
-                {
-                    SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
-                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.2f }, Projectile.Center);
-                    for (int i = 0; i < 12; i++)
-                    {
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
-                        dust2.scale = Main.rand.NextFloat(0.75f, 1.1f);
-                        dust2.noGravity = false;
-                        dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);
-                    }
-                }
-            }
-            if (Projectile.ai[1] == 1f)
-            {
-                CurrentChargingFrames = 0;
-                CurrentOverchargeFrames = 0;
+                PostFiringCooldown();
+                return;
             }
 
-            Lighting.AddLight(GunTipPosition, bColor.ToVector3() * 1.5f * chargePower);
+            revSpeed = Utils.Remap(revFrames, 0, 150, 1, 3, true);
+            if (shootingTimer >= 10 && revFrames < 150)
+            {
+                SoundStyle shot = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianShieldDeactivate");
+                SoundEngine.PlaySound(shot with { Pitch = Utils.Remap(revFrames, 0, 150, 0.2f, 0.8f, true), Volume = 0.2f, MaxInstances = -1 }, Projectile.Center);
 
-            time++;
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+                float spread = 0.045f * Utils.GetLerpValue(0, 300, revFrames, true);
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(spread), ModContent.ProjectileType<HolyLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, revSpeed * (shotsFired % 2 == 0 ? -1f : 1f) * Utils.Remap(revFrames, 120, 150, 0.1f, 0.45f, true), Projectile.whoAmI);
+
+                for (int i = 0; i <= 2; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5f) * revSpeed, 0, default, Main.rand.NextFloat(0.3f, 0.7f) * revSpeed);
+                    dust.noGravity = true;
+                    dust.color = Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f));
+                }
+
+                OffsetLengthFromArm -= 7f;
+                shootingTimer = 0;
+                shotsFired++;
+            }
+
+            shootingTimer += revSpeed;
+            revFrames++;
+
+            if (revFrames >= 150 && !isOnCooldown)
+            {
+                revSpeed = 4;
+                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                OffsetLengthFromArm -= 35f;
+                cooldownTimer = 60;
+                SoundStyle bigShot = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay");
+                SoundEngine.PlaySound(bigShot with { Pitch = 0.2f, Volume = 0.7f }, Projectile.Center);
+                SoundStyle bigShot2 = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyRay");
+                SoundEngine.PlaySound(bigShot2 with { Pitch = 0.4f, Volume = 0.8f }, Projectile.Center);
+
+                int bigBeamDamage = (int)(Projectile.damage * 6.5f);
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, 1, Projectile.whoAmI, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, -1, Projectile.whoAmI, 1);
+
+                for (int i = 0; i <= 25; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, 278, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(5f, 30f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                    dust.noGravity = true;
+                    dust.color = Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f));
+                }
+            }
         }
-
-        public override void OnKill(int timeLeft)
+        private void PostFiringCooldown()
         {
-            if (SoundEngine.TryGetActiveSound(ChargeSlot, out var ChargeSound))
-                ChargeSound?.Stop();
+            Owner.channel = true;
+
+            if (cooldownTimer <= 1)
+            {
+                Projectile.Kill();
+            }
+
+            cooldownTimer--;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (time < 2)
+            if (revFrames < 2)
                 return false;
-
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleVortex").Value;
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<HolyLaser>()] > 0 && shotsFired > 0)
+            {
+                float fade = Utils.GetLerpValue(1, 4, revSpeed);
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 5 * fade;
+                    Main.spriteBatch.Draw(texture, drawPosition + drawOffset, null, Color.Orchid with { A = 0 } * fade, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite, 0f);
+                }
+            }
 
-            // Glow Orb
-            for (int i = 0; i < 3; i++)
-                Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.Chartreuse with { A = 0 } * 0.4f, vortexRotation * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.5f * 0.14f + i * 0.015f) * chargePower * overchargePower, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<HolyLaser>()] > 0 && shotsFired > 0)
+            {
+                Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom").Value;
+                float rot = Main.GlobalTimeWrappedHourly * 25;
 
-            Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.White with { A = 0 } * chargePower, vortexRotation, rechargeTexture.Size() * 0.5f, 0.25f * chargePower * 0.14f * overchargePower, SpriteEffects.None, 0);
+                float sine = MathHelper.Clamp(Math.Abs((float)Math.Sin(rot * 2.275f / MathHelper.Pi)), 0.9f, 1f);
 
-            // Main staff
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation + (MathHelper.ToRadians(45f * (Projectile.spriteDirection))), rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+                // Glow Orb
+                for (int i = 0; i < 6; i++)
+                    Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.Lerp(Color.Orchid, Color.Khaki, i * 0.1f) with { A = 0 } * 0.4f, rot * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.03f + i * 0.007f) * revSpeed * sine, SpriteEffects.None, 0);
+            }
             return false;
         }
     }
