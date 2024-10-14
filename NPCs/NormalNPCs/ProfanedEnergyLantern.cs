@@ -25,6 +25,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment", AssetRequestMode.AsyncLoad);
             }
+            NPCID.Sets.PositiveNPCTypesExcludedFromDeathTally[Type] = true; // You can't kill this thing but just in case anyway
         }
 
         public override void SetDefaults()
@@ -42,6 +43,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.dontTakeDamage = true;
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
+            Banner = ModContent.NPCType<ProfanedEnergyBody>();
         }
 
         public override void AI()
