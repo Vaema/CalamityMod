@@ -34,8 +34,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, 0, Color.Plum);
-            return true;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, 2, Color.Plum);
+            return false;
         }
 
         public override void AI()
