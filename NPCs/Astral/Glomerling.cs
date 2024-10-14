@@ -28,6 +28,7 @@ namespace CalamityMod.NPCs.Astral
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 8;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.PositiveNPCTypesExcludedFromDeathTally[Type] = true;
         }
 
         public override void SetDefaults()
@@ -42,6 +43,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
+            Banner = ModContent.NPCType<Astraglomerate>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 50;
