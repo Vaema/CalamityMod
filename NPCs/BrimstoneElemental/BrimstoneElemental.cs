@@ -203,10 +203,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     ModContent.ItemType<Brimlance>(),
                     ModContent.ItemType<SeethingDischarge>(),
-                    ModContent.ItemType<DormantBrimseeker>()
+                    ModContent.ItemType<DormantBrimseeker>(),
+                    ModContent.ItemType<Hellborn>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Hellborn>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);

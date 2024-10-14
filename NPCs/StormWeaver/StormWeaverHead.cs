@@ -988,9 +988,9 @@ namespace CalamityMod.NPCs.StormWeaver
                 {
                     ModContent.ItemType<StormDragoon>(),
                     ModContent.ItemType<TheStorm>(),
+                    ModContent.ItemType<Thunderbolt>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));

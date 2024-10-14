@@ -67,9 +67,9 @@ namespace CalamityMod.Items.TreasureBags
             {
                 ModContent.ItemType<Brimlance>(),
                 ModContent.ItemType<SeethingDischarge>(),
-                ModContent.ItemType<DormantBrimseeker>()
+                ModContent.ItemType<DormantBrimseeker>(),
+                ModContent.ItemType<Hellborn>()
             }));
-            itemLoot.Add(ModContent.ItemType<Hellborn>(), 10);
 
             // Equipment
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

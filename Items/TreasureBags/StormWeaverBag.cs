@@ -61,9 +61,9 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
                 ModContent.ItemType<StormDragoon>(),
-                ModContent.ItemType<TheStorm>()
+                ModContent.ItemType<TheStorm>(),
+                ModContent.ItemType<Thunderbolt>()
             }));
-            itemLoot.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
             // Equipment
             itemLoot.AddRevBagAccessories();
