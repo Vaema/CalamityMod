@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Rogue
         private bool initialized = false;
         public override void SetDefaults()
         {
-            Projectile.width = 42;
+            Projectile.width = 40;
             Projectile.height = 36;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 120;
@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Rogue
                     money = 2000000;
                 if (money != 0)
                 {
-                    modifiers.SourceDamage *= (float)(money / 500000 + 1);
+                    modifiers.SourceDamage *= (float)(money / 750000 + 1);
                     SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
                     for (int j = 0; j < 8; j++)
                     {
