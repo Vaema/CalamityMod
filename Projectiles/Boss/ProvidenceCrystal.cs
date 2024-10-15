@@ -171,8 +171,8 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
                 Vector2 drawArea = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-                Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-                Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+                Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
                 Color colorAlpha = Projectile.GetAlpha(colorArea);
                 Vector2 halfRect = textureRect.Size() / 2f;
                 float scaleFactor = (float)Math.Cos(MathHelper.TwoPi * (Projectile.localAI[0] / 60f)) + 3f + 3f;

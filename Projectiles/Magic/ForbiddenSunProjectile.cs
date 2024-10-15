@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
             Lighting.AddLight(Projectile.Center, 0.25f, 0.2f, 0.01f);
             if (Projectile.wet && !Projectile.lavaWet)
             {

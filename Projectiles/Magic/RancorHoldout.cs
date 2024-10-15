@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         public const int ManaConsumeRate = 12;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 16;
+            Main.projFrames[Type] = 16;
         }
 
         public override void SetDefaults()
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 4)
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
 

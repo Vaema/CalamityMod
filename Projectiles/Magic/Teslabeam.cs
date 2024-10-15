@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()

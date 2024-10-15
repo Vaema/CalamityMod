@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 ringScale = Projectile.Size / tex.Size() * Projectile.scale;
             Color ringColor = Color.Lerp(Color.DodgerBlue, Color.Blue, Projectile.Opacity) * Projectile.Opacity * 1.2f;
 

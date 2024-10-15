@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             bool portalIsInteractable = portalOpacity >= 1f;
             Vector2 portalDrawPosition = Owner.Center + InitialDirection.ToRotationVector2() * 130f - Main.screenPosition;
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (portalIsInteractable)
             {
                 Main.spriteBatch.EnterShaderRegion();

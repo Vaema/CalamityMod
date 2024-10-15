@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color healGreen = new Color(54, 209, 54, 0);
             Vector2 projPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color healGreenDraw = healGreen;

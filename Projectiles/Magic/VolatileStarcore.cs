@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = NumAnimationFrames;
+            Main.projFrames[Type] = NumAnimationFrames;
         }
         public override void SetDefaults()
         {

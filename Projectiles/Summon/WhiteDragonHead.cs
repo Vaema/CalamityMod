@@ -40,8 +40,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minionSlots = 2;
             Projectile.minion = true;
 
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 100;
         }
 
         public override void AI()
@@ -184,7 +184,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D texBody = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/WhiteDragonBody").Value;
             Texture2D texBody2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/WhiteDragonBody2").Value;
             Texture2D texTail = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/WhiteDragonTail").Value;

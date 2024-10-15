@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Summon
         public const int OnDeathHealValue = 1;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()

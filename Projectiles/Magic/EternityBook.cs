@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
+            Main.projFrames[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -60,8 +60,8 @@ namespace CalamityMod.Projectiles.Magic
 
             // Switch frames at a linearly increasing rate to make it look like the player is flipping pages quickly.
             Projectile.localAI[0] += Utils.Remap(Time, 0f, 200f, 1f, 5f);
-            Projectile.frame = (int)Math.Round(Projectile.localAI[0] / 10f) % Main.projFrames[Projectile.type];
-            if (Projectile.localAI[0] >= Main.projFrames[Projectile.type] * 10f)
+            Projectile.frame = (int)Math.Round(Projectile.localAI[0] / 10f) % Main.projFrames[Type];
+            if (Projectile.localAI[0] >= Main.projFrames[Type] * 10f)
                 Projectile.localAI[0] = 0f;
 
             AdjustPlayerValues(player);
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Update the player's arm directions to make it look as though they're flipping through the book.
             float frontArmRotation = (MathHelper.PiOver2 - 0.46f) * -player.direction;
-            float backArmRotation = frontArmRotation + MathHelper.Lerp(0.12f, 1.1f, CalamityUtils.Convert01To010(Projectile.localAI[0] / Main.projFrames[Projectile.type] / 10f)) * -player.direction;
+            float backArmRotation = frontArmRotation + MathHelper.Lerp(0.12f, 1.1f, CalamityUtils.Convert01To010(Projectile.localAI[0] / Main.projFrames[Type] / 10f)) * -player.direction;
             player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, backArmRotation);
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, frontArmRotation);
         }

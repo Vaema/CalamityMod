@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color color = Color.Goldenrod;

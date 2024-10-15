@@ -37,8 +37,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -282,7 +282,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (spinning)
             {
                 Main.EntitySpriteDraw(p.Value, drawPos + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4, null, Color.Chartreuse with { A = 0 } * 0.45f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, p.Size() * 0.5f, new Vector2(0.9f - 0.3f * Utils.GetLerpValue(25, 0, time, true), 1 + 0.6f * Utils.GetLerpValue(25, 0, time, true)) * Main.rand.NextFloat(1.25f, 1.4f), SpriteEffects.None);
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Chartreuse * 0.5f, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Chartreuse * 0.5f, 1);
             }
             return false;
         }

@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Time % LightningFireRate == 0f && Main.myPlayer == Projectile.owner)
             {
                 int lightningDamage = Projectile.damage;
-                int totalSystemBanes = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
+                int totalSystemBanes = Main.player[Projectile.owner].ownedProjectileCounts[Type];
 
                 // Make the damage of the lightning have diminishing returns depending on how many systems are present.
                 lightningDamage = (int)Math.Ceiling(lightningDamage / Math.Pow(totalSystemBanes, 1D / 3D));

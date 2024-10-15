@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Summon
                 mp.voidAura = false;
                 Projectile.Kill();
             }
-            if (owner.whoAmI == Main.myPlayer && owner.ownedProjectileCounts[Projectile.type] <= 25 && timer > 0 && timer % 4 == 0)
+            if (owner.whoAmI == Main.myPlayer && owner.ownedProjectileCounts[Type] <= 25 && timer > 0 && timer % 4 == 0)
             {
                 NPC target = CalamityUtils.MinionHoming(Projectile.Center, 1800f, owner);
                 if (target != null)

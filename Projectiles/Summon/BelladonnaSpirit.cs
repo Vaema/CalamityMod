@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Rectangle sourceRectangle = texture.Frame(verticalFrames: AnimationFrames, frameY: Projectile.frame);
             Vector2 origin = sourceRectangle.Size() * 0.5f;
