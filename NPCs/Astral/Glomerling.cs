@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Astral
         {
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/GlomerlingGlow", AssetRequestMode.AsyncLoad);
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 8;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;

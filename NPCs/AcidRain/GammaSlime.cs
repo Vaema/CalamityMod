@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.TargetClosest(false);
 
-            if (NPC.velocity.Y == 0f && LaserShootCountdown <= 0f && !Target.npcTypeNoAggro[NPC.type])
+            if (NPC.velocity.Y == 0f && LaserShootCountdown <= 0f && !Target.npcTypeNoAggro[Type])
             {
                 NPC.velocity.X *= 0.8f;
 
@@ -182,7 +182,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             // Randomly prepare to shoot a laser.
             if (Main.netMode != NetmodeID.MultiplayerClient && Math.Abs(Target.Center.X - NPC.Center.X) < 250f && Target.Center.X < NPC.Center.X &&
-                LaserShootCountdown == 0f && Main.rand.NextBool(110) && !Target.npcTypeNoAggro[NPC.type])
+                LaserShootCountdown == 0f && Main.rand.NextBool(110) && !Target.npcTypeNoAggro[Type])
             {
                 LaserShootCountdown = 600f;
                 NPC.netUpdate = true;

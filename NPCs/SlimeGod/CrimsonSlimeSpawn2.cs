@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.CrimsonSlimeSpawn.DisplayName");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
@@ -63,9 +63,9 @@ namespace CalamityMod.NPCs.SlimeGod
             int frameY = 1;
             if (!Main.dedServ)
             {
-                if (TextureAssets.Npc[NPC.type].Value is null)
+                if (TextureAssets.Npc[Type].Value is null)
                     return;
-                frameY = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+                frameY = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
             }
             int aiState = 0;
             if (NPC.aiAction == 0)
@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.frame.Y += frameY;
                 NPC.frameCounter = 0f;
             }
-            if (NPC.frame.Y >= frameY * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameY * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 

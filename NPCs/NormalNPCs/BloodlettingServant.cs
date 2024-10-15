@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.ai[0] >= ChargeTelegraphGateValue)
             {
-                Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
+                Texture2D npcTexture = TextureAssets.Npc[Type].Value;
                 Color originalColor = NPC.GetAlpha(drawColor);
                 Color newColor = new Color(192, 0, 0, 255 - NPC.alpha);
                 Vector2 drawPosition = NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY);
@@ -275,7 +275,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         afterimageColor = NPC.GetAlpha(afterimageColor);
                         afterimageColor *= (afterimageAmount - j) / 15f;
                         Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         afterimagePos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(npcTexture, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                     }

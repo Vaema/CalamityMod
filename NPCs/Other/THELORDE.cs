@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.Other
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
             NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             if (!Main.dedServ)
             {
                 DeathAnimationTexture = ModContent.Request<Texture2D>(Texture + "DEATH", AssetRequestMode.AsyncLoad);
@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 
