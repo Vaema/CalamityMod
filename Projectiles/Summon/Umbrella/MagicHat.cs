@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;

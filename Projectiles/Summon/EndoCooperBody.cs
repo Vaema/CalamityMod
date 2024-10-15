@@ -19,6 +19,7 @@ namespace CalamityMod.Projectiles.Summon
         private int laserdirection = 1;
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
