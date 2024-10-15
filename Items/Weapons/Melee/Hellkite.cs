@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static readonly SoundStyle HitSoundBig = new("CalamityMod/Sounds/Item/HellkiteBigHit", 2);
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Item/HellkiteCharge");
         public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/HellkiteFullCharge");
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         public override void SetDefaults()
         {
             Item.width = 124;

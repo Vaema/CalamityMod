@@ -23,7 +23,7 @@ namespace CalamityMod.Items.LoreItems
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
         }
 
         public override bool CanUseItem(Player player) => false;

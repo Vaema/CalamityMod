@@ -10,7 +10,7 @@ namespace CalamityMod.Items
         public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
