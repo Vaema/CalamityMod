@@ -80,7 +80,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> confusionEnemyList;
         public static List<int> dungeonEnemyBuffList;
         public static List<int> dungeonProjectileBuffList;
         public static List<int> bossHPScaleList;
@@ -162,37 +161,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            confusionEnemyList = new List<int>()
-            {
-                NPCType<AeroSlime>(),
-                NPCType<Rimehound>(),
-                NPCType<AstralachneaGround>(),
-                NPCType<AstralachneaWall>(),
-                NPCType<BloomSlime>(),
-                NPCType<Bohldohr>(),
-                NPCType<CalamityEye>(),
-                NPCType<CrimulanBlightSlime>(),
-                NPCType<Cryon>(),
-                NPCType<CryoSlime>(),
-                NPCType<RenegadeWarlock>(),
-                NPCType<DespairStone>(),
-                NPCType<EbonianBlightSlime>(),
-                NPCType<FearlessGoldfishWarrior>(),
-                NPCType<HeatSpirit>(),
-                NPCType<MantisShrimp>(),
-                NPCType<OverloadedSoldier>(),
-                NPCType<PerennialSlime>(),
-                NPCType<Rotdog>(),
-                NPCType<Scryllar>(),
-                NPCType<ScryllarRage>(),
-                NPCType<SeaUrchin>(),
-                NPCType<StellarCulex>(),
-                NPCType<Stormlion>(),
-                NPCType<SuperDummyNPC>(),
-                NPCType<WulfrumGyrator>(),
-                NPCType<WulfrumRover>()
-            };
-
             dungeonEnemyBuffList = new List<int>()
             {
                 NPCID.SkeletonSniper,
@@ -1840,8 +1808,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            enemyImmunityList = null;
-            confusionEnemyList = null;
             dungeonEnemyBuffList = null;
             dungeonProjectileBuffList = null;
             bossHPScaleList = null;
