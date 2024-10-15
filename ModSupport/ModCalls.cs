@@ -7,6 +7,7 @@ using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;
@@ -1076,9 +1077,9 @@ namespace CalamityMod
         //This is to add minions to the hp scaling config
         public static bool AddToHPScaling(int type)
         {
-            if (!CalamityLists.bossHPScaleList.Contains(type))
+            if (!BossHPScalingList.List.Contains(type))
             {
-                CalamityLists.bossHPScaleList.Add(type);
+                BossHPScalingList.List.Add(type);
                 return true;
             }
             return false;
