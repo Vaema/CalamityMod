@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 56;
