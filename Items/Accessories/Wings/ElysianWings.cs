@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -28,7 +29,10 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.accessory = true;
         }
-
+        public override void UpdateVanity(Player player)
+        {
+            DrawWingEffects(player);
+        }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
@@ -37,6 +41,11 @@ namespace CalamityMod.Items.Accessories.Wings
             player.noFallDmg = true;
             modPlayer.elysianWingsDust = false;
 
+            if (!hideVisual)
+                DrawWingEffects(player);
+        }
+        private void DrawWingEffects(Player player)
+        {
             float rate = Main.GlobalTimeWrappedHourly * 2;
             List<Color> eColors = new List<Color>()
             {
@@ -50,14 +59,12 @@ namespace CalamityMod.Items.Accessories.Wings
             Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
 
-            if (!hideVisual)
+            Vector2 spawnPos = player.Center + new Vector2(-25 * player.direction, 0);
+            Lighting.AddLight(spawnPos, usedColor.ToVector3() * 1.2f);
+
+            if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f)
             {
-                Vector2 spawnPos = player.Center + new Vector2(-25 * player.direction, 0);
-                Lighting.AddLight(spawnPos, usedColor.ToVector3() * 1.2f);
-            }
-            if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
-            {
-                Vector2 spawnPos = player.Center + new Vector2(-25 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
+                spawnPos = player.Center + new Vector2(-25 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
                 Vector2 spawnPos2 = player.Center + new Vector2(15 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
 
                 float partScale = Main.rand.NextFloat(0.3f, 0.8f);

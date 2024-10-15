@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,19 +36,22 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+                for (int i = 0; i < 3; i++)
+                {
+                    int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
+                    if (Main.projectile.IndexInRange(p))
+                        Main.projectile[p].originalDamage = Item.damage;
+                }
             }
-            float angleMax = MathHelper.ToRadians(45f);
+            float angleMax = MathHelper.ToRadians(360f);
             if (CalamityUtils.CountProjectiles(type) == 1)
                 angleMax = 0f;
             float index = 1f;
-            if (player.ownedProjectileCounts[Item.shoot] > 8)
+            if (player.ownedProjectileCounts[Item.shoot] > 30)
             {
-                angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 8) * 2.5f);
+                angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 30) * 2.5f);
             }
-            angleMax = angleMax > MathHelper.ToRadians(105f) ? MathHelper.ToRadians(105f) : angleMax; // More intuative than using a min function
+            angleMax = angleMax > MathHelper.ToRadians(360f) ? MathHelper.ToRadians(360f) : angleMax; // More intuative than using a min function
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type == type && p.owner == player.whoAmI)

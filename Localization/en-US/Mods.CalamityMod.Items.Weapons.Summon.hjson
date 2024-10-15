@@ -250,7 +250,7 @@ DankStaff: {
 
 DazzlingStabberStaff: {
 	DisplayName: Dazzling Stabber Staff
-	Tooltip: Summons a holy blade to fight for you
+	Tooltip: Summons three holy blades made of profaned materials to fight for you
 }
 
 DeathstareRod: {
