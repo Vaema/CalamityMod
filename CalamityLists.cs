@@ -78,7 +78,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> dungeonProjectileBuffList;
         public static List<int> bossHPScaleList;
         public static List<int> friendlyBeeList;
         public static List<int> debuffList;
@@ -158,19 +157,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            dungeonProjectileBuffList = new List<int>()
-            {
-                ProjectileID.PaladinsHammerHostile,
-                ProjectileID.ShadowBeamHostile,
-                ProjectileID.InfernoHostileBolt,
-                ProjectileID.InfernoHostileBlast,
-                ProjectileID.LostSoulHostile,
-                ProjectileID.SniperBullet,
-                ProjectileID.RocketSkeleton,
-                ProjectileID.BulletDeadeye,
-                ProjectileID.Shadowflames
-            };
-
             bossHPScaleList = new List<int>()
             {
                 NPCID.EaterofWorldsHead,
@@ -1777,7 +1763,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            dungeonProjectileBuffList = null;
             bossHPScaleList = null;
             friendlyBeeList = null;
             debuffList = null;
