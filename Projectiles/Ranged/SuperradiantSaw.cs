@@ -43,8 +43,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -353,7 +353,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Draw the saw itself at full brightness
-            Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D buzzsawTexture = TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(buzzsawTexture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, buzzsawTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
             if (Empowered) // Rainbow outline while empowered

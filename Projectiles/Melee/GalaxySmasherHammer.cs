@@ -34,8 +34,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -326,7 +326,7 @@ namespace CalamityMod.Projectiles.Melee
             Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
             Asset<Texture2D> p3 = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom");
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.5f, 3, texture, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.5f, 3, texture, true, true);
 
             float shrinkLerp = (Utils.GetLerpValue(40, 35, EchoHammerPrep, true));
             float growLerp = (Utils.GetLerpValue(0, 35, EchoHammerPrep, true));

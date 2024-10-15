@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 12;
+            Main.npcFrameCount[Type] = 12;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -203,10 +203,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     ModContent.ItemType<Brimlance>(),
                     ModContent.ItemType<SeethingDischarge>(),
-                    ModContent.ItemType<DormantBrimseeker>()
+                    ModContent.ItemType<DormantBrimseeker>(),
+                    ModContent.ItemType<Hellborn>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Hellborn>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);
@@ -311,10 +311,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 frameLocation = new Vector2((float)(npcTexture.Width / 2), (float)(npcTexture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D npcTexture = TextureAssets.Npc[Type].Value;
+            Vector2 frameLocation = new Vector2((float)(npcTexture.Width / 2), (float)(npcTexture.Height / Main.npcFrameCount[Type] / 2));
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)npcTexture.Width, (float)(npcTexture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)npcTexture.Width, (float)(npcTexture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += frameLocation * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             // Give brimmy an outline based on current elemental mode

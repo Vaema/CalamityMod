@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs((float)Math.Sin(Projectile.localAI[1] / 10f)));
             
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = ProvUtils.GetProjectileColor(255, true) * 4;
             Color baseColor2 = ProvUtils.GetProjectileColor(255);

@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D middleTex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D middleTex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D endpointTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraEndpoints", AssetRequestMode.ImmediateLoad).Value;
 
             // Used to track the animation of the segments

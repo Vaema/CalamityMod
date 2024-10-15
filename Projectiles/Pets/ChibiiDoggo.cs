@@ -20,12 +20,12 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 11; //same as black cat
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 11; //same as black cat
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-7f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Pets
                 spriteEffects = SpriteEffects.FlipHorizontally;
             Color colorArea = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
             Texture2D texture2D3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/ChibiiDoggoMonochrome").Value;
-            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 halfRect = rectangle.Size() / 2f;
@@ -75,14 +75,14 @@ IL_6899:
                 {
                     trailColorChange = (float)(1 - counter);
                 }
-                colorAlpha *= trailColorChange / ((float)ProjectileID.Sets.TrailCacheLength[Projectile.type] * 1.5f);
+                colorAlpha *= trailColorChange / ((float)ProjectileID.Sets.TrailCacheLength[Type] * 1.5f);
                 Vector2 oldDrawPos = Projectile.oldPos[counter];
                 float projRotate = Projectile.rotation;
                 SpriteEffects effects = spriteEffects;
                 Main.spriteBatch.Draw(texture2D3, oldDrawPos + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorAlpha, projRotate + Projectile.rotation * 0f * (float)(counter - 1) * Projectile.spriteDirection, halfRect, Projectile.scale, effects, 0f);
                 goto IL_6881;
             }
-            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
             return false;
         }
 

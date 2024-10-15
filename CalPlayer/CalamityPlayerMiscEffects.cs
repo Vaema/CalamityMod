@@ -860,12 +860,27 @@ namespace CalamityMod.CalPlayer
 
         private void MiscEffects()
         {
-            // Update Carpet textures
+            // Update textures
             if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
                 Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
                 Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
                 TextureAssets.FlyingCarpet = (auricSet ? carpetAuric : carpetOriginal);
+
+                for (int l = 0; l < Player.MaxBuffs; l++)
+                {
+                    if (Player.buffType[l] != BuffID.Lucky)
+                        continue;
+
+                    if (Player.buffTime[l] > CalamityUtils.SecondsToFrames(600f))
+                        TextureAssets.Buff[BuffID.Lucky] = ExtraTextureRefs.LuckIconGreater;
+                    else if (Player.buffTime[l] > CalamityUtils.SecondsToFrames(300f))
+                        TextureAssets.Buff[BuffID.Lucky] = ExtraTextureRefs.LuckIconVanilla;
+                    else
+                        TextureAssets.Buff[BuffID.Lucky] = ExtraTextureRefs.LuckIconLesser;
+
+                    break;
+                }
             }
 
             // Calculate/reset DoG cart rotations based on whether the DoG cart is in use.

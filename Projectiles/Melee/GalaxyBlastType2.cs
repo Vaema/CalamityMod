@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void AI()
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.frameCounter = 0;
                     Projectile.frame++;
                 }
-                if (Projectile.ai[0] >= (float)(Main.projFrames[Projectile.type] * Projectile.MaxUpdates * 3))
+                if (Projectile.ai[0] >= (float)(Main.projFrames[Type] * Projectile.MaxUpdates * 3))
                 {
                     Projectile.Kill();
                 }

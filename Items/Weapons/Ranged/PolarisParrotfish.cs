@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle Squeak = new("CalamityMod/Sounds/Custom/CuteSqueak") { Volume = 0.75f };
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
-            Item.staff[Item.type] = true; //so it doesn't look weird af when holding it
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+            Item.staff[Type] = true; //so it doesn't look weird af when holding it
         }
 
         public override void SetDefaults()

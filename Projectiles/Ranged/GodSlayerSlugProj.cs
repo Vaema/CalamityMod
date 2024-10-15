@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
 
             if (Main.netMode != NetmodeID.Server)
                 TextureBlue = Mod.Assets.Request<Texture2D>("Projectiles/Ranged/GodSlayerSlugBlue", AssetRequestMode.ImmediateLoad).Value;
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Set all old positions to the bullet's warp position so that there aren't weird afterimages.
             // If an old position is uninitialized (0,0 aka never used), then don't change it.
-            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Projectile.type]; ++i)
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; ++i)
             {
                 Vector2 oldPosElem = Projectile.oldPos[i];
                 if (!(oldPosElem == Vector2.Zero))

@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CanBreakTrees => ref Projectile.ai[2];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 90;
+            ProjectileID.Sets.TrailingMode[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 90;
         }
 
         public override void SetDefaults()

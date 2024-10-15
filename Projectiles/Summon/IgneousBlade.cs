@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
         public bool Firing = false;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
         }
 
         public override void SetDefaults()

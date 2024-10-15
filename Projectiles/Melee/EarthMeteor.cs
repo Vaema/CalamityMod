@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Melee
             Color auraColor = mainColor;
 
             CalamityUtils.DrawProjectileWithBackglow(Projectile, auraColor, Color.White * 0.5f, 9);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(Color.White, randomColor, 0.3f), 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(Color.White, randomColor, 0.3f), 1);
 
             return false;
         }

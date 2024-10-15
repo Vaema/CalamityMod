@@ -23,8 +23,8 @@ namespace CalamityMod.Projectiles.Typeless
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
         }
 
         public override void SetDefaults()
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 case (int)GemTechArmorGemType.Melee:
                 default:
-                    texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                     break;
                 case (int)GemTechArmorGemType.Ranged:
                     texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/GemTechGreenGem").Value;
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             Projectile.velocity = Vector2.Zero;
-            Projectile.timeLeft = ProjectileID.Sets.TrailCacheLength[Projectile.type];
+            Projectile.timeLeft = ProjectileID.Sets.TrailCacheLength[Type];
             Projectile.netUpdate = true;
         }
     }
