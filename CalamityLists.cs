@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> friendlyBeeList;
         public static List<int> debuffList;
         public static List<int> fireDebuffList;
         public static List<int> sicknessDebuffList;
@@ -155,17 +154,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            friendlyBeeList = new List<int>()
-            {
-                ProjectileID.GiantBee,
-                ProjectileID.Bee,
-                ProjectileID.Wasp,
-                ProjectileType<PlaguenadeBee>(),
-                ProjectileType<PlaguePrincess>(),
-                ProjectileType<BabyPlaguebringer>(),
-                ProjectileType<PlagueBeeSmall>()
-            };
-
             debuffList = new List<int>()
             {
                 BuffID.Poisoned,
@@ -1671,7 +1659,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            friendlyBeeList = null;
             debuffList = null;
             fireDebuffList = null;
             sicknessDebuffList = null;
