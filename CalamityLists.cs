@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> debuffList;
         public static List<int> fireDebuffList;
         public static List<int> sicknessDebuffList;
         public static List<int> alcoholList;
@@ -154,77 +153,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            debuffList = new List<int>()
-            {
-                BuffID.Poisoned,
-                BuffID.Darkness,
-                BuffID.Cursed,
-                BuffID.OnFire,
-                BuffID.Bleeding,
-                BuffID.Confused,
-                BuffID.Slow,
-                BuffID.Weak,
-                BuffID.Silenced,
-                BuffID.BrokenArmor,
-                BuffID.CursedInferno,
-                BuffID.Frostburn,
-                BuffID.Chilled,
-                BuffID.Frozen,
-                BuffID.Burning,
-                BuffID.Suffocation,
-                BuffID.Ichor,
-                BuffID.Venom,
-                BuffID.Blackout,
-                BuffID.Electrified,
-                BuffID.Rabies,
-                BuffID.Webbed,
-                BuffID.Stoned,
-                BuffID.Dazed,
-                BuffID.VortexDebuff,
-                BuffID.WitheredArmor,
-                BuffID.WitheredWeapon,
-                BuffID.OgreSpit,
-                BuffID.BetsysCurse,
-                BuffType<SulphuricPoisoning>(),
-                BuffType<Shadowflame>(),
-                BuffType<BrimstoneFlames>(),
-                BuffType<BurningBlood>(),
-                BuffType<BrainRot>(),
-                BuffType<ElementalMix>(),
-                BuffType<GlacialState>(),
-                BuffType<GodSlayerInferno>(),
-                BuffType<AstralInfectionDebuff>(),
-                BuffType<HolyFlames>(),
-                BuffType<Irradiated>(),
-                BuffType<Plague>(),
-                BuffType<CrushDepth>(),
-                BuffType<RiptideDebuff>(),
-                BuffType<MarkedforDeath>(),
-                BuffType<AbsorberAffliction>(),
-                BuffType<ArmorCrunch>(),
-                BuffType<Crumbling>(),
-                BuffType<Vaporfied>(),
-                BuffType<Eutrophication>(),
-                BuffType<Dragonfire>(),
-                BuffType<VermillionFlux>(),
-                BuffType<AuricRebuke>(),
-                BuffType<StaticDischarge>(),
-                BuffType<Nightwither>(),
-                BuffType<VulnerabilityHex>(),
-                BuffType<MiracleBlight>(),
-                BuffType<WhisperingDeath>(),
-                BuffType<FrozenLungs>(),
-                BuffType<FishAlert>(),
-                BuffType<HolyInferno>(),
-                BuffType<IcarusFolly>(),
-                BuffType<DoGExtremeGravity>(),
-                // BuffType<NOU>(),
-                BuffType<PopoNoselessBuff>(),
-                BuffType<SearingLava>(),
-                BuffType<WeakBrimstoneFlames>(),
-                BuffType<Withered>()
-            };
-
             fireDebuffList = new List<int>()
             {
                 BuffID.OnFire,
@@ -1659,7 +1587,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            debuffList = null;
             fireDebuffList = null;
             sicknessDebuffList = null;
             alcoholList = null;

@@ -82,6 +82,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
 using CalamityMod.Projectiles.Pets;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.CalPlayer
 {
@@ -1932,12 +1933,12 @@ namespace CalamityMod.CalPlayer
 
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
-                    int hasBuff = Player.buffType[l];
-                    if (Player.buffTime[l] <= 2 && hasBuff == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
+                    int buffID = Player.buffType[l];
+                    if (Player.buffTime[l] <= 2 && buffID == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
                         if (Player.whoAmI == Main.myPlayer)
                             Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(25));
 
-                    bool shouldAffect = CalamityLists.debuffList.Contains(hasBuff);
+                    bool shouldAffect = DebuffsList.IsDebuff(buffID);
                     if (shouldAffect)
                         Player.GetDamage<RogueDamageClass>() += 0.1f;
                 }
