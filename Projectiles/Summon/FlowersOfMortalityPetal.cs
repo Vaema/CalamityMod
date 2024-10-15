@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public float Hue => OffsetAngle % MathHelper.TwoPi / MathHelper.TwoPi % 1f;
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
