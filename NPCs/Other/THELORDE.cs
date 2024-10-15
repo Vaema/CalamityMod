@@ -130,6 +130,8 @@ namespace CalamityMod.NPCs.Other
             aiSwitchCounter++;
             if (ajitPaiDidNothingWrong && invincibleCounter < 6000)
             {
+                // On a technical level, the defense/DR stat is not being increased, but for player purposes he may as well be
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = true;
                 invincibleCounter++;
             }
             NPC.alpha -= 100;
@@ -155,6 +157,7 @@ namespace CalamityMod.NPCs.Other
             // Trigger the death animation
             else if (NPC.life <= 1 && invincibleCounter >= 6000)
             {
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = false;
                 NPC.life = 1;
                 if (!Dying)
                 {
