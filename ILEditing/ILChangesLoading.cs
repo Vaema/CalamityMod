@@ -205,6 +205,7 @@ namespace CalamityMod.ILEditing
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
+            IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
