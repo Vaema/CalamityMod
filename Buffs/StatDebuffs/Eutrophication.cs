@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -26,7 +27,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             if (npc.Calamity().eutrophication < npc.buffTime[buffIndex])
                 npc.Calamity().eutrophication = npc.buffTime[buffIndex];
-            if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().eutrophication;
             npc.DelBuff(buffIndex);
             buffIndex--;

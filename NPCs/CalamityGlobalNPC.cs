@@ -88,6 +88,7 @@ using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 using CalamityMod.ExtraTextures;
 using MonoMod.Utils;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs
 {
@@ -8689,7 +8690,7 @@ namespace CalamityMod.NPCs
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&
                 target.type != NPCID.MourningWood && target.type != NPCID.Everscream && target.type != NPCID.SantaNK1 && target.type != NPCType<RavagerClawRight>() &&
                 target.type != NPCType<ReaperShark>() && target.type != NPCType<Mauler>() && target.type != NPCType<EidolonWyrmHead>() && target.type != NPCID.GolemFistLeft && target.type != NPCID.GolemFistRight &&
-                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityLists.enemyImmunityList.Contains(target.type) && !AcidRainEvent.AllMinibosses.Contains(target.type))
+                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !EnemyImmunitiesList.IsNPCImmune(target) && !AcidRainEvent.AllMinibosses.Contains(target.type))
             {
                 return true;
             }

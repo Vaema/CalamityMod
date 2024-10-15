@@ -35,6 +35,7 @@ using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -99,7 +100,7 @@ namespace CalamityMod
             //
 
             // All bosses and several enemies are automatically immune to Pearl Aura.
-            if (CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss)
+            if (EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss)
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][ModContent.BuffType<PearlAura>()] = true;
 
             // Make all Cal NPCs immune to confused unless otherwise specified

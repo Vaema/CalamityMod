@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -104,7 +105,7 @@ namespace CalamityMod.Buffs
             {
                 if (npc.Calamity().webbed < npc.buffTime[buffIndex])
                     npc.Calamity().webbed = npc.buffTime[buffIndex];
-                if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                if ((EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().webbed;
                 npc.DelBuff(buffIndex);
                 buffIndex--;
@@ -113,7 +114,7 @@ namespace CalamityMod.Buffs
             {
                 if (npc.Calamity().slowed < npc.buffTime[buffIndex])
                     npc.Calamity().slowed = npc.buffTime[buffIndex];
-                if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                if ((EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().slowed;
                 npc.DelBuff(buffIndex);
                 buffIndex--;

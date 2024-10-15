@@ -33,6 +33,7 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.CalPlayer
 {
