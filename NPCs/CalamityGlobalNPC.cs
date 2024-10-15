@@ -2852,7 +2852,7 @@ namespace CalamityMod.NPCs
 
             if (NPC.downedMoonlord)
             {
-                if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
+                if (BuffedDungeonEnemiesList.IsNPCBuffedDungeonEnemy(npc))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;

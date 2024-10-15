@@ -27,7 +27,6 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
@@ -35,7 +34,6 @@ using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
@@ -80,7 +78,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> dungeonEnemyBuffList;
         public static List<int> dungeonProjectileBuffList;
         public static List<int> bossHPScaleList;
         public static List<int> friendlyBeeList;
@@ -161,34 +158,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            dungeonEnemyBuffList = new List<int>()
-            {
-                NPCID.SkeletonSniper,
-                NPCID.TacticalSkeleton,
-                NPCID.SkeletonCommando,
-                NPCID.Paladin,
-                NPCID.GiantCursedSkull,
-                NPCID.BoneLee,
-                NPCID.DiabolistWhite,
-                NPCID.DiabolistRed,
-                NPCID.NecromancerArmored,
-                NPCID.Necromancer,
-                NPCID.RaggedCasterOpenCoat,
-                NPCID.RaggedCaster,
-                NPCID.HellArmoredBonesSword,
-                NPCID.HellArmoredBonesMace,
-                NPCID.HellArmoredBonesSpikeShield,
-                NPCID.HellArmoredBones,
-                NPCID.BlueArmoredBonesSword,
-                NPCID.BlueArmoredBonesNoPants,
-                NPCID.BlueArmoredBonesMace,
-                NPCID.BlueArmoredBones,
-                NPCID.RustyArmoredBonesSwordNoArmor,
-                NPCID.RustyArmoredBonesSword,
-                NPCID.RustyArmoredBonesFlail,
-                NPCID.RustyArmoredBonesAxe
-            };
-
             dungeonProjectileBuffList = new List<int>()
             {
                 ProjectileID.PaladinsHammerHostile,
@@ -1808,7 +1777,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            dungeonEnemyBuffList = null;
             dungeonProjectileBuffList = null;
             bossHPScaleList = null;
             friendlyBeeList = null;

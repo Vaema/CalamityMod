@@ -23,6 +23,7 @@ using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using CalamityMod.World.Planets;
@@ -1718,7 +1719,7 @@ DukeEditFailed:
 
             // All Hardmode Dungeon Enemies
             // Ectoplasm @ 20%
-            if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
+            if (BuffedDungeonEnemiesList.IsNPCBuffedDungeonEnemy(npc))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
 
