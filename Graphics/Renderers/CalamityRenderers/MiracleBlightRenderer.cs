@@ -60,14 +60,6 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (!npc.active || npc.type <= NPCID.None)
                 return false;
 
-            // Do not draw other mod's bosses.
-            if (npc.ModNPC != null && npc.ModNPC.Mod != CalamityMod.Instance && npc.boss)
-                return false;
-
-            // Don't draw excluded NPCs, or if the npc is a bestiary dummy.
-            if (ExcludedNPCs.Contains(npc.type) || npc.IsABestiaryIconDummy)
-                return false;
-
             if (!CalamityDrawParameterNPC.DrawingMiracleBlight[npc.whoAmI])
                 return false;
 
