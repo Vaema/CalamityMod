@@ -77,8 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> fireDebuffList;
-        public static List<int> sicknessDebuffList;
         public static List<int> alcoholList;
         public static List<int> spearAutoreuseList;
         public static List<int> pumpkinMoonBuffList;
@@ -153,20 +151,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            fireDebuffList 
-
-            sicknessDebuffList = new List<int>()
-            {
-                BuffID.Poisoned,
-                BuffID.Venom,
-                BuffType<SulphuricPoisoning>(),
-                BuffType<AstralInfectionDebuff>(),
-                BuffType<Plague>(),
-                BuffType<AbsorberAffliction>(),
-                BuffType<WhisperingDeath>(),
-                BuffType<Irradiated>()
-            };
-
             alcoholList = new List<int>()
             {
                 BuffID.Tipsy,
@@ -1572,8 +1556,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            fireDebuffList = null;
-            sicknessDebuffList = null;
             alcoholList = null;
             spearAutoreuseList = null;
             pumpkinMoonBuffList = null;

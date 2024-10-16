@@ -389,7 +389,7 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = CalamityLists.sicknessDebuffList.Contains(buffID);
+                    bool shouldHalveDuration = SicknessDebuffsList.IsSickenessDebuff(buffID);
                     if (livingDewHalveDebuffs)
                         shouldHalveDuration |= FireDebuffsList.IsFireDebuff(buffID);
                     if (purity)
