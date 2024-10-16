@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> alcoholList;
         public static List<int> spearAutoreuseList;
         public static List<int> pumpkinMoonBuffList;
         public static List<int> frostMoonBuffList;
@@ -151,31 +150,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            alcoholList = new List<int>()
-            {
-                BuffID.Tipsy,
-                BuffType<BloodyMaryBuff>(),
-                BuffType<CaribbeanRumBuff>(),
-                BuffType<CinnamonRollBuff>(),
-                BuffType<EverclearBuff>(),
-                BuffType<EvergreenGinBuff>(),
-                BuffType<FireballBuff>(),
-                BuffType<GrapeBeerBuff>(),
-                BuffType<MargaritaBuff>(),
-                BuffType<MoonshineBuff>(),
-                BuffType<MoscowMuleBuff>(),
-                BuffType<OldFashionedBuff>(),
-                BuffType<RedWineBuff>(),
-                BuffType<RumBuff>(),
-                BuffType<ScrewdriverBuff>(),
-                BuffType<StarBeamRyeBuff>(),
-                BuffType<TequilaBuff>(),
-                BuffType<TequilaSunriseBuff>(),
-                BuffType<VodkaBuff>(),
-                BuffType<WhiskeyBuff>(),
-                BuffType<WhiteWineBuff>()
-            };
-
             spearAutoreuseList = new List<int>()
             {
                 ItemID.AdamantiteGlaive,
@@ -1556,7 +1530,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            alcoholList = null;
             spearAutoreuseList = null;
             pumpkinMoonBuffList = null;
             frostMoonBuffList = null;
