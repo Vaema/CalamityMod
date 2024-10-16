@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
         public static List<int> highTestFishList;
         public static List<int> forceItemList;
@@ -144,13 +143,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            needsDebuffIconDisplayList = new List<int>()
-            {
-                NPCID.TargetDummy,
-                NPCID.WallofFleshEye,
-                NPCType<SuperDummyNPC>()
-            };
-
             // TODO -- override HoldItem => Player.accFishingLine = true; on these items, just like the scope fix...
             highTestFishList = new List<int>()
             {
@@ -1397,7 +1389,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            needsDebuffIconDisplayList = null;
             scopedWeaponList = null;
             highTestFishList = null;
             forceItemList = null;
