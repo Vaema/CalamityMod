@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
         public static List<int> highTestFishList;
@@ -145,28 +144,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            noRageWormSegmentList = new List<int>()
-            {
-                NPCType<DesertScourgeBody>(),
-                NPCType<DesertScourgeTail>(),
-                NPCType<AquaticScourgeBody>(),
-                NPCType<AquaticScourgeBodyAlt>(),
-                NPCType<AquaticScourgeTail>(),
-                NPCType<AstrumDeusBody>(),
-                NPCType<AstrumDeusTail>(),
-                NPCType<StormWeaverBody>(),
-                NPCType<StormWeaverTail>(),
-                NPCType<DevourerofGodsBody>(),
-                NPCType<DevourerofGodsTail>(),
-                NPCType<ThanatosBody1>(),
-                NPCType<ThanatosBody2>(),
-                NPCType<ThanatosTail>(),
-                NPCType<AresLaserCannon>(),
-                NPCType<AresTeslaCannon>(),
-                NPCType<AresPlasmaFlamethrower>(),
-                NPCType<AresGaussNuke>()
-            };
-
             needsDebuffIconDisplayList = new List<int>()
             {
                 NPCID.TargetDummy,
@@ -1420,7 +1397,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
             scopedWeaponList = null;
             highTestFishList = null;

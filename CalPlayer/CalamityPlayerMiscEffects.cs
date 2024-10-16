@@ -556,7 +556,7 @@ namespace CalamityMod.CalPlayer
                         // If they're a boss, reduce the boss distance.
                         // Boss distance will always be >= enemy distance, so there's no need to do another check.
                         // Worm boss body and tail segments are not counted as bosses for this calculation.
-                        if (npc.IsABoss() && !CalamityLists.noRageWormSegmentList.Contains(npc.type))
+                        if (npc.IsABoss() && !NoRageWormSegmentList.IsNoRageWormSegment(npc))
                             bossDistance = hitboxEdgeDist;
                     }
                 }
