@@ -1965,6 +1965,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileID.PrincessWeapon,
                 ProjectileType<AnahitasArpeggioNote>(),
                 ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),

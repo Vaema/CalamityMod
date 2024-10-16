@@ -116,6 +116,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.AdamantiteChainsaw, standardChainsawTweaks },
                 { ProjectileID.AdamantiteDrill, standardDrillTweaks },
                 { ProjectileID.Anchor, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.Arkhalis, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.Bee, Do(PiercingExact(2)) },
                 { ProjectileID.BeeArrow, Do(PointBlank, ExtraUpdatesExact(1)) },
                 { ProjectileID.BlackCounterweight, counterweightTweaks },
@@ -202,6 +203,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(1)) }, // Beam Sword projectile
+                { ProjectileID.Terragrim, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.ThunderStaffShot, Do(PiercingExact(3)) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
@@ -217,7 +219,6 @@ namespace CalamityMod.Projectiles
 
                 #region CATEGORY 3: True Melee support
                 { ProjectileID.AdamantiteGlaive, trueMelee },
-                { ProjectileID.Arkhalis, trueMeleeNoSpeed },
                 { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CobaltNaginata, trueMelee },
                 { ProjectileID.CopperShortswordStab, trueMelee },
@@ -243,7 +244,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Spear, trueMelee },
                 { ProjectileID.StardustChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.Swordfish, trueMelee },
-                { ProjectileID.Terragrim, trueMeleeNoSpeed },
                 { ProjectileID.TheRottedFork, trueMelee },
                 { ProjectileID.TinShortswordStab, trueMelee },
                 { ProjectileID.TitaniumTrident, trueMelee },

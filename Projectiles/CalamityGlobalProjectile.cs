@@ -4596,6 +4596,18 @@ namespace CalamityMod.Projectiles
                 return false;
             }
 
+            // Manual drawing to adjust for scale change
+            if (projectile.type == ProjectileID.Terragrim || projectile.type == ProjectileID.Arkhalis)
+            {
+                Texture2D tex = TextureAssets.Projectile[projectile.type].Value;
+                Rectangle frame = tex.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+                Vector2 origin = frame.Size() / 2f;
+                SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
+                return false;
+            }
+
             // Chlorophyte Crystal AI rework.
             if (projectile.type == ProjectileID.CrystalLeaf)
                 return ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
