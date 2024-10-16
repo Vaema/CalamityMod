@@ -149,27 +149,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            pumpkinMoonBuffList = new List<int>()
-            {
-                NPCID.Scarecrow1,
-                NPCID.Scarecrow2,
-                NPCID.Scarecrow3,
-                NPCID.Scarecrow4,
-                NPCID.Scarecrow5,
-                NPCID.Scarecrow6,
-                NPCID.Scarecrow7,
-                NPCID.Scarecrow8,
-                NPCID.Scarecrow9,
-                NPCID.Scarecrow10,
-                NPCID.HeadlessHorseman,
-                NPCID.MourningWood,
-                NPCID.Splinterling,
-                NPCID.Pumpking,
-                NPCID.PumpkingBlade,
-                NPCID.Hellhound,
-                NPCID.Poltergeist
-            };
-
             frostMoonBuffList = new List<int>()
             {
                 NPCID.ZombieElf,
@@ -1507,7 +1486,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            pumpkinMoonBuffList = null;
             frostMoonBuffList = null;
             eclipseBuffList = null;
             eventProjectileBuffList = null;

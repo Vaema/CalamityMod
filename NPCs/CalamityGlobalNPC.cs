@@ -2827,7 +2827,7 @@ namespace CalamityMod.NPCs
 
             if (DownedBossSystem.downedDoG)
             {
-                if (CalamityLists.pumpkinMoonBuffList.Contains(npc.type))
+                if (PumpkinMoonBuffList.IsPumpkinMoonBuffNPC(npc))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.5);
                     npc.damage += 30;
