@@ -302,7 +302,6 @@ namespace CalamityMod.Projectiles
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
-                projectile.damage = (int)(projectile.originalDamage * MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime));
 
                 // Make fizzle sounds and fire dust to indicate the impending explosion.
                 if (ExplosiveEnchantCountdown <= 300)
@@ -4306,6 +4305,10 @@ namespace CalamityMod.Projectiles
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
+
+            // This can apply to minions or minion shots
+            if (ExplosiveEnchantCountdown > 0)
+                modifiers.SourceDamage *= MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime);
 
             if (modPlayer.farProximityRewardEnchant)
             {
