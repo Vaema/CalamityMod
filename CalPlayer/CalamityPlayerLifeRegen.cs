@@ -16,6 +16,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -390,9 +391,9 @@ namespace CalamityMod.CalPlayer
                         continue;
                     bool shouldHalveDuration = CalamityLists.sicknessDebuffList.Contains(buffID);
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= CalamityLists.fireDebuffList.Contains(buffID);
+                        shouldHalveDuration |= FireDebuffsList.IsFireDebuff(buffID);
                     if (purity)
-                        shouldHalveDuration |= CalamityLists.debuffList.Contains(buffID);
+                        shouldHalveDuration |= DebuffsList.IsDebuff(buffID);
 
                     if (shouldHalveDuration)
                         --Player.buffTime[l];
@@ -456,7 +457,7 @@ namespace CalamityMod.CalPlayer
             if (purity)
             {
                 int intendedPurityDefense = 0;
-                int currentDebuffs = Player.buffType.Count(CalamityLists.debuffList.Contains);
+                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
                 if (currentDebuffs > 0)
                 {
                     // Healing rate is normally 5 HP/s (+1 every 12 frames)
@@ -509,7 +510,7 @@ namespace CalamityMod.CalPlayer
                 // If the player has any debuffs, give the extra life regen and defense
                 // More defense is given for each additional debuff
                 int intendedJewelDefense = 0;
-                int currentDebuffs = Player.buffType.Count(CalamityLists.debuffList.Contains);
+                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
@@ -536,7 +537,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
                 // If any debuff is detected, provide even more life regen and massively accelerate it
-                if (Player.buffType.Any(CalamityLists.debuffList.Contains))
+                if (Player.buffType.Any(DebuffsList.List.Contains))
                 {
                     Player.lifeRegen += 3;
                     if (Player.lifeRegenTime < 1800)

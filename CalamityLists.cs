@@ -153,22 +153,7 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            fireDebuffList = new List<int>()
-            {
-                BuffID.OnFire,
-                BuffID.OnFire3, // Hellfire
-                BuffID.Burning, // Touching meteorite ore or hellstone without obsidian skull
-                BuffID.CursedInferno,
-                BuffID.ShadowFlame, // Vanilla Shadowflame, can normally never be applied to players
-                BuffType<Shadowflame>(), // Calamity Shadowflame copy for players
-                BuffType<SearingLava>(), // Crags lava
-                BuffType<BrimstoneFlames>(),
-                BuffType<HolyFlames>(),
-                BuffType<GodSlayerInferno>(),
-                BuffType<Dragonfire>(),
-                BuffType<WeakBrimstoneFlames>(), // Aflame enchant self damage
-                BuffType<BanishingFire>(),
-            };
+            fireDebuffList 
 
             sicknessDebuffList = new List<int>()
             {
