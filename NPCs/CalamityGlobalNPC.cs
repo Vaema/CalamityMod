@@ -2841,7 +2841,7 @@ namespace CalamityMod.NPCs
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (CalamityLists.eclipseBuffList.Contains(npc.type))
+                else if (EclipseBuffList.IsEclipseBuffNPC(npc))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 5D);
                     npc.damage += 30;

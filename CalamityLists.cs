@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> eclipseBuffList;
         public static List<int> eventProjectileBuffList;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
@@ -147,28 +146,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-
-            eclipseBuffList = new List<int>()
-            {
-                NPCID.Eyezor,
-                NPCID.Reaper,
-                NPCID.Frankenstein,
-                NPCID.SwampThing,
-                NPCID.Vampire,
-                NPCID.VampireBat,
-                NPCID.Butcher,
-                NPCID.CreatureFromTheDeep,
-                NPCID.Fritz,
-                NPCID.Nailhead,
-                NPCID.Psycho,
-                NPCID.DeadlySphere,
-                NPCID.DrManFly,
-                NPCID.ThePossessed,
-                NPCID.Mothron,
-                NPCID.MothronEgg,
-                NPCID.MothronSpawn
-            };
-
             eventProjectileBuffList = new List<int>()
             {
                 ProjectileID.FlamingWood,
@@ -1466,7 +1443,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            eclipseBuffList = null;
             eventProjectileBuffList = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
