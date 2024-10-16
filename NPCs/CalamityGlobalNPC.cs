@@ -2834,7 +2834,7 @@ namespace CalamityMod.NPCs
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (CalamityLists.frostMoonBuffList.Contains(npc.type))
+                else if (FrostMoonBuffList.IsFrostMoonBuffNPC(npc))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;

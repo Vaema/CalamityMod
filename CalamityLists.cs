@@ -77,8 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> pumpkinMoonBuffList;
-        public static List<int> frostMoonBuffList;
         public static List<int> eclipseBuffList;
         public static List<int> eventProjectileBuffList;
         public static List<int> noRageWormSegmentList;
@@ -149,24 +147,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            frostMoonBuffList = new List<int>()
-            {
-                NPCID.ZombieElf,
-                NPCID.ZombieElfBeard,
-                NPCID.ZombieElfGirl,
-                NPCID.PresentMimic,
-                NPCID.GingerbreadMan,
-                NPCID.Yeti,
-                NPCID.Everscream,
-                NPCID.IceQueen,
-                NPCID.SantaNK1,
-                NPCID.ElfCopter,
-                NPCID.Nutcracker,
-                NPCID.NutcrackerSpinning,
-                NPCID.ElfArcher,
-                NPCID.Krampus,
-                NPCID.Flocko
-            };
 
             eclipseBuffList = new List<int>()
             {
@@ -1486,7 +1466,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            frostMoonBuffList = null;
             eclipseBuffList = null;
             eventProjectileBuffList = null;
             noRageWormSegmentList = null;
