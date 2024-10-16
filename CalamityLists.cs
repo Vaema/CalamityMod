@@ -77,8 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> scopedWeaponList;
-        public static List<int> highTestFishList;
         public static List<int> forceItemList;
         public static List<int> livingFireBlockList;
         public static List<int> amalgamBuffList;
@@ -143,14 +141,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            // TODO -- override HoldItem => Player.accFishingLine = true; on these items, just like the scope fix...
-            highTestFishList = new List<int>()
-            {
-                ItemID.GoldenFishingRod,
-                ItemType<EarlyBloomRod>(),
-                ItemType<TheDevourerofCods>()
-            };
-
             forceItemList = new List<int>()
             {
                 ItemType<SubmarineShocker>(),
@@ -1389,8 +1379,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            scopedWeaponList = null;
-            highTestFishList = null;
             forceItemList = null;
             livingFireBlockList = null;
             amalgamBuffList = null;
