@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[2] > 0)
             {
                 Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
             }
 
             if (Projectile.owner == Main.myPlayer)

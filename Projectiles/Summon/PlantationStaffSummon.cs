@@ -284,7 +284,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 int tentacleAmount = 6;
                 for (int tentacleIndex = 0; tentacleIndex < tentacleAmount; tentacleIndex++)
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlantationStaffTentacle>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, tentacleIndex, Projectile.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlantationStaffTentacle>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, tentacleIndex, Projectile.whoAmI);
 
                 SoundEngine.PlaySound(SoundID.Roar with { Volume = .3f, Pitch = 1f, PitchVariance = .1f }, Projectile.Center);
             }

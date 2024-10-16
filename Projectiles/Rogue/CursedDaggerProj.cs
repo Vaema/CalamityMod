@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.Calamity().stealthStrike)
             {
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, Projectile.position);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CursedDaggerBlastHitbox>(), (int)(Projectile.damage), Projectile.knockBack * 2, Projectile.owner, 0, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CursedDaggerBlastHitbox>(), (int)(Projectile.damage), Projectile.knockBack * 2, Projectile.owner, 0, 0f);
             }
         }
 

@@ -61,8 +61,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.Calamity().mouseWorld, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectileDirect(source, player.Calamity().mouseWorld, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, player.Calamity().mouseWorld, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, player.Calamity().mouseWorld, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
 
             if (Main.dedServ)
                 return false;

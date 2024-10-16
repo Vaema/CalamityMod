@@ -259,12 +259,12 @@ namespace CalamityMod.Projectiles.Ranged
                             if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Type] < 80)
                             {
                                 closestTarget = Main.npc[index];
-                                Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                             }
                         }
                         if (closestTarget != null)
                         {
-                            Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
                         int heal = 25;

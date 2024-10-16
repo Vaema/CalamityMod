@@ -331,7 +331,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             // Damage Aureus for a percentage of its HP if the spawn explodes on or near it
             if (Main.netMode != NetmodeID.MultiplayerClient && (Main.npc[CalamityGlobalNPC.astrumAureus].Center - NPC.Center).Length() < (200f + 30f * (NPC.scale - 1f)) && !Main.IsItDay())
-                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), Main.npc[CalamityGlobalNPC.astrumAureus].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Main.npc[CalamityGlobalNPC.astrumAureus].lifeMax / 200 * NPC.scale), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.astrumAureus].whoAmI);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), Main.npc[CalamityGlobalNPC.astrumAureus].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Main.npc[CalamityGlobalNPC.astrumAureus].lifeMax / 200 * NPC.scale), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.astrumAureus].whoAmI);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

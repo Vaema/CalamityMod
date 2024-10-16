@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.owner == Main.myPlayer)
                 {
                     for (int k = 0; k < projectiles; k++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
                 }
                 for (int k = 0; k < 3; k++)
                 {

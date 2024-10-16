@@ -529,7 +529,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     NPC.GetSource_FromThis(),
                     NPC.Center,
                     Vector2.Zero,

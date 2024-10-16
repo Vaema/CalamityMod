@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
 
                     if (weldingTimer % 2 == 0)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<DragonsBreathFlames>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 1, weldingTimer, (Time % 15 < 10 ? 18 : 0));
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<DragonsBreathFlames>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 1, weldingTimer, (Time % 15 < 10 ? 18 : 0));
 
                     weldingTimer--;
                     if (Time % 3 == 0)
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundStyle bigShot = new("CalamityMod/Sounds/Item/DudFire");
                     SoundEngine.PlaySound(bigShot with { PitchVariance = 0.15f, Volume = 0.75f }, Projectile.Center);
 
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, Projectile.knockBack, Projectile.owner, 1);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, Projectile.knockBack, Projectile.owner, 1);
                     hasLaunchedMag = true;
                 }
             }
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, !Main.rand.NextBool(5));
 
                     for (int i = 0; i < 3; i++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.15f * i * 0.5f) * shootSpeed * (i == 0 ? 0.5f : i == 1 ? 0.7f : 1) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<DragonsBreathFlames>(), damage, knockback, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.15f * i * 0.5f) * shootSpeed * (i == 0 ? 0.5f : i == 1 ? 0.7f : 1) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<DragonsBreathFlames>(), damage, knockback, Projectile.owner);
 
                     SoundEngine.PlaySound(DragonsBreath.FireballSound, Projectile.Center);
                     hasLaunchedMag = false;

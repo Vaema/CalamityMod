@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGBarrageLaunch");
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.1f }, Projectile.Center);
 
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 GunTipPosition,
                 shootDirection * projSpeed * 0.3f,
@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < numProj; i++)
                 {
                     Vector2 perturbedSpeed = (shootDirection).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                    Projectile.NewProjectileDirect(
+                    Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     GunTipPosition,
                     perturbedSpeed * projSpeed * VelocityMultiplier,

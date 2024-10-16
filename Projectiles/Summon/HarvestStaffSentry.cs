@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 spawnPosition = Projectile.Center + new Vector2(Main.rand.NextFloat(-randomOffset, randomOffset), -80f);
                 MakeSpawnValid(ref spawnPosition);
 
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     spawnPosition,
                     Vector2.Zero,

@@ -288,9 +288,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     float cloudSpawnOutwardness = (AttackTimer - cloudSummonDelay) / cloudSummonRate * 50f;
 
                     Vector2 spawnPosition = NPC.Top + new Vector2(cloudSpawnOutwardness, -36);
-                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
                     spawnPosition = NPC.Top + new Vector2(-cloudSpawnOutwardness, -36);
-                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
                 }
             }
 

@@ -886,7 +886,7 @@ namespace CalamityMod.CalPlayer
                 pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
                 if (pulseCounter >= 420)
                 {
-                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
                     float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
                     SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");

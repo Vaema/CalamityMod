@@ -281,7 +281,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 offset = new Vector2(5f, 0).RotatedBy(rot).RotatedBy(randRot);
                         Vector2 velOffset = new Vector2(1f, 0).RotatedBy(rot).RotatedBy(randRot);
 
-                        Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, velOffset, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner, EmpoweredHammer, (EmpoweredHammer % 2 == 0 ? -1 : 1), target.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, velOffset, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner, EmpoweredHammer, (EmpoweredHammer % 2 == 0 ? -1 : 1), target.whoAmI);
                     }
                 }
 

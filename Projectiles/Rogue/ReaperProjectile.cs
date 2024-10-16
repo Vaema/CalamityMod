@@ -249,13 +249,13 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     Particle Smear = new CustomPulse(rainSpot, Vector2.Zero, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-5, 5), 0, 0.35f, 12);
                     GeneralParticleHandler.SpawnParticle(Smear);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
                 }
                 else // Radiation Burst
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0, MaxInstances = -1 }, Projectile.Center);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + target.velocity * 32, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + target.velocity * 32, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
                 }
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);

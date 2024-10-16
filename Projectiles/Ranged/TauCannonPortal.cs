@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     float angle = starterAngle + (MathHelper.TwoPi / randomBoltAmount * i);
                     Vector2 velocity = angle.ToRotationVector2() * 14f;
-                    Projectile.NewProjectileDirect(
+                    Projectile.NewProjectile(
                         Projectile.GetSource_FromThis(),
                         Projectile.Center,
                         velocity,

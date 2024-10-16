@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
                         Vector2 dustOnlySpread = Main.rand.NextVector2Circular(shootSpeed, shootSpeed);
                         Vector2 dustVelocity = shootVelocity + dustInaccuracy * dustOnlySpread;
                         if (actuallyShoot && Main.myPlayer == Projectile.owner)
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), laserStartPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner, i * 0.5f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserStartPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner, i * 0.5f);
                         SpawnFiringDust(GunTipPosition, dustVelocity);
                     }
                 }

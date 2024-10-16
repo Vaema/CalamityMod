@@ -194,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 firingVelocity = shootDirection.RotatedByRandom((0.2f * i) + 0.02f) * 5f * Main.rand.NextFloat(0.7f, 1.3f);
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<NorfleetComet>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, i, PUNISHMENTMODE ? 1 : 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<NorfleetComet>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, i, PUNISHMENTMODE ? 1 : 0);
                 }
 
                 NetUpdate();

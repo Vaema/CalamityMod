@@ -2830,7 +2830,7 @@ namespace CalamityMod.CalPlayer
             if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
             {
                 var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
-                Projectile.NewProjectileDirect(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
+                Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = 2400;
                 ascendantInsigniaBuffTime = 240; //4 seconds

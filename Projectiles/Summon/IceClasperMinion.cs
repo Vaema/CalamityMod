@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 25f);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                     Projectile.Center,
                     velocity,
                     ModContent.ProjectileType<IceClasperSummonProjectile>(),

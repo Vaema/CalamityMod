@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<NorfleetExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1], Projectile.ai[2] == 1 ? 1 : 0);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<NorfleetExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1], Projectile.ai[2] == 1 ? 1 : 0);
 
             if (Projectile.ai[1] == 0)
             {

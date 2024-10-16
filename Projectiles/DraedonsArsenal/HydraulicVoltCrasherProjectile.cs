@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     return false;
                 }
             }
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), npc.Center,
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), npc.Center,
                                            Vector2.Zero,
                                            attackType,
                                            Projectile.damage,

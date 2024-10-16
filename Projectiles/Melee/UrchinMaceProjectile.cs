@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Melee
             //Spawn a whirlpool typhoon after sending it out
             if (WindupProgress >= 1f && Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Main.MouseWorld - Owner.position).SafeNormalize(Vector2.One) * 25f, ModContent.ProjectileType<RedtideWhirlpool>(), (int)(Projectile.damage * whirlpoolDamageMultiplier), Projectile.knockBack, Projectile.owner, 0, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Main.MouseWorld - Owner.position).SafeNormalize(Vector2.One) * 25f, ModContent.ProjectileType<RedtideWhirlpool>(), (int)(Projectile.damage * whirlpoolDamageMultiplier), Projectile.knockBack, Projectile.owner, 0, 0f);
             }
 
             SoundEngine.PlaySound(SoundID.Item7, Projectile.position);

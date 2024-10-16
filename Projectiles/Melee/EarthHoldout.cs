@@ -255,7 +255,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.ai[1] == -1)
                 {
                     Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, 2);
                 }
 
                 spawnBoom = false;

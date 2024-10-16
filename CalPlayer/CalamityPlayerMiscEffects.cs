@@ -3417,7 +3417,7 @@ namespace CalamityMod.CalPlayer
                             continue;
 
                         if (Vector2.Distance(Player.Center, npc.Center) <= range)
-                            Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<TarragonAura>(), damage, 0f, Player.whoAmI, npc.whoAmI);
+                            Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<TarragonAura>(), damage, 0f, Player.whoAmI, npc.whoAmI);
                     }
                 }
             }
@@ -3444,7 +3444,7 @@ namespace CalamityMod.CalPlayer
                             continue;
 
                         if (Vector2.Distance(Player.Center, npc.Center) <= range)
-                            Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
+                            Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
 
                         // Occasionally spawn cute sparks so it looks like an electrical aura
                         if (Main.rand.NextBool(10))
@@ -3485,7 +3485,7 @@ namespace CalamityMod.CalPlayer
                         {
                             npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
                             if (brimLoreInfernoTimer == 0)
-                                Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
+                                Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
                         }
                     }
                 }

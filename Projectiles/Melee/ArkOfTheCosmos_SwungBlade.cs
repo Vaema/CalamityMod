@@ -184,9 +184,7 @@ namespace CalamityMod.Projectiles.Melee
 
                         var source = Projectile.GetSource_FromThis();
                         Projectile blast = Projectile.NewProjectileDirect(source, Owner.Center + adjustedBlastRotation.ToRotationVector2() * 10f, adjustedBlastRotation.ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SwirlBoltDamageMultiplier / ArkoftheCosmos.SwirlBoltAmount * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
-                        {
-                            blast.timeLeft = 100;
-                        }
+                        blast.timeLeft = 100;
                     }
                 }
 
@@ -244,9 +242,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             var source = Projectile.GetSource_FromThis();
                             Projectile blast = Projectile.NewProjectileDirect(source, Projectile.Center + (MathHelper.TwoPi * (i / 3f) + rotationOffset).ToRotationVector2() * 30f, (MathHelper.TwoPi * (i / 3f) + rotationOffset).ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SnapBoltsDamageMultiplier * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
-                            {
-                                blast.timeLeft = 100;
-                            }
+                            blast.timeLeft = 100;
                         }
 
                         //Reset local immunity so that the snap can do damage

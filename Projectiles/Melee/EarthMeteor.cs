@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
             if (time == (int)(fallTime * 0.2f) && Projectile.ai[2] > 0)
             {
                 Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
             }
             if (time == fallTime)
             {
@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Player Owner = Main.player[Projectile.owner];
                 Owner.Calamity().GeneralScreenShakePower = 4.5f;
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                 for (int i = 0; i < 20; i++)
                 {
                     randomColor = Main.rand.Next(3) switch

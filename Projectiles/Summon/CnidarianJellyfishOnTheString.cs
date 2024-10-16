@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Summon
 
                         if (Projectile.owner == Main.myPlayer)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
                         }
                     }
                 }
