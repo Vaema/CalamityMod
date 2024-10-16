@@ -24,6 +24,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
@@ -850,7 +851,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || CalamityLists.spearAutoreuseList.Contains(item.type))
+            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.IsAutoreuseableSpear(item))
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
