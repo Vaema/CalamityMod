@@ -3453,7 +3453,7 @@ namespace CalamityMod.Projectiles
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (CalamityLists.eventProjectileBuffList.Contains(projectile.type))
+                    if (EventProjectileBuffList.IsEventBuffProjectile(projectile))
                         projectile.damage += 15;
                 }
 

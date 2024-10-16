@@ -77,7 +77,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> eventProjectileBuffList;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
@@ -146,28 +145,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            eventProjectileBuffList = new List<int>()
-            {
-                ProjectileID.FlamingWood,
-                ProjectileID.GreekFire1,
-                ProjectileID.GreekFire2,
-                ProjectileID.GreekFire3,
-                ProjectileID.FlamingScythe,
-                ProjectileID.FlamingArrow,
-                ProjectileID.PineNeedleHostile,
-                ProjectileID.OrnamentHostile,
-                ProjectileID.OrnamentHostileShrapnel,
-                ProjectileID.FrostWave,
-                ProjectileID.FrostShard,
-                ProjectileID.Missile,
-                ProjectileID.Present,
-                ProjectileID.Spike,
-                ProjectileID.BulletDeadeye,
-                ProjectileID.EyeLaser,
-                ProjectileID.Nail,
-                ProjectileID.DrManFlyFlask
-            };
-
             noRageWormSegmentList = new List<int>()
             {
                 NPCType<DesertScourgeBody>(),
@@ -1443,7 +1420,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            eventProjectileBuffList = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
             scopedWeaponList = null;
