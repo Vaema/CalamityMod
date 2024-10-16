@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
             Projectile.MaxUpdates = MirrorofKalandra.Wind_ArrowSpeedMult;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override void AI()
         {
