@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs
             return true;
         }
 
-        private static void ResetParameters(NPC npc)
+        public static void ResetParameters(NPC npc)
         {
             if (npc is null)
                 return;
@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs
             DrawingPolarity[whoAmI] = false;
         }
 
-        private static bool ShouldDrawMiracleBlight(NPC npc)
+        public static bool ShouldDrawMiracleBlight(NPC npc)
         {
             if (npc is null || !npc.active)
                 return false;
@@ -111,7 +111,7 @@ namespace CalamityMod.NPCs
             return true;
         }
 
-        private static bool ShouldDrawPolarity(NPC npc)
+        public static bool ShouldDrawPolarity(NPC npc)
         {
             if (npc is null || !npc.active)
                 return false;
