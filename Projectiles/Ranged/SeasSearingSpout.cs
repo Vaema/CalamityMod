@@ -9,6 +9,8 @@ namespace CalamityMod.Projectiles.Ranged
     public class SeasSearingSpout : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "CalamityMod/Projectiles/Melee/BrinySpout";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
