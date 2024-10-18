@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 6; i++)

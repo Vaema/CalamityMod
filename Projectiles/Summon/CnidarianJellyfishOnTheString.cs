@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Summon
 
                         if (Projectile.owner == Main.myPlayer)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
                         }
                     }
                 }
@@ -241,7 +241,7 @@ namespace CalamityMod.Projectiles.Summon
 
             PrimitiveRenderer.RenderTrail(segmentPositions, new(PrimWidthFunction, PrimColorFunction), 66);
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Vector2 squish = new Vector2(2 - StretchRatio(), StretchRatio());
 

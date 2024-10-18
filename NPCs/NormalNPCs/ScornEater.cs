@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.4f,
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.lavaImmune = true;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(0, 0, 75, 0);
             NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ScornEaterBanner>();

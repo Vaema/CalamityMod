@@ -29,8 +29,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 25;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -205,8 +205,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom2");
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine2");
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], baseColor with { A = 0 } * 0.8f, 1, tex.Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Positive ? Color.Lerp(Color.White, baseColor, MathHelper.Clamp(Utils.GetLerpValue(50, 175, time, true), 0, 0.5f)) with { A = 0 } : Color.Black, 1, tex2.Value, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], baseColor with { A = 0 } * 0.8f, 1, tex.Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Positive ? Color.Lerp(Color.White, baseColor, MathHelper.Clamp(Utils.GetLerpValue(50, 175, time, true), 0, 0.5f)) with { A = 0 } : Color.Black, 1, tex2.Value, true, true);
 
             Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot");
             Asset<Texture2D> tex4 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot2");

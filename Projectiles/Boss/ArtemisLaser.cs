@@ -32,8 +32,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -217,7 +217,7 @@ namespace CalamityMod.Projectiles.Boss
                 lightColor.B = (byte)(255 * Projectile.Opacity);
                 Vector2 drawOffset = Projectile.velocity.SafeNormalize(Vector2.Zero) * -30f;
                 Projectile.Center += drawOffset;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
                 Projectile.Center -= drawOffset;
                 return false;
             }

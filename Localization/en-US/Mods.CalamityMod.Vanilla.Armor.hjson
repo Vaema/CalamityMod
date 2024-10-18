@@ -101,8 +101,7 @@ SetBonus: {
 		'''
 	Obsidian:
 		'''
-		Increases whip range by 50% and speed by 35%
-		Increases minion damage by 15%
+		{$ArmorSetBonus.ObsidianOutlaw}
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
 	Palladium:
@@ -137,6 +136,7 @@ SetBonus: {
 		'''
 		Allows the ability to dash
 		10% increased damage and critical strike chance
+		+90 maximum stealth
 		'''
 	SquireTier2:
 		'''

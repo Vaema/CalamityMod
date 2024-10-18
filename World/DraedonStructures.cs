@@ -255,12 +255,15 @@ namespace CalamityMod.World
             do
             {
                 int underworldTop = Main.UnderworldLayer;
-                //gen opposite to the brimstone crags
-                //has more wiggle room in seeds with modified hell gen
+                // Generates opposite to the Brimstone Crags
+                // Has more wiggle room in Remix seed due to modified hell gen
                 bool dungeonRight = Main.dungeonX > Main.maxTilesX / 2;
-                int midLeft = Main.drunkWorld || Main.remixWorld ? 6 : 9;
-                float midRight = Main.drunkWorld || Main.remixWorld ? 0.6f : 0.82f;
+                int midLeft = Main.remixWorld ? 6 : 9;
+                float midRight = Main.remixWorld ? 0.6f : 0.82f;
                 int placementPositionX = dungeonRight ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / midLeft)) : WorldGen.genRand.Next((int)(Main.maxTilesX * midRight), (int)(Main.maxTilesX * 0.925));
+                // If in Drunk world but not GFB, Hell lab spawns in the center of the world (Hell gets swapped around)
+                if (Main.drunkWorld && !Main.remixWorld)
+                    placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.4f), (int)(Main.maxTilesX * 0.6f));
                 int placementPositionY = WorldGen.genRand.Next(Main.maxTilesY - 150, Main.maxTilesY - 125);
 
                 placementPoint = new Point(placementPositionX, placementPositionY);
@@ -432,6 +435,11 @@ namespace CalamityMod.World
                             canGenerateInLocation = false;
                     }
                 }
+                // Snow overlaps a lot with jungle on drunk/gfb worlds so it needs a bit of extra help
+                if (Main.drunkWorld)
+                {
+                    iceTilesInArea *= 3;
+                }
                 if (!canGenerateInLocation || nearbyOtherWorkshop || iceTilesInArea < totalTiles * 0.35f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
                     tries++;
                 else
@@ -568,7 +576,7 @@ namespace CalamityMod.World
                 contents.Insert(8, new ChestItem(ItemID.CrimsonPlanterBox, WorldGen.genRand.Next(5, 9 + 1)));
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is not null)
             {
                 var marineKelpPlanterBox = thorium.Find<ModItem>("MarineKelpPlanterBox");

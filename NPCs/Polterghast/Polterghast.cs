@@ -39,17 +39,14 @@ namespace CalamityMod.NPCs.Polterghast
     {
         public static int phase1IconIndex;
         public static int phase3IconIndex;
-
-        internal static void LoadHeadIcons()
+        
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/Polterghast/Polterghast_Head_Boss";
             string phase3IconPath = "CalamityMod/NPCs/Polterghast/Necroplasm_Head_Boss";
 
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase3IconPath, -1);
-            phase3IconIndex = ModContent.GetModBossHeadSlot(phase3IconPath);
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath);
+            phase3IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase3IconPath);
         }
 
         private const int DespawnTimerMax = 900;
@@ -95,8 +92,8 @@ namespace CalamityMod.NPCs.Polterghast
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 12;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 12;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             if (!Main.dedServ)
@@ -119,7 +116,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(3, 50, 0, 0);
+            NPC.value = Item.buyPrice(1, 50, 0, 0);
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -308,7 +305,7 @@ namespace CalamityMod.NPCs.Polterghast
 
             // Stop rain
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
 
             // Set time left
             if (NPC.timeLeft < 1800)
@@ -1164,9 +1161,9 @@ namespace CalamityMod.NPCs.Polterghast
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
             Texture2D texture2D16 = Texture_Glow2.Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             int afterimageAmt = 7;
 
             if (CalamityClientConfig.Instance.Afterimages)
@@ -1178,14 +1175,14 @@ namespace CalamityMod.NPCs.Polterghast
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            vector43 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             vector43 += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color c = NPC.IsABestiaryIconDummy ? Color.White : NPC.GetAlpha(drawColor);
             spriteBatch.Draw(texture2D15, vector43, NPC.frame, c, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -1222,7 +1219,7 @@ namespace CalamityMod.NPCs.Polterghast
                     otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
                     otherAfterimageColor *= (afterimageAmt - j) / 15f;
                     Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 

@@ -103,7 +103,7 @@ namespace CalamityMod.World.Planets
 
         public static bool InvalidSkyPlacementArea(Rectangle area)
         {
-            Mod varia = CalamityMod.Instance.varia;
+            Mod varia = ExternalMods.varia;
             for (int i = area.Left; i < area.Right; i++)
             {
                 for (int j = area.Top; j < area.Bottom; j++)

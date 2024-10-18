@@ -40,11 +40,9 @@ namespace CalamityMod.ILEditing
             // Graphics
             IL_Main.DoDraw += AdditiveDrawing;
             IL_Main.DoDraw += DrawFloralParadiseFog;
-            On_Main.DrawGore += DrawForegroundStuff;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;
             On_Main.DrawInfernoRings += DrawForegroundParticles;
-            On_TileDrawing.PreDrawTiles += ClearForegroundStuff;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
 
@@ -53,6 +51,11 @@ namespace CalamityMod.ILEditing
             On_Player.ApplyEquipFunctional += DyeableShadersRenderer.CheckAccessoryDetour;
             On_Player.ApplyEquipVanity_Item += DyeableShadersRenderer.CheckVanityDetour;
             On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
+
+            // Graphics (ModPlant stuff)
+            IL_TileDrawing.DrawSingleTile += DisableCullingForTreeAndCactus;
+            IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
+            On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
 
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
@@ -91,7 +94,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
 
             //LavaStyles
-            if (CalamityMod.Instance.biomeLava == null)
+            if (ExternalMods.biomeLava == null)
             {
                 //Rendering/Drawing
                 IL_Main.DoDraw += DoDrawLavas;
@@ -138,6 +141,7 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
+            IL_Projectile.Damage += ReduceEoWGrenadeResist;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Player.UpdateBuffs += NerfSharpeningStation;
             IL_Player.UpdateBuffs += NerfBeetleScaleMail;
@@ -198,8 +202,10 @@ namespace CalamityMod.ILEditing
             IL_Player.Update += PreventUFODismountInWater;
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
+            IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
+            IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

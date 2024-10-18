@@ -652,7 +652,7 @@ namespace CalamityMod
                         healAmt = 0;
                 }
 
-                player.statLife += healAmt;
+                player.HealPlayer(healAmt, healAmt > 0 ? Enums.HealTextType.Broadcast : Enums.HealTextType.None);
                 player.statMana += item.healMana;
                 if (player.statMana > player.statManaMax2)
                 {
@@ -666,8 +666,6 @@ namespace CalamityMod
                     player.AddBuff(BuffID.ManaSickness, Player.manaSickTime, true);
                 if (Main.myPlayer == player.whoAmI)
                 {
-                    if (healAmt > 0)
-                        player.HealEffect(healAmt, true);
                     if (item.healMana > 0)
                         player.ManaEffect(item.healMana);
                 }

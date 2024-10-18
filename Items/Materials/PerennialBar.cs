@@ -18,16 +18,7 @@ namespace CalamityMod.Items.Materials
 
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 24;
-            Item.createTile = ModContent.TileType<Tiles.PerennialBar>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.PerennialBar>());
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Lime;
         }

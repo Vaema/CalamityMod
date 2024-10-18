@@ -6,6 +6,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -169,8 +170,8 @@ namespace CalamityMod.Items.Weapons.Melee
             int attunement1 = tag.GetInt("mainAttunement");
             int attunement2 = tag.GetInt("secondaryAttunement");
 
-            mainAttunement = Attunement.attunementArray[attunement1 != -1 ? attunement1 : Attunement.attunementArray.Length - 1];
-            secondaryAttunement = Attunement.attunementArray[attunement2 != -1 ? attunement2 : Attunement.attunementArray.Length - 1];
+            mainAttunement = AttunementSystem.FindOrNull(attunement1);
+            secondaryAttunement = AttunementSystem.FindOrNull(attunement2);
 
             if (mainAttunement == secondaryAttunement)
                 secondaryAttunement = null;
@@ -180,14 +181,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : Attunement.attunementArray.Length - 1);
-            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : Attunement.attunementArray.Length - 1);
+            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : AttunementSystem.EmptyID);
+            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : AttunementSystem.EmptyID);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            mainAttunement = Attunement.attunementArray[reader.ReadInt32()];
-            secondaryAttunement = Attunement.attunementArray[reader.ReadInt32()];
+            mainAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
+            secondaryAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
         }
         #endregion
 
@@ -199,10 +200,21 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement != null)
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.Default, (float)AttunementID.Evil)];
+                mainAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)mainAttunement.id));
 
             if (secondaryAttunement != null)
-                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.Default, (float)AttunementID.Evil)];
+                secondaryAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)secondaryAttunement.id));
+        }
+
+        private static int ClampAttunementRange(int input)
+        {
+            if (input < (int)AttunementID.Default)
+                return (int)AttunementID.Default;
+
+            if (input > (int)AttunementID.Evil)
+                return (int)AttunementID.Evil;
+
+            return input;
         }
 
         public override void HoldItem(Player player)
@@ -287,8 +299,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D itemTexture = TextureAssets.Item[Item.type].Value;
-            Rectangle itemFrame = (Main.itemAnimations[Item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[Item.type].GetFrame(itemTexture);
+            Texture2D itemTexture = TextureAssets.Item[Type].Value;
+            Rectangle itemFrame = (Main.itemAnimations[Type] == null) ? itemTexture.Frame() : Main.itemAnimations[Type].GetFrame(itemTexture);
 
             if (mainAttunement == null)
                 return true;

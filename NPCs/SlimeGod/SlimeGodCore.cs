@@ -90,12 +90,12 @@ namespace CalamityMod.NPCs.SlimeGod
 
             NPC.defense = 6;
             NPC.LifeMaxNERB(420);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 0, 0);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();
@@ -666,7 +666,7 @@ namespace CalamityMod.NPCs.SlimeGod
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
             Texture2D pog = ZenithSeedEyeTexture.Value;
@@ -698,7 +698,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (!Main.zenithWorld)
             {
                 Vector2 drawPositionAdjustment = halfSize - screenPos + new Vector2(0f, NPC.gfxOffY);
-                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f;
+                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[Type] * 1.5f;
                 int twoConst = 2;
                 int coreID = 1;
 

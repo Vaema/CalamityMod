@@ -20,8 +20,8 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.Abyss
                 return;
             }
             NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

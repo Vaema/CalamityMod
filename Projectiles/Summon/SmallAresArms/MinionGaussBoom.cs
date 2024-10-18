@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public override float GetScreenshakePower(float pulseCompletionRatio) => 0f;
         public override Color GetCurrentExplosionColor(float pulseCompletionRatio) => Color.Lerp(Color.Yellow * 1.6f, Color.White, MathHelper.Clamp(pulseCompletionRatio * 2.2f, 0f, 1f));
 
-        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
+        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Type] = true;
 
         public override void SetDefaults()
         {

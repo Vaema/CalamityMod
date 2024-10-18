@@ -30,7 +30,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             // Breaks with being behind tiles, and causes a funny interaction where his head goes behind his neck.
             NPCID.MoonLordCore,
             NPCID.MoonLordHand,
-            NPCID.MoonLordHead
+            NPCID.MoonLordHead,
+
+            // Crashes the fucking game when killed
+            NPCID.WallofFlesh
         };
 
         /// <summary>

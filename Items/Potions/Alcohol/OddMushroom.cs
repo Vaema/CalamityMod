@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,24 +12,19 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
+                new Color(232, 100, 90),
+                new Color(230, 215, 117),
+                new Color(143, 83, 64)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 38;
-            Item.height = 50;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useStyle = ItemUseStyleID.EatFood;
-            Item.UseSound = SoundID.Item2;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<Trippy>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(3600f);
+            Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.SecondsToFrames(3600f));
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(gold: 10);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void OnConsumeItem(Player player)

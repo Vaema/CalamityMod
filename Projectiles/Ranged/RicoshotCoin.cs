@@ -91,9 +91,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            Main.projFrames[Projectile.type] = 8;
+            ProjectileID.Sets.TrailCacheLength[Type] = 60;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 8;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             // Produce a tiny amount of light based on coin type.
@@ -253,8 +253,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int numFrames = Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int numFrames = Main.projFrames[Type];
             Rectangle frame = new Rectangle(
                 /* X */ (int)CoinType * tex.Width / 3,
                 /* Y */ Projectile.frame * tex.Height / numFrames,

@@ -38,7 +38,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [AutoloadBossHead]
     [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
     public class Cryogen : ModNPC
     {
@@ -66,16 +65,13 @@ namespace CalamityMod.NPCs.Cryogen
         public static int cryoIconIndex;
         public static int pyroIconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string cryoIconPath = "CalamityMod/NPCs/Cryogen/Cryogen_Phase1_Head_Boss";
             string pyroIconPath = "CalamityMod/NPCs/Cryogen/Pyrogen_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
-            cryoIconIndex = ModContent.GetModBossHeadSlot(cryoIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
-            pyroIconIndex = ModContent.GetModBossHeadSlot(pyroIconPath);
+            
+            cryoIconIndex = CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
+            pyroIconIndex = CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
         }
 
         public override void SetStaticDefaults()
@@ -105,7 +101,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<CryogenBossBar>();
             NPC.noGravity = true;
@@ -265,9 +261,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             if (!player.active || player.dead)
             {
@@ -1302,7 +1298,7 @@ namespace CalamityMod.NPCs.Cryogen
                 FireDrawer = null;
 
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (currentPhase)
             {
                 case 2:
@@ -1321,7 +1317,7 @@ namespace CalamityMod.NPCs.Cryogen
                     texture = Phase6Texture.Value;
                     break;
                 default:
-                    texture = TextureAssets.Npc[NPC.type].Value;
+                    texture = TextureAssets.Npc[Type].Value;
                     break;
             }
 
@@ -1331,9 +1327,9 @@ namespace CalamityMod.NPCs.Cryogen
 
             NPC.DrawBackglow(Main.zenithWorld ? Color.Red : BackglowColor, 4f, spriteEffects, NPC.frame, screenPos);
 
-            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 origin = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 drawPos = NPC.Center - screenPos;
-            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color overlay = Main.zenithWorld ? Color.Red : drawColor;
             spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(overlay), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);

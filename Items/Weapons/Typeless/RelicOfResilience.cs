@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         public const float WeaknessDR = 0.45f;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()

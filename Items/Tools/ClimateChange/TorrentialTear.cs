@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.World;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,11 +38,11 @@ namespace CalamityMod.Items.Tools.ClimateChange
 
             if (!Main.raining)
             {
-                CalamityUtils.StartRain(torrentialTear: true, worldSync: true);
+                CalamityWorld.StartRain(adjustSeverity: true, worldSync: true);
             }
             else
             {
-                CalamityUtils.StopRain(clearWeather: false, worldSync: true);
+                CalamityWorld.StopRain(clearWeather: false, worldSync: true);
             }
 
             return true;

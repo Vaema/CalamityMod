@@ -172,8 +172,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 120;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 120;
         }
 
         public override void SetDefaults()
@@ -514,7 +514,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawBlade()
         {
-            var texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            var texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             SpriteEffects direction = Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (State == SwingState.Swinging)

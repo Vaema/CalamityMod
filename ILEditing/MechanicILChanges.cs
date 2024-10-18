@@ -9,15 +9,16 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
+using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
@@ -307,16 +308,14 @@ namespace CalamityMod.ILEditing
 
                 dir = self.direction;
                 dashing = true;
-                if (self.dashTime > 0)
-                    self.dashTime--;
-                if (self.dashTime < 0)
-                    self.dashTime++;
 
-                if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
+                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
+                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
+                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
                 {
                     self.dashTime = 15;
                     return;
-                }
+                }*/
 
                 dashing = true;
                 self.dashTime = 0;
@@ -331,6 +330,7 @@ namespace CalamityMod.ILEditing
             {
                 dir = 1;
                 dashing = false;
+                self.dashTime = 0;
             }
         }
         #endregion
@@ -552,14 +552,22 @@ namespace CalamityMod.ILEditing
                 if (Main.gameMenu || !player.active)
                     return proj;
 
-                // Do not apply Hellbound effects to minions not spawned by the item itself, if it came out of an item
-                // This prevent minions like Luxor's Gift getting it, but minions spawned out of minions such as Temporal Umbrella will work fine
-                if (spawnSource is EntitySource_ItemUse && player.ActiveItem().shoot != projectile.type)
+                // Do not apply Hellbound effects to minions not spawned by weapons
+                // This prevent minions like Luxor's Gift getting it
+                if (spawnSource is EntitySource_ItemUse trueSource && trueSource.Item is Item weapon && weapon.damage <= 0)
                     return proj;
 
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
                 if (player.Calamity().explosiveMinionsEnchant)
                     projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+            }
+            // Minion shots inherit the "explode countdown" from the parent minion
+            // This is only to inherit the damage scaling of the minion and does NOT mean the shot will explode too
+            else if (ProjectileID.Sets.MinionShot[projectile.type])
+            {
+                // Going down the chain
+                if (spawnSource is EntitySource_Parent trueSource && trueSource.Entity is Projectile parent)
+                    projectile.Calamity().ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
         }
@@ -888,7 +896,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas(isBackground: true);
+                LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
             {
@@ -896,7 +904,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas();
+                LavaRenderingSystem.Instance.DrawLavas();
             });
         }
 
@@ -909,7 +917,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas();
+                LavaRenderingSystem.Instance.DrawLavas();
             });
         }
 
@@ -922,7 +930,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLavas(isBackground: true);
+                LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
         }
 
@@ -935,7 +943,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.alphaSave = CalamityMod.lavaAlpha.ToArray();
+                LavaRenderingSystem.LavaAlpha.CopyTo(LavaRenderingSystem.AlphaSave, 0);
             });
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(0), i => i.MatchStloc(34), i => i.MatchBr(out _), i => i.MatchLdloc(34), i => i.MatchLdcI4(1), i => i.MatchBeq(out _)))
             {
@@ -946,7 +954,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate((CaptureBiome biome) => {
                 for (int i = 0; i < 1; i++)
                 {
-                    CalamityMod.lavaAlpha[i] = ((i == CalamityMod.LavaStyle) ? 1f : 0f);
+                    LavaRenderingSystem.LavaAlpha[i] = ((i == LavaRenderingSystem.LavaStyle) ? 1f : 0f);
                 }
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -955,7 +963,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: true, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("bloodMoon"), i => i.MatchBrtrue(out _), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchBr(out _), i => i.MatchLdcI4(9), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -963,7 +971,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: true, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -971,7 +979,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: false, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
             {
@@ -979,7 +987,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                LavaRendering.instance.DrawLiquid(bg: false, CalamityMod.LavaStyle);
+                LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc2(), i => i.MatchStsfld<Main>("liquidAlpha")))
             {
@@ -987,7 +995,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitDelegate(() => {
-                CalamityMod.lavaAlpha = LavaRendering.alphaSave;
+                LavaRenderingSystem.AlphaSave.CopyTo(LavaRenderingSystem.LavaAlpha, 0);
             });
         }
 
@@ -1005,7 +1013,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
             cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
-                LavaRendering.instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
+                LavaRenderingSystem.Instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
         #endregion
@@ -1028,7 +1036,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
-            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRendering.instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRendering.instance.WaterStyleMaxCount)));
+            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
 
             //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type")), i => i.MatchStloc(8)))
@@ -1056,7 +1064,11 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
-            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) => (style >= LavaRendering.instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava) ? CalamityMod.LavaTextures.liquid[style - LavaRendering.instance.WaterStyleMaxCount - 1].Value : initialTexture);
+            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
+                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
+                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
+                    : initialTexture
+            );
         }
 
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
@@ -1138,13 +1150,13 @@ namespace CalamityMod.ILEditing
                 LogFailure("Ambient lava bubble replacer", "Could not locate the bubble newdust parameters");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.dustLava());
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(16), i => i.MatchLdcI4(8), i => i.MatchLdcI4(35)))
             {
                 LogFailure("Ambient lava bubble replacer", "Could not locate the surface bubble newdust parameters");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
         
         private void LavaDropletReplacer(ILContext il)
@@ -1155,7 +1167,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("Ambient lava droplet replacer", "Could not locate the lava droplet newgore parameters");
                 return;
             }
-			cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.goreLava());
+			cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
 		}
 
         private void SplashEntityLava(ILContext il)
@@ -1166,13 +1178,13 @@ namespace CalamityMod.ILEditing
                 LogFailure("Entity Lava Splashing (Item, Projectile, NPC, Player)", "Could not locate the first lava bubble splashing");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.dustLava());
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Entity>("width"), i => i.MatchLdcI4(12), i => i.MatchAdd(), i => i.MatchLdcI4(24), i => i.MatchLdcI4(35)))
             {
                 LogFailure("Entity Lava Splashing (Item, Projectile, NPC, Player)", "Could not locate the second lava bubble splashing");
                 return;
             }
-            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRendering.dustLava());
+            cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
 
         private void PlayerDebuffEdit(ILContext il)
@@ -1188,7 +1200,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(161);
             cursor.EmitDelegate((Player player, int onFiretime) =>
             {
-                LavaStylesLoader.InflictDebuff(player, CalamityMod.LavaStyle, onFiretime);
+                LavaStylesLoader.InflictDebuff(player, LavaRenderingSystem.LavaStyle, onFiretime);
             });
         }
         #endregion
@@ -1196,7 +1208,7 @@ namespace CalamityMod.ILEditing
         #region Other
         private Color WaterfallGlowmaskEditor(On_WaterfallManager.orig_StylizeColor orig, float alpha, int maxSteps, int waterfallType, int y, int s, Tile tileCache, Color aColor)
         {
-            if (CalamityMod.LavaStyle != 0 && !LavaStylesLoader.Get(CalamityMod.LavaStyle).LavafallGlowmask())
+            if (LavaRenderingSystem.LavaStyle != 0 && !LavaStylesLoader.Get(LavaRenderingSystem.LavaStyle).LavafallGlowmask())
             {
                 return aColor;
             }
@@ -1209,7 +1221,7 @@ namespace CalamityMod.ILEditing
         private void LavaFallRedrawer(On_WaterfallManager.orig_Draw orig, WaterfallManager self, SpriteBatch spriteBatch)
         {
             orig.Invoke(self, spriteBatch);
-            LavaRendering.instance.InitialDrawLavafall(self);
+            LavaRenderingSystem.Instance.InitialDrawLavafall(self);
         }
         #endregion
 
@@ -1246,32 +1258,32 @@ namespace CalamityMod.ILEditing
                     lightColor.Y = Math.Max(lightColor.Y, G);
                     lightColor.Z = Math.Max(lightColor.Z, B);
                 }
-                else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+                else if (tile.LiquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
                 {
                     Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
 
-                    float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                    float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                    float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
+                    float R = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.X : 0f;
+                    float G = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
+                    float B = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
+                    LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref R, ref G, ref B);
 
                     for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
                     {
-                        if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
+                        if (LavaRenderingSystem.LavaAlpha[styleIndex] > 0f && styleIndex != LavaRenderingSystem.LavaStyle)
                         {
                             float r = styleIndex == 0 ? lavaLight.X : 0f;
                             float g = styleIndex == 0 ? lavaLight.Y : 0f;
                             float b = styleIndex == 0 ? lavaLight.Z : 0f;
                             LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
 
-                            float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                            float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                            float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+                            float r2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.X : 0f;
+                            float g2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
+                            float b2 = LavaRenderingSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
+                            LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref r2, ref g2, ref b2);
 
-                            R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            R = float.Lerp(r, r2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
+                            G = float.Lerp(g, g2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
+                            B = float.Lerp(b, b2, LavaRenderingSystem.LavaAlpha[LavaRenderingSystem.LavaStyle]);
                         }
                     }
 
@@ -1297,7 +1309,7 @@ namespace CalamityMod.ILEditing
                 float r = 0.55f;
                 float g = 0.33f;
                 float b = 0.11f;
-                LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r, ref g, ref b);
+                LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref r, ref g, ref b);
                 if (!(r == 0 && g == 0 && b == 0))
                 {
                     float r8;
@@ -1332,9 +1344,9 @@ namespace CalamityMod.ILEditing
                 {
                     CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
                 }
-                else if (liquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
                 {
-                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
                 }
             });
         }
@@ -1390,7 +1402,7 @@ namespace CalamityMod.ILEditing
                 // Reason: Flag6 is "IsWater" flag, and since we don't modified that behaviour "yet" it will never be triggered here
                 // Fix this when there will be new lava style with dynamic color changes
                 else if (tileCache.LiquidType == LiquidID.Lava)
-                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
             });
 
             // And now remaining TotalCount is now could pass to local variable
@@ -1514,23 +1526,6 @@ namespace CalamityMod.ILEditing
             }
             cursor.Emit(OpCodes.Pop);
             cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TaxesToCollectLimit");
-        }
-        #endregion
-
-        #region Foreground tiles drawing
-        private static void DrawForegroundStuff(Terraria.On_Main.orig_DrawGore orig, Main self)
-        {
-            orig(self);
-            if (Main.PlayerLoaded && !Main.gameMenu)
-                ForegroundManager.DrawTiles();
-        }
-
-        private static void ClearForegroundStuff(On_TileDrawing.orig_PreDrawTiles orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
-        {
-            orig(self, solidLayer, forRenderTargets, intoRenderTargets);
-
-            if (!solidLayer && (intoRenderTargets || Lighting.UpdateEveryFrame))
-                ForegroundManager.ClearTiles();
         }
         #endregion
 
@@ -1727,6 +1722,38 @@ namespace CalamityMod.ILEditing
                 }
                 AchievementsHelper.NotifyProgressionEvent(27);
             }
+            // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
+            else if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            {
+                if (NPC.downedGolemBoss)
+                    orig(self);
+                else
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int nanodroidType = Main.rand.NextBool() ? ModContent.NPCType<NanodroidPlagueGreen>() : ModContent.NPCType<NanodroidPlagueRed>();
+                        NPC droids = NPC.NewNPCDirect(self.GetSource_FromThis(), (int)self.Center.X, (int)self.Center.Y, nanodroidType);
+                        droids.velocity = -self.velocity.RotatedByRandom(MathHelper.Pi / 20f) * 2f;
+                        droids.netUpdate = true;
+                        droids.shimmerTransparency = 1f;
+                        NetMessage.SendData(146, -1, -1, null, 2, droids.whoAmI);
+                    }
+
+                    self.TurnToAir();
+                    self.shimmerWet = true;
+                    self.wet = true;
+                    self.velocity *= 0.1f;
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        Item.ShimmerEffect(self.Center);
+                    }
+                    else
+                    {
+                        NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                        NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                    }
+                }
+            }
             else
             {
                 orig(self);
@@ -1849,8 +1876,8 @@ namespace CalamityMod.ILEditing
                 return;
 
             var glowMask = glowMaskTile.GlowMask;
-            int xPos = drawData.tileFrameX + drawData.addFrX;
-            int yPos = drawData.tileFrameY + drawData.addFrY;
+            var xPos = drawData.tileFrameX + drawData.addFrX;
+            var yPos = drawData.tileFrameY + drawData.addFrY;
             if (glowMask.HasContentInFramePos(xPos, yPos))
             {
                 ref Tile tileCache = ref drawData.tileCache;
@@ -1890,7 +1917,7 @@ namespace CalamityMod.ILEditing
                 }
                 else
                 {
-                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - screenPosition + screenOffset;
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
                     Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
@@ -1953,6 +1980,335 @@ namespace CalamityMod.ILEditing
                 }
             }
         }
+        #endregion
+
+        #region Hellscape for GlowMask ModPlants
+
+        #region Tree Trunk / Cactus GlowMask
+        private static void DrawTreeTrunkAndCactusGlowMask(On_TileDrawing.orig_DrawBasicTile orig, TileDrawing self, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, TileDrawInfo drawData, Rectangle normalTileRect, Vector2 normalTilePosition)
+        {
+            orig(self, screenPosition, screenOffset, tileX, tileY, drawData, normalTileRect, normalTilePosition);
+
+            var type = drawData.typeCache;
+
+            #region GlowMask Cactus
+            if (type == TileID.Cactus)
+            {
+                var frameX = drawData.tileFrameX;
+                var frameY = drawData.tileFrameY;
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetCactusType(tileX, tileY, frameX, frameY, out var sandType);
+                if (PlantLoader.Get<ModCactus>(TileID.Cactus, sandType) is GlowMaskCactus glowCacti)
+                {
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    // Fruit Check
+                    var isFruit = drawData.tileFrameX == 204 || drawData.tileFrameY == 202;
+                    var textureToDraw = isFruit ? glowCacti.GetFruitGlowTexture() : glowCacti.GetGlowTexture();
+                    var texture = textureToDraw?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, drawPos, drawRect, glowCacti.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+
+            #region GlowMask Tree Trunk
+            else if (type == TileID.Trees)
+            {
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetTreeBottom(tileX, tileY, out var groundX, out var groundY);
+                Tile tile = Main.tile[groundX, groundY];
+                if (PlantLoader.Get<ModTree>(TileID.Trees, tile.TileType) is GlowMaskTree glowTree)
+                {
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    var texture = glowTree.GetGlowTexture()?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, drawPos, drawRect, glowTree.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+
+            #region GlowMask Palm Tree Trunk
+            else if (type == TileID.PalmTree)
+            {
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetTreeBottom(tileX, tileY, out var groundX, out var groundY);
+                Tile tile = Main.tile[groundX, groundY];
+                if (PlantLoader.Get<ModPalmTree>(TileID.PalmTree, tile.TileType) is GlowMaskPalmTree glowTree)
+                {
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    var texture = glowTree.GetGlowTexture()?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, normalTilePosition, drawRect, glowTree.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+        }
+        #endregion
+
+        #region Disable Tree/Cactus Culling
+        private static void DisableCullingForTreeAndCactus(ILContext il)
+        {
+            // Justification:
+            //   Culling for Tree/Cactus should be disabled to simplify the GlowMask rendering on Plants
+            //   Without this We would need to setup more ilchanges to properly gather draw position
+            //   Furthermore we might need to clone the whole vanilla code for tree rendering
+            //
+            //   And disable culling for pitch black tree/cactus would not affect the performance that much as it's really niche case
+
+            var cursor = new ILCursor(il);
+
+            int visibleFlagIndex = 0;
+            if (!cursor.TryGotoNext(MoveType.Before,
+            [
+                x => x.MatchLdloc(out visibleFlagIndex),
+                x => x.MatchLdarg(out _),
+                x => x.MatchLdfld(out _),
+                x => x.MatchCallOrCallvirt<TileDrawing>("IsVisible")
+            ]))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate IsVisible Call");
+                return;
+            }
+
+            if (!cursor.TryGotoPrev(MoveType.Before, x => x.MatchBrfalse(out _)))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate Brfalse.s");
+                return;
+            }
+
+            cursor.EmitLdarg1(); // TileDrawInfo drawInfo
+            cursor.EmitDelegate((TileDrawInfo drawInfo) =>
+            {
+                var type = drawInfo.typeCache;
+                return type == TileID.Cactus || type == TileID.Trees || type == TileID.PalmTree;
+            });
+            cursor.EmitLdloc(visibleFlagIndex);
+            cursor.EmitOr(); // visible || isTree || isCactus || isPalmTree
+            cursor.EmitStloc(visibleFlagIndex);
+        }
+        #endregion
+
+        #region Tree Parts GlowMask
+        private static void DrawTreeGlowMask(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchLdfld<Point>("X")))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::X");
+                return;
+            }
+            
+            if (!cursor.Next.MatchStloc(out var xLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::X");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchLdfld<Point>("Y")))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::Y");
+                return;
+            }
+
+            if (!cursor.Next.MatchStloc(out var yLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::Y");
+                return;
+            }
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetTopGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-R", "GetTreeBranchTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-L", "GetTreeBranchTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyPalmTreeGlowMaskSubParts<GlowMaskPalmTree>(cursor, "GlowMaskPalmTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
+                (glowMaskPalmTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = WorldGen.IsPalmOasisTree(tileX) ?
+                        glowMaskPalmTree.GetOasisTopGlowTextures().Value :
+                        glowMaskPalmTree.GetTopGlowTextures().Value,
+
+                    Color = glowMaskPalmTree.GetGlowColor(tileX, tileY)
+                };
+            });
+        }
+        #endregion
+
+        #region GlowMask Patch Tree Sub Parts
+        private static void ApplyTreeGlowMaskSubParts<PlantType>(
+            ILCursor cursor,
+            string debugSubpartName,
+            string getTextureMethodName,
+            int xLocaIdx,
+            int yLocaIdx,
+            Func<PlantType, int, int, GlowMaskPlantDrawInfo?> onPlantDrawn) where PlantType : IPlant
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoPrev([x => x.MatchLdcI4(out var styleEq) && styleEq == 14, x => x.MatchBneUn(out _)]))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate Bne.Un for TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.Prev.MatchLdloc(out var treeStyleLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Prev Instruction is not a LdLoc. Cannot locate TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdloc(treeStyleLocaIdx); // TreeStyle
+            cursor.EmitLdloc(xLocaIdx);
+            cursor.EmitLdloc(yLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                int style,
+                int tileX,
+                int tileY) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // Spooky Hardcoded Index: style above 100 is modded tile
+                if (style < 100)
+                    return;
+
+                int lookup = style - 100;
+                if (PlantLoader.Get<ModTree>(TileID.Trees, lookup) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
+        #region GlowMask Patch Palm Tree Sub Parts
+        private static void ApplyPalmTreeGlowMaskSubParts<PlantType>(
+            ILCursor cursor,
+            string debugSubpartName,
+            string getTextureMethodName,
+            int xLocaIdx,
+            int yLocaIdx,
+            Func<PlantType, int, int, GlowMaskPlantDrawInfo?> onPlantDrawn)
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdloc(xLocaIdx);
+            cursor.EmitLdloc(yLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                int tileX,
+                int tileY) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // TODO: This can be replace to read style and biome index from ilcode
+                // ... When we can figure out how to extract info from them
+                // Check TileDrawing.DrawTrees for context
+                WorldGen.GetTreeBottom(tileX, tileY, out var sandX, out var sandY);
+                var sandType = Main.tile[sandX, sandY].TileType;
+
+                if (PlantLoader.Get<ModPalmTree>(TileID.PalmTree, sandType) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
         #endregion
     }
 }

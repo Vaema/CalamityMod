@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<GhastlyVisage>();
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -203,8 +203,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(13f, 16f);
             SpriteEffects spriteEffects = SpriteEffects.None;

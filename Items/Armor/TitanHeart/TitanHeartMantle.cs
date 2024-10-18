@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
                 AddIngredient<AstralMonolith>(20).
                 AddIngredient<Materials.TitanHeart>().
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<TitanHeartBoots>()).
                 Register();
         }
     }

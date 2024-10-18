@@ -76,6 +76,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
                 AddIngredient<ScoriaBar>(7).
                 AddIngredient<CoreofHavoc>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HydrothermicHeadRogue>()).
                 Register();
         }
     }

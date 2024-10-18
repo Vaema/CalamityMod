@@ -23,6 +23,7 @@ using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -32,7 +33,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    // TODO -- Combine with SpeedrunTimerStoppingSystem, which should be renamed and call the UI draw code in this file.
     public class SpeedrunTimerUI
     {
         // These values put the Speedrun Timer roughly at the top center of a 1080p screen.
@@ -63,10 +63,7 @@ namespace CalamityMod.UI
             CalamityPlayer calamityPlayer = player.Calamity();
 
             // Main timer
-            string formatStr = @"hh\:mm\:ss\.ff";
-            string formatStrDays = @"d\:hh\:mm\:ss\.ff";
-            TimeSpan totalTime = CalamityMod.SpeedrunTimer.Elapsed.Add(calamityPlayer.previousSessionTotal);
-            string text = totalTime.ToString(totalTime.Days > 0 ? formatStrDays : formatStr);
+            string text = SpeedrunTimerSystem.GetTimerText(calamityPlayer);
             float scale = 2f;
             Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, text, screenPos.X, screenPos.Y, Color.White, Color.Black, default, scale);
 
@@ -74,8 +71,7 @@ namespace CalamityMod.UI
                 return;
 
             // Latest split
-            TimeSpan split = calamityPlayer.lastSplit;
-            text = split.ToString(split.Days > 0 ? formatStrDays : formatStr);
+            text = SpeedrunTimerSystem.GetSplitText(calamityPlayer);
             scale = 1f;
             float lineTwoX = screenPos.X + SplitHorizontalOffset;
             float lineTwoY = screenPos.Y + SplitVerticalOffset;

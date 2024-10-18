@@ -16,10 +16,8 @@ namespace CalamityMod.Items.Weapons.Summon
         //Cooper be like cool
 
         public static int AttackMode = 0;
-        public override void SetStaticDefaults()
-        {
-            //Icy no problems with that
-        }
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 10f;
 
         public override void SetDefaults()
         {

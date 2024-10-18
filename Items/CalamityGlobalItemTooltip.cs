@@ -880,6 +880,19 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = "Increases movement acceleration and deceleration by 1.75x\n" +
                 "Increases movement speed by 1.15x. This bonus applies to running boot accessories");
 
+            // Frog Leg and all upgrades get clear explanations of what they actually do.
+            if (item.type == ItemID.FrogLeg)
+                EditTooltipByNum(0, (line) => line.Text = "Increases jump speed by " + (int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f) + "% and allows auto-jump");
+
+            if (item.type == ItemID.FrogFlipper || item.type == ItemID.FrogWebbing)
+                EditTooltipByNum(1, (line) => line.Text = "Increases jump speed by " + (int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f) + "% and allows auto-jump");
+
+            if (item.type == ItemID.FrogGear)
+                EditTooltipByNum(2, (line) => line.Text = "Increases jump speed by " + (int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f) + "% and allows auto-jump");
+
+            if (item.type == ItemID.AmphibianBoots)
+                EditTooltipByNum(1, (line) => line.Text = "Increases jump speed by " + (int)(BalancingConstants.AmphibianBootsJumpSpeedBoost * 20f) + "% and allows auto-jump");
+
             // Soaring Insignia nerf and clear explanation of what it actually does.
             if (item.type == ItemID.EmpressFlightBooster)
             {

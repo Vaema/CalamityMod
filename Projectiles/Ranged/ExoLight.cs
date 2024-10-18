@@ -29,8 +29,8 @@ namespace CalamityMod.Projectiles.Ranged
         public Vector2 oldPos = Vector2.Zero;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()
@@ -82,10 +82,19 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.scale = MathHelper.Lerp(0.001f, 1f, Utils.GetLerpValue(0f, 25f, Time, true));
             if (Projectile.localAI[0] == 0f)
             {
+                float currentDist = 25000f;
                 foreach (NPC n in Main.ActiveNPCs)
                 {
                     if (n.CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                        NPCDestination = n.Center + n.velocity * 5f;
+                    {
+                        Vector2 potentialDest = n.Center + n.velocity * 5f;
+                        float newDist = potentialDest.Distance(Projectile.Center);
+                        if (newDist < currentDist)
+                        {
+                            currentDist = newDist;
+                            NPCDestination = potentialDest;
+                        }
+                    }
                 }
                 InitialCenter = Projectile.Center;
                 Projectile.localAI[0] = 1f;

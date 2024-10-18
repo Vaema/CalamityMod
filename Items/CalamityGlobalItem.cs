@@ -274,7 +274,7 @@ namespace CalamityMod.Items
             {
                 // Calculate how much damage to deal based on how much mana was consumed
                 int remainingMana = player.statMana;
-                int damagePerManaConsumed = 80; // TODO -- may not be balanced, but eating 150 mana to do 12,000 base damage seems okay
+                int damagePerManaConsumed = 80;
                 int monsterDamage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(remainingMana * damagePerManaConsumed);
 
                 // Spawn the Mana Monster
@@ -616,9 +616,7 @@ namespace CalamityMod.Items
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
-                    player.statLife += 5;
-                    if (Main.myPlayer == player.whoAmI)
-                        player.HealEffect(5, true);
+                    player.HealPlayer(5);
                 }
             }
             return true;
@@ -802,6 +800,11 @@ namespace CalamityMod.Items
             {
                 return false; // Don't use weapons if you're charging with a spear
             }
+
+            // If the player if using the Drill Containment Unit, ignore all this.
+            // It will start to check for everything below EVERY FRAME, including attacking with PSC or using Charge
+            if (player.mount.Type == MountID.Drill)
+                return base.CanUseItem(item, player);
 
             // Conversion for Andromeda
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GiantIbanRobotOfDoom>()] > 0)
@@ -1006,6 +1009,8 @@ namespace CalamityMod.Items
             {
                 player.setBonus = CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.CrystalAssassin");
                 modPlayer.DashID = string.Empty;
+                modPlayer.rogueStealthMax += 0.9f;
+                modPlayer.wearingRogueArmor = true;
             }
             else if (set == "SquireTier2")
             {

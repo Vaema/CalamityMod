@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HeldDefense, (DisableDashDuration / 60D).ToString("N1"));
 
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
 
         public override void SetDefaults()
         {

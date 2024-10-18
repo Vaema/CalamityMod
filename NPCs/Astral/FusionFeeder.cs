@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Astral
             value.Position.X += 40f;
             value.Position.Y -= 6f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 500;
             NPC.defense = 12;
             NPC.DR_NERD(0.15f);
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.knockBackResist = 0.8f;
             NPC.behindTiles = true;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
@@ -293,7 +293,7 @@ namespace CalamityMod.NPCs.Astral
                 drawColor = Color.White;
 
             //draw shark
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             //draw glowmask
             spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos + offset, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);

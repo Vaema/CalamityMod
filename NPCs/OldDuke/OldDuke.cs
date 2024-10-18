@@ -47,8 +47,8 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 7;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.npcSlots = 15f;
             NPC.HitSound = SoundID.NPCHit14;
             NPC.DeathSound = SoundID.NPCDeath20;
-            NPC.value = Item.buyPrice(4, 0, 0, 0);
+            NPC.value = Item.buyPrice(2, 0, 0, 0);
             NPC.boss = true;
             NPC.netAlways = true;
             NPC.timeLeft = NPC.activeTime * 30;
@@ -215,8 +215,8 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / Main.npcFrameCount[Type] / 2);
             Color color = drawColor;
             Color drawLerpColor = Color.White;
             float drawLerpValue = 0f;
@@ -268,7 +268,7 @@ namespace CalamityMod.NPCs.OldDuke
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -319,7 +319,7 @@ namespace CalamityMod.NPCs.OldDuke
                     secondAfterimageColor = NPC.GetAlpha(secondAfterimageColor);
                     secondAfterimageColor *= 1f - afterimageOpacity;
                     Vector2 secondAfterimagePos = NPC.Center + (j / (float)secondAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * afterimageOpacity - screenPos;
-                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     secondAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, secondAfterimagePos, NPC.frame, secondAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.OldDuke
             finalDrawColor = Color.Lerp(finalDrawColor, drawLerpColor, drawLerpValue);
             finalDrawColor = NPC.GetAlpha(finalDrawColor);
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, (NPC.ai[0] > 9f ? finalDrawColor : NPC.GetAlpha(drawColor)), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -374,7 +374,7 @@ namespace CalamityMod.NPCs.OldDuke
                         yellowAfterimageColor = Color.Lerp(yellowAfterimageColor, drawLerpColor, drawLerpValue);
                         yellowAfterimageColor *= (afterimageAmt - k) / 15f;
                         Vector2 yellowAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        yellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        yellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         yellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, yellowAfterimagePos, NPC.frame, yellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
@@ -386,7 +386,7 @@ namespace CalamityMod.NPCs.OldDuke
                         secondYellowAfterimageColor = NPC.GetAlpha(secondYellowAfterimageColor);
                         secondYellowAfterimageColor *= 1f - afterimageOpacity;
                         Vector2 secondYellowAfterimagePos = NPC.Center + (l / (float)secondAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * afterimageOpacity - screenPos;
-                        secondYellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        secondYellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         secondYellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, secondYellowAfterimagePos, NPC.frame, secondYellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }

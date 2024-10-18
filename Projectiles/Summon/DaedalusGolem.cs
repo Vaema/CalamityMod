@@ -25,9 +25,9 @@ namespace CalamityMod.Projectiles.Summon
         public ref float StuckJumpSpeed => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 18;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 18;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon
         #region AI
         public override void AI()
         {
-            Main.projFrames[Projectile.type] = 16;
+            Main.projFrames[Type] = 16;
             bool isCorrectProjectile = Projectile.type == ModContent.ProjectileType<DaedalusGolem>();
             Owner.AddBuff(ModContent.BuffType<DaedalusGolemBuff>(), 3600);
             if (isCorrectProjectile)

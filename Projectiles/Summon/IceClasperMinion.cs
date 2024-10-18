@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 25f);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                     Projectile.Center,
                     velocity,
                     ModContent.ProjectileType<IceClasperSummonProjectile>(),
@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

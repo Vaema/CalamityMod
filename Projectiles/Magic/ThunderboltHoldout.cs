@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
         public static Asset<Texture2D> MuzzleFlash;
         public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderboltHoldoutFlash");
 
-        public override void SetStaticDefaults() => Main.projFrames[Projectile.type] = 15;
+        public override void SetStaticDefaults() => Main.projFrames[Type] = 15;
 
         public override void SetDefaults()
         {

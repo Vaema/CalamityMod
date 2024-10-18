@@ -46,8 +46,8 @@ namespace CalamityMod.NPCs.Signus
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -78,7 +78,7 @@ namespace CalamityMod.NPCs.Signus
             NPC.height = 130;
             NPC.defense = 60;
             NPC.LifeMaxNERB(300000, 360000, 320000);
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -809,7 +809,7 @@ namespace CalamityMod.NPCs.Signus
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D NPCTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D NPCTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowMaskTexture = Texture_Glow.Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -818,7 +818,7 @@ namespace CalamityMod.NPCs.Signus
 
             int afterimageAmt = 5;
             Rectangle frame = NPC.frame;
-            int frameCount = Main.npcFrameCount[NPC.type];
+            int frameCount = Main.npcFrameCount[Type];
 
             if (NPC.ai[0] == 4f)
             {
@@ -838,7 +838,7 @@ namespace CalamityMod.NPCs.Signus
             }
             else
             {
-                NPCTexture = TextureAssets.Npc[NPC.type].Value;
+                NPCTexture = TextureAssets.Npc[Type].Value;
                 glowMaskTexture = Texture_Glow.Value;
             }
 

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -70,12 +71,7 @@ namespace CalamityMod.Projectiles.Typeless
                     dust.fadeIn = Main.rand.NextFloat(3f, 4f);
                     dust.noGravity = true;
                 }
-                player.HealEffect(70, false);
-                player.statLife += 70;
-                if (player.statLife > player.statLifeMax2)
-                {
-                    player.statLife = player.statLifeMax2;
-                }
+                player.HealPlayer(70, HealTextType.Local);
                 SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, Projectile.Center);
             }
         }
@@ -118,7 +114,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.ai[0] >= CrystalsDrawTime)
                 return true;
             float opacity = Projectile.ai[0] / CrystalsDrawTime;
-            Texture2D crystalTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D crystalTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < TotalCrystalsToDraw; i++)
             {
                 float angle = MathHelper.TwoPi / TotalCrystalsToDraw * i + Projectile.ai[0] / 10f;

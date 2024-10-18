@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
-            Projectile.NewProjectileDirect(source, new(XPosition, YPosition - YOffset), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, new(XPosition, YPosition - YOffset), Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
             return false;
         }

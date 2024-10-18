@@ -32,9 +32,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 5;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 6;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
 
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 5, 25);
+            NPC.value = Item.buyPrice(0, 0, 4, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -225,7 +225,7 @@ namespace CalamityMod.NPCs.AcidRain
                 {
                     NPC.frameCounter = 0;
                     NPC.frame.Y += frameHeight;
-                    if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                    if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                         NPC.frame.Y = frameHeight;
                 }
             }

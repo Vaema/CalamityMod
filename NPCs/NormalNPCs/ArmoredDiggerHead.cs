@@ -5,10 +5,11 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,7 +24,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/ArmoredDigger_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
@@ -510,6 +510,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return lightColor * NPC.Opacity;
             }
             else return null;
+        }
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<ArmoredDiggerBody>()].Value, 4, 26, 0.6f, new Vector2(10, -10), 4, 16);
+            }
+            return true;
         }
     }
 }

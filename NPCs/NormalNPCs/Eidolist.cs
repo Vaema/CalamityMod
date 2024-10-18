@@ -23,8 +23,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
@@ -43,7 +43,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 80;
             NPC.lifeMax = 5000;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.value = Item.buyPrice(0, 0, 30, 0);
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -309,7 +309,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += hasBeenHit ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

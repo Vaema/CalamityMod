@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
 
             Projectile.velocity *= 0.8f;
             Projectile.rotation += 0.01f;

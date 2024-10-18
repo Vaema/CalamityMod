@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -225,14 +225,14 @@ namespace CalamityMod.NPCs.SunkenSea
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
 
             // Rotate back and forth like a bell
             float rotation = NPC.rotation + MathF.Sin(Main.GlobalTimeWrappedHourly + NPC.localAI[1]) * rotationMultiplier;
 
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             // Draws transparent clones around itself to look woozy

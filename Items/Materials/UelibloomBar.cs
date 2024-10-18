@@ -19,18 +19,9 @@ namespace CalamityMod.Items.Materials
 
         public override void SetDefaults()
         {
-            Item.width = 15;
-            Item.height = 12;
-            Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
-            Item.maxStack = 9999;
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.UelibloomBar>());
             Item.value = Item.sellPrice(gold: 1, silver: 40);
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
         }
         public override void AddRecipes()
         {

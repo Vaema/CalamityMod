@@ -51,8 +51,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Neither scarf can be used if either is on cooldown
-            // TODO -- Why do the two scarves not use the same cooldown? They're both called "Scarf Cooldown".
-            if (playerDashing && DashID == CounterScarfDash.ID && Player.dashDelay < 0 && dodgeScarf && !(Player.HasCooldown(Cooldowns.CounterScarf.ID) || Player.HasCooldown(Cooldowns.EvasionScarf.ID)))
+            if (playerDashing && DashID == CounterScarfDash.ID && Player.dashDelay < 0 && dodgeScarf && !Player.HasCooldown(Cooldowns.ScarfCooldown.ID))
             {
                 CounterScarfDodge();
                 return true;
@@ -490,6 +489,7 @@ namespace CalamityMod.CalPlayer
                 if (WorldGen.SolidOrSlopedTile(upwardTilePoint.X, upwardTilePoint.Y) || WorldGen.SolidOrSlopedTile(aheadTilePoint.X, aheadTilePoint.Y))
                     Player.velocity.X /= 2f;
 
+                Player.timeSinceLastDashStarted = 0;
                 Player.dashDelay = -1;
             }
 

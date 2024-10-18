@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<OceanSpirit>(), ModContent.BuffType<OceanSpiritBuff>());
-            Item.value = Item.sellPrice(gold: 5, silver: 50);
-            Item.rare = ItemRarityID.Yellow;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

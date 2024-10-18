@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 180;
         public override Color LaserOverlayColor => new(250, 250, 250, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
@@ -41,8 +41,8 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Thanatos' mouth laser
             // This is its serious name
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Boss
             // Determine frames.
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5f == 0f)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -181,9 +181,9 @@ namespace CalamityMod.Projectiles.Boss
                 return false;
 
             Color beamColor = LaserOverlayColor;
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,
@@ -218,7 +218,7 @@ namespace CalamityMod.Projectiles.Boss
                                      0);
                     incrementalBodyLength += laserOffset;
                     centerOnLaser += Projectile.velocity * laserOffset;
-                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Projectile.type];
+                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Type];
                     if (middleFrameArea.Y + middleFrameArea.Height > LaserMiddleTexture.Height)
                         middleFrameArea.Y = 0;
                 }

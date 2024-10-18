@@ -8,6 +8,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.EntitySources;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
@@ -15,6 +16,7 @@ using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -186,15 +188,23 @@ namespace CalamityMod.Projectiles
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
+            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
+            // which is way too early, the projectile's own initialization isn't even done yet
+            
             CreatedByPlayerDash = source is ProjectileSource_PlayerDashHit;
 
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
             if (sourceItem != null)
                 extorterBoost = true;
 
-            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
-            // which is way too early, the projectile's own initialization isn't even done yet
+            // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
+            if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
+            {
+                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
+                projectile.Calamity().supercritHits = -1;
+            }
         }
+
         #endregion On Spawn
 
         #region Set Defaults
@@ -292,7 +302,6 @@ namespace CalamityMod.Projectiles
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
-                projectile.damage = (int)(projectile.originalDamage * MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime));
 
                 // Make fizzle sounds and fire dust to indicate the impending explosion.
                 if (ExplosiveEnchantCountdown <= 300)
@@ -2655,8 +2664,9 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.ThornBall && !projectile.tileCollide)
+                else if (projectile.type == ProjectileID.ThornBall && projectile.ai[2] != 0)
                 {
+                    projectile.tileCollide = false;
                     if (projectile.alpha > 0)
                     {
                         projectile.alpha -= 30;
@@ -4296,6 +4306,10 @@ namespace CalamityMod.Projectiles
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
 
+            // This can apply to minions or minion shots
+            if (ExplosiveEnchantCountdown > 0)
+                modifiers.SourceDamage *= MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime);
+
             if (modPlayer.farProximityRewardEnchant)
             {
                 float proximityDamageInterpolant = Utils.GetLerpValue(250f, 2400f, target.Distance(player.Center), true);
@@ -4570,7 +4584,7 @@ namespace CalamityMod.Projectiles
                 if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
                     return true;
 
-                Texture2D texture = CalamityMod.WallOfFleshDemonSickleTexture.Value;
+                Texture2D texture = ExtraTextureRefs.WallOfFleshDemonSickleTexture.Value;
                 int frameHeight = texture.Height / Main.projFrames[projectile.type];
                 int frameY = frameHeight * projectile.frame;
                 Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
@@ -4582,6 +4596,18 @@ namespace CalamityMod.Projectiles
 
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
 
+                return false;
+            }
+
+            // Manual drawing to adjust for scale change
+            if (projectile.type == ProjectileID.Terragrim || projectile.type == ProjectileID.Arkhalis)
+            {
+                Texture2D tex = TextureAssets.Projectile[projectile.type].Value;
+                Rectangle frame = tex.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+                Vector2 origin = frame.Size() / 2f;
+                SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
                 return false;
             }
 

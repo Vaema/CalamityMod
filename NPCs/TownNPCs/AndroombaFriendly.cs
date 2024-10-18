@@ -24,8 +24,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-            Main.npcCatchable[NPC.type] = true;
+            Main.npcFrameCount[Type] = 9;
+            Main.npcCatchable[Type] = true;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 16;
@@ -256,7 +256,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowmask = FaceTextures[0].Value;
             // If the solution is from Calamity or vanilla, set the glowmask to grab the appropriate texture from the texture array
             if (NPC.ai[3] <= 8)

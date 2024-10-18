@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Fishing
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Fishing
             itemLoot.AddIf(() => Main.hardMode, ItemID.HallowedSeeds, 20, seedMin, seedMax);
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is null)
                 return;
 

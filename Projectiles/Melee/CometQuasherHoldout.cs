@@ -223,7 +223,7 @@ namespace CalamityMod.Projectiles.Melee
             if (spawnBoom)
             {
                 Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.3f), Projectile.knockBack, Projectile.owner, 0, 0, 4);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.3f), Projectile.knockBack, Projectile.owner, 0, 0, 4);
                 spawnBoom = false;
             }
         }

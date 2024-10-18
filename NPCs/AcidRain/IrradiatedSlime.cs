@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
             AIType = NPCID.ToxicSludge;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

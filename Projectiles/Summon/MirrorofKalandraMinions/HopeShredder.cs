@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
         {
             Projectile.frameCounter++;
             if (Projectile.frameCounter % MirrorofKalandra.Vile_BowChargeTime == 0)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         public void ShootTarget()
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

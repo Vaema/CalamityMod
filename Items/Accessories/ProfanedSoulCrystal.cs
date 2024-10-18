@@ -522,6 +522,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DivineGeode>(50).
                 AddIngredient<UnholyEssence>(100).
                 AddTile<ProfanedCrucible>().
+                AddDecraftCondition(CalamityConditions.DownedSupremeCalamitas, CalamityConditions.DownedExoMechs).
                 Register();
         }
     }

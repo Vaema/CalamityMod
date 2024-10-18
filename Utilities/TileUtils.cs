@@ -317,9 +317,11 @@ namespace CalamityMod
 
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
+        [Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
-            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
         /// <summary>

@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
-            ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
+            ItemID.Sets.GamepadWholeScreenUseRange[Type] = true;
+            ItemID.Sets.LockOnIgnoresCollision[Type] = true;
         }
 
         public override void SetDefaults()

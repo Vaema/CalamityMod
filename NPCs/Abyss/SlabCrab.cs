@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 23;
+            Main.npcFrameCount[Type] = 23;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);

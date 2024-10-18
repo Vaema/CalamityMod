@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -250,7 +250,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.velocity.X == 0f)
                     {
-                        NPC.frame.Y = frameHeight * 1;
+                        NPC.frame.Y = 0;
                         NPC.frameCounter = 0.0;
                         return;
                     }
@@ -262,7 +262,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.frame.Y = NPC.frame.Y + frameHeight;
                     NPC.frameCounter = 0.0;
                 }
-                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - 1)
+                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
                 {
                     NPC.frame.Y = frameHeight;
                 }
@@ -270,7 +270,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else
             {
                 NPC.frameCounter = 0.0;
-                NPC.frame.Y = frameHeight * (Main.npcFrameCount[NPC.type] - 1);
+                NPC.frame.Y = frameHeight * (Main.npcFrameCount[Type] - 1);
             }
         }
 

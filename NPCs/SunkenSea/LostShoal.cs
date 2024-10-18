@@ -37,15 +37,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
                 BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
                 GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold", AssetRequestMode.ImmediateLoad).Value;
             }
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -328,14 +328,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.2f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
             {
                 return 0.125f;
             }
@@ -396,7 +396,7 @@ namespace CalamityMod.NPCs.SunkenSea
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             // Regular stuff for drawing the actual fish and its afterimages
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (Variant)
             {
                 case (int)ShoalColor.Blue:
@@ -409,7 +409,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     texture = GoldTexture;
                     break;
             }
-            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
             Color white = Color.White;
             float colorLerpAmt = 0.5f;
             int afterimageAmt = 7;
@@ -423,7 +423,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 offset = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     offset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, offset, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                 }
@@ -432,7 +432,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float sine = MathF.Sin(Main.GlobalTimeWrappedHourly * 3f + RandomOpacityOffset) / 2f + 0.5f;
 
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, npcOffset, NPC.frame, drawColor * MathHelper.Lerp(0.4f, 0.8f, sine), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 

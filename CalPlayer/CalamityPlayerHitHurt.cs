@@ -71,12 +71,12 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 20; j++)
             {
-                int sVeilDustIndex1 = Dust.NewDust(Player.Center, 1, 1, DustID.VilePowder, sVeilDustDir.X * j, sVeilDustDir.Y * j);
-                int sVeilDustIndex2 = Dust.NewDust(Player.Center, 1, 1, DustID.VilePowder, -sVeilDustDir.X * j, -sVeilDustDir.Y * j);
-                Main.dust[sVeilDustIndex1].noGravity = false;
-                Main.dust[sVeilDustIndex1].noLight = false;
-                Main.dust[sVeilDustIndex2].noGravity = false;
-                Main.dust[sVeilDustIndex2].noLight = false;
+                Dust sVeilDust1 = Dust.NewDustDirect(Player.Center, 1, 1, DustID.VilePowder, sVeilDustDir.X * j, sVeilDustDir.Y * j);
+                Dust sVeilDust2 = Dust.NewDustDirect(Player.Center, 1, 1, DustID.VilePowder, -sVeilDustDir.X * j, -sVeilDustDir.Y * j);
+                sVeilDust1.noGravity = false;
+                sVeilDust1.noLight = false;
+                sVeilDust2.noGravity = false;
+                sVeilDust2.noLight = false;
             }
 
             SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
@@ -94,8 +94,7 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 30; j++)
             {
-                int num = Dust.NewDust(Player.position, Player.width, Player.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
-                Dust dust = Main.dust[num];
+                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                 dust.position.X += Main.rand.Next(-20, 21);
                 dust.position.Y += Main.rand.Next(-20, 21);
                 dust.velocity *= 0.4f;
@@ -113,16 +112,8 @@ namespace CalamityMod.CalPlayer
 
         private void CounterScarfDodge()
         {
-            if (evasionScarf)
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.EvasionScarf.ID, duration);
-            }
-            else
-            {
-                int duration = CalamityUtils.SecondsToFrames(30);
-                Player.AddCooldown(Cooldowns.CounterScarf.ID, duration);
-            }
+            int duration = CalamityUtils.SecondsToFrames(30);
+            Player.AddCooldown(ScarfCooldown.ID, duration, true, evasionScarf ? "evasionscarf" : "counterscarf");
 
             // 17APR2024: Ozzatron: Counter Scarf is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
             int counterScarfIFrames = Player.ComputeDodgeIFrames();
@@ -130,8 +121,7 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 100; j++)
             {
-                int scarfDodgeDust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.LifeDrain, 0f, 0f, 100, default, 2f);
-                Dust dust = Main.dust[scarfDodgeDust];
+                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.LifeDrain, 0f, 0f, 100, default, 2f);
                 dust.position.X += Main.rand.Next(-20, 21);
                 dust.position.Y += Main.rand.Next(-20, 21);
                 dust.velocity *= 0.4f;
@@ -253,6 +243,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // Xyk vanity death animation
+            if (XykVisualsBlue || XykVisualsOrange)
+            {
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), Main.zenithWorld ? Main.rand.Next(5000, 50000 + 1) : 0, 0, Player.whoAmI);
+            }
+
             if (hInferno)
             {
                 foreach (NPC n in Main.ActiveNPCs)
@@ -268,8 +264,7 @@ namespace CalamityMod.CalPlayer
 
                 for (int j = 0; j < 50; j++)
                 {
-                    int nebulousReviveDust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                    Dust dust = Main.dust[nebulousReviveDust];
+                    Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                     dust.position.X += Main.rand.Next(-20, 21);
                     dust.position.Y += Main.rand.Next(-20, 21);
                     dust.velocity *= 0.9f;
@@ -286,12 +281,7 @@ namespace CalamityMod.CalPlayer
                     chaliceBleedoutBuffer = 0D;
                     chaliceDamagePointPartialProgress = 0D;
                 }
-
-                Player.statLife += 100;
-                Player.HealEffect(100);
-
-                if (Player.statLife > Player.statLifeMax2)
-                    Player.statLife = Player.statLifeMax2;
+                Player.HealPlayer(100);
 
                 Player.AddCooldown(Cooldowns.NebulousCore.ID, CalamityUtils.SecondsToFrames(90));
                 return false;
@@ -315,11 +305,7 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 3;
-                        Player.HealEffect(Player.statLifeMax2 / 3);
-
-                        if (Player.statLife > Player.statLifeMax2)
-                            Player.statLife = Player.statLifeMax2;
+                        Player.HealPlayer(Player.statLifeMax2 / 3);
                     }
                 }
 
@@ -362,9 +348,9 @@ namespace CalamityMod.CalPlayer
 
                 for (int i = 0; i < 60; i++)
                 {
-                    int d = Dust.NewDust(Player.position, Player.width, Player.height, DustID.GemSapphire, 0f, 0f, 0, default, 2.5f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].velocity *= 5f;
+                    Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GemSapphire, 0f, 0f, 0, default, 2.5f);
+                    dust.noGravity = true;
+                    dust.velocity *= 5f;
                 }
 
                 return false;
@@ -536,7 +522,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -644,7 +630,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 1.25f;
+                totalDamageMult += 0.65f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -1238,7 +1224,7 @@ namespace CalamityMod.CalPlayer
             // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -2268,15 +2254,13 @@ namespace CalamityMod.CalPlayer
                 if (daedalusAbsorb && Main.rand.NextBool(10))
                 {
                     int healAmt = (int)(hurtInfo.Damage / 2D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (absorber)
                 {
                     int healAmt = (int)(hurtInfo.Damage / 20D);
-                    Player.statLife += healAmt;
-                    Player.HealEffect(healAmt);
+                    Player.HealPlayer(healAmt);
                 }
 
                 if (witheringDamageDone > 0)
@@ -2285,8 +2269,7 @@ namespace CalamityMod.CalPlayer
                     if (healCompenstationRatio > 1D)
                         healCompenstationRatio = 1D;
                     int healCompensation = (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.statLife += (int)(healCompenstationRatio * hurtInfo.Damage);
-                    Player.HealEffect(healCompensation);
+                    Player.HealPlayer((int)(healCompenstationRatio * hurtInfo.Damage));
                     Player.AddBuff(ModContent.BuffType<Withered>(), 1080);
                     witheringDamageDone = 0;
                 }
@@ -2369,22 +2352,22 @@ namespace CalamityMod.CalPlayer
 
                         for (int d = 0; d < 20; d++)
                         {
-                            int dust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
-                            Main.dust[dust].velocity *= 3f;
+                            Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                            dust.velocity *= 3f;
                             if (Main.rand.NextBool())
                             {
-                                Main.dust[dust].scale = 0.5f;
-                                Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                                dust.scale = 0.5f;
+                                dust.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                             }
                         }
 
                         for (int d = 0; d < 35; d++)
                         {
-                            int fire = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 3f);
-                            Main.dust[fire].noGravity = true;
-                            Main.dust[fire].velocity *= 5f;
-                            fire = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 2f);
-                            Main.dust[fire].velocity *= 2f;
+                            Dust fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                            fire.noGravity = true;
+                            fire.velocity *= 5f;
+                            fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                            fire.velocity *= 2f;
                         }
                     }
                 }
@@ -2396,21 +2379,21 @@ namespace CalamityMod.CalPlayer
 
                     for (int d = 0; d < 10; d++)
                     {
-                        int ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
-                        Main.dust[ice].velocity *= 3f;
+                        Dust ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        ice.velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
-                            Main.dust[ice].scale = 0.5f;
-                            Main.dust[ice].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                            ice.scale = 0.5f;
+                            ice.fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                         }
                     }
                     for (int d = 0; d < 15; d++)
                     {
-                        int ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
-                        Main.dust[ice].noGravity = true;
-                        Main.dust[ice].velocity *= 5f;
-                        ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
-                        Main.dust[ice].velocity *= 2f;
+                        Dust ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
+                        ice.noGravity = true;
+                        ice.velocity *= 5f;
+                        ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        ice.velocity *= 2f;
                     }
                 }
 
@@ -2735,7 +2718,7 @@ namespace CalamityMod.CalPlayer
                         var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, DemonshadeHelm.ShadowScytheEntitySourceContext);
                         for (int l = 0; l < 2; l++)
                         {
-                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(3000);
+                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
                             shadowbeamDamage = Player.ApplyArmorAccDamageBonusesTo(shadowbeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
@@ -2748,7 +2731,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int l = 0; l < 5; l++)
                         {
-                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(5000);
+                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
                             scytheDamage = Player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);

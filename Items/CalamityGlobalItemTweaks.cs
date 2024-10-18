@@ -15,7 +15,7 @@ namespace CalamityMod.Items
     public partial class CalamityGlobalItem : GlobalItem
     {
         // 02AUG2023: Ozzatron: Having Overhaul enabled turns off all scaling changes, per direct request from Mirsario on 8/2/23.
-        private static bool DisableScalingForOverhaul => CalamityMod.Instance.overhaul is not null;
+        private static bool DisableScalingForOverhaul => ExternalMods.overhaul is not null;
 
         #region Database and Initialization
         internal static SortedDictionary<int, IItemTweak[]> currentTweaks = null;
@@ -196,15 +196,16 @@ namespace CalamityMod.Items
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
                 { ItemID.PoisonStaff, Do(DamageExact(57)) },
                 { ItemID.PossessedHatchet, Do(DamageExact(135)) },
+                { ItemID.PrincessWeapon, Do(DamageExact(90)) }, // Resonance Scepter
                 { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), DamageExact(255)) },
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
                 { ItemID.PurplePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
                 { ItemID.PurplePhasesaber, Do(DamageExact(60)) },
                 { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
                 { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
-                { ItemID.RainbowRod, Do(DamageExact(35), ManaExact(15)) },
-                { ItemID.Rally, Do(AutoReuse, DamageExact(18)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
+                { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13)) },
+                { ItemID.Rally, Do(AutoReuse, DamageExact(18)) },
                 { ItemID.RavenStaff, Do(AutoReuse, UseExact(20), DamageExact(36)) },
                 { ItemID.RazorbladeTyphoon, Do(DamageExact(103)) },
                 { ItemID.Razorpine, Do(DamageExact(40)) },
@@ -229,7 +230,7 @@ namespace CalamityMod.Items
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
                 { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
                 { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
-                { ItemID.SolarEruption, Do(DamageExact(157)) },
+                { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
                 { ItemID.SpaceGun, Do(DamageExact(25)) },
                 { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageExact(14)) },
@@ -246,6 +247,7 @@ namespace CalamityMod.Items
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
                 { ItemID.TerraBlade, Do(DamageExact(122)) },
+                { ItemID.Terragrim, Do(TrueMeleeNoSpeed, DamageExact(13)) },
                 // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
                 // Terrarian is extremely overpowered and requires a heavy nerf.
                 { ItemID.Terrarian, Do(AutoReuse, DamageExact(90)) },
@@ -431,7 +433,6 @@ namespace CalamityMod.Items
                 { ItemID.ShadowJoustingLance, trueMelee },
                 { ItemID.SolarFlareChainsaw, trueMeleeNoSpeed },
                 { ItemID.StardustChainsaw, trueMeleeNoSpeed },
-                { ItemID.Terragrim, trueMeleeNoSpeed },
                 { ItemID.TheHorsemansBlade, trueMelee },
                 { ItemID.TinShortsword, Do(AutoReuse, TrueMelee) },
                 { ItemID.VortexChainsaw, trueMeleeNoSpeed },

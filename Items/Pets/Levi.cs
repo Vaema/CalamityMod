@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Pets
         public override void SetDefaults()
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<LeviPet>(), ModContent.BuffType<LeviBuff>());
-            Item.value = Item.sellPrice(gold: 40);
+            Item.value = Item.sellPrice(gold: 20);
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().devItem = true;
         }
