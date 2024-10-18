@@ -28,9 +28,9 @@ namespace CalamityMod.Cooldowns
             int h = instance.player.height;
             for (int i = 0; i < 66; i++)
             {
-                int d = Dust.NewDust(pos, w, h, DustID.GemEmerald, 0, 0, 100, default, 1.5f);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].velocity *= 6.6f;
+                Dust dust = Dust.NewDustDirect(pos, w, h, DustID.GemEmerald, 0, 0, 100, default, 1.5f);
+                dust.noGravity = true;
+                dust.velocity *= 6.6f;
             }
         }
 
