@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
             Time++;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public void AbsolutelyFuckingAnnihilateTrees(int x, int y)
         {

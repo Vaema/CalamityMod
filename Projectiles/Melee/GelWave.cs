@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 164;
-            Projectile.height = 164;
+            Projectile.width = 42;
+            Projectile.height = 84;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Melee;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] += 1f;
             }
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation();
             if (Main.rand.NextBool(10))
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
@@ -61,6 +61,8 @@ namespace CalamityMod.Projectiles.Melee
                 disgustingtrail.scale = 1.2f;
             }
         }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override bool? CanDamage() => (Projectile.alpha == 0 ? null : false);
 

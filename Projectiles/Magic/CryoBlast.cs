@@ -19,7 +19,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 35;
+            Projectile.width = 40;
+            Projectile.height = 62;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = 3;
@@ -125,6 +126,8 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
         }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
