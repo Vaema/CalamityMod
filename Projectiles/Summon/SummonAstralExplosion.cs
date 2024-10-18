@@ -1,6 +1,8 @@
-﻿using Terraria;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Summon
 {
     public class SummonAstralExplosion : ModProjectile, ILocalizedModType
@@ -31,5 +33,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.timeLeft % 5f == 4f)
                 Projectile.frame++;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
     }
 }
