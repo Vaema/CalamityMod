@@ -69,7 +69,7 @@ namespace CalamityMod.Tiles.Furniture
             var drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + zero + CalamityUtils.TileDrawOffset + Vector2.UnitY * 2;
             var animateFrameOffset = Main.tileFrame[Type] * AnimationFrameHeight;
             var height = 16;
-            var finalColor = Lighting.GetColor(i, j);
+            var finalColor = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
 
             var rect = new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height);
 

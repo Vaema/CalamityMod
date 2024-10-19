@@ -6064,11 +6064,10 @@ namespace CalamityMod.NPCs
             if (CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
                 CalamityLists.PerforatorIDs.Contains(npc.type) || CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
                 CalamityLists.AstrumDeusIDs.Contains(npc.type) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
-                npc.type == NPCType<ProfanedRocks>())
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>() || npc.type == NPCType<ProfanedRocks>())
             {
-                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : 0.5f;
-                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<UltimusCleaver>() && item.type != ItemType<InfernaCutter>())
+                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : (CalamityLists.DesertScourgeIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
+                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
         }
