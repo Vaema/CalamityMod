@@ -17,7 +17,9 @@ namespace CalamityMod.Tiles.Furniture
             Main.tileLavaDeath[Type] = true;
             Main.tileSolidTop[Type] = true;
             Main.tileTable[Type] = true;
-            TileID.Sets.CritterCageLidStyle[Type] = TileID.Sets.CritterCageLidStyle[TileID.BunnyCage]; // Big, gray lid
+            // TODO: Unique drawcode so that it behaves like vanilla cages (dynamic heights based on where its placed), BUT with a custom top
+            // Using the vanilla set causes discrepencies between this cage's sprite and the vanilla cage top sprite
+            //TileID.Sets.CritterCageLidStyle[Type] = TileID.Sets.CritterCageLidStyle[TileID.BunnyCage]; // Big, gray lid 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
             TileObjectData.addTile(Type);
             AnimationFrameHeight = 54;
