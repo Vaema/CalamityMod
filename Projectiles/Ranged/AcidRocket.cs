@@ -2,9 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -17,7 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SulphuricBlast : ModProjectile, ILocalizedModType
+    public class AcidRocket : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public NPC chosenTarget;
@@ -159,7 +157,8 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     for (int k = 0; k < 3; k++)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WrathwingCinder>(), (int)(Projectile.damage * 2), Projectile.knockBack, Projectile.owner, RocketID);
+                        Vector2 acidVelocity = (Vector2.UnitY * (-12f + Main.rand.NextFloat(-3f, 4f))).RotatedByRandom((double)MathHelper.ToRadians(40f));
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity + acidVelocity, ModContent.ProjectileType<SulphuricDrop>(), (int)(Projectile.damage * 0.15f), Projectile.knockBack, Projectile.owner, RocketID);
                     }
                 }
             }

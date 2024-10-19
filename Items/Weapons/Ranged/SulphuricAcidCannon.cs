@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item73;
             Item.useAmmo = AmmoID.Rocket;
-            Item.shoot = ModContent.ProjectileType<SulphuricBlast>();
+            Item.shoot = ModContent.ProjectileType<AcidRocket>();
             Item.shootSpeed = 16f;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
