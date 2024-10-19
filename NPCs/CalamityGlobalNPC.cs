@@ -36,6 +36,7 @@ using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
@@ -6015,8 +6016,27 @@ namespace CalamityMod.NPCs
         #region Modify Hit
         public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
+            List<int> SharkIDs =
+            [
+                NPCID.Shark,
+                NPCID.DukeFishron,
+                NPCID.Sharkron,
+                NPCID.Sharkron2,
+                NPCID.SandShark,
+                NPCID.SandsharkCorrupt,
+                NPCID.SandsharkCrimson,
+                NPCID.SandsharkHallow,
+                NPCID.GoblinShark,
+                NPCType<FusionFeeder>(),
+                NPCType<GreatSandShark.GreatSandShark>(),
+                NPCType<Mauler>(),
+                NPCType<OldDuke.OldDuke>(),
+                NPCType<SulphurousSharkron>(),
+                NPCType<ReaperShark>()
+            ];
+
             // Kaguya hair boom GIF
-            if (npc.type == NPCID.Shark && target.name == "Rebecca" && Main.zenithWorld)
+            if (SharkIDs.Contains(npc.type) && target.name == "Rebecca" && Main.zenithWorld)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
