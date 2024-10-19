@@ -33,6 +33,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.DR_NERD(0.1f);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
+            NPC.chaseable = false;
             NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.lifeMax = 20000;
             NPC.HitSound = SoundID.NPCHit36;
