@@ -196,7 +196,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (spawnBoom)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<GrandGuardianBoom>(), Projectile.damage / 3, Projectile.knockBack * 0.5f, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<GrandGuardianBoom>(), Projectile.damage / 3, Projectile.knockBack * 0.5f, Projectile.owner);
                 spawnBoom = false;
             }
 
@@ -208,10 +208,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(3 - Projectile.numHits, 1, 3));
             if (Projectile.numHits < 3)
             {
-                Owner.statLife += heal;
-                Owner.HealEffect(heal);
-                if (Owner.statLife > Owner.statLifeMax2)
-                    Owner.statLife = Owner.statLifeMax2;
+                Owner.HealPlayer(heal);
             }
 
             int points = 4;

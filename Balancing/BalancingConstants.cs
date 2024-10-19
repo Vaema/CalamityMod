@@ -3,8 +3,8 @@
     public static class BalancingConstants
     {
         #region Movement
-        // When the relevant config is enabled: Gives the player a substantial +50% move speed boost at all times
-        internal static readonly float DefaultMoveSpeedBoost = 0.5f;
+        // When the relevant config is enabled: Multiplies the player's movement speed by 1.5x at all times
+        internal static readonly float DefaultMoveSpeedBoost = 1.5f;
 
         // When the relevant config is enabled: Increases the player's base jump height by 10%
         internal static readonly float ConfigBoostedBaseJumpHeight = 5.51f; // vanilla = 5.01f

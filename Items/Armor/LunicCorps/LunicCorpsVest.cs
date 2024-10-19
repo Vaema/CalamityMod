@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 AddIngredient<AstralBar>(11).
                 AddIngredient(ItemID.ChlorophyteBar, 11).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<LunicCorpsBoots>()).
                 Register();
         }
     }

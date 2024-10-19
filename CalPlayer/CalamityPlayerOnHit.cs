@@ -7,6 +7,8 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
@@ -118,10 +120,7 @@ namespace CalamityMod.CalPlayer
 
                     int heal = 2;
                     Player.lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(heal);
 
                     break;
 
@@ -259,10 +258,7 @@ namespace CalamityMod.CalPlayer
 
                     int heal = 2;
                     Main.player[Main.myPlayer].lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(heal);
 
                     break;
 
@@ -1109,11 +1105,9 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
                 for (int dustexplode = 0; dustexplode < 180; dustexplode++)
                 {
-                    Vector2 dustd = new Vector2(17f, 17f).RotatedBy(MathHelper.ToRadians(dustexplode * 2));
-                    int d = Dust.NewDust(proj.Center, proj.width, proj.height, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd.X, dustd.Y, 100, default, 1f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].position = proj.Center;
-                    Main.dust[d].velocity *= 0.1f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
+                    dust.noGravity = true;
                 }
                 titanCooldown = 15;
             }

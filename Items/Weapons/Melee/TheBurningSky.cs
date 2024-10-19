@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
 
             // Visually a sword, but with no true melee capability. The Burning Sky is held out like a staff.
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()

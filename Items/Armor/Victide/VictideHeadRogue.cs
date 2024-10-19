@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Armor.Victide
             CreateRecipe().
                 AddIngredient<SeaRemains>(3).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<VictideBreastplate>()).
                 Register();
         }
     }

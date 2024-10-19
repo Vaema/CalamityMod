@@ -1055,6 +1055,25 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
+        #region Remove Lihzahrd Power Cells Requiring Plantera Defeated
+        private static void RemovePowerCellPlanteraLock(ILContext il)
+        {
+            // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<NPC>("downedPlantBoss")))
+            {
+                LogFailure("Remove Power Cell Plantera Lock", "Could not locate the downed Plantera bool.");
+                return;
+            }
+
+            // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
+            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4_1);
+        }
+        #endregion
+
         #region Celestial Sigil Non-Linearity Change
         private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
@@ -1081,6 +1100,33 @@ namespace CalamityMod.ILEditing
             }
             else
                 orig(self, sItem);
+        }
+        #endregion
+
+        #region Remove NPC.damage Condition from Radar
+        private static void RemoveDamageConditionFromRadar(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            Func<Instruction, bool>[] searchFor =
+            [
+                (x => x.MatchLdfld<NPC>(nameof(NPC.damage))),
+                (x => x.MatchLdcI4(out var comp) && comp == 0),
+                (x => x.MatchBle(out _)) //ble.s
+            ];
+
+            if (!cursor.TryGotoNext(MoveType.After, searchFor))
+            {
+                LogFailure("Radar Condition", "Unable to locate condition for NPC.damage > 0");
+                return;
+            }
+
+            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            cursor.Prev.OpCode = OpCodes.Nop;
+
+            // After that we pop NPC.damage and 0 from stack
+            cursor.EmitPop();
+            cursor.EmitPop();
         }
         #endregion
 

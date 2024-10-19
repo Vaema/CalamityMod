@@ -16,8 +16,8 @@ namespace CalamityMod.Items.Weapons.Typeless
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Item.type] = true;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()

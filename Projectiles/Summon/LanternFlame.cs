@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.SentryShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 

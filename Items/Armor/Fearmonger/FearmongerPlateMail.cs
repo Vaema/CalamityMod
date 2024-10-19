@@ -36,6 +36,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
                 AddIngredient<AscendantSpiritEssence>(3).
                 AddIngredient(ItemID.SoulofFright, 12).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<FearmongerGreaves>()).
                 Register();
         }
     }

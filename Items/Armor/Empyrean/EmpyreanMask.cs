@@ -90,6 +90,7 @@ namespace CalamityMod.Items.Armor.Empyrean
                 AddIngredient<MeldConstruct>(10).
                 AddIngredient(ItemID.LunarBar, 8).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<EmpyreanCloak>()).
                 Register();
         }
     }

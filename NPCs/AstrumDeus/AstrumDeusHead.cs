@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<AstrumDeusBossBar>();
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(0, 50, 0, 0);
             NPC.alpha = 255;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -170,9 +170,9 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = NPC.Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            Texture2D mainWormTex = TextureAssets.Npc[NPC.type].Value;
+            Texture2D mainWormTex = TextureAssets.Npc[Type].Value;
             Texture2D secondWormTex = TextureGlow2.Value;
-            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(mainWormTex.Width, mainWormTex.Height) * NPC.scale / 2f;

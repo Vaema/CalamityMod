@@ -12,7 +12,11 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => Item.staff[Type] = true;
+        public override void SetStaticDefaults()
+        {
+            Item.staff[Type] = true;
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        }
 
         public override void SetDefaults()
         {
@@ -47,13 +51,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 switch (i)
                 {
                     case 0:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
                         break;
                     case 1:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
                         break;
                     case 2:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
                         break;
                 }
             }

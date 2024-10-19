@@ -71,7 +71,7 @@ namespace CalamityMod.Items.Accessories
             if (Main.zenithWorld)
             {
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Calamity_GFB").Value;
-                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Main.itemAnimations[Item.type].GetFrame(texture), lightColor, 0f, Vector2.Zero, 1f, 0, 0);
+                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Main.itemAnimations[Type].GetFrame(texture), lightColor, 0f, Vector2.Zero, 1f, 0, 0);
                 return false;
             }
             else

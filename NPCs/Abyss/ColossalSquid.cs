@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -590,7 +590,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     spriteEffects |= SpriteEffects.FlipVertically;
                 }
-                Main.spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value,
+                Main.spriteBatch.Draw(TextureAssets.Npc[Type].Value,
                     new Vector2((float)(player.direction * 4), player.gfxOffY) + ((player.gravDir == 1f) ? player.Top : player.Bottom) - screenPos,
                     new Microsoft.Xna.Framework.Rectangle?(NPC.frame), NPC.GetAlpha(color), NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 0f);
             }
@@ -608,7 +608,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

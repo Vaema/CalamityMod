@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 {
                     Vector2 toTargetDirection = CalamityUtils.CalculatePredictiveAimToTarget(proj.Center, Target, ProjectileVelocity);
 
-                    Projectile.NewProjectileDirect(proj.GetSource_FromThis(),
+                    Projectile.NewProjectile(proj.GetSource_FromThis(),
                         proj.Center,
                         toTargetDirection,
                         ModContent.ProjectileType<BetterHornetStinger>(),

@@ -241,8 +241,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 21;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 21;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -269,7 +269,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.width = NPC.height = 44;
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
-            NPC.value = Item.buyPrice(30, 0, 0, 0);
+            NPC.value = Item.buyPrice(3, 0, 0, 0);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
@@ -291,6 +291,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCalamitas")
             });
         }
@@ -3608,18 +3609,18 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive ? TextureAssets.Npc[NPC.type].Value : HoodedTexture.Value;
+            Texture2D texture2D15 = DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive ? TextureAssets.Npc[Type].Value : HoodedTexture.Value;
             Texture2D pony = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/AlicornMount_Front").Value;
             bool inPhase2 = NPC.ai[0] >= 3f && (NPC.life > NPC.lifeMax * 0.01 || cirrus);
 
             if (cirrus)
                 texture2D15 = inPhase2 ? CirrusTexture2.Value : CirrusTexture.Value;
 
-            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type] / 2f);
+            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type] / 2f);
             Vector2 ponyOrigin = new Vector2(pony.Width / 2f, pony.Height / 30f);
             int afterimageAmt = 7;
 
-            Rectangle frame = texture2D15.Frame(2, Main.npcFrameCount[NPC.type], NPC.frame.Y / Main.npcFrameCount[NPC.type], NPC.frame.Y % Main.npcFrameCount[NPC.type]);
+            Rectangle frame = texture2D15.Frame(2, Main.npcFrameCount[Type], NPC.frame.Y / Main.npcFrameCount[Type], NPC.frame.Y % Main.npcFrameCount[Type]);
             Rectangle ponyFrame = pony.Frame(1, 15, 0, alicornFrame);
             Vector2 ponyPos = NPC.Center - screenPos;
             ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
@@ -3634,14 +3635,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             if (!(cirrus && NPC.ai[1] == 2f))

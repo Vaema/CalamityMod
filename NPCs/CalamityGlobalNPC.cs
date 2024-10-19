@@ -36,6 +36,7 @@ using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
@@ -3670,8 +3671,6 @@ namespace CalamityMod.NPCs
                 calcDR *= 0.5f;
             if (absorberAffliction > 0)
                 calcDR *= 0.8f;
-            if (npc.betsysCurse)
-                calcDR *= 0.66f;
             if (npc.Calamity().kamiFlu > 0)
                 calcDR *= KamiFlu.MultiplicativeDamageReduction;
             if (npc.Calamity().aCrunch > 0)
@@ -3706,7 +3705,6 @@ namespace CalamityMod.NPCs
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             FlatEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            FlatEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             FlatEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -3725,7 +3723,6 @@ namespace CalamityMod.NPCs
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             MultEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            MultEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             MultEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -6019,8 +6016,27 @@ namespace CalamityMod.NPCs
         #region Modify Hit
         public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
+            List<int> SharkIDs =
+            [
+                NPCID.Shark,
+                NPCID.DukeFishron,
+                NPCID.Sharkron,
+                NPCID.Sharkron2,
+                NPCID.SandShark,
+                NPCID.SandsharkCorrupt,
+                NPCID.SandsharkCrimson,
+                NPCID.SandsharkHallow,
+                NPCID.GoblinShark,
+                NPCType<FusionFeeder>(),
+                NPCType<GreatSandShark.GreatSandShark>(),
+                NPCType<Mauler>(),
+                NPCType<OldDuke.OldDuke>(),
+                NPCType<SulphurousSharkron>(),
+                NPCType<ReaperShark>()
+            ];
+
             // Kaguya hair boom GIF
-            if (npc.type == NPCID.Shark && target.name == "Rebecca" && Main.zenithWorld)
+            if (SharkIDs.Contains(npc.type) && target.name == "Rebecca" && Main.zenithWorld)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
@@ -6048,11 +6064,10 @@ namespace CalamityMod.NPCs
             if (CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
                 CalamityLists.PerforatorIDs.Contains(npc.type) || CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
                 CalamityLists.AstrumDeusIDs.Contains(npc.type) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
-                npc.type == NPCType<ProfanedRocks>())
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>() || npc.type == NPCType<ProfanedRocks>())
             {
-                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : 0.5f;
-                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<UltimusCleaver>() && item.type != ItemType<InfernaCutter>())
+                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : (CalamityLists.DesertScourgeIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
+                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
         }
@@ -6118,7 +6133,6 @@ namespace CalamityMod.NPCs
 
                 // Don't allow large hitbox projectiles or explosions to "snipe" enemies.
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
-                bool hitBullseye = false;
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
                 if (bullseye != null && acceptableVelocity && acceptableHitbox)
@@ -6149,19 +6163,39 @@ namespace CalamityMod.NPCs
                     bool willStrikeBullseye = dotCenter > dotOne && dotCenter > dotTwo;
 
                     // If a bullseye is triggered, set it as hit.
-                    if (willStrikeBullseye && bullseye.ai[1] == 0f)
+                    if (willStrikeBullseye)
                     {
-                        modifiers.SetCrit();
-                        hitBullseye = true;
-                        bullseye.ai[1] = 1f; // Make the bullseye disappear immediately.
+                        // 08OCT2024: Ozzatron: this can be abused by firing a ton of shots then hotswapping to AMR while they are in flight
+                        // we will need IEntitySource item use time provenance to fix this, and even that is unreliable with holdouts
+                        modPlayer.spiritOriginCritBoost += player.ActiveItem().useTime;
+
+                        if (bullseye.ai[2] == 0f)
+                        {
+                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime; 
+                            bullseye.ai[2] = 1f;
+                        }
+
+                        if (Main.rand.NextBool(5))
+                        {
+                            int randomStarAmount = Main.rand.Next(3, 6);
+                            float randomCircleRotation = Main.rand.NextFloat(MathHelper.TwoPi);
+                            for (int i = 0 ; i < randomStarAmount ; i++)
+                            {
+                                Particle fancyStars = new FancyStars(
+                                bullseye.Center,
+                                Main.rand.NextFloat(MathHelper.TwoPi) * Main.rand.NextBool().ToDirectionInt(),
+                                Main.rand.NextFloat(0.42f, 0.63f),
+                                (MathHelper.TwoPi / randomStarAmount * i).ToRotationVector2().RotatedBy(randomCircleRotation).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(7f, 12f),
+                                Main.rand.NextFloat(0.1f, 0.5f),
+                                55,
+                                new Color(Main.rand.Next(256), Main.rand.Next(256), Main.rand.Next(256)) * 1.2f);
+                                GeneralParticleHandler.SpawnParticle(fancyStars);
+                            } 
+                        }
+
                         bullseye.netUpdate = true;
                     }
                 }
-
-                // The bonus provided by Daawnlight Spirit Origin can be computed as a complete replacement to regular crits.
-                // As such, it is subtracted by the base critical strike damage boost of 200%
-                float bonus = DaawnlightSpiritOrigin.GetDamageMultiplier(player, modPlayer, hitBullseye, cgp.forcedCrit) - 2f;
-                modifiers.CritDamage += bonus;
             }
 
             if (!projectile.npcProj && !projectile.trap)
@@ -6339,9 +6373,10 @@ namespace CalamityMod.NPCs
                 NPC.downedMoonlord &&
                 Main.player[npc.target].ZoneDungeon)
             {
-                int maxValue = Main.expertMode ? 4 : 6;
+                // This value can change by (on average) 0.75x or 1.25x depending on your having positive or negative luck
+                int baseValue = Main.expertMode ? 4 : 6;
 
-                if (Main.rand.NextBool(maxValue) && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
+                if (Main.player[npc.target].RollLuck(baseValue) == 0 && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
                 {
                     int randomType = Utils.SelectRandom(Main.rand, new int[]
                     {
@@ -6599,11 +6634,6 @@ namespace CalamityMod.NPCs
             {
                 spawnRate = (int)(spawnRate * 1.1);
                 maxSpawns = (int)(maxSpawns * 0.9f);
-            }
-            if (player.calmed)
-            {
-                spawnRate = (int)(spawnRate * 1.2);
-                maxSpawns = (int)(maxSpawns * 0.8f);
             }
             if (player.Calamity().tranquilityCandle)
             {
@@ -9366,6 +9396,7 @@ namespace CalamityMod.NPCs
             // These are ordered by their order in the bestiary, if you're wondering why it seems so arbitrary lmao
             switch (npc.netID)
             {
+                case NPCID.Guide:
                 case NPCID.Dryad:
                 case NPCID.Mechanic:
                 case NPCID.EmpressButterfly:

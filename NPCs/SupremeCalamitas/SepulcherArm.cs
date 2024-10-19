@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor_Unused)
         {
-            Texture2D armTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D armTexture = TextureAssets.Npc[Type].Value;
             Texture2D foreArmTexture = ForearmTexture.Value;
             Texture2D handTexture = HandTexture.Value;
 

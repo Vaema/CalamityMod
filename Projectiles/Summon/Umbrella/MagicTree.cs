@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -165,7 +165,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             if (Projectile.ai[1] == 0f)
                 return false;
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             switch (TreeType)
             {
                 case Tree.Astral:

@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 

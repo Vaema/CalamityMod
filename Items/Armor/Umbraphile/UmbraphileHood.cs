@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Armor.Umbraphile
                 AddIngredient<SolarVeil>(12).
                 AddIngredient(ItemID.HallowedBar, 8).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<UmbraphileBoots>()).
                 Register();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,22 +13,15 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
+                new Color(213, 255, 226),
+                new Color(141, 220, 166)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 38;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<BoundingBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(300f);
-
+            Item.DefaultToFood(26, 38, ModContent.BuffType<BoundingBuff>(), CalamityUtils.SecondsToFrames(300f), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }

@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-            ItemID.Sets.SortingPriorityTerraforming[Type] = 92; // Blood Water
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 88; // Blood Water
         }
 
         public override void SetDefaults()

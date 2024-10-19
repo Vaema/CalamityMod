@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,22 +14,16 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(45, 45, 45),
+                new Color(0, 0, 0),
+                new Color(95, 0, 36)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<ShadowBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(480f);
-
+            Item.DefaultToFood(20, 28, ModContent.BuffType<ShadowBuff>(), CalamityUtils.SecondsToFrames(480f), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Orange;
         }

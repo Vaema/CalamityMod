@@ -308,16 +308,14 @@ namespace CalamityMod.ILEditing
 
                 dir = self.direction;
                 dashing = true;
-                if (self.dashTime > 0)
-                    self.dashTime--;
-                if (self.dashTime < 0)
-                    self.dashTime++;
 
-                if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
+                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
+                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
+                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
                 {
                     self.dashTime = 15;
                     return;
-                }
+                }*/
 
                 dashing = true;
                 self.dashTime = 0;
@@ -332,6 +330,7 @@ namespace CalamityMod.ILEditing
             {
                 dir = 1;
                 dashing = false;
+                self.dashTime = 0;
             }
         }
         #endregion
@@ -553,14 +552,22 @@ namespace CalamityMod.ILEditing
                 if (Main.gameMenu || !player.active)
                     return proj;
 
-                // Do not apply Hellbound effects to minions not spawned by the item itself, if it came out of an item
-                // This prevent minions like Luxor's Gift getting it, but minions spawned out of minions such as Temporal Umbrella will work fine
-                if (spawnSource is EntitySource_ItemUse && player.ActiveItem().shoot != projectile.type)
+                // Do not apply Hellbound effects to minions not spawned by weapons
+                // This prevent minions like Luxor's Gift getting it
+                if (spawnSource is EntitySource_ItemUse trueSource && trueSource.Item is Item weapon && weapon.damage <= 0)
                     return proj;
 
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
                 if (player.Calamity().explosiveMinionsEnchant)
                     projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+            }
+            // Minion shots inherit the "explode countdown" from the parent minion
+            // This is only to inherit the damage scaling of the minion and does NOT mean the shot will explode too
+            else if (ProjectileID.Sets.MinionShot[projectile.type])
+            {
+                // Going down the chain
+                if (spawnSource is EntitySource_Parent trueSource && trueSource.Entity is Projectile parent)
+                    projectile.Calamity().ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
         }
@@ -1889,8 +1896,8 @@ namespace CalamityMod.ILEditing
 
                 drawColor = glowMaskTile.GlowMaskPaintInteraction switch
                 {
-                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
-                    GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                    GlowMaskTile.PaintColorTint.ByEveryPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: false),
                     _ => drawColor
                 };
 

@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 500;
             NPC.knockBackResist = 0f;
             NPC.alpha = 100;
-            NPC.value = Item.buyPrice(0, 0, 1, 5);
+            NPC.value = Item.buyPrice(0, 0, 4, 0);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -212,8 +212,8 @@ namespace CalamityMod.NPCs.Abyss
                     }
                 }
                 NPC.velocity.Y += 0.1f;
-                if (currentFrame == 5 && NPC.frameCounter == 0.0)
-                    NPC.velocity.Y = -2.748f; // manually picked value :desolate:
+                if (currentFrame == 3 && NPC.frameCounter == 0.0)
+                    NPC.velocity.Y = -1.35f; // manually picked value :desolate: // yeah this is desolate indeed _ YuH
             }
             else
             {
@@ -224,12 +224,12 @@ namespace CalamityMod.NPCs.Abyss
             }
         }
 
-        public override void FindFrame(int frameHeight) //8 frames, 78 height
+        public override void FindFrame(int frameHeight) //4 frames, 78 height
         {
             NPC.frameCounter += 1.0;
             if (NPC.frameCounter >= 7)
             {
-                currentFrame = currentFrame == 7 ? 0 : currentFrame + 1;
+                currentFrame = currentFrame == 3 ? 0 : currentFrame + 1;
                 NPC.netUpdate = true; //update current frame variable
                 NPC.frameCounter = 0;
             }
@@ -254,14 +254,14 @@ namespace CalamityMod.NPCs.Abyss
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            var texture = TextureAssets.Npc[NPC.type];
-            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            var texture = TextureAssets.Npc[Type];
+            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            var glowTexture = TextureAssets.Npc[NPC.type];
-            vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            var glowTexture = TextureAssets.Npc[Type];
+            vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(new Color(67, 218, 166));
-            Main.spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, vector,
+            Main.spriteBatch.Draw(TextureAssets.Npc[Type].Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 

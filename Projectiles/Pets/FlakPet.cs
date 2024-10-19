@@ -17,10 +17,10 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 7;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(2, 4, 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(2, 4, 6)
             .WithOffset(-7f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 

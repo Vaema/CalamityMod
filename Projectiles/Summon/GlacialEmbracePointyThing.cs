@@ -53,8 +53,8 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (circlingPlayer)
             {
-                ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+                ProjectileID.Sets.MinionSacrificable[Type] = true;
                 if (Projectile.penetrate == 1)
                 {
                     Projectile.penetrate++;
@@ -198,7 +198,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float math = recharging == 0 ? 90f : (300 - recharging) / 3;
                     float regularDistance = math > 90f ? 90f : math;
-                    Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * regularDistance;
+                    Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * regularDistance + Vector2.UnitY * player.gfxOffY;
                     Projectile.rotation = Projectile.ai[0] + (float)Math.Atan(90);
                     Projectile.ai[0] -= MathHelper.ToRadians(4f);
                     NPC target = recharging > 0 ? null : CalamityUtils.MinionHoming(Projectile.Center, 800f, player);
@@ -308,7 +308,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (!circling || (!circlingPlayer && recharging == 0))
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, !circlingPlayer ? 1 : 3);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, !circlingPlayer ? 1 : 3);
             }
             return true;
         }

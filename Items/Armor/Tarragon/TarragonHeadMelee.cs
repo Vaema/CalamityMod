@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Armor.Tarragon
                 AddIngredient<UelibloomBar>(7).
                 AddIngredient<DivineGeode>(6).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<TarragonHeadMagic>()).
                 Register();
         }
     }

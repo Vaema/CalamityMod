@@ -52,7 +52,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Position = new Vector2(28f, 20f),
@@ -288,9 +288,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     float cloudSpawnOutwardness = (AttackTimer - cloudSummonDelay) / cloudSummonRate * 50f;
 
                     Vector2 spawnPosition = NPC.Top + new Vector2(cloudSpawnOutwardness, -36);
-                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
                     spawnPosition = NPC.Top + new Vector2(-cloudSpawnOutwardness, -36);
-                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, lightningDamage, 0f, Main.myPlayer);
                 }
             }
 
@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             else
             {
-                texture = TextureAssets.Npc[NPC.type].Value;
+                texture = TextureAssets.Npc[Type].Value;
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             }
             if (Main.zenithWorld)

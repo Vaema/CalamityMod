@@ -236,6 +236,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 AddIngredient<StormlionMandible>(3).
                 AddIngredient(ItemID.Silk, 10).
                 AddTile(TileID.Loom).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DesertProwlerPants>()).
                 Register();
         }
     }

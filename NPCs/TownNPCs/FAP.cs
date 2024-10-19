@@ -33,13 +33,13 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 27;
-            NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
-            NPCID.Sets.AttackFrameCount[NPC.type] = 4;
-            NPCID.Sets.DangerDetectRange[NPC.type] = 400;
-            NPCID.Sets.AttackType[NPC.type] = 0;
-            NPCID.Sets.AttackTime[NPC.type] = 60;
-            NPCID.Sets.AttackAverageChance[NPC.type] = 15;
+            Main.npcFrameCount[Type] = 27;
+            NPCID.Sets.ExtraFramesCount[Type] = 9;
+            NPCID.Sets.AttackFrameCount[Type] = 4;
+            NPCID.Sets.DangerDetectRange[Type] = 400;
+            NPCID.Sets.AttackType[Type] = 0;
+            NPCID.Sets.AttackTime[Type] = 60;
+            NPCID.Sets.AttackAverageChance[Type] = 15;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<HallowBiome>(AffectionLevel.Love)
@@ -92,7 +92,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[NPC.type] : 0);
+            int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[Type] : 0);
             if (NPC.velocity.Y == 0f)
             {
                 if (NPC.direction == 1)
@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (NPC.direction == -1)
                     NPC.spriteDirection = -1;
 
-                int nonAttackFrames = Main.npcFrameCount[NPC.type] - NPCID.Sets.AttackFrameCount[NPC.type];
+                int nonAttackFrames = Main.npcFrameCount[Type] - NPCID.Sets.AttackFrameCount[Type];
                 if (NPC.ai[0] == 23f)
                 {
                     NPC.frameCounter += 1D;
@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     if (NPC.ai[1] < 10f)
                         num254 = 0;
 
-                    num254 = Main.npcFrameCount[NPC.type] - 2;
+                    num254 = Main.npcFrameCount[Type] - 2;
                     NPC.frame.Y = frameHeight * num254;
                 }
                 else if (NPC.ai[0] == 10f || NPC.ai[0] == 13f) // Attacking
@@ -323,7 +323,7 @@ namespace CalamityMod.NPCs.TownNPCs
                         NPC.frameCounter = 0D;
                     }
 
-                    float num260 = NPC.ai[1] / (float)NPCID.Sets.AttackTime[NPC.type];
+                    float num260 = NPC.ai[1] / (float)NPCID.Sets.AttackTime[Type];
                     int num261 = 0;
                     num261 = ((num260 > 0.65f) ?
                         nonAttackFrames : ((num260 > 0.5f) ?
@@ -632,7 +632,7 @@ namespace CalamityMod.NPCs.TownNPCs
                         NPC.frameCounter = 0D;
                     }
 
-                    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - extraFrameAmt)
+                    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - extraFrameAmt)
                         NPC.frame.Y = walkFrameHeightLimit;
                 }
 
@@ -814,7 +814,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 return false;
 
             var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
+            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
             return false;
         }
 
@@ -880,7 +880,7 @@ namespace CalamityMod.NPCs.TownNPCs
             musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
             NPCShop shop = new(Type);
-            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnough)
+            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
                 .AddWithCustomValue(ModContent.ItemType<RedWine>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Whiskey>(), Item.buyPrice(gold: 3))
@@ -916,9 +916,9 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
                 .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
                 .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods)
-                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnough, Condition.InHallow)
-                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
-                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnough, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
+                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
+                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
                 .Register();
         }
 

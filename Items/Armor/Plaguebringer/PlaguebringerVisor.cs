@@ -79,6 +79,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                 AddIngredient<InfectedArmorPlating>(4).
                 AddIngredient<PlagueCellCanister>(4).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PlaguebringerCarapace>()).
                 Register();
         }
     }

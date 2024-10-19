@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Enums;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -63,12 +64,7 @@ namespace CalamityMod.Projectiles.Boss
             if (!player.immune && playerDist < 50f && !player.dead && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
                 int healAmt = (int)Projectile.ai[1];
-                player.HealEffect(healAmt, false);
-                player.statLife += healAmt;
-                if (player.statLife > player.statLifeMax2)
-                {
-                    player.statLife = player.statLifeMax2;
-                }
+                player.HealPlayer(healAmt, HealTextType.Local);
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, index, healAmt);
                 Projectile.Kill();
             }
@@ -85,7 +81,7 @@ namespace CalamityMod.Projectiles.Boss
             float vel = Projectile.velocity.Length() / 8;
             Projectile.localAI[1] += vel;
 
-            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;

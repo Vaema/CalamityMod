@@ -16,9 +16,9 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 8;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -37,7 +37,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = NPCAIStyleID.Passive;
             AIType = NPCID.Squirrel;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 0, 20);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -142,7 +141,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.frame.Y = NPC.frame.Y + frameHeight;
                     NPC.frameCounter = 0.0;
                 }
-                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - 1)
+                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
                 {
                     NPC.frame.Y = frameHeight;
                 }
@@ -150,7 +149,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else
             {
                 NPC.frameCounter = 0.0;
-                NPC.frame.Y = frameHeight * (Main.npcFrameCount[NPC.type] - 1);
+                NPC.frame.Y = frameHeight * (Main.npcFrameCount[Type] - 1);
             }
         }
 

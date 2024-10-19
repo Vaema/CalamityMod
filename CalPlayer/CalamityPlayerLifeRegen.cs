@@ -4,6 +4,7 @@ using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
@@ -395,7 +396,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -422,7 +423,7 @@ namespace CalamityMod.CalPlayer
                     bloodfinTimer = 30;
 
                     if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
-                        Player.statLife += 1;
+                        Player.HealPlayer(1, HealTextType.None);
                 }
             }
 
@@ -678,14 +679,14 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
                 if (Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
-                    Main.dust[regen].noGravity = true;
-                    Main.dust[regen].fadeIn = 1.3f;
+                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
+                    regen.noGravity = true;
+                    regen.fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    Main.dust[regen].velocity = velocity;
+                    regen.velocity = velocity;
                     velocity.Normalize();
                     velocity *= 34f;
-                    Main.dust[regen].position = Player.Center - velocity;
+                    regen.position = Player.Center - velocity;
                 }
             }
 
@@ -740,9 +741,7 @@ namespace CalamityMod.CalPlayer
                 if (pinkCandleHealFraction >= 1D)
                 {
                     pinkCandleHealFraction = 0D;
-
-                    if (Player.statLife < Player.statLifeMax2)
-                        Player.statLife++;
+                    Player.HealPlayer(1, HealTextType.None);
                 }
             }
             else
@@ -753,7 +752,7 @@ namespace CalamityMod.CalPlayer
                 reaverRegenCooldown = 0;
 
                 if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.statLife += 1;
+                    Player.HealPlayer(1, HealTextType.None);
             }
 
             if (BloomStoneRegen)
@@ -784,14 +783,14 @@ namespace CalamityMod.CalPlayer
                     bool dustSpawnRolled = Main.rand.Next(30000) < Player.lifeRegenTime || purity ? Main.rand.NextBool() : aAmpoule ? Main.rand.NextBool(4) : Main.rand.NextBool(30);
                     if (dustType != -1 && dustSpawnRolled)
                     {
-                        int regen = Dust.NewDust(Player.position, Player.width, Player.height, dustType, 0f, 0f, purity || aAmpoule ? 80 : 200, default, purity || aAmpoule ? 0.5f : 1f);
-                        Main.dust[regen].noGravity = true;
-                        Main.dust[regen].fadeIn = 1.3f;
+                        Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, dustType, 0f, 0f, purity || aAmpoule ? 80 : 200, default, purity || aAmpoule ? 0.5f : 1f);
+                        regen.noGravity = true;
+                        regen.fadeIn = 1.3f;
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                        Main.dust[regen].velocity = velocity;
+                        regen.velocity = velocity;
                         velocity.Normalize();
                         velocity *= purity || aAmpoule ? 55f : 34f;
-                        Main.dust[regen].position = Player.Center - velocity;
+                        regen.position = Player.Center - velocity;
                     }
                 }
 
@@ -827,14 +826,14 @@ namespace CalamityMod.CalPlayer
 
                 if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
-                    Main.dust[regen].noGravity = true;
-                    Main.dust[regen].fadeIn = 1.3f;
+                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
+                    regen.noGravity = true;
+                    regen.fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    Main.dust[regen].velocity = velocity;
+                    regen.velocity = velocity;
                     velocity.Normalize();
                     velocity *= 34f;
-                    Main.dust[regen].position = Player.Center - velocity;
+                    regen.position = Player.Center - velocity;
                 }
             }
 
@@ -887,7 +886,7 @@ namespace CalamityMod.CalPlayer
                 pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
                 if (pulseCounter >= 420)
                 {
-                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
                     float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
                     SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");

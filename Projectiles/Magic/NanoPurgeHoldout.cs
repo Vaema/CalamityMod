@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
                 ChargeTowardsNextShot -= itemUseTime;
 
                 // Update the animation.
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
                 bool manaCostPaid = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
                 if (manaCostPaid)

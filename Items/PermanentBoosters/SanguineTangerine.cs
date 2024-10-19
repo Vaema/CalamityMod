@@ -30,12 +30,12 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 38;
             Item.height = 40;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.LightPurple;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = UseSound;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = UseSound;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 24);
+            Item.rare = ItemRarityID.LightPurple;
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;

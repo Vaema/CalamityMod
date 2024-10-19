@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true; //so it doesn't look weird af when holding it
+            Item.staff[Type] = true; //so it doesn't look weird af when holding it
         }
 
         public override void SetDefaults()

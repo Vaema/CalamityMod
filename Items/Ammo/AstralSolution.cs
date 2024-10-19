@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-            ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 94; // Red Solution
         }
 
         public override void SetDefaults() => Item.DefaultToSolution(ModContent.ProjectileType<AstralSpray>());

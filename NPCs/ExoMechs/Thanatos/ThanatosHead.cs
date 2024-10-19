@@ -132,10 +132,10 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
 
             // Ensure that the reticle is not culled due to the player being very far from Thanatos.
-            NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
+            NPCID.Sets.MustAlwaysDraw[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -174,7 +174,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(15, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -1094,7 +1094,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     NPC.frame.Y += frameHeight;
                     NPC.frameCounter = 0D;
                 }
-                int finalFrame = Main.npcFrameCount[NPC.type] - 1;
+                int finalFrame = Main.npcFrameCount[Type] - 1;
                 if (NPC.frame.Y >= frameHeight * finalFrame)
                     NPC.frame.Y = frameHeight * finalFrame;
             }
@@ -1109,8 +1109,8 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
             // Reimplementation of CalamityUtils.DrawAnimatedBestiaryWorm but tweaked due to Thanatos' animations
             if (NPC.IsABestiaryIconDummy)
@@ -1139,7 +1139,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
 
             Vector2 center = NPC.Center - screenPos;
-            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 

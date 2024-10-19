@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()

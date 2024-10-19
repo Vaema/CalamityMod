@@ -32,8 +32,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public int laserDelay = 150;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 4;
             NPC.lifeMax = Main.zenithWorld ? 90 : 58;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 1, 50);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.HitSound = SoundID.NPCHit4;
@@ -205,7 +205,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            int frame = (int)(NPC.frameCounter / 8) % Main.npcFrameCount[NPC.type];
+            int frame = (int)(NPC.frameCounter / 8) % Main.npcFrameCount[Type];
 
             NPC.frame.Y = frame * frameHeight;
         }

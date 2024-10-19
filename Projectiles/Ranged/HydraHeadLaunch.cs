@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         //Normal hitbox size for explosion, rotated otherwise
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.ai[1] < 1f ? Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size()) : null);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.ai[1] < 1f ? Projectile.RotatingHitboxCollision(targetHitbox) : null);
 
         public override void AI()
         {

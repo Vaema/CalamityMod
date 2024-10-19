@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = Owner.Center + (direction * ThrustDisplaceRatio() * 60);
 
                 Projectile.frameCounter++;
-                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Projectile.type])
+                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Type])
                     Projectile.frame++;
 
                 if (Main.rand.NextBool() && Owner.whoAmI == Main.myPlayer)

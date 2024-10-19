@@ -12,6 +12,7 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
@@ -244,8 +245,6 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
-        public int spiritOriginBullseyeShootCountdown = 0;
-        public int spiritOriginConvertedCrit = 0;
         public int RustyMedallionCooldown = 0;
         public int MiniSwamerCooldown = 0;
         public float SulphWaterPoisoningLevel;
@@ -640,11 +639,13 @@ namespace CalamityMod.CalPlayer
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
+        public int spiritOriginCritBoost = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
         public bool HasReducedDashFirstFrame = false;
         public bool HasIncreasedDashFirstFrame = false;
+        public bool IsFirstDashFrame = false;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -657,6 +658,8 @@ namespace CalamityMod.CalPlayer
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
         public bool Pauldron = false;
+        public bool XykVisualsBlue = false;
+        public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
         public bool royalGel = false;
         public bool handWarmer = false;
@@ -1140,23 +1143,29 @@ namespace CalamityMod.CalPlayer
         public bool LiliesOfFinalityBool = false;
         public bool FlarebatBool = false;
         public bool FrostbatBool = false;
+        public bool AmphibiansGuitarBool = false;
         #endregion
 
         #region Biome
-        public bool ZoneCalamity => Player.InModBiome(GetInstance<BrimstoneCragsBiome>());
-        public bool ZoneAstral => Player.InModBiome(GetInstance<BiomeManagers.AstralInfectionBiome>()) && !ZoneAbyss;
-        public bool ZoneSunkenSea => ZoneSunkenBurrows || ZoneSunkenSeaReefs || ZoneSunkenSeaPolyp || ZoneSunkenSeaShores;
-        public bool ZoneSunkenBurrows => Player.InModBiome(GetInstance<SunkenSeaBurrowsBiome>());
-        public bool ZoneSunkenSeaReefs => Player.InModBiome(GetInstance<SunkenSeaReefsBiome>());
-        public bool ZoneSunkenSeaPolyp => Player.InModBiome(GetInstance<SunkenSeaPolypBiome>());
-        public bool ZoneSunkenSeaShores => Player.InModBiome(GetInstance<SunkenSeaShoresBiome>());
-        public bool ZoneSulphur => Player.InModBiome(GetInstance<SulphurousSeaBiome>());
+        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneBasaltGully;
+        public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
+        public bool ZonePolypForest => Player.InModBiome<PolypForestBiome>();
+        public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
+        public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
+        public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
+        
+        public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();
         public bool ZoneAbyss => ZoneAbyssLayer1 || ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4;
-        public bool ZoneAbyssLayer1 => Player.InModBiome(GetInstance<AbyssLayer1Biome>());
-        public bool ZoneAbyssLayer2 => Player.InModBiome(GetInstance<AbyssLayer2Biome>());
-        public bool ZoneAbyssLayer3 => Player.InModBiome(GetInstance<AbyssLayer3Biome>());
-        public bool ZoneAbyssLayer4 => Player.InModBiome(GetInstance<AbyssLayer4Biome>());
-        public bool ZoneFloralParadise => Player.InModBiome(GetInstance<FloralParadiseBiome>());
+        public bool ZoneAbyssLayer1 => Player.InModBiome<AbyssLayer1Biome>();
+        public bool ZoneAbyssLayer2 => Player.InModBiome<AbyssLayer2Biome>();
+        public bool ZoneAbyssLayer3 => Player.InModBiome<AbyssLayer3Biome>();
+        public bool ZoneAbyssLayer4 => Player.InModBiome<AbyssLayer4Biome>();
+        
+        public bool ZoneFloralParadise => Player.InModBiome<FloralParadiseBiome>();
+        
+        public bool ZoneCalamity => Player.InModBiome<BrimstoneCragsBiome>();
+        
+        public bool ZoneAstral => Player.InModBiome<AstralInfectionBiome>() && !ZoneAbyss;
 
         public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
 
@@ -1828,6 +1837,8 @@ namespace CalamityMod.CalPlayer
             normalityRelocator = false;
             flameLickedShell = false;
             Pauldron = false;
+            XykVisualsBlue = false;
+            XykVisualsOrange = false;
             manaOverloader = false;
             royalGel = false;
             handWarmer = false;
@@ -1904,9 +1915,11 @@ namespace CalamityMod.CalPlayer
             lumenousAmulet = false;
             oceanCrest = false;
             aquaticEmblem = false;
+            if (!spiritOrigin)
+                spiritOriginCritBoost = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
-            spiritOriginConvertedCrit = 0;
+
 
             astralStarRain = false;
 
@@ -2118,6 +2131,7 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;
             mWorm = false;
@@ -2240,6 +2254,8 @@ namespace CalamityMod.CalPlayer
             LiliesOfFinalityBool = false;
             FlarebatBool = false;
             FrostbatBool = false;
+            AmphibiansGuitarBool = false;
+            #endregion
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
@@ -2374,7 +2390,7 @@ namespace CalamityMod.CalPlayer
             bloodflareCoreRemainingHealOverTime = 0;
             #endregion
 
-            #region Debuffs
+            #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
             arsenalCooldown = 0;
@@ -2394,7 +2410,7 @@ namespace CalamityMod.CalPlayer
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
-            spiritOriginConvertedCrit = 0;
+            spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0f;
@@ -2814,7 +2830,7 @@ namespace CalamityMod.CalPlayer
             if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
             {
                 var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
-                Projectile.NewProjectileDirect(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
+                Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = 2400;
                 ascendantInsigniaBuffTime = 240; //4 seconds
@@ -2891,10 +2907,7 @@ namespace CalamityMod.CalPlayer
                     int damage = Player.ApplyArmorAccDamageBonusesTo(proj.damage / 10);
 
                     Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), damage, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
-                    Player.statLife += 2;
-                    Player.HealEffect(2);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
+                    Player.HealPlayer(2);
                 }
             }
             if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Cooldowns.SandCloak.ID))
@@ -2945,9 +2958,9 @@ namespace CalamityMod.CalPlayer
                             Vector2 step = teleportOffset / numDust;
                             for (int i = 0; i < numDust; i++)
                             {
-                                int dustIndex = Dust.NewDust(Player.Center - (step * i), 1, 1, DustID.VilePowder, step.X, step.Y);
-                                Main.dust[dustIndex].noGravity = true;
-                                Main.dust[dustIndex].noLight = true;
+                                Dust dust = Dust.NewDustDirect(Player.Center - (step * i), 1, 1, DustID.VilePowder, step.X, step.Y);
+                                dust.noGravity = true;
+                                dust.noLight = true;
                             }
 
                             spectralVeilImmunity = SpectralVeil.VeilIFrames;
@@ -2985,9 +2998,9 @@ namespace CalamityMod.CalPlayer
                             SoundEngine.PlaySound(BrimflameScowl.ActivationSound, Player.Center);
                             for (int i = 0; i < 36; i++)
                             {
-                                int brimDust = Dust.NewDust(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
-                                Main.dust[brimDust].velocity *= 3f;
-                                Main.dust[brimDust].scale *= 1.15f;
+                                Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
+                                brimDust.velocity *= 3f;
+                                brimDust.scale *= 1.15f;
                             }
                             int dustAmt = 36;
                             for (int j = 0; j < dustAmt; j++)
@@ -2995,10 +3008,10 @@ namespace CalamityMod.CalPlayer
                                 Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
                                 dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
                                 Vector2 dustVelocity = dustRotation - Player.Center;
-                                int brimDust2 = Dust.NewDust(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
-                                Main.dust[brimDust2].noGravity = true;
-                                Main.dust[brimDust2].noLight = true;
-                                Main.dust[brimDust2].velocity = dustVelocity;
+                                Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
+                                brimDust2.noGravity = true;
+                                brimDust2.noLight = true;
+                                brimDust2.velocity = dustVelocity;
                             }
                         }
                     }
@@ -3018,9 +3031,9 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(BloodflareHeadRanged.ActivationSound, Player.Center);
                     for (int d = 0; d < 64; d++)
                     {
-                        int dust = Dust.NewDust(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Necroplasm, 0f, 0f, 0, default, 1f);
-                        Main.dust[dust].velocity *= 3f;
-                        Main.dust[dust].scale *= 1.15f;
+                        Dust dust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Necroplasm, 0f, 0f, 0, default, 1f);
+                        dust.velocity *= 3f;
+                        dust.scale *= 1.15f;
                     }
                     int dustAmt = 36;
                     for (int d = 0; d < dustAmt; d++)
@@ -3028,10 +3041,10 @@ namespace CalamityMod.CalPlayer
                         Vector2 source = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
                         source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
                         Vector2 dustVel = source - Player.Center;
-                        int phanto = Dust.NewDust(source + dustVel, 0, 0, (int)CalamityDusts.Necroplasm, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.4f);
-                        Main.dust[phanto].noGravity = true;
-                        Main.dust[phanto].noLight = true;
-                        Main.dust[phanto].velocity = dustVel;
+                        Dust phanto = Dust.NewDustDirect(source + dustVel, 0, 0, (int)CalamityDusts.Necroplasm, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.4f);
+                        phanto.noGravity = true;
+                        phanto.noLight = true;
+                        phanto.velocity = dustVel;
                     }
                     float spread = 45f * 0.0174f;
                     double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
@@ -3069,11 +3082,11 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(OmegaBlueHelmet.ActivationSound, Player.Center);
                     for (int i = 0; i < 66; i++)
                     {
-                        int d = Dust.NewDust(Player.position, Player.width, Player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 2.6f);
-                        Main.dust[d].noGravity = true;
-                        Main.dust[d].noLight = true;
-                        Main.dust[d].fadeIn = 1f;
-                        Main.dust[d].velocity *= 6.6f;
+                        Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 2.6f);
+                        dust.noGravity = true;
+                        dust.noLight = true;
+                        dust.fadeIn = 1f;
+                        dust.velocity *= 6.6f;
                     }
                 }
                 if (dsSetBonus)
@@ -3081,9 +3094,9 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(DemonshadeHelm.ActivationSound, Player.Center);
                     for (int i = 0; i < 36; i++)
                     {
-                        int brimDust = Dust.NewDust(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
-                        Main.dust[brimDust].velocity *= 3f;
-                        Main.dust[brimDust].scale *= 1.15f;
+                        Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
+                        brimDust.velocity *= 3f;
+                        brimDust.scale *= 1.15f;
                     }
                     int dustAmt = 36;
                     for (int j = 0; j < dustAmt; j++)
@@ -3091,10 +3104,10 @@ namespace CalamityMod.CalPlayer
                         Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
                         dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
                         Vector2 dustVelocity = dustRotation - Player.Center;
-                        int brimDust2 = Dust.NewDust(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
-                        Main.dust[brimDust2].noGravity = true;
-                        Main.dust[brimDust2].noLight = true;
-                        Main.dust[brimDust2].velocity = dustVelocity;
+                        Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
+                        brimDust2.noGravity = true;
+                        brimDust2.noLight = true;
+                        brimDust2.velocity = dustVelocity;
                     }
                     if (Player.whoAmI == Main.myPlayer)
                     {
@@ -3218,12 +3231,12 @@ namespace CalamityMod.CalPlayer
                     for (int i = 0; i < 30; i++)
                     {
                         float angle = MathHelper.TwoPi * i / 30f;
-                        int dustIndex = Dust.NewDust(Player.position, 120, 120, DustID.Rain_BloodMoon, 0f, 0f, 0, default, 2f);
-                        Main.dust[dustIndex].noGravity = true;
-                        Main.dust[dustIndex].velocity *= 4f;
-                        dustIndex = Dust.NewDust(Player.position, 120, 120, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1f);
-                        Main.dust[dustIndex].velocity *= 2.25f;
-                        Main.dust[dustIndex].noGravity = true;
+                        Dust dust = Dust.NewDustDirect(Player.position, 120, 120, DustID.Rain_BloodMoon, 0f, 0f, 0, default, 2f);
+                        dust.noGravity = true;
+                        dust.velocity *= 4f;
+                        dust = Dust.NewDustDirect(Player.position, 120, 120, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1f);
+                        dust.velocity *= 2.25f;
+                        dust.noGravity = true;
                         Dust.NewDust(Player.Center + angle.ToRotationVector2() * 160f, 0, 0, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1f);
                     }
 
@@ -3396,44 +3409,44 @@ namespace CalamityMod.CalPlayer
             // Make some dust
             for (int index = 0; index < 100; ++index)
             {
-                Main.dust[Dust.NewDust(player.position, player.width, player.height, DustID.TeleportationPotion, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 150, Color.Cyan, 1.2f)].velocity *= 0.5f;
+                Dust.NewDust(player.position, player.width, player.height, DustID.TeleportationPotion, player.velocity.X * 0.1f, player.velocity.Y * 0.1f, 150, Color.Cyan, 1.2f);
             }
             Rectangle rect = player.getRect();
             int dustAmt = rect.Width * rect.Height / 5;
             for (int k = 0; k < dustAmt; k++)
             {
-                int idx = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TeleportationPotion);
-                Main.dust[idx].scale = Main.rand.NextFloat(0.2f, 0.7f);
+                Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TeleportationPotion);
+                dust.scale = Main.rand.NextFloat(0.2f, 0.7f);
                 if (k < 10)
-                    Main.dust[idx].scale += 0.25f;
+                    dust.scale += 0.25f;
                 if (k < 5)
-                    Main.dust[idx].scale += 0.25f;
+                    dust.scale += 0.25f;
             }
             for (int k = 0; k < 50; k++)
             {
-                int idx = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.DungeonSpirit);
-                Main.dust[idx].noGravity = true;
+                Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.DungeonSpirit);
+                dust.noGravity = true;
                 for (int i = 0; i < 5; i++)
                 {
                     if (Main.rand.NextBool(3))
-                        Main.dust[idx].velocity *= 0.75f;
+                        dust.velocity *= 0.75f;
                 }
                 if (Main.rand.NextBool(3))
                 {
-                    Main.dust[idx].velocity *= 2f;
-                    Main.dust[idx].scale *= 1.2f;
+                    dust.velocity *= 2f;
+                    dust.scale *= 1.2f;
                 }
                 if (Main.rand.NextBool(3))
                 {
-                    Main.dust[idx].velocity *= 2f;
-                    Main.dust[idx].scale *= 1.2f;
+                    dust.velocity *= 2f;
+                    dust.scale *= 1.2f;
                 }
                 if (Main.rand.NextBool())
                 {
-                    Main.dust[idx].fadeIn = Main.rand.NextFloat(0.75f, 1f);
-                    Main.dust[idx].scale = Main.rand.NextFloat(0.25f, 0.75f);
+                    dust.fadeIn = Main.rand.NextFloat(0.75f, 1f);
+                    dust.scale = Main.rand.NextFloat(0.25f, 0.75f);
                 }
-                Main.dust[idx].scale *= 0.8f;
+                dust.scale *= 0.8f;
             }
 
             if (playSound)
@@ -4013,12 +4026,12 @@ namespace CalamityMod.CalPlayer
                     if (Main.rand.NextBool(20))
                     {
                         int confettiDust = Main.rand.Next(139, 143);
-                        int confetti = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, confettiDust, Player.velocity.X, Player.velocity.Y, 0, new Color(), 1.2f);
-                        Main.dust[confetti].velocity.X *= (float)(1.0 + Main.rand.Next(-50, 51) * 0.01);
-                        Main.dust[confetti].velocity.Y *= (float)(1.0 + Main.rand.Next(-50, 51) * 0.01);
-                        Main.dust[confetti].velocity.X += Main.rand.Next(-50, 51) * 0.05f;
-                        Main.dust[confetti].velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
-                        Main.dust[confetti].scale *= (float)(1.0 + Main.rand.Next(-30, 31) * 0.01);
+                        Dust confetti = Dust.NewDustDirect(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, confettiDust, Player.velocity.X, Player.velocity.Y, 0, new Color(), 1.2f);
+                        confetti.velocity.X *= (float)(1.0 + Main.rand.Next(-50, 51) * 0.01);
+                        confetti.velocity.Y *= (float)(1.0 + Main.rand.Next(-50, 51) * 0.01);
+                        confetti.velocity.X += Main.rand.Next(-50, 51) * 0.05f;
+                        confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
+                        confetti.scale *= (float)(1.0 + Main.rand.Next(-30, 31) * 0.01);
                     }
                     if (Main.rand.NextBool(40) && Main.netMode != NetmodeID.Server)
                     {
@@ -4126,8 +4139,8 @@ namespace CalamityMod.CalPlayer
                 {
                     if (Main.rand.NextBool(3))
                     {
-                        int element = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.RainbowTorch, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
-                        Main.dust[element].noGravity = true;
+                        Dust rainbow = Dust.NewDustDirect(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.RainbowTorch, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
+                        rainbow.noGravity = true;
                     }
                 }
                 if (dsSetBonus)

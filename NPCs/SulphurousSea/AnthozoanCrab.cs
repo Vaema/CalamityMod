@@ -20,8 +20,8 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            Main.npcFrameCount[Type] = 16;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.defense = 22;
             NPC.lifeMax = 1130;
             NPC.aiStyle = AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.knockBackResist = 0.04f;

@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CanBreakTrees => ref Projectile.ai[2];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 90;
+            ProjectileID.Sets.TrailingMode[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 90;
         }
 
         public override void SetDefaults()
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
             Time++;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public void AbsolutelyFuckingAnnihilateTrees(int x, int y)
         {

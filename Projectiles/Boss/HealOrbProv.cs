@@ -35,12 +35,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     int healAmount = (int)Projectile.ai[1];
-                    Main.player[playerTracker].HealEffect(healAmount, false);
-                    Main.player[playerTracker].statLife += healAmount;
-                    if (Main.player[playerTracker].statLife > Main.player[playerTracker].statLifeMax2)
-                    {
-                        Main.player[playerTracker].statLife = Main.player[playerTracker].statLifeMax2;
-                    }
+                    Main.player[playerTracker].HealPlayer(healAmount);
                     NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, playerTracker, (float)healAmount, 0f, 0f, 0, 0, 0);
                 }
                 Projectile.Kill();

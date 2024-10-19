@@ -3,8 +3,6 @@ using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -17,7 +15,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -48,6 +45,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public bool setMovement = true;
         public bool broIsAlive = true;
 
+        public bool isDeathmode = (CalamityWorld.death || BossRushEvent.BossRushActive);
+
         public Player Target => Main.player[NPC.target];
         public ref float PunchCounter => ref NPC.ai[1];
         public ref float DartBurstCounter => ref NPC.ai[2];
@@ -59,9 +58,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 9;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -107,8 +106,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCataclysm")
-            });
+            }); 
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -138,8 +138,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 CurrentFrame = (int)Math.Round(MathHelper.Lerp(12f, 21f, punchInterpolant));
             }
 
-            int xFrame = CurrentFrame / Main.npcFrameCount[NPC.type];
-            int yFrame = CurrentFrame % Main.npcFrameCount[NPC.type];
+            int xFrame = CurrentFrame / Main.npcFrameCount[Type];
+            int yFrame = CurrentFrame % Main.npcFrameCount[Type];
 
             NPC.frame.Width = 212;
             NPC.frame.Height = 208;
@@ -174,7 +174,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && Main.masterMode && !broIsAlive)
+            if (scal.ModNPC<SupremeCalamitas>().respawnBro == false && isDeathmode && !broIsAlive)
             {
                 if (NPC.life > (NPC.lifeMax * 0.65f))
                     NPC.life = (int)(NPC.lifeMax * 0.65f);
@@ -471,7 +471,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 origin = NPC.frame.Size() * 0.5f;
             int afterimageCount = 4;
 
@@ -553,7 +553,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
                     {
                         NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && Main.masterMode && !broIsAlive)
+                        if (scal.ModNPC<SupremeCalamitas>().respawnBro == true && isDeathmode && !broIsAlive)
                         {
                             for (int i = 0; i < 45; i++)
                             {

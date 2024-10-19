@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()

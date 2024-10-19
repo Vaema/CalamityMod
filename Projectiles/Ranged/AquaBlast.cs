@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 20;
+            Main.projFrames[Type] = 20;
         }
         public int spreadDust = 0;
         public static int Lifetime = 600;
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame = 0;
             }
-            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
 
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();

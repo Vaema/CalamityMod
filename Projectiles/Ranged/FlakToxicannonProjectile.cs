@@ -252,10 +252,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = IsShrapnel ? Request<Texture2D>("CalamityMod/Projectiles/Environment/AcidDrop").Value : Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = IsShrapnel ? Request<Texture2D>("CalamityMod/Projectiles/Environment/AcidDrop").Value : Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color drawColor = Projectile.GetAlpha(lightColor);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], drawColor * 0.35f, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor * 0.35f, 1, texture);
 
             return false;
         }
