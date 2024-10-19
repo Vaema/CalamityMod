@@ -1896,8 +1896,8 @@ namespace CalamityMod.ILEditing
 
                 drawColor = glowMaskTile.GlowMaskPaintInteraction switch
                 {
-                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
-                    GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                    GlowMaskTile.PaintColorTint.ByEveryPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: false),
                     _ => drawColor
                 };
 

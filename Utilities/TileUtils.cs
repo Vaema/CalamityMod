@@ -226,6 +226,44 @@ namespace CalamityMod
             return uniqueAnimationFrame * animationFrameLength;
         }
 
+        /// <summary>
+        /// Gets the color of a tile/wall after paint is applied
+        /// </summary>
+        /// <param name="paintType">The ID of the paint, this can be received from the tile's TileColor or WallColor</param>
+        /// <param name="color">The base color to apply the paint to</param>
+        /// <param name="deepPaintOnly">Whether or not only deep paints should be included. Typically this should be set to false if this isn't being used for a glowmask</param>
+        /// <returns>The original color with paint applied</returns>
+        public static Color ApplyPaint(int paintType, Color color, bool deepPaintOnly = true)
+        {
+            if (paintType == PaintID.None)
+                return color;
+
+            bool isDeep = IsDeepPaint(paintType);
+            if (deepPaintOnly && !isDeep)
+                return color;
+
+            Color paintCol = WorldGen.paintColor(paintType);
+
+            if (paintType < PaintID.DeepRedPaint)
+            {
+                paintCol.R = (byte)((paintCol.R / 2f) + 128);
+                paintCol.G = (byte)((paintCol.G / 2f) + 128);
+                paintCol.B = (byte)((paintCol.B / 2f) + 128);
+            }
+            if (paintType == PaintID.ShadowPaint)
+            {
+                paintCol = Color.Black;
+            }
+            color = color.MultiplyRGB(paintCol);
+
+            return color;
+        }
+
+        private static bool IsDeepPaint(int paintType)
+        {
+            return PaintID.DeepRedPaint >= paintType && paintType <= PaintID.DeepPinkPaint;
+        }
+
         public static Tile ParanoidTileRetrieval(int x, int y)
         {
             if (!WorldGen.InWorld(x, y))

@@ -53,7 +53,7 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
         {
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j);
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
             Texture2D cloth = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureOtherworldly/OtherworldlyStone_Cloth").Value;
 
             DrawExtraTop(i, j, cloth, drawOffset, drawColour);
@@ -181,27 +181,6 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
         {
             //Subtract y so that y is vertical for ease of readability
             return Main.tile[i + x, j - y].TileType == type == equal;
-        }
-
-        private Color GetDrawColour(int i, int j)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType < 13)
-            {
-                paintCol.R = (byte)((paintCol.R / 2f) + 128);
-                paintCol.G = (byte)((paintCol.G / 2f) + 128);
-                paintCol.B = (byte)((paintCol.B / 2f) + 128);
-            }
-            if (colType == 29)
-            {
-                paintCol = Color.Black;
-            }
-            Color col = Lighting.GetColor(i, j);
-            col.R = (byte)(paintCol.R / 255f * col.R);
-            col.G = (byte)(paintCol.G / 255f * col.G);
-            col.B = (byte)(paintCol.B / 255f * col.B);
-            return col;
         }
 
         private int GetExtraState(string type)
