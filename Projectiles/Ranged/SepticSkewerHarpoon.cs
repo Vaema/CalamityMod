@@ -377,7 +377,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
                     hasLatchedTarget = true;
-                    if ((chosenTarget.life <= chosenTarget.lifeMax * 0.3f) || chosenTarget.boss)
+                    if ((chosenTarget.lifeMax >= Projectile.damage * 28f) || chosenTarget.boss)
                         strongEnemy = true;
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
                     SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);

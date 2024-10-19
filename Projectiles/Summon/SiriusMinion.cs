@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
             SpawnEffect(); // Does a dust spawn effect.
             ShootTarget(target); // If there's a target, shoot at the target.
 
-            Projectile.Center = Owner.Center - Vector2.UnitY * 60f; // Stays above the player.
+            Projectile.Center = Owner.Center - Vector2.UnitY * (60f - Owner.gfxOffY); // Stays above the player.
 
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 1f); // Passively makes blue light.
 

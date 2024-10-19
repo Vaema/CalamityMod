@@ -1,6 +1,9 @@
-﻿using CalamityMod.Items.Placeables.Furniture;
+﻿using CalamityMod.Buffs.Potions;
+using CalamityMod.Items.Placeables.Furniture;
+using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -11,10 +14,14 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Furniture
 {
-    public class PiggyCageTile : ModTile
+    public class RepairUnitCageTile : ModTile
     {
+        public static Asset<Texture2D> topTexture;
+
         public override void SetStaticDefaults()
         {
+            if (!Main.dedServ)
+                topTexture = ModContent.Request<Texture2D>(Texture + "_Top");
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileSolidTop[Type] = true;
@@ -22,7 +29,7 @@ namespace CalamityMod.Tiles.Furniture
             TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
             TileObjectData.addTile(Type);
             AnimationFrameHeight = 54;
-            AddMapEntry(new Color(122, 217, 232), CalamityUtils.GetItemName<PiggyCage>());
+            AddMapEntry(new Color(122, 217, 232), CalamityUtils.GetItemName<RepairUnitCage>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -40,16 +47,8 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
-            int frameAmt = 34;
-            int timeNeeded = 6;
-            if (frame == 0)
-            {
-                timeNeeded = 90;
-            }
-            if (frame == 25)
-            {
-                timeNeeded = 30;
-            }
+            int frameAmt = 10;
+            int timeNeeded = 10;
             frameCounter++;
             if (frameCounter >= timeNeeded)
             {
@@ -87,7 +86,7 @@ namespace CalamityMod.Tiles.Furniture
                 drawRectangle = rect;
                 drawRectangle.Y = 0;
                 drawRectangle.Height = 10;
-                spriteBatch.Draw(BabyFlakCrabCageTile.topTexture.Value, position, drawRectangle, finalColor, 0f, zero, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(topTexture.Value, position, drawRectangle, finalColor, 0f, zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {

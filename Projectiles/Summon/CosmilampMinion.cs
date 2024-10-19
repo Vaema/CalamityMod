@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void HoverInPlace()
         {
-            Vector2 hoverDestination = Owner.Top + new Vector2(MathHelper.Lerp(-100f, 100f, HoverOffsetInterpolant), -80f);
+            Vector2 hoverDestination = Owner.Top + Vector2.UnitY * Owner.gfxOffY + new Vector2(MathHelper.Lerp(-100f, 100f, HoverOffsetInterpolant), -80f);
             hoverDestination.Y += ((float)Math.Sin(MathHelper.TwoPi * HoverOffsetInterpolant + Timer / 50f) * 0.5f + 0.5f) * 40f;
 
             // Zoom towards the hover destination.

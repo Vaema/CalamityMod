@@ -64,20 +64,5 @@ namespace CalamityMod.Tiles
         public virtual void OnUnload() { }
 
         public abstract Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData);
-
-        public static Color ApplyPaint(int paintType, Color color, bool deepPaintOnly = true)
-        {
-            if (deepPaintOnly && !IsDeepPaint(paintType))
-                return color;
-
-            Color paintCol = WorldGen.paintColor(paintType);
-            color = color.MultiplyRGB(paintCol);
-            return color;
-        }
-
-        private static bool IsDeepPaint(int paintType)
-        {
-            return PaintID.DeepRedPaint <= paintType && paintType <= PaintID.DeepPinkPaint;
-        }
     }
 }

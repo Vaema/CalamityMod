@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
                 AttackTarget(potentialTarget);
 
             // Stay near the target and spin around.
-            Projectile.Center = Owner.Center - Vector2.UnitY * 16f;
+            Projectile.Center = Owner.Center - Vector2.UnitY * (16f -  Owner.gfxOffY);
             // The projectile spins right at a constant speed.
             Projectile.rotation += MathHelper.ToRadians(1.5f);
 

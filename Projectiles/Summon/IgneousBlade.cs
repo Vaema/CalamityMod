@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
             if (!Firing)
             {
                 const float outwardPosition = 180f;
-                Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * outwardPosition;
+                Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * outwardPosition + Vector2.UnitY * player.gfxOffY;
                 Projectile.rotation = Projectile.ai[0] + MathHelper.PiOver2 + MathHelper.PiOver4;
                 Projectile.ai[0] -= MathHelper.ToRadians(4f);
             }

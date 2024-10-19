@@ -198,7 +198,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float math = recharging == 0 ? 90f : (300 - recharging) / 3;
                     float regularDistance = math > 90f ? 90f : math;
-                    Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * regularDistance;
+                    Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * regularDistance + Vector2.UnitY * player.gfxOffY;
                     Projectile.rotation = Projectile.ai[0] + (float)Math.Atan(90);
                     Projectile.ai[0] -= MathHelper.ToRadians(4f);
                     NPC target = recharging > 0 ? null : CalamityUtils.MinionHoming(Projectile.Center, 800f, player);
