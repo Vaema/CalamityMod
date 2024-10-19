@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 8;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -212,8 +212,8 @@ namespace CalamityMod.NPCs.Abyss
                     }
                 }
                 NPC.velocity.Y += 0.1f;
-                if (currentFrame == 5 && NPC.frameCounter == 0.0)
-                    NPC.velocity.Y = -2.748f; // manually picked value :desolate:
+                if (currentFrame == 3 && NPC.frameCounter == 0.0)
+                    NPC.velocity.Y = -1.35f; // manually picked value :desolate: // yeah this is desolate indeed _ YuH
             }
             else
             {
@@ -224,12 +224,12 @@ namespace CalamityMod.NPCs.Abyss
             }
         }
 
-        public override void FindFrame(int frameHeight) //8 frames, 78 height
+        public override void FindFrame(int frameHeight) //4 frames, 78 height
         {
             NPC.frameCounter += 1.0;
             if (NPC.frameCounter >= 7)
             {
-                currentFrame = currentFrame == 7 ? 0 : currentFrame + 1;
+                currentFrame = currentFrame == 3 ? 0 : currentFrame + 1;
                 NPC.netUpdate = true; //update current frame variable
                 NPC.frameCounter = 0;
             }
