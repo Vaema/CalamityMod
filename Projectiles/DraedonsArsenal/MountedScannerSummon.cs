@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            Projectile.Center = player.Center + AngularOffsetRelativeToPlayer.ToRotationVector2() * OffsetDistanceFromPlayer;
+            Projectile.Center = player.Center + AngularOffsetRelativeToPlayer.ToRotationVector2() * OffsetDistanceFromPlayer + Vector2.UnitY * player.gfxOffY;
             GrantBuffs(player);
 
             NPC potentialTarget = Projectile.Center.MinionHoming(960f, player);

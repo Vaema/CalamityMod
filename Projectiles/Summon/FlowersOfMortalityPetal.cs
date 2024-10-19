@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 shootVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 10f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<MortalityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
-            Projectile.Center = player.Center + OffsetAngle.ToRotationVector2() * (150f + (float)Math.Sin(Time * 0.08f) * 15f);
+            Projectile.Center = player.Center + OffsetAngle.ToRotationVector2() * (150f + (float)Math.Sin(Time * 0.08f) * 15f) + Vector2.UnitY * Owner.gfxOffY;
             Projectile.rotation += MathHelper.ToRadians(7f);
             OffsetAngle += MathHelper.ToRadians(6f);
         }

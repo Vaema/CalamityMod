@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
             TargetNPC(potentialTarget); // Targets the NPC.
 
             Lighting.AddLight(Projectile.Center, Color.Fuchsia.ToVector3()); // Makes a light with the same color as the flowers.
-            Projectile.Center = Owner.Center + RotationMovement.ToRotationVector2() * 100f; // Spins around the player.
+            Projectile.Center = Owner.Center + RotationMovement.ToRotationVector2() * 100f + Vector2.UnitY * Owner.gfxOffY; // Spins around the player.
             Projectile.rotation += MathHelper.ToRadians(6.25f * Owner.direction); // Rotates around itself in the direction of the owner
             Projectile.scale = MathHelper.Lerp(1f, 1.005f, FlowerShootTimer % 100f); // Expands the closer it is to shooting, goes back to normal once shot; peridoically.
             RotationMovement += MathHelper.ToRadians(1.25f * Owner.direction); // The changing variable that moves the flower, changes directions depending on the player.
