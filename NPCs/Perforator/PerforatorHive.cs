@@ -552,8 +552,6 @@ namespace CalamityMod.NPCs.Perforator
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Dryad }, DownedBossSystem.downedPerforator);
-
             // If neither The Hive Mind nor The Perforator Hive have been killed yet, notify players of Aerialite Ore
             if (!DownedBossSystem.downedHiveMind && !DownedBossSystem.downedPerforator)
             {

@@ -247,8 +247,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Wizard }, DownedBossSystem.downedBrimstoneElemental);
-
             // Mark brimmy as dead
             DownedBossSystem.downedBrimstoneElemental = true;
             CalamityNetcode.SyncWorld();

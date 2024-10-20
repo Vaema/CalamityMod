@@ -776,8 +776,6 @@ namespace CalamityMod.NPCs.SlimeGod
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedSlimeGod);
-
             // Mark the Slime God as dead
             DownedBossSystem.downedSlimeGod = true;
             CalamityNetcode.SyncWorld();
