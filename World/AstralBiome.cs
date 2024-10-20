@@ -631,12 +631,14 @@ namespace CalamityMod.World
                     type != ModContent.TileType<AstralClay>() && type != ModContent.TileType<AstralVines>() &&
                     type != ModContent.TileType<AstralMonolith>() && type != ModContent.TileType<AstralOre>() &&
                     type != ModContent.TileType<AstralNormalLargePiles>() && type != ModContent.TileType<AstralIceLargePiles>() &&
-                    type != ModContent.TileType<AstralDesertLargePiles>() && type != ModContent.TileType<AstralDesertMediumPiles>() &&
-                    type != ModContent.TileType<AstralNormalMediumPiles>() && type != ModContent.TileType<AstralIceMediumPiles>() &&
+                    type != ModContent.TileType<AstralDesertLargePiles>() && type != ModContent.TileType<AstralStoneLargePiles>() && 
+                    type != ModContent.TileType<AstralDesertMediumPiles>() && type != ModContent.TileType<AstralNormalMediumPiles>() && 
+                    type != ModContent.TileType<AstralIceMediumPiles>() && type != ModContent.TileType<AstralStoneMediumPiles>() &&
                     type != ModContent.TileType<AstralDesertSmallPiles>() && type != ModContent.TileType<AstralNormalSmallPiles>() &&
-                    type != ModContent.TileType<AstralIceSmallPiles>() && type != ModContent.TileType<AstralDesertStalactite>() &&
-                    type != ModContent.TileType<AstralNormalStalactite>() && type != ModContent.TileType<AstralIceStalactite>() &&
-                    type != ModContent.TileType<AstralDesertStalactite>())
+                    type != ModContent.TileType<AstralIceSmallPiles>() && type != ModContent.TileType<AstralStoneSmallPiles>() &&
+                    type != ModContent.TileType<AstralDesertStalactite>() && type != ModContent.TileType<AstralNormalStalactite>() && 
+                    type != ModContent.TileType<AstralIceStalactite>() && type != ModContent.TileType<AstralDesertStalactite>() && 
+                    type != ModContent.TileType<AstralStoneStalactite>())
                     {
                         if (TileID.Sets.Conversion.Grass[type] && !TileID.Sets.GrassSpecial[type])
                         {
@@ -742,8 +744,9 @@ namespace CalamityMod.World
                                 case TileID.LargePiles:
                                     if (tile.TileFrameX <= 1170)
                                     {
-                                        RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralNormalLargePiles>(), x, y, 324, 0, 1170, 0, 18);
+                                        RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralStoneLargePiles>(), x, y, 324, 0, 1170, 0, 18);
                                     }
+                                    // TODO: Mushroom, replace when Astral Undergrowth is being worked on again
                                     if (tile.TileFrameX >= 1728)
                                     {
                                         RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralNormalLargePiles>(), x, y, 324, 1728, 1872, 0, 18);
@@ -771,9 +774,13 @@ namespace CalamityMod.World
                                         {
                                             newType = (ushort)ModContent.TileType<AstralDesertMediumPiles>();
                                         }
-                                        else if (tile.TileFrameX <= 558 || (tile.TileFrameX >= 1368 && tile.TileFrameX <= 1458))
+                                        else if (tile.TileFrameX >= 1368 && tile.TileFrameX <= 1458)
                                         {
                                             newType = (ushort)ModContent.TileType<AstralNormalMediumPiles>();
+                                        }
+                                        else if (tile.TileFrameX <= 558)
+                                        {
+                                            newType = (ushort)ModContent.TileType<AstralStoneMediumPiles>();
                                         }
                                         else if (tile.TileFrameX >= 900 && tile.TileFrameX <= 1098)
                                         {
@@ -815,9 +822,14 @@ namespace CalamityMod.World
                                         {
                                             newType3 = (ushort)ModContent.TileType<AstralDesertSmallPiles>();
                                         }
-                                        else if (tile.TileFrameX <= 486)
+                                        else if (tile.TileFrameX >= 110 && tile.TileFrameX <= 198)
                                         {
                                             newType3 = (ushort)ModContent.TileType<AstralNormalSmallPiles>();
+                                        }
+                                        // Intentionally encapsulates everything EXCEPT the above range
+                                        else if (tile.TileFrameX <= 486)
+                                        {
+                                            newType3 = (ushort)ModContent.TileType<AstralStoneSmallPiles>();
                                         }
                                         else if (tile.TileFrameX >= 648 && tile.TileFrameX <= 846)
                                         {
@@ -847,7 +859,7 @@ namespace CalamityMod.World
                                     }
                                     else if ((tile.TileFrameX >= 54 && tile.TileFrameX <= 90) || (tile.TileFrameX >= 216 && tile.TileFrameX <= 360))
                                     {
-                                        newType2 = (ushort)ModContent.TileType<AstralNormalStalactite>();
+                                        newType2 = (ushort)ModContent.TileType<AstralStoneStalactite>();
                                     }
                                     else if (tile.TileFrameX <= 36)
                                     {
@@ -1063,15 +1075,28 @@ namespace CalamityMod.World
                     {
                         SetTileFromConvert(x, y, convert, ushort.MaxValue, ushort.MaxValue, TileID.HallowedPlants2, TileID.Plants2);
                     }
+                    // TODO: All astral medium pile conversions break said tiles. Large and small piles work fine.
                     else if (type == ModContent.TileType<AstralNormalLargePiles>())
                     {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 378, 0);
+                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles2, x, y, 540, 0);
                     }
                     else if (type == ModContent.TileType<AstralNormalMediumPiles>())
                     {
                         RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 18);
                     }
                     else if (type == ModContent.TileType<AstralNormalSmallPiles>())
+                    {
+                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 110, 0);
+                    }
+                    else if (type == ModContent.TileType<AstralStoneLargePiles>())
+                    {
+                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 378, 0);
+                    }
+                    else if (type == ModContent.TileType<AstralStoneMediumPiles>())
+                    {
+                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 1368, 18);
+                    }
+                    else if (type == ModContent.TileType<AstralStoneSmallPiles>())
                     {
                         RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 0);
                     }
@@ -1099,7 +1124,8 @@ namespace CalamityMod.World
                     {
                         RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 648, 0);
                     }
-                    else if (type == ModContent.TileType<AstralNormalStalactite>())
+                    // TODO: All astral stalactite conversions break said tiles 
+                    else if (type == ModContent.TileType<AstralNormalStalactite>() || type == ModContent.TileType<AstralStoneStalactite>())
                     {
                         ushort originType = TileID.Stone;
                         switch (convert)
