@@ -4467,9 +4467,6 @@ namespace CalamityMod.CalPlayer
             if (Player.ownedProjectileCounts[ProjectileType<GiantIbanRobotOfDoom>()] > 0)
                 Player.yoraiz0rEye = 0;
 
-            if (Player.HeldItem != null && Player.HeldItem.type == ItemID.FalconBlade)
-                Player.moveSpeed += 0.2f;
-
             int totalMoonlightDyes = Player.dye.Count(dyeItem => dyeItem.type == ItemType<ProfanedMoonlightDye>());
             if (totalMoonlightDyes > 0)
             {

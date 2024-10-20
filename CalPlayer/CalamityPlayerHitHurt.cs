@@ -538,32 +538,6 @@ namespace CalamityMod.CalPlayer
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
                 modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
-            // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
-            if (item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
-            }
-
-            // Titanium Sword deals up to +15% damage based on the target's knockback resistance.
-            if (item.type == ItemID.TitaniumSword)
-            {
-                float knockbackResistBonus = 0.15f * (1f - target.knockBackResist);
-                modifiers.ScalingBonusDamage += knockbackResistBonus;
-            }
-
-            // Antlion Claw, Bone Sword and Breaker Blade ignore 50% of the enemy's defense.
-            if (item.type == ItemID.AntlionClaw || item.type == ItemID.BoneSword || item.type == ItemID.BreakerBlade)
-            {
-                modifiers.ScalingArmorPenetration += 0.5f;
-            }
-
-            // Stylish Scissors, all Phaseblades and all Phasesabers ignore 100% of the enemy's defense.
-            if (item.type == ItemID.StylistKilLaKillScissorsIWish || (item.type >= ItemID.BluePhaseblade && item.type <= ItemID.YellowPhaseblade) || (item.type >= ItemID.BluePhasesaber && item.type <= ItemID.YellowPhasesaber) || item.type == ItemID.OrangePhaseblade || item.type == ItemID.OrangePhasesaber)
-            {
-                modifiers.ScalingArmorPenetration += 1f;
-            }
-
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
             {
@@ -658,31 +632,10 @@ namespace CalamityMod.CalPlayer
                     modifiers.ScalingBonusDamage += 0.05f;
             }
 
-            // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
-            if (proj.type == ProjectileID.Excalibur || proj.type == ProjectileID.TrueExcalibur)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
-            }
-
             // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
             // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
             if (proj.type == ProjectileID.InfernoFriendlyBlast)
                 modifiers.SourceDamage *= 1.2f;
-
-            // Gungnir deals +100% damage to targets above 75% HP.
-            if (proj.type == ProjectileID.Gungnir)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
-            }
-
-            // Titanium Trident deals up to +15% damage based on the target's knockback resistance.
-            if (proj.type == ProjectileID.TitaniumTrident)
-            {
-                float knockbackResistBonus = 0.15f * (1f - target.knockBackResist);
-                modifiers.ScalingBonusDamage += knockbackResistBonus;
-            }
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)

@@ -658,63 +658,8 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = brainDodgeLine);
             #endregion
 
-            // Early Hardmode ore melee weapons have new on-hit effects.
-            #region Early Hardmode Melee Tooltips
-
-            // Cobalt
-            if (item.type == ItemID.CobaltSword || item.type == ItemID.CobaltNaginata)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nDecreases enemy defense by 25% on hit\nThis effect lasts for 10 seconds");
-
-            // Palladium
-            if (item.type == ItemID.PalladiumSword || item.type == ItemID.PalladiumPike)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nIncreases natural life regen on hit");
-
-            // Mythril
-            if (item.type == ItemID.MythrilSword || item.type == ItemID.MythrilHalberd)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nDecreases enemy contact damage by 10% on hit\nThis effect lasts for 10 seconds");
-
-            // Orichalcum
-            if (item.type == ItemID.OrichalcumSword || item.type == ItemID.OrichalcumHalberd)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nIncreases how frequently the Orichalcum set bonus triggers on hit");
-
-            // Adamantite
-            if (item.type == ItemID.AdamantiteSword)
-                EditTooltipByName("Material", (line) => line.Text += "\nSlows enemies on hit");
-
-            if (item.type == ItemID.AdamantiteGlaive)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nSlows enemies on hit");
-
-            // Titanium
-            if (item.type == ItemID.TitaniumSword)
-                EditTooltipByName("Material", (line) => line.Text += "\nDeals increased damage to enemies with high knockback resistance");
-
-            if (item.type == ItemID.TitaniumTrident)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nDeals increased damage to enemies with high knockback resistance");
-
-            // Hallowed (and True Excalibur)
-            if (item.type == ItemID.Excalibur || item.type == ItemID.Gungnir || item.type == ItemID.TrueExcalibur)
-                EditTooltipByName("Material", (line) => line.Text += "\nDeals double damage to enemies above 75% life");
-            #endregion
-
             // Other melee weapon tooltips
             #region Other Melee Tooltips
-
-            if (item.type == ItemID.CandyCaneSword || item.type == ItemID.FruitcakeChakram)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nHeals you on hit");
-
-            // Stylish Scissors, all Phaseblades, and all Phasesabers ignore 100% of defense
-            if (item.type == ItemID.StylistKilLaKillScissorsIWish || (item.type >= ItemID.BluePhasesaber && item.type <= ItemID.YellowPhasesaber) || item.type == ItemID.OrangePhasesaber)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nIgnores 100% of enemy defense");
-            // Phaseblades are done separately to ensure it appears under the Material line
-            if (item.type >= ItemID.BluePhaseblade && item.type <= ItemID.YellowPhaseblade || item.type == ItemID.OrangePhaseblade)
-                EditTooltipByName("Material", (line) => line.Text += "\nIgnores 100% of enemy defense");
-
-            // Bone Sword, Breaker Blade, and Mandible Blade ignore 50% of defense
-            if (item.type == ItemID.BoneSword || item.type == ItemID.BreakerBlade)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nIgnores 50% of enemy defense");
-            // Mandible Blade is done separately to ensure it appears under the Material line
-            if (item.type == ItemID.AntlionClaw)
-                EditTooltipByName("Material", (line) => line.Text += "\nIgnores 50% of enemy defense");
 
             // Death Sickle inflict Whispering Death
             if (item.type == ItemID.DeathSickle)

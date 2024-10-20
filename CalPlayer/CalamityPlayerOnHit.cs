@@ -87,43 +87,6 @@ namespace CalamityMod.CalPlayer
 
             switch (item.type)
             {
-                case ItemID.CobaltSword:
-                    target.Calamity().cobaltNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ItemID.PalladiumSword:
-                    if (Player.moonLeech)
-                        return;
-                    Player.lifeRegenTime += 2;
-                    break;
-
-                case ItemID.MythrilSword:
-                    target.Calamity().mythrilNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ItemID.OrichalcumSword:
-                    if (Player.petalTimer > 0)
-                        Player.petalTimer /= 2;
-                    break;
-
-                case ItemID.AdamantiteSword:
-                    float slowDownMult = 0.5f;
-                    if (CalamityLists.enemyImmunityList.Contains(target.type) || target.boss)
-                        slowDownMult = 0.95f;
-                    target.velocity *= slowDownMult;
-                    break;
-
-                case ItemID.CandyCaneSword:
-
-                    if (Player.moonLeech || Player.lifeSteal <= 0f || target.lifeMax <= 5)
-                        return;
-
-                    int heal = 2;
-                    Player.lifeSteal -= heal;
-                    Player.HealPlayer(heal);
-
-                    break;
-
                 case ItemID.DeathSickle:
                     target.AddBuff(BuffType<WhisperingDeath>(), 120);
                     break;
@@ -225,43 +188,6 @@ namespace CalamityMod.CalPlayer
 
             switch (proj.type)
             {
-                case ProjectileID.CobaltNaginata:
-                    target.Calamity().cobaltNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ProjectileID.PalladiumPike:
-                    if (Player.moonLeech)
-                        return;
-                    Player.lifeRegenTime += 2;
-                    break;
-
-                case ProjectileID.MythrilHalberd:
-                    target.Calamity().mythrilNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ProjectileID.OrichalcumHalberd:
-                    if (Player.petalTimer > 0)
-                        Player.petalTimer /= 2;
-                    break;
-
-                case ProjectileID.AdamantiteGlaive:
-                    float slowDownMult = 0.5f;
-                    if (CalamityLists.enemyImmunityList.Contains(target.type) || target.boss)
-                        slowDownMult = 0.95f;
-                    target.velocity *= slowDownMult;
-                    break;
-
-                case ProjectileID.FruitcakeChakram:
-
-                    if (Player.moonLeech || Main.player[Main.myPlayer].lifeSteal <= 0f || target.lifeMax <= 5)
-                        return;
-
-                    int heal = 2;
-                    Main.player[Main.myPlayer].lifeSteal -= heal;
-                    Player.HealPlayer(heal);
-
-                    break;
-
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;

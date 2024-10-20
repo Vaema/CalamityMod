@@ -529,21 +529,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (item.type == ItemID.PearlwoodBow)
-            {
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if ((p.type == ModContent.ProjectileType<RainbowFront>() || p.type == ModContent.ProjectileType<RainbowTrail>()) && p.owner == player.whoAmI)
-                    {
-                        p.Kill();
-                    }
-                }
-                for (int i = -8; i <= 8; i += 8)
-                {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                    Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<RainbowFront>(), damage, 0f, player.whoAmI);
-                }
-            }
             return true;
         }
         #endregion

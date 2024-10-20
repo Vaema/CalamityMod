@@ -256,10 +256,6 @@ namespace CalamityMod.NPCs
         public const int knockbackResistanceMin = 180;
         public int knockbackResistanceTimer = 0;
 
-        // Used for NPCs affected by vanilla Cobalt/Mythril weapons
-        public const int cobaltAndMythrilNerfTime = 600;
-        public int cobaltNerfTimer = 0;
-        public int mythrilNerfTimer = 0;
 
         // Debuffs
         public int vaporfied = 0;
@@ -495,9 +491,6 @@ namespace CalamityMod.NPCs
 
             myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
             myClone.knockbackResistanceTimer = knockbackResistanceTimer;
-
-            myClone.cobaltNerfTimer = cobaltNerfTimer;
-            myClone.mythrilNerfTimer = mythrilNerfTimer;
 
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
@@ -5591,10 +5584,6 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
-            if (cobaltNerfTimer > 0)
-                cobaltNerfTimer--;
-            if (mythrilNerfTimer > 0)
-                mythrilNerfTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
             if (veriumDoomTimer > 0)
@@ -7115,42 +7104,6 @@ namespace CalamityMod.NPCs
                         Main.dust[dust].noGravity = false;
                         Main.dust[dust].scale *= 0.5f;
                     }
-                }
-            }
-
-            // Cobalt weapons reduce NPC defense
-            if (cobaltNerfTimer > 0)
-            {
-                miscDefenseLoss = (int)(npc.defense * 0.25);
-
-                // Particle effects
-                if (Main.rand.NextBool(5))
-                {
-                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
-                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
-
-                    Particle cobaltArrow = new StatDownArrow(spawnLocation, velocity, new Color(27, 141, 235), new Color(0, 94, 181), 0.75f, 15);
-                    GeneralParticleHandler.SpawnParticle(cobaltArrow);
-                }
-            }
-
-            // Mythril weapons reduce NPC contact damage
-            if (mythrilNerfTimer > 0)
-            {
-                // Ensure that it isn't trying to set a non-zero damage value if the NPC's damage is currently 0
-                if (npc.damage == 0)
-                    npc.damage = 0;
-                else
-                    npc.damage = (int)(npc.defDamage * 0.9);
-
-                // Particle effects
-                if (Main.rand.NextBool(5))
-                {
-                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
-                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
-
-                    Particle mythrilArrow = new StatDownArrow(spawnLocation, velocity, new Color(35, 217, 144), new Color(23, 145, 97), 0.75f, 15);
-                    GeneralParticleHandler.SpawnParticle(mythrilArrow);
                 }
             }
 

@@ -115,6 +115,7 @@ namespace CalamityMod.Projectiles
                 #region CATEGORY 2: Weapon/Enemy Balancing
                 { ProjectileID.AdamantiteChainsaw, standardChainsawTweaks },
                 { ProjectileID.AdamantiteDrill, standardDrillTweaks },
+                { ProjectileID.AdamantiteGlaive, Do(TrueMelee, LocalIFrames(6)) },
                 { ProjectileID.Anchor, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Arkhalis, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.Bee, Do(PiercingExact(2)) },
@@ -130,6 +131,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
+                { ProjectileID.CobaltNaginata, Do(TrueMelee, LocalIFrames(9)) },
                 { ProjectileID.CrystalBullet, standardBulletTweaks },
                 { ProjectileID.CrystalVileShardHead, Do(LocalIFrames(23)) },
                 { ProjectileID.CrystalVileShardShaft, Do(LocalIFrames(23)) },
@@ -178,6 +180,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.MoonlordBullet, standardBulletTweaks }, // Luminite Bullet
                 { ProjectileID.MythrilChainsaw, standardChainsawTweaks },
                 { ProjectileID.MythrilDrill, standardDrillTweaks },
+                { ProjectileID.MythrilHalberd, Do(TrueMelee, LocalIFrames(8)) },
                 { ProjectileID.NanoBullet, standardBulletTweaks },
                 { ProjectileID.NebulaDrill, standardDrillTweaks },
                 { ProjectileID.NebulaLaser, Do(ExtraUpdatesDelta(-1)) },
@@ -218,9 +221,7 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 3: True Melee support
-                { ProjectileID.AdamantiteGlaive, trueMelee },
                 { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
-                { ProjectileID.CobaltNaginata, trueMelee },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
                 { ProjectileID.GoldShortswordStab, trueMelee },
@@ -230,7 +231,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.JoustingLance, trueMelee },
                 { ProjectileID.LeadShortswordStab, trueMelee },
                 { ProjectileID.MushroomSpear, trueMelee },
-                { ProjectileID.MythrilHalberd, trueMelee },
                 { ProjectileID.NebulaChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.ObsidianSwordfish, trueMelee },
                 { ProjectileID.OrichalcumHalberd, trueMelee },
