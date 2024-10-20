@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Turret
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 600);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 100);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire, 300);
 
         public override bool? CanDamage() => ableToHit ? (bool?)null : false;
 

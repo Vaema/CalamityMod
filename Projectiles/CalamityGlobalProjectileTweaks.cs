@@ -213,7 +213,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
-                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(2), TimeLeftExact(1400)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 

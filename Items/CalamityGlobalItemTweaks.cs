@@ -87,7 +87,7 @@ namespace CalamityMod.Items
                 { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
                 { ItemID.DaedalusStormbow, Do(DamageExact(30)) },
                 { ItemID.DaoofPow, Do(DamageExact(85), ShootSpeedExact(10)) },
-                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(41)) },
+                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(40)) },
                 { ItemID.DartRifle, Do(PointBlank, DamageExact(58)) },
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(20)) },
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
@@ -117,7 +117,6 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
-                { ItemID.GoldenShower, Do(DamageExact(39)) },
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
@@ -167,7 +166,7 @@ namespace CalamityMod.Items
                 { ItemID.MonkStaffT3, Do(DamageExact(225)) }, // Sky Dragon's Fury
                 { ItemID.MoonlordBullet, Do(DamageExact(19)) }, // Luminite Bullet
                 { ItemID.MoonlordTurretStaff, Do(DamageExact(50), UseExact(15)) }, //Lunar Portal Staff
-                { ItemID.Muramasa, Do(CritDelta(+20)) },
+                { ItemID.Muramasa, Do(CritDelta(+10)) },
                 { ItemID.MushroomSpear, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(100)) },
                 { ItemID.Musket, Do(PointBlank, DamageExact(22)) },
                 { ItemID.MythrilHalberd, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(95), ShootSpeedRatio(1.25f)) },
@@ -197,7 +196,7 @@ namespace CalamityMod.Items
                 { ItemID.PoisonStaff, Do(DamageExact(57)) },
                 { ItemID.PossessedHatchet, Do(DamageExact(135)) },
                 { ItemID.PrincessWeapon, Do(DamageExact(90)) }, // Resonance Scepter
-                { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), DamageExact(255)) },
+                { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), DamageExact(200)) },
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
                 { ItemID.PurplePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
                 { ItemID.PurplePhasesaber, Do(DamageExact(60)) },
@@ -246,7 +245,7 @@ namespace CalamityMod.Items
                 { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
-                { ItemID.TerraBlade, Do(DamageExact(122)) },
+                { ItemID.TerraBlade, Do(DamageExact(92)) },
                 { ItemID.Terragrim, Do(TrueMeleeNoSpeed, DamageExact(13)) },
                 // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
                 // Terrarian is extremely overpowered and requires a heavy nerf.
@@ -325,7 +324,7 @@ namespace CalamityMod.Items
                 { ItemID.BloodLustCluster, Do(AxePower(100), UseTimeExact(13), TileBoostExact(+0)) },
                 { ItemID.BonePickaxe, Do(PickPower(55), UseTimeExact(6)) },
                 { ItemID.BorealWoodHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, AxePower(150), UseTimeExact(3), TileBoostExact(+0), DamageExact(126)) },
+                { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, AxePower(150), UseTimeExact(3), TileBoostExact(+0)) },
                 { ItemID.CactusPickaxe, Do(PickPower(34), UseTimeExact(9)) },
                 { ItemID.CnadyCanePickaxe, Do(PickPower(55), UseTimeExact(9), TileBoostExact(+1)) }, // Candy Cane Pickaxe
                 { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, AxePower(120), UseTimeExact(3), TileBoostExact(+0), DamageExact(112)) },
