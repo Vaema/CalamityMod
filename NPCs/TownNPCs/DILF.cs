@@ -11,6 +11,8 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -124,6 +126,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
             return dialogue;
         }
+
+        public override void PartyHatPosition(ref Vector2 position, ref SpriteEffects spriteEffects) => position.X -= 5f * NPC.direction;
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
