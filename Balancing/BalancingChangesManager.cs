@@ -419,9 +419,6 @@ namespace CalamityMod.Balancing
             // 60% resist to Dynamic Pursuer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
-            // 60% resist to Prismatic Breaker's deathray.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<PrismaticRay>()))));
-
             // 50% resist to Chicken Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<ChickenExplosion>()))));
 
@@ -436,6 +433,9 @@ namespace CalamityMod.Balancing
 
             // 50% resist to Yharim's Crystal.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<YharimsCrystalBeam>()))));
+
+            // 45% resist to Prismatic Breaker's deathray.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<PrismaticRay>()))));
 
             // 45% resist to Wrathwing's stealth strike fireballs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<WrathwingCinder>()))));

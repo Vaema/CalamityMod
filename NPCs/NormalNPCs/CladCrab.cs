@@ -226,7 +226,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSulphur || spawnInfo.Player.Calamity().ZoneSunkenSea)
+            if (spawnInfo.Player.Calamity().ZoneSulphur || spawnInfo.Player.Calamity().ZoneSunkenSea || !spawnInfo.Player.InZonePurity())
             {
                 return 0f;
             }
