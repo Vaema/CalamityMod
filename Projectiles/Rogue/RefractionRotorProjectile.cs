@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
