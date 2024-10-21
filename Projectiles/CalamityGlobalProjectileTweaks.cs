@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles
                 #region CATEGORY 2: Weapon/Enemy Balancing
                 { ProjectileID.AdamantiteChainsaw, standardChainsawTweaks },
                 { ProjectileID.AdamantiteDrill, standardDrillTweaks },
-                { ProjectileID.AdamantiteGlaive, Do(TrueMelee, LocalIFrames(6)) },
+                { ProjectileID.AdamantiteGlaive, Do(TrueMelee, LocalIFrames(7)) },
                 { ProjectileID.Anchor, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Arkhalis, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.Bee, Do(PiercingExact(2)) },
