@@ -67,9 +67,9 @@ namespace CalamityMod.Items
                 { ItemID.ChainGuillotines, Do(DamageExact(100)) },
                 { ItemID.ChainGun, Do(PointBlank, DamageExact(35)) },
                 { ItemID.ChainKnife, Do(AutoReuse, DamageRatio(1.34f)) },  // Uses ratios due to remix seed
-                { ItemID.ChlorophyteClaymore, Do(UseMeleeSpeed, DamageExact(176), UseExact(35), UseAnimationExact(45), ShootSpeedExact(22f)) },
-                { ItemID.ChlorophytePartisan, Do(AutoReuse, UseMeleeSpeed, UseRatio(0.8f), DamageExact(70)) },
-                { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(80), UseExact(10)) },
+                { ItemID.ChlorophyteClaymore, Do(UseMeleeSpeed, DamageExact(180), UseExact(45), ShootSpeedExact(22f)) },
+                { ItemID.ChlorophytePartisan, Do(AutoReuse, UseMeleeSpeed, DamageExact(98)) },
+                { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(92), UseExact(10)) },
                 { ItemID.ChristmasTreeSword, Do(AutoReuse, UseTurn, UseMeleeSpeed, DamageExact(80), UseExact(30)) },
                 { ItemID.ClingerStaff, Do(DamageExact(63)) },
                 { ItemID.ClockworkAssaultRifle, Do(PointBlank, DamageExact(21)) },
@@ -104,7 +104,7 @@ namespace CalamityMod.Items
                 { ItemID.EmpressBlade, Do(AutoReuse, DamageExact(60), UseExact(20)) }, // Terraprisma
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
-                { ItemID.Excalibur, Do(TrueMelee, DamageExact(210), UseExact(24)) },
+                { ItemID.Excalibur, Do(TrueMelee, DamageExact(220), UseExact(24)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) },
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
@@ -124,7 +124,7 @@ namespace CalamityMod.Items
                 { ItemID.GreenPhaseblade, Do(AutoReuse, UseTurn, DamageExact(48)) },
                 { ItemID.GreenPhasesaber, Do(DamageExact(132)) },
                 { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
-                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, DamageExact(132), ShootSpeedExact(7f)) },
+                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, DamageExact(144), ShootSpeedExact(7f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
                 { ItemID.Handgun, Do(PointBlank, UseExact(20)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
