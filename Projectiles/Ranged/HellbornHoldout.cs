@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (cooldownTimer > 1)
             {
-                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot)
+                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot && !Main.mouseLeftRelease)
                     Projectile.ai[2] = 0;
                 if (cooldownTimer <= 18 && !hasPlayedReloadSound)
                 {
