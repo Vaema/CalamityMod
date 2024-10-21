@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
             if (Projectile.numHits == 0)
                 Projectile.velocity *= 0.4f;
         }

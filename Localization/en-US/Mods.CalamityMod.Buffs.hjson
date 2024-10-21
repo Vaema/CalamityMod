@@ -1577,3 +1577,8 @@ AmphibiansGuitarBuff: {
 	DisplayName: Amphibian's Guitars
 	Description: Worthless human...
 }
+
+HadopelagicPressure: {
+	DisplayName: Hadopelagic Pressure
+	Description: Rapidly sinking to a watery grave
+}

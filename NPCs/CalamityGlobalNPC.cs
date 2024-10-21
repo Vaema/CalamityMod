@@ -301,6 +301,7 @@ namespace CalamityMod.NPCs
 
         public int cDepth = 0;
         public int rTide = 0;
+        public int hadopelagicpressure = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
         public int vermillionFlux = 0;
@@ -529,6 +530,7 @@ namespace CalamityMod.NPCs
 
             myClone.cDepth = cDepth;
             myClone.rTide = rTide;
+            myClone.hadopelagicpressure = hadopelagicpressure;
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
@@ -1170,6 +1172,13 @@ namespace CalamityMod.NPCs
             {
                 int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
                 ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
+            }
+
+            //Hadopelagic Pressure
+            if (hadopelagicpressure > 0)
+            {
+                int baseHadopelagicPressureDoTValue = (int)(400 * waterDamageMult);
+                ApplyDPSDebuff(baseHadopelagicPressureDoTValue, baseHadopelagicPressureDoTValue / 2, ref npc.lifeRegen, ref damage);
             }
             #endregion
 
@@ -5535,6 +5544,8 @@ namespace CalamityMod.NPCs
                 crumble--;
             if (cDepth > 0)
                 cDepth--;
+            if (hadopelagicpressure > 0)
+                hadopelagicpressure--;
             if (rTide > 0)
                 rTide--;
             if (gsInferno > 0)
@@ -6996,6 +7007,9 @@ namespace CalamityMod.NPCs
             if (cDepth > 0)
                 CrushDepth.DrawEffects(npc, ref drawColor);
 
+            if (hadopelagicpressure > 0)
+                HadopelagicPressure.DrawEffects(npc, ref drawColor);
+
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
 
@@ -7205,6 +7219,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix > 0),
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hadopelagicpressure > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
