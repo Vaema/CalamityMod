@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.Cooldowns;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
@@ -77,7 +72,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> forceItemList;
         public static List<int> livingFireBlockList;
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
@@ -141,79 +135,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            forceItemList = new List<int>()
-            {
-                ItemType<SubmarineShocker>(),
-                ItemType<Barinautical>(),
-                ItemType<Downpour>(),
-                ItemType<DeepseaStaff>(),
-                ItemType<ScourgeoftheSeas>(),
-                ItemType<InsidiousImpaler>(),
-                ItemType<SepticSkewer>(),
-                ItemType<FetidEmesis>(),
-                ItemType<VitriolicViper>(),
-                ItemType<CadaverousCarrion>(),
-                ItemType<ToxicantTwister>(),
-                ItemType<OldDukeScales>(),
-                ItemType<Greentide>(),
-                ItemType<Leviatitan>(),
-                ItemType<Atlantis>(),
-                ItemType<AnahitasArpeggio>(),
-                ItemType<Whitewater>(),
-                ItemType<LeviathanTeeth>(),
-                ItemType<GastricBelcherStaff>(),
-                ItemType<PearlofEnthrallment>(),
-                ItemType<AquaticScourgeBag>(),
-                ItemType<OldDukeBag>(),
-                ItemType<LeviathanBag>(),
-                ItemType<OldDukeMask>(),
-                ItemType<LeviathanMask>(),
-                ItemType<AquaticScourgeMask>(),
-                ItemType<OldDukeTrophy>(),
-                ItemType<LeviathanTrophy>(),
-                ItemType<AquaticScourgeTrophy>(),
-                ItemType<LoreAquaticScourge>(),
-                ItemType<LoreLeviathanAnahita>(),
-                ItemType<LoreSulphurSea>(),
-                ItemType<LoreAbyss>(),
-                ItemType<LoreOldDuke>(),
-                ItemType<PearlShard>(),
-                ItemType<AeroStone>(),
-                ItemType<TheCommunity>(),
-                ItemType<DukesDecapitator>(),
-                ItemType<SulphurousSand>(),
-                ItemID.HotlineFishingHook,
-                ItemID.BottomlessBucket,
-                ItemID.SuperAbsorbantSponge,
-                ItemID.FishingPotion,
-                ItemID.SonarPotion,
-                ItemID.CratePotion,
-                ItemID.AnglerTackleBag,
-                ItemID.HighTestFishingLine,
-                ItemID.TackleBox,
-                ItemID.AnglerEarring,
-                ItemID.FishermansGuide,
-                ItemID.WeatherRadio,
-                ItemID.Sextant,
-                ItemID.AnglerHat,
-                ItemID.AnglerVest,
-                ItemID.AnglerPants,
-                ItemID.GoldenBugNet,
-                ItemID.FishronWings,
-                ItemID.Flairon,
-                ItemID.Tsunami,
-                ItemID.BubbleGun,
-                ItemID.RazorbladeTyphoon,
-                ItemID.TempestStaff,
-                ItemID.FishronBossBag,
-                ItemID.Coral,
-                ItemID.Seashell,
-                ItemID.Starfish,
-                ItemID.SoulofSight,
-                ItemID.GreaterHealingPotion,
-                ItemID.SuperHealingPotion
-            };
-
             livingFireBlockList = new List<int>()
             {
                 TileType<LivingGodSlayerFireBlockTile>(),
@@ -1379,7 +1300,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            forceItemList = null;
             livingFireBlockList = null;
             amalgamBuffList = null;
             persistentBuffList = null;

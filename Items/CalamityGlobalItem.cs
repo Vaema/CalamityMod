@@ -1604,7 +1604,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (CalamityLists.forceItemList?.Contains(item.type) ?? false)
+            if (ItemsForcedInsideWorldList.IsItemForcedInsideWorld(item))
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion
