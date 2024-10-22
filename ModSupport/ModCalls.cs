@@ -915,14 +915,14 @@ namespace CalamityMod
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
-            if (shouldBeListed && !CalamityLists.amalgamBuffList.Contains(type))
+            if (shouldBeListed && !AmalgamBuffList.IsBuffBoostedByAmalgan(type))
             {
-                CalamityLists.amalgamBuffList.Add(type);
+                AmalgamBuffList.List.Add(type);
                 return true;
             }
             else if (!shouldBeListed)
             {
-                return CalamityLists.amalgamBuffList.Remove(type);
+                return AmalgamBuffList.List.Remove(type);
             }
 
             return false;
@@ -942,7 +942,7 @@ namespace CalamityMod
             return false;
         }
 
-        public static bool IsOnAmalgamBuffList(int type) => CalamityLists.amalgamBuffList.Contains(type);
+        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.IsBuffBoostedByAmalgan(type);
         public static bool IsOnPersistentBuffList(int type) => CalamityLists.persistentBuffList.Contains(type);
         #endregion
 

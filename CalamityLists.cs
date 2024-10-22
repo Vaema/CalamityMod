@@ -66,7 +66,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
         public static List<int> BlacklistedWeaponsWithToolPower;
@@ -128,102 +127,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            amalgamBuffList = new List<int>()
-            {
-                BuffType<AnechoicCoatingBuff>(),
-                BuffType<AstralInjectionBuff>(),
-                BuffType<BaguetteBuff>(),
-                BuffType<BloodfinBoost>(),
-                BuffType<BoundingBuff>(),
-                BuffType<CalciumBuff>(),
-                BuffType<CeaselessHunger>(),
-                BuffType<GravityNormalizerBuff>(),
-                BuffType<Omniscience>(),
-                BuffType<PhotosynthesisBuff>(),
-                BuffType<ShadowBuff>(),
-                BuffType<Soaring>(),
-                BuffType<SulphurskinBuff>(),
-                BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(),
-                BuffType<WeaponImbueHolyFlames>(),
-                BuffType<Zen>(),
-                BuffType<Zerg>(),
-                BuffType<BloodyMaryBuff>(),
-                BuffType<CaribbeanRumBuff>(),
-                BuffType<CinnamonRollBuff>(),
-                BuffType<EverclearBuff>(),
-                BuffType<EvergreenGinBuff>(),
-                BuffType<FabsolVodkaBuff>(),
-                BuffType<FireballBuff>(),
-                BuffType<GrapeBeerBuff>(),
-                BuffType<MargaritaBuff>(),
-                BuffType<MoonshineBuff>(),
-                BuffType<MoscowMuleBuff>(),
-                BuffType<RedWineBuff>(),
-                BuffType<RumBuff>(),
-                BuffType<ScrewdriverBuff>(),
-                BuffType<StarBeamRyeBuff>(),
-                BuffType<TequilaBuff>(),
-                BuffType<TequilaSunriseBuff>(),
-                BuffType<Trippy>(),
-                BuffType<VodkaBuff>(),
-                BuffType<WhiskeyBuff>(),
-                BuffType<WhiteWineBuff>(),
-                BuffID.ObsidianSkin,
-                BuffID.Regeneration,
-                BuffID.Swiftness,
-                BuffID.Gills,
-                BuffID.Ironskin,
-                BuffID.ManaRegeneration,
-                BuffID.MagicPower,
-                BuffID.Featherfall,
-                BuffID.Spelunker,
-                BuffID.Invisibility,
-                BuffID.Shine,
-                BuffID.NightOwl,
-                BuffID.Battle,
-                BuffID.Thorns,
-                BuffID.WaterWalking,
-                BuffID.Archery,
-                BuffID.Hunter,
-                BuffID.Gravitation,
-                BuffID.Tipsy,
-                BuffID.WellFed,
-                BuffID.WellFed2,
-                BuffID.WellFed3,
-                BuffID.Honey,
-                BuffID.WeaponImbueVenom,
-                BuffID.WeaponImbueCursedFlames,
-                BuffID.WeaponImbueFire,
-                BuffID.WeaponImbueGold,
-                BuffID.WeaponImbueIchor,
-                BuffID.WeaponImbueNanites,
-                BuffID.WeaponImbueConfetti,
-                BuffID.WeaponImbuePoison,
-                BuffID.Lucky,
-                BuffID.Mining,
-                BuffID.Heartreach,
-                BuffID.Calm,
-                BuffID.Builder,
-                BuffID.Titan,
-                BuffID.Flipper,
-                BuffID.Summoning,
-                BuffID.Dangersense,
-                BuffID.AmmoReservation,
-                BuffID.Lifeforce,
-                BuffID.Endurance,
-                BuffID.Rage,
-                BuffID.Inferno,
-                BuffID.Wrath,
-                BuffID.Lovestruck,
-                BuffID.Stinky,
-                BuffID.Fishing,
-                BuffID.Sonar,
-                BuffID.Crate,
-                BuffID.Warmth,
-                BuffID.SugarRush
-            };
-
             persistentBuffList = new List<int>()
             {
                 BuffType<WeaponImbueBrimstone>(),
@@ -1279,7 +1182,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            amalgamBuffList = null;
             persistentBuffList = null;
             MagicGunIDs = null;
             BlacklistedWeaponsWithToolPower = null;

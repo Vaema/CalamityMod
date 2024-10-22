@@ -1078,8 +1078,8 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
-                        int hasBuff = Player.buffType[l];
-                        if (Player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                        int buffID = Player.buffType[l];
+                        if (Player.buffTime[l] > 2 && DebuffsList.IsDebuff(buffID))
                             Player.buffTime[l]--;
                     }
                 }
@@ -1786,7 +1786,7 @@ namespace CalamityMod.CalPlayer
             // God Slayer Armor dash debuff immunity
             if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
             {
-                foreach (int debuff in CalamityLists.debuffList)
+                foreach (int debuff in DebuffsList.List)
                     Player.buffImmune[debuff] = true;
             }
 
@@ -1858,7 +1858,7 @@ namespace CalamityMod.CalPlayer
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
                 // You become immune to all debuffs
-                foreach (int debuff in CalamityLists.debuffList)
+                foreach (int debuff in DebuffsList.List)
                     Player.buffImmune[debuff] = true;
 
                 // Prevent thorns effects from being abused during invincibility
@@ -3850,8 +3850,8 @@ namespace CalamityMod.CalPlayer
             {
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
-                    int hasBuff = Player.buffType[l];
-                    if (CalamityLists.amalgamBuffList.Contains(hasBuff))
+                    int buffID = Player.buffType[l];
+                    if (AmalgamBuffList.IsBuffBoostedByAmalgan(buffID))
                     {
                         if (amalgam)
                         {
@@ -3862,14 +3862,14 @@ namespace CalamityMod.CalPlayer
                                 Player.buffTime[l] += 1;
 
                             // Buffs will not go away when you die, to prevent wasting potions.
-                            if (!Main.persistentBuff[hasBuff])
-                                Main.persistentBuff[hasBuff] = true;
+                            if (!Main.persistentBuff[buffID])
+                                Main.persistentBuff[buffID] = true;
                         }
                         else
                         {
                             // Reset buff persistence if Amalgam is removed.
-                            if (Main.persistentBuff[hasBuff] && !CalamityLists.persistentBuffList.Contains(hasBuff))
-                                Main.persistentBuff[hasBuff] = false;
+                            if (Main.persistentBuff[buffID] && !CalamityLists.persistentBuffList.Contains(buffID))
+                                Main.persistentBuff[buffID] = false;
                         }
                     }
                 }
