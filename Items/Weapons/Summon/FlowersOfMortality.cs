@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<WitherBlossomsStaff>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentStardust, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

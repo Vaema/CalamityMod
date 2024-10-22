@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Accessories
                 AddRecipeGroup("AnyManaFlower"). //Any mana flower accessory
                 AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<AscendantSpiritEssence>(4).
-                AddIngredient<GalacticaSingularity>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }
