@@ -36,6 +36,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 3;
             Projectile.extraUpdates = 4;
             Projectile.timeLeft = FireTime + ChargeupTime;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition()
