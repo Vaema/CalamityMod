@@ -4,21 +4,16 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Enums;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Tools;
-using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
@@ -62,7 +57,6 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Tiles.LivingFire;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -72,7 +66,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> livingFireBlockList;
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
@@ -135,20 +128,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            livingFireBlockList = new List<int>()
-            {
-                TileType<LivingGodSlayerFireBlockTile>(),
-                TileType<LivingHolyFireBlockTile>(),
-                TileType<LivingBrimstoneFireBlockTile>(),
-                TileType<LivingPlagueFireBlockTile>(),
-                TileID.LivingFire,
-                TileID.LivingCursedFire,
-                TileID.LivingDemonFire,
-                TileID.LivingFrostFire,
-                TileID.LivingIchor,
-                TileID.LivingUltrabrightFire
-            };
-
             amalgamBuffList = new List<int>()
             {
                 BuffType<AnechoicCoatingBuff>(),
@@ -1300,7 +1279,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            livingFireBlockList = null;
             amalgamBuffList = null;
             persistentBuffList = null;
             MagicGunIDs = null;
