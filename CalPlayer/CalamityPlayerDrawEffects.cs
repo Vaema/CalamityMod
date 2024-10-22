@@ -255,6 +255,9 @@ namespace CalamityMod.CalPlayer
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
 
+            if (calamityPlayer.hadopelagicpressure && drawInfo.shadow == 0f)
+                HadopelagicPressure.DrawEffects(drawInfo);
+
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
             else if (calamityPlayer.icarusFolly && drawInfo.shadow == 0f)
                 IcarusFolly.DrawEffects(drawInfo);
@@ -268,9 +271,6 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
-
-            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
-                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
@@ -299,6 +299,9 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
                 VermillionFlux.DrawEffects(drawInfo);
+
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);

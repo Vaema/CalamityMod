@@ -33,26 +33,8 @@ namespace CalamityMod.Buffs.DamageOverTime
         internal static void DrawEffects(PlayerDrawSet drawInfo)
         {
             Player Player = drawInfo.drawPlayer;
-            // A bit of blood
-            if (Main.rand.NextBool(30))
-            {
-                int bloodLifetime = Main.rand.Next(22, 36);
-                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                Color bloodColor = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat());
-                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
-
-                if (Main.rand.NextBool(15))
-                    bloodScale *= 1.3f;
-
-                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 1.5f);
-                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 2 * randomSpeedMultiplier;
-                bloodVelocity.Y -= 5f;
-                BloodParticle blood = new BloodParticle(Player.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                GeneralParticleHandler.SpawnParticle(blood);
-            }
-
             // Blue n black dust
-            Dust water = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Water, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.4f);
+            Dust water = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, 390, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.4f);
             water.noGravity = true;
             water.velocity *= 0.75f;
             water.velocity.X *= 0.75f;
@@ -62,10 +44,16 @@ namespace CalamityMod.Buffs.DamageOverTime
                 water.noGravity = false;
                 water.scale *= 0.5f;
             }
-            if (Main.rand.NextBool(5))
+            if (Main.rand.NextBool(4))
             {
-                DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-3f, -4f)), Main.rand.NextBool() ? Color.DarkBlue : Color.Blue, new Vector2(0.8f, 1), 0, 0.09f, 0f, 45);
+                DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-3f, -4f)), Main.rand.NextBool() ? Color.DeepSkyBlue : Color.MediumBlue, new Vector2(0.8f, 1), 0, 0.09f, 0f, 45);
                 GeneralParticleHandler.SpawnParticle(pulse);
+            }
+            if (Main.rand.NextBool(10))
+            {
+                Color smokeColor = Color.MediumBlue;
+                Particle smoke = new HeavySmokeParticle(Player.Calamity().RandomDebuffVisualSpot, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), smokeColor, 40, Main.rand.NextFloat(0.3f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
+                GeneralParticleHandler.SpawnParticle(smoke);
             }
         }
 
@@ -75,7 +63,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             if (Main.rand.NextBool(13))
             {
                 Color smokeColor = Color.MediumBlue;
-                Particle smoke = new HeavySmokeParticle(npcSize, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), smokeColor, 40, Main.rand.NextFloat(0.3f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
+                Particle smoke = new HeavySmokeParticle(npcSize, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), smokeColor, 40, Main.rand.NextFloat(0.3f, 0.4f) + (0.00000013f * npc.width * npc.height), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
             Dust water = Dust.NewDustDirect(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, 360, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.4f);
