@@ -295,7 +295,7 @@ namespace CalamityMod.World
                     break;
                 }
             }
-            while (tries <= 20000);
+            while (tries <= 50000);
         }
         #endregion
 
