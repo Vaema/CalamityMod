@@ -21,7 +21,7 @@ namespace CalamityMod.Systems.Collections
     /// <summary>
     /// A <see cref="ModSystem"/> that contains a <see cref="IList{T}"/> of Item IDs of those which are forced to be inside the world map.
     /// </summary>
-    public class ItemsForcedInsideWorldList : ModSystem
+    public sealed class ItemsForcedInsideWorldList : ModSystem
     {
         public static IList<int> List { get; private set; }
 
