@@ -21,6 +21,7 @@ using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -262,6 +263,45 @@ namespace CalamityMod
         private static bool IsDeepPaint(int paintType)
         {
             return PaintID.DeepRedPaint >= paintType && paintType <= PaintID.DeepPinkPaint;
+        }
+
+        /// <summary>
+        /// Draws placed wall with multiple variants, properly painted.
+        /// </summary>
+        /// <param name="spriteBatch">The sprite batch.</param>
+        /// <param name="type">The type of wall.</param>
+        /// <param name="i">The x co-ordinate of the wall.</param>
+        /// <param name="j">The y co-ordinate of the wall.</param>
+        /// <param name="sheetOffset">The offset within the spritesheet, similar to TileFrame.</param>
+        /// <returns>Whether or not PreDraw is drawn</returns>
+        public static bool DrawMultiVariantWall(this SpriteBatch spriteBatch, int type, int i, int j, int[] sheetOffset)
+        {
+            if (spriteBatch is null)
+                return true;
+
+            spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                Tile tile = Main.tile[i, j];
+    			Effect tileShader = Main.tileShader;
+                TreePaintingSettings settings = TreePaintSystemData.GetWallSettings(type);
+                int paintColor = tile.WallColor;
+			    tileShader.Parameters["leafHueTestOffset"]?.SetValue(settings.HueTestOffset);
+    			tileShader.Parameters["leafMinHue"]?.SetValue(settings.SpecialGroupMinimalHueValue);
+	    		tileShader.Parameters["leafMaxHue"]?.SetValue(settings.SpecialGroupMaximumHueValue);
+		    	tileShader.Parameters["leafMinSat"]?.SetValue(settings.SpecialGroupMinimumSaturationValue);
+			    tileShader.Parameters["leafMaxSat"]?.SetValue(settings.SpecialGroupMaximumSaturationValue);
+		    	tileShader.Parameters["invertSpecialGroupResult"]?.SetValue(settings.InvertSpecialGroupResult);
+	    		int index = Main.ConvertPaintIdToTileShaderIndex(paintColor, settings.UseSpecialGroups, settings.UseWallShaderHacks);
+    			tileShader.CurrentTechnique.Passes[index].Apply();
+
+                Texture2D sprite = TextureAssets.Wall[type].Value;
+                Vector2 offset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) - Vector2.One * 8f;
+                Rectangle frame = new Rectangle(sheetOffset[0] + tile.WallFrameX, sheetOffset[1] + tile.WallFrameY, 32, 32);
+                Color lightColor = Lighting.GetColor(i, j);
+
+                spriteBatch.Draw(sprite, offset, frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            });
+            return false;
         }
 
         public static Tile ParanoidTileRetrieval(int x, int y)
