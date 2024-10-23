@@ -2904,9 +2904,8 @@ namespace CalamityMod.CalPlayer
                 {
                     Projectile proj = Main.projectile[projIndex];
                     float start = 360f / angelAmt;
-                    int damage = Player.ApplyArmorAccDamageBonusesTo(proj.damage / 10);
 
-                    Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), damage, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
+                    Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), proj.damage / 10, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
                     Player.HealPlayer(2);
                 }
             }
@@ -2915,10 +2914,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(20));
 
                 var source = Player.GetSource_Accessory(FindAccessory(ItemType<Items.Accessories.SandCloak>()));
-                int damage = Player.ApplyArmorAccDamageBonusesTo(12);
                 float knockback = 2.5f;
 
-                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<SandCloakVeil>(), damage, knockback, Player.whoAmI);
+                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<SandCloakVeil>(), 12, knockback, Player.whoAmI);
                 Main.projectile[veil].Center = Player.Center;
                 SoundEngine.PlaySound(SoundID.Item45, Player.Center);
             }
@@ -3052,7 +3050,6 @@ namespace CalamityMod.CalPlayer
                     double offsetAngle;
 
                     int damage = (int)(Player.GetTotalDamage<RangedDamageClass>().ApplyTo(300f));
-                    damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
@@ -3147,7 +3144,6 @@ namespace CalamityMod.CalPlayer
                         // To compute Forbidden Circlet tornado damage, create a fake stat modifier on the spot which combines both classes.
                         StatModifier forbidden = Player.GetTotalDamage<SummonDamageClass>().CombineWith(Player.GetDamage<RogueDamageClass>());
                         int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.tornadoBaseDmg);
-                        damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                         float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.tornadoBaseKB);
 
@@ -3586,7 +3582,7 @@ namespace CalamityMod.CalPlayer
                             var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
                             //Spawn explosion. ai[0] is used for transferring the recorded falling time
 
-                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage));
+                            int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
 
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
@@ -4162,6 +4158,7 @@ namespace CalamityMod.CalPlayer
 
             if (veneratedLocket)
             {
+                var LocketSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<VeneratedLocket>()));
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
                     if (!CalamityLists.VeneratedLocketBanlist.Contains(item.type))
@@ -4207,9 +4204,8 @@ namespace CalamityMod.CalPlayer
                         float speedY5 = veneratedCloneYPos + (float)Main.rand.Next(-30, 31) * 0.02f;
 
                         // 08DEC2023: Ozzatron: Locket + Old Fashioned may need to be a corner case. We should probably just rework Locket instead.
-                        int locketDamage = Player.ApplyArmorAccDamageBonusesTo((int)(damage * 0.07f));
-
-                        int p = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, locketDamage, knockBack * 0.5f, Player.whoAmI);
+                        int locketDamage = (int)(damage * 0.07f);
+                        int p = Projectile.NewProjectile(LocketSource, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, locketDamage, knockBack * 0.5f, Player.whoAmI);
 
                         if (p.WithinBounds(Main.maxProjectiles))
                         {
@@ -4228,7 +4224,6 @@ namespace CalamityMod.CalPlayer
                     {
                         int knifeCount = 12;
                         int knifeDamage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
-                        knifeDamage = Player.ApplyArmorAccDamageBonusesTo(knifeDamage);
 
                         float angleStep = MathHelper.TwoPi / knifeCount;
                         float speed = 14f;
@@ -4239,7 +4234,7 @@ namespace CalamityMod.CalPlayer
                             velocity2 = velocity2.RotatedBy(angleStep * i);
                             int knifeCol = Main.rand.Next(0, 2);
 
-                            int knife = Projectile.NewProjectile(source, Player.Center, velocity2, ProjectileType<VeneratedKnife>(), knifeDamage, 0f, Player.whoAmI, knifeCol, 0);
+                            int knife = Projectile.NewProjectile(LocketSource, Player.Center, velocity2, ProjectileType<VeneratedKnife>(), knifeDamage, 0f, Player.whoAmI, knifeCol, 0);
                             if (knife.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[knife].DamageType = DamageClass.Generic;
                         }
@@ -4251,12 +4246,12 @@ namespace CalamityMod.CalPlayer
             {
                 if (item.CountsAsClass<RangedDamageClass>())
                 {
+                    var MedallionSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RustyMedallion>()));
                     int d = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(RustyMedallion.AcidDropBaseDamage);
-                    d = Player.ApplyArmorAccDamageBonusesTo(d);
 
                     Vector2 startingPosition = Main.MouseWorld - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
                     Vector2 directionToMouse = (Main.MouseWorld - startingPosition).SafeNormalize(Vector2.UnitX);
-                    int drop = Projectile.NewProjectile(source, startingPosition, directionToMouse * 15f, ProjectileType<AcidBarrelDrop>(), d, 0f, Player.whoAmI, 3);
+                    int drop = Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<AcidBarrelDrop>(), d, 0f, Player.whoAmI, 3);
                     if (drop.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[drop].penetrate = 2;
@@ -4270,9 +4265,9 @@ namespace CalamityMod.CalPlayer
             {
                 if (item.CountsAsClass<RangedDamageClass>() && !item.channel)
                 {
+                    var SwarmerSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DynamoStemCells>()));
                     int newDamage = (int)(damage * (6 - 5 * (item.useTime >= 25 ? 1 : item.useTime / 25)));
-                    newDamage = Player.ApplyArmorAccDamageBonusesTo(newDamage);
-                    Projectile.NewProjectile(source, position, velocity * 1.25f, ProjectileType<MiniatureFolly>(), newDamage, 2f, Player.whoAmI);
+                    Projectile.NewProjectile(SwarmerSource, position, velocity * 1.25f, ProjectileType<MiniatureFolly>(), newDamage, 2f, Player.whoAmI);
 
                     MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
                 }

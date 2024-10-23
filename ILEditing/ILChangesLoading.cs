@@ -76,7 +76,8 @@ namespace CalamityMod.ILEditing
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
             On_WorldGen.CloseDoor += CloseDoor_LabDoorOverride;
             On_Item.AffixName += IncorporateEnchantmentInAffix;
-            On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateMinionExplodingCountdown;
+            On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
+            On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
             // TODO -- This should be unnecessary. There is now a TML hook for platform collision for ModNPCs.
             On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;

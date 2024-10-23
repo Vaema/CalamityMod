@@ -62,7 +62,6 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 fireFrom = new Vector2(owner.Center.X, owner.Center.Y);
                 Projectile.position = fireFrom - new Vector2(Projectile.width, Projectile.height) / 2f;
                 Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-                Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
             }
             else
                 Projectile.Kill();

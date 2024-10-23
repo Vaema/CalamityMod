@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Armor.Daedalus
     public class DaedalusHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+        public static int CrystalDamage = 95;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -49,12 +51,10 @@ namespace CalamityMod.Items.Armor.Daedalus
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<DaedalusCrystal>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Daedalus Crystals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(95);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(CrystalDamage);
 
                     var p = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DaedalusCrystal>(), damage, 0f, Main.myPlayer, 50f, 0f);
-                    p.originalDamage = baseDamage;
+                    p.originalDamage = CrystalDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.2f;

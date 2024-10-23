@@ -568,6 +568,7 @@ namespace CalamityMod.CalPlayer
                             hitDirection = Player.direction;
 
                         // TODO -- This should probably use DirectStrike?
+                        // If this does use DirectStrike, remember to remove the Old Fashioned bonus as it'd be a projectile.
                         if (Player.whoAmI == Main.myPlayer)
                             Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
 
