@@ -132,12 +132,14 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.OnFire3, 120);
             }
 
+            bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
+
             ItemLifesteal(target, item, damageDone);
-            ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true));
+            ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
             NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
 
             // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
-            if (target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>())
+            if (targetIsDummy)
                 return;
 
             if (rageModeActive && shatteredCommunity)
@@ -448,12 +450,14 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
+                bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
+
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
-                ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false));
+                ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
                 NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
-                if (target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>())
+                if (targetIsDummy)
                     return;
 
                 if (rageModeActive && shatteredCommunity)
@@ -463,7 +467,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Item
-        public void ItemOnHit(Item item, int damage, Vector2 position, bool crit, bool npcCheck)
+        public void ItemOnHit(Item item, int damage, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = Player.GetSource_ItemUse(item);
             if (!item.CountsAsClass<MeleeDamageClass>() && Player.meleeEnchant == 7)
@@ -518,7 +522,8 @@ namespace CalamityMod.CalPlayer
 
                         Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI, 0f, 0f);
                     }
-                    if (soaring)
+
+                    if (soaring && !targetIsDummy)
                     {
                         double useTimeMultiplier = 0.85 + (item.useTime * item.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
                         double wingTimeFraction = Player.wingTimeMax / 20D;
@@ -532,6 +537,7 @@ namespace CalamityMod.CalPlayer
                         if (Player.wingTime > Player.wingTimeMax)
                             Player.wingTime = Player.wingTimeMax;
                     }
+
                     if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                         bloodflareMeleeHits++;
                 }
@@ -540,7 +546,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Proj On Hit
-        public void ProjOnHit(Projectile proj, Vector2 position, bool crit, bool npcCheck)
+        public void ProjOnHit(Projectile proj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             CalamityGlobalProjectile modProj = proj.Calamity();
             var source = proj.GetSource_FromThis();
@@ -620,7 +626,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (proj.CountsAsClass<MeleeDamageClass>())
-                MeleeOnHit(proj, modProj, position, crit, npcCheck);
+                MeleeOnHit(proj, modProj, position, crit, npcCheck, targetIsDummy);
             if (proj.CountsAsClass<RangedDamageClass>())
                 RangedOnHit(proj, modProj, position, crit, npcCheck);
             if (proj.CountsAsClass<MagicDamageClass>())
@@ -632,14 +638,14 @@ namespace CalamityMod.CalPlayer
         }
 
         #region Melee
-        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = proj.GetSource_FromThis();
             Item heldItem = Player.ActiveItem();
 
             if (proj.IsTrueMelee())
             {
-                if (soaring)
+                if (soaring && !targetIsDummy)
                 {
                     double useTimeMultiplier = 0.85 + (heldItem.useTime * heldItem.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
                     double wingTimeFraction = Player.wingTimeMax / 20D;
