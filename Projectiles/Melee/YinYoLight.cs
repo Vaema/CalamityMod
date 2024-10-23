@@ -8,6 +8,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         private const int speedTimerMax = 30;
         private int speedTimer = 0;
+        public override string Texture => "Terraria/Images/Item_528";
 
         public override void SetStaticDefaults()
         {
