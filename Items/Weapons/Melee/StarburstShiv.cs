@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.PiercingStarlight).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentSolar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

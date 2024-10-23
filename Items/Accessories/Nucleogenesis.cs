@@ -50,7 +50,6 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<StatisCurse>().
                 AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<AscendantSpiritEssence>(4).
-                AddIngredient<GalacticaSingularity>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -42,58 +42,45 @@ namespace CalamityMod.Walls
             }
         }
 
-        public static void DrawWallGlow(int wallType, int i, int j, SpriteBatch spriteBatch)
+        public static bool DrawWallGlow(int type, int i, int j, SpriteBatch spriteBatch)
         {
             if (GlowMask.Texture is null)
-                return;
+                return true;
 
-            Tile tile = Main.tile[i, j];
-            int xLength = 32;
-            int xOff = 0;
-
-            int xPos = tile.WallFrameX + xOff;
-            int yPos = tile.WallFrameY;
-
-            Rectangle frame = new Rectangle(xPos, yPos, xLength, 32);
-            Color drawcolor;
-            drawcolor = WorldGen.paintColor(tile.WallColor);
-            drawcolor.A = 255;
-            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
-
-            Vector2 pos = new Vector2((i * 16 - (int)Main.screenPosition.X), (j * 16 - (int)Main.screenPosition.Y)) + zero;
-            Color lightColor = Lighting.GetColor(i, j, Color.White);
-
-            spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-
-            if (GlowMask.HasContentInFramePos(xPos, yPos))
+            spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Main.GameViewMatrix.TransformationMatrix, () =>
             {
-                float brightness = 1f;
-                float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
-                brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                drawcolor *= brightness;
-                Color glowColor = drawcolor * 0.4f;
+                Tile tile = Main.tile[i, j];
+    			Effect tileShader = Main.tileShader;
+                TreePaintingSettings settings = TreePaintSystemData.GetWallSettings(type);
+                int paintColor = tile.WallColor;
+			    tileShader.Parameters["leafHueTestOffset"]?.SetValue(settings.HueTestOffset);
+    			tileShader.Parameters["leafMinHue"]?.SetValue(settings.SpecialGroupMinimalHueValue);
+	    		tileShader.Parameters["leafMaxHue"]?.SetValue(settings.SpecialGroupMaximumHueValue);
+		    	tileShader.Parameters["leafMinSat"]?.SetValue(settings.SpecialGroupMinimumSaturationValue);
+			    tileShader.Parameters["leafMaxSat"]?.SetValue(settings.SpecialGroupMaximumSaturationValue);
+		    	tileShader.Parameters["invertSpecialGroupResult"]?.SetValue(settings.InvertSpecialGroupResult);
+	    		int index = Main.ConvertPaintIdToTileShaderIndex(paintColor, settings.UseSpecialGroups, settings.UseWallShaderHacks);
+    			tileShader.CurrentTechnique.Passes[index].Apply();
 
-                // For now checking for glowing frames greatly reducing the bottleneck
-                // But maybe we could squeeze bit more by removing the loop
-                for (int k = 0; k < 3; k++)
+                Texture2D sprite = TextureAssets.Wall[type].Value;
+                Vector2 offset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) - Vector2.One * 8f;
+                int yPos = tile.WallFrameY;
+                int xPos = tile.WallFrameX;
+                Rectangle frame = new Rectangle(xPos, yPos, 32, 32);
+                Color lightColor = Lighting.GetColor(i, j);
+
+                spriteBatch.Draw(sprite, offset, frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+                if (GlowMask.HasContentInFramePos(xPos, yPos))
                 {
-                    Vector2 offset = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f)) * 0.2f * k;
-                    spriteBatch.Draw(GlowMask.Texture, pos + offset + new Vector2(-8 + xOff, -8), frame, glowColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    Color glowColor = Color.Lerp(lightColor, Color.White, 0.2f + MathF.Sin(Main.GameUpdateCount * 0.007f) * 0.1f);
+                    spriteBatch.Draw(GlowMask.Texture, offset, frame, glowColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
-            }
-        }
-
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            DrawWallGlow(Type, i, j, spriteBatch);
+            });
             return false;
         }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => DrawWallGlow(Type, i, j, spriteBatch);
 
         public override void KillWall(int i, int j, ref bool fail) => fail = true;
 
