@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles
         public bool DealsDefenseDamage = false;
 
         // Old Fashioned buff. This is true by default but does not have effect unless the player has the buff consumed.
-        public bool buffedByOldFashioned = true;
+        public bool? buffedByOldFashioned = true;
 
         // Nihility Quiver
         public bool nihilicArrow = false;
@@ -4186,8 +4186,8 @@ namespace CalamityMod.Projectiles
             CalamityPlayer modPlayer = player.Calamity();
 
             // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
-            if (modPlayer.oldFashioned)
-                modifiers.SourceDamage *= buffedByOldFashioned ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
+            if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {

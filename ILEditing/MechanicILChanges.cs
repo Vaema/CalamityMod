@@ -563,6 +563,10 @@ namespace CalamityMod.ILEditing
                     if (item.type != ModContent.ItemType<WulfrumFusionCannon>())
                         projectile.Calamity().buffedByOldFashioned = false;
                 }
+                // Projectiles spawned by NPCs do not count
+                // It will neither be buffed nor debuffed
+                else if (parentSource.Entity is NPC parentNPC)
+                    projectile.Calamity().buffedByOldFashioned = null;
                 // Projectiles spawned by other projectiles is determined by the state of the parent projectile
                 else if (parentSource.Entity is Projectile parentProj)
                     projectile.Calamity().buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
