@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
-            Projectile.alpha = 50;
+            Projectile.alpha = 255;
         }
 
         public override void OnKill(int timeLeft)
@@ -32,7 +32,18 @@ namespace CalamityMod.Projectiles.Boss
             dust.scale = 0.95f;
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(100, 255, 100, Projectile.alpha);
+        public override bool CanHitPlayer(Player target) => Projectile.timeLeft >= 85;
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            if (Projectile.timeLeft < 85)
+            {
+                byte b2 = (byte)(Projectile.timeLeft * 3);
+                byte a2 = (byte)(Projectile.alpha * (b2 / 255f));
+                return new Color(b2, b2, b2, a2);
+            }
+            return new Color(255, 255, 255, Projectile.alpha);
+        }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
