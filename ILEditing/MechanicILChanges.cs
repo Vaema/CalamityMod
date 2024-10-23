@@ -553,7 +553,7 @@ namespace CalamityMod.ILEditing
                 return proj;
 
             // Old Fashioned
-            if (projectile.damage > 0 && spawnSource is EntitySource_Parent parentSource)
+            if (damage > 0 && spawnSource is EntitySource_Parent parentSource)
             {
                 // Assume all entity-spawned projectiles are buffed at first
                 // Relevant ones include: Buff, Item, NPC, Player, Projectile
@@ -563,12 +563,15 @@ namespace CalamityMod.ILEditing
                 // Items, if detected as weapons, are debuffed
                 // A criteria of a weapon is determined as something with over 0 damage and over 0 use animation, and came out of an item
                 // This rules out items like Shield of Cthulhu (hypothetically were it to spawn projectiles) or Bombs or Navy Fishing Rod
-                if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item.damage > 0 && itemSource.Item.useAnimation > 0)
                 {
                     // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
-                    if (item.type != ModContent.ItemType<WulfrumFusionCannon>())
+                    if (itemSource.Item.type != ModContent.ItemType<WulfrumFusionCannon>())
                         projectile.Calamity().buffedByOldFashioned = false;
                 }
+                // This also counts other item-spawned cases that could still be from weapons but not directly from using it (ItemUse)
+                else if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                    projectile.Calamity().buffedByOldFashioned = false;
                 // Projectiles spawned by NPCs do not count
                 // It will neither be buffed nor debuffed
                 else if (parentSource.Entity is NPC parentNPC)
