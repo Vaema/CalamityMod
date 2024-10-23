@@ -156,8 +156,8 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public bool DealsDefenseDamage = false;
 
-        // Old Fashioned buff. This is true by default but does not have effect unless the player has the buff consumed.
-        public bool? buffedByOldFashioned = true;
+        // Old Fashioned buff. This does not have effect unless the player has the buff consumed.
+        public bool? buffedByOldFashioned;
 
         // Nihility Quiver
         public bool nihilicArrow = false;

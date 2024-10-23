@@ -553,8 +553,14 @@ namespace CalamityMod.ILEditing
                 return proj;
 
             // Old Fashioned
-            if (spawnSource is EntitySource_Parent parentSource)
+            if (projectile.damage > 0 && spawnSource is EntitySource_Parent parentSource)
             {
+                // Assume all entity-spawned projectiles are buffed at first
+                // Relevant ones include: Buff, Item, NPC, Player, Projectile
+                // We will dissect the cases below
+                projectile.Calamity().buffedByOldFashioned = true;
+
+                // Items, if detected as weapons, are debuffed
                 // A criteria of a weapon is determined as something with over 0 damage and over 0 use animation, and came out of an item
                 // This rules out items like Shield of Cthulhu (hypothetically were it to spawn projectiles) or Bombs or Navy Fishing Rod
                 if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
