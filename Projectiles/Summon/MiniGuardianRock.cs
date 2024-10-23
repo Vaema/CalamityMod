@@ -46,7 +46,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             // Despawn properly
             if (Owner.Calamity().pSoulGuardians && Projectile.ai[0] == 0f)

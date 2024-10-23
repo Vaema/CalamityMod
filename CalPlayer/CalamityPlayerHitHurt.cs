@@ -164,7 +164,6 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < 10; i++)
                 {
                     int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
-                    damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                     int lumenyl = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), ModContent.ProjectileType<AbyssalMirrorProjectile>(), damage, 0, Player.whoAmI);
                     Main.projectile[lumenyl].rotation = Main.rand.NextFloat(0, 360);
@@ -206,7 +205,6 @@ namespace CalamityMod.CalPlayer
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2750);
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                 int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
                 if (eclipse.WithinBounds(Main.maxProjectiles))
@@ -1499,7 +1497,6 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < 9; i++)
                 {
                     int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
-                    seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
 
                     Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
                     bee.ArmorPenetration = 35;
@@ -1565,7 +1562,7 @@ namespace CalamityMod.CalPlayer
                         Rectangle npcHitbox = n.getRect();
                         if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                         {
-                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage));
+                            int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage);
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
@@ -2494,7 +2491,6 @@ namespace CalamityMod.CalPlayer
                     for (int n = 0; n < 4; n++)
                     {
                         int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
-                        featherDamage = Player.ApplyArmorAccDamageBonusesTo(featherDamage);
 
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);
                     }
@@ -2505,10 +2501,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item74, Player.Center);
 
                     int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(25);
-                    blazeDamage = Player.ApplyArmorAccDamageBonusesTo(blazeDamage);
-
                     int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(320);
-                    astralStarDamage = Player.ApplyArmorAccDamageBonusesTo(astralStarDamage);
 
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                     for (int n = 0; n < 12; n++)
@@ -2523,7 +2516,6 @@ namespace CalamityMod.CalPlayer
                     for (int n = 0; n < 3; n++)
                     {
                         int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(130);
-                        deificStarDamage = Player.ApplyArmorAccDamageBonusesTo(deificStarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2564,7 +2556,6 @@ namespace CalamityMod.CalPlayer
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
                         int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
-                        effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;
                         Projectile.NewProjectile(source, Player.Center, spawnerVelocity, ModContent.ProjectileType<ShadeNimbusSpawner>(), effectDamage, 0f, Player.whoAmI, 0f, 0f, effectStrength);
@@ -2593,7 +2584,6 @@ namespace CalamityMod.CalPlayer
                     {
                         SoundEngine.PlaySound(SoundID.Item74, Player.Center);
                         int eDamage = (int)Player.GetBestClassDamage().ApplyTo(230);
-                        eDamage = Player.ApplyArmorAccDamageBonusesTo(eDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                             Projectile.NewProjectile(fuckYouBitch, Player.Center, Vector2.Zero, ModContent.ProjectileType<DeepseaBlaze>(), eDamage, 1f, Player.whoAmI, 0f, 0f);
@@ -2610,7 +2600,6 @@ namespace CalamityMod.CalPlayer
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
                         int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(60);
-                        sDamage = Player.ApplyArmorAccDamageBonusesTo(sDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
@@ -2635,7 +2624,6 @@ namespace CalamityMod.CalPlayer
                     if (hurtInfo.Damage > 0)
                     {
                         int rDamage = (int)Player.GetBestClassDamage().ApplyTo(240);
-                        rDamage = Player.ApplyArmorAccDamageBonusesTo(rDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                             Projectile.NewProjectile(source, Player.Center.X, Player.position.Y + 36f, 0f, -18f, ModContent.ProjectileType<ReaverThornBase>(), rDamage, 0f, Player.whoAmI, 0f, 0f);
@@ -2651,7 +2639,7 @@ namespace CalamityMod.CalPlayer
                         double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
-                        int shrapnelDamage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(675));
+                        int shrapnelDamage = Player.CalcIntDamage<MeleeDamageClass>(675);
                         if (Player.whoAmI == Main.myPlayer)
                         {
                             for (int i = 0; i < 4; i++)
@@ -2672,7 +2660,6 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < 2; l++)
                         {
                             int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
-                            shadowbeamDamage = Player.ApplyArmorAccDamageBonusesTo(shadowbeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
                             if (beam.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2685,7 +2672,6 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < 5; l++)
                         {
                             int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
-                            scytheDamage = Player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);
                             if (scythe.whoAmI.WithinBounds(Main.maxProjectiles))

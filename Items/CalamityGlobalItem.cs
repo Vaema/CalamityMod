@@ -7,6 +7,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -254,6 +255,7 @@ namespace CalamityMod.Items
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            var playerSource = player.GetSource_FromThis();
             if (Main.myPlayer == player.whoAmI && player.Calamity().cursedSummonsEnchant)
             {
                 if (NPC.CountNPCS(ModContent.NPCType<CalamitasEnchantDemon>()) < 2)
@@ -298,22 +300,22 @@ namespace CalamityMod.Items
                 {
                     if (item.CountsAsClass<MeleeDamageClass>())
                     {
-                        int meleeDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.25f);
+                        int meleeDamage = (int)(newDamage * 0.25f);
 
                         if (meleeDamage >= 1)
                         {
-                            int projectile = Projectile.NewProjectile(source, position, velocity * 0.5f, ModContent.ProjectileType<LuxorsGiftMelee>(), (int)meleeDamage, 0f, player.whoAmI);
+                            int projectile = Projectile.NewProjectile(playerSource, position, velocity * 0.5f, ModContent.ProjectileType<LuxorsGiftMelee>(), (int)meleeDamage, 0f, player.whoAmI);
                             if (projectile.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[projectile].DamageType = DamageClass.Generic;
                         }
                     }
                     else if (item.CountsAsClass<ThrowingDamageClass>())
                     {
-                        int throwingDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.2f);
+                        int throwingDamage = (int)(newDamage * 0.2f);
 
                         if (throwingDamage >= 1)
                         {
-                            int projectile = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LuxorsGiftRogue>(), (int)throwingDamage, 0f, player.whoAmI);
+                            int projectile = Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<LuxorsGiftRogue>(), (int)throwingDamage, 0f, player.whoAmI);
                             if (projectile.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[projectile].DamageType = DamageClass.Generic;
                         }
@@ -326,11 +328,11 @@ namespace CalamityMod.Items
                         // The projectile is fired inside of the scope's code instead
                         if (type != ModContent.ProjectileType<TitaniumRailgunScope>())
                         {
-                            int rangedDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.15f);
+                            int rangedDamage = (int)(newDamage * 0.15f);
 
                             if (rangedDamage >= 1)
                             {
-                                int projectile = Projectile.NewProjectile(source, position, velocity * 1.5f, ModContent.ProjectileType<LuxorsGiftRanged>(), (int)rangedDamage, 0f, player.whoAmI);
+                                int projectile = Projectile.NewProjectile(playerSource, position, velocity * 1.5f, ModContent.ProjectileType<LuxorsGiftRanged>(), (int)rangedDamage, 0f, player.whoAmI);
                                 if (projectile.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[projectile].DamageType = DamageClass.Generic;
                             }
@@ -338,11 +340,11 @@ namespace CalamityMod.Items
                     }
                     else if (item.CountsAsClass<MagicDamageClass>())
                     {
-                        int magicDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.3f);
+                        int magicDamage = (int)(newDamage * 0.3f);
 
                         if (magicDamage >= 1)
                         {
-                            int projectile = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LuxorsGiftMagic>(), (int)magicDamage, 0f, player.whoAmI);
+                            int projectile = Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<LuxorsGiftMagic>(), (int)magicDamage, 0f, player.whoAmI);
                             if (projectile.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[projectile].DamageType = DamageClass.Generic;
                         }
@@ -351,15 +353,13 @@ namespace CalamityMod.Items
                     {
                         if (damage >= 1)
                         {
-                            // 08DEC2023: Ozzatron: Luxor Summons spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                            int baseDamage = player.ApplyArmorAccDamageBonusesTo(item.damage);
-                            int summonDamage = baseDamage;
+                            int summonDamage = item.damage;
 
-                            int projectile = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<LuxorsGiftSummon>(), summonDamage, 0f, player.whoAmI);
+                            int projectile = Projectile.NewProjectile(playerSource, position, Vector2.Zero, ModContent.ProjectileType<LuxorsGiftSummon>(), summonDamage, 0f, player.whoAmI);
                             if (projectile.WithinBounds(Main.maxProjectiles))
                             {
                                 Main.projectile[projectile].DamageType = DamageClass.Generic;
-                                Main.projectile[projectile].originalDamage = baseDamage;
+                                Main.projectile[projectile].originalDamage = item.damage;
                             }
                         }
                     }
@@ -374,9 +374,8 @@ namespace CalamityMod.Items
                     {
                         // Bloodflare Mage Bolt: 130%, soft cap starts at 2000 base damage
                         int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * 1.3, 2600);
-                        bloodflareBoltDamage = player.ApplyArmorAccDamageBonusesTo(bloodflareBoltDamage);
 
-                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
                     }
                 }
             }
@@ -390,9 +389,8 @@ namespace CalamityMod.Items
                         // Bloodflare Ranged Bloodsplosion: 80%, soft cap starts at 150 base damage
                         // This is intentionally extremely low because this effect can be grossly overpowered with sniper rifles and the like.
                         int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * 0.8, 120);
-                        bloodsplosionDamage = player.ApplyArmorAccDamageBonusesTo(bloodsplosionDamage);
 
-                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -403,7 +401,7 @@ namespace CalamityMod.Items
                     modPlayer.tarraCrits = 0;
                     // Tarragon Mage Leaves: (8-10) x 20%, soft cap starts at 200 base damage
                     int leafAmt = 8 + Main.rand.Next(3); // 8, 9, or 10
-                    int leafDamage = player.ApplyArmorAccDamageBonusesTo(damage * 0.2f);
+                    int leafDamage = (int)(damage * 0.2f);
 
                     for (int l = 0; l < leafAmt; l++)
                     {
@@ -414,7 +412,7 @@ namespace CalamityMod.Items
                         speed = item.shootSpeed / speed;
                         xDiff *= speed;
                         yDiff *= speed;
-                        int projectile = Projectile.NewProjectile(source, position, new Vector2(xDiff, yDiff), ProjectileID.Leaf, leafDamage, knockBack, player.whoAmI);
+                        int projectile = Projectile.NewProjectile(playerSource, position, new Vector2(xDiff, yDiff), ProjectileID.Leaf, leafDamage, knockBack, player.whoAmI);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
@@ -427,8 +425,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        int ataxiaFlareDamage = player.ApplyArmorAccDamageBonusesTo(damage * 0.25f);
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
+                        int ataxiaFlareDamage = (int)(damage * 0.25f);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -441,9 +439,8 @@ namespace CalamityMod.Items
                     {
                         // God Slayer Ranged Shrapnel: 100%, soft cap starts at 800 base damage
                         int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage, 800);
-                        shrapnelRoundDamage = player.ApplyArmorAccDamageBonusesTo(shrapnelRoundDamage);
 
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -456,7 +453,6 @@ namespace CalamityMod.Items
 
                     // Hydrothermic Rogue Flares: 6 x (50 + 15%), soft cap starts at 90 base damage
                     int flareDamage = CalamityUtils.DamageSoftCap(50 + damage * 0.15, 90);
-                    flareDamage = player.ApplyArmorAccDamageBonusesTo(flareDamage);
 
                     if (player.whoAmI == Main.myPlayer)
                     {
@@ -468,8 +464,8 @@ namespace CalamityMod.Items
                         for (int i = 0; i < 3; i++)
                         {
                             offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 30f * i;
-                            Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
-                            Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
+                            Projectile.NewProjectile(playerSource, player.Center.X, player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
+                            Projectile.NewProjectile(playerSource, player.Center.X, player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
                         }
                     }
                 }
@@ -484,9 +480,8 @@ namespace CalamityMod.Items
                     {
                         // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
                         int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
-                        seashellDamage = player.ApplyArmorAccDamageBonusesTo(seashellDamage);
 
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
                     }
                 }
             }
@@ -501,7 +496,7 @@ namespace CalamityMod.Items
                             if (i != 0)
                             {
                                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                                int rocket = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
+                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ModContent.ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
                                 //First extra value is rocket type which I just used 0 to get the default, second is the velocity I went with my gut feeling and got quite close to Scorpio's velocity with Rockets I
                                 if (rocket.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[rocket].DamageType = DamageClass.Generic;
@@ -519,7 +514,7 @@ namespace CalamityMod.Items
                     {
                         float spreadX = velocity.X + Main.rand.NextFloat(-0.75f, 0.75f);
                         float spreadY = velocity.Y + Main.rand.NextFloat(-0.75f, 0.75f);
-                        int feather = Projectile.NewProjectile(source, position, new Vector2(spreadX, spreadY) * 1.25f, ModContent.ProjectileType<TradewindsProjectile>(), (int)(damage * 0.3), 2f, player.whoAmI);
+                        int feather = Projectile.NewProjectile(playerSource, position, new Vector2(spreadX, spreadY) * 1.25f, ModContent.ProjectileType<TradewindsProjectile>(), (int)(damage * 0.3), 2f, player.whoAmI);
                         if (feather.WithinBounds(Main.maxProjectiles))
                         {
                             Main.projectile[feather].usesLocalNPCImmunity = true;
@@ -938,6 +933,15 @@ namespace CalamityMod.Items
             float x = MathHelper.Clamp(ChargeRatio, 0f, 1f);
             float y = 1.08f - 0.04f / (x + 0.06f);
             return MathHelper.Clamp(y, 0f, 1f);
+        }
+        #endregion
+
+        #region ModifyHitNPC
+        public override void ModifyHitNPC(Item item, Player player, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
+            if (player.Calamity().oldFashioned)
+                modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
         #endregion
 

@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Magic
     public class VeeringWindFrostWave : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public override string Texture => "Terraria/Images/Projectile_348";
 
         public override void SetStaticDefaults()
         {

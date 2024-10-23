@@ -11,6 +11,7 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
@@ -539,19 +540,50 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Hellbound Enchantment Projectile Creation Effects
-        private static int IncorporateMinionExplodingCountdown(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
+        #region Apply Projectile Variables Upon Creation
+        private static int IncorporateExtraProjectileVariables(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
         {
             // This is unfortunately not something that can be done via SetDefaults since owner is set
             // after that method is called. Doing it directly when the projectile is spawned appears to be the only reasonable way.
             int proj = orig(spawnSource, x, y, xSpeed, ySpeed, type, damage, knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[proj];
+
+            Player player = Main.player[projectile.owner];
+            if (Main.gameMenu || !player.active)
+                return proj;
+
+            // Old Fashioned
+            if (damage > 0 && spawnSource is EntitySource_Parent parentSource)
+            {
+                // Assume all entity-spawned projectiles are buffed at first
+                // Relevant ones include: Buff, Item, NPC, Player, Projectile
+                // We will dissect the cases below
+                projectile.Calamity().buffedByOldFashioned = true;
+
+                // Items, if detected as weapons, are debuffed
+                // A criteria of a weapon is determined as something with over 0 damage and over 0 use animation, and came out of an item
+                // This rules out items like Shield of Cthulhu (hypothetically were it to spawn projectiles) or Bombs or Navy Fishing Rod
+                if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item.damage > 0 && itemSource.Item.useAnimation > 0)
+                {
+                    // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
+                    if (itemSource.Item.type != ModContent.ItemType<WulfrumFusionCannon>())
+                        projectile.Calamity().buffedByOldFashioned = false;
+                }
+                // This also counts other item-spawned cases that could still be from weapons but not directly from using it (ItemUse)
+                else if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                    projectile.Calamity().buffedByOldFashioned = false;
+                // Projectiles spawned by NPCs do not count
+                // It will neither be buffed nor debuffed
+                else if (parentSource.Entity is NPC parentNPC)
+                    projectile.Calamity().buffedByOldFashioned = null;
+                // Projectiles spawned by other projectiles is determined by the state of the parent projectile
+                else if (parentSource.Entity is Projectile parentProj)
+                    projectile.Calamity().buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
+            }
+
+            // Hellbound Enchantment
             if (projectile.minion)
             {
-                Player player = Main.player[projectile.owner];
-                if (Main.gameMenu || !player.active)
-                    return proj;
-
                 // Do not apply Hellbound effects to minions not spawned by weapons
                 // This prevent minions like Luxor's Gift getting it
                 if (spawnSource is EntitySource_ItemUse trueSource && trueSource.Item is Item weapon && weapon.damage <= 0)
@@ -570,6 +602,15 @@ namespace CalamityMod.ILEditing
                     projectile.Calamity().ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
+        }
+        #endregion
+
+        #region Apply Old Fashioned Damage to Miscellanous Hits
+        private static void ApplyOldFashionedDamageToMiscHits(Terraria.On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
+        {
+            if (self.Calamity().oldFashioned)
+                damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
+            orig(self, npc, damage, knockback, direction, crit, damageType, damageVariation);
         }
         #endregion
 

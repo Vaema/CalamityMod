@@ -51,9 +51,8 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = OrnateShield.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = OrnateShield.ShieldSlamDamage;
             hitContext.damageClass = DamageClass.Melee;
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseDamage = OrnateShield.ShieldSlamDamage;
             hitContext.BaseKnockback = OrnateShield.ShieldSlamKnockback;
 
             npc.AddBuff(BuffID.Frostburn2, 180); //Great, Frostbite is ACTUALLY called Frostburn 2

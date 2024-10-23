@@ -10,6 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class FeatherLarge : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "Terraria/Images/Item_1516";
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 6;

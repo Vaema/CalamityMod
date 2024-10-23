@@ -5,6 +5,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Packets;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -405,7 +406,10 @@ namespace CalamityMod.NPCs.Abyss
                         if (player.ItemAnimationActive)
                         {
                             // ouch!
-                            player.ApplyDamageToNPC(NPC, (int)player.GetDamage(DamageClass.MeleeNoSpeed).ApplyTo(player.HeldItem.damage), 0, player.direction);
+                            Item pick = player.HeldItem;
+                            int pickDamage = (int)player.GetDamage(pick.DamageType).ApplyTo(pick.damage);
+                            Projectile hit = Projectile.NewProjectileDirect(pick.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), pickDamage, 0f, player.whoAmI, NPC.whoAmI);
+                            hit.DamageType = pick.DamageType;
                             SoundEngine.PlaySound(SoundID.Dig, NPC.Center); // this is the dig sound that shale piles use
                             if (CurrentPhase < (int)AIState.Enraged)
                             {

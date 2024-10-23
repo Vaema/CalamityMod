@@ -132,7 +132,6 @@ namespace CalamityMod.Projectiles.Summon
             Main.dust[num469].velocity *= 0f;
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -241,7 +240,6 @@ namespace CalamityMod.Projectiles.Summon
             Lighting.AddLight(Projectile.Center, 0.5f, 0.1f, 0f);
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
             if (Projectile.timeLeft == 600)
             {
                 damage = Projectile.damage;
@@ -439,7 +437,6 @@ namespace CalamityMod.Projectiles.Summon
             Lighting.AddLight(Projectile.Center, 1f, 0.2f, 0f);
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
         }
 
         public override bool PreAI()
@@ -710,7 +707,6 @@ namespace CalamityMod.Projectiles.Summon
 
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 8)
@@ -872,7 +868,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
@@ -993,7 +988,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             if (Projectile.timeLeft > 120)
             {
@@ -1296,7 +1290,6 @@ namespace CalamityMod.Projectiles.Summon
             Player owner = Main.player[Projectile.owner];
 
             Projectile.damage = (int)owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             if (Projectile.ai[1] == 0f)
             {
@@ -1777,7 +1770,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             //Ensure that psa's spears are not coloured by night
             var psc = Projectile.ai[0] > 0f;
@@ -1908,7 +1900,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, ProvUtils.GetDustID(!Main.dayTime), 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;
@@ -2024,7 +2015,6 @@ namespace CalamityMod.Projectiles.Summon
 
             var Owner = Main.player[Projectile.owner];
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 6)

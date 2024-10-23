@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Boss
     public class MushBombFall : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+        public override string Texture => "CalamityMod/Projectiles/Boss/MushBomb";
 
         public override void SetStaticDefaults()
         {

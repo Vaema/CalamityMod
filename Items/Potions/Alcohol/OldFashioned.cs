@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -10,8 +11,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static readonly float AccessoryAndSetBonusDamageMultiplier = 1.5f;
-        public static readonly float DamageStatReduction = 0.25f;
+        public static readonly float DamageBoostMultiplier = 1.25f;
+        public static readonly float DamageReductionMultiplier = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2"));
 
         public override void SetStaticDefaults()
         {

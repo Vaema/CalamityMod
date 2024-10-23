@@ -5615,7 +5615,6 @@ namespace CalamityMod.NPCs
                 if (player.miscCounter % frequency == 0)
                 {
                     int sDamage = strongerShock ? 50 : 10;
-                    sDamage = player.ApplyArmorAccDamageBonusesTo(sDamage);
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
@@ -5635,7 +5634,7 @@ namespace CalamityMod.NPCs
             {
                 SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
                 Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
+                int damage = 20;
                 Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
             }
 

@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
@@ -23,28 +22,7 @@ namespace CalamityMod.Walls
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Texture2D sprite = TextureAssets.Wall[Type].Value;
-            Color lightColor = CalamityUtils.ApplyPaint(Main.tile[i, j].WallColor, Lighting.GetColor(i, j), false);
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            zero -= new Vector2(8, 8);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            int[] sheetOffset = CreatePattern(i, j);
-            spriteBatch.Draw
-                (
-                    sprite,
-                    drawOffset,
-                    new Rectangle(sheetOffset[0] + Main.tile[i, j].WallFrameX, sheetOffset[1] + Main.tile[i, j].WallFrameY, 32, 32),
-                    lightColor,
-                    0,
-                    new Vector2(0f, 0f),
-                    1,
-                    SpriteEffects.None,
-                    0f
-                );
-            return false;
-        }
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => spriteBatch.DrawMultiVariantWall(Type, i, j, CreatePattern(i, j));
 
         private int[] CreatePattern(int i, int j)
         {
