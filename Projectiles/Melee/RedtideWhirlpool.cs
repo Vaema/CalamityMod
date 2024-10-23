@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -54,7 +55,8 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath19, Projectile.position);
