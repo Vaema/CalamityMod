@@ -553,42 +553,42 @@ namespace CalamityMod.ILEditing
                 return proj;
 
             // Old Fashioned
-            if (damage > 0 && spawnSource is EntitySource_Parent parentSource)
+            if (spawnSource is EntitySource_Parent parentSource)
             {
-                // Assume all entity-spawned projectiles are buffed at first
-                // Relevant ones include: Buff, Item, NPC, Player, Projectile
-                // We will dissect the cases below
-                projectile.Calamity().buffedByOldFashioned = true;
+                // Parent-spawned projectiles involve 5 relevant sources: Buff, Item, NPC, Player, Projectile
+                // 1. Buffs: Old Fashioned inherently does not affect them, they have no effect
 
-                // Items, if detected as weapons, are debuffed
-                // A criteria of a weapon is determined as something with over 0 damage and over 0 use animation, and came out of an item
-                // This rules out items like Shield of Cthulhu (hypothetically were it to spawn projectiles) or Bombs or Navy Fishing Rod
-                if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item.damage > 0 && itemSource.Item.useAnimation > 0)
-                {
-                    // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
-                    if (itemSource.Item.type != ModContent.ItemType<WulfrumFusionCannon>())
-                        projectile.Calamity().buffedByOldFashioned = false;
-                }
-                // This also counts other item-spawned cases that could still be from weapons but not directly from using it (ItemUse)
-                else if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                /* 2. Item: If detected to be from weapons, are assumedly debuffed
+                *The criteria includes: A. has damage, B. has use animation, and C. came out of an item
+                *This rules out items such as Bombs or Shield of Cthulhu (hypothetically were it to spawn projectiles)
+                *This source is *not* from item use, but is still used for a multitude of purposes in weapons */
+                if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
                     projectile.Calamity().buffedByOldFashioned = false;
-                // Projectiles spawned by NPCs do not count
-                // It will neither be buffed nor debuffed
-                else if (parentSource.Entity is NPC parentNPC)
-                    projectile.Calamity().buffedByOldFashioned = null;
-                // Projectiles spawned by other projectiles is determined by the state of the parent projectile
+
+                // 3. NPCs: Not considered at all; no effect
+
+                // 4. Players: Only considered if the source owner matches the projectile's, otherwise no effect
+                else if (parentSource.Entity is Player parentPlayer && parentPlayer.whoAmI == projectile.owner)
+                {
+                    // 4A. The primary player-based source is item use, which follows the same logic as items (see above)
+                    // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
+                    if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item is Item usedItem
+                    && usedItem.damage > 0 && usedItem.useAnimation > 0 && usedItem.type != ModContent.ItemType<WulfrumFusionCannon>())
+                        projectile.Calamity().buffedByOldFashioned = false;
+                    // 4B. Every non item-use source is assumed safe to buff
+                    else
+                        projectile.Calamity().buffedByOldFashioned = true;
+                }
+
+                // 5. Projectiles: Directly inherited by its parent projectile
                 else if (parentSource.Entity is Projectile parentProj)
                     projectile.Calamity().buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
             }
 
             // Hellbound Enchantment
-            if (projectile.minion)
+            // This only applies to minions spawned by weapon uses, preventing other minions such as Luxor's Gift from exploding
+            if (projectile.minion && spawnSource is EntitySource_ItemUse useSource && useSource.Item is Item weapon && weapon.useAnimation > 0)
             {
-                // Do not apply Hellbound effects to minions not spawned by weapons
-                // This prevent minions like Luxor's Gift getting it
-                if (spawnSource is EntitySource_ItemUse trueSource && trueSource.Item is Item weapon && weapon.damage <= 0)
-                    return proj;
-
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
                 if (player.Calamity().explosiveMinionsEnchant)
                     projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
