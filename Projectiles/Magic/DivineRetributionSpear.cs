@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
                 Dust dust = Dust.NewDustPerfect(Projectile.Center + dustOffset, ModContent.DustType<LightDust>());
                 dust.noGravity = true;
                 dust.noLightEmittence = true;
-                dust.color = Color.Gold;
+                dust.color = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
                 dust.scale = Main.rand.NextFloat(0.4f, 0.6f);
             }
 
@@ -88,8 +88,9 @@ namespace CalamityMod.Projectiles.Magic
             Texture2D spear = TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
 
-            Color baseColor = Color.Gold * Projectile.Opacity;
-            Color glowColor = new Color(255, 255, 150) * Projectile.Opacity;
+            float cLerp = Utils.GetLerpValue(210, 160, Projectile.timeLeft, true);
+            Color baseColor = Color.Lerp(Color.Goldenrod, new Color(255, 255, 150), cLerp) * Projectile.Opacity;
+            Color glowColor = Color.Lerp(Color.OrangeRed, Color.Orange, cLerp) * Projectile.Opacity;
 
             float squish = MathHelper.Clamp(Projectile.velocity.Length() * 0.04f, 0, 0.2f);
             Vector2 scale = new Vector2(1f + squish, 1f - squish);
@@ -138,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Main.rand.NextVector2CircularEdge(5f, 5f));
                 dust.noGravity = true;
                 dust.noLightEmittence = true;
-                dust.color = Color.Gold;
+                dust.color = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
             }
         }
