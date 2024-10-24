@@ -253,7 +253,7 @@ namespace CalamityMod.Projectiles.Summon
 
         #endregion
 
-        public override bool? CanDamage() => (State == AIState.Dashing) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Dashing;
 
         // The minion while dashing does 1.25x more damge.
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= 1.25f;

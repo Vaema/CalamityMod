@@ -204,6 +204,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netUpdate = true;
         }
 
+        public override bool MinionContactDamage() => true;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Rebound on collision.

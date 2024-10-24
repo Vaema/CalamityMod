@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         // The minion will only have contact damage if it's on latching mode.
-        public override bool? CanDamage() => (State == AIState.Latching) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Latching;
 
         // The minion will do 1.5x damage if it's latched on.
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= CalamarisLament.LatchingDamageMultiplier;
