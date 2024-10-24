@@ -985,9 +985,16 @@ PristineFury: {
 	DisplayName: Pristine Fury
 	Tooltip:
 		'''
-		Fires an intense helix of flames that explode into a column of smoke
-		Press <right> to disperse intense clouds of profaned heat
+		Fires an intense helix of profaned flames that burst into a column of smoke
+		Press <right> to disperse flamable crystaline powder
+		Powder can be ignited, causuing it to explode for extra damage
+		Both helix flames and other nearby explosions can ignite the powder
 		Uses gel for ammo
+		'''
+	LegendaryText:
+		'''
+		[c/ff8c00:'She profaned on my rock til I holy blast]
+		[c/ff8c00:Who the hell is "Mithrix?"']
 		'''
 }
 
