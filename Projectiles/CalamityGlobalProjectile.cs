@@ -7,6 +7,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.EntitySources;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
@@ -4197,6 +4198,10 @@ namespace CalamityMod.Projectiles
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
+
+            // Stardust Wings buff the Stardust Guardian's damage.
+            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
+                modifiers.SourceDamage *= 3f;
 
             // If applicable, use ricoshot bonus damage.
             if (totalRicoshotDamageBonus > 0f)

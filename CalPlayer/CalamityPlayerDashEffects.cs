@@ -142,7 +142,8 @@ namespace CalamityMod.CalPlayer
 
                 if (HasCustomDash)
                 {
-                    Player.vortexStealthActive = false;
+                    if (Player.wingsLogic != (int)VanillaWingID.WingsVortex)
+                        Player.vortexStealthActive = false;
 
                     // Decide the player's facing direction.
                     if (Player.velocity.X != 0f)

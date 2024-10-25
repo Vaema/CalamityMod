@@ -1416,18 +1416,12 @@ namespace CalamityMod.Items
             else if (item.type == ItemID.FrozenWings) // Bonus to melee and ranged stats while wearing frost armor
             {
                 player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.FrostHelmet && player.body == ArmorIDs.Body.FrostBreastplate && player.legs == ArmorIDs.Legs.FrostLeggings)
-                {
-                    player.GetDamage<MeleeDamageClass>() += 0.04f;
-                    player.GetDamage<RangedDamageClass>() += 0.04f;
-                    player.Calamity().frozenWingsCold = true;
-                }
+                player.Calamity().frozenWingsCold = true;
             }
             else if (item.type == ItemID.FlameWings) // Bonus to melee stats
             {
-                player.GetDamage<MeleeDamageClass>() += 0.05f;
-                player.GetCritChance<MeleeDamageClass>() += 5;
                 player.noFallDmg = true;
+                player.Calamity().flameWingsHeat = true;
             }
             else if (item.type == ItemID.GhostWings) // Bonus to mage stats while wearing spectre armor
             {
@@ -1535,41 +1529,6 @@ namespace CalamityMod.Items
                 player.moveSpeed += 0.1f;
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.WingsSolar) // Bonus to melee stats while wearing solar flare armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.SolarFlareHelmet && player.body == ArmorIDs.Body.SolarFlareBreastplate && player.legs == ArmorIDs.Legs.SolarFlareLeggings)
-                {
-                    player.GetDamage<MeleeDamageClass>() += 0.07f;
-                    player.GetCritChance<MeleeDamageClass>() += 3;
-                }
-            }
-            else if (item.type == ItemID.WingsVortex) // Bonus to ranged stats while wearing vortex armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.VortexHelmet && player.body == ArmorIDs.Body.VortexBreastplate && player.legs == ArmorIDs.Legs.VortexLeggings)
-                {
-                    player.GetDamage<RangedDamageClass>() += 0.03f;
-                    player.GetCritChance<RangedDamageClass>() += 7;
-                }
-            }
-            else if (item.type == ItemID.WingsNebula) // Bonus to magic stats while wearing nebula armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.NebulaHelmet && player.body == ArmorIDs.Body.NebulaBreastplate && player.legs == ArmorIDs.Legs.NebulaLeggings)
-                {
-                    player.GetDamage<MagicDamageClass>() += 0.05f;
-                    player.GetCritChance<MagicDamageClass>() += 5;
-                    player.statManaMax2 += 20;
-                    player.manaCost *= 0.95f;
-                }
-            }
-            else if (item.type == ItemID.WingsStardust) // Bonus to summon stats while wearing stardust armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.StardustHelmet && player.body == ArmorIDs.Body.StardustPlate && player.legs == ArmorIDs.Legs.StardustLeggings)
-                    player.GetDamage<SummonDamageClass>() += 0.1f;
-            }
             else if (item.type == ItemID.FishronWings || item.type == ItemID.BetsyWings || item.type == ItemID.Yoraiz0rWings ||
                 item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings || item.type == ItemID.LokisWings ||
                 item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.BejeweledValkyrieWing ||
@@ -1633,6 +1592,10 @@ namespace CalamityMod.Items
             // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
                 grabRange += 246;
+
+            // Nebula boosters have greater pickup range while using Nebula Mantle.
+            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
+                grabRange *= 2;
         }
         #endregion
 

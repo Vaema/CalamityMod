@@ -153,6 +153,7 @@ namespace CalamityMod.NPCs
         public bool IncreasedHeatEffects_CinnamonRoll = false;
         public bool IncreasedHeatEffects_FlameWakerBoots = false;
         public bool IncreasedHeatEffects_HellfireTreads = false;
+        public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
@@ -454,6 +455,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FlameWakerBoots = IncreasedHeatEffects_FlameWakerBoots;
             myClone.IncreasedHeatEffects_HellfireTreads = IncreasedHeatEffects_HellfireTreads;
+            myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
@@ -867,6 +869,8 @@ namespace CalamityMod.NPCs
                 heatDamageMult += 0.5;
             if (IncreasedHeatEffects_HellfireTreads)
                 heatDamageMult += 0.5;
+            if (IncreasedHeatEffects_FlameWings)
+                heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;

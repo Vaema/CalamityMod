@@ -1256,11 +1256,10 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 240, "Halves flight time when taking a hit");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(7.5f, 1f, 1, 160, "5% increased melee damage and critical strike chance");
+                AddWingStats(7.5f, 1f, 1, 160, "Multiplies all heat debuff damage by 1.25x");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, "4% increased melee and ranged damage\n" +
-                    "and multiplies all cold debuff damage by 1.25x while wearing Frost armor");
+                AddWingStats(6.75f, 1f, 1, 130, "Multiplies all cold debuff damage by 1.25x");
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Spectre Hood set\n" +
@@ -1315,19 +1314,16 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 170, "+5 defense and 5% increased damage");
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, "7% increased melee damage and 3% increased melee critical strike chance\n" +
-                    "while wearing the Solar Flare Armor");
+                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 30%");
 
             if (item.type == ItemID.WingsStardust)
-                AddWingStats(9f, 2.5f, 3, 180, "10% increased minion damage while wearing the Stardust Armor");
+                AddWingStats(9f, 2.5f, 3, 180, "Greatly increases Stardust armor's stardust guardian damage and attack range");
 
             if (item.type == ItemID.WingsVortex)
-                AddWingStats(6.5f, 1.5f, 2, 180, "3% increased ranged damage and 7% increased ranged critical strike chance\n" +
-                    "while wearing the Vortex Armor");
+                AddWingStats(6.5f, 1.5f, 2, 180, "Prevents dashes from disabling Vortex armor's stealth ability");
 
             if (item.type == ItemID.WingsNebula)
-                AddWingStats(6.5f, 1.5f, 2, 180, "+20 max mana, 5% increased magic damage and critical strike chance,\n" +
-                    "and 5% decreased mana usage while wearing the Nebula Armor");
+                AddWingStats(6.5f, 1.5f, 2, 180, "Increases the pickup range of Nebula armor's nebula boosters");
 
             // Betsy's Wings (and dev wings) are the only wings without "Allows flight and free fall"
             if (item.type == ItemID.BetsyWings)

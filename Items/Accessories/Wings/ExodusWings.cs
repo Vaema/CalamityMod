@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Armor.Empyrean;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -33,8 +34,8 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             if (player.armor[0].type == ModContent.ItemType<EmpyreanMask>() && player.armor[1].type == ModContent.ItemType<EmpyreanCloak>() && player.armor[2].type == ModContent.ItemType<EmpyreanCuisses>())
             {
-                player.GetDamage<ThrowingDamageClass>() += 0.05f;
-                player.GetCritChance<ThrowingDamageClass>() += 5;
+                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
+                player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
             }
 
             if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
