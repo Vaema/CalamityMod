@@ -18,7 +18,7 @@ AddedTooltip: {
 	Pwnhammer:
 		'''
 		Demon Altars now drop Souls of Night instead of generating ores when destroyed
-		nHardmode ores now generate after defeating Mechanical Bosses for the first time
+		Hardmode ores now generate after defeating Mechanical Bosses for the first time
 		'''
 	// Life Drain
 	SoulDrain:
@@ -219,6 +219,53 @@ EditedTooltip: {
 	LavaWaders: Grants immunity to the Burning and On Fire! debuffs, and 7 seconds of immunity to lava
 	Gi: 10% increased movement and jump speed
 	GoldPickaxe: Can mine Demonite, Crimtane, Meteorite, Sea Prisms, and Sea Prism Crystals
+	FlaskofCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
+	FlaskofFire: Melee, Whip, and Rogue attacks set enemies on fire
+	FlaskofGold: Melee, Whip, and Rogue attacks make enemies drop more gold
+	FlaskofIchor: Melee, Whip, and Rogue attacks decrease enemies defense
+	FlaskofNanites: Melee, Whip, and Rogue attacks confuse enemies
+	FlaskofParty: All attacks cause confetti to appear
+	FlaskofPoison: Melee, Whip, and Rogue attacks poison enemies
+	FlaskofVenom: Melee, Whip, and Rogue attacks inflict Acid Venom on enemies
+	/*
+	OOA sets
+	*/
+	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
+	SquirePlating: 10% increased summon damage and 15% increased melee damage
+	SquireGreaves:
+		'''
+		5% increased summon damage and melee critical strike chance
+		15% increased movement speed
+		'''
+	MonkBrows: Increases your max number of sentries by 1 and increases melee attack speed by 10%
+	MonkShirt: 10% increased summon and melee damage
+	MonkPants1: 5% increased summon damage and melee critical strike chance
+	MonkPants2: 20% increased movement speed
+	// Valhalla Knight
+	SquireAltShirt: 30% increased summon damage and grants +4 HP/s life regen
+	SquireAltPants: 10% increased summon damage and melee critical strike chance
+	HuntressJerkin:
+		'''
+		10% increased summon and ranged damage
+		10% chance to not consume ammo
+		'''
+	ApprenticeTrousers:
+		'''
+		5% increased summon damage and magic critical strike chance
+		20% increased movement speed
+		'''
+	// Shinobi Infiltrator
+	MonkAltHead:
+		'''
+		Increases your max number of sentries by 2
+		10% increased melee and summon damage
+		'''
+	MonkAltShirt: 10% increased summon damage and melee speed
+	MonkAltPants: 10% increased summon damage and melee critical strike chance
+	// Red Riding
+	HuntressAltShirt: 15% increased summon and ranged damage and 20% chance to not consume ammo
+	// Dark Artist
+	ApprenticeAltPants: 10% increased summon damage and magic critical strike chance
 }
 
 // Buff Descriptions

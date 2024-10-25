@@ -682,22 +682,22 @@ namespace CalamityMod.Items
             // Flasks apply to Rogue weapons
             #region Rogue Flask Tooltips
             if (item.type == ItemID.FlaskofCursedFlames)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofCursedFlames"));
             if (item.type == ItemID.FlaskofFire)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofFire"));
             if (item.type == ItemID.FlaskofGold)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofGold"));
             if (item.type == ItemID.FlaskofIchor)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofIchor"));
             if (item.type == ItemID.FlaskofNanites)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofNanites"));
             // party flask is unique because it affects ALL projectiles in Calamity, not just "also rogue ones"
             if (item.type == ItemID.FlaskofParty)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("Melee and Whip", "All"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofParty"));
             if (item.type == ItemID.FlaskofPoison)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofPoison"));
             if (item.type == ItemID.FlaskofVenom)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" and Whip", ", Whip, and Rogue"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofVenom"));
             #endregion
 
             // Rebalances to vanilla item stats
@@ -1039,56 +1039,52 @@ namespace CalamityMod.Items
             // Reduce DD2 armor piece bonuses because they're overpowered, and clarify life regen boosts
             // Squire armor
             if (item.type == ItemID.SquireGreatHelm)
-                EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 1 and grants +2 HP/s life regen");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreatHelm"));
             if (item.type == ItemID.SquirePlating)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and 15% increased melee damage");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquirePlating"));
             if (item.type == ItemID.SquireGreaves)
-                EditTooltipByNum(0, (line) => line.Text = "5% increased minion damage and melee critical strike chance\n" +
-                "15% increased movement speed");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreaves"));
 
             // Monk armor
             if (item.type == ItemID.MonkBrows)
-                EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 1 and increases melee attack speed by 10%");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkBrows"));
             if (item.type == ItemID.MonkShirt)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion and melee damage");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkShirt"));
             if (item.type == ItemID.MonkPants)
             {
-                EditTooltipByNum(0, (line) => line.Text = "5% increased minion damage and melee critical strike chance");
-                EditTooltipByNum(1, (line) => line.Text = "20% increased movement speed");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkPants1"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkPants2"));
             }
 
             // Huntress armor
             if (item.type == ItemID.HuntressJerkin)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion and ranged damage\n" +
-                "10% chance to not consume ammo");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressJerkin"));
 
             // Apprentice armor
             if (item.type == ItemID.ApprenticeTrousers)
-                EditTooltipByNum(0, (line) => line.Text = "5% increased minion damage and magic critical strike chance\n" +
-                "20% increased movement speed");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
             // Valhalla Knight armor
             if (item.type == ItemID.SquireAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = "30% increased minion damage and grants +4 HP/s life regen");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
             if (item.type == ItemID.SquireAltPants)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and melee critical strike chance");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltPants"));
 
             // Shinobi Infiltrator armor
             if (item.type == ItemID.MonkAltHead)
-                EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 2\n" +
-                "10% increased melee and minion damage");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltHead"));
             if (item.type == ItemID.MonkAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and melee speed");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltShirt"));
             if (item.type == ItemID.MonkAltPants)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and melee critical strike chance");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltPants"));
 
             // Red Riding armor
             if (item.type == ItemID.HuntressAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = "15% increased minion and ranged damage and 20% chance to not consume ammo");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltShirt"));
 
             // Dark Artist armor
             if (item.type == ItemID.ApprenticeAltPants)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and magic critical strike chance");
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltPants"));
             #endregion
 
             // Non-consumable boss summon items
@@ -1097,7 +1093,6 @@ namespace CalamityMod.Items
                 item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing || item.type == ItemID.QueenSlimeCrystal ||
                 item.type == ItemID.PirateMap || item.type == ItemID.SnowGlobe || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull ||
                 item.type == ItemID.NaughtyPresent || item.type == ItemID.PumpkinMoonMedallion || item.type == ItemID.SolarTablet || item.type == ItemID.SolarTablet || item.type == ItemID.CelestialSigil)
-
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
 
@@ -1328,7 +1323,7 @@ namespace CalamityMod.Items
 
             #region Herbs and Seeds Tooltips
 
-            void AddHerbTooltips(string text)
+            void AddHerbTooltips(string key)
             {
                 int materialIndex = 0;
                 for (int i = 0; i < tooltips.Count; ++i)
@@ -1337,25 +1332,25 @@ namespace CalamityMod.Items
                         materialIndex = i;
                         break;
                     }
-                tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", text));
+                tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", CalamityUtils.GetTextValue($"Vanilla.HerbTooltips.{key}")));
             }
 
             if (item.type == ItemID.Daybloom)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Daybloom"));
+                AddHerbTooltips("Daybloom");
             if (item.type == ItemID.Moonglow)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Moonglow"));
+                AddHerbTooltips("Moonglow");
             if (item.type == ItemID.Waterleaf)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Waterleaf"));
+                AddHerbTooltips("Waterleaf");
             if (item.type == ItemID.Blinkroot)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Blinkroot"));
+                AddHerbTooltips("Blinkroot");
             if (item.type == ItemID.Shiverthorn)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Shiverthorn"));
+                AddHerbTooltips("Shiverthorn");
             if (item.type == ItemID.Deathweed)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Deathweed"));
+                AddHerbTooltips("Deathweed");
             if (item.type == ItemID.Fireblossom)
-                AddHerbTooltips(CalamityUtils.GetTextValue("Vanilla.HerbTooltips.Fireblossom"));
+                AddHerbTooltips("Fireblossom");
 
-            void AddSeedTooltips(string text)
+            void AddSeedTooltips(string key)
             {
                 int materialIndex = 0;
                 for (int i = 0; i < tooltips.Count; ++i)
@@ -1364,23 +1359,23 @@ namespace CalamityMod.Items
                         materialIndex = i;
                         break;
                     }
-                tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", text));
+                tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", CalamityUtils.GetTextValue($"Vanilla.SeedTooltips.{key}")));
             }
 
             if (item.type == ItemID.DaybloomSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Daybloom"));
+                AddSeedTooltips("Daybloom");
             if (item.type == ItemID.MoonglowSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Moonglow"));
+                AddSeedTooltips("Moonglow");
             if (item.type == ItemID.WaterleafSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Waterleaf"));
+                AddSeedTooltips("Waterleaf");
             if (item.type == ItemID.BlinkrootSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Blinkroot"));
+                AddSeedTooltips("Blinkroot");
             if (item.type == ItemID.ShiverthornSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Shiverthorn"));
+                AddSeedTooltips("Shiverthorn");
             if (item.type == ItemID.DeathweedSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Deathweed"));
+                AddSeedTooltips("Deathweed");
             if (item.type == ItemID.FireblossomSeeds)
-                AddSeedTooltips(CalamityUtils.GetTextValue("Vanilla.SeedTooltips.Fireblossom"));
+                AddSeedTooltips("Fireblossom");
 
             #endregion
 
@@ -1507,24 +1502,24 @@ namespace CalamityMod.Items
         #region Schematic Knowledge Tooltip Utility
         public static void InsertKnowledgeTooltip(List<TooltipLine> tooltips, int tier, bool allowOldWorlds = false)
         {
-            TooltipLine line = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge1", "You don't have sufficient knowledge to create this yet");
-            TooltipLine line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "A specific schematic must be deciphered first");
+            TooltipLine line = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge1", CalamityUtils.GetTextValue("Misc.SchematicKnowledgeTooltip"));
+            TooltipLine line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.SchematicKnowledgeTooltip2"));
             switch (tier)
             {
                 case 1:
-                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "The Sunken Sea schematic must be deciphered first");
+                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier1KnowledgeTooltip"));
                     break;
                 case 2:
-                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "The Planetoid schematic must be deciphered first");
+                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier2KnowledgeTooltip"));
                     break;
                 case 3:
-                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "The Jungle schematic must be deciphered first");
+                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier3KnowledgeTooltip"));
                     break;
                 case 4:
-                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "The Underworld schematic must be deciphered first");
+                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier4KnowledgeTooltip"));
                     break;
                 case 5:
-                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", "The Ice biome schematic must be deciphered first");
+                    line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier5KnowledgeTooltip"));
                     break;
             }
             line.OverrideColor = line2.OverrideColor = Color.Cyan;
