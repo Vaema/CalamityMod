@@ -1030,9 +1030,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (Main.netMode != NetmodeID.Server)
                         {
                             if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            {
                                 Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
-                            }
                         }
                     }
 
@@ -1083,11 +1081,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
                                 SpawnTeleportLocation(player);
-                            else
-                                calamityGlobalNPC.newAI[2] += 10f;
                         }
-                        else
-                            calamityGlobalNPC.newAI[2] += 2f;
 
                         float speedCopy = speed;
                         float turnSpeedCopy = turnSpeed;
@@ -1878,12 +1872,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.localAI[1] = 0f;
 
                     calamityGlobalNPC.newAI[2] += 1f;
-
-                    // Go to ground phase sooner
-                    if (increaseSpeedMore)
-                        calamityGlobalNPC.newAI[2] += 10f;
-                    else if (increaseSpeed)
-                        calamityGlobalNPC.newAI[2] += 2f;
 
                     float speedCopy = speed;
                     float turnSpeedCopy = turnSpeed;
