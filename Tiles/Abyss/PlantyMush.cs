@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithAbyss(Type);
 
             DustType = 2;
-            AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.PlantyMush>());
+            AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.Abyss.PlantyMush>());
             HitSound = MineSound;
 
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");

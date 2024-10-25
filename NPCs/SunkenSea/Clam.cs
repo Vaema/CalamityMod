@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;

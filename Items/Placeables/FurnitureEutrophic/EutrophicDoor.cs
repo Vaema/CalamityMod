@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureEutrophic;
 using Terraria;
 using Terraria.ID;

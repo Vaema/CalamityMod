@@ -422,6 +422,21 @@ namespace CalamityMod.CalPlayer
                 else
                     HasReducedDashFirstFrame = false;
             }
+
+            // Solar Wings increase dash velocity of Solar Flare armor dash
+            if (Player.wingsLogic == (int)VanillaWingID.WingsSolar)
+            {
+                if (Player.dashDelay == -1 && Player.dash == 3)
+                {
+                    if (!HasReducedDashFirstFrame)
+                    {
+                        Player.velocity.X *= 1.3f;
+                        HasReducedDashFirstFrame = true;
+                    }
+                }
+                else
+                    HasReducedDashFirstFrame = false;
+            }
         }
         #endregion
 
@@ -1615,8 +1630,8 @@ namespace CalamityMod.CalPlayer
                 evolutionLifeRegenCounter--;
             if (hurtSoundTimer > 0)
                 hurtSoundTimer--;
-            if (icicleCooldown > 0)
-                icicleCooldown--;
+            if (wingProjectileCooldown > 0)
+                wingProjectileCooldown--;
             if (statisTimer > 0 && Player.dashDelay >= 0)
                 statisTimer = 0;
             if (hallowedRuneCooldown > 0)

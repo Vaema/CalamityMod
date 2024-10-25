@@ -114,7 +114,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 enrageScale += 1f;
             }
 
-            npc.Calamity().DR = npc.ai[0] == 4f ? 0.6f : 0.15f;
+            npc.Calamity().DR = npc.ai[0] == 4f ? 0.6f : 0.2f;
 
             // Emit dust
             int dustAmt = (npc.ai[0] == 2f) ? 2 : 1;

@@ -329,6 +329,8 @@ namespace CalamityMod.Projectiles.Summon
 
         #endregion
 
+        public override bool MinionContactDamage() => true;
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (State == AIState.Ramming)

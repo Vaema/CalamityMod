@@ -206,6 +206,6 @@ namespace CalamityMod.Projectiles.Summon
                 HitCounter = 0;
             }
         }
-        public override bool? CanDamage() => Reforming ? false : null;
+        public override bool MinionContactDamage() => !Reforming;
     }
 }

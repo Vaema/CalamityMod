@@ -70,6 +70,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             IL_Player.DashMovement += FixAllDashMechanics;
+            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
@@ -144,6 +145,7 @@ namespace CalamityMod.ILEditing
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
             IL_Projectile.Damage += ReduceEoWGrenadeResist;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
+            IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
             IL_Player.UpdateBuffs += NerfSharpeningStation;
             IL_Player.UpdateBuffs += NerfBeetleScaleMail;
             IL_Player.UpdateBuffs += NerfNebulaArmorBaseLifeRegenAndDamage;
