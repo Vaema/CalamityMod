@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Accessories.Wings
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.cryogenSoul = true;
             player.noFallDmg = true;
-            if (modPlayer.icicleCooldown <= 0)
+            if (modPlayer.wingProjectileCooldown <= 0)
             {
                 if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
                 {
@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Accessories.Wings
                         Main.projectile[p].DamageType = DamageClass.Generic;
                         Main.projectile[p].frame = Main.rand.Next(5);
                     }
-                    modPlayer.icicleCooldown = 7;
+                    modPlayer.wingProjectileCooldown = 7;
                 }
             }
         }

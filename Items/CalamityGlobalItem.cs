@@ -1403,7 +1403,7 @@ namespace CalamityMod.Items
             else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
             {
                 player.noFallDmg = true;
-                if (modPlayer.icicleCooldown <= 0)
+                if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
                     if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
@@ -1414,7 +1414,7 @@ namespace CalamityMod.Items
                         {
                             Main.projectile[p].DamageType = DamageClass.Generic;
                             Main.projectile[p].Calamity().lineColor = 1;
-                            modPlayer.icicleCooldown = 15;
+                            modPlayer.wingProjectileCooldown = 15;
                         }
                     }
                 }
@@ -1422,7 +1422,7 @@ namespace CalamityMod.Items
             else if (item.type == ItemID.TatteredFairyWings) // Leave a trail of damaging fairy dust while in flight
             {
                 player.noFallDmg = true;
-                if (modPlayer.icicleCooldown <= 0)
+                if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
                     if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
@@ -1432,7 +1432,7 @@ namespace CalamityMod.Items
 
                         int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), fairyDustDamage, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                            modPlayer.icicleCooldown = 10;
+                            modPlayer.wingProjectileCooldown = 10;
                     }
                 }
             }
