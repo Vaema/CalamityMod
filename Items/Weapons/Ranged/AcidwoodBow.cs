@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

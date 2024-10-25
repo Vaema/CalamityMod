@@ -64,7 +64,7 @@ namespace CalamityMod.Tiles.Crags
         {
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(20))
             {
-                Item.NewItem(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16f, ModContent.ItemType<Items.Placeables.CinderBlossomSeeds>());
+                Item.NewItem(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16f, ModContent.ItemType<Items.Placeables.Crags.CinderBlossomSeeds>());
             }
         }
     }

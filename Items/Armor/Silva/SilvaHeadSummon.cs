@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;

@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.Crags
 
             HitSound = SoundID.Dig;
             MinPick = 100;
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedRemains>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedRemains>());
             AddMapEntry(new Color(212, 82, 227));
 
             this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureAncient;
 using Terraria;
 using Terraria.ID;

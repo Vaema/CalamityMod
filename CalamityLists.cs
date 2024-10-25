@@ -14,7 +14,7 @@ using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.TreasureBags;

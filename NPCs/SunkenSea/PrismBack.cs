@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
@@ -15,6 +14,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using ReLogic.Content;
+using CalamityMod.Items.Placeables.SunkenSea;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
