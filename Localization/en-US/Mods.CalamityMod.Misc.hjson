@@ -75,3 +75,5 @@ Polaris4: You let Polaris cuddle your arm
 Polaris5: You pet Polaris
 // Point Blank
 PointBlank: Does extra damage to enemies shot at point-blank range
+// Charge
+Charge: Current Charge: {0}%

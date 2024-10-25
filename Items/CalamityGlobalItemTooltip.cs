@@ -170,7 +170,7 @@ namespace CalamityMod.Items
             {
                 // Convert current charge ratio into a percentage.
                 float displayedPercent = ChargeRatio * 100f;
-                TooltipLine line = new TooltipLine(Mod, "CalamityCharge", $"Current Charge: {displayedPercent:N1}%");
+                TooltipLine line = new TooltipLine(Mod, "CalamityMod:Charge", CalamityUtils.GetText("Misc.Charge").Format(displayedPercent.ToString("N1")));
                 tooltips.Insert(++lastTooltipIndex, line);
             }
 
@@ -407,10 +407,6 @@ namespace CalamityMod.Items
         #endregion
 
         #region Vanilla Item Tooltip Modification
-
-        // Turns a number into a string of increased mining speed.
-        public static string MiningSpeedString(int percent) => $"\n{percent}% increased mining speed";
-
         private static void ModifyVanillaTooltips(Item item, IList<TooltipLine> tooltips)
         {
             #region Modular Tooltip Editing Code
