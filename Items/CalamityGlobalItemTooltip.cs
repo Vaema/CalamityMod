@@ -557,10 +557,6 @@ namespace CalamityMod.Items
                 || item.type == ItemID.RichGravestone1 || item.type == ItemID.RichGravestone2 || item.type == ItemID.RichGravestone3 || item.type == ItemID.RichGravestone4 || item.type == ItemID.RichGravestone5)
                 EditTooltipByName("Material", (line) => line.Text += AddedTooltip("Tombstones"));
 
-            // Eternity Crystal notifies the player that they can accelerate the invasion
-            if (item.type == ItemID.DD2ElderCrystal)
-                EditTooltipByNum(0, (line) => line.Text += Lang.SupportGlyphs(AddedTooltip("DD2ElderCrystal")));
-
             // Modify item speed tooltips to use a new scale designed to more accurately reflect practical distributions of item speeds.
             // Due to the higher complexity of the action, the actual logic is delegated to its own method.
             // I think this fits the miscellaneous category? Not seeing anything like this elsewhere. - Tomat
