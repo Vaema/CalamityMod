@@ -695,6 +695,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             }
 
                             // Fire laser walls every X seconds after a laser wall phase ends
+                            float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
                             if (calamityGlobalNPC.newAI[3] >= LaserWallCooldown)
                             {
                                 NPC.Opacity = 0f;
