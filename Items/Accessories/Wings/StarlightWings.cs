@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories.Wings
         public new string LocalizationCategory => "Items.Accessories.Wings";
         public override void SetStaticDefaults()
         {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(150, 7.5f, 1f);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 7.5f, 1.5f);
         }
 
         public override void SetDefaults()
@@ -29,15 +29,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if ((player.armor[0].type == ModContent.ItemType<DaedalusHeadMagic>() || player.armor[0].type == ModContent.ItemType<DaedalusHeadSummon>() ||
-                player.armor[0].type == ModContent.ItemType<DaedalusHeadMelee>() || player.armor[0].type == ModContent.ItemType<DaedalusHeadRanged>() ||
-                player.armor[0].type == ModContent.ItemType<DaedalusHeadRogue>()) &&
-                player.armor[1].type == ModContent.ItemType<DaedalusBreastplate>() && player.armor[2].type == ModContent.ItemType<DaedalusLeggings>())
-            {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.GetCritChance<GenericDamageClass>() += 5;
-            }
-
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int dustXOffset = 4;

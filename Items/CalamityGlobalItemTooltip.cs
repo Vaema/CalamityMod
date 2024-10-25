@@ -1230,10 +1230,10 @@ namespace CalamityMod.Items
                 AddWingStats(3f, 1f, 0, 25);
 
             if (item.type == ItemID.AngelWings)
-                AddWingStats(6.25f, 1f, 1, 100, "+20 max life, +10 defense and +1 HP/s life regen");
+                AddWingStats(6.25f, 1f, 1, 100);
 
             if (item.type == ItemID.DemonWings)
-                AddWingStats(6.25f, 1f, 1, 100, "5% increased damage and critical strike chance");
+                AddWingStats(6.25f, 1f, 1, 100);
 
             if (item.type == ItemID.Jetpack)
                 AddWingStats(6.5f, 1f, 1, 150);
@@ -1243,13 +1243,13 @@ namespace CalamityMod.Items
                     "5% increased magic damage and magic critical strike chance");
 
             if (item.type == ItemID.FairyWings)
-                AddWingStats(6.75f, 1f, 1, 130, "+60 max life");
+                AddWingStats(6.75f, 1f, 1, 130);
 
             if (item.type == ItemID.BeeWings)
                 AddWingStats(7.5f, 1f, 1, 160, "Permanently gives the Honey buff");
 
             if (item.type == ItemID.HarpyWings)
-                AddWingStats(6.75f, 1f, 1, 130, "20% increased movement speed\n" +
+                AddWingStats(6.75f, 1f, 1, 130, "10% increased movement speed\n" +
                     "With Harpy Ring or Angel Treads equipped, most attacks sometimes launch feathers");
 
             if (item.type == ItemID.BoneWings)
@@ -1262,12 +1262,10 @@ namespace CalamityMod.Items
                 AddWingStats(6.75f, 1f, 1, 130, "Multiplies all cold debuff damage by 1.25x");
 
             if (item.type == ItemID.GhostWings)
-                AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Spectre Hood set\n" +
-                    "5% increased magic damage and critical strike chance while wearing the Spectre Mask set");
+                AddWingStats(7.5f, 1f, 1, 170);
 
             if (item.type == ItemID.BeetleWings)
-                AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Beetle Shell set\n" +
-                    "5% increased melee damage and critical strike chance while wearing the Beetle Scale Mail set");
+                AddWingStats(7.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FinWings)
                 AddWingStats(6.75f, 1f, 1, 130, "Gills effect and you can move freely through liquids\n" +
@@ -1277,14 +1275,13 @@ namespace CalamityMod.Items
                 AddWingStats(8f, 2f, 2, 180);
 
             if (item.type == ItemID.SteampunkWings)
-                AddWingStats(7.5f, 1f, 1, 180, "+8 defense, 10% increased movement speed,\n" + "4% increased damage, and 2% increased critical strike chance");
+                AddWingStats(7.5f, 1f, 1, 180);
 
             if (item.type == ItemID.LeafWings)
-                AddWingStats(7.5f, 1f, 1, 160, "+5 defense, 5% increased damage reduction,\n" + "and permanent Dryad's Blessing while wearing the Tiki Armor");
+                AddWingStats(7.5f, 1f, 1, 160, "+10 defense and permanent Dryad's Blessing");
 
             if (item.type == ItemID.BatWings)
-                AddWingStats(7.5f, 1f, 1, 160, "At night or during an eclipse, you will gain the following boosts:\n" +
-                    "7% increased damage and 3% increased critical strike chance");
+                AddWingStats(7.5f, 1f, 1, 160, "Improves vision");
 
             // All developer wings have identical stats and no special effects
             if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
@@ -1301,17 +1298,16 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 180, "5% increased damage and critical strike chance");
 
             if (item.type == ItemID.SpookyWings)
-                AddWingStats(7.5f, 1f, 1, 180, "Increased minion knockback and 5% increased minion damage while wearing the Spooky Armor");
+                AddWingStats(7.5f, 1f, 1, 180);
 
             if (item.type == ItemID.Hoverboard)
-                AddWingStats(6.5f, 1f, 1, 170, "5% increased weapon-type damage while wearing the Shroomite Armor\n" +
-                    "The weapon type boosted matches which Shroomite helmet is worn");
+                AddWingStats(6.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FestiveWings)
-                AddWingStats(7.5f, 1f, 1, 180, "+40 max life\nOrnaments rain down as you fly");
+                AddWingStats(7.5f, 1f, 1, 180, "Ornaments rain down as you fly");
 
             if (item.type == ItemID.MothronWings)
-                AddWingStats(7.5f, 1f, 1, 170, "+5 defense and 5% increased damage");
+                AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
                 AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 30%");

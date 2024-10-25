@@ -140,6 +140,8 @@ namespace CalamityMod.Items
             #region Vanilla Wing Tweaks
             // 170 -> 240 flight time
             ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings] = new WingStats(240, 7.5f, 1f);
+            // 170 -> 200 flight time
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings] = new WingStats(200, 7.5f);
 
             // (Empress Wings) 150 -> 100 flight time
             ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings] = new WingStats(100, 8f, 2f);
@@ -1349,19 +1351,6 @@ namespace CalamityMod.Items
             if (item.type == ItemID.TerrasparkBoots)
                 player.buffImmune[BuffID.OnFire] = true;
 
-            if (item.type == ItemID.AngelWings) // Boost to max life, defense, and life regen
-            {
-                player.statLifeMax2 += 20;
-                player.statDefense += 10;
-                player.lifeRegen += 2;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.DemonWings) // Boost to all damage and crit
-            {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.GetCritChance<GenericDamageClass>() += 5;
-                player.noFallDmg = true;
-            }
             else if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
             {
                 if (player.IsUnderwater())
@@ -1387,109 +1376,36 @@ namespace CalamityMod.Items
                 player.GetCritChance<MagicDamageClass>() += 5;
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.FairyWings) // Boost to max life
-            {
-                player.statLifeMax2 += 60;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.BatWings) // Stronger at night
+            else if (item.type == ItemID.BatWings) // Gives night vision
             {
                 player.noFallDmg = true;
-                if (!Main.dayTime || Main.eclipse)
-                {
-                    player.GetDamage<GenericDamageClass>() += 0.07f;
-                    player.GetCritChance<GenericDamageClass>() += 3;
-                }
+                player.nightVision = true;
             }
             else if (item.type == ItemID.HarpyWings)
             {
                 modPlayer.harpyWingBoost = true;
-                player.moveSpeed += 0.2f;
+                player.moveSpeed += 0.1f;
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.MothronWings) // Spawn baby mothrons over time to attack enemies, max of 3
-            {
-                player.statDefense += 5;
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.FrozenWings) // Bonus to melee and ranged stats while wearing frost armor
+            else if (item.type == ItemID.FrozenWings) // Increases cold debuff damage
             {
                 player.noFallDmg = true;
                 player.Calamity().frozenWingsCold = true;
             }
-            else if (item.type == ItemID.FlameWings) // Bonus to melee stats
+            else if (item.type == ItemID.FlameWings) // Increases heat debuff damage
             {
                 player.noFallDmg = true;
                 player.Calamity().flameWingsHeat = true;
             }
-            else if (item.type == ItemID.GhostWings) // Bonus to mage stats while wearing spectre armor
+            else if (item.type == ItemID.LeafWings) // Bonus to defensive stats
             {
                 player.noFallDmg = true;
-                if (player.body == ArmorIDs.Body.SpectreRobe && player.legs == ArmorIDs.Legs.SpectrePants)
-                {
-                    if (player.head == ArmorIDs.Head.SpectreHood)
-                    {
-                        player.statDefense += 10;
-                        player.endurance += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.SpectreMask)
-                    {
-                        player.GetDamage<MagicDamageClass>() += 0.05f;
-                        player.GetCritChance<MagicDamageClass>() += 5;
-                    }
-                }
-            }
-            else if (item.type == ItemID.BeetleWings) // Boosted defense and melee stats while wearing beetle armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.BeetleHelmet && player.legs == ArmorIDs.Legs.BeetleLeggings)
-                {
-                    if (player.body == ArmorIDs.Body.BeetleShell)
-                    {
-                        player.statDefense += 10;
-                        player.endurance += 0.05f;
-                    }
-                    else if (player.body == ArmorIDs.Body.BeetleScaleMail)
-                    {
-                        player.GetDamage<MeleeDamageClass>() += 0.05f;
-                        player.GetCritChance<MeleeDamageClass>() += 5;
-                    }
-                }
-            }
-            else if (item.type == ItemID.Hoverboard) // Boosted ranged stats while wearing shroomite armor
-            {
-                player.noFallDmg = true;
-                if (player.body == ArmorIDs.Body.ShroomiteBreastplate && player.legs == ArmorIDs.Legs.ShroomiteLeggings)
-                {
-                    if (player.head == ArmorIDs.Head.ShroomiteHeadgear) //arrows
-                    {
-                        player.arrowDamage += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.ShroomiteMask) //bullets
-                    {
-                        player.bulletDamage += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.ShroomiteHelmet) //specialists (non-arrow/bullet)
-                    {
-                        player.specialistDamage += 0.05f;
-                    }
-                }
-            }
-            else if (item.type == ItemID.LeafWings) // Bonus to defensive stats while wearing tiki armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.TikiMask && player.body == ArmorIDs.Body.TikiShirt && player.legs == ArmorIDs.Legs.TikiPants)
-                {
-                    player.statDefense += 5;
-                    player.endurance += 0.05f;
-                    player.AddBuff(BuffID.DryadsWard, 5, true); // Dryad's Blessing
-                }
+                player.statDefense += 10;
+                player.AddBuff(BuffID.DryadsWard, 2); // Dryad's Blessing
             }
             else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
             {
                 player.noFallDmg = true;
-                player.statLifeMax2 += 40;
                 if (modPlayer.icicleCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
@@ -1504,15 +1420,6 @@ namespace CalamityMod.Items
                             modPlayer.icicleCooldown = 15;
                         }
                     }
-                }
-            }
-            else if (item.type == ItemID.SpookyWings) // Bonus to summon stats while wearing spooky armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.SpookyHelmet && player.body == ArmorIDs.Body.SpookyBreastplate && player.legs == ArmorIDs.Legs.SpookyLeggings)
-                {
-                    player.GetKnockback(DamageClass.Summon) += 2f;
-                    player.GetDamage<SummonDamageClass>() += 0.05f;
                 }
             }
             else if (item.type == ItemID.TatteredFairyWings)

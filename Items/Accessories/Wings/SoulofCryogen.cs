@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.cryogenSoul = true;
-            player.GetDamage<GenericDamageClass>() += 0.07f;
             player.noFallDmg = true;
             if (modPlayer.icicleCooldown <= 0)
             {

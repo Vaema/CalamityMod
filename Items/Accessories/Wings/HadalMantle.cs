@@ -30,14 +30,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if ((player.armor[0].type == ModContent.ItemType<HydrothermicHeadRanged>() || player.armor[0].type == ModContent.ItemType<HydrothermicHeadMelee>() ||
-                player.armor[0].type == ModContent.ItemType<HydrothermicHeadSummon>() || player.armor[0].type == ModContent.ItemType<HydrothermicHeadRogue>() ||
-                player.armor[0].type == ModContent.ItemType<HydrothermicHeadMagic>()) &&
-                player.armor[1].type == ModContent.ItemType<HydrothermicArmor>() && player.armor[2].type == ModContent.ItemType<HydrothermicSubligar>())
-            {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-            }
-
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int dustXOffset = 4;

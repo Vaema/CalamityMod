@@ -56,7 +56,6 @@ HadalMantle: {
 		Acceleration multiplier: 1.5
 		Average vertical speed
 		Flight time: 180
-		5% increased damage while wearing the Hydrothermic Armor
 		Fueled by the fury of the depths
 		'''
 }
@@ -122,7 +121,6 @@ SoulofCryogen: {
 		Acceleration multiplier: 1.0
 		Average vertical speed
 		Flight time: 120
-		7% increase to all damage
 		Icicles rain down as you fly
 		'''
 }
@@ -132,10 +130,9 @@ StarlightWings: {
 	Tooltip:
 		'''
 		Horizontal speed: 7.50
-		Acceleration multiplier: 1.0
+		Acceleration multiplier: 1.5
 		Average vertical speed
-		Flight time: 150
-		5% increased damage and critical strike chance while wearing the Daedalus Armor
+		Flight time: 160
 		Wings of the Nightingale
 		'''
 }
