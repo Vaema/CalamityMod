@@ -1368,12 +1368,9 @@ namespace CalamityMod.Items
                 player.AddBuff(BuffID.Honey, 2);
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.ButterflyWings) // Boost to magic stats
+            else if (item.type == ItemID.ButterflyWings) // Boost to mana regen
             {
-                player.statManaMax2 += 20;
-                player.GetDamage<MagicDamageClass>() += 0.05f;
-                player.manaCost *= 0.95f;
-                player.GetCritChance<MagicDamageClass>() += 5;
+                player.manaRegen = (int)(player.manaRegen * 1.25f);
                 player.noFallDmg = true;
             }
             else if (item.type == ItemID.BatWings) // Gives night vision
@@ -1422,19 +1419,22 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            else if (item.type == ItemID.TatteredFairyWings)
+            else if (item.type == ItemID.TatteredFairyWings) // Leave a trail of damaging fairy dust while in flight
             {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.GetCritChance<GenericDamageClass>() += 5;
                 player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.SteampunkWings)
-            {
-                player.statDefense += 8;
-                player.GetDamage<GenericDamageClass>() += 0.04f;
-                player.GetCritChance<GenericDamageClass>() += 2;
-                player.moveSpeed += 0.1f;
-                player.noFallDmg = true;
+                if (modPlayer.icicleCooldown <= 0)
+                {
+                    var source = player.GetSource_Accessory(item);
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    {
+                        int fairyDustDamage = (int)player.GetBestClassDamage().ApplyTo(35);
+                        Vector2 fairyDustVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.08f, 0.2f);
+
+                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), fairyDustDamage, 0f, player.whoAmI);
+                        if (p.WithinBounds(Main.maxProjectiles))
+                            modPlayer.icicleCooldown = 10;
+                    }
+                }
             }
             else if (item.type == ItemID.FishronWings || item.type == ItemID.BetsyWings || item.type == ItemID.Yoraiz0rWings ||
                 item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings || item.type == ItemID.LokisWings ||

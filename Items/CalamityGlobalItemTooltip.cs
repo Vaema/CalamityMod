@@ -1239,8 +1239,7 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 150);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(7.5f, 1f, 1, 160, "+20 max mana, 5% decreased mana usage,\n" +
-                    "5% increased magic damage and magic critical strike chance");
+                AddWingStats(7.5f, 1f, 1, 160, "Increases mana regeneration rate");
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(6.75f, 1f, 1, 130);
@@ -1295,7 +1294,7 @@ namespace CalamityMod.Items
             }
 
             if (item.type == ItemID.TatteredFairyWings)
-                AddWingStats(7.5f, 1f, 1, 180, "5% increased damage and critical strike chance");
+                AddWingStats(7.5f, 1f, 1, 180, "You leave a trail of fairy dust as you fly");
 
             if (item.type == ItemID.SpookyWings)
                 AddWingStats(7.5f, 1f, 1, 180);
@@ -1304,7 +1303,7 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FestiveWings)
-                AddWingStats(7.5f, 1f, 1, 180, "Ornaments rain down as you fly");
+                AddWingStats(7.5f, 1f, 1, 180, "Homing ornaments rain down as you fly");
 
             if (item.type == ItemID.MothronWings)
                 AddWingStats(7.5f, 1f, 1, 200);
