@@ -458,7 +458,7 @@ namespace CalamityMod
             return new Rectangle(0, item.height * frame, item.width, item.height);
         }
 
-        public static void DrawHook(this Projectile projectile, Texture2D hookTexture, float angleAdditive = 0f)
+        public static bool DrawHook(this Projectile projectile, Texture2D hookTexture, float angleAdditive = 0f)
         {
             Player player = Main.player[projectile.owner];
             Vector2 center = projectile.Center;
@@ -485,6 +485,7 @@ namespace CalamityMod
                         hookTexture.Size() / 2, 1f, SpriteEffects.None, 0f);
                 }
             }
+            return true;
         }
 
         internal static void IterateDisco(ref Color c, ref float aiParam, in byte discoIter = 7)
