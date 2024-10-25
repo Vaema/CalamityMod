@@ -1630,8 +1630,8 @@ namespace CalamityMod.CalPlayer
                 evolutionLifeRegenCounter--;
             if (hurtSoundTimer > 0)
                 hurtSoundTimer--;
-            if (icicleCooldown > 0)
-                icicleCooldown--;
+            if (wingProjectileCooldown > 0)
+                wingProjectileCooldown--;
             if (statisTimer > 0 && Player.dashDelay >= 0)
                 statisTimer = 0;
             if (hallowedRuneCooldown > 0)

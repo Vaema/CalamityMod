@@ -728,7 +728,7 @@ namespace CalamityMod.CalPlayer
         public int phantomicBulwarkCooldown = 0;
         public int phantomicHeartRegen = 0; // 0 = can spawn, 720 = regen applied, 600 = regen stops and 10 sec cd before it can spawn again
         public bool silvaWings = false;
-        public int icicleCooldown = 0;
+        public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool MiniSwarmers = false;
         public bool noStupidNaturalARSpawns = false;
@@ -2449,7 +2449,7 @@ namespace CalamityMod.CalPlayer
             killSpikyBalls = false;
             scuttlerCooldown = 0;
             rogueCrownCooldown = 0;
-            icicleCooldown = 0;
+            wingProjectileCooldown = 0;
             statisTimer = 0;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
