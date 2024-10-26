@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RaidersTalisman>().
                 AddIngredient<MoonstoneCrown>().
                 AddIngredient<ElectriciansGlove>().
-                AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

@@ -48,7 +48,6 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<StarTaintedGenerator>().
                 AddIngredient<StatisCurse>().
-                AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
