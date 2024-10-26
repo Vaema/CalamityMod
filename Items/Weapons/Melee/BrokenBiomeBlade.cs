@@ -289,8 +289,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D itemTexture = TextureAssets.Item[Item.type].Value;
-            Rectangle itemFrame = (Main.itemAnimations[Item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[Item.type].GetFrame(itemTexture);
+            Texture2D itemTexture = TextureAssets.Item[Type].Value;
+            Rectangle itemFrame = (Main.itemAnimations[Type] == null) ? itemTexture.Frame() : Main.itemAnimations[Type].GetFrame(itemTexture);
 
             if (mainAttunement == null)
                 return true;

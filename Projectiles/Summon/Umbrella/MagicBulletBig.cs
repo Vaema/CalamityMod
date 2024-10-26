@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             if (Projectile.alpha != 0)
                 return false;
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, 1, 0, 0);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             Main.spriteBatch.Draw(texture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             // Draw Afterimages
-            CalamityUtils.DrawAfterimagesFromEdge(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesFromEdge(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
     }

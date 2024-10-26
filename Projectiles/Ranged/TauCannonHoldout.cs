@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (Projectile.timeLeft % 4 == 0 && Projectile.timeLeft > CoolingDownTime)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                                 GunTipPosition,
                                 Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.25f) * HeldItem.shootSpeed,
                                 ProjectileType<TauCannonBolt>(),
@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (!HasShotBeam)
                         {
-                            Projectile.NewProjectileDirect(
+                            Projectile.NewProjectile(
                                 Projectile.GetSource_FromThis(),
                                 GunTipPosition,
                                 Projectile.velocity,
@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             if (Projectile.owner == Main.myPlayer)
                             {
-                                Projectile.NewProjectileDirect(
+                                Projectile.NewProjectile(
                                     Projectile.GetSource_FromThis(),
                                     GunTipPosition + Projectile.velocity * 25f,
                                     Projectile.velocity,
@@ -174,7 +174,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 int randomPortalAmount = Main.rand.Next(4, 5+1);
                                 for (int i = 0; i < randomPortalAmount; i++)
                                 {
-                                    Projectile.NewProjectileDirect(
+                                    Projectile.NewProjectile(
                                         Projectile.GetSource_FromThis(),
                                         Owner.Center + Main.rand.NextVector2CircularEdge(480f, 480f) * Main.rand.NextFloat(0.8f, 1.2f),
                                         Vector2.Zero,

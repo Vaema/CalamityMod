@@ -32,6 +32,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float EnemyTargetingRange = 1300f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 46;

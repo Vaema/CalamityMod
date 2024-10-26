@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Items/Ammo/VeriumBolt";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -34,8 +34,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, 0, Color.Plum);
-            return true;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, 2, Color.Plum);
+            return false;
         }
 
         public override void AI()

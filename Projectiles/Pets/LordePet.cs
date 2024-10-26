@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Pets
         public override string Texture => "CalamityMod/NPCs/Other/THELORDE";
         public override void SetStaticDefaults()
         {
-            Main.projPet[Projectile.type] = true;
+            Main.projPet[Type] = true;
         }
 
         public override void SetDefaults()
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Pets
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1);
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), frameUsed, drawColor, Projectile.rotation, new Vector2(texture.Width / 4f, texture.Height / 14f), Projectile.scale, spriteEffects, 0);

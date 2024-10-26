@@ -372,7 +372,7 @@ namespace CalamityMod.Items.Weapons.Melee
             position.Y -= 6f * scale;
 
             Texture2D itemTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OmegaBiomeBladeExtra").Value;
-            Rectangle itemFrame = (Main.itemAnimations[Item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[Item.type].GetFrame(itemTexture);
+            Rectangle itemFrame = (Main.itemAnimations[Type] == null) ? itemTexture.Frame() : Main.itemAnimations[Type].GetFrame(itemTexture);
 
             // Draw all particles.
 

@@ -28,11 +28,11 @@ namespace CalamityMod.Buffs.StatDebuffs
 
             if (Main.rand.NextBool(12))
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, (int)CalamityDusts.ProfanedFire, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 3f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 1.8f;
-                Main.dust[dust].velocity.Y -= 0.5f;
-                drawInfo.DustCache.Add(dust);
+                Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, (int)CalamityDusts.ProfanedFire, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 3f);
+                dust.noGravity = true;
+                dust.velocity *= 1.8f;
+                dust.velocity.Y -= 0.5f;
+                drawInfo.DustCache.Add(dust.dustIndex);
             }
         }
     }

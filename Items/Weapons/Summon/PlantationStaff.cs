@@ -33,6 +33,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float TentacleSpeed = 25f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 50;

@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,7 +23,7 @@ namespace CalamityMod.Projectiles.Rogue
         private bool initialized = false;
         public override void SetDefaults()
         {
-            Projectile.width = 42;
+            Projectile.width = 40;
             Projectile.height = 36;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 120;
@@ -55,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPosition = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D alternateHookTexture = Projectile.spriteDirection == -1 ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SlickCaneProjectileAlt").Value : Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D alternateHookTexture = Projectile.spriteDirection == -1 ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SlickCaneProjectileAlt").Value : Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(Projectile.spriteDirection == 1 ? alternateHookTexture.Width + 8f : -8f, -8f);
             Main.EntitySpriteDraw(alternateHookTexture, drawPosition, null,
                 lightColor, Projectile.rotation,
@@ -80,14 +81,15 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false))
+            //Dont drop money from Dummies, WoF eyes and worm segments to make grinding money a bit harder and not give money from Dummies since that was apparently happening
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !CalamityLists.needsDebuffIconDisplayList.Contains(target.type))
             {
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes
                 moneyValueToDrop = (int)MathHelper.Clamp(moneyValueToDrop, 0, 5000f);
                 if (Projectile.Calamity().stealthStrike && Main.rand.NextBool(20))
                 {
-                    moneyValueToDrop += Item.buyPrice(0, Main.rand.Next(1, 4), Main.rand.Next(0, 100), Main.rand.Next(0, 100));
+                    moneyValueToDrop += Item.buyPrice(0, Main.rand.Next(1, 3), Main.rand.Next(0, 100), Main.rand.Next(0, 100));
                     SoundEngine.PlaySound(TheSevensStriker.TriplesSound, Projectile.Center);
                 }
                 else if (moneyValueToDrop > 0f)
@@ -142,16 +144,16 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // Boost dmg in proportion to money, caps at 2 plat
+            // Boost dmg in proportion to money, caps at 5 plat. Unless in Gfb cuz it would be funny
             if (Projectile.Calamity().stealthStrike)
             {
                 Player player = Main.player[Projectile.owner];
                 double money = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (money >= 2000000)
-                    money = 2000000;
+                if (money >= 5000000 && !Main.zenithWorld)
+                    money = 5000000;
                 if (money != 0)
                 {
-                    modifiers.SourceDamage *= (float)(money / 500000 + 1);
+                    modifiers.SourceDamage *= (float)(money / 1250000 + 1);
                     SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
                     for (int j = 0; j < 8; j++)
                     {

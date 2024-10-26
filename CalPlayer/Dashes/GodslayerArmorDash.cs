@@ -140,9 +140,8 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = AsgardianAegis.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = 3000;
             hitContext.damageClass = player.GetBestClass();
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseDamage = 3000;
             hitContext.BaseKnockback = 15f;
 
             // God Slayer Dash intentionally does not use the vanilla function for collision attack iframes.

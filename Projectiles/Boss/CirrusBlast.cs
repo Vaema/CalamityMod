@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Boss
             // Determine frames.
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5f == 4f)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;
@@ -105,9 +105,9 @@ namespace CalamityMod.Projectiles.Boss
                 return false;
 
             Color beamColor = LaserOverlayColor;
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             // Start texture drawing.
             Vector2 centerOnLaser = Projectile.Center + Projectile.velocity * Projectile.scale * 116f;

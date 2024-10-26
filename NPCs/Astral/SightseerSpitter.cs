@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/SightseerSpitterGlow", AssetRequestMode.AsyncLoad);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -195,7 +195,6 @@ namespace CalamityMod.NPCs.Astral
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.ProjectileNPC[Type] = true;
         }
 
@@ -251,12 +250,11 @@ namespace CalamityMod.NPCs.Astral
         {
             if (modifiers.GetDamage(NPC.damage, 0f, 0f) > 0)
             {
-                if (target.HasNPCBannerBuff(ModContent.NPCType<SightseerSpitter>()))
+                int parent = ModContent.NPCType<SightseerSpitter>();
+                if (target.HasNPCBannerBuff(parent))
                 {
-                    if (Main.expertMode)
-                        modifiers.IncomingDamageMultiplier *= 0.5f;
-                    else
-                        modifiers.IncomingDamageMultiplier *= 0.75f;
+		        	ItemID.BannerEffect effect = ItemID.Sets.BannerStrength[Item.BannerToItem(parent)];
+        			modifiers.IncomingDamageMultiplier *= (Main.expertMode ? effect.ExpertDamageReceived : effect.NormalDamageReceived);
                 }
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)

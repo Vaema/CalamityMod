@@ -25,11 +25,11 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -114,13 +114,13 @@ namespace CalamityMod.Projectiles.Summon
                     }
 
                     if (Time % 40f >= 33f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                        Projectile.frame = Main.projFrames[Type] - 1;
                     else if (Time % 40f >= 27f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 2;
+                        Projectile.frame = Main.projFrames[Type] - 2;
                     else if (Time % 40f >= 22f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 3;
+                        Projectile.frame = Main.projFrames[Type] - 3;
                     else if (Time % 40f >= 17f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 4;
+                        Projectile.frame = Main.projFrames[Type] - 4;
 
                     Projectile.direction = Projectile.spriteDirection = (player.Center.X - Projectile.Center.X > 0).ToDirectionInt();
                     if (Math.Abs(player.Center.X - Projectile.Center.X) < 80f)
@@ -229,10 +229,10 @@ namespace CalamityMod.Projectiles.Summon
 
             // PreDraw is used instead of PostDraw because of draw order. Drawing the chains after the head
             // would cause them to be drawn on top of the head, which we do not want.
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
-                             headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             headTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              lightColor,
                              Projectile.rotation,
                              Projectile.Size * 0.5f,

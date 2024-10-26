@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -182,8 +182,8 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRectangle = rectangular.Size() / 2f;
             float scaleFactor = (float)Math.Cos((double)(6.28318548f * (Projectile.localAI[0] / 60f))) + 3f + 3f;

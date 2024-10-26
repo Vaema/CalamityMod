@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -143,8 +143,8 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color originalColor = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 drawPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D27 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle rectangle = texture2D27.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture2D27 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle rectangle = texture2D27.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color alphaColor = Projectile.GetAlpha(originalColor);
             Vector2 origin7 = rectangle.Size() / 2f;
             Color sandyColor = Main.hslToRgb(0.25f, 1f, 1f).MultiplyRGBA(new Color(255, 255, 255, 0));

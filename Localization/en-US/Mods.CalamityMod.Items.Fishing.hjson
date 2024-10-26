@@ -57,7 +57,7 @@ Bloodfin: {
 		'''
 		Grants a buff that grants +2.5 HP/s life regen
 		This buff directly restores HP if below 75% health
-		10 second duration
+		{$CommonItemTooltip.SecondDuration}
 		'The wonders of angiogenesis'
 		'''
 }
@@ -163,13 +163,7 @@ RustedJingleBell: {
 
 SerpentsBite: {
 	DisplayName: Serpent's Bite
-	Tooltip:
-		'''
-		Reach: 28.125
-		Launch Velocity: 18
-		Reelback Velocity: 14
-		Pull Velocity: 12
-		'''
+	Tooltip: "{$Common.GrappleStats}"
 }
 
 Serpentuna: {

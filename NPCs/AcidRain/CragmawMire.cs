@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
             {

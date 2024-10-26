@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChanneledState == 0f && ChannelTimer > 10f)
             {
-                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, 1, 0, 0);
 
                 return false;
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

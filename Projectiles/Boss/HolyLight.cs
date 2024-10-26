@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Boss
             float vel = Projectile.velocity.Length() / 8;
             Projectile.localAI[1] += vel;
 
-            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;

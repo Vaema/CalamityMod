@@ -3,7 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.World;
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 16;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 5f

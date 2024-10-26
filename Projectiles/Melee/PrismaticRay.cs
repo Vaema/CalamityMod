@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/Melee/PrismaticRayStart";
         public Player Owner => Main.player[Projectile.owner];
 
-        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/PrismaticRayMid", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/PrismaticRayEnd", AssetRequestMode.ImmediateLoad).Value;
         public override float MaxScale => 5f;

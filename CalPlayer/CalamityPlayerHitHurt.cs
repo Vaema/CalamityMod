@@ -20,6 +20,8 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -71,12 +73,12 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 20; j++)
             {
-                int sVeilDustIndex1 = Dust.NewDust(Player.Center, 1, 1, DustID.VilePowder, sVeilDustDir.X * j, sVeilDustDir.Y * j);
-                int sVeilDustIndex2 = Dust.NewDust(Player.Center, 1, 1, DustID.VilePowder, -sVeilDustDir.X * j, -sVeilDustDir.Y * j);
-                Main.dust[sVeilDustIndex1].noGravity = false;
-                Main.dust[sVeilDustIndex1].noLight = false;
-                Main.dust[sVeilDustIndex2].noGravity = false;
-                Main.dust[sVeilDustIndex2].noLight = false;
+                Dust sVeilDust1 = Dust.NewDustDirect(Player.Center, 1, 1, DustID.VilePowder, sVeilDustDir.X * j, sVeilDustDir.Y * j);
+                Dust sVeilDust2 = Dust.NewDustDirect(Player.Center, 1, 1, DustID.VilePowder, -sVeilDustDir.X * j, -sVeilDustDir.Y * j);
+                sVeilDust1.noGravity = false;
+                sVeilDust1.noLight = false;
+                sVeilDust2.noGravity = false;
+                sVeilDust2.noLight = false;
             }
 
             SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
@@ -94,8 +96,7 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 30; j++)
             {
-                int num = Dust.NewDust(Player.position, Player.width, Player.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
-                Dust dust = Main.dust[num];
+                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                 dust.position.X += Main.rand.Next(-20, 21);
                 dust.position.Y += Main.rand.Next(-20, 21);
                 dust.velocity *= 0.4f;
@@ -122,8 +123,7 @@ namespace CalamityMod.CalPlayer
 
             for (int j = 0; j < 100; j++)
             {
-                int scarfDodgeDust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.LifeDrain, 0f, 0f, 100, default, 2f);
-                Dust dust = Main.dust[scarfDodgeDust];
+                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.LifeDrain, 0f, 0f, 100, default, 2f);
                 dust.position.X += Main.rand.Next(-20, 21);
                 dust.position.Y += Main.rand.Next(-20, 21);
                 dust.velocity *= 0.4f;
@@ -166,7 +166,6 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < 10; i++)
                 {
                     int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
-                    damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                     int lumenyl = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), ModContent.ProjectileType<AbyssalMirrorProjectile>(), damage, 0, Player.whoAmI);
                     Main.projectile[lumenyl].rotation = Main.rand.NextFloat(0, 360);
@@ -208,7 +207,6 @@ namespace CalamityMod.CalPlayer
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2750);
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                 int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
                 if (eclipse.WithinBounds(Main.maxProjectiles))
@@ -266,8 +264,7 @@ namespace CalamityMod.CalPlayer
 
                 for (int j = 0; j < 50; j++)
                 {
-                    int nebulousReviveDust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                    Dust dust = Main.dust[nebulousReviveDust];
+                    Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                     dust.position.X += Main.rand.Next(-20, 21);
                     dust.position.Y += Main.rand.Next(-20, 21);
                     dust.velocity *= 0.9f;
@@ -351,9 +348,9 @@ namespace CalamityMod.CalPlayer
 
                 for (int i = 0; i < 60; i++)
                 {
-                    int d = Dust.NewDust(Player.position, Player.width, Player.height, DustID.GemSapphire, 0f, 0f, 0, default, 2.5f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].velocity *= 5f;
+                    Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GemSapphire, 0f, 0f, 0, default, 2.5f);
+                    dust.noGravity = true;
+                    dust.velocity *= 5f;
                 }
 
                 return false;
@@ -541,32 +538,6 @@ namespace CalamityMod.CalPlayer
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
                 modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
-            // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
-            if (item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
-            }
-
-            // Titanium Sword deals up to +15% damage based on the target's knockback resistance.
-            if (item.type == ItemID.TitaniumSword)
-            {
-                float knockbackResistBonus = 0.15f * (1f - target.knockBackResist);
-                modifiers.ScalingBonusDamage += knockbackResistBonus;
-            }
-
-            // Antlion Claw, Bone Sword and Breaker Blade ignore 50% of the enemy's defense.
-            if (item.type == ItemID.AntlionClaw || item.type == ItemID.BoneSword || item.type == ItemID.BreakerBlade)
-            {
-                modifiers.ScalingArmorPenetration += 0.5f;
-            }
-
-            // Stylish Scissors, all Phaseblades and all Phasesabers ignore 100% of the enemy's defense.
-            if (item.type == ItemID.StylistKilLaKillScissorsIWish || (item.type >= ItemID.BluePhaseblade && item.type <= ItemID.YellowPhaseblade) || (item.type >= ItemID.BluePhasesaber && item.type <= ItemID.YellowPhasesaber) || item.type == ItemID.OrangePhaseblade || item.type == ItemID.OrangePhasesaber)
-            {
-                modifiers.ScalingArmorPenetration += 1f;
-            }
-
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
             {
@@ -658,34 +629,13 @@ namespace CalamityMod.CalPlayer
             if (screwdriver)
             {
                 if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += 0.05f;
-            }
-
-            // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
-            if (proj.type == ProjectileID.Excalibur || proj.type == ProjectileID.TrueExcalibur)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
+                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
 
             // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
             // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
             if (proj.type == ProjectileID.InfernoFriendlyBlast)
                 modifiers.SourceDamage *= 1.2f;
-
-            // Gungnir deals +100% damage to targets above 75% HP.
-            if (proj.type == ProjectileID.Gungnir)
-            {
-                if (target.life > (int)(target.lifeMax * 0.75))
-                    modifiers.ScalingBonusDamage += 1f;
-            }
-
-            // Titanium Trident deals up to +15% damage based on the target's knockback resistance.
-            if (proj.type == ProjectileID.TitaniumTrident)
-            {
-                float knockbackResistBonus = 0.15f * (1f - target.knockBackResist);
-                modifiers.ScalingBonusDamage += knockbackResistBonus;
-            }
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -1549,7 +1499,6 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < 9; i++)
                 {
                     int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
-                    seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
 
                     Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
                     bee.ArmorPenetration = 35;
@@ -1615,7 +1564,7 @@ namespace CalamityMod.CalPlayer
                         Rectangle npcHitbox = n.getRect();
                         if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                         {
-                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage));
+                            int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage);
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
@@ -1716,6 +1665,10 @@ namespace CalamityMod.CalPlayer
         #region Modify Hurt
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
+            // Calcium Potion knockback reduction
+            if (calcium)
+                modifiers.Knockback *= (1f - CalciumPotion.KnockbackResistance);
+
             // Handles energy shields and Boss Rush, in that order
             modifiers.ModifyHurtInfo += ModifyHurtInfo_Calamity;
 
@@ -2355,22 +2308,22 @@ namespace CalamityMod.CalPlayer
 
                         for (int d = 0; d < 20; d++)
                         {
-                            int dust = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
-                            Main.dust[dust].velocity *= 3f;
+                            Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                            dust.velocity *= 3f;
                             if (Main.rand.NextBool())
                             {
-                                Main.dust[dust].scale = 0.5f;
-                                Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                                dust.scale = 0.5f;
+                                dust.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                             }
                         }
 
                         for (int d = 0; d < 35; d++)
                         {
-                            int fire = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 3f);
-                            Main.dust[fire].noGravity = true;
-                            Main.dust[fire].velocity *= 5f;
-                            fire = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 2f);
-                            Main.dust[fire].velocity *= 2f;
+                            Dust fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                            fire.noGravity = true;
+                            fire.velocity *= 5f;
+                            fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                            fire.velocity *= 2f;
                         }
                     }
                 }
@@ -2382,21 +2335,21 @@ namespace CalamityMod.CalPlayer
 
                     for (int d = 0; d < 10; d++)
                     {
-                        int ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
-                        Main.dust[ice].velocity *= 3f;
+                        Dust ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        ice.velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
-                            Main.dust[ice].scale = 0.5f;
-                            Main.dust[ice].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                            ice.scale = 0.5f;
+                            ice.fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                         }
                     }
                     for (int d = 0; d < 15; d++)
                     {
-                        int ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
-                        Main.dust[ice].noGravity = true;
-                        Main.dust[ice].velocity *= 5f;
-                        ice = Dust.NewDust(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
-                        Main.dust[ice].velocity *= 2f;
+                        Dust ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
+                        ice.noGravity = true;
+                        ice.velocity *= 5f;
+                        ice = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        ice.velocity *= 2f;
                     }
                 }
 
@@ -2406,7 +2359,6 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (xerocSet)
                 {
-                    Player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 180);
                     Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 180);
                 }
                 else if (reaverDefense)
@@ -2544,7 +2496,6 @@ namespace CalamityMod.CalPlayer
                     for (int n = 0; n < 4; n++)
                     {
                         int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
-                        featherDamage = Player.ApplyArmorAccDamageBonusesTo(featherDamage);
 
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);
                     }
@@ -2555,10 +2506,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item74, Player.Center);
 
                     int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(25);
-                    blazeDamage = Player.ApplyArmorAccDamageBonusesTo(blazeDamage);
-
                     int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(320);
-                    astralStarDamage = Player.ApplyArmorAccDamageBonusesTo(astralStarDamage);
 
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                     for (int n = 0; n < 12; n++)
@@ -2573,7 +2521,6 @@ namespace CalamityMod.CalPlayer
                     for (int n = 0; n < 3; n++)
                     {
                         int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(130);
-                        deificStarDamage = Player.ApplyArmorAccDamageBonusesTo(deificStarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2614,7 +2561,6 @@ namespace CalamityMod.CalPlayer
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
                         int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
-                        effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;
                         Projectile.NewProjectile(source, Player.Center, spawnerVelocity, ModContent.ProjectileType<ShadeNimbusSpawner>(), effectDamage, 0f, Player.whoAmI, 0f, 0f, effectStrength);
@@ -2643,7 +2589,6 @@ namespace CalamityMod.CalPlayer
                     {
                         SoundEngine.PlaySound(SoundID.Item74, Player.Center);
                         int eDamage = (int)Player.GetBestClassDamage().ApplyTo(230);
-                        eDamage = Player.ApplyArmorAccDamageBonusesTo(eDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                             Projectile.NewProjectile(fuckYouBitch, Player.Center, Vector2.Zero, ModContent.ProjectileType<DeepseaBlaze>(), eDamage, 1f, Player.whoAmI, 0f, 0f);
@@ -2660,7 +2605,6 @@ namespace CalamityMod.CalPlayer
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
                         int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(60);
-                        sDamage = Player.ApplyArmorAccDamageBonusesTo(sDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
@@ -2685,7 +2629,6 @@ namespace CalamityMod.CalPlayer
                     if (hurtInfo.Damage > 0)
                     {
                         int rDamage = (int)Player.GetBestClassDamage().ApplyTo(240);
-                        rDamage = Player.ApplyArmorAccDamageBonusesTo(rDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                             Projectile.NewProjectile(source, Player.Center.X, Player.position.Y + 36f, 0f, -18f, ModContent.ProjectileType<ReaverThornBase>(), rDamage, 0f, Player.whoAmI, 0f, 0f);
@@ -2701,7 +2644,7 @@ namespace CalamityMod.CalPlayer
                         double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
-                        int shrapnelDamage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(675));
+                        int shrapnelDamage = Player.CalcIntDamage<MeleeDamageClass>(675);
                         if (Player.whoAmI == Main.myPlayer)
                         {
                             for (int i = 0; i < 4; i++)
@@ -2722,7 +2665,6 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < 2; l++)
                         {
                             int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
-                            shadowbeamDamage = Player.ApplyArmorAccDamageBonusesTo(shadowbeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
                             if (beam.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2735,7 +2677,6 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < 5; l++)
                         {
                             int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
-                            scytheDamage = Player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);
                             if (scythe.whoAmI.WithinBounds(Main.maxProjectiles))

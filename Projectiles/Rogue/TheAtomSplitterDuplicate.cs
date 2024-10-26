@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Rogue
         public ref float Lifetime => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             Color drawColor = CalamityUtils.MulticolorLerp((Time / 35f + Projectile.identity / 4f) % 1f, CalamityUtils.ExoPalette);
             drawColor.A = 0;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], drawColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor);
             return false;
         }
     }

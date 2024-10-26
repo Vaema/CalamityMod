@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.SulphurousSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -89,7 +89,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 return;
             }
             NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

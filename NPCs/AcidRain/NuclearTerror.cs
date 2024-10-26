@@ -87,9 +87,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 14;
+            NPCID.Sets.TrailCacheLength[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -606,7 +606,7 @@ Continue:
                     NPC.frame.Y = frameHeight * 8;
                 }
 
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type] && Main.netMode != NetmodeID.MultiplayerClient)
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type] && Main.netMode != NetmodeID.MultiplayerClient)
                     NPC.StrikeInstantKill();
             }
             else if (NPC.frame.Y >= (Walking ? 8 : 4) * frameHeight)

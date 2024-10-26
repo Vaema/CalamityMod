@@ -39,7 +39,7 @@ namespace CalamityMod.Tiles.Crags.Tree
             AddMapEntry(new Color(38, 25, 27), CreateMapEntryName());
             DustType = 155;
             HitSound = SoundID.DD2_SkeletonHurt;
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedBone>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedBone>());
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -176,14 +176,14 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int totalSeeds = Main.rand.Next(1, 3);
                 for (int numSeed = 0; numSeed < totalSeeds; numSeed++)
                 {
-                    yield return new Item(ModContent.ItemType<Items.Placeables.SpineSapling>());
+                    yield return new Item(ModContent.ItemType<Items.Placeables.Crags.SpineSapling>());
                 }
             }
 
             //chance to drop extra wood
             if (Main.rand.NextBool())
             {
-                yield return new Item(ModContent.ItemType<Items.Placeables.ScorchedBone>());
+                yield return new Item(ModContent.ItemType<Items.Placeables.Crags.ScorchedBone>());
             }
         }
 

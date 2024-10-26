@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.Other
         {
             spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
-            Texture2D portalTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D portalTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos;
             Vector2 origin = portalTexture.Size() * 0.5f;
             Color baseColor = Color.White;

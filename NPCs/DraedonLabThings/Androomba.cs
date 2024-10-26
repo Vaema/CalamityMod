@@ -22,9 +22,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 22;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
-            Main.npcCatchable[NPC.type] = true;
+            Main.npcFrameCount[Type] = 22;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            Main.npcCatchable[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 18;
@@ -256,7 +256,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             drawPosition.Y += DrawOffsetY;

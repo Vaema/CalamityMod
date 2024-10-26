@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.TreasureBags;
@@ -61,7 +64,6 @@ using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Melee.MaceFlails;
@@ -156,6 +158,11 @@ namespace CalamityMod
         public static List<int> DisabledSummonerNerfMinions;
 
         public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
+
+        /// <summary>
+        /// Each Sunken Sea subbiome has a correspoding spawn condition boolean value and a biome type.
+        /// </summary>
+        public static SortedDictionary<SunkenSeaBiomeFlags, (Func<NPCSpawnInfo, bool> SpawnCondition, int BiomeType)> SunkenSeaBiomeCorrespondentValues { get; private set; }
 
         public override void OnModLoad()
         {
@@ -1956,6 +1963,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileID.PrincessWeapon,
                 ProjectileType<AnahitasArpeggioNote>(),
                 ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),
@@ -2713,6 +2721,16 @@ namespace CalamityMod
                 ItemType<Mycoroot>(),
                 ItemType<CosmicKunai>()
             };
+
+            SunkenSeaBiomeCorrespondentValues = new()
+            {
+                { SunkenSeaBiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
+                { SunkenSeaBiomeFlags.TimelessShores, (spawnInfo => spawnInfo.Player.Calamity().ZoneTimelessShores, GetInstance<TimelessShoresBiome>().Type) },
+                { SunkenSeaBiomeFlags.RadiantReefs, (spawnInfo => spawnInfo.Player.Calamity().ZoneRadiantReefs, GetInstance<RadiantReefsBiome>().Type) },
+                { SunkenSeaBiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
+                { SunkenSeaBiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
+                { SunkenSeaBiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
+            };
         }
 
         public override void Unload()
@@ -2794,6 +2812,8 @@ namespace CalamityMod
             DisabledSummonerNerfMinions = null;
 
             VeneratedLocketBanlist = null;
+
+            SunkenSeaBiomeCorrespondentValues = null;
         }
     }
 }

@@ -9,6 +9,10 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;
 using Terraria;
 using Terraria.ID;
@@ -1382,14 +1386,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofLight, 5);
             r.AddIngredient(ItemID.SoulofNight, 5);
             r.AddTile(TileID.MythrilAnvil);
-            r.Register();
-            r.DisableDecraft();
-
-            // Lihzahrd Power Cell (NOT Calamity's Old Power Cell)
-            r = Recipe.Create(ItemID.LihzahrdPowerCell);
-            r.AddIngredient(ItemID.LihzahrdBrick, 5);
-            r.AddIngredient<CoreofSunlight>();
-            r.AddTile(TileID.LihzahrdFurnace);
             r.Register();
             r.DisableDecraft();
         }

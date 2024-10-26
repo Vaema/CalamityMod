@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void PostDraw(Color lightColor)
         {
             Color color = Color.White;
-            Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height);
+            Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height);
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrowGlow").Value, Projectile.Center - Main.screenPosition, frame, color, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
                 if (Time > 6)
-                    CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], MainColor * 0.3f, 1, texture);
+                    CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], MainColor * 0.3f, 1, texture);
                 return true;
         }
     }

@@ -16,7 +16,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public float Knockback = 2f;
         public override void SetDefaults()
         {
-            Item.width = Item.height = 44;
+            Item.width = 44;
+            Item.height = 64;
             Item.damage = 10;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 32;
@@ -33,8 +34,8 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.myPlayer != Owner.whoAmI)
                 return false;
 
-            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Effect tileEffect = Filters.Scene["CalamityMod:WulfrumScaffoldSelection"].GetShader().Shader;
 

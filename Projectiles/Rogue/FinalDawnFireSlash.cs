@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
         public static float StealthReturnRatio = 0.40f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 11;
+            Main.projFrames[Type] = 11;
         }
         public override void SetDefaults()
         {
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 drawCenter = Projectile.Center;
             Rectangle frameRectangle = new Rectangle(Projectile.frame / 5 * width, Projectile.frame % 5 * height, width, height);
 
-            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnFireSlash_Glow").Value;
 
             Main.spriteBatch.Draw(scytheTexture,

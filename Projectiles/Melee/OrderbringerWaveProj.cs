@@ -55,12 +55,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.scale += 0.0026f;
                 hitboxSize += 0.4525f;
                 Projectile.velocity *= 0.995f;
-
-                if (time % 50 == 0 && time > 10)
-                {
-                    //Projectile stars = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.2f), 3f, Projectile.owner, 0f);
-                    //stars.penetrate = 1;
-                }
             }
             else
             {

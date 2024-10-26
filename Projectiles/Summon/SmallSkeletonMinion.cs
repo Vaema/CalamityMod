@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Summon
         public int Variant;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 7;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame = 1;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 1;
             }
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Rectangle frame = new Rectangle(Variant * Projectile.width, Projectile.frame * Projectile.height, Projectile.width, Projectile.height);
             SpriteEffects spriteEffects = (Projectile.spriteDirection == 1) ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2f, 1f, spriteEffects, 0);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2f, 1f, spriteEffects, 0);
             return false;
         }
 

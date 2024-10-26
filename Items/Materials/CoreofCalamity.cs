@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
 
             ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
         }
@@ -33,10 +33,11 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CoreofSunlight>(3).
-                AddIngredient<CoreofEleum>(3).
-                AddIngredient<CoreofHavoc>(3).
+                AddIngredient<EssenceofSunlight>().
+                AddIngredient<EssenceofHavoc>().
+                AddIngredient<EssenceofEleum>().
                 AddIngredient<AshesofCalamity>().
+                AddIngredient(ItemID.Ectoplasm, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

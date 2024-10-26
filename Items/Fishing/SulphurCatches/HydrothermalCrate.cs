@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools.ClimateChange;
@@ -62,16 +62,16 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
             var tier3AcidRain = itemLoot.DefineConditionalDropSet(() => DownedBossSystem.downedPolterghast && DownedBossSystem.downedBoomerDuke);
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<Items.Placeables.SulphurousSand>(), 1, 5, 10);
-            itemLoot.Add(ModContent.ItemType<Items.Placeables.SulphurousSandstone>(), 1, 5, 10);
-            itemLoot.Add(ModContent.ItemType<Items.Placeables.HardenedSulphurousSandstone>(), 1, 5, 10);
+            itemLoot.Add(ModContent.ItemType<Items.Placeables.Abyss.SulphurousSand>(), 1, 5, 10);
+            itemLoot.Add(ModContent.ItemType<Items.Placeables.Abyss.SulphurousSandstone>(), 1, 5, 10);
+            itemLoot.Add(ModContent.ItemType<Items.Placeables.Abyss.HardenedSulphurousSandstone>(), 1, 5, 10);
             itemLoot.Add(ModContent.ItemType<Acidwood>(), 1, 5, 10);
 
             tier1AcidRain.Add(ModContent.ItemType<SulphuricScale>(), 10, 1, 3);
             tier2AcidRain.Add(ModContent.ItemType<CorrodedFossil>(), 10, 1, 3);
             tier2AbyssAvailable.Add(ModContent.ItemType<DepthCells>(), 5, 2, 5);
             tier2AbyssAvailable.Add(ModContent.ItemType<Lumenyl>(), 5, 2, 5);
-            tier2AbyssAvailable.Add(ModContent.ItemType<Items.Placeables.PlantyMush>(), 5, 2, 5);
+            tier2AbyssAvailable.Add(ModContent.ItemType<Items.Placeables.Abyss.PlantyMush>(), 5, 2, 5);
             scoriaAvailable.Add(ModContent.ItemType<ScoriaOre>(), 5, 16, 28);
             scoriaAvailable.Add(ModContent.ItemType<ScoriaBar>(), new Fraction(15, 100), 4, 7);
             tier3AcidRain.Add(ModContent.ItemType<ReaperTooth>(), 10, 1, 5);

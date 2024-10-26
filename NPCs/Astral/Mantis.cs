@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
+            Main.npcFrameCount[Type] = 14;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = 0

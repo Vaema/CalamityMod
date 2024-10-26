@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.Weapons.Magic;

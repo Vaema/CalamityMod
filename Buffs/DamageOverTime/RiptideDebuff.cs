@@ -36,11 +36,11 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool(14))
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.FungiHit, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                Main.dust[dust].noGravity = false;
-                Main.dust[dust].velocity *= 1.2f;
-                Main.dust[dust].velocity.Y += 0.8f;
-                drawInfo.DustCache.Add(dust);
+                Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.FungiHit, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                dust.noGravity = false;
+                dust.velocity *= 1.2f;
+                dust.velocity.Y += 0.8f;
+                drawInfo.DustCache.Add(dust.dustIndex);
             }
             if (Main.rand.NextBool(9))
             {

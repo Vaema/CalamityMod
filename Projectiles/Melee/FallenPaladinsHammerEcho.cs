@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public override void SetDefaults()
         {
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/FallenPaladinsHammer").Value;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.DarkRed with { A = 0 } * 0.5f, 1, texture, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.DarkRed with { A = 0 } * 0.5f, 1, texture, true, true);
 
             Projectile.DrawProjectileWithBackglow(Color.Red with { A = 0 }, Color.Lerp(Color.Red, Color.White, 0.5f), 5f, texture);
             return false;

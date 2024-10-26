@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)

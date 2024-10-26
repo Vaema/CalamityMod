@@ -14,6 +14,9 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const float ReboundRamDamageFactor = 2f;
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+
         public override void SetDefaults()
         {
             Item.width = 80;

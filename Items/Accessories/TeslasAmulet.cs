@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;

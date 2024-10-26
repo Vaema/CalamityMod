@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
         public const int InwardCollapseTime = 70;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -165,8 +165,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D myTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle frame = myTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D myTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = myTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color trasparentCrystalColor = Projectile.GetAlpha(lightColor) * 0.6f;
             Vector2 origin = frame.Size() / 2f;
 

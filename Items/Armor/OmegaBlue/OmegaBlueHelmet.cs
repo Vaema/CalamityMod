@@ -94,6 +94,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
                 AddIngredient<DepthCells>(12).
                 AddIngredient<RuinousSoul>().
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<OmegaBlueChestplate>()).
                 Register();
         }
     }

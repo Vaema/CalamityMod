@@ -72,10 +72,7 @@ BobbitHook: {
 	Tooltip:
 		'''
 		Retracts upon attaching to a tile with extreme speeds
-		Reach: 40
-		Launch Velocity: 25
-		Reelback Velocity: 28
-		Pull Velocity: 24
+		{$Common.GrappleStats}
 		'''
 }
 
@@ -124,7 +121,7 @@ Gelpick: {
 
 GenesisPickaxe: {
 	DisplayName: Genesis Pickaxe
-	Tooltip: Can mine Uelibloom Ore
+	Tooltip: "{$Common.CanMineUelibloom}"
 }
 
 Grax: {

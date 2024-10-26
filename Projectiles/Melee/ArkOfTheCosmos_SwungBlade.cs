@@ -75,8 +75,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -184,9 +184,7 @@ namespace CalamityMod.Projectiles.Melee
 
                         var source = Projectile.GetSource_FromThis();
                         Projectile blast = Projectile.NewProjectileDirect(source, Owner.Center + adjustedBlastRotation.ToRotationVector2() * 10f, adjustedBlastRotation.ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SwirlBoltDamageMultiplier / ArkoftheCosmos.SwirlBoltAmount * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
-                        {
-                            blast.timeLeft = 100;
-                        }
+                        blast.timeLeft = 100;
                     }
                 }
 
@@ -244,9 +242,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             var source = Projectile.GetSource_FromThis();
                             Projectile blast = Projectile.NewProjectileDirect(source, Projectile.Center + (MathHelper.TwoPi * (i / 3f) + rotationOffset).ToRotationVector2() * 30f, (MathHelper.TwoPi * (i / 3f) + rotationOffset).ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SnapBoltsDamageMultiplier * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
-                            {
-                                blast.timeLeft = 100;
-                            }
+                            blast.timeLeft = 100;
                         }
 
                         //Reset local immunity so that the snap can do damage
@@ -489,7 +485,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 drawOrigin = new Vector2(flipped ? sword.Width : 0f, sword.Height);
             Vector2 drawOffset = Owner.Center + drawAngle.ToRotationVector2() * 10f - Main.screenPosition;
 
-            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type] && Combo == 0f)
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type] && Combo == 0f)
             {
                 for (int i = 1; i < Projectile.oldRot.Length; ++i)
                 {
@@ -544,7 +540,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Vector2 backScissorDrawPosition = Owner.Center + drawAngle.ToRotationVector2() * 10f + (drawAngle.ToRotationVector2() * 56f + (drawAngle - MathHelper.PiOver2).ToRotationVector2() * 11 * Owner.direction) * Projectile.scale - Main.screenPosition; //Lined up with the hole in the front blade
 
-            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 Texture2D afterimage = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsGlow").Value;
 

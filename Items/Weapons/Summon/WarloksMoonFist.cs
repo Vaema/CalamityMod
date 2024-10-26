@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const int PunchCooldownTime = 36;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
+
         public override void SetDefaults()
         {
             Item.width = 50;

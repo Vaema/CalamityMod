@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
             }
 
-            int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 5, 1, 20));
+            int heal = (int)(MathHelper.Clamp(25 - Projectile.numHits * 8, 1, 25));
             if (Projectile.numHits < 20)
             {
                 Owner.HealPlayer(heal);

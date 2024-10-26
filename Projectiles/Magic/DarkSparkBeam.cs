@@ -173,7 +173,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float drawArea = Projectile.localAI[1];
             Projectile projectile2 = Main.projectile[(int)Projectile.ai[1]];
             Color color = GetBeamColor((int)projectile2.ai[0], (int)Projectile.ai[0]);

@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;

@@ -336,6 +336,9 @@ namespace CalamityMod.Systems
                 if (sideType < 0)
                     return;
 
+                if (!_TileTypeToBlendTextureSlot.IndexInRange(sideType))
+                    return;
+
                 var blendTextureSlot = _TileTypeToBlendTextureSlot[sideType];
                 if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
                     return;

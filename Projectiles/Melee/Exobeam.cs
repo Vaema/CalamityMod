@@ -30,8 +30,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 30;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft > 595)
                 return false;
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float bladeScale = Utils.GetLerpValue(3f, 13f, Projectile.velocity.Length(), true) * 1.2f;
 
             //Draw the blade.

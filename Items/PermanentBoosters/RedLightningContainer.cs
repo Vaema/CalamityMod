@@ -1,8 +1,10 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -10,6 +12,8 @@ namespace CalamityMod.Items.PermanentBoosters
     public class RedLightningContainer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.RageBoosterTooltip").WithFormatArgs(BalancingConstants.RageDurationPerBooster.FramesToSeconds());
+
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetDefaults()

@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 28;
+            Main.projFrames[Type] = 28;
         }
 
         public override void SetDefaults()
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             if (red > 255)
                 red = 255;
 
-            if (++Projectile.frame >= Main.projFrames[Projectile.type])
+            if (++Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             Projectile.soundDelay--;
