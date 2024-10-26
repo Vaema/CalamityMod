@@ -293,10 +293,7 @@ namespace CalamityMod.Projectiles.Rogue
                 AMPUTATE = true;
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
 
-        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 80, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
