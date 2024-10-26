@@ -2838,11 +2838,11 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense += 5;
             }
 
-            if (xRage)
-                Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-
             if (xWrath)
-                Player.GetCritChance<RogueDamageClass>() += 5;
+            { 
+            Player.GetDamage<ThrowingDamageClass>() += 0.1f;
+            Player.GetCritChance<RogueDamageClass>() += 5;
+            }
 
             if (graxDefense)
             {

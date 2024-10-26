@@ -965,7 +965,6 @@ namespace CalamityMod.CalPlayer
         public bool decayEffigy = false;
         public bool rRage = false;
         public bool tRegen = false;
-        public bool xRage = false;
         public bool xWrath = false;
         public bool graxDefense = false;
         public bool encased = false;
@@ -2066,7 +2065,6 @@ namespace CalamityMod.CalPlayer
             crimEffigy = false;
             decayEffigy = false;
             rRage = false;
-            xRage = false;
             xWrath = false;
             graxDefense = false;
             encased = false;
@@ -2550,7 +2548,6 @@ namespace CalamityMod.CalPlayer
             corrEffigy = false;
             crimEffigy = false;
             rRage = false;
-            xRage = false;
             xWrath = false;
             kamiBoost = false;
             graxDefense = false;
