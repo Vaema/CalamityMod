@@ -254,8 +254,8 @@ Margarita: {
 		Halves the duration of most harmful debuffs
 		Reduces defense by {0}% and life regen by {1} HP/s
 		{$Common.AlcoholWarning}
-		{2} minute duration
 		[c/B00BA5:'One of the best drinks ever created, enjoy it while it lasts.']
+		{$CommonItemTooltip.MinuteDuration@2}
 		'''
 }
 
