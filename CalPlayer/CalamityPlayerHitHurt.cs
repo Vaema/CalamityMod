@@ -2353,7 +2353,6 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (xerocSet)
                 {
-                    Player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 180);
                     Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 180);
                 }
                 else if (reaverDefense)
