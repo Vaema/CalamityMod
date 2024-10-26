@@ -22,7 +22,7 @@ Baguette: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
-		Red Wine heals {0} HP, but reduces life regen by {1} HP/s
+		{$Potions.RedWine.DisplayName} heals {0} HP, but reduces life regen by {1} HP/s
 		[c/FCE391:'je suis Monte']
 		'''
 }
@@ -71,17 +71,17 @@ Fabsoup: {
 
 FlaskOfBrimstone: {
 	DisplayName: Flask of Brimstone
-	Tooltip: Melee, Whip, and Rogue attacks inflict Brimstone Flames
+	Tooltip: Melee, Whip, and Rogue attacks inflict {$Buffs.BrimstoneFlames.DisplayName}
 }
 
 FlaskOfCrumbling: {
 	DisplayName: Flask of Crumbling
-	Tooltip: Melee, Whip, and Rogue attacks inflict Crumbling on enemies
+	Tooltip: Melee, Whip, and Rogue attacks inflict {$Buffs.Crumbling.DisplayName}
 }
 
 FlaskOfHolyFlames: {
 	DisplayName: Flask of Holy Flames
-	Tooltip: Melee, Whip, and Rogue attacks inflict Holy Flames
+	Tooltip: Melee, Whip, and Rogue attacks inflict {$Buffs.HolyFlames.DisplayName}
 }
 
 GravityNormalizerPotion: {
@@ -93,7 +93,7 @@ HadalStew: {
 	DisplayName: Hadal Stew
 	Tooltip:
 		'''
-		Only gives [S] seconds of Potion Sickness
+		Only gives [S] seconds of {$BuffName.PotionSickness}
 		{$CommonItemTooltip.MediumStats}
 		{$CommonItemTooltip.MinuteDuration}
 		'''
@@ -185,7 +185,7 @@ CinnamonRoll: {
 	DisplayName: Cinnamon Roll
 	Tooltip:
 		'''
-		Increases mana regeneration rate and multiplies all fire-based debuff damage by {0}x
+		Multiplies all fire-based debuff damage by {0}x and increases mana regeneration
 		Reduces defense by {1}%
 		{$Common.AlcoholWarning}
 		[c/B00BA5:'A great-tasting cinnamon whiskey with a touch of cream soda.']
@@ -198,7 +198,7 @@ Everclear: {
 		'''
 		{0}% increased damage
 		Reduces life regen by {1} HP/s and defense by {2}%
-		Counts as 2 alcohols for Alcohol Poisoning
+		Counts as 2 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		{$Common.AlcoholWarning}
 		[c/B00BA5:'This is the most potent booze I have, be careful with it.']
 		'''

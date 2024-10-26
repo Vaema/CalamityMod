@@ -21,7 +21,7 @@ AstralChunk: {
 }
 
 BloodwormItem: {
-	DisplayName: Bloodworm
+	DisplayName: "{$NPCs.BloodwormNormal.DisplayName}"
 	Tooltip:
 		'''
 		Summons The Old Duke if used as bait in the Sulphurous Sea

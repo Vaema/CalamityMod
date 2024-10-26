@@ -32,6 +32,7 @@ using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Mounts.Minecarts;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -2018,8 +2019,8 @@ namespace CalamityMod.CalPlayer
             // Nimble Bounder bonus
             if (nimbleBounderBoost)
             {
-                Player.moveSpeed += 0.05f;
-                Player.jumpSpeedBoost += 0.25f;
+                Player.moveSpeed += NimbleBounder.MoveSpeedBoost;
+                Player.jumpSpeedBoost += NimbleBounder.JumpSpeedBoost;
             }
 
             // Affliction bonus
@@ -3032,8 +3033,8 @@ namespace CalamityMod.CalPlayer
 
             if (cinnamonRoll)
             {
-                Player.manaRegenDelay--;
-                Player.manaRegenBonus += 10;
+                Player.manaRegenDelayBonus += CinnamonRoll.ManaRegenDelayBonus;
+                Player.manaRegenBonus += CinnamonRoll.ManaRegenBonus;
             }
 
             if (starBeamRye)

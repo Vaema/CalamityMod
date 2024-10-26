@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Typeless
                     dust.fadeIn = Main.rand.NextFloat(3f, 4f);
                     dust.noGravity = true;
                 }
-                player.HealPlayer(70, HealTextType.Local);
+                player.HealPlayer(RelicOfConvergence.HealValue, HealTextType.Local);
                 SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, Projectile.Center);
             }
         }

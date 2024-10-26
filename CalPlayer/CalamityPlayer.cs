@@ -3866,7 +3866,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
-                    (nimbleBounderBoost ? 0.1f : 0f) +
+                    (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (blueCandle ? CirrusBlueCandleBuff.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
@@ -3882,7 +3882,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunSpeedBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
-                    (nimbleBounderBoost ? 0.1f : 0f) +
+                    (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
 

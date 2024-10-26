@@ -11,6 +11,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
+        // Mana has a stupid formula so it won't go into the tooltip
+        public static float ManaRegenDelayBonus = 1f;
+        public static int ManaRegenBonus = 10;
         public static float HeatDebuffBoost = 0.5f;
         public static float DefenseLossPercent = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + HeatDebuffBoost).ToString(), DefenseLossPercent.ToPercent());
