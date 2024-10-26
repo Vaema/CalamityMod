@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Enums;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -437,7 +438,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Damage Variance Dampening and Luck Removal
-        private static int AdjustDamageVariance(Terraria.On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
+        private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
             // Change the default damage variance from +-15% to +-5%.
             // If other mods decide to change the scale, they can override this. We're solely killing the default value.
@@ -566,6 +567,21 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Vortex Booster Keeps Vortex Stealth When Dashing
+        private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
+        {
+            // Allows for Vortex Booster to keep Vortex armor's stealth when dashing
+            bool vortexStealth = self.vortexStealthActive;
+            orig(self);
+
+            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
+            {
+                if (vortexStealth && !self.vortexStealthActive)
+                    self.vortexStealthActive = true;
+            }
+        }
+        #endregion
+
         #region Nebula Armor Nerfs
         private static void NerfNebulaArmorBaseLifeRegenAndDamage(ILContext il)
         {
@@ -642,6 +658,54 @@ namespace CalamityMod.ILEditing
 
             // Swap the threshold with Calamity's value.
             cursor.Next.Operand = BalancingConstants.NebulaManaRegenFrameCounterThreshold;
+        }
+        #endregion
+
+        #region Stardust Guardian Buffs
+        private static void StardustGuardianAttackBuffs(ILContext il)
+        {
+            // Increase the Stardust Guardian's attack range while wearing Stardust Wings.
+            var cursor = new ILCursor(il);
+
+            // Move to the label after the instruction that sets num3 to 500f.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(100f)))
+                {
+                    LogFailure("Stardust Guardian Buffs", "Could not move to after the Stardust Guardian's attack range.");
+                    return;
+                }
+            }
+
+            // Define a label for the branch statement.
+            var label = il.DefineLabel();
+
+            // Load Player.wingsLogic, and check if it's Stardust Wings.
+            // If it is, increase the two attack range variables.
+            cursor.Emit(OpCodes.Ldloc_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
+            cursor.Emit(OpCodes.Bne_Un, label);
+
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 4);
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 5);
+
+            cursor.MarkLabel(label);
+
+            // Now, increase the Stardust Guardian's move speed when attacking targets.
+            // This is applied regardless of having Stardust Wings.
+            // This jumps to the base speed value when moving towards a target.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(6f)))
+            {
+                LogFailure("Stardust Guardian Buffs", "Could not locate the Stardust Guardian's attack move speed.");
+                return;
+            }
+
+            // Remove and replace with a higher value.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_R4, 12f);
         }
         #endregion
 

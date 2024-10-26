@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ExtraTextures
@@ -31,6 +32,11 @@ namespace CalamityMod.ExtraTextures
         // Flying Carpet Replacements
         public static Asset<Texture2D> FlyingCarpetVanilla;
         public static Asset<Texture2D> FlyingCarpetAuric;
+
+        // Lucky Buff icon replacements
+        public static Asset<Texture2D> LuckIconGreater;
+        public static Asset<Texture2D> LuckIconVanilla;
+        public static Asset<Texture2D> LuckIconLesser;
 
         // Particles
         public static Asset<Texture2D> CircularSmear;
@@ -67,6 +73,10 @@ namespace CalamityMod.ExtraTextures
             FlyingCarpetVanilla = TextureAssets.FlyingCarpet;
             FlyingCarpetAuric = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AuricCarpet", AssetRequestMode.AsyncLoad);
 
+            LuckIconGreater = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyGreater", AssetRequestMode.AsyncLoad);
+            LuckIconVanilla = TextureAssets.Buff[BuffID.Lucky];
+            LuckIconLesser = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyLesser", AssetRequestMode.AsyncLoad);
+
             CircularSmear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmear", AssetRequestMode.AsyncLoad);
             CircularSmearFire1 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire1", AssetRequestMode.AsyncLoad);
             CircularSmearFire2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire2", AssetRequestMode.AsyncLoad);
@@ -78,6 +88,7 @@ namespace CalamityMod.ExtraTextures
             if (!Main.dedServ)
             {
                 TextureAssets.FlyingCarpet = FlyingCarpetVanilla;
+                TextureAssets.Buff[BuffID.Lucky] = LuckIconVanilla;
             }
         }
     }

@@ -1103,6 +1103,33 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove NPC.damage Condition from Radar
+        private static void RemoveDamageConditionFromRadar(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            Func<Instruction, bool>[] searchFor =
+            [
+                (x => x.MatchLdfld<NPC>(nameof(NPC.damage))),
+                (x => x.MatchLdcI4(out var comp) && comp == 0),
+                (x => x.MatchBle(out _)) //ble.s
+            ];
+
+            if (!cursor.TryGotoNext(MoveType.After, searchFor))
+            {
+                LogFailure("Radar Condition", "Unable to locate condition for NPC.damage > 0");
+                return;
+            }
+
+            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            cursor.Prev.OpCode = OpCodes.Nop;
+
+            // After that we pop NPC.damage and 0 from stack
+            cursor.EmitPop();
+            cursor.EmitPop();
+        }
+        #endregion
+
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property
         [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]

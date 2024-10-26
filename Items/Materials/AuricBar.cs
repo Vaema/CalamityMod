@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
         }
 

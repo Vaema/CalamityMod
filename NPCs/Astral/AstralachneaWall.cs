@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.Astral
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.AstralachneaGround.DisplayName");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
 
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaWallGlow", AssetRequestMode.AsyncLoad);
@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.Astral
             if (NPC.IsABestiaryIconDummy)
             {
                 NPC.frameCounter += 0.1f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 NPC.frame.Y = (int)NPC.frameCounter * frameHeight;
                 return;
             }

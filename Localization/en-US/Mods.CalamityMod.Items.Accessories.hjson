@@ -303,7 +303,7 @@ BlazingCore: {
 		Upon shattering, holy stars spiral outwards and you only take 1 damage
 		After shattering, this damage reduction effect goes on cooldown
 		Damage parried whilst on cooldown summons additional healing stars, and will not be reduced
-		Provides a moderate amount of light in the Abyss
+		{$Common.AbyssLightLevel2}
 		'''
 }
 
@@ -826,7 +826,7 @@ GiantPearl: {
 		You have a light aura around you
 		Enemies within the aura are slowed down
 		You release homing prism shards while an enemy is slowed
-		Provides a small amount of light in the abyss
+		{$Common.AbyssLightLevel1}
 		'''
 }
 
@@ -1046,7 +1046,7 @@ LumenousAmulet: {
 		'''
 		Attacks inflict Crush Depth and you are immune to it and Riptide
 		While in the abyss you gain 25% increased max life
-		Provides a moderate amount of light in the abyss
+		{$Common.AbyssLightLevel2}
 		'''
 }
 
@@ -1814,7 +1814,7 @@ TheCamper: {
 		You deal 90% less damage unless stationary
 		Standing still grants buffs depending on held item, and creates a damaging aura around you
 		While moving, you regenerate health as if standing still
-		Provides a small amount of light in the Abyss
+		{$Common.AbyssLightLevel1}
 		'In rest may we find victory'
 		'''
 }

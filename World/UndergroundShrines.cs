@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -42,8 +43,8 @@ namespace CalamityMod.World
             {
                 return true;
             }
-            if (tile.TileType == TileType<Navystone>() ||
-            tile.TileType == TileType<EutrophicSand>() ||
+            if (tile.TileType == TileType<Tiles.SunkenSea.Navystone>() ||
+            tile.TileType == TileType<Tiles.SunkenSea.EutrophicSand>() ||
             tile.WallType == WallType<NavystoneWall>() ||
             tile.WallType == WallType<EutrophicSandWall>())
             {
@@ -243,7 +244,7 @@ namespace CalamityMod.World
             List<ChestItem> contents = new List<ChestItem>()
             {
                 new ChestItem(ItemType<LuxorsGift>(), 1),
-                new ChestItem(ItemType<Items.Placeables.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+                new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
@@ -256,7 +257,7 @@ namespace CalamityMod.World
                 contents = new List<ChestItem>()
                 {
                 new ChestItem(ItemType<LuxorsGift>(), 1),
-                new ChestItem(ItemType<Items.Placeables.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+                new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),

@@ -1,6 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ArcherfishShot>();
+            Item.shoot = ModContent.ProjectileType<MegalodonShot>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;

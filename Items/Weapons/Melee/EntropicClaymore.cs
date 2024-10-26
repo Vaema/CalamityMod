@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             for (int i = 0; i < 6; i++)
             {
-                Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.7f, 1.1f), type, damage / 2, knockback * 0.5f, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.7f, 1.1f), type, damage / 2, knockback * 0.5f, player.whoAmI);
             }
             return false;
         }

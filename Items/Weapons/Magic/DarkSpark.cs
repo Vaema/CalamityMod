@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();
             Item.shootSpeed = 30f;
 
-            Item.UseSound = SoundID.Item13;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.channel = true;
             Item.noMelee = true;

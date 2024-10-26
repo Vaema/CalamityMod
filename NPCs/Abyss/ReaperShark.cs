@@ -3,7 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             if (!Main.dedServ)
             {
                 ManTexture = ModContent.Request<Texture2D>(Texture + "Man", AssetRequestMode.ImmediateLoad);
@@ -681,7 +681,7 @@ namespace CalamityMod.NPCs.Abyss
             value.Position.Y -= 50f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPC.frameCounter += hasBeenHit || NPC.IsABestiaryIconDummy ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * newFrameHeight;
         }
@@ -694,11 +694,11 @@ namespace CalamityMod.NPCs.Abyss
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Asset<Texture2D> npcTexture = Main.zenithWorld ? ManTexture : TextureAssets.Npc[NPC.type];
+            Asset<Texture2D> npcTexture = Main.zenithWorld ? ManTexture : TextureAssets.Npc[Type];
             Rectangle nframe = npcTexture.Frame(1, 4, 0, (int)NPC.frameCounter);
-            Vector2 origin = new Vector2((float)(npcTexture.Value.Width / 2), (float)(npcTexture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 origin = new Vector2((float)(npcTexture.Value.Width / 2), (float)(npcTexture.Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)npcTexture.Value.Width, (float)(npcTexture.Value.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)npcTexture.Value.Width, (float)(npcTexture.Value.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             spriteBatch.Draw(npcTexture.Value, npcOffset, nframe, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);

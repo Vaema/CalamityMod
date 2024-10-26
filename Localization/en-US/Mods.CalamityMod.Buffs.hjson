@@ -10,7 +10,7 @@ BloodyMaryBuff: {
 
 CaribbeanRumBuff: {
 	DisplayName: Caribbean Rum
-	Description: Life regen, movement speed, and wing flight time increased, you are floaty and defense is reduced
+	Description: Life regen and movement speed increased, you are floaty and defense is reduced
 }
 
 CinnamonRollBuff: {
@@ -60,7 +60,7 @@ MoscowMuleBuff: {
 
 OldFashionedBuff: {
 	DisplayName: Old Fashioned
-	Description: Accessory and set bonus damage multiplied, damage reduced
+	Description: Non-weapon damage increased, weapon damage reduced
 }
 
 RedWineBuff: {
@@ -95,7 +95,7 @@ TequilaSunriseBuff: {
 
 Trippy: {
 	DisplayName: Trippy
-	Description: You see the world for what it truly is... and you also have a 50% increase to all damage
+	Description: You see the world for what it truly is... and you also have a {0}% increase to all damage
 }
 
 VodkaBuff: {
@@ -550,12 +550,12 @@ BloodfinBoost: {
 
 BoundingBuff: {
 	DisplayName: Bounding
-	Description: Increased jump height, jump speed, and fall damage resistance
+	Description: Increased jump speed and height
 }
 
 CalciumBuff: {
 	DisplayName: Calcium
-	Description: You are immune to fall damage
+	Description: You take {0}% less knockback
 }
 
 CeaselessHunger: {
@@ -565,7 +565,7 @@ CeaselessHunger: {
 
 GravityNormalizerBuff: {
 	DisplayName: Gravity Normalizer
-	Description: Gravity is now normal in space, immunity to distorted
+	Description: Gravity is now normal in space, immunity to {$BuffName.VortexDebuff}
 }
 
 Omniscience: {
@@ -575,7 +575,7 @@ Omniscience: {
 
 PhotosynthesisBuff: {
 	DisplayName: Photosynthesis
-	Description: Life regen boosted, more during daytime, and hearts heal more HP
+	Description: Hearts heal {0} more HP
 }
 
 ShadowBuff: {
@@ -583,18 +583,13 @@ ShadowBuff: {
 	Description:
 		'''
 		You are a shadow
-		Rogue weapons spawn projectiles on hit
-		8% boosted stealth generation
+		{0}% increased stealth generation
 		'''
 }
 
 Soaring: {
 	DisplayName: Soaring
-	Description:
-		'''
-		10% increased wing flight time and speed
-		True melee hits restore some wing flight time
-		'''
+	Description: "{0}% increased wing flight time and speed"
 }
 
 SulphurskinBuff: {

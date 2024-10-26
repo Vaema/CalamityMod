@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 spawnPosition = Projectile.spriteDirection == -1 ? Projectile.Left : Projectile.Right;
                 Vector2 shootVelocity = CalamityUtils.CalculatePredictiveAimToTarget(spawnPosition, Target, ProjectileVelocity);
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     spawnPosition,
                     shootVelocity,

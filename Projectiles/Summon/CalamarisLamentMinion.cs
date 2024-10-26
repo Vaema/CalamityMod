@@ -209,14 +209,14 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         // The minion will only have contact damage if it's on latching mode.
-        public override bool? CanDamage() => (State == AIState.Latching) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Latching;
 
         // The minion will do 1.5x damage if it's latched on.
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= CalamarisLament.LatchingDamageMultiplier;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

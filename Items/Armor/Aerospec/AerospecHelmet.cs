@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecHelmet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+        public static int ValkyrieDamage = 20;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -48,13 +50,11 @@ namespace CalamityMod.Items.Armor.Aerospec
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Valkyrie>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Aerospec Valkyries spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(20);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ValkyrieDamage);
 
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<Valkyrie>(), damage, 0f, Main.myPlayer, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ValkyrieDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.11f;
@@ -74,6 +74,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient(ItemID.SunplateBlock, 3).
                 AddIngredient(ItemID.Feather).
                 AddTile(TileID.SkyMill).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AerospecHeadgear>()).
                 Register();
         }
     }

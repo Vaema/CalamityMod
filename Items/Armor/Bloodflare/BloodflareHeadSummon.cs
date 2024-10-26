@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
                 AddIngredient<BloodstoneCore>(11).
                 AddIngredient<RuinousSoul>(2).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<BloodflareHeadRogue>()).
                 Register();
         }
     }

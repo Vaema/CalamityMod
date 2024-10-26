@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
-            Texture2D maceTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D maceTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D whirlpoolTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/RedtideWhirlpool").Value;
 
             float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 2f;
@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Melee
             //Spawn a whirlpool typhoon after sending it out
             if (WindupProgress >= 1f && Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Main.MouseWorld - Owner.position).SafeNormalize(Vector2.One) * 25f, ModContent.ProjectileType<RedtideWhirlpool>(), (int)(Projectile.damage * whirlpoolDamageMultiplier), Projectile.knockBack, Projectile.owner, 0, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Main.MouseWorld - Owner.position).SafeNormalize(Vector2.One) * 25f, ModContent.ProjectileType<RedtideWhirlpool>(), (int)(Projectile.damage * whirlpoolDamageMultiplier), Projectile.knockBack, Projectile.owner, 0, 0f);
             }
 
             SoundEngine.PlaySound(SoundID.Item7, Projectile.position);

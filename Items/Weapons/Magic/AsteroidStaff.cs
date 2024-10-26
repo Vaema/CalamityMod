@@ -98,7 +98,7 @@ namespace CalamityMod.Items.Weapons.Magic
         #endregion
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()

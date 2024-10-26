@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.frame = 0;
                 }
             }
-            else if (Projectile.owner == Main.myPlayer && Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.owner == Main.myPlayer && Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }

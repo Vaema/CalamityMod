@@ -35,31 +35,15 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int i = Main.myPlayer;
-            float playerKnockback = knockback;
-            playerKnockback = player.GetWeaponKnockback(Item, playerKnockback);
-            player.itemTime = Item.useTime;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            Vector2 tentacleVelocity = new Vector2(mouseXDist, mouseYDist);
-            tentacleVelocity.Normalize();
-            Vector2 tentacleRandVelocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-            tentacleRandVelocity.Normalize();
-            tentacleVelocity = tentacleVelocity * 4f + tentacleRandVelocity;
-            tentacleVelocity.Normalize();
-            tentacleVelocity *= Item.shootSpeed;
-            float tentacleYDirection = (float)Main.rand.Next(10, 80) * 0.001f;
+            Vector2 spreadVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(18f)) * Main.rand.NextFloat(0.8f, 1.2f);
+            float tentacleYDirection = Main.rand.NextFloat(0.01f, 0.05f);
             if (Main.rand.NextBool())
-            {
                 tentacleYDirection *= -1f;
-            }
-            float tentacleXDirection = (float)Main.rand.Next(10, 80) * 0.001f;
+            float tentacleXDirection = Main.rand.NextFloat(0.01f, 0.05f);
             if (Main.rand.NextBool())
-            {
                 tentacleXDirection *= -1f;
-            }
-            Projectile.NewProjectile(source, realPlayerPos, tentacleVelocity, ModContent.ProjectileType<EldritchTentacle>(), damage, playerKnockback, i, tentacleXDirection, tentacleYDirection);
+
+            Projectile.NewProjectile(source, position, spreadVelocity, type, damage, knockback, Main.myPlayer, tentacleXDirection, tentacleYDirection);
             return false;
         }
     }

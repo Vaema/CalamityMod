@@ -53,6 +53,7 @@ namespace CalamityMod.Items.Armor.Prismatic
                 AddIngredient<DivineGeode>(8).
                 AddIngredient(ItemID.Nanites, 300).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PrismaticGreaves>()).
                 Register();
         }
     }

@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -61,6 +61,7 @@ namespace CalamityMod.Items.Armor.Silva
                 AddIngredient<EffulgentFeather>(5).
                 AddIngredient<AscendantSpiritEssence>(2).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SilvaArmor>()).
                 Register();
         }
     }

@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Ranged
         public Vector2 baseVel;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.owner == Main.myPlayer)
                 {
                     for (int k = 0; k < projectiles; k++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
                 }
                 for (int k = 0; k < 3; k++)
                 {
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (baseColor == Color.White)
                 return false;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom").Value;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], (baseColor * 0.7f) with { A = 0 }, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], (baseColor * 0.7f) with { A = 0 }, 1, texture);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, baseColor with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

@@ -23,8 +23,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -189,8 +189,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Turquoise with { A = 0 } * 0.5f, 1, texture, true, true);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Turquoise with { A = 0 } * 0.5f, 1, texture, true, true);
 
             Projectile.DrawProjectileWithBackglow(Color.Turquoise with { A = 0 }, Color.White, 12f * Utils.GetLerpValue(0, 42, Projectile.ai[0], true) , texture);
             return true;

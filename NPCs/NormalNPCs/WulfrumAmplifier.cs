@@ -32,8 +32,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public int laserDelay = 150;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -205,7 +205,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            int frame = (int)(NPC.frameCounter / 8) % Main.npcFrameCount[NPC.type];
+            int frame = (int)(NPC.frameCounter / 8) % Main.npcFrameCount[Type];
 
             NPC.frame.Y = frame * frameHeight;
         }

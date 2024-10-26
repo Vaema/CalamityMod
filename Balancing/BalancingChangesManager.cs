@@ -307,6 +307,9 @@ namespace CalamityMod.Balancing
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), ResistTrueMelee(0.5f)));
 
+            // 50% resist to Galactus Blade.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.5f, ProjectileType<GalacticaComet>())));
+
             // 40% resist to Stellar Torus Staff.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<StellarTorusBeam>())));
             #endregion
@@ -416,9 +419,6 @@ namespace CalamityMod.Balancing
             // 60% resist to Dynamic Pursuer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
-            // 60% resist to Prismatic Breaker's deathray.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<PrismaticRay>()))));
-
             // 50% resist to Chicken Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<ChickenExplosion>()))));
 
@@ -433,6 +433,9 @@ namespace CalamityMod.Balancing
 
             // 50% resist to Yharim's Crystal.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<YharimsCrystalBeam>()))));
+
+            // 45% resist to Prismatic Breaker's deathray.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<PrismaticRay>()))));
 
             // 45% resist to Wrathwing's stealth strike fireballs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<WrathwingCinder>()))));

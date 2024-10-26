@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void PerformInitializationEffects()
         {
-            int totalHeads = Owner.ownedProjectileCounts[Projectile.type];
+            int totalHeads = Owner.ownedProjectileCounts[Type];
             CurrentPositionOffset = IdealPositionOffset = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
             Projectile.netUpdate = true;
         }
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = (Projectile.velocity * 9f + Projectile.SafeDirectionTo(returnPosition) * flySpeed) / 10f;
             }
 
-            int totalHeads = Owner.ownedProjectileCounts[Projectile.type];
+            int totalHeads = Owner.ownedProjectileCounts[Type];
             int moveRate = 40 + totalHeads * 4;
 
             // Reset the ideal offset from time to time.
@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             bool shouldFlip = Math.Abs(Projectile.rotation) > MathHelper.PiOver2;
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
                              null,

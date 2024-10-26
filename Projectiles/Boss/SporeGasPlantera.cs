@@ -3,6 +3,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,10 +12,13 @@ namespace CalamityMod.Projectiles.Boss
     public class SporeGasPlantera : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SporeGas;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.instance.LoadProjectile(ProjectileID.SporeGas2);
+            Main.instance.LoadProjectile(ProjectileID.SporeGas3);
         }
 
         public override void SetDefaults()
@@ -80,21 +84,21 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Changes the texture of the projectile
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             switch ((int)Projectile.ai[0])
             {
                 case 0:
                     break;
                 case 1:
-                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/SporeGasPlantera2").Value;
+                    texture = TextureAssets.Projectile[ProjectileID.SporeGas2].Value;
                     break;
                 case 2:
-                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/SporeGasPlantera3").Value;
+                    texture = TextureAssets.Projectile[ProjectileID.SporeGas3].Value;
                     break;
                 default:
                     break;
             }
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, texture);
             return false;
         }
 

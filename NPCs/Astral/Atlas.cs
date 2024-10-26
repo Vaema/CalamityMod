@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             //not really important seeing as custom drawing, but for heights sake, 6
             //also it's visuals are messed up on npc spawners etc. because the sheet is 3 wide.
             //not much we can do. looks fine in-game so /shrug
@@ -584,7 +584,7 @@ namespace CalamityMod.NPCs.Astral
             SpriteEffects effect = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             //draw actual sprite
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, position, NPC.frame,
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, position, NPC.frame,
                 drawColor, 0f, default, 1f, //color, rotation, origin, scale
                 effect, 0f); //effect, drawlayer
 

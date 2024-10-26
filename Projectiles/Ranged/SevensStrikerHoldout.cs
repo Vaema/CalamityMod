@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 19;
+            Main.projFrames[Type] = 19;
         }
 
         public override void SetDefaults()
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frameCounter = 0;
             }
             // Once the animation is finished, stop rolling, set the extra timer to 16 frames, and reset the sprite to frame 0
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 rolling = false;
                 rolltimer = 16;
@@ -214,7 +214,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Sounds
             // Crank & new casino
-            if (Projectile.frameCounter == 0 && Projectile.frame == 2 * (Main.projFrames[Projectile.type] / 19))
+            if (Projectile.frameCounter == 0 && Projectile.frame == 2 * (Main.projFrames[Type] / 19))
             {
                 SoundEngine.PlaySound(SoundID.Item108 with { Volume = SoundID.Item108.Volume * 0.9f }, Projectile.Center);
                 RouletteSoundSlot = SoundEngine.PlaySound(TheSevensStriker.RouletteSound, Projectile.Center);
@@ -340,7 +340,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 drawOrigin = new Vector2(Owner.direction < 0 ? gun.Width - 33f : 33f, 33f);
             Vector2 drawOffset = Owner.MountedCenter + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
             drawOffset.Y -= 10;
-            int indframeheight = gun.Height / Main.projFrames[Projectile.type];
+            int indframeheight = gun.Height / Main.projFrames[Type];
             int currentframe = indframeheight * Projectile.frame;
             Rectangle frame = new Rectangle(0, currentframe, gun.Width, indframeheight);
 

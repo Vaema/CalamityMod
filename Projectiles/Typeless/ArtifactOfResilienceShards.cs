@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 240f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -223,7 +223,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -261,7 +261,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -299,7 +299,7 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()

@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.frameCounter % 4f == 3f)
             {
                 Projectile.frame++;
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                 {
                     Projectile.frame = 0;
                 }
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     return false;
                 }
             }
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), npc.Center,
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), npc.Center,
                                            Vector2.Zero,
                                            attackType,
                                            Projectile.damage,
@@ -183,8 +183,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

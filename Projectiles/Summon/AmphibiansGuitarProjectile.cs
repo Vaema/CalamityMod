@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionShot[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], noteColor with { A = 0 } * 0.4f, 1, tex.Value, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], noteColor with { A = 0 } * 0.4f, 1, tex.Value, true, true);
 
             Main.EntitySpriteDraw(tex.Value, generalDrawPos, null, noteColor with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.9f * Utils.GetLerpValue(-5, 20, time, true), 1) * Projectile.scale, SpriteEffects.None);
             Main.EntitySpriteDraw(tex.Value, generalDrawPos, null, Color.Lerp(Color.White, noteColor, 0.15f) with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.9f * Utils.GetLerpValue(-5, 20, time, true), 1) * Projectile.scale * 0.88f, SpriteEffects.None);

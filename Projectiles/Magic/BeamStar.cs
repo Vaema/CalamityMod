@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPosition;
-            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 1; i < Projectile.oldPos.Length; i++)
             {
                 float scale = Projectile.scale * MathHelper.Lerp(0.9f, 0.6f, i / (float)Projectile.oldPos.Length) * 0.56f;

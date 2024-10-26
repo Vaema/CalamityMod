@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.World;
@@ -362,7 +363,8 @@ namespace CalamityMod.Systems
             // Insert the Astral biome generation right before the final hardmode announcement.
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
             {
-                AstralBiome.PlaceAstralMeteor();
+                //Delaying it a bit so that weaker pcs dont suffer - Shade
+                ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
             }));
         }
         #endregion

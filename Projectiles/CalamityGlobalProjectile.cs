@@ -7,6 +7,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.EntitySources;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
@@ -156,6 +157,9 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public bool DealsDefenseDamage = false;
 
+        // Old Fashioned buff. This does not have effect unless the player has the buff consumed.
+        public bool? buffedByOldFashioned;
+
         // Nihility Quiver
         public bool nihilicArrow = false;
 
@@ -302,7 +306,6 @@ namespace CalamityMod.Projectiles
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
-                projectile.damage = (int)(projectile.originalDamage * MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime));
 
                 // Make fizzle sounds and fire dust to indicate the impending explosion.
                 if (ExplosiveEnchantCountdown <= 300)
@@ -3714,7 +3717,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<NanotechProjectile>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(60);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
                                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<NanotechProjectile>(), damage, 0f, projectile.owner);
                                 }
                             }
@@ -3726,7 +3728,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<MoonSigil>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(42);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                     int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<MoonSigil>(), damage, 0f, projectile.owner);
                                     if (proj.WithinBounds(Main.maxProjectiles))
@@ -3742,7 +3743,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<DragonShit>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(DragonScales.ShitBaseDamage);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                     int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 1.2f, ProjectileType<DragonShit>(), damage, 0f, projectile.owner);
                                     if (proj.WithinBounds(Main.maxProjectiles))
@@ -3762,7 +3762,6 @@ namespace CalamityMod.Projectiles
                                 {
                                     // Daedalus Rogue Crystals: 2 x 25%, soft cap starts at 120 base damage
                                     int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
-                                    crystalDamage = player.ApplyArmorAccDamageBonusesTo(crystalDamage);
 
                                     for (int i = 0; i < 2; i++)
                                     {
@@ -4187,102 +4186,9 @@ namespace CalamityMod.Projectiles
             Player player = Main.player[projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            // Old Fashioned damage boost
-            if (modPlayer.oldFashioned)
-            {
-                // Yoyo bullshit
-                if (player.counterWeight > 0)
-                {
-                    if (projectile.type >= ProjectileID.BlackCounterweight && projectile.type <= ProjectileID.YellowCounterweight)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Honey Balloon, Bee Cloak, Honey Comb, Stinger Necklace, Sweetheart Necklace
-                if (player.honeyCombItem != null && !player.honeyCombItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.Bee)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Star Cloak, Mana Cloak, Star Veil, Bee Cloak
-                if (player.starCloakItem != null && !player.starCloakItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.BeeCloakStar || projectile.type == ProjectileID.ManaCloakStar || projectile.type == ProjectileID.StarCloakStar)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Hive Pack
-                if (player.strongBees)
-                {
-                    if (projectile.type == ProjectileID.GiantBee)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Bone Glove
-                if (player.boneGloveItem != null && !player.boneGloveItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.BoneGloveProj)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Bone Helm
-                if (player.HasItem(ItemID.BoneHelm))
-                {
-                    if (projectile.type == ProjectileID.InsanityShadowFriendly)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Volatile Gelatin
-                if (player.volatileGelatin)
-                {
-                    if (projectile.type == ProjectileID.VolatileGelatinBall)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Spore Sac
-                if (player.sporeSac)
-                {
-                    if (projectile.type == ProjectileID.SporeTrap || projectile.type == ProjectileID.SporeTrap2 ||
-                        projectile.type == ProjectileID.SporeGas || projectile.type == ProjectileID.SporeGas2 ||
-                        projectile.type == ProjectileID.SporeGas3)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Spectre Mask bonus
-                if (player.ghostHurt)
-                {
-                    if (projectile.type == ProjectileID.SpectreWrath)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Orichalcum Armor bonus
-                if (player.onHitPetal)
-                {
-                    if (projectile.type == ProjectileID.FlowerPetal)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Titanium Armor bonus
-                if (player.onHitTitaniumStorm)
-                {
-                    if (projectile.type == ProjectileID.TitaniumStormShard)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Forbidden Armor bonus
-                if (player.setForbidden)
-                {
-                    if (projectile.type == ProjectileID.SandnadoFriendly)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Stardust Armor bonus
-                if (player.setStardust)
-                {
-                    if (projectile.type == ProjectileID.StardustGuardianExplosion || projectile.type == ProjectileID.StardustPunch)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-            }
+            // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
+            if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
@@ -4292,6 +4198,10 @@ namespace CalamityMod.Projectiles
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
+
+            // Stardust Wings buff the Stardust Guardian's damage.
+            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
+                modifiers.SourceDamage *= 3f;
 
             // If applicable, use ricoshot bonus damage.
             if (totalRicoshotDamageBonus > 0f)
@@ -4306,6 +4216,10 @@ namespace CalamityMod.Projectiles
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
+
+            // This can apply to minions or minion shots
+            if (ExplosiveEnchantCountdown > 0)
+                modifiers.SourceDamage *= MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime);
 
             if (modPlayer.farProximityRewardEnchant)
             {
@@ -4350,7 +4264,6 @@ namespace CalamityMod.Projectiles
             if (projectile.owner == Main.myPlayer && !projectile.npcProj && !projectile.trap && projectile.CountsAsClass<RogueDamageClass>() && modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
             {
                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
-                damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                 int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
                 Main.projectile[spike].frame = 4;
@@ -4593,6 +4506,18 @@ namespace CalamityMod.Projectiles
 
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
 
+                return false;
+            }
+
+            // Manual drawing to adjust for scale change
+            if (projectile.type == ProjectileID.Terragrim || projectile.type == ProjectileID.Arkhalis)
+            {
+                Texture2D tex = TextureAssets.Projectile[projectile.type].Value;
+                Rectangle frame = tex.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+                Vector2 origin = frame.Size() / 2f;
+                SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
                 return false;
             }
 
@@ -4950,7 +4875,6 @@ namespace CalamityMod.Projectiles
                                 Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
 
                                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
-                                damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                 int soul = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileType<LostSoulFriendly>(), damage, 0f, projectile.owner);
                                 Main.projectile[soul].tileCollide = false;
@@ -4963,7 +4887,6 @@ namespace CalamityMod.Projectiles
                         if (modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
                         {
                             int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
-                            damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                             int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
                             Main.projectile[spike].frame = 4;

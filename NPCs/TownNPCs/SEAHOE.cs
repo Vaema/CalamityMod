@@ -24,14 +24,14 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 25;
-            NPCID.Sets.ExtraFramesCount[NPC.type] = 5;
-            NPCID.Sets.AttackFrameCount[NPC.type] = 4;
-            NPCID.Sets.DangerDetectRange[NPC.type] = 700;
-            NPCID.Sets.AttackType[NPC.type] = 0;
-            NPCID.Sets.AttackTime[NPC.type] = 90;
-            NPCID.Sets.AttackAverageChance[NPC.type] = 30;
-            NPCID.Sets.HatOffsetY[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 25;
+            NPCID.Sets.ExtraFramesCount[Type] = 5;
+            NPCID.Sets.AttackFrameCount[Type] = 4;
+            NPCID.Sets.DangerDetectRange[Type] = 700;
+            NPCID.Sets.AttackType[Type] = 0;
+            NPCID.Sets.AttackTime[Type] = 90;
+            NPCID.Sets.AttackAverageChance[Type] = 30;
+            NPCID.Sets.HatOffsetY[Type] = 16;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<OceanBiome>(AffectionLevel.Like)
@@ -210,8 +210,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<PolypLauncher>())
                 .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
                 .AddWithCustomValue(ModContent.ItemType<BloodwormItem>(), Item.buyPrice(gold: 40), downedOldDuke)
-                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.InBeach)
-                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnough, Condition.InBeach, Condition.DownedEyeOfCthulhu)
+                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.InBeach)
+                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons, Condition.InBeach, Condition.DownedEyeOfCthulhu)
                 .Register();
         }
 

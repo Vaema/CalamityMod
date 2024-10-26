@@ -80,9 +80,6 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             velocity = velocity.RotatedByRandom(MathHelper.PiOver4 * 0.1f);
-
-            // This weapon is acquired through usage of an armor set bonus and thus counts as armor. This function must be used.
-            damage = player.ApplyArmorAccDamageBonusesTo(damage);
         }
 
         public override bool CanUseItem(Player player)
