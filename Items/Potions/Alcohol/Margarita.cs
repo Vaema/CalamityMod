@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,8 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class Margarita : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
         public static int BuffType = ModContent.BuffType<MargaritaBuff>();
-        public static int BuffDuration = 10800;
+        public static float DefenseLossPercent = 0.06f;
+        public static int RegenLoss = 1;
+        public static int MinuteDuration = 3;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), RegenLoss.ToRegenPerSecond(), MinuteDuration);
 
         public override void SetStaticDefaults()
         {
@@ -32,7 +37,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void OnConsumeItem(Player player)
         {
-            player.AddBuff(BuffType, BuffDuration);
+            player.AddBuff(BuffType, CalamityUtils.MinutesToFrames(MinuteDuration));
         }
     }
 }

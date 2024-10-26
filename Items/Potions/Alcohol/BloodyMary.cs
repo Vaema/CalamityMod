@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class BloodyMary : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DamageMovementBoost = 0.1f;
+        public static int RegenLoss = 4;
+        public static float DefenseLossPercent = 0.04f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageMovementBoost.ToPercent(), RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +28,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(20, 32, ModContent.BuffType<BloodyMaryBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(20, 32, ModContent.BuffType<BloodyMaryBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Lime;

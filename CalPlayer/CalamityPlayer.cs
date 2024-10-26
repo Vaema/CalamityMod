@@ -29,6 +29,8 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -234,7 +236,6 @@ namespace CalamityMod.CalPlayer
         public int profanedSoulWeaponType = 0;
         public int hurtSoundTimer = 0;
         public int danceOfLightCharge = 0;
-        public int shadowPotCooldown = 0;
         public int dogTextCooldown = 0;
         public float auralisStealthCounter = 0f;
         public int auralisAuroraCounter = 0;
@@ -2398,7 +2399,6 @@ namespace CalamityMod.CalPlayer
             planarSpeedBoost = 0;
             galileoCooldown = 0;
             soundCooldown = 0;
-            shadowPotCooldown = 0;
             dogTextCooldown = 0;
             auralisStealthCounter = 0f;
             auralisAuroraCounter = 0;
@@ -3966,16 +3966,16 @@ namespace CalamityMod.CalPlayer
                 knockback.Flat += item.knockBack * ((1f - modStealth) * 0.5f);
 
             if (whiskey)
-                knockback.Flat += item.knockBack * 0.2f;
+                knockback.Flat += item.knockBack * Whiskey.KnockbackBoost;
 
             if (tequila && Main.dayTime)
-                knockback += item.knockBack * 0.1f;
+                knockback += item.knockBack * Tequila.KnockbackBoost;
 
             if (tequilaSunrise && Main.dayTime)
-                knockback += item.knockBack * 0.2f;
+                knockback += item.knockBack * TequilaSunrise.KnockbackBoost;
 
             if (moscowMule)
-                knockback += item.knockBack * 0.5f;
+                knockback += item.knockBack * MoscowMule.KnockbackBoost;
 
             if (titanHeartMask && rogue)
                 knockback += item.knockBack * 0.05f;
@@ -4851,8 +4851,8 @@ namespace CalamityMod.CalPlayer
 
             if (shadow)
             {
-                stealthGenStandstill += 0.08f;
-                stealthGenMoving += 0.08f;
+                stealthGenStandstill += ShadowPotion.StealthRegenBoost;
+                stealthGenMoving += ShadowPotion.StealthRegenBoost;
             }
 
             if (eArtifact)

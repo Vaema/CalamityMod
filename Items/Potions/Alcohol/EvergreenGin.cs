@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class EvergreenGin : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float SicknessWaterDebuffBoost = 0.25f;
+        public static int RegenLoss = 1;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + SicknessWaterDebuffBoost).ToString(), RegenLoss.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -22,7 +28,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(18, 32, ModContent.BuffType<EvergreenGinBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(18, 32, ModContent.BuffType<EvergreenGinBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;

@@ -79,5 +79,10 @@ namespace CalamityMod
         /// <para>NOTE: Modded translations are not loaded until after PostSetupContent.</para>Caching the result is suggested.
         /// </returns>
         public static string GetTextValueFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix).ToString();
+
+        // Double-rounded for proper digit cutoffs
+        public static string ToRegenPerSecond(this int regen) => float.Parse((regen * 0.5f).ToString("N2")).ToString();
+        public static string ToJumpSpeedPercent(this float boost) => float.Parse((boost * 20f).ToString("N2")).ToString();
+        public static string ToPercent(this float percent) => float.Parse((percent * 100f).ToString("N4")).ToString();
     }
 }

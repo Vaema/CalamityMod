@@ -14,6 +14,7 @@ using CalamityMod.Events;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.Abyss;
@@ -862,11 +863,11 @@ namespace CalamityMod.NPCs
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
-                heatDamageMult += 0.25;
+                heatDamageMult += Fireball.HeatDebuffBoost;
             if (IncreasedHeatEffects_FlameWakerBoots)
                 heatDamageMult += 0.25;
             if (IncreasedHeatEffects_CinnamonRoll)
-                heatDamageMult += 0.5;
+                heatDamageMult += CinnamonRoll.HeatDebuffBoost;
             if (IncreasedHeatEffects_HellfireTreads)
                 heatDamageMult += 0.5;
             if (IncreasedHeatEffects_FlameWings)
@@ -877,8 +878,8 @@ namespace CalamityMod.NPCs
 
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
-                sicknessDamageMult += 0.25;
-                waterDamageMult += 0.25;
+                sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+                waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.

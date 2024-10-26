@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class Everclear : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DamageBoost = 0.25f;
+        public static int RegenLoss = 10;
+        public static float DefenseLossPercent = 0.30f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +28,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 42, ModContent.BuffType<EverclearBuff>(), CalamityUtils.SecondsToFrames(60f), true);
+            Item.DefaultToFood(14, 42, ModContent.BuffType<EverclearBuff>(), CalamityUtils.MinutesToFrames(1), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Lime;

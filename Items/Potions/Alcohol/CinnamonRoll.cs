@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class CinnamonRoll : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float HeatDebuffBoost = 0.5f;
+        public static float DefenseLossPercent = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + HeatDebuffBoost).ToString(), DefenseLossPercent.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +27,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;

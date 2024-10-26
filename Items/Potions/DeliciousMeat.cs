@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Potions
         }
         public override void SetDefaults()
         {
-            Item.DefaultToFood(32, 30, BuffID.WellFed2, CalamityUtils.SecondsToFrames(1800f));
+            Item.DefaultToFood(32, 30, BuffID.WellFed2, CalamityUtils.MinutesToFrames(30));
             Item.value = Item.buyPrice(silver: 50); // Sold by Archmage
             Item.rare = ItemRarityID.Pink;
         }

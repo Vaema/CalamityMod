@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Potions
     public class BoundingPotion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float JumpSpeedBoost = 0.25f;
+        public static float JumpHeightPercentBoost = 0.2f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(JumpSpeedBoost.ToJumpSpeedPercent(), JumpHeightPercentBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
@@ -21,7 +27,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(26, 38, ModContent.BuffType<BoundingBuff>(), CalamityUtils.SecondsToFrames(300f), true);
+            Item.DefaultToFood(26, 38, ModContent.BuffType<BoundingBuff>(), CalamityUtils.MinutesToFrames(8), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }

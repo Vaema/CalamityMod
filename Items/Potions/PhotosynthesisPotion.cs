@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Potions
     public class PhotosynthesisPotion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static int IncreasedHeartHeal = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(IncreasedHeartHeal);
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
@@ -22,7 +27,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 34, ModContent.BuffType<PhotosynthesisBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(30, 34, ModContent.BuffType<PhotosynthesisBuff>(), CalamityUtils.MinutesToFrames(8), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }

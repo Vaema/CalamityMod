@@ -7,6 +7,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -598,7 +599,7 @@ namespace CalamityMod.Items
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
-                    player.HealPlayer(5);
+                    player.HealPlayer(PhotosynthesisPotion.IncreasedHeartHeal);
                 }
             }
             return true;
@@ -1474,7 +1475,7 @@ namespace CalamityMod.Items
             float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.1f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? 0.1f : 0f) +
+                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? 0.1f : 0f) +
                 moveSpeedBoost;
 

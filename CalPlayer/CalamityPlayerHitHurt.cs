@@ -20,6 +20,8 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -627,7 +629,7 @@ namespace CalamityMod.CalPlayer
             if (screwdriver)
             {
                 if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += 0.05f;
+                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
 
             // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
@@ -1663,6 +1665,10 @@ namespace CalamityMod.CalPlayer
         #region Modify Hurt
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
+            // Calcium Potion knockback reduction
+            if (calcium)
+                modifiers.Knockback *= (1f - CalciumPotion.KnockbackResistance);
+
             // Handles energy shields and Boss Rush, in that order
             modifiers.ModifyHurtInfo += ModifyHurtInfo_Calamity;
 

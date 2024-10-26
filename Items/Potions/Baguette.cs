@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Potions
     public class Baguette : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static int RedWineBuffedHealValue = 250;
+        public static int RedWineBuffedRegenLoss = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RedWineBuffedHealValue, RedWineBuffedRegenLoss.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +27,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(52, 38, BuffID.WellFed, CalamityUtils.SecondsToFrames(300f));
+            Item.DefaultToFood(52, 38, BuffID.WellFed, CalamityUtils.MinutesToFrames(5));
             Item.value = Item.sellPrice(silver: 1);
             Item.rare = ItemRarityID.Blue;
             Item.Calamity().donorItem = true;

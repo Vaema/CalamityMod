@@ -524,21 +524,6 @@ namespace CalamityMod.CalPlayer
                         Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI, 0f, 0f);
                     }
 
-                    if (soaring && !targetIsDummy)
-                    {
-                        double useTimeMultiplier = 0.85 + (item.useTime * item.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
-                        double wingTimeFraction = Player.wingTimeMax / 20D;
-
-                        // TODO -- this scaling function is probably totally screwed. What is it supposed to do?
-                        double meleeStatMultiplier = (double)(Player.GetTotalDamage<MeleeDamageClass>().Additive * (float)(Player.GetTotalCritChance<MeleeDamageClass>() / 10f));
-
-                        if (Player.wingTime < Player.wingTimeMax)
-                            Player.wingTime += (int)(useTimeMultiplier * (wingTimeFraction + meleeStatMultiplier));
-
-                        if (Player.wingTime > Player.wingTimeMax)
-                            Player.wingTime = Player.wingTimeMax;
-                    }
-
                     if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                         bloodflareMeleeHits++;
                 }
@@ -643,20 +628,6 @@ namespace CalamityMod.CalPlayer
 
             if (proj.IsTrueMelee())
             {
-                if (soaring && !targetIsDummy)
-                {
-                    double useTimeMultiplier = 0.85 + (heldItem.useTime * heldItem.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
-                    double wingTimeFraction = Player.wingTimeMax / 20D;
-
-                    // TODO -- this scaling function is probably totally screwed. What is it supposed to do?
-                    double meleeStatMultiplier = (double)(Player.GetTotalDamage<MeleeDamageClass>().Additive * (float)(Player.GetTotalCritChance<MeleeDamageClass>() / 10f));
-
-                    if (Player.wingTime < Player.wingTimeMax)
-                        Player.wingTime += (int)(useTimeMultiplier * (wingTimeFraction + meleeStatMultiplier));
-
-                    if (Player.wingTime > Player.wingTimeMax)
-                        Player.wingTime = Player.wingTimeMax;
-                }
                 if (hideOfDeus && hideOfDeusTimer == 0)
                 {
                     hideOfDeusTimer = 10;
@@ -1059,16 +1030,6 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-            }
-
-            if (shadow && shadowPotCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
-            {
-                int randrot = Main.rand.Next(-30, 391);
-                Vector2 SoulSpeed = new Vector2(13f, 13f).RotatedBy(MathHelper.ToRadians(randrot));
-                int soul = Projectile.NewProjectile(spawnSource, proj.Center, SoulSpeed, ProjectileType<PenumbraSoul>(), (int)(proj.damage * 0.1), 3f, proj.owner, 0f, 0f);
-                if (soul.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[soul].DamageType = DamageClass.Generic;
-                shadowPotCooldown = 30;
             }
 
             if (raiderTalisman && modProj.stealthStrike)
