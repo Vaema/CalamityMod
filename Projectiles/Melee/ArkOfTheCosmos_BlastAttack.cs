@@ -148,9 +148,7 @@ namespace CalamityMod.Projectiles.Melee
                         float positionAlongLine = MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, lerpRatio);
                         Vector2 starPosition = Projectile.Center + Projectile.velocity * positionAlongLine;
                         Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), starPosition, Main.rand.NextVector2CircularEdge(28, 28), ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.BlastBoltsDamageMultiplier * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.07f);
-                        {
-                            blast.timeLeft = 100;
-                        }
+                        blast.timeLeft = 100;
                     }
                 }
             }
