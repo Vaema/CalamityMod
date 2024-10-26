@@ -182,6 +182,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.EmpressFlightBooster)
                 item.rare = ItemRarityID.Yellow;
 
+            // Zenith rarity
+            if (item.type == ItemID.Zenith)
+                item.rare = ModContent.RarityType<Violet>();
+
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
             {
