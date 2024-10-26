@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.BlizzardStaff).
                 AddIngredient<ShadowspecBar>(5).
                 AddIngredient<EndothermicEnergy>(100).
-                AddIngredient<CoreofEleum>(15).
+                AddIngredient<EssenceofEleum>(15).
                 AddTile<DraedonsForge>().
                 Register();
         }

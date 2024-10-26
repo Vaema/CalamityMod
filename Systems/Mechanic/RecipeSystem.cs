@@ -1388,14 +1388,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
             r.DisableDecraft();
-
-            // Lihzahrd Power Cell (NOT Calamity's Old Power Cell)
-            r = Recipe.Create(ItemID.LihzahrdPowerCell);
-            r.AddIngredient(ItemID.LihzahrdBrick, 5);
-            r.AddIngredient<CoreofSunlight>();
-            r.AddTile(TileID.LihzahrdFurnace);
-            r.Register();
-            r.DisableDecraft();
         }
         #endregion
 

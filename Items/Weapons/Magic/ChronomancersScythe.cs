@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.IceSickle).
                 AddIngredient(ItemID.FastClock).
                 AddIngredient(ItemID.LunarBar, 10).
-                AddIngredient<CoreofEleum>(6).
+                AddIngredient<EssenceofEleum>(6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

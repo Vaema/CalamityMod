@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.SunkenSea;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -52,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<FrigidflashBolt>().
                 AddIngredient(ItemID.WaterBolt).
                 AddIngredient<SeaPrism>(15).
-                AddIngredient<CoreofSunlight>(5).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.Bookcases).
                 Register();
         }
