@@ -620,9 +620,6 @@ namespace CalamityMod.CalPlayer
             if (caribbeanRum)
                 Player.lifeRegen += CaribbeanRum.RegenBoost;
 
-            if (aChicken)
-                Player.lifeRegen += 1;
-
             if (mushy)
                 Player.lifeRegen += 2;
 
