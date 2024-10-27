@@ -9368,11 +9368,14 @@ namespace CalamityMod.NPCs
                 case NPCID.DiggerHead:
                 case NPCID.UndeadMiner:
                 case NPCID.GraniteGolem:
+                case NPCID.GraniteFlyer:
                 case NPCID.GreekSkeleton:
                 case NPCID.UndeadViking:
                 case NPCID.IcyMerman:
+                case NPCID.IceElemental:
                 case NPCID.DesertBeast:
                 case NPCID.DuneSplicerHead:
+                case NPCID.SandElemental:
                 case NPCID.SandShark:
                 case NPCID.SandsharkCorrupt:
                 case NPCID.SandsharkCrimson:
