@@ -632,11 +632,11 @@ SanctifiedSpark: {
 	DisplayName: Sanctified Spark
 	Tooltip:
 		'''
-{$CommonItemTooltip.Sentry}
-Summons a friendly immolator that will float towrds you
-Immolators rapidly fire homing flares at nearby enemies, before continuing to float near you again
-After firing, Immolators will fire one healing bolt at you for every 4 summon slots you have
-'They might be a bit clingy, but at least they're warmth'
+		{$CommonItemTooltip.Sentry}
+		Summons a friendly immolator that will float towrds you
+		Immolators rapidly fire homing flares at nearby enemies, before continuing to float near you again
+		After firing, Immolators will fire one healing bolt at you for every 4 summon slots you have
+		'They might be a bit clingy, but at least they're warmth'
 		'''
 }
 
