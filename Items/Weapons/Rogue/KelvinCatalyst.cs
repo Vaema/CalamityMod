@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<Icebreaker>().
                 AddIngredient<SnowstormStaff>().
                 AddIngredient<EssenceofEleum>(10).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

@@ -3961,36 +3961,37 @@ namespace CalamityMod.CalPlayer
 
         public override void ModifyWeaponKnockback(Item item, ref StatModifier knockback)
         {
+            // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
             if (auricBoost)
-                knockback.Flat += item.knockBack * ((1f - modStealth) * 0.5f);
+                knockback += ((1f - modStealth) * 0.5f);
 
             if (whiskey)
-                knockback.Flat += item.knockBack * Whiskey.KnockbackBoost;
+                knockback += Whiskey.KnockbackBoost;
 
             if (tequila && Main.dayTime)
-                knockback += item.knockBack * Tequila.KnockbackBoost;
+                knockback += Tequila.KnockbackBoost;
 
             if (tequilaSunrise && Main.dayTime)
-                knockback += item.knockBack * TequilaSunrise.KnockbackBoost;
+                knockback += TequilaSunrise.KnockbackBoost;
 
             if (moscowMule)
-                knockback += item.knockBack * MoscowMule.KnockbackBoost;
+                knockback += MoscowMule.KnockbackBoost;
 
             if (titanHeartMask && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartMantle && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartBoots && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartSet && rogue)
-                knockback += item.knockBack * 0.2f;
+                knockback += 0.2f;
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
-                knockback += item.knockBack;
+                knockback += 1f;
         }
         #endregion
 
