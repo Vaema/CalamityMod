@@ -1232,7 +1232,7 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 30%");
+                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 20%");
 
             if (item.type == ItemID.WingsStardust)
                 AddWingStats(9f, 2.5f, 3, 180, "Greatly increases Stardust armor's stardust guardian damage and attack range");

@@ -431,7 +431,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!HasReducedDashFirstFrame)
                     {
-                        Player.velocity.X *= 1.3f;
+                        Player.velocity.X *= 1.2f;
                         HasReducedDashFirstFrame = true;
                     }
                 }

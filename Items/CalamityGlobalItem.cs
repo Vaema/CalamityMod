@@ -1378,10 +1378,10 @@ namespace CalamityMod.Items
                 player.manaRegen = (int)(player.manaRegen * 1.25f);
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.BatWings) // Gives night vision
+            else if (item.type == ItemID.BatWings) // Greatly increases vision
             {
                 player.noFallDmg = true;
-                player.nightVision = true;
+                player.nightVision = false; // Does not stack with Night Owl; actual effect is handled in LightingEffectsSystem
             }
             else if (item.type == ItemID.HarpyWings)
             {
