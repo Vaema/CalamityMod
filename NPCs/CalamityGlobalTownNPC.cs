@@ -1173,6 +1173,7 @@ namespace CalamityMod.NPCs
             {
                 shop.AddWithCustomValue(ItemID.StinkPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnoughToSellPylons)
                 .Add(ItemType<StatMeter>())
+                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
                 .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
             }
 
