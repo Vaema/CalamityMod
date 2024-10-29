@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -70,7 +71,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<IcicleStaff>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddTile(TileID.IceMachine).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

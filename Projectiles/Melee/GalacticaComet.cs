@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Melee
     public class GalacticaComet : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        private int noTileHitCounter = 90;
         public int time = 0;
         public int cometType = 0;
         public Color useColor = Color.White;

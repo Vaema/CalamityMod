@@ -85,8 +85,6 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.Packets;
 using CalamityMod.ExtraTextures;
 using MonoMod.Utils;
 
@@ -3970,7 +3968,7 @@ namespace CalamityMod.NPCs
                             SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
                             for (int i = 0; i < 20; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, 18, 0f, 0f, 100, default, 1.8f);
+                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, DustID.CorruptGibs, 0f, 0f, 100, default, 1.8f);
                                 Main.dust[dust].velocity *= 1.3f;
                                 Main.dust[dust].velocity += npc.velocity;
                                 Main.dust[dust].noGravity = true;
@@ -3988,7 +3986,7 @@ namespace CalamityMod.NPCs
                         npc.position += npc.netOffset;
                         for (int i = 0; i < 2; i++)
                         {
-                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
+                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.CorruptGibs, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
                             Main.dust[dust].velocity *= 0.3f;
                             Main.dust[dust].noGravity = true;
                         }
@@ -9368,11 +9366,14 @@ namespace CalamityMod.NPCs
                 case NPCID.DiggerHead:
                 case NPCID.UndeadMiner:
                 case NPCID.GraniteGolem:
+                case NPCID.GraniteFlyer:
                 case NPCID.GreekSkeleton:
                 case NPCID.UndeadViking:
                 case NPCID.IcyMerman:
+                case NPCID.IceElemental:
                 case NPCID.DesertBeast:
                 case NPCID.DuneSplicerHead:
+                case NPCID.SandElemental:
                 case NPCID.SandShark:
                 case NPCID.SandsharkCorrupt:
                 case NPCID.SandsharkCrimson:

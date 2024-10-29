@@ -15,11 +15,14 @@ NPCName: {
 	DiggerHead: Exposure to the effects of godly magicks flowing throughout the cracks of the world causes unusual rapid growths in giant worms.
 	UndeadMiner: After the Crusade died down, many spelunkers attempted to take advantage of the situation. The results were less than optimal.
 	GraniteGolem: These strong magicked constructs were utilized in mines for carrying heavy ores and machinery. They continue to inhabit the mines deep below, even after their abandonment.
+	GraniteFlyer: The Earth Elemental manifests through many forms by taking on the properties of different materials, such as this hardy granite.
 	GreekSkeleton: Marble caves were used as arenas during the Deific Era. Fighters looking for glory flocked to them, but now only their bodies populate the area.
 	UndeadViking: After the Crusade left the continent in shambles, many factions attempted to conquer it. These vikings were one such group, but the icy winds of the tundra made short work of them.
 	IcyMerman: Mermen rarely stray far from the ocean, favoring the vast waters where their revered Elemental now lives in. Those that do can become lost, wander into cold caverns, and become icy undead fish men.
+	IceElemental: Unclaimed fragments of the Water Elemental, Anahita, scattered across the world. Their frosty shards freeze all.
 	DesertBeast: Minor draconic offshoots who thrive in arid climates, the Basilisk's hardened bodies make them formidable threats.
 	DuneSplicerHead: The largest worm native to the Desert. Even strengthened by divine magicks, they fall short of the Scourge, and run amok in a hunger-induced frenzy.
+	SandElemental: The most powerful manifestation of the fragmented Earth Elemental, taking many forms through the properties of different materials. With this feminine form, her tornadoes tear all asunder.
 	SandShark: "{$CommonEntries.SandShark}"
 	SandsharkCorrupt: "{$CommonEntries.SandShark}"
 	SandsharkCrimson: "{$CommonEntries.SandShark}"

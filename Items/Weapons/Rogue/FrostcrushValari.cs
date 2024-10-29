@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<CryonicBar>(6).
                 AddIngredient<Voidstone>(40).
                 AddIngredient(ItemID.Ectoplasm, 5).
-                AddTile(TileID.IceMachine).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
