@@ -30,9 +30,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool OnHitProc = false;
 
         #region stats
-        public static int BaseDamage = 800;
+        public static int BaseDamage = 250;
 
-        public static int PhoenixAttunement_BaseDamage = 1200;
+        public static int PhoenixAttunement_BaseDamage = 300;
         public static int PhoenixAttunement_LocalIFrames = 30; //Remember its got one extra update
         public static float PhoenixAttunement_BoltDamageReduction = 0.5f;
         public static float PhoenixAttunement_BoltThrowDamageMultiplier = 1f;
@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float PhoenixAttunement_FullChargeDamageBoost = 2.1f;
         public static float PhoenixAttunement_ThrowDamageBoost = 3.2f;
 
-        public static int PolarisAttunement_BaseDamage = 1800;
-        public static int PolarisAttunement_FullChargeDamage = 3600;
+        public static int PolarisAttunement_BaseDamage = 350;
+        public static int PolarisAttunement_FullChargeDamage = 600;
         public static int PolarisAttunement_ShredIFrames = 10;
         public static int PolarisAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static int PolarisAttunement_LocalIFramesCharged = 16;
@@ -51,19 +51,19 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float PolarisAttunement_ShotDamageBoost = 0.8f; //The shots fired if the dash connects
         public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gainted per second.
 
-        public static int AndromedaAttunement_BaseDamage = 2800;
+        public static int AndromedaAttunement_BaseDamage = 1200;
         public static int AndromedaAttunement_DashHitIFrames = 20;
         public static float AndromedaAttunement_FullChargeBoost = 6f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
         public static float AndromedaAttunement_StarDamageMultiplier = 1.2f;
         public static float AndromedaAttunement_ChargeupBoltDamageMultiplier = 0.2f; //The shots fired as it charges
 
-        public static int AriesAttunement_BaseDamage = 1325;
+        public static int AriesAttunement_BaseDamage = 300;
         public static int AriesAttunement_LocalIFrames = 10;
         public static int AriesAttunement_Reach = 650;
         public static float AriesAttunement_ChainDamageReduction = 0.2f;
         public static float AriesAttunement_OnHitBoltDamageReduction = 0.5f;
 
-        public static int CancerPassiveDamage = 3000;
+        public static int CancerPassiveDamage = 725;
         public static int CancerPassiveLifeSteal = 3;
         public static float CancerPassiveLifeStealProc = 0.4f;
         public static int CapricornPassiveDebuffTime = 200;
@@ -124,10 +124,10 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 24f;
-            Item.rare = RarityType<DarkBlue>();
             Item.reuseDelay = 30;
         }
 
@@ -301,9 +301,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<OmegaBiomeBlade>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddTile<CosmicAnvil>().
+                AddIngredient<ArmoredShell>().
+                AddIngredient<TwistingNether>().
+                AddIngredient<DarkPlasma>().
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }
