@@ -324,7 +324,6 @@ namespace CalamityMod.CalPlayer
         public bool ExoChair = false;
         public AndromedaPlayerState andromedaState;
         public int andromedaCripple;
-        public const float UnicornSpeedNerfPower = 0.8f;
         #endregion
 
         #region Pet
