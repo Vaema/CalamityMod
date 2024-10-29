@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D sparkleTex = TextureAssets.Projectile[Type].Value;
             Texture2D bloomTex = Bloom.Value;
             float bloomScale = (sparkleTex.Height / (float)bloomTex.Height) * Projectile.scale;
-            float sparkleScale = (0.7f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f) * Projectile.scale;
+            float sparkleScale = (0.5f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f) * Projectile.scale;
 
             Color color = ColorFunction(0f);
             Vector2 drawPos = Projectile.Center - Main.screenPosition;

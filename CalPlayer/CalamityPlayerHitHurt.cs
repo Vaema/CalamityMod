@@ -1818,6 +1818,35 @@ namespace CalamityMod.CalPlayer
                     }
 
                     SoundEngine.PlaySound(BlazingCore.ParrySuccessSound, Player.Center);
+
+                    float power = 2;
+                    for (int i = 0; i < (int)(20 * power); i++)
+                    {
+                        if (Main.rand.NextBool())
+                        {
+                            Particle spark = new CustomSpark(Player.Center, ((new Vector2(19, 19) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 47, Main.rand.NextFloat(1.15f, 1.3f) * power, Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        else
+                        {
+                            bool isSpark = Main.rand.NextBool(5);
+                            Dust dust = Dust.NewDustPerfect(Player.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.85f, 1.15f) * power * (isSpark ? 0.5f : 1);
+                            dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                            if (isSpark)
+                                dust.noGravity = false;
+                            else
+                                dust.noLightEmittence = true;
+                        }
+                    }
+
+                    Particle orb1 = new CustomPulse(Player.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1f, 0.8f), 0, 0, 0.14f * power, 25);
+                    GeneralParticleHandler.SpawnParticle(orb1);
+
+                    Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.Khaki, "CalamityMod/Particles/BloomRing", new Vector2(1f, 0.5f), 0, 0, 2.1f * power, 25);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+
                     blazingCoreSuccessfulParry = 60;
                     Player.AddCooldown(ParryCooldown.ID, 60 * 30, false, "blazingcore"); //cooldown is frames in seconds multiplied by the desired amount of seconds
                 }

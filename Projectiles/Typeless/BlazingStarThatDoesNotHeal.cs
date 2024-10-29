@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             float hue = 0.04f * (Projectile.ai[0] % 4f) + 0.1f * completionRatio * CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly * 0.25f) % 1f);
             Color trailColor = Main.hslToRgb(hue, 0.8f, 0.6f);
-            return trailColor * Projectile.Opacity;
+            return trailColor * Projectile.Opacity * 0.5f;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D sparkleTex = TextureAssets.Projectile[Type].Value;
             Texture2D bloomTex = Bloom.Value;
             float bloomScale = (float)sparkleTex.Height / (float)bloomTex.Height;
-            float sparkleScale = 0.7f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f;
+            float sparkleScale = 0.5f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f;
 
             Color color = ColorFunction(0f);
             float rotation = Projectile.rotation + Main.GlobalTimeWrappedHourly * 8f;
