@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.LivingFire;
+﻿using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Tiles.LivingFire;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

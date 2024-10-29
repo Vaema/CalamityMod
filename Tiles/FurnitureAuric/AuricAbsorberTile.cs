@@ -24,23 +24,9 @@ namespace CalamityMod.Tiles.FurnitureAuric
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             var tileCache = Main.tile[i, j];
-            Color drawColour = GetDrawColour(i, j, Color.White);
-
-            TileFramingSystem.SlopedGlowmask(in tileCache, i, j, TextureAssets.Tile[Type].Value, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(in tileCache, i, j, TextureAssets.Tile[Type].Value, null, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Color.White), default);
         }
 
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
-        }
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);

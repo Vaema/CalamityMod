@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public const int PlagueDashIFrames = 12;
+        public static int BeeMinionDamage = 25;
 
         public override void SetDefaults()
         {
@@ -58,13 +59,11 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<PlaguebringerSummon>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Plaguebringer armor dudes spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(25);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(BeeMinionDamage);
 
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<PlaguebringerSummon>(), damage, 0f, player.whoAmI, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = BeeMinionDamage;
                 }
             }
 
@@ -79,6 +78,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                 AddIngredient<InfectedArmorPlating>(4).
                 AddIngredient<PlagueCellCanister>(4).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PlaguebringerCarapace>()).
                 Register();
         }
     }

@@ -1081,7 +1081,9 @@ SeekingScorcher: {
 	DisplayName: Seeking Scorcher
 	Tooltip:
 		'''
-		Throws a holy boomerang that seeks out up to four enemies before returning to the player
+		Throws an unholy axe that rapidly and relentlessly seeks out enemies
+		The axe grows in damage and power the longer it remains flying
+		At max damage, hitting an enemy results in a massive crystalline explosion
 		'May your enemies burn in hell for the sins they have committed'
 		'''
 }

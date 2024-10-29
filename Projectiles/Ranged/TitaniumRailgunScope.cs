@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Converge the sights
             float spread = (1f - ChargePercent) * MaxSightAngle;
             float halfAngle = spread / 2f;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color sightsColor = Color.Lerp(Color.LightBlue, Color.Crimson, ChargePercent);
 

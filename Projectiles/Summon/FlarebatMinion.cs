@@ -173,6 +173,8 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override bool MinionContactDamage() => true;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (AttackState.HasFlag(AttackBehaviorFlags.HasDashed) && !AttackState.HasFlag(AttackBehaviorFlags.HasHitTargetOnDash) && Target == target)

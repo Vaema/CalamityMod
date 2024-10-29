@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -163,7 +163,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.frameCounter++;
                 if (NPC.frameCounter >= 5)
                 {
-                    CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[NPC.type];
+                    CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[Type];
                     NPC.frameCounter = 0;
                 }
 
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.frameCounter++;
             if (NPC.frameCounter >= 5)
             {
-                CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[NPC.type];
+                CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[Type];
                 NPC.frameCounter = 0;
             }
 
@@ -331,7 +331,7 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.frameCounter++;
             if (NPC.frameCounter >= (hasCharged ? 4 : 7))
             {
-                CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[NPC.type];
+                CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[Type];
                 NPC.frameCounter = 0;
             }
 
@@ -423,7 +423,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             Vector2 origin = NPC.frame.Size() * 0.5f;
@@ -447,7 +447,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.frameCounter++;
                 if (NPC.frameCounter >= 5)
                 {
-                    CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[NPC.type];
+                    CurrentFrame = (CurrentFrame + 1) % Main.npcFrameCount[Type];
                     NPC.frameCounter = 0;
                 }
             }

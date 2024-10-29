@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

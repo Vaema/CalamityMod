@@ -33,12 +33,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 680f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 54f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = 680f;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = 54f / MaxUpdates;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile proj = Main.projectile[x];
-                    if (proj.active && proj.type == Projectile.type && proj.owner == Projectile.owner)
+                    if (proj.active && proj.type == Type && proj.owner == Projectile.owner)
                     {
                         MainYoyo = x;
                         break;
@@ -226,7 +226,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.45f * randSize * (1 - fade) * power, SpriteEffects.None, 0);
 
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             Texture2D texture = TextureAssets.Projectile[Type].Value;
 
             Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 } * fade, lightColor, 4f * fade, texture);

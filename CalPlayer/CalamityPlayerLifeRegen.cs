@@ -6,6 +6,8 @@ using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
@@ -177,14 +179,12 @@ namespace CalamityMod.CalPlayer
             if (vodka)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Vodka.RegenLoss;
             }
             if (redWine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
-                if (baguette)
-                    totalNegativeLifeRegen += 3;
+                totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
             }
             if (grapeBeer)
             {
@@ -193,7 +193,7 @@ namespace CalamityMod.CalPlayer
             if (moonshine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Moonshine.RegenLoss;
             }
             if (rum)
             {
@@ -206,7 +206,7 @@ namespace CalamityMod.CalPlayer
             if (fireball)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Fireball.RegenLoss;
             }
             if (whiskey)
             {
@@ -215,27 +215,27 @@ namespace CalamityMod.CalPlayer
             if (everclear)
             {
                 alcoholPoisonLevel += 2;
-                totalNegativeLifeRegen += 10;
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             }
             if (bloodyMary)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 4;
+                totalNegativeLifeRegen += BloodyMary.RegenLoss;
             }
             if (tequila)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Tequila.RegenLoss;
             }
             if (tequilaSunrise)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 2;
+                totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
             }
             if (screwdriver)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Screwdriver.RegenLoss;
             }
             if (caribbeanRum)
             {
@@ -252,27 +252,27 @@ namespace CalamityMod.CalPlayer
             if (margarita)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Margarita.RegenLoss;
             }
             if (starBeamRye)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 2;
+                totalNegativeLifeRegen += StarBeamRye.RegenLoss;
             }
             if (moscowMule)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 4;
+                totalNegativeLifeRegen += MoscowMule.RegenLoss;
             }
             if (whiteWine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += WhiteWine.RegenLoss;
             }
             if (evergreenGin)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += EvergreenGin.RegenLoss;
             }
             if (Player.tipsy)
             {
@@ -615,10 +615,10 @@ namespace CalamityMod.CalPlayer
         public override void UpdateLifeRegen()
         {
             if (rum)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += Rum.RegenBoost;
 
             if (caribbeanRum)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += CaribbeanRum.RegenBoost;
 
             if (aChicken)
                 Player.lifeRegen += 1;
@@ -679,14 +679,14 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
                 if (Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
-                    Main.dust[regen].noGravity = true;
-                    Main.dust[regen].fadeIn = 1.3f;
+                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
+                    regen.noGravity = true;
+                    regen.fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    Main.dust[regen].velocity = velocity;
+                    regen.velocity = velocity;
                     velocity.Normalize();
                     velocity *= 34f;
-                    Main.dust[regen].position = Player.Center - velocity;
+                    regen.position = Player.Center - velocity;
                 }
             }
 
@@ -769,8 +769,7 @@ namespace CalamityMod.CalPlayer
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
             {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || photosynthesis || aAmpoule || purity;
-                bool onlyPhotosynthesisAtNight = !shadeRegen && !cFreeze && !honeyDewWorking && photosynthesis && !Main.dayTime;
+                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking  || aAmpoule || purity;
 
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
@@ -779,32 +778,31 @@ namespace CalamityMod.CalPlayer
                 // Spawn dust of some flavor while actually regenerating, aAmpule and purity have a slightly different looking style
                 if (Player.lifeRegen > 0 && Player.statLife < actualMaxLife)
                 {
-                    int dustType = shadeRegen ? 173 : cFreeze ? 67 : honeyDewWorking ? DustID.Honey2 : photosynthesis ? 244 : aAmpoule ? 228 : purity ? 187 : -1;
+                    int dustType = shadeRegen ? 173 : cFreeze ? 67 : honeyDewWorking ? DustID.Honey2 : aAmpoule ? 228 : purity ? 187 : -1;
                     bool dustSpawnRolled = Main.rand.Next(30000) < Player.lifeRegenTime || purity ? Main.rand.NextBool() : aAmpoule ? Main.rand.NextBool(4) : Main.rand.NextBool(30);
                     if (dustType != -1 && dustSpawnRolled)
                     {
-                        int regen = Dust.NewDust(Player.position, Player.width, Player.height, dustType, 0f, 0f, purity || aAmpoule ? 80 : 200, default, purity || aAmpoule ? 0.5f : 1f);
-                        Main.dust[regen].noGravity = true;
-                        Main.dust[regen].fadeIn = 1.3f;
+                        Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, dustType, 0f, 0f, purity || aAmpoule ? 80 : 200, default, purity || aAmpoule ? 0.5f : 1f);
+                        regen.noGravity = true;
+                        regen.fadeIn = 1.3f;
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                        Main.dust[regen].velocity = velocity;
+                        regen.velocity = velocity;
                         velocity.Normalize();
                         velocity *= purity || aAmpoule ? 55f : 34f;
-                        Main.dust[regen].position = Player.Center - velocity;
+                        regen.position = Player.Center - velocity;
                     }
                 }
 
                 // Actually apply "standing still" regeneration (the stats are granted even at full health)
-                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : cFreeze ? 60f : honeyDewWorking ? 90f : photosynthesis ? 90f : aAmpoule ? 90f : purity ? 60f : -1f;
+                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : cFreeze ? 60f : honeyDewWorking ? 90f : aAmpoule ? 90f : purity ? 60f : -1f;
 
                 // 4 = vanilla Shiny Stone
-                int turboRegenPower = shadeRegen || cFreeze || purity ? 4 : honeyDewWorking || aAmpoule ? 3 : photosynthesis ? 1 : -1;
+                int turboRegenPower = shadeRegen || cFreeze || purity ? 4 : honeyDewWorking || aAmpoule ? 3 : -1;
 
                 if (turboRegenPower > 0)
                 {
                     // After a brief delay determined by your form of standing still regen, min-cap life regen time at 1800 / 3600.
-                    // Photosynthesis Potion does not do this at night.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f && !onlyPhotosynthesisAtNight)
+                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f)
                         Player.lifeRegenTime = 1800f;
 
                     Player.lifeRegen += turboRegenPower;
@@ -826,14 +824,14 @@ namespace CalamityMod.CalPlayer
 
                 if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
-                    Main.dust[regen].noGravity = true;
-                    Main.dust[regen].fadeIn = 1.3f;
+                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
+                    regen.noGravity = true;
+                    regen.fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    Main.dust[regen].velocity = velocity;
+                    regen.velocity = velocity;
                     velocity.Normalize();
                     velocity *= 34f;
-                    Main.dust[regen].position = Player.Center - velocity;
+                    regen.position = Player.Center - velocity;
                 }
             }
 
@@ -841,9 +839,9 @@ namespace CalamityMod.CalPlayer
             if (Player.statLife < actualMaxLife)
             {
                 // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Photosynthesis Potion buff or The Camper.
+                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, or The Camper.
                 int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || photosynthesis || camper) &&
+                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper) &&
                     Player.StandingStill() && Player.itemAnimation == 0;
 
                 if (!noLifeRegenCap)
@@ -881,12 +879,11 @@ namespace CalamityMod.CalPlayer
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
                 int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(200);
-                auraDamage = Player.ApplyArmorAccDamageBonusesTo(auraDamage);
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
                 pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
                 if (pulseCounter >= 420)
                 {
-                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
                     float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
                     SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");

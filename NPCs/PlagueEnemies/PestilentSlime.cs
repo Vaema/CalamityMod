@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             {
                 spikeTimer -= 1f;
             }
-            if (!NPC.wet && !Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (!NPC.wet && !Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 Vector2 slimePosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                 float targetXDist = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - slimePosition.X;

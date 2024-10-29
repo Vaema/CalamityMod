@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Summon
         public Vector2 storedPos;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = false; // To prevent blade type desync
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = false; // To prevent blade type desync
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -308,7 +308,7 @@ namespace CalamityMod.Projectiles.Summon
         public override bool? CanDamage() => attackCooldown == 0 ? null : false;
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (KnifeType == 1)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/DazzlingStabber").Value;
             if (KnifeType == 2)

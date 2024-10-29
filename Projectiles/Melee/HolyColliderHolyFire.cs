@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
         public int time = 0;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 

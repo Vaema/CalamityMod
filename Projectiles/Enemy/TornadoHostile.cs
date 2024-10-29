@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Enemy
             Vector2 sizeModdingPos = new Vector2(0f, sizeModdingVector2.Y - sizeModdingVector.Y);
             sizeModdingPos.X = sizeModdingPos.Y * vectorMult;
             new Vector2(sizeModdingVector.X - sizeModdingPos.X / 2f, sizeModdingVector.Y);
-            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle drawRectangle = texture2D23.Frame(1, 1, 0, 0);
             Vector2 smallRect = drawRectangle.Size() / 2f;
             float aiTrackMult = -0.06283186f * aiTracker;

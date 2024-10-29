@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 16;
             this.HideFromBestiary();
             if (!Main.dedServ)
             {

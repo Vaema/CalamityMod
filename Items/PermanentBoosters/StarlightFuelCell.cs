@@ -1,6 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -8,6 +10,8 @@ namespace CalamityMod.Items.PermanentBoosters
     public class StarlightFuelCell : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.AdrenalineBoosterTooltip").WithFormatArgs(BalancingConstants.AdrenalineDamagePerBooster.ToPercent(), BalancingConstants.AdrenalineDRPerBooster.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 20;

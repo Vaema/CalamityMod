@@ -49,7 +49,7 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddIngredient(ItemID.AncientBattleArmorMaterial, 3).
-                AddIngredient<CoreofSunlight>().
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

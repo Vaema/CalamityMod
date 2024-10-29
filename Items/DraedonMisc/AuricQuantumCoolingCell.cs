@@ -69,7 +69,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CoreofEleum>(6).
+                AddIngredient<EssenceofEleum>(6).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();

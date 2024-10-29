@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Item.type].Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Type].Value);
         }
     }
 }

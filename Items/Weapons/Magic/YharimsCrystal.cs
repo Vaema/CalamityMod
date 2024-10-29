@@ -26,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<YharimsCrystalPrism>();
             Item.shootSpeed = 30f;
 
-            Item.UseSound = SoundID.Item13;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;

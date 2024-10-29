@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         // Allows item to be extractinated and specifies custom behavior instead of copying an existing item
-        public override void SetStaticDefaults() => ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+        public override void SetStaticDefaults() => ItemID.Sets.ExtractinatorMode[Type] = Item.type;
 
         public override void SetDefaults()
         {

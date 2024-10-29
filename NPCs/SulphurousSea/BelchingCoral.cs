@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public const float CheckDistance = 480f;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 4;
             value.PortraitPositionYOverride = 24f;

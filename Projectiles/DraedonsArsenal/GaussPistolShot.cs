@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const float ChargeTime = 30f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
         }
 
         public override void SetDefaults()

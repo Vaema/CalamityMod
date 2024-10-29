@@ -142,7 +142,8 @@ namespace CalamityMod.CalPlayer
 
                 if (HasCustomDash)
                 {
-                    Player.vortexStealthActive = false;
+                    if (Player.wingsLogic != (int)VanillaWingID.WingsVortex)
+                        Player.vortexStealthActive = false;
 
                     // Decide the player's facing direction.
                     if (Player.velocity.X != 0f)
@@ -489,6 +490,7 @@ namespace CalamityMod.CalPlayer
                 if (WorldGen.SolidOrSlopedTile(upwardTilePoint.X, upwardTilePoint.Y) || WorldGen.SolidOrSlopedTile(aheadTilePoint.X, aheadTilePoint.Y))
                     Player.velocity.X /= 2f;
 
+                Player.timeSinceLastDashStarted = 0;
                 Player.dashDelay = -1;
             }
 
@@ -567,6 +569,7 @@ namespace CalamityMod.CalPlayer
                             hitDirection = Player.direction;
 
                         // TODO -- This should probably use DirectStrike?
+                        // If this does use DirectStrike, remember to remove the Old Fashioned bonus as it'd be a projectile.
                         if (Player.whoAmI == Main.myPlayer)
                             Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
 

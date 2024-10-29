@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
 
             this.HideFromBestiary();
 
@@ -289,7 +289,7 @@ namespace CalamityMod.NPCs.DesertScourge
                             NPC.frame.Y += frameHeight;
                             NPC.frameCounter = 0D;
                         }
-                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                             NPC.frame.Y = 0;
                     }
                 }

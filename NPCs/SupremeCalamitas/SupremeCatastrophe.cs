@@ -51,9 +51,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 8;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -132,8 +132,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 CurrentFrame = (int)Math.Round(MathHelper.Lerp(6f, 15f, slashInterpolant));
             }
 
-            int xFrame = CurrentFrame / Main.npcFrameCount[NPC.type];
-            int yFrame = CurrentFrame % Main.npcFrameCount[NPC.type];
+            int xFrame = CurrentFrame / Main.npcFrameCount[Type];
+            int yFrame = CurrentFrame % Main.npcFrameCount[Type];
 
             NPC.frame.Width = 400;
             NPC.frame.Height = 230;
@@ -508,7 +508,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 origin = NPC.frame.Size() * 0.5f;
             int afterimageCount = 4;
 

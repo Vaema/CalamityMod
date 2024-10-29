@@ -45,16 +45,16 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.DrawBackglow(PlaguebringerGoliath.BackglowColor, 4f);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
             Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value;
-            Vector2 origin = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Projectile.type] / 2);
+            Vector2 origin = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Type] / 2);
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
-            drawPos -= new Vector2(glow.Width, glow.Height / Main.projFrames[Projectile.type]) / 2f;
+            drawPos -= new Vector2(glow.Width, glow.Height / Main.projFrames[Type]) / 2f;
             drawPos += origin + new Vector2(0f, Projectile.gfxOffY);
             Color whiteColor = Color.White;
             Main.spriteBatch.Draw(glow, drawPos, null, whiteColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);

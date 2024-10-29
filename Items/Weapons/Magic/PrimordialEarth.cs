@@ -1,9 +1,8 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -45,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<DeathValleyDuster>().
                 AddIngredient(ItemID.Amber, 5).
-                AddIngredient<CoreofSunlight>(6).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.Bookcases).
                 Register();
         }

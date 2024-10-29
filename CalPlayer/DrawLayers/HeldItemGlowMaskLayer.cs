@@ -68,6 +68,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/FatesRevealGlow").Value;
             else if (itemType == ModContent.ItemType<GreatswordofJudgement>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value;
+            else if (itemType == ModContent.ItemType<GalactusBlade>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GalactusBladeGlow").Value;
             else if (itemType == ModContent.ItemType<LegionofCelestia>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/LegionofCelestiaGlow").Value;
             else if (itemType == ModContent.ItemType<NecroplasmicBeacon>())

@@ -188,6 +188,9 @@ namespace CalamityMod.Items.Weapons.Melee
             float tweakedScale = scale * (1 + extraScale); //Make the scale bigger to avoid crunching of the item
             Vector2 offset = (frontTexture.Size() * extraScale / 2f) * scale;
 
+            // The base offset is not perfect, so we need to move it down a little
+            offset -= Vector2.UnitY * 16f * scale;
+
             float backLayerOpacity = (Charge > 0) ? 1f : (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.9f) * 0.2f + 0.3f;
 
             spriteBatch.Draw(backTexture, position - offset, null, drawColor * backLayerOpacity, 0f, origin, tweakedScale, SpriteEffects.None, 0f); //Make the back scissor slightly transparent if the ark isnt charged
@@ -231,7 +234,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<TrueArkoftheAncients>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentSolar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

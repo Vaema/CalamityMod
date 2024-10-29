@@ -1,4 +1,5 @@
-﻿using CalamityMod.Rarities;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +20,14 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AuricOre>());
             Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<Violet>();
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(30).
+                AddIngredient<YharonSoulFragment>().
+                AddCondition(Condition.NearShimmer).
+                Register();
         }
     }
 }

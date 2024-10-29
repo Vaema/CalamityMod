@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int Lifetime = 180;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D bladeTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D bladeTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

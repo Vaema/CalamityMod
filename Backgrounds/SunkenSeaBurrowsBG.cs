@@ -31,7 +31,7 @@ namespace CalamityMod.Backgrounds
         /// </summary>
         public override void PreUpdatePlayers()
         {
-            if (!Main.dedServ && Main.LocalPlayer.InModBiome<BiomeManagers.SunkenSeaBurrowsBiome>())
+            if (!Main.dedServ && Main.LocalPlayer.InModBiome<BiomeManagers.GleamingBurrowsBiome>())
             {
                 for (int i = 0; i < Main.screenWidth / 16; i++)
                 {
@@ -68,7 +68,7 @@ namespace CalamityMod.Backgrounds
 
         private static void DrawBurrowsBG()
         {
-            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.SunkenSeaBurrowsBiome>()))
+            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.GleamingBurrowsBiome>()))
             {
                 Transparency += TransitionSpeed;
 

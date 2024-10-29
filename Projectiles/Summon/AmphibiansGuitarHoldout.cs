@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
             SpawnTimer++;
             if (SpawnTimer > 19f && Owner.ownedProjectileCounts[MinionType] < 8)
             {
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     Owner.MountedCenter,
                     Vector2.Zero,

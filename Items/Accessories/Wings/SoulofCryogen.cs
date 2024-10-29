@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 3));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 6.25f, 1f);
         }
 
@@ -52,15 +52,13 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.cryogenSoul = true;
-            player.GetDamage<GenericDamageClass>() += 0.07f;
             player.noFallDmg = true;
-            if (modPlayer.icicleCooldown <= 0)
+            if (modPlayer.wingProjectileCooldown <= 0)
             {
                 if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
                 {
                     var source = player.GetSource_Accessory(Item);
                     int damage = (int)player.GetBestClassDamage().ApplyTo(32);
-                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                     int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, player.velocity.X * 0f, 2f, ModContent.ProjectileType<FrostShardFriendly>(), damage, 3f, player.whoAmI, 1f);
                     if (p.WithinBounds(Main.maxProjectiles))
@@ -68,7 +66,7 @@ namespace CalamityMod.Items.Accessories.Wings
                         Main.projectile[p].DamageType = DamageClass.Generic;
                         Main.projectile[p].frame = Main.rand.Next(5);
                     }
-                    modPlayer.icicleCooldown = 7;
+                    modPlayer.wingProjectileCooldown = 7;
                 }
             }
         }

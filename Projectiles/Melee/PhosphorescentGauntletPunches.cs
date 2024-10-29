@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
         public const float LungeSpeed = 19f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 14;
+            Main.projFrames[Type] = 14;
         }
 
         public override void SetDefaults()
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame++;
 
                 // Die at the end of the final punch.
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                     Projectile.Kill();
             }
         }
@@ -158,8 +158,8 @@ namespace CalamityMod.Projectiles.Melee
         // Manual drawing is used to correct the origin of the projectile when drawn.
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D punchTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle frame = punchTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D punchTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = punchTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects directionEffect = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Main.EntitySpriteDraw(punchTexture, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, origin, Projectile.scale, directionEffect, 0);

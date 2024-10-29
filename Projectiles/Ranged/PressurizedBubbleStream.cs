@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -32,9 +33,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 3;
             Projectile.extraUpdates = 4;
             Projectile.timeLeft = FireTime + ChargeupTime;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition()
@@ -80,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Vector2 bubblePosition = Owner.MountedCenter - Vector2.UnitY * 4f + bubbleRotation.ToRotationVector2() * 55f;
 
-                SoundEngine.PlaySound(ReedBlowgun.BubbleBurstSound, bubblePosition);
+                SoundEngine.PlaySound(SoundID.Item64, bubblePosition);
             }
 
             Projectile.velocity *= 0.985f;
@@ -130,7 +133,8 @@ namespace CalamityMod.Projectiles.Ranged
                 waterDust.velocity -= Projectile.velocity * 0.1f;
             }
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item21, Projectile.position);

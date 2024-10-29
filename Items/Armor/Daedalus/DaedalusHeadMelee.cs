@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Armor.Daedalus
                 AddIngredient<CryonicBar>(7).
                 AddIngredient<EssenceofEleum>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DaedalusHeadMagic>()).
                 Register();
         }
     }

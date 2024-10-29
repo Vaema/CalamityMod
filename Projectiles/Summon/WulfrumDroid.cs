@@ -98,9 +98,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 12;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -177,7 +177,7 @@ namespace CalamityMod.Projectiles.Summon
             bool buffMode = BuffModeBuffer <= 0;
 
             //Do frame stuff i guess
-            Projectile.frame = Projectile.frame % (Main.projFrames[Projectile.type] / 2);
+            Projectile.frame = Projectile.frame % (Main.projFrames[Type] / 2);
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 8)
@@ -185,13 +185,13 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type] / 2)
+            if (Projectile.frame >= Main.projFrames[Type] / 2)
             {
                 Projectile.frame = 0;
             }
 
             if (buffMode)
-                Projectile.frame += Main.projFrames[Projectile.type] / 2;
+                Projectile.frame += Main.projFrames[Type] / 2;
 
 
             //Buff stuff

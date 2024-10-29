@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Materials
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D tex = TextureAssets.Item[Item.type].Value;
+            Texture2D tex = TextureAssets.Item[Type].Value;
 
             //Give it an outline. Make it look really important and shiny. The player must not confuse this for a random material
             spriteBatch.End();

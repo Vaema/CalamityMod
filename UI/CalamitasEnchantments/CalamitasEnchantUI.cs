@@ -183,6 +183,9 @@ namespace CalamityMod.UI.CalamitasEnchants
                 cost *= CurrentlyHeldItem.stack;
             }
 
+            // Calamitas' happiness also affects the cost
+            cost = (int)(cost * Main.LocalPlayer.currentShoppingSettings.PriceAdjustment);
+
             // Make it 20% cheaper if the player has the Discount Card or Greedy Ring
             if (Main.LocalPlayer.discountAvailable)
                 cost = (int)(cost * 0.8);
