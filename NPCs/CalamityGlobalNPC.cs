@@ -1661,7 +1661,7 @@ namespace CalamityMod.NPCs
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
-            foreach (KeyValuePair<int, int> BossRushHPChange in CalamityLists.BossRushHPChanges)
+            foreach (var BossRushHPChange in BossRushHPChangeDict.Dict)
             {
                 if (npc.type == BossRushHPChange.Key)
                 {
