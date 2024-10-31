@@ -1743,7 +1743,7 @@ namespace CalamityMod.NPCs
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                 npc.npcSlots = 32f;
             }
-            else if (CalamityLists.DestroyerIDs.Contains(npc.type))
+            else if (DestroyerIDList.Includes(npc))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
                 npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
@@ -2785,7 +2785,7 @@ namespace CalamityMod.NPCs
             {
                 if (!NPC.downedMechBossAny)
                 {
-                    if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -2795,7 +2795,7 @@ namespace CalamityMod.NPCs
                 }
                 else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
                 {
-                    if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -3604,7 +3604,7 @@ namespace CalamityMod.NPCs
             // Damage reduction on spawn for certain worm bosses.
             if (EaterOfWorldsIDList.Includes(npc) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
-            if (CalamityLists.DestroyerIDs.Contains(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
+            if (DestroyerIDList.Includes(npc) && newAI[1] < DestroyerAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
             if (AstrumDeusIDList.Includes(npc))
             {
@@ -6064,7 +6064,7 @@ namespace CalamityMod.NPCs
 
             // True melee resists
             if (DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper ||
-                PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
+                PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || DestroyerIDList.Includes(npc) ||
                 AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
@@ -7404,7 +7404,7 @@ namespace CalamityMod.NPCs
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || CalamityLists.DestroyerIDs.Contains(npc.type))
+                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc))
                     return false;
             }
 
@@ -7671,7 +7671,7 @@ namespace CalamityMod.NPCs
             }
 
             // Destroyer drawing and laser telegraphs
-            else if (CalamityLists.DestroyerIDs.Contains(npc.type) && !npc.IsABestiaryIconDummy)
+            else if (DestroyerIDList.Includes(npc) && !npc.IsABestiaryIconDummy)
             {
                 Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
                 int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
@@ -8688,7 +8688,7 @@ namespace CalamityMod.NPCs
         #region Should Affect NPC
         public static bool ShouldAffectNPC(NPC target)
         {
-            if (EaterOfWorldsIDList.Includes(target) || CalamityLists.DestroyerIDs.Contains(target.type))
+            if (EaterOfWorldsIDList.Includes(target) || DestroyerIDList.Includes(target))
                 return false;
 
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&

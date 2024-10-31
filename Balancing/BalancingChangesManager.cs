@@ -160,29 +160,29 @@ namespace CalamityMod.Balancing
 
             #region The Destroyer
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(ResistTrueMelee(0.5f))));
 
             // 50% resist to Adamantite Throwing Axe's lightning.
             // See Aquatic Scourge comment.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
 
             // 50% resist to Aftershock's rocks.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AftershockRock>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AftershockRock>()))));
 
             // 50% resist to Dormant Brimseeker.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
 
             // 45% resist to Mounted Scanner.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<MountedScannerLaser>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<MountedScannerLaser>()))));
 
             // 30% resist to Meowthrower.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
 
             // 25% resist to Avalanche's Ice Bombs and shards.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<IceBombFriendly>(), ProjectileType<FrostShardFriendly>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<IceBombFriendly>(), ProjectileType<FrostShardFriendly>()))));
 
             // 25% resist to Snowstorm Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DestroyerIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<Snowflake>(), ProjectileType<SnowflakeIceStar>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<Snowflake>(), ProjectileType<SnowflakeIceStar>()))));
             #endregion
 
             #region Astrum Aureus
