@@ -8637,7 +8637,7 @@ namespace CalamityMod.NPCs
         {
             if (!GetDownedBossVariable(npc.type))
             {
-                CalamityLists.bossTypes.TryGetValue(npc.type, out int newBossTypeJustDowned);
+                BossTypeDict.TryGet(npc.type, out int newBossTypeJustDowned);
 
                 for (int i = 0; i < Main.maxPlayers; i++)
                 {
