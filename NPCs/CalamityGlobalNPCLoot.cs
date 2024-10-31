@@ -1711,7 +1711,7 @@ DukeEditFailed:
 
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (SkeletonList.IsSkeleton(npc.type))
+            if (SkeletonList.Includes(npc.type))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies
