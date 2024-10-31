@@ -56,8 +56,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
-        public static List<int> zombieList;
         public static List<int> demonEyeList;
         public static List<int> skeletonList;
         public static List<int> angryBonesList;
@@ -113,45 +111,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            zombieList = new List<int>()
-            {
-                NPCID.Zombie,
-                NPCID.ArmedZombie,
-                NPCID.BaldZombie,
-                NPCID.PincushionZombie,
-                NPCID.ArmedZombiePincussion, // what is this spelling
-                NPCID.SlimedZombie,
-                NPCID.ArmedZombieSlimed,
-                NPCID.SwampZombie,
-                NPCID.ArmedZombieSwamp,
-                NPCID.TwiggyZombie,
-                NPCID.ArmedZombieTwiggy,
-                NPCID.FemaleZombie,
-                NPCID.ArmedZombieCenx,
-                NPCID.ZombieRaincoat,
-                NPCID.ZombieEskimo,
-                NPCID.ArmedZombieEskimo,
-                NPCID.BigRainZombie,
-                NPCID.SmallRainZombie,
-                NPCID.BigFemaleZombie,
-                NPCID.SmallFemaleZombie,
-                NPCID.BigTwiggyZombie,
-                NPCID.SmallTwiggyZombie,
-                NPCID.BigSwampZombie,
-                NPCID.SmallSwampZombie,
-                NPCID.BigSlimedZombie,
-                NPCID.SmallSlimedZombie,
-                NPCID.BigPincushionZombie,
-                NPCID.SmallPincushionZombie,
-                NPCID.BigBaldZombie,
-                NPCID.SmallBaldZombie,
-                NPCID.BigZombie,
-                NPCID.SmallZombie,
-                NPCID.MaggotZombie,
-                NPCType<BucketZombie>()
-                // halloween zombies not included because they don't drop shackles or zombie arms
-            };
-
             demonEyeList = new List<int>()
             {
                 NPCID.DemonEye,
@@ -1099,7 +1058,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            zombieList = null;
             demonEyeList = null;
             skeletonList = null;
             angryBonesList = null;
