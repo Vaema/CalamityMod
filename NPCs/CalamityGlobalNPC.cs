@@ -805,7 +805,7 @@ namespace CalamityMod.NPCs
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
             #region Debuff System Multiplier Calculations
             bool wormBoss = DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || PerforatorWormIDList.Includes(npc) ||
-                AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
+                AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || StormWeaverIDList.Includes(npc);
             bool slimeGod = SlimeGodIDList.Includes(npc);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
@@ -6065,7 +6065,7 @@ namespace CalamityMod.NPCs
             // True melee resists
             if (DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || DestroyerIDList.Includes(npc) ||
-                AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || ThanatosIDList.Includes(npc) ||
+                AstrumDeusIDList.Includes(npc) || StormWeaverIDList.Includes(npc) || ThanatosIDList.Includes(npc) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
             {

@@ -45,7 +45,6 @@ namespace CalamityMod
     public sealed class CalamityLists : ModSystem
     {
         public static List<int> DeathModeSplittingWormIDs;
-        public static List<int> StormWeaverIDs;
         public static List<int> RavagerIDs;
         public static List<int> GolemIDs;
         public static List<int> BoundNPCIDs;
@@ -90,13 +89,6 @@ namespace CalamityMod
                 NPCID.SeekerHead,
                 NPCID.SeekerBody,
                 NPCID.SeekerTail
-            };
-
-            StormWeaverIDs = new List<int>
-            {
-                NPCType<StormWeaverHead>(),
-                NPCType<StormWeaverBody>(),
-                NPCType<StormWeaverTail>()
             };
 
             // Purposefully does not include the freed head
@@ -664,7 +656,6 @@ namespace CalamityMod
         public override void Unload()
         {
             DeathModeSplittingWormIDs = null;
-            StormWeaverIDs = null;
             RavagerIDs = null;
             GolemIDs = null;
             BoundNPCIDs = null;

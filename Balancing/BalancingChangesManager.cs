@@ -315,28 +315,28 @@ namespace CalamityMod.Balancing
 
             #region Storm Weaver
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(ResistTrueMelee(0.5f))));
 
             // 50% resist to Dazzling Stabber Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DazzlingStabber>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DazzlingStabber>()))));
 
             // 50% resist to Last Prism.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.LastPrismLaser))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.LastPrismLaser))));
 
             // 50% resist to Legion of Celestia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<CelestialAxeMinion>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<CelestialAxeMinion>()))));
 
             // 50% resist to Pristine Fury's alt fire.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<PristineSecondary>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<PristineSecondary>()))));
 
             // 50% resist to Tactician's Trump Card's explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));
 
             // 35% resist to Event Horizon.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
 
             // 25% resist to Molten Amputator's blobs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
             #endregion
 
             #region Old Duke
