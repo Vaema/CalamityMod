@@ -51,7 +51,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> pierceResistExceptionLeviAureusList;
         public static List<int> pierceResistExceptionList;
 
         public static List<int> AstrumDeusIDs;
@@ -98,19 +97,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            pierceResistExceptionLeviAureusList = new List<int>()
-            {
-                ProjectileID.NettleBurstEnd,
-                ProjectileID.NettleBurstLeft,
-                ProjectileID.NettleBurstRight,
-                ProjectileID.PrincessWeapon,
-                ProjectileType<AnahitasArpeggioNote>(),
-                ProjectileType<AtlantisSpear>(),
-                ProjectileType<AuroraFire>(),
-                ProjectileType<BallisticPoisonCloud>(),
-                ProjectileType<DuststormCloudHitbox>()
-            };
-
             pierceResistExceptionList = new List<int>()
             {
                 ProjectileID.Arkhalis,
@@ -872,7 +858,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            pierceResistExceptionLeviAureusList = null;
             pierceResistExceptionList = null;
 
             AstrumDeusIDs = null;
