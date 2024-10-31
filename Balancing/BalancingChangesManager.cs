@@ -208,28 +208,28 @@ namespace CalamityMod.Balancing
 
             #region Ravager
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(ResistTrueMelee(0.5f))));
 
             // 50% resist to Aegis Blade's explosions because the true melee resist ain't enough.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AegisBlast>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AegisBlast>()))));
 
             // 50% resist to Icicle Arrows.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<IcicleArrowProj>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<IcicleArrowProj>()))));
 
             // 35% resist to Flying Dragon.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
 
             // 30% resist to Aurora Blazer.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<AuroraFire>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<AuroraFire>()))));
 
             // 30% resist to Flak Kraken.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<FlakKrakenProjectile>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<FlakKrakenProjectile>()))));
 
             // 25% resist to Lucrecia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<DNA>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<DNA>()))));
 
             // 20% resist to The Hive.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.RavagerIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<HiveNuke>(), ProjectileType<HiveMissile>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<HiveNuke>(), ProjectileType<HiveMissile>()))));
             #endregion
 
             #region Lunatic Cultist
