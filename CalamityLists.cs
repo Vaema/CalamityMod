@@ -56,7 +56,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> demonEyeList;
         public static List<int> skeletonList;
         public static List<int> angryBonesList;
         public static List<int> hornetList;
@@ -111,24 +110,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            demonEyeList = new List<int>()
-            {
-                NPCID.DemonEye,
-                NPCID.CataractEye,
-                NPCID.SleepyEye,
-                NPCID.DialatedEye, // it is spelled "dilated"
-                NPCID.GreenEye,
-                NPCID.PurpleEye,
-                NPCID.DemonEyeOwl,
-                NPCID.DemonEyeSpaceship,
-                NPCID.DemonEye2,
-                NPCID.PurpleEye2,
-                NPCID.GreenEye2,
-                NPCID.DialatedEye2,
-                NPCID.SleepyEye2,
-                NPCID.CataractEye2
-            };
-
             skeletonList = new List<int>()
             {
                 NPCID.Skeleton,
@@ -1058,7 +1039,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            demonEyeList = null;
             skeletonList = null;
             angryBonesList = null;
             hornetList = null;
