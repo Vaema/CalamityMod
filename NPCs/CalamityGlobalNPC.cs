@@ -6229,7 +6229,7 @@ namespace CalamityMod.NPCs
             // Apply balancing resists/vulnerabilities.
             BalancingChangesManager.ApplyFromProjectile(npc, ref modifiers, projectile);
 
-            if (CalamityLists.GrenadeResistIDs.Contains(projectile.type))
+            if (GrenadeResistIDList.Includes(projectile.type))
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
                 // Note that Calamity reduces the vanilla resist from 80% to 60%

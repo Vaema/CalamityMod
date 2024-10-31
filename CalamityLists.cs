@@ -34,7 +34,6 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
-using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,8 +43,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> GrenadeResistIDs;
-
         public static SortedDictionary<int, int> BossRushHPChanges;
         public static SortedDictionary<int, int> BossValues;
         public static SortedDictionary<int, int> bossTypes;
@@ -70,30 +67,6 @@ namespace CalamityMod
         {
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
-
-
-            GrenadeResistIDs = new List<int>
-            {
-                ProjectileID.Grenade,
-                ProjectileID.StickyGrenade,
-                ProjectileID.BouncyGrenade,
-                ProjectileID.Bomb,
-                ProjectileID.StickyBomb,
-                ProjectileID.BouncyBomb,
-                ProjectileID.Dynamite,
-                ProjectileID.StickyDynamite,
-                ProjectileID.BouncyDynamite,
-                ProjectileID.Explosives,
-                ProjectileID.ExplosiveBunny,
-                ProjectileID.PartyGirlGrenade,
-                ProjectileID.BombFish,
-                ProjectileID.Beenade,
-                ProjectileID.Bee,
-                ProjectileID.GiantBee,
-                ProjectileType<AeroExplosive>(),
-                ProjectileID.ScarabBomb,
-                ProjectileID.TNTBarrel
-            };
 
 
             // Collections
@@ -333,7 +306,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            GrenadeResistIDs = null;
 
             BossRushHPChanges?.Clear();
             BossRushHPChanges = null;
