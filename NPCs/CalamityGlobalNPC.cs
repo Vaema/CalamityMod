@@ -805,7 +805,7 @@ namespace CalamityMod.NPCs
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
             #region Debuff System Multiplier Calculations
             bool wormBoss = CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type) ||
-                CalamityLists.AquaticScourgeIDs.Contains(npc.type) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
+                AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
             bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
@@ -1514,7 +1514,7 @@ namespace CalamityMod.NPCs
             }
 
             // Aquatic Scourge sets kill time in AI, not here.
-            if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !CalamityLists.AquaticScourgeIDs.Contains(npc.type))
+            if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !AquaticScourgeIDList.Includes(npc))
             {
                 KillTime = revKillTime;
             }
@@ -6064,7 +6064,7 @@ namespace CalamityMod.NPCs
 
             // True melee resists
             if (CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
-                CalamityLists.PerforatorIDs.Contains(npc.type) || CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
+                CalamityLists.PerforatorIDs.Contains(npc.type) || AquaticScourgeIDList.Includes(npc) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
                 AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())

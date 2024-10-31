@@ -133,29 +133,29 @@ namespace CalamityMod.Balancing
 
             #region Aquatic Scourge
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(ResistTrueMelee(0.5f))));
 
             // 50% resist to Adamantite Throwing Axe's lightning.
             // Twisting Thunder and Gael's Greatsword use this projectile too, but they are far beyond progression, so who cares!
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
 
             // 50% resist to Dormant Brimseeker.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
 
             // 50% resist to Mounted Scanner.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<MountedScannerLaser>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<MountedScannerLaser>()))));
 
             // 40% resist to Cryophobia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<CryoBlast>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<CryoBlast>()))));
 
             // 40% resist to SHPC.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<SHPExplosion>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<SHPExplosion>()))));
 
             // 30% resist to Meowthrower.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
 
             // 25% resist to Snowstorm Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AquaticScourgeIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<Snowflake>(), ProjectileType<SnowflakeIceStar>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<Snowflake>(), ProjectileType<SnowflakeIceStar>()))));
             #endregion
 
             #region The Destroyer
