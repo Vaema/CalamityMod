@@ -6,7 +6,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Systems.Collections
 {
-    public sealed class ZombieList : ModSystem
+    public sealed class ZombieIDList : ModSystem
     {
         public static IList<int> List { get; private set; }
 

@@ -1706,12 +1706,12 @@ DukeEditFailed:
 
             // All Moss Hornets
             // Needler @ 4% Normal, 6.67% Expert+
-            if (MossHornetList.Includes(npc.type))
+            if (MossHornetIDList.Includes(npc.type))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
 
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (SkeletonList.Includes(npc.type))
+            if (SkeletonIDList.Includes(npc.type))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies

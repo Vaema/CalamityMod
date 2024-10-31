@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Systems.Collections
 {
-    public sealed class AngryBonesList : ModSystem
+    public sealed class MossHornetIDList : ModSystem
     {
         public static IList<int> List { get; private set; }
 
@@ -12,12 +12,11 @@ namespace CalamityMod.Systems.Collections
         {
             List =
             [
-                NPCID.AngryBones,
-                NPCID.AngryBonesBig,
-                NPCID.AngryBonesBigMuscle,
-                NPCID.AngryBonesBigHelmet,
-                NPCID.BigBoned,
-                NPCID.ShortBones
+                NPCID.MossHornet,
+                NPCID.TinyMossHornet,
+                NPCID.LittleMossHornet,
+                NPCID.BigMossHornet,
+                NPCID.GiantMossHornet
             ];
         }
 

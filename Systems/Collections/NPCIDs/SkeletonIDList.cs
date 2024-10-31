@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Systems.Collections
 {
-    public sealed class SkeletonList : ModSystem
+    public sealed class SkeletonIDList : ModSystem
     {
         public static IList<int> List { get; private set; }
 

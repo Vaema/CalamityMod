@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Systems.Collections
 {
-    public sealed class HornetList : ModSystem
+    public sealed class HornetIDList : ModSystem
     {
         public static IList<int> List { get; private set; }
 

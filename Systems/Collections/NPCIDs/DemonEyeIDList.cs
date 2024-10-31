@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Systems.Collections
 {
-    public sealed class DemonEyeList : ModSystem
+    public sealed class DemonEyeIDList : ModSystem
     {
         public static IList<int> List { get; private set; }
 
