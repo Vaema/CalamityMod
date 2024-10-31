@@ -300,13 +300,7 @@ namespace CalamityMod.CalPlayer
                 if (silvaCountdown == silvaReviveDuration && !hasSilvaEffect)
                 {
                     SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-
                     Player.AddBuff(ModContent.BuffType<SilvaRevival>(), silvaReviveDuration);
-
-                    if (silvaWings)
-                    {
-                        Player.HealPlayer(Player.statLifeMax2 / 3);
-                    }
                 }
 
                 hasSilvaEffect = true;
@@ -522,7 +516,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += 0.5f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -604,7 +598,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += 0.5f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;

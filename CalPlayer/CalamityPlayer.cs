@@ -728,6 +728,7 @@ namespace CalamityMod.CalPlayer
         public int phantomicBulwarkCooldown = 0;
         public int phantomicHeartRegen = 0; // 0 = can spawn, 720 = regen applied, 600 = regen stops and 10 sec cd before it can spawn again
         public bool silvaWings = false;
+        public int silvaWingsLifeRegenTimer = 0;
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool MiniSwarmers = false;
@@ -2770,6 +2771,7 @@ namespace CalamityMod.CalPlayer
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
             harpyWingFeatherCooldown = 0;
+            silvaWingsLifeRegenTimer = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;

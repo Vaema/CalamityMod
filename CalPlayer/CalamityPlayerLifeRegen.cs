@@ -6,6 +6,7 @@ using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
@@ -733,6 +734,25 @@ namespace CalamityMod.CalPlayer
 
                 Player.lifeRegenTime += 4;
             }
+
+            if (silvaWings)
+            {
+                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
+                    silvaWingsLifeRegenTimer = 0;
+                else
+                {
+                    silvaWingsLifeRegenTimer++;
+                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
+                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
+                }
+
+                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
+                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
+                Player.lifeRegen += lifeRegenBoost;
+                Main.NewText(lifeRegenBoost);
+            }
+            else
+                silvaWingsLifeRegenTimer = 0;
 
             if (pinkCandle && !noLifeRegen)
             {
