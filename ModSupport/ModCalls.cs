@@ -929,21 +929,21 @@ namespace CalamityMod
         }
         public static bool SetPersistentBuffList(int type, bool isPersistent)
         {
-            if (isPersistent && !CalamityLists.persistentBuffList.Contains(type))
+            if (isPersistent && !PersistentBuffList.IsPersistentBuff(type))
             {
-                CalamityLists.persistentBuffList.Add(type);
+                PersistentBuffList.List.Add(type);
                 return true;
             }
             else if (!isPersistent)
             {
-                return CalamityLists.persistentBuffList.Remove(type);
+                return PersistentBuffList.List.Remove(type);
             }
 
             return false;
         }
 
         public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.IsBuffBoostedByAmalgan(type);
-        public static bool IsOnPersistentBuffList(int type) => CalamityLists.persistentBuffList.Contains(type);
+        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.IsPersistentBuff(type);
         #endregion
 
         #region Venerated Locket Bans

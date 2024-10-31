@@ -66,7 +66,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
         public static List<int> BlacklistedWeaponsWithToolPower;
 
@@ -127,21 +126,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            persistentBuffList = new List<int>()
-            {
-                BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(),
-                BuffType<WeaponImbueHolyFlames>(),
-                BuffID.WeaponImbueVenom,
-                BuffID.WeaponImbueCursedFlames,
-                BuffID.WeaponImbueFire,
-                BuffID.WeaponImbueGold,
-                BuffID.WeaponImbueIchor,
-                BuffID.WeaponImbueNanites,
-                BuffID.WeaponImbueConfetti,
-                BuffID.WeaponImbuePoison
-            };
-
             MagicGunIDs = new List<int>()
             {
                 ItemType<AbyssShocker>(),
@@ -1182,7 +1166,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            persistentBuffList = null;
             MagicGunIDs = null;
             BlacklistedWeaponsWithToolPower = null;
 

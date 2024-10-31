@@ -3868,7 +3868,7 @@ namespace CalamityMod.CalPlayer
                         else
                         {
                             // Reset buff persistence if Amalgam is removed.
-                            if (Main.persistentBuff[buffID] && !CalamityLists.persistentBuffList.Contains(buffID))
+                            if (Main.persistentBuff[buffID] && !PersistentBuffList.IsPersistentBuff(buffID))
                                 Main.persistentBuff[buffID] = false;
                         }
                     }
