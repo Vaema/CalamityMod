@@ -2568,7 +2568,7 @@ namespace CalamityMod.NPCs
                 npc.GetNPCDamage();
                 npc.defDamage = npc.damage;
             }
-            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
+            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || BossHPScalingList.Includes(npc.type))
             {
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);

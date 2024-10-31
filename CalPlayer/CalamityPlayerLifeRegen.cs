@@ -13,7 +13,6 @@ using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
@@ -24,7 +23,6 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -437,7 +435,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(CalamityLists.fireDebuffList.Contains))
+            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.IsFireDebuff))
             {
                 if (Player.lifeRegenTime < 1800)
                     Player.lifeRegenTime = 1800;
