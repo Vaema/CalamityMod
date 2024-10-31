@@ -123,7 +123,7 @@ namespace CalamityMod.Balancing
 
             #region The Perforators
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.PerforatorIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(PerforatorWormIDList.List, Do(ResistTrueMelee(0.5f))));
             #endregion
 
             #region Wall of Flesh

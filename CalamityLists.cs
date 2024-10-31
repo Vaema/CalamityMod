@@ -86,18 +86,6 @@ namespace CalamityMod
         {
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
-            PerforatorIDs = new List<int>
-            {
-                NPCType<PerforatorHeadLarge>(),
-                NPCType<PerforatorBodyLarge>(),
-                NPCType<PerforatorTailLarge>(),
-                NPCType<PerforatorHeadMedium>(),
-                NPCType<PerforatorBodyMedium>(),
-                NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorHeadSmall>(),
-                NPCType<PerforatorBodySmall>(),
-                NPCType<PerforatorTailSmall>()
-            };
 
             DesertScourgeIDs = new List<int>
             {

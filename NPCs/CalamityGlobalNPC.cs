@@ -804,7 +804,7 @@ namespace CalamityMod.NPCs
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
             #region Debuff System Multiplier Calculations
-            bool wormBoss = CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type) ||
+            bool wormBoss = CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || PerforatorWormIDList.Includes(npc) ||
                 AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
             bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
 
@@ -6064,7 +6064,7 @@ namespace CalamityMod.NPCs
 
             // True melee resists
             if (CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
-                CalamityLists.PerforatorIDs.Contains(npc.type) || AquaticScourgeIDList.Includes(npc) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
+                PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
                 AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
@@ -6235,7 +6235,7 @@ namespace CalamityMod.NPCs
                 // Note that Calamity reduces the vanilla resist from 80% to 60%
                 bool hasResist = CalamityLists.EaterofWorldsIDs.Contains(npc.type) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
-                if (npc.type == NPCID.Creeper || CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type))
+                if (npc.type == NPCID.Creeper || CalamityLists.DesertScourgeIDs.Contains(npc.type) || PerforatorWormIDList.Includes(npc))
                     hasResist = true;
                 if (hasResist)
                     modifiers.SourceDamage *= 0.4f;
