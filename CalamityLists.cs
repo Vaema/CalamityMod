@@ -253,14 +253,6 @@ namespace CalamityMod
                 { NPCID.Deerclops, 44 }
             };
 
-            legOverrideList = new List<int>()
-            {
-                EquipLoader.GetEquipSlot(CalamityMod.Instance, "ProfanedSoulCrystal", EquipType.Legs),
-                EquipLoader.GetEquipSlot(CalamityMod.Instance, "AquaticHeart", EquipType.Legs),
-                //CalamityMod.Instance.GetEquipSlot("SirenLeg", EquipType.Legs), whate even was SirenLeg vs SirenLegAlt?
-                EquipLoader.GetEquipSlot(CalamityMod.Instance, "Popo", EquipType.Legs)
-            };
-
             // Duke Fishron and Old Duke phase 3 becomes way too easy if you can make him stop being invisible with Yanmei's Knife.
             // This is a list so that other NPCs can be added as necessary.
             // IT DOES NOT make them immune to the debuff, just stops them from being recolored.
@@ -313,8 +305,6 @@ namespace CalamityMod
             BossValues = null;
             bossTypes?.Clear();
             bossTypes = null;
-
-            legOverrideList = null;
 
             kamiDebuffColorImmuneList = null;
 

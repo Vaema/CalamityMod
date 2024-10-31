@@ -6,6 +6,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -27,7 +28,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Remove shoe drawing effects if special legs are meant to be drawn.
-            if (CalamityLists.legOverrideList.Contains(Player.legs))
+            if (LegOverrideList.Includes(Player.legs))
             {
                 PlayerDrawLayers.Shoes.Hide();
             }
