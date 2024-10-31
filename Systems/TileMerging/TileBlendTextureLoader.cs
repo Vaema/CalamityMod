@@ -13,23 +13,25 @@ namespace CalamityMod.Systems
 {
     internal sealed class TileBlendTextureLoader : ModSystem
     {
-        internal const int EmptySlot = 255;
+        internal const int EmptySlot = 0;
+        internal const int StartingIndex = 1;
+        internal const int MaxCount = 255;
 
         internal static TileBlendTexture[] Registry { get; private set; }
         internal static IEnumerable<TileBlendTexture> AllTextures => Registry.Take(Count);
-        internal static int Count => _UniqueSlot;
+        internal static int Count => _UniqueSlot - StartingIndex;
 
-        private static int _UniqueSlot = 0;
+        private static int _UniqueSlot = StartingIndex;
 
         public override void Load()
         {
-            Registry = new TileBlendTexture[EmptySlot + 1];
+            Registry = new TileBlendTexture[MaxCount];
         }
 
         public override void Unload()
         {
             Registry = null;
-            _UniqueSlot = 0;
+            _UniqueSlot = StartingIndex;
         }
 
         internal static int Register(TileBlendTexture sheet)
@@ -37,8 +39,8 @@ namespace CalamityMod.Systems
             if (sheet.Slot >= 0)
                 throw new ArgumentException("Argument has already registered to System", nameof(sheet));
 
-            if (_UniqueSlot >= EmptySlot)
-                throw new InvalidOperationException($"Slots are all used up to {EmptySlot}, We can't allocate more!");
+            if (_UniqueSlot >= MaxCount)
+                throw new InvalidOperationException($"Slots are all used up to {MaxCount}, We can't allocate more!");
 
             var slot = _UniqueSlot++;
             Registry[slot] = sheet;
