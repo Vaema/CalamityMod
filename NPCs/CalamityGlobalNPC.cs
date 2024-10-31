@@ -6065,11 +6065,11 @@ namespace CalamityMod.NPCs
             // True melee resists
             if (DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || DestroyerIDList.Includes(npc) ||
-                AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
+                AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || ThanatosIDList.Includes(npc) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
             {
-                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : (CalamityLists.DesertScourgeIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
+                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : (DesertScourgeIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
                 if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
@@ -6256,7 +6256,7 @@ namespace CalamityMod.NPCs
         private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
         {
             // Thanatos segments do not trigger pierce resistance if they are closed
-            if (CalamityLists.ThanatosIDs.Contains(npc.type) && unbreakableDR)
+            if (ThanatosIDList.Includes(npc) && unbreakableDR)
                 return;
 
             // Isolates projectiles which ignore pierce resist only on Leviathan and Astrum Aureus

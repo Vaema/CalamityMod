@@ -45,7 +45,6 @@ namespace CalamityMod
     public sealed class CalamityLists : ModSystem
     {
         public static List<int> DeathModeSplittingWormIDs;
-        public static List<int> ThanatosIDs;
         public static List<int> AresIDs;
         public static List<int> SkeletronPrimeIDs;
         public static List<int> StormWeaverIDs;
@@ -93,14 +92,6 @@ namespace CalamityMod
                 NPCID.SeekerHead,
                 NPCID.SeekerBody,
                 NPCID.SeekerTail
-            };
-
-            ThanatosIDs = new List<int>
-            {
-                NPCType<ThanatosHead>(),
-                NPCType<ThanatosBody1>(),
-                NPCType<ThanatosBody2>(),
-                NPCType<ThanatosTail>()
             };
 
             AresIDs = new List<int>
@@ -694,7 +685,6 @@ namespace CalamityMod
         public override void Unload()
         {
             DeathModeSplittingWormIDs = null;
-            ThanatosIDs = null;
             AresIDs = null;
             SkeletronPrimeIDs = null;
             StormWeaverIDs = null;
