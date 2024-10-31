@@ -45,7 +45,6 @@ namespace CalamityMod
     public sealed class CalamityLists : ModSystem
     {
         public static List<int> DeathModeSplittingWormIDs;
-        public static List<int> GolemIDs;
         public static List<int> BoundNPCIDs;
 
         public static List<int> GrenadeResistIDs;
@@ -88,15 +87,6 @@ namespace CalamityMod
                 NPCID.SeekerHead,
                 NPCID.SeekerBody,
                 NPCID.SeekerTail
-            };
-
-            GolemIDs = new List<int>
-            {
-                NPCID.Golem,
-                NPCID.GolemHead,
-                NPCID.GolemHeadFree,
-                NPCID.GolemFistLeft,
-                NPCID.GolemFistRight
             };
 
             GrenadeResistIDs = new List<int>
@@ -644,7 +634,6 @@ namespace CalamityMod
         public override void Unload()
         {
             DeathModeSplittingWormIDs = null;
-            GolemIDs = null;
             BoundNPCIDs = null;
             GrenadeResistIDs = null;
             ZeroContactDamageNPCList = null;
