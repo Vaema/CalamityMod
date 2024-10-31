@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Placeables.Crags
             Item.useStyle = ItemUseStyleID.Swing;
             Item.maxStack = 9999;
 
-            Item.value = Item.sellPrice(copper: 50);
+            Item.value = Item.sellPrice(silver: 1, copper: 50); // Mushroom Grass Seeds cost
         }
 
         public override bool? UseItem(Player player)

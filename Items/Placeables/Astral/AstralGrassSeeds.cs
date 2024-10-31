@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Placeables.Astral
             Item.useStyle = ItemUseStyleID.Swing;
             Item.maxStack = 9999;
 
-            Item.value = Item.sellPrice(silver: 4);
+            Item.value = Item.sellPrice(silver: 20); // Hallow Grass Seeds cost
         }
 
         public override bool? UseItem(Player player)
