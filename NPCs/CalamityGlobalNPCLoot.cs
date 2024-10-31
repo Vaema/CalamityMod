@@ -19,9 +19,6 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Typeless;
-using CalamityMod.NPCs.AcidRain;
-using CalamityMod.NPCs.Astral;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Ores;
@@ -1714,7 +1711,7 @@ DukeEditFailed:
 
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (CalamityLists.skeletonList.Contains(npc.type))
+            if (SkeletonList.IsSkeleton(npc))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies

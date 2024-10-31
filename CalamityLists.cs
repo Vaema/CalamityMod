@@ -56,7 +56,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> skeletonList;
         public static List<int> angryBonesList;
         public static List<int> hornetList;
         public static List<int> mossHornetList;
@@ -110,38 +109,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            skeletonList = new List<int>()
-            {
-                NPCID.Skeleton,
-                NPCID.HeadacheSkeleton,
-                NPCID.MisassembledSkeleton,
-                NPCID.PantlessSkeleton,
-                NPCID.BoneThrowingSkeleton,
-                NPCID.BoneThrowingSkeleton2,
-                NPCID.BoneThrowingSkeleton3,
-                NPCID.BoneThrowingSkeleton4,
-                NPCID.BigPantlessSkeleton,
-                NPCID.SmallPantlessSkeleton,
-                NPCID.BigMisassembledSkeleton,
-                NPCID.SmallMisassembledSkeleton,
-                NPCID.BigHeadacheSkeleton,
-                NPCID.SmallHeadacheSkeleton,
-                NPCID.BigSkeleton,
-                NPCID.SmallSkeleton,
-
-                //Note: These skeletons don't count for Skeleton Banner for some god forsaken reason
-                NPCID.SkeletonTopHat,
-                NPCID.SkeletonAstonaut,
-                NPCID.SkeletonAlien,
-
-                //Other skeleton types
-                NPCID.ArmoredSkeleton,
-                NPCID.HeavySkeleton,
-                NPCID.SkeletonArcher,
-                NPCID.GreekSkeleton,
-                NPCID.SporeSkeleton
-            };
-
             angryBonesList = new List<int>()
             {
                 NPCID.AngryBones,
@@ -1039,7 +1006,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            skeletonList = null;
             angryBonesList = null;
             hornetList = null;
             mossHornetList = null;
