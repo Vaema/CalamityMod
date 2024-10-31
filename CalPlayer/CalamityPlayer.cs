@@ -52,6 +52,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -4011,7 +4012,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Mana Cost
         public override void ModifyManaCost(Item item, ref float reduce, ref float mult)
         {
-            if (CalamityLists.MagicGunIDs.Contains(item.type) && meteorSet)
+            if (MagicGunIDList.IsMagicGun(item) && meteorSet)
             {
                 mult *= 0.33f;
             }

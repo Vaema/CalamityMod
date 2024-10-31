@@ -66,7 +66,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> MagicGunIDs;
         public static List<int> BlacklistedWeaponsWithToolPower;
 
         // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
@@ -126,47 +125,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            MagicGunIDs = new List<int>()
-            {
-                ItemType<AbyssShocker>(),
-                ItemType<AcidGun>(),
-                ItemType<AethersWhisper>(),
-                ItemType<AetherfluxCannon>(),
-                ItemType<Omicron>(),
-                ItemType<ApoctosisArray>(),
-                ItemType<Cryophobia>(),
-                ItemType<Effervescence>(),
-                ItemType<EidolicWail>(),
-                ItemType<GatlingLaser>(),
-                ItemType<GaussPistol>(),
-                ItemType<Genesis>(),
-                ItemType<IonBlaster>(),
-                ItemType<Lazhar>(),
-                ItemType<NanoPurge>(),
-                ItemType<PlasmaCaster>(),
-                ItemType<PlasmaRifle>(),
-                ItemType<PulsePistol>(),
-                ItemType<PurgeGuzzler>(),
-                ItemType<RainbowPartyCannon>(),
-                ItemType<SHPC>(),
-                ItemType<TeslaCannon>(),
-                ItemType<TheSwarmer>(),
-                ItemType<Thunderbolt>(),
-                ItemType<Wingman>(),
-                ItemID.BeeGun,
-                ItemID.BubbleGun,
-                ItemID.ChargedBlasterCannon,
-                ItemID.HeatRay,
-                ItemID.LaserMachinegun,
-                ItemID.LaserRifle,
-                ItemID.LeafBlower,
-                ItemID.RainbowGun,
-                ItemID.SpaceGun,
-                ItemID.WaspGun,
-                ItemID.ZapinatorGray,
-                ItemID.ZapinatorOrange
-            };
-
             // This list intentionally does not contain Grax.
             BlacklistedWeaponsWithToolPower = new List<int>()
             {
@@ -1166,7 +1124,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            MagicGunIDs = null;
             BlacklistedWeaponsWithToolPower = null;
 
             zombieList = null;
