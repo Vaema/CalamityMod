@@ -975,21 +975,21 @@ namespace CalamityMod
         }
         public static bool SetSummonerNerfDisabledByItem(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfItems.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfItemList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfItems.Add(type);
+                DisabledSummonerNerfItemList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfItems.Remove(type);
+                return DisabledSummonerNerfItemList.List.Remove(type);
             }
 
             return false;
         }
 
         public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityLists.DisabledSummonerNerfMinions.Contains(type);
-        public static bool GetSummonerNerfDisabledByItem(int type) => CalamityLists.DisabledSummonerNerfItems.Contains(type);
+        public static bool GetSummonerNerfDisabledByItem(int type) => DisabledSummonerNerfItemList.Includes(type);
         #endregion
 
         #region Debuff Display support

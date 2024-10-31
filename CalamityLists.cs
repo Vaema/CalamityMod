@@ -48,7 +48,6 @@ namespace CalamityMod
 
         public static Dictionary<int, int> EncryptedSchematicIDRelationship;
 
-        public static List<int> DisabledSummonerNerfItems;
         public static List<int> DisabledSummonerNerfMinions;
 
         /// <summary>
@@ -250,7 +249,6 @@ namespace CalamityMod
                 [4] = ItemType<EncryptedSchematicIce>(),
             };
 
-            DisabledSummonerNerfItems = new();
             DisabledSummonerNerfMinions = new();
 
             SunkenSeaBiomeCorrespondentValues = new()
@@ -276,7 +274,6 @@ namespace CalamityMod
 
             EncryptedSchematicIDRelationship = null;
 
-            DisabledSummonerNerfItems = null;
             DisabledSummonerNerfMinions = null;
 
             SunkenSeaBiomeCorrespondentValues = null;
