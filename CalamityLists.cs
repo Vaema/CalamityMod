@@ -44,7 +44,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> DeathModeSplittingWormIDs;
         public static List<int> BoundNPCIDs;
 
         public static List<int> GrenadeResistIDs;
@@ -76,18 +75,6 @@ namespace CalamityMod
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
 
-            DeathModeSplittingWormIDs = new List<int>
-            {
-                NPCID.DuneSplicerHead,
-                NPCID.DuneSplicerBody,
-                NPCID.DuneSplicerTail,
-                NPCID.DiggerHead,
-                NPCID.DiggerBody,
-                NPCID.DiggerTail,
-                NPCID.SeekerHead,
-                NPCID.SeekerBody,
-                NPCID.SeekerTail
-            };
 
             GrenadeResistIDs = new List<int>
             {
@@ -633,7 +620,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            DeathModeSplittingWormIDs = null;
             BoundNPCIDs = null;
             GrenadeResistIDs = null;
             ZeroContactDamageNPCList = null;

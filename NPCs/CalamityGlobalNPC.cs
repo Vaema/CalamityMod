@@ -1689,7 +1689,7 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (CalamityLists.DeathModeSplittingWormIDs.Contains(npc.type))
+            if (DeathModeSplittingWormList.Includes(npc))
             {
                 if (CalamityWorld.death)
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
