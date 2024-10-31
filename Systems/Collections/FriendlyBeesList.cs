@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -34,6 +33,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if a projectile is a friendly bee.
         /// </summary>
-        public static bool IsFriendlyBee(Projectile proj) => List.Contains(proj.type);
+        public static bool Includes(int projType) => List.Contains(projType);
     }
 }

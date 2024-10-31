@@ -20,7 +20,6 @@ using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -186,6 +185,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if an NPC is in this list.
         /// </summary>
-        public static bool IsNPCImmune(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }

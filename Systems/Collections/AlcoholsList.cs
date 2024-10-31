@@ -46,6 +46,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check whether or not a buff ID is an alcohol.
         /// </summary>
-        public static bool HasAlcoholBuff(int buffID) => List.Contains(buffID);
+        public static bool Includes(int buffID) => List.Contains(buffID);
     }
 }

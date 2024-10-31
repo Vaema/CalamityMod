@@ -33,6 +33,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if this buffType is a PersistentBuff.
         /// </summary>
-        public static bool IsPersistentBuff(int buffType) => List.Contains(buffType);
+        public static bool Includes(int buffType) => List.Contains(buffType);
     }
 }

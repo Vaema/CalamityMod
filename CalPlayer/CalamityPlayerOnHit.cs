@@ -7,33 +7,29 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
-using CalamityMod.Enums;
-using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.CalPlayer
 {
@@ -281,7 +277,7 @@ namespace CalamityMod.CalPlayer
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
-                if ((plaguebringerCarapace || uberBees) && FriendlyBeesList.IsFriendlyBee(proj))
+                if ((plaguebringerCarapace || uberBees) && FriendlyBeesList.Includes(proj.type))
                     target.AddBuff(BuffType<Plague>(), 300);
 
                 // All projectiles fired from Soma Prime are marked using CalamityGlobalProjectile
@@ -1145,7 +1141,7 @@ namespace CalamityMod.CalPlayer
 
                 if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
                 {
-                   target.AddBuff(BuffType<HolyFlames>(), 600);
+                    target.AddBuff(BuffType<HolyFlames>(), 600);
                 }
 
                 if (divineBless)

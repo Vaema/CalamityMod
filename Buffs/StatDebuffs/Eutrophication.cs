@@ -27,7 +27,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             if (npc.Calamity().eutrophication < npc.buffTime[buffIndex])
                 npc.Calamity().eutrophication = npc.buffTime[buffIndex];
-            if ((EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().eutrophication;
             npc.DelBuff(buffIndex);
             buffIndex--;

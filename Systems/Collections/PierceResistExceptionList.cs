@@ -6,7 +6,6 @@ using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -97,6 +96,6 @@ namespace CalamityMod.Systems.Collections
 
         public override void Unload() => List = null;
 
-        public static bool IsException(Projectile projectile) => List.Contains(projectile.type);
+        public static bool Includes(int projectileType) => List.Contains(projectileType);
     }
 }

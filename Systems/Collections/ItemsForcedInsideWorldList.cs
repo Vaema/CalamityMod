@@ -11,7 +11,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -106,6 +105,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check whether or not an item is an item that should be forced inside the world map.
         /// </summary>
-        public static bool IsItemForcedInsideWorld(Item item) => List.Contains(item.type);
+        public static bool Includes(int itemType) => List.Contains(itemType);
     }
 }

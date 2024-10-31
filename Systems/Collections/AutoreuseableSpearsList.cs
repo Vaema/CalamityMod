@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,6 +41,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check whether or not an item is an autoreusable spear.
         /// </summary>
-        public static bool IsAutoreuseableSpear(Item item) => List.Contains(item.type);
+        public static bool Includes(int itemType) => List.Contains(itemType);
     }
 }

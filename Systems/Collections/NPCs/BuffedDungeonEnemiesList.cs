@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -48,6 +47,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if an NPC is a buffed Dungeon enemy.
         /// </summary>
-        public static bool IsNPCBuffedDungeonEnemy(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }

@@ -387,11 +387,11 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = SicknessDebuffsList.IsSickenessDebuff(buffID);
+                    bool shouldHalveDuration = SicknessDebuffsList.Includes(buffID);
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= FireDebuffsList.IsFireDebuff(buffID);
+                        shouldHalveDuration |= FireDebuffsList.Includes(buffID);
                     if (purity)
-                        shouldHalveDuration |= DebuffsList.IsDebuff(buffID);
+                        shouldHalveDuration |= DebuffsList.Includes(buffID);
 
                     if (shouldHalveDuration)
                         --Player.buffTime[l];
@@ -435,7 +435,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.IsFireDebuff))
+            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
             {
                 if (Player.lifeRegenTime < 1800)
                     Player.lifeRegenTime = 1800;

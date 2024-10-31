@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -33,6 +32,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if this projectile is a buffed Dungeon projectile.
         /// </summary>
-        public static bool IsProjectileBuffed(Projectile proj) => List.Contains(proj.type);
+        public static bool Includes(int projType) => List.Contains(projType);
     }
 }

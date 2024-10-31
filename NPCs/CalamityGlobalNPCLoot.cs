@@ -1706,17 +1706,17 @@ DukeEditFailed:
 
             // All Moss Hornets
             // Needler @ 4% Normal, 6.67% Expert+
-            if (MossHornetList.IsMossHornet(npc))
+            if (MossHornetList.Includes(npc.type))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
 
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (SkeletonList.IsSkeleton(npc))
+            if (SkeletonList.IsSkeleton(npc.type))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies
             // Ectoplasm @ 20%
-            if (BuffedDungeonEnemiesList.IsNPCBuffedDungeonEnemy(npc))
+            if (BuffedDungeonEnemiesList.Includes(npc.type))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
 
@@ -1784,7 +1784,7 @@ DukeEditFailed:
         public override bool PreKill(NPC npc)
         {
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
-            if (CalamityWorld.revenge && (EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper))
+            if (CalamityWorld.revenge && (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
 
             // Boss Rush pre-kill effects

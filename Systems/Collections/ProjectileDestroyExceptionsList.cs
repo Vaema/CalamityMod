@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -144,6 +142,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if a projectile belongs in the exception list.
         /// </summary>
-        public static bool IsDestroyException(Projectile proj) => List.Any(x => proj.type == x);
+        public static bool Includes(int projType) => List.Contains(projType);
     }
 }

@@ -2,7 +2,6 @@
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.NormalNPCs;
-using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -54,6 +53,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if an NPC is supposed to be immune to the Confusion debuff.
         /// </summary>
-        public static bool IsNPCImmune(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }

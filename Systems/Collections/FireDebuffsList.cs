@@ -38,6 +38,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if a buff ID is a fire debuff.
         /// </summary>
-        public static bool IsFireDebuff(int buffID) => List.Contains(buffID);
+        public static bool Includes(int buffID) => List.Contains(buffID);
     }
 }

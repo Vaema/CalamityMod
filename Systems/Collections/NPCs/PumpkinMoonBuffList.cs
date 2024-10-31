@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,7 +13,7 @@ namespace CalamityMod.Systems.Collections
 
         public override void OnModLoad()
         {
-            List = 
+            List =
             [
                 NPCID.Scarecrow1,
                 NPCID.Scarecrow2,
@@ -38,6 +37,6 @@ namespace CalamityMod.Systems.Collections
 
         public override void Unload() => List = null;
 
-        public static bool IsPumpkinMoonBuffNPC(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }

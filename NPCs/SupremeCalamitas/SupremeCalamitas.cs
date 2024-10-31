@@ -1613,7 +1613,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = DebuffsList.IsDebuff(buffID);
+                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;

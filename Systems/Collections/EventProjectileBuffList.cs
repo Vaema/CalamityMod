@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,6 +38,6 @@ namespace CalamityMod.Systems.Collections
 
         public override void Unload() => List = null;
 
-        public static bool IsEventBuffProjectile(Projectile projectile) => List.Contains(projectile.type);
+        public static bool Includes(int projType) => List.Contains(projType);
     }
 }

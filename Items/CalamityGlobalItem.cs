@@ -10,7 +10,6 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
@@ -851,7 +850,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.IsAutoreuseableSpear(item))
+            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.Includes(item.type))
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
@@ -1604,7 +1603,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (ItemsForcedInsideWorldList.IsItemForcedInsideWorld(item))
+            if (ItemsForcedInsideWorldList.Includes(item.type))
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion

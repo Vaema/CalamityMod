@@ -5,7 +5,6 @@ using CalamityMod.NPCs.GreatSandShark;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SunkenSea;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -48,6 +47,6 @@ namespace CalamityMod.Systems.Collections
 
         public override void Unload() => List = null;
 
-        public static bool IsMiniboss(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }

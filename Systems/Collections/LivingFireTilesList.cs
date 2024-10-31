@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Tiles.LivingFire;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -36,6 +35,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check whether or not a tile is a Living-Fire-type of tile.
         /// </summary>
-        public static bool IsLivingFireTile(Tile tile) => List.Contains(tile.TileType);
+        public static bool Includes(int tileType) => List.Contains(tileType);
     }
 }

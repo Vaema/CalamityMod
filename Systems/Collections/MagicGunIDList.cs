@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -61,6 +60,6 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// A shorthand method to check if this Item is Magic Gun.
         /// </summary>
-        public static bool IsMagicGun(Item item) => List.Contains(item.type);
+        public static bool Includes(int itemType) => List.Contains(itemType);
     }
 }

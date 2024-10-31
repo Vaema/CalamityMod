@@ -18,7 +18,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             if (npc.Calamity().tSad < npc.buffTime[buffIndex])
                 npc.Calamity().tSad = npc.buffTime[buffIndex];
-            if ((EnemyImmunitiesList.IsNPCImmune(npc) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().tSad;
             npc.DelBuff(buffIndex);
             buffIndex--;

@@ -905,7 +905,7 @@ namespace CalamityMod.CalPlayer
         {
             // TODO -- Evolution dodge isn't actually a dodge and you'll still get hit for 1.
             // This should probably be changed so that when the evolution reflects it gives you 1 frame of guaranteed free dodging everything.
-            if (!ProjectileDestroyExceptionsList.IsDestroyException(proj) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1038,7 +1038,7 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.25;
             }
 
-            if (!ProjectileDestroyExceptionsList.IsDestroyException(proj) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
                 if (daedalusReflect && !disableAllDodges && !evolution && !Player.HasCooldown(GlobalDodge.ID))
@@ -1460,7 +1460,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
-            if (!ProjectileDestroyExceptionsList.IsDestroyException(proj) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);

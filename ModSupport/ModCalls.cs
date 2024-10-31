@@ -915,7 +915,7 @@ namespace CalamityMod
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
-            if (shouldBeListed && !AmalgamBuffList.IsBuffBoostedByAmalgan(type))
+            if (shouldBeListed && !AmalgamBuffList.Includes(type))
             {
                 AmalgamBuffList.List.Add(type);
                 return true;
@@ -929,7 +929,7 @@ namespace CalamityMod
         }
         public static bool SetPersistentBuffList(int type, bool isPersistent)
         {
-            if (isPersistent && !PersistentBuffList.IsPersistentBuff(type))
+            if (isPersistent && !PersistentBuffList.Includes(type))
             {
                 PersistentBuffList.List.Add(type);
                 return true;
@@ -942,8 +942,8 @@ namespace CalamityMod
             return false;
         }
 
-        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.IsBuffBoostedByAmalgan(type);
-        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.IsPersistentBuff(type);
+        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.Includes(type);
+        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.Includes(type);
         #endregion
 
         #region Venerated Locket Bans

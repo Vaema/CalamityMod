@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.NPCs.NormalNPCs;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -23,6 +22,6 @@ namespace CalamityMod.Systems.Collections
 
         public override void Unload() => List = null;
 
-        public static bool IsNPCNeedDebuffIconDisplay(NPC npc) => List.Contains(npc.type);
+        public static bool Includes(int npcType) => List.Contains(npcType);
     }
 }
