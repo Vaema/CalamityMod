@@ -749,7 +749,6 @@ namespace CalamityMod.CalPlayer
                 // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
                 int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
                 Player.lifeRegen += lifeRegenBoost;
-                Main.NewText(lifeRegenBoost);
             }
             else
                 silvaWingsLifeRegenTimer = 0;
