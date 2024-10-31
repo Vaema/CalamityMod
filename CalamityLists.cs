@@ -45,7 +45,6 @@ namespace CalamityMod
     public sealed class CalamityLists : ModSystem
     {
         public static List<int> DeathModeSplittingWormIDs;
-        public static List<int> SkeletronPrimeIDs;
         public static List<int> StormWeaverIDs;
         public static List<int> RavagerIDs;
         public static List<int> GolemIDs;
@@ -91,16 +90,6 @@ namespace CalamityMod
                 NPCID.SeekerHead,
                 NPCID.SeekerBody,
                 NPCID.SeekerTail
-            };
-
-            SkeletronPrimeIDs = new List<int>
-            {
-                NPCID.SkeletronPrime,
-                NPCType<SkeletronPrime2>(),
-                NPCID.PrimeCannon,
-                NPCID.PrimeLaser,
-                NPCID.PrimeSaw,
-                NPCID.PrimeVice
             };
 
             StormWeaverIDs = new List<int>
@@ -675,7 +664,6 @@ namespace CalamityMod
         public override void Unload()
         {
             DeathModeSplittingWormIDs = null;
-            SkeletronPrimeIDs = null;
             StormWeaverIDs = null;
             RavagerIDs = null;
             GolemIDs = null;
