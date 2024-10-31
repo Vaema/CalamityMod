@@ -2822,7 +2822,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (Main.hardMode && CalamityLists.HardmodeNPCNerfList.Contains(npc.type))
+            if (Main.hardMode && HardmodeNPCNerfList.Includes(npc))
             {
                 npc.damage = (int)Math.Round(npc.damage * 0.75);
                 npc.defDamage = npc.damage;
