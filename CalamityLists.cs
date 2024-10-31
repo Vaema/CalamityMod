@@ -4,8 +4,6 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -21,14 +19,12 @@ using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
-using CalamityMod.NPCs.GreatSandShark;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
-using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
@@ -36,7 +32,6 @@ using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.DraedonsArsenal;
@@ -56,8 +51,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> minibossList;
-
         public static List<int> pierceResistList;
         public static List<int> pierceResistExceptionLeviAureusList;
         public static List<int> pierceResistExceptionList;
@@ -106,33 +99,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            minibossList = new List<int>()
-            {
-                NPCType<EidolonWyrmHead>(),
-                NPCType<Mauler>(),
-                NPCType<ReaperShark>(),
-                NPCType<ColossalSquid>(),
-                NPCType<GreatSandShark>(),
-                NPCType<GiantClam>(),
-                NPCType<ArmoredDiggerHead>(),
-                NPCType<ArmoredDiggerBody>(),
-                NPCType<ArmoredDiggerTail>(),
-                NPCType<ThiccWaifu>(),
-                NPCType<Horse>(),
-                NPCType<PlaguebringerMiniboss>(),
-                NPCID.Pumpking,
-                NPCID.MourningWood,
-                NPCID.IceQueen,
-                NPCID.SantaNK1,
-                NPCID.Everscream,
-                NPCID.DD2Betsy,
-                NPCID.Mothron,
-                NPCID.MartianSaucer,
-                NPCID.MartianSaucerCannon,
-                NPCID.MartianSaucerCore,
-                NPCID.MartianSaucerTurret,
-            };
-
             pierceResistList = new List<int>()
             {
                 NPCID.EaterofWorldsHead,
@@ -962,7 +928,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            minibossList = null;
             pierceResistList = null;
             pierceResistExceptionLeviAureusList = null;
             pierceResistExceptionList = null;
