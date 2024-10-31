@@ -44,7 +44,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> DevourerOfGodsIDs;
         public static List<int> CosmicGuardianIDs;
         public static List<int> AquaticScourgeIDs;
         public static List<int> PerforatorIDs;
@@ -89,12 +88,6 @@ namespace CalamityMod
         {
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
-            DevourerOfGodsIDs = new List<int>
-            {
-                NPCType<DevourerofGodsHead>(),
-                NPCType<DevourerofGodsBody>(),
-                NPCType<DevourerofGodsTail>()
-            };
 
             CosmicGuardianIDs = new List<int>
             {
@@ -765,7 +758,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            DevourerOfGodsIDs = null;
             CosmicGuardianIDs = null;
             AquaticScourgeIDs = null;
             PerforatorIDs = null;
