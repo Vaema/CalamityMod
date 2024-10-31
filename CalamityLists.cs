@@ -51,7 +51,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> pierceResistList;
         public static List<int> pierceResistExceptionLeviAureusList;
         public static List<int> pierceResistExceptionList;
 
@@ -99,61 +98,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            pierceResistList = new List<int>()
-            {
-                NPCID.EaterofWorldsHead,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail,
-                NPCID.Creeper,
-                NPCID.TheDestroyer,
-                NPCID.TheDestroyerBody,
-                NPCID.TheDestroyerTail,
-                NPCType<DesertScourgeHead>(),
-                NPCType<DesertScourgeBody>(),
-                NPCType<DesertScourgeTail>(),
-                NPCType<PerforatorHeadLarge>(),
-                NPCType<PerforatorBodyLarge>(),
-                NPCType<PerforatorTailLarge>(),
-                NPCType<PerforatorHeadMedium>(),
-                NPCType<PerforatorBodyMedium>(),
-                NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorHeadSmall>(),
-                NPCType<PerforatorBodySmall>(),
-                NPCType<PerforatorTailSmall>(),
-                NPCType<AquaticScourgeHead>(),
-                NPCType<AquaticScourgeBody>(),
-                NPCType<AquaticScourgeBodyAlt>(),
-                NPCType<AquaticScourgeTail>(),
-                NPCType<AstrumAureus>(),
-                NPCType<Leviathan>(),
-                NPCType<RavagerHead>(),
-                NPCType<RavagerClawLeft>(),
-                NPCType<RavagerClawRight>(),
-                NPCType<RavagerLegLeft>(),
-                NPCType<RavagerLegRight>(),
-                NPCType<AstrumDeusHead>(),
-                NPCType<AstrumDeusBody>(),
-                NPCType<AstrumDeusTail>(),
-                NPCType<ProfanedRocks>(),
-                NPCType<DarkEnergy>(),
-                NPCType<StormWeaverHead>(),
-                NPCType<StormWeaverBody>(),
-                NPCType<StormWeaverTail>(),
-                NPCType<CosmicGuardianHead>(),
-                NPCType<CosmicGuardianBody>(),
-                NPCType<CosmicGuardianTail>(),
-                NPCType<ThanatosHead>(),
-                NPCType<ThanatosBody1>(),
-                NPCType<ThanatosBody2>(),
-                NPCType<ThanatosTail>(),
-                NPCType<BrimstoneHeart>(),
-                NPCType<AresBody>(),
-                NPCType<AresLaserCannon>(),
-                NPCType<AresTeslaCannon>(),
-                NPCType<AresPlasmaFlamethrower>(),
-                NPCType<AresGaussNuke>()
-            };
-
             pierceResistExceptionLeviAureusList = new List<int>()
             {
                 ProjectileID.NettleBurstEnd,
@@ -928,7 +872,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            pierceResistList = null;
             pierceResistExceptionLeviAureusList = null;
             pierceResistExceptionList = null;
 

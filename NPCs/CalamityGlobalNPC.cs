@@ -11,6 +11,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
@@ -57,11 +58,12 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
@@ -71,6 +73,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Utils;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -6073,7 +6076,7 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Modify Hit By Projectile
-        public static bool DisableMultWhipTag = false; 
+        public static bool DisableMultWhipTag = false;
         //this bool does nothing on this branch, its just here so that CalTestHelpers doesn't crash searching for it
         //if you want to mess with this, please do so in the summoner branch - Shade
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
@@ -6170,7 +6173,7 @@ namespace CalamityMod.NPCs
 
                         if (bullseye.ai[2] == 0f)
                         {
-                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime; 
+                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime;
                             bullseye.ai[2] = 1f;
                         }
 
@@ -6178,7 +6181,7 @@ namespace CalamityMod.NPCs
                         {
                             int randomStarAmount = Main.rand.Next(3, 6);
                             float randomCircleRotation = Main.rand.NextFloat(MathHelper.TwoPi);
-                            for (int i = 0 ; i < randomStarAmount ; i++)
+                            for (int i = 0; i < randomStarAmount; i++)
                             {
                                 Particle fancyStars = new FancyStars(
                                 bullseye.Center,
@@ -6189,7 +6192,7 @@ namespace CalamityMod.NPCs
                                 55,
                                 new Color(Main.rand.Next(256), Main.rand.Next(256), Main.rand.Next(256)) * 1.2f);
                                 GeneralParticleHandler.SpawnParticle(fancyStars);
-                            } 
+                            }
                         }
 
                         bullseye.netUpdate = true;
@@ -6237,7 +6240,7 @@ namespace CalamityMod.NPCs
                     modifiers.SourceDamage *= 0.4f;
             }
 
-            if (CalamityLists.pierceResistList.Contains(npc.type))
+            if (PierceResistList.HasPierceResist(npc))
                 PierceResistGlobal(projectile, npc, ref modifiers);
 
             if (modPlayer.camper && !player.StandingStill())
