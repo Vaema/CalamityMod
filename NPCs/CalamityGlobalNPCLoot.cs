@@ -1706,7 +1706,7 @@ DukeEditFailed:
 
             // All Moss Hornets
             // Needler @ 4% Normal, 6.67% Expert+
-            if (CalamityLists.mossHornetList.Contains(npc.type))
+            if (MossHornetList.IsMossHornet(npc))
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
 
             // All Skeletons

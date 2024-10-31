@@ -56,8 +56,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> hornetList;
-        public static List<int> mossHornetList;
         public static List<int> minibossList;
 
         public static List<int> pierceResistList;
@@ -108,37 +106,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            hornetList = new List<int>()
-            {
-                NPCID.BigHornetStingy,
-                NPCID.LittleHornetStingy,
-                NPCID.BigHornetSpikey,
-                NPCID.LittleHornetSpikey,
-                NPCID.BigHornetLeafy,
-                NPCID.LittleHornetLeafy,
-                NPCID.BigHornetHoney,
-                NPCID.LittleHornetHoney,
-                NPCID.BigHornetFatty,
-                NPCID.LittleHornetFatty,
-                NPCID.BigStinger,
-                NPCID.LittleStinger,
-                NPCID.Hornet,
-                NPCID.HornetFatty,
-                NPCID.HornetHoney,
-                NPCID.HornetLeafy,
-                NPCID.HornetSpikey,
-                NPCID.HornetStingy
-            };
-
-            mossHornetList = new List<int>()
-            {
-                NPCID.MossHornet,
-                NPCID.TinyMossHornet,
-                NPCID.LittleMossHornet,
-                NPCID.BigMossHornet,
-                NPCID.GiantMossHornet
-            };
-
             minibossList = new List<int>()
             {
                 NPCType<EidolonWyrmHead>(),
@@ -995,8 +962,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            hornetList = null;
-            mossHornetList = null;
             minibossList = null;
             pierceResistList = null;
             pierceResistExceptionLeviAureusList = null;
