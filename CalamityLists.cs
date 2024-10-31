@@ -44,8 +44,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> BoundNPCIDs;
-
         public static List<int> GrenadeResistIDs;
         public static List<int> ZeroContactDamageNPCList;
         public static List<int> HardmodeNPCNerfList;
@@ -372,17 +370,6 @@ namespace CalamityMod
                 NPCID.ZombieMerman
             };
 
-            BoundNPCIDs = new List<int>
-            {
-                NPCID.BoundGoblin,
-                NPCID.BoundWizard,
-                NPCID.BoundMechanic,
-                NPCID.SleepingAngler,
-                NPCID.BartenderUnconscious,
-                NPCID.WebbedStylist,
-                NPCID.GolferRescue
-            };
-
             // Collections
             BossRushHPChanges = new SortedDictionary<int, int>
             {
@@ -620,7 +607,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            BoundNPCIDs = null;
             GrenadeResistIDs = null;
             ZeroContactDamageNPCList = null;
             HardmodeNPCNerfList = null;
