@@ -44,7 +44,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> CosmicGuardianIDs;
         public static List<int> AquaticScourgeIDs;
         public static List<int> PerforatorIDs;
         public static List<int> DesertScourgeIDs;
@@ -88,14 +87,6 @@ namespace CalamityMod
         {
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
-
-            CosmicGuardianIDs = new List<int>
-            {
-                NPCType<CosmicGuardianHead>(),
-                NPCType<CosmicGuardianBody>(),
-                NPCType<CosmicGuardianTail>()
-            };
-
             AquaticScourgeIDs = new List<int>
             {
                 NPCType<AquaticScourgeHead>(),
@@ -758,7 +749,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            CosmicGuardianIDs = null;
             AquaticScourgeIDs = null;
             PerforatorIDs = null;
             DesertScourgeIDs = null;
