@@ -1784,7 +1784,7 @@ DukeEditFailed:
         public override bool PreKill(NPC npc)
         {
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
-            if (CalamityWorld.revenge && (CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper))
+            if (CalamityWorld.revenge && (EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
 
             // Boss Rush pre-kill effects

@@ -85,13 +85,6 @@ namespace CalamityMod
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
 
-            EaterofWorldsIDs = new List<int>
-            {
-                NPCID.EaterofWorldsHead,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail
-            };
-
             SlimeGodIDs = new List<int>
             {
                 NPCType<EbonianPaladin>(),
@@ -719,7 +712,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            EaterofWorldsIDs = null;
             SlimeGodIDs = null;
             DeathModeSplittingWormIDs = null;
             DestroyerIDs = null;

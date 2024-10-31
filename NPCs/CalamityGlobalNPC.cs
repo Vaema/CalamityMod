@@ -804,7 +804,7 @@ namespace CalamityMod.NPCs
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
             #region Debuff System Multiplier Calculations
-            bool wormBoss = DesertScourgeIDList.Includes(npc) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || PerforatorWormIDList.Includes(npc) ||
+            bool wormBoss = DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || PerforatorWormIDList.Includes(npc) ||
                 AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
             bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
 
@@ -1824,7 +1824,7 @@ namespace CalamityMod.NPCs
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
             }
-            else if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
+            else if (EaterOfWorldsIDList.Includes(npc))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
@@ -3602,7 +3602,7 @@ namespace CalamityMod.NPCs
             ApplyDR(npc, ref modifiers);
 
             // Damage reduction on spawn for certain worm bosses.
-            if (CalamityLists.EaterofWorldsIDs.Contains(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
+            if (EaterOfWorldsIDList.Includes(npc) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
             if (CalamityLists.DestroyerIDs.Contains(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
@@ -6063,7 +6063,7 @@ namespace CalamityMod.NPCs
                 modifiers.SourceDamage *= 0.1f;
 
             // True melee resists
-            if (DesertScourgeIDList.Includes(npc) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
+            if (DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
                 AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
                 npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
@@ -6233,7 +6233,7 @@ namespace CalamityMod.NPCs
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
                 // Note that Calamity reduces the vanilla resist from 80% to 60%
-                bool hasResist = CalamityLists.EaterofWorldsIDs.Contains(npc.type) && !Main.expertMode;
+                bool hasResist = EaterOfWorldsIDList.Includes(npc) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
                 if (npc.type == NPCID.Creeper || DesertScourgeIDList.Includes(npc) || PerforatorWormIDList.Includes(npc))
                     hasResist = true;
@@ -8688,7 +8688,7 @@ namespace CalamityMod.NPCs
         #region Should Affect NPC
         public static bool ShouldAffectNPC(NPC target)
         {
-            if (CalamityLists.EaterofWorldsIDs.Contains(target.type) || CalamityLists.DestroyerIDs.Contains(target.type))
+            if (EaterOfWorldsIDList.Includes(target) || CalamityLists.DestroyerIDs.Contains(target.type))
                 return false;
 
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&

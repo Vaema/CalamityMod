@@ -112,13 +112,13 @@ namespace CalamityMod.Balancing
 
             #region Eater of Worlds
             // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.EaterofWorldsIDs, Do(ResistTrueMelee(0.5f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(ResistTrueMelee(0.5f))));
 
             // 50% resist to Demon Scythe.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.EaterofWorldsIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
 
             // 40% resist to Sky Glaze.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.EaterofWorldsIDs, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<StickyFeather>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<StickyFeather>()))));
             #endregion
 
             #region The Perforators
