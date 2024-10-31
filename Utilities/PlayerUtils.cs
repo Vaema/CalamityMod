@@ -15,6 +15,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Enums;
 using static Terraria.Player;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod
 {
@@ -905,7 +906,7 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityLists.BlacklistedWeaponsWithToolPower.Contains(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.IsBlacklistedItem(item);
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
                 bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(item.type);

@@ -66,8 +66,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> BlacklistedWeaponsWithToolPower;
-
         // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
         public static List<int> zombieList;
         public static List<int> demonEyeList;
@@ -125,19 +123,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            // This list intentionally does not contain Grax.
-            BlacklistedWeaponsWithToolPower = new List<int>()
-            {
-                ItemID.ButchersChainsaw,
-                ItemID.LucyTheAxe,
-                ItemID.Rockfish,
-                ItemType<AxeofPurity>(),
-                ItemType<HydraulicVoltCrasher>(),
-                ItemType<InfernaCutter>(),
-                ItemType<PhotonRipper>(),
-                ItemType<Respiteblock>()
-            };
-
             zombieList = new List<int>()
             {
                 NPCID.Zombie,
@@ -1124,8 +1109,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            BlacklistedWeaponsWithToolPower = null;
-
             zombieList = null;
             demonEyeList = null;
             skeletonList = null;
