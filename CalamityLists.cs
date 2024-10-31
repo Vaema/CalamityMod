@@ -44,8 +44,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> EaterofWorldsIDs;
-        public static List<int> SlimeGodIDs;
         public static List<int> DeathModeSplittingWormIDs;
         public static List<int> DestroyerIDs;
         public static List<int> ThanatosIDs;
@@ -84,15 +82,6 @@ namespace CalamityMod
         {
             // Lists of enemies that resist piercing to some extent (mostly worms).
             // Could prove useful for other things as well.
-
-            SlimeGodIDs = new List<int>
-            {
-                NPCType<EbonianPaladin>(),
-                NPCType<CrimulanPaladin>(),
-                NPCType<SplitEbonianPaladin>(),
-                NPCType<SplitCrimulanPaladin>(),
-                NPCType<SlimeGodCore>()
-            };
 
             DeathModeSplittingWormIDs = new List<int>
             {
@@ -712,7 +701,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            SlimeGodIDs = null;
             DeathModeSplittingWormIDs = null;
             DestroyerIDs = null;
             ThanatosIDs = null;

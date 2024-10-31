@@ -806,7 +806,7 @@ namespace CalamityMod.NPCs
             #region Debuff System Multiplier Calculations
             bool wormBoss = DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || PerforatorWormIDList.Includes(npc) ||
                 AquaticScourgeIDList.Includes(npc) || AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type);
-            bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
+            bool slimeGod = SlimeGodIDList.Includes(npc);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
