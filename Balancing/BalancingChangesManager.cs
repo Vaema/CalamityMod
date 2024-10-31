@@ -371,31 +371,31 @@ namespace CalamityMod.Balancing
 
             #region Exo Mechs: Ares
             // 30% resist to Dynamic Pursuer.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
             // 25% resist to Aetherflux Cannon.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PhasedGodRay>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PhasedGodRay>()))));
 
             // 25% resist to Prismatic Breaker's deathray.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PrismaticRay>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PrismaticRay>()))));
 
             // 20% resist to the Spin Throw part of the Ark of the Cosmos' combo.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, AotCThrowCombo))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, AotCThrowCombo))));
 
             // 20% resist to Dragon Rage projectiles.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, DragonRageFilter))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, DragonRageFilter))));
 
             // 20% resist to Eclipse's Fall.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EclipsesSmol>(), ProjectileType<EclipsesFallMain>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EclipsesSmol>(), ProjectileType<EclipsesFallMain>()))));
 
             // 20% resist to Rancor.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<RancorLaserbeam>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<RancorLaserbeam>()))));
 
             // 20% resist to Yharim's Crystal.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<YharimsCrystalBeam>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<YharimsCrystalBeam>()))));
 
             // 20% resist to Zenith.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileID.FinalFractal))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileID.FinalFractal))));
             #endregion
 
             #region Exo Mechs: Artemis and Apollo

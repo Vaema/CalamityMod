@@ -6066,7 +6066,7 @@ namespace CalamityMod.NPCs
             if (DesertScourgeIDList.Includes(npc) || EaterOfWorldsIDList.Includes(npc) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc) || AquaticScourgeIDList.Includes(npc) || DestroyerIDList.Includes(npc) ||
                 AstrumDeusIDList.Includes(npc) || CalamityLists.StormWeaverIDs.Contains(npc.type) || ThanatosIDList.Includes(npc) ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
             {
                 float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : (DesertScourgeIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
