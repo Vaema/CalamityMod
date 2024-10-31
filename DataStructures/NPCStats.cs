@@ -611,6 +611,7 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<SlimeGodCore>(), ModContent.ProjectileType<UnstableCrimulanGlob>()), new int[] { 38, 60, 76, 92, 138 } },
                 { new Tuple<int, int>(ModContent.NPCType<EbonianPaladin>(), ModContent.ProjectileType<UnstableEbonianGlob>()), new int[] { 42, 68, 84, 100, 150 } },
                 { new Tuple<int, int>(ModContent.NPCType<CrimulanPaladin>(), ModContent.ProjectileType<UnstableCrimulanGlob>()), new int[] { 38, 60, 76, 92, 138 } },
+                { new Tuple<int, int>(ModContent.NPCType<CrimulanPaladin>(), ModContent.ProjectileType<CrimulanSpike>()), new int[] { 42, 68, 84, 100, 150 } },
                 { new Tuple<int, int>(ModContent.NPCType<SplitEbonianPaladin>(), ModContent.ProjectileType<UnstableEbonianGlob>()), new int[] { 38, 60, 76, 92, 138 } },
                 { new Tuple<int, int>(ModContent.NPCType<SplitCrimulanPaladin>(), ModContent.ProjectileType<UnstableCrimulanGlob>()), new int[] { 34, 52, 68, 80, 120 } },
                 { new Tuple<int, int>(ModContent.NPCType<CorruptSlimeSpawn>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 36, 56, 68, 80, 120 } },
