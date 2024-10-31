@@ -961,14 +961,14 @@ namespace CalamityMod
         #region Summoner Cross Class Nerf Disabling
         public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfMinions.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfMinionList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfMinions.Add(type);
+                DisabledSummonerNerfMinionList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfMinions.Remove(type);
+                return DisabledSummonerNerfMinionList.List.Remove(type);
             }
 
             return false;
@@ -988,7 +988,7 @@ namespace CalamityMod
             return false;
         }
 
-        public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityLists.DisabledSummonerNerfMinions.Contains(type);
+        public static bool GetSummonerNerfDisabledByMinion(int type) => DisabledSummonerNerfMinionList.Includes(type);
         public static bool GetSummonerNerfDisabledByItem(int type) => DisabledSummonerNerfItemList.Includes(type);
         #endregion
 

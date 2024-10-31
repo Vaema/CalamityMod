@@ -48,8 +48,6 @@ namespace CalamityMod
 
         public static Dictionary<int, int> EncryptedSchematicIDRelationship;
 
-        public static List<int> DisabledSummonerNerfMinions;
-
         /// <summary>
         /// Each Sunken Sea subbiome has a correspoding spawn condition boolean value and a biome type.
         /// </summary>
@@ -249,8 +247,6 @@ namespace CalamityMod
                 [4] = ItemType<EncryptedSchematicIce>(),
             };
 
-            DisabledSummonerNerfMinions = new();
-
             SunkenSeaBiomeCorrespondentValues = new()
             {
                 { SunkenSeaBiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
@@ -273,8 +269,6 @@ namespace CalamityMod
             bossTypes = null;
 
             EncryptedSchematicIDRelationship = null;
-
-            DisabledSummonerNerfMinions = null;
 
             SunkenSeaBiomeCorrespondentValues = null;
         }
