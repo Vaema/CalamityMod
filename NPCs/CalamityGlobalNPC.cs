@@ -1661,13 +1661,9 @@ namespace CalamityMod.NPCs
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
-            foreach (var BossRushHPChange in BossRushHPChangeDict.Dict)
+            if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
             {
-                if (npc.type == BossRushHPChange.Key)
-                {
-                    npc.lifeMax = BossRushHPChange.Value;
-                    break;
-                }
+                npc.lifeMax = newHP;
             }
         }
         #endregion
@@ -1675,13 +1671,9 @@ namespace CalamityMod.NPCs
         #region Boss Value Changes
         private void BossValueChanges(NPC npc)
         {
-            foreach (KeyValuePair<int, int> BossValue in CalamityLists.BossValues)
+            if (BossValueDict.TryGet(npc.type, out var value))
             {
-                if (npc.type == BossValue.Key)
-                {
-                    npc.value = BossValue.Value;
-                    break;
-                }
+                npc.value = value;
             }
         }
         #endregion

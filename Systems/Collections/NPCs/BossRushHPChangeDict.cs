@@ -121,5 +121,10 @@ namespace CalamityMod.Systems.Collections
             Dict?.Clear();
             Dict = null;
         }
+
+        public static bool TryGet(int npcType, out int newHP)
+        {
+            return Dict.TryGetValue(npcType, out newHP);
+        }
     }
 }
