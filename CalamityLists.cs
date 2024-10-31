@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -52,8 +51,6 @@ namespace CalamityMod
         public static List<int> DisabledSummonerNerfItems;
         public static List<int> DisabledSummonerNerfMinions;
 
-        public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
-
         /// <summary>
         /// Each Sunken Sea subbiome has a correspoding spawn condition boolean value and a biome type.
         /// </summary>
@@ -61,10 +58,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            // Lists of enemies that resist piercing to some extent (mostly worms).
-            // Could prove useful for other things as well.
-
-
             // Collections
             BossRushHPChanges = new SortedDictionary<int, int>
             {
@@ -260,18 +253,6 @@ namespace CalamityMod
             DisabledSummonerNerfItems = new();
             DisabledSummonerNerfMinions = new();
 
-            VeneratedLocketBanlist = new List<int>()
-            {
-                ItemType<PoisonPack>(),
-                ItemType<SkyStabber>(),
-                ItemType<Nychthemeron>(),
-                ItemType<HellsSun>(),
-                ItemType<GodsParanoia>(),
-                ItemType<SlickCane>(),
-                ItemType<Mycoroot>(),
-                ItemType<CosmicKunai>()
-            };
-
             SunkenSeaBiomeCorrespondentValues = new()
             {
                 { SunkenSeaBiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
@@ -297,8 +278,6 @@ namespace CalamityMod
 
             DisabledSummonerNerfItems = null;
             DisabledSummonerNerfMinions = null;
-
-            VeneratedLocketBanlist = null;
 
             SunkenSeaBiomeCorrespondentValues = null;
         }

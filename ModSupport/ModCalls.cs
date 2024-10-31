@@ -949,9 +949,9 @@ namespace CalamityMod
         #region Venerated Locket Bans
         public static bool AddToVeneratedLocketBanlist(int type)
         {
-            if (!CalamityLists.VeneratedLocketBanlist.Contains(type))
+            if (!VeneratedLocketBanList.Includes(type))
             {
-                CalamityLists.VeneratedLocketBanlist.Add(type);
+                VeneratedLocketBanList.List.Add(type);
                 return true;
             }
             return false;
