@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Potions
         public override void SetDefaults()
         {
             // Eating animation but gulp sound? Sure
-            Item.DefaultToFood(22, 38, BuffID.MagicPower, CalamityUtils.SecondsToFrames(360f));
+            Item.DefaultToFood(22, 38, BuffID.MagicPower, CalamityUtils.MinutesToFrames(8));
             Item.healMana = 200;
             Item.UseSound = SoundID.Item3;
             Item.value = Item.sellPrice(silver: 50); // Based on material cost rather than potion cost

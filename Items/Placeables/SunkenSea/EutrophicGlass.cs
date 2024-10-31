@@ -16,10 +16,10 @@ namespace CalamityMod.Items.Placeables.SunkenSea
 
         public override void AddRecipes()
         {
-            CreateRecipe(25).
-                    AddIngredient<EutrophicSand>(2).
-                    AddTile(TileID.Furnaces).
-                    Register();
+            CreateRecipe().
+                AddIngredient<EutrophicSand>(2).
+                AddTile(TileID.Furnaces).
+                Register();
         }
     }
 }

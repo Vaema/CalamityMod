@@ -9,6 +9,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class OddMushroom : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DamageBoost = 0.5f;
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +24,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.SecondsToFrames(3600f));
+            Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.MinutesToFrames(60));
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;

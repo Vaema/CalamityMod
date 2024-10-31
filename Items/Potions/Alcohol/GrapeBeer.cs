@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class GrapeBeer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DefenseLossPercent = 0.03f;
+        public static int SecondDuration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), SecondDuration);
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -29,7 +35,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void OnConsumeItem(Player player)
         {
-            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), 900);
+            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
         }
     }
 }

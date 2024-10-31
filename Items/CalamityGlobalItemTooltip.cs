@@ -764,16 +764,16 @@ namespace CalamityMod.Items
 
             // Frog Leg and all upgrades get clear explanations of what they actually do.
             if (item.type == ItemID.FrogLeg)
-                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("FrogLeg").Format((int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f)));
+                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
 
             if (item.type == ItemID.FrogFlipper || item.type == ItemID.FrogWebbing)
-                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format((int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f)));
+                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
 
             if (item.type == ItemID.FrogGear)
-                EditTooltipByNum(2, (line) => line.Text = GetEditedTooltip("FrogLeg").Format((int)(BalancingConstants.VanillaFrogLegJumpSpeedBoost * 20f)));
+                EditTooltipByNum(2, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
 
             if (item.type == ItemID.AmphibianBoots)
-                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format((int)(BalancingConstants.AmphibianBootsJumpSpeedBoost * 20f)));
+                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.AmphibianBootsJumpSpeedBoost.ToJumpSpeedPercent()));
 
             // Soaring Insignia nerf and clear explanation of what it actually does.
             if (item.type == ItemID.EmpressFlightBooster)
@@ -1232,7 +1232,7 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 30%");
+                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 20%");
 
             if (item.type == ItemID.WingsStardust)
                 AddWingStats(9f, 2.5f, 3, 180, "Greatly increases Stardust armor's stardust guardian damage and attack range");

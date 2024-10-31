@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -821,7 +822,7 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ItemType<LivingShard>(), 12) },
                 { Vanilla(ItemID.FireGauntlet), AddIngredient(ItemType<ScoriaBar>(), 5) },
-                { Vanilla(ItemID.Zenith), AddIngredient(ItemType<AuricBar>(), 5) },
+                { Vanilla(ItemID.Zenith), ZenithRecipeEdit },
 
                 // Tier unlock various items to a lower tier (sorted by progression)
                 // Move a bunch of mythril anvil locked stuff in early HM to regular anvils to fit progression changes
@@ -845,7 +846,7 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.NaughtyPresent), RemoveIngredient(ItemID.SoulofFright) },
 
                 // Add 20 Souls of Flight to vanilla Luminite wings
-                { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), AddIngredient(ItemID.SoulofFlight, 20) },
+                { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), LunarWingsRecipeEdits },
 
                 // Berserker's Glove recipe change now that it doesn't provide melee speed
                 { Vanilla(ItemID.BerserkerGlove), ReplaceIngredient(ItemID.PowerGlove, ItemID.TitanGlove) },
@@ -986,6 +987,29 @@ namespace CalamityMod.Systems
         {
             r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
             r.ChangeIngredientStack(ItemID.Vertebrae, 10);
+        }
+
+        private static void ZenithRecipeEdit(Recipe r)
+        {
+            r.AddIngredient(ItemType<AuricBar>(), 5);
+            int idx = r.requiredTile.IndexOf(TileID.MythrilAnvil);
+            if (idx == -1)
+                return;
+            r.requiredTile[idx] = TileType<CosmicAnvil>();
+        }
+
+        private static void LunarWingsRecipeEdits(Recipe r)
+        {
+            // Add Soul of Flight then move it to the top
+            r.AddIngredient(ItemID.SoulofFlight, 20);
+
+            if (r.requiredItem.Count < 3)
+                return;
+
+            var store = r.requiredItem[0];
+            r.requiredItem[0] = r.requiredItem[2];
+            r.requiredItem[2] = r.requiredItem[1];
+            r.requiredItem[1] = store;
         }
         #endregion
 
@@ -1388,14 +1412,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
             r.DisableDecraft();
-
-            // Lihzahrd Power Cell (NOT Calamity's Old Power Cell)
-            r = Recipe.Create(ItemID.LihzahrdPowerCell);
-            r.AddIngredient(ItemID.LihzahrdBrick, 5);
-            r.AddIngredient<CoreofSunlight>();
-            r.AddTile(TileID.LihzahrdFurnace);
-            r.Register();
-            r.DisableDecraft();
         }
         #endregion
 
@@ -1509,7 +1525,7 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup(AnyIceBlock, 20);
             r.AddRecipeGroup(AnySnowBlock, 10);
             r.AddIngredient(ItemID.Shiverthorn);
-            r.AddTile(TileID.IceMachine);
+            r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
         }
@@ -1916,7 +1932,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.FrozenTurtleShell);
             r.AddIngredient(ItemID.TurtleShell, 2);
             r.AddIngredient<EssenceofEleum>(4);
-            r.AddTile(TileID.IceMachine);
+            r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
 

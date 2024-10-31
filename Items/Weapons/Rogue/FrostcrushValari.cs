@@ -74,8 +74,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<Kylie>().
                 AddIngredient<CryonicBar>(6).
                 AddIngredient<Voidstone>(40).
-                AddIngredient<CoreofEleum>(5).
-                AddTile(TileID.IceMachine).
+                AddIngredient(ItemID.Ectoplasm, 5).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

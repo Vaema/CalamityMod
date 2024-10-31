@@ -29,6 +29,8 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -234,7 +236,6 @@ namespace CalamityMod.CalPlayer
         public int profanedSoulWeaponType = 0;
         public int hurtSoundTimer = 0;
         public int danceOfLightCharge = 0;
-        public int shadowPotCooldown = 0;
         public int dogTextCooldown = 0;
         public float auralisStealthCounter = 0f;
         public int auralisAuroraCounter = 0;
@@ -323,7 +324,6 @@ namespace CalamityMod.CalPlayer
         public bool ExoChair = false;
         public AndromedaPlayerState andromedaState;
         public int andromedaCripple;
-        public const float UnicornSpeedNerfPower = 0.8f;
         #endregion
 
         #region Pet
@@ -728,6 +728,7 @@ namespace CalamityMod.CalPlayer
         public int phantomicBulwarkCooldown = 0;
         public int phantomicHeartRegen = 0; // 0 = can spawn, 720 = regen applied, 600 = regen stops and 10 sec cd before it can spawn again
         public bool silvaWings = false;
+        public int silvaWingsLifeRegenTimer = 0;
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool MiniSwarmers = false;
@@ -965,7 +966,6 @@ namespace CalamityMod.CalPlayer
         public bool decayEffigy = false;
         public bool rRage = false;
         public bool tRegen = false;
-        public bool xRage = false;
         public bool xWrath = false;
         public bool graxDefense = false;
         public bool encased = false;
@@ -2066,7 +2066,6 @@ namespace CalamityMod.CalPlayer
             crimEffigy = false;
             decayEffigy = false;
             rRage = false;
-            xRage = false;
             xWrath = false;
             graxDefense = false;
             encased = false;
@@ -2400,7 +2399,6 @@ namespace CalamityMod.CalPlayer
             planarSpeedBoost = 0;
             galileoCooldown = 0;
             soundCooldown = 0;
-            shadowPotCooldown = 0;
             dogTextCooldown = 0;
             auralisStealthCounter = 0f;
             auralisAuroraCounter = 0;
@@ -2550,7 +2548,6 @@ namespace CalamityMod.CalPlayer
             corrEffigy = false;
             crimEffigy = false;
             rRage = false;
-            xRage = false;
             xWrath = false;
             kamiBoost = false;
             graxDefense = false;
@@ -2774,6 +2771,7 @@ namespace CalamityMod.CalPlayer
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
             harpyWingFeatherCooldown = 0;
+            silvaWingsLifeRegenTimer = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -3869,7 +3867,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
-                    (nimbleBounderBoost ? 0.1f : 0f) +
+                    (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (blueCandle ? CirrusBlueCandleBuff.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
@@ -3885,7 +3883,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunSpeedBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
-                    (nimbleBounderBoost ? 0.1f : 0f) +
+                    (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
 
@@ -3964,36 +3962,37 @@ namespace CalamityMod.CalPlayer
 
         public override void ModifyWeaponKnockback(Item item, ref StatModifier knockback)
         {
+            // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
             if (auricBoost)
-                knockback.Flat += item.knockBack * ((1f - modStealth) * 0.5f);
+                knockback += ((1f - modStealth) * 0.5f);
 
             if (whiskey)
-                knockback.Flat += item.knockBack * 0.2f;
+                knockback += Whiskey.KnockbackBoost;
 
             if (tequila && Main.dayTime)
-                knockback += item.knockBack * 0.1f;
+                knockback += Tequila.KnockbackBoost;
 
             if (tequilaSunrise && Main.dayTime)
-                knockback += item.knockBack * 0.2f;
+                knockback += TequilaSunrise.KnockbackBoost;
 
             if (moscowMule)
-                knockback += item.knockBack * 0.5f;
+                knockback += MoscowMule.KnockbackBoost;
 
             if (titanHeartMask && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartMantle && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartBoots && rogue)
-                knockback += item.knockBack * 0.05f;
+                knockback += 0.05f;
 
             if (titanHeartSet && rogue)
-                knockback += item.knockBack * 0.2f;
+                knockback += 0.2f;
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
-                knockback += item.knockBack;
+                knockback += 1f;
         }
         #endregion
 
@@ -4854,8 +4853,8 @@ namespace CalamityMod.CalPlayer
 
             if (shadow)
             {
-                stealthGenStandstill += 0.08f;
-                stealthGenMoving += 0.08f;
+                stealthGenStandstill += ShadowPotion.StealthRegenBoost;
+                stealthGenMoving += ShadowPotion.StealthRegenBoost;
             }
 
             if (eArtifact)

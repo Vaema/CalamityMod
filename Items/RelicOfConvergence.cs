@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items
@@ -8,6 +9,10 @@ namespace CalamityMod.Items
     public class RelicOfConvergence : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+
+        public static int HealValue = 70;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HealValue);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;

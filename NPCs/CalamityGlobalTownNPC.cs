@@ -9,6 +9,8 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
 using CalamityMod.Items.Potions;
@@ -1165,14 +1167,17 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
                 .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .Add(ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
                 .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode); // Vanilla sells these in Hardmode, we just make them available at all times
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
+                .Add(ItemType<AstralGrassSeeds>(), Condition.NotBloodMoon, Condition.Hardmode);
             }
 
             if (type == NPCID.GoblinTinkerer)
             {
                 shop.AddWithCustomValue(ItemID.StinkPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnoughToSellPylons)
                 .Add(ItemType<StatMeter>())
+                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
                 .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
             }
 

@@ -20,6 +20,8 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -298,13 +300,7 @@ namespace CalamityMod.CalPlayer
                 if (silvaCountdown == silvaReviveDuration && !hasSilvaEffect)
                 {
                     SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-
                     Player.AddBuff(ModContent.BuffType<SilvaRevival>(), silvaReviveDuration);
-
-                    if (silvaWings)
-                    {
-                        Player.HealPlayer(Player.statLifeMax2 / 3);
-                    }
                 }
 
                 hasSilvaEffect = true;
@@ -520,7 +516,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += 0.5f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -602,7 +598,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += 0.5f;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -627,7 +623,7 @@ namespace CalamityMod.CalPlayer
             if (screwdriver)
             {
                 if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += 0.05f;
+                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
 
             // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
@@ -1663,6 +1659,10 @@ namespace CalamityMod.CalPlayer
         #region Modify Hurt
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
+            // Calcium Potion knockback reduction
+            if (calcium)
+                modifiers.Knockback *= (1f - CalciumPotion.KnockbackResistance);
+
             // Handles energy shields and Boss Rush, in that order
             modifiers.ModifyHurtInfo += ModifyHurtInfo_Calamity;
 
@@ -2353,7 +2353,6 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (xerocSet)
                 {
-                    Player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 180);
                     Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 180);
                 }
                 else if (reaverDefense)

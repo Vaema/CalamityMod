@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,7 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class MoscowMule : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        internal static readonly int CritBoost = 3;
+
+        public static float DamageBoost = 0.09f;
+        public static float KnockbackBoost = 0.5f;
+        public static int CritBoost = 3;
+        public static int RegenLoss = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), KnockbackBoost.ToPercent(), CritBoost, RegenLoss.ToRegenPerSecond());
 
         public override void SetStaticDefaults()
         {
@@ -24,7 +30,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(32, 32, ModContent.BuffType<MoscowMuleBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(32, 32, ModContent.BuffType<MoscowMuleBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;

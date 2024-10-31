@@ -43,7 +43,7 @@ namespace CalamityMod.Items
                 { ItemID.AmethystStaff, Do(ManaExact(2)) },
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) },
                 { ItemID.AntlionClaw, Do(UseExact(10)) }, // Mandible Blade
-                { ItemID.AquaScepter, Do(DamageExact(24)) },
+                { ItemID.AquaScepter, Do(DamageRatio(0.9f)) }, // Uses ratios due to remix seed
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(50)) },
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), ShootSpeedExact(23f), KnockbackExact(8)) },

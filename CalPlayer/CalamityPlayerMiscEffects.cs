@@ -32,6 +32,7 @@ using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Mounts.Minecarts;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -430,7 +431,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!HasReducedDashFirstFrame)
                     {
-                        Player.velocity.X *= 1.3f;
+                        Player.velocity.X *= 1.25f;
                         HasReducedDashFirstFrame = true;
                     }
                 }
@@ -1582,8 +1583,6 @@ namespace CalamityMod.CalPlayer
                 dragonRageCooldown--;
             if (soundCooldown > 0)
                 soundCooldown--;
-            if (shadowPotCooldown > 0)
-                shadowPotCooldown--;
             if (raiderCritLifespan > 0f)
                 raiderCritLifespan--;
             if (raiderSoundCooldown > 0)
@@ -2020,8 +2019,8 @@ namespace CalamityMod.CalPlayer
             // Nimble Bounder bonus
             if (nimbleBounderBoost)
             {
-                Player.moveSpeed += 0.05f;
-                Player.jumpSpeedBoost += 0.25f;
+                Player.moveSpeed += NimbleBounder.MoveSpeedBoost;
+                Player.jumpSpeedBoost += NimbleBounder.JumpSpeedBoost;
             }
 
             // Affliction bonus
@@ -2137,10 +2136,6 @@ namespace CalamityMod.CalPlayer
                     hasteCounter = 0;
                 }
             }
-
-            // Calcium Potion buff
-            if (calcium)
-                Player.noFallDmg = true;
 
             // Ceaseless Hunger Potion buff
             if (ceaselessHunger)
@@ -2824,7 +2819,7 @@ namespace CalamityMod.CalPlayer
             if (astralInjection)
             {
                 if (Player.statMana < Player.statManaMax2)
-                    Player.statMana += 2;
+                    Player.statMana += AstralInjection.ManaPerFrame;
                 if (Player.statMana > Player.statManaMax2)
                     Player.statMana = Player.statManaMax2;
             }
@@ -2838,11 +2833,11 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense += 5;
             }
 
-            if (xRage)
-                Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-
             if (xWrath)
-                Player.GetCritChance<RogueDamageClass>() += 5;
+            { 
+            Player.GetDamage<ThrowingDamageClass>() += 0.1f;
+            Player.GetCritChance<RogueDamageClass>() += 5;
+            }
 
             if (graxDefense)
             {
@@ -2980,38 +2975,38 @@ namespace CalamityMod.CalPlayer
                 Player.moveSpeed -= 0.2f;
 
             if (fabsolVodka)
-                Player.GetDamage<GenericDamageClass>() += 0.08f;
+                Player.GetDamage<GenericDamageClass>() += FabsolsVodka.DamageBoost;
 
             if (vodka)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.06f;
+                Player.GetDamage<GenericDamageClass>() += Vodka.DamageBoost;
                 Player.GetCritChance<GenericDamageClass>() += Vodka.CritBoost;
             }
 
             if (moonshine)
             {
-                Player.statDefense += 10;
-                Player.endurance += 0.03f;
+                Player.statDefense += Moonshine.DefenseBoost;
+                Player.endurance += Moonshine.DamageReductionBoost;
             }
 
             if (rum)
-                Player.moveSpeed += 0.1f;
+                Player.moveSpeed += Rum.MoveSpeedBoost;
 
             if (whiskey)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.04f;
+                Player.GetDamage<GenericDamageClass>() += Whiskey.DamageBoost;
                 Player.GetCritChance<GenericDamageClass>() += Whiskey.CritBoost;
             }
 
             if (everclear)
-                Player.GetDamage<GenericDamageClass>() += 0.25f;
+                Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
             if (bloodyMary)
             {
                 if (Main.bloodMoon)
                 {
-                    Player.GetDamage<GenericDamageClass>() += 0.1f;
-                    Player.moveSpeed += 0.1f;
+                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageMovementBoost;
+                    Player.moveSpeed += BloodyMary.DamageMovementBoost;
                 }
             }
 
@@ -3019,7 +3014,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.dayTime)
                 {
-                    Player.statDefense += 5;
+                    Player.statDefense += Tequila.DefenseBoost;
                     Player.GetCritChance<GenericDamageClass>() += Tequila.CritBoost;
                 }
             }
@@ -3028,35 +3023,35 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.dayTime)
                 {
-                    Player.statDefense += 10;
+                    Player.statDefense += TequilaSunrise.DefenseBoost;
                     Player.GetCritChance<GenericDamageClass>() += TequilaSunrise.CritBoost;
                 }
             }
 
             if (caribbeanRum)
-                Player.moveSpeed += 0.1f;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
 
             if (cinnamonRoll)
             {
-                Player.manaRegenDelay--;
-                Player.manaRegenBonus += 10;
+                Player.manaRegenDelayBonus += CinnamonRoll.ManaRegenDelayBonus;
+                Player.manaRegenBonus += CinnamonRoll.ManaRegenBonus;
             }
 
             if (starBeamRye)
             {
-                Player.GetDamage<MagicDamageClass>() += 0.08f;
-                Player.manaCost *= 0.9f;
-                Player.statManaMax2 += 50;
+                Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
+                Player.manaCost *= (1f - StarBeamRye.ManaCostReduction);
+                Player.statManaMax2 += StarBeamRye.MaxManaBoost;
             }
 
             if (moscowMule)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.09f;
+                Player.GetDamage<GenericDamageClass>() += MoscowMule.DamageBoost;
                 Player.GetCritChance<GenericDamageClass>() += MoscowMule.CritBoost;
             }
 
             if (whiteWine)
-                Player.GetDamage<MagicDamageClass>() += 0.08f;
+                Player.GetDamage<MagicDamageClass>() += WhiteWine.MagicDamageBoost;
 
             // Adjustment to the Tipsy debuff
             if (Player.tipsy)
@@ -3113,7 +3108,7 @@ namespace CalamityMod.CalPlayer
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
                 (blueCandle ? CirrusBlueCandleBuff.WingTimeBoost : 0D) +
-                (soaring ? 0.1 : 0D) +
+                (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
                 (ascendantInsignia ? 0.05 : 0D) + // Added to soaring insignia's flight to get 30%
@@ -3169,9 +3164,8 @@ namespace CalamityMod.CalPlayer
 
             if (bounding)
             {
-                Player.jumpSpeedBoost += 0.25f;
-                Player.jumpHeight += 10;
-                Player.extraFall += 25;
+                Player.jumpSpeedBoost += BoundingPotion.JumpSpeedBoost;
+                Player.jumpHeight += (int)(BoundingPotion.JumpHeightPercentBoost * 15);
             }
 
             if (mushy)
@@ -3513,7 +3507,7 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() *= 1.2f;
 
             if (trippy)
-                Player.GetDamage<GenericDamageClass>() += 0.5f;
+                Player.GetDamage<GenericDamageClass>() += OddMushroom.DamageBoost;
 
             if (eArtifact)
             {
@@ -4263,37 +4257,37 @@ namespace CalamityMod.CalPlayer
             if (fabsolVodka)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
+                    Player.statDefense -= (int)(Player.statDefense * FabsolsVodka.DefenseLossPercent);
             }
 
             if (vodka)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
+                    Player.statDefense -= (int)(Player.statDefense * Vodka.DefenseLossPercent);
             }
 
             if (grapeBeer)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.03);
+                    Player.statDefense -= (int)(Player.statDefense * GrapeBeer.DefenseLossPercent);
             }
 
             if (rum)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
+                    Player.statDefense -= (int)(Player.statDefense * Rum.DefenseLossPercent);
             }
 
             if (whiskey)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
+                    Player.statDefense -= (int)(Player.statDefense * Whiskey.DefenseLossPercent);
             }
 
             if (everclear)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.3);
+                    Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
 
             if (bloodyMary)
@@ -4301,38 +4295,38 @@ namespace CalamityMod.CalPlayer
                 if (Main.bloodMoon)
                 {
                     if (Player.statDefense > 0)
-                        Player.statDefense -= (int)(Player.statDefense * 0.04);
+                        Player.statDefense -= (int)(Player.statDefense * BloodyMary.DefenseLossPercent);
                 }
             }
 
             if (caribbeanRum)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.1);
+                    Player.statDefense -= (int)(Player.statDefense * CaribbeanRum.DefenseLossPercent);
             }
 
             if (cinnamonRoll)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.1);
+                    Player.statDefense -= (int)(Player.statDefense * CinnamonRoll.DefenseLossPercent);
             }
 
             if (margarita)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.06);
+                    Player.statDefense -= (int)(Player.statDefense * Margarita.DefenseLossPercent);
             }
 
             if (starBeamRye)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.06);
+                    Player.statDefense -= (int)(Player.statDefense * StarBeamRye.DefenseLossPercent);
             }
 
             if (whiteWine)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.06);
+                    Player.statDefense -= (int)(Player.statDefense * WhiteWine.DefenseLossPercent);
             }
 
             if (Player.tipsy)
@@ -4607,7 +4601,7 @@ namespace CalamityMod.CalPlayer
                     if (item.type == ModContent.ItemType<HadalStew>())
                         CalamityUtils.ConsumeItemViaQuickBuff(Player, item, HadalStew.BuffType, HadalStew.BuffDuration, true);
                     if (item.type == ModContent.ItemType<Margarita>())
-                        CalamityUtils.ConsumeItemViaQuickBuff(Player, item, Margarita.BuffType, Margarita.BuffDuration, false);
+                        CalamityUtils.ConsumeItemViaQuickBuff(Player, item, Margarita.BuffType, CalamityUtils.MinutesToFrames(Margarita.MinuteDuration), false);
                 }
             }
         }

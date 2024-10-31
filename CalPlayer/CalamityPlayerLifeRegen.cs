@@ -6,6 +6,9 @@ using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
@@ -141,9 +144,13 @@ namespace CalamityMod.CalPlayer
             if (CalamityGlobalNPC.aquaticScourge >= 0 && Main.zenithWorld)
             {
                 NPC AS = Main.npc[CalamityGlobalNPC.aquaticScourge];
-                //if the player is 50 blocks or more away from the head
-                if (AS.life < AS.lifeMax) //Only poison when damaged
-                    ASPoisonLevel = Utils.GetLerpValue(800f, 1600f, Vector2.Distance(Player.Center, AS.Center), true);
+                float scoogDistance = Vector2.Distance(Player.Center, AS.Center);
+                // GFB Aquatic Scourge poisons you if:
+                // 1. You are over 50 blocks away from the head
+                // 2. You are under 250 blocks away from the head (so that people halfway across the world aren't getting killed for no reason)
+                // 3. Aquatic Scourge has been damaged
+                if (AS.life < AS.lifeMax && scoogDistance < 4000f)
+                    ASPoisonLevel = Utils.GetLerpValue(800f, 1600f, scoogDistance, true);
             }
 
             bool ASPoisoning = ASPoisonLevel > 0f;
@@ -152,7 +159,7 @@ namespace CalamityMod.CalPlayer
                 float increment = 1f / SulphSeaWaterSafetyTime;
                 //No way to mitigate AS Poisoning
                 if (ASPoisoning)
-                    increment *= 4f + (8f * ASPoisonLevel);
+                    increment *= 3f + (6f * ASPoisonLevel);
                 if (sulphurskin && !ASPoisoning)
                     increment *= 0.5f;
                 if (sulphurSet && !ASPoisoning)
@@ -177,14 +184,12 @@ namespace CalamityMod.CalPlayer
             if (vodka)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Vodka.RegenLoss;
             }
             if (redWine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
-                if (baguette)
-                    totalNegativeLifeRegen += 3;
+                totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
             }
             if (grapeBeer)
             {
@@ -193,7 +198,7 @@ namespace CalamityMod.CalPlayer
             if (moonshine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Moonshine.RegenLoss;
             }
             if (rum)
             {
@@ -206,7 +211,7 @@ namespace CalamityMod.CalPlayer
             if (fireball)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Fireball.RegenLoss;
             }
             if (whiskey)
             {
@@ -215,27 +220,27 @@ namespace CalamityMod.CalPlayer
             if (everclear)
             {
                 alcoholPoisonLevel += 2;
-                totalNegativeLifeRegen += 10;
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             }
             if (bloodyMary)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 4;
+                totalNegativeLifeRegen += BloodyMary.RegenLoss;
             }
             if (tequila)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Tequila.RegenLoss;
             }
             if (tequilaSunrise)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 2;
+                totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
             }
             if (screwdriver)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Screwdriver.RegenLoss;
             }
             if (caribbeanRum)
             {
@@ -252,27 +257,27 @@ namespace CalamityMod.CalPlayer
             if (margarita)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += Margarita.RegenLoss;
             }
             if (starBeamRye)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 2;
+                totalNegativeLifeRegen += StarBeamRye.RegenLoss;
             }
             if (moscowMule)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 4;
+                totalNegativeLifeRegen += MoscowMule.RegenLoss;
             }
             if (whiteWine)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += WhiteWine.RegenLoss;
             }
             if (evergreenGin)
             {
                 alcoholPoisonLevel++;
-                totalNegativeLifeRegen += 1;
+                totalNegativeLifeRegen += EvergreenGin.RegenLoss;
             }
             if (Player.tipsy)
             {
@@ -615,13 +620,10 @@ namespace CalamityMod.CalPlayer
         public override void UpdateLifeRegen()
         {
             if (rum)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += Rum.RegenBoost;
 
             if (caribbeanRum)
-                Player.lifeRegen += 2;
-
-            if (aChicken)
-                Player.lifeRegen += 1;
+                Player.lifeRegen += CaribbeanRum.RegenBoost;
 
             if (mushy)
                 Player.lifeRegen += 2;
@@ -733,6 +735,24 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegenTime += 4;
             }
 
+            if (silvaWings)
+            {
+                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
+                    silvaWingsLifeRegenTimer = 0;
+                else
+                {
+                    silvaWingsLifeRegenTimer++;
+                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
+                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
+                }
+
+                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
+                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
+                Player.lifeRegen += lifeRegenBoost;
+            }
+            else
+                silvaWingsLifeRegenTimer = 0;
+
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
@@ -769,8 +789,7 @@ namespace CalamityMod.CalPlayer
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
             {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || photosynthesis || aAmpoule || purity;
-                bool onlyPhotosynthesisAtNight = !shadeRegen && !cFreeze && !honeyDewWorking && photosynthesis && !Main.dayTime;
+                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking  || aAmpoule || purity;
 
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
@@ -779,7 +798,7 @@ namespace CalamityMod.CalPlayer
                 // Spawn dust of some flavor while actually regenerating, aAmpule and purity have a slightly different looking style
                 if (Player.lifeRegen > 0 && Player.statLife < actualMaxLife)
                 {
-                    int dustType = shadeRegen ? 173 : cFreeze ? 67 : honeyDewWorking ? DustID.Honey2 : photosynthesis ? 244 : aAmpoule ? 228 : purity ? 187 : -1;
+                    int dustType = shadeRegen ? 173 : cFreeze ? 67 : honeyDewWorking ? DustID.Honey2 : aAmpoule ? 228 : purity ? 187 : -1;
                     bool dustSpawnRolled = Main.rand.Next(30000) < Player.lifeRegenTime || purity ? Main.rand.NextBool() : aAmpoule ? Main.rand.NextBool(4) : Main.rand.NextBool(30);
                     if (dustType != -1 && dustSpawnRolled)
                     {
@@ -795,16 +814,15 @@ namespace CalamityMod.CalPlayer
                 }
 
                 // Actually apply "standing still" regeneration (the stats are granted even at full health)
-                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : cFreeze ? 60f : honeyDewWorking ? 90f : photosynthesis ? 90f : aAmpoule ? 90f : purity ? 60f : -1f;
+                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : cFreeze ? 60f : honeyDewWorking ? 90f : aAmpoule ? 90f : purity ? 60f : -1f;
 
                 // 4 = vanilla Shiny Stone
-                int turboRegenPower = shadeRegen || cFreeze || purity ? 4 : honeyDewWorking || aAmpoule ? 3 : photosynthesis ? 1 : -1;
+                int turboRegenPower = shadeRegen || cFreeze || purity ? 4 : honeyDewWorking || aAmpoule ? 3 : -1;
 
                 if (turboRegenPower > 0)
                 {
                     // After a brief delay determined by your form of standing still regen, min-cap life regen time at 1800 / 3600.
-                    // Photosynthesis Potion does not do this at night.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f && !onlyPhotosynthesisAtNight)
+                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f)
                         Player.lifeRegenTime = 1800f;
 
                     Player.lifeRegen += turboRegenPower;
@@ -841,9 +859,9 @@ namespace CalamityMod.CalPlayer
             if (Player.statLife < actualMaxLife)
             {
                 // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Photosynthesis Potion buff or The Camper.
+                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, or The Camper.
                 int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || photosynthesis || camper) &&
+                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper) &&
                     Player.StandingStill() && Player.itemAnimation == 0;
 
                 if (!noLifeRegenCap)

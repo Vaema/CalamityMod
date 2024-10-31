@@ -7,6 +7,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -180,6 +181,10 @@ namespace CalamityMod.Items
             // Soaring Insignia is post-Golem so it should use the yellow rarity.
             if (item.type == ItemID.EmpressFlightBooster)
                 item.rare = ItemRarityID.Yellow;
+
+            // Zenith rarity
+            if (item.type == ItemID.Zenith)
+                item.rare = ModContent.RarityType<Violet>();
 
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
@@ -598,7 +603,7 @@ namespace CalamityMod.Items
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
-                    player.HealPlayer(5);
+                    player.HealPlayer(PhotosynthesisPotion.IncreasedHeartHeal);
                 }
             }
             return true;
@@ -1373,10 +1378,10 @@ namespace CalamityMod.Items
                 player.manaRegen = (int)(player.manaRegen * 1.25f);
                 player.noFallDmg = true;
             }
-            else if (item.type == ItemID.BatWings) // Gives night vision
+            else if (item.type == ItemID.BatWings) // Greatly increases vision
             {
                 player.noFallDmg = true;
-                player.nightVision = true;
+                player.nightVision = false; // Does not stack with Night Owl; actual effect is handled in LightingEffectsSystem
             }
             else if (item.type == ItemID.HarpyWings)
             {
@@ -1474,7 +1479,7 @@ namespace CalamityMod.Items
             float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.1f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? 0.1f : 0f) +
+                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? 0.1f : 0f) +
                 moveSpeedBoost;
 

@@ -14,6 +14,7 @@ using CalamityMod.Events;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.Abyss;
@@ -84,8 +85,6 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.Packets;
 using CalamityMod.ExtraTextures;
 using MonoMod.Utils;
 
@@ -862,11 +861,11 @@ namespace CalamityMod.NPCs
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
-                heatDamageMult += 0.25;
+                heatDamageMult += Fireball.HeatDebuffBoost;
             if (IncreasedHeatEffects_FlameWakerBoots)
                 heatDamageMult += 0.25;
             if (IncreasedHeatEffects_CinnamonRoll)
-                heatDamageMult += 0.5;
+                heatDamageMult += CinnamonRoll.HeatDebuffBoost;
             if (IncreasedHeatEffects_HellfireTreads)
                 heatDamageMult += 0.5;
             if (IncreasedHeatEffects_FlameWings)
@@ -877,8 +876,8 @@ namespace CalamityMod.NPCs
 
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
-                sicknessDamageMult += 0.25;
-                waterDamageMult += 0.25;
+                sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+                waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
@@ -3969,7 +3968,7 @@ namespace CalamityMod.NPCs
                             SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
                             for (int i = 0; i < 20; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, 18, 0f, 0f, 100, default, 1.8f);
+                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, DustID.CorruptGibs, 0f, 0f, 100, default, 1.8f);
                                 Main.dust[dust].velocity *= 1.3f;
                                 Main.dust[dust].velocity += npc.velocity;
                                 Main.dust[dust].noGravity = true;
@@ -3987,7 +3986,7 @@ namespace CalamityMod.NPCs
                         npc.position += npc.netOffset;
                         for (int i = 0; i < 2; i++)
                         {
-                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
+                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.CorruptGibs, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
                             Main.dust[dust].velocity *= 0.3f;
                             Main.dust[dust].noGravity = true;
                         }
@@ -9367,11 +9366,14 @@ namespace CalamityMod.NPCs
                 case NPCID.DiggerHead:
                 case NPCID.UndeadMiner:
                 case NPCID.GraniteGolem:
+                case NPCID.GraniteFlyer:
                 case NPCID.GreekSkeleton:
                 case NPCID.UndeadViking:
                 case NPCID.IcyMerman:
+                case NPCID.IceElemental:
                 case NPCID.DesertBeast:
                 case NPCID.DuneSplicerHead:
+                case NPCID.SandElemental:
                 case NPCID.SandShark:
                 case NPCID.SandsharkCorrupt:
                 case NPCID.SandsharkCrimson:

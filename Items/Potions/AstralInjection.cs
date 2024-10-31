@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -11,6 +12,11 @@ namespace CalamityMod.Items.Potions
     public class AstralInjection : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static int ManaPerFrame = 2;
+        public static int SelfDamage = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ManaPerFrame * 60, SelfDamage);
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
@@ -22,7 +28,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 34, ModContent.BuffType<AstralInjectionBuff>(), CalamityUtils.SecondsToFrames(5f), true);
+            Item.DefaultToFood(14, 34, ModContent.BuffType<AstralInjectionBuff>(), CalamityUtils.SecondsToFrames(5), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Lime;
         }
@@ -30,10 +36,10 @@ namespace CalamityMod.Items.Potions
         public override void OnConsumeItem(Player player)
         {
             player.AddBuff(BuffID.ManaSickness, Player.manaSickTime / 2, true);
-            player.statLife -= 5;
+            player.statLife -= SelfDamage;
             if (Main.myPlayer == player.whoAmI)
             {
-                player.HealEffect(-5, true);
+                player.HealEffect(-SelfDamage, true);
             }
             if (player.statLife <= 0)
             {

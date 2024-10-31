@@ -96,7 +96,8 @@ SilvaWings: {
 		Acceleration multiplier: 2.8
 		Excellent vertical speed
 		Flight time: 270
-		The Silva revive heals you to 33% health while wearing the Silva armor
+		Grants a scaling life regeneration boost while you remain in the air without resetting flight time
+		This boost caps at 8 HP/s after 15 seconds
 		'The purest of nature'
 		'''
 }

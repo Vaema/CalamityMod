@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             if (player.armor[0].type == ModContent.ItemType<EmpyreanMask>() && player.armor[1].type == ModContent.ItemType<EmpyreanCloak>() && player.armor[2].type == ModContent.ItemType<EmpyreanCuisses>())
             {
-                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
                 player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
             }
 
