@@ -56,7 +56,6 @@ namespace CalamityMod
 {
     public sealed class CalamityLists : ModSystem
     {
-        public static List<int> angryBonesList;
         public static List<int> hornetList;
         public static List<int> mossHornetList;
         public static List<int> minibossList;
@@ -109,16 +108,6 @@ namespace CalamityMod
 
         public override void OnModLoad()
         {
-            angryBonesList = new List<int>()
-            {
-                NPCID.AngryBones,
-                NPCID.AngryBonesBig,
-                NPCID.AngryBonesBigMuscle,
-                NPCID.AngryBonesBigHelmet,
-                NPCID.BigBoned,
-                NPCID.ShortBones
-            };
-
             hornetList = new List<int>()
             {
                 NPCID.BigHornetStingy,
@@ -1006,7 +995,6 @@ namespace CalamityMod
 
         public override void Unload()
         {
-            angryBonesList = null;
             hornetList = null;
             mossHornetList = null;
             minibossList = null;
