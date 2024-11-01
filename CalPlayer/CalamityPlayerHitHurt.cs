@@ -20,6 +20,7 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
@@ -865,7 +866,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction -= 0.1;
 
             if (corrEffigy)
-                contactDamageReduction -= 0.05;
+                contactDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (contactDamageReduction > 0D)
@@ -1120,7 +1121,7 @@ namespace CalamityMod.CalPlayer
                 projectileDamageReduction -= 0.1;
 
             if (corrEffigy)
-                projectileDamageReduction -= 0.05;
+                projectileDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (projectileDamageReduction > 0D)

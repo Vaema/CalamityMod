@@ -33,8 +33,10 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -2841,9 +2843,9 @@ namespace CalamityMod.CalPlayer
 
             if (graxDefense)
             {
-                Player.statDefense += 30;
-                Player.endurance += 0.1f;
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
+                Player.statDefense += Grax.DefenseBoost;
+                Player.endurance += Grax.DamageReductionBoost;
+                Player.GetDamage<GenericDamageClass>() += Grax.DamageBoost;
             }
 
             if (brutalCarnage)
@@ -3005,8 +3007,8 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.bloodMoon)
                 {
-                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageMovementBoost;
-                    Player.moveSpeed += BloodyMary.DamageMovementBoost;
+                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
+                    Player.moveSpeed += BloodyMary.MoveSpeedBoost;
                 }
             }
 
@@ -3107,7 +3109,7 @@ namespace CalamityMod.CalPlayer
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
-                (blueCandle ? CirrusBlueCandleBuff.WingTimeBoost : 0D) +
+                (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
@@ -3236,14 +3238,14 @@ namespace CalamityMod.CalPlayer
 
             if (corrEffigy)
             {
-                Player.moveSpeed += 0.1f;
-                Player.GetCritChance<GenericDamageClass>() += 10;
+                Player.moveSpeed += CorruptionEffigy.MoveSpeedBoost;
+                Player.GetCritChance<GenericDamageClass>() += CorruptionEffigy.CritBoost;
             }
 
             if (crimEffigy)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
-                Player.statDefense += 10;
+                Player.GetDamage<GenericDamageClass>() += CrimsonEffigy.DamageBoost;
+                Player.statDefense += CrimsonEffigy.DefenseBoost;
             }
 
             // The player's true max life value with Calamity adjustments
@@ -4383,7 +4385,7 @@ namespace CalamityMod.CalPlayer
                 Player.endurance -= 0.1f;
 
             if (corrEffigy)
-                Player.endurance -= 0.05f;
+                Player.endurance -= CorruptionEffigy.DamageReductionLoss;
         }
         #endregion
 

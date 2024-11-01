@@ -749,7 +749,7 @@ Serpentine: {
 	Tooltip:
 		'''
 		Casts a serpent that follows the mouse cursor
-		Ignores 15 points of enemy Defense
+		{$Common.ArmorPenetration}
 		'''
 }
 

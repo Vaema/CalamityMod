@@ -29,6 +29,7 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -1601,7 +1602,7 @@ namespace CalamityMod.CalPlayer
 
             // Max health reductions
             if (crimEffigy)
-                Player.statLifeMax2 = (int)(Player.statLifeMax2 * 0.9);
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1f - CrimsonEffigy.MaxHealthLossPercent));
 
             ResetRogueStealth();
 
@@ -3868,7 +3869,7 @@ namespace CalamityMod.CalPlayer
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
-                    (blueCandle ? CirrusBlueCandleBuff.AccelerationBoost : 0f) +
+                    (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
 
