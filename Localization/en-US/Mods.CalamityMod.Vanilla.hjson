@@ -182,6 +182,7 @@ EditedTooltip: {
 		'Never get cold feet again'
 		'''
 	SunMoonStones: critical strike chance, life regeneration,
+	CelestialStoneShell:Minor increase to damage,
 	MagnetFlower: 10% reduced mana cost
 	ArcaneFlowerManaCloak: 12% reduced mana cost
 	Magiluminescence:
