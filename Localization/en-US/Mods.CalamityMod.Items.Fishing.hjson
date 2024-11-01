@@ -109,7 +109,7 @@ DragoonDrizzlefish: {
 
 Havocfish: {
 	DisplayName: Havocfish
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofHavoc] essence
 }
 
 Shadowfish: {
@@ -203,32 +203,32 @@ EnchantedStarfish: {
 
 FishofEleum: {
 	DisplayName: Fish of Eleum
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofEleum] essence
 }
 
 FishofFlight: {
 	DisplayName: Fish of Flight
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofFlight] souls
 }
 
 FishofLight: {
 	DisplayName: Fish of Light
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofLight] souls
 }
 
 FishofNight: {
 	DisplayName: Fish of Night
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofNight] souls
 }
 
 GlimmeringGemfish: {
 	DisplayName: Glimmering Gemfish
-	Tooltip: Press <right> to extract gems
+	Tooltip: Press <right> to extract [ITEMS] gems
 }
 
 Gorecodile: {
 	DisplayName: Gorecodile
-	Tooltip: Press <right> to extract blood orbs
+	Tooltip: Press <right> to extract [i:CalamityMod/BloodOrb] blood orbs
 }
 
 HydrothermalCrate: {
@@ -247,7 +247,7 @@ Spadefish: {
 
 StuffedFish: {
 	DisplayName: Stuffed Fish
-	Tooltip: Press <right> to extract herbs and seeds
+	Tooltip: Press <right> to extract [HERBS] herbs and [SEEDS] seeds
 }
 
 SulphurousCrate: {
@@ -257,7 +257,7 @@ SulphurousCrate: {
 
 SunbeamFish: {
 	DisplayName: Sunbeam Fish
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofSunlight] essence
 }
 
 // Fishing Rods
