@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,8 +17,8 @@ namespace CalamityMod.Items.Accessories
     public class WarbanneroftheSun : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        internal const float MaxBonus = 0.2f;
-        internal const float MaxDistance = 480f;
+        internal const float MaxBonus = 0.4f;
+        internal const float MaxDistance = 500f;
 
         public override void SetStaticDefaults()
         {
@@ -38,10 +40,21 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.warbannerOfTheSun = true;
 
-            float bonus = CalculateBonus(player);
-            player.GetAttackSpeed<MeleeDamageClass>() += bonus;
+            int maxValue = (int)(MaxBonus * 100);
+            float bonus = CalculateBonus(player) - 0.2f;
+            float displayBonus = (int)((bonus + 0.2f) * 100); // Should range from 0 to the maxValue
+
+            if (player.Calamity().cooldowns.TryGetValue(WarbanneroftheSunBuff.ID, out var cooldown))
+            {
+                cooldown.timeLeft = maxValue - (int)displayBonus;
+            }
+            else
+            {
+                player.AddCooldown(WarbanneroftheSunBuff.ID, maxValue);
+            }
+
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
             player.GetDamage<MeleeDamageClass>() += bonus;
-            player.GetDamage<TrueMeleeDamageClass>() += bonus;
         }
 
         private static float CalculateBonus(Player player)
@@ -51,7 +64,7 @@ namespace CalamityMod.Items.Accessories
             int closestNPC = -1;
             foreach (NPC nPC in Main.ActiveNPCs)
             {
-                if (nPC.IsAnEnemy() && !nPC.dontTakeDamage)
+                if ((nPC.IsAnEnemy() || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage)
                 {
                     closestNPC = nPC.whoAmI;
                     break;
@@ -75,7 +88,7 @@ namespace CalamityMod.Items.Accessories
             {
                 NPC actualClosestNPC = Main.npc[closestNPC];
 
-                float generousHitboxWidth = Math.Max(actualClosestNPC.Hitbox.Width / 2f, actualClosestNPC.Hitbox.Height / 2f);
+                float generousHitboxWidth = Math.Max(actualClosestNPC.Hitbox.Width / 2f, actualClosestNPC.Hitbox.Height / 2f) + 80; // Adds some room so max bonus isnt when you're ON the hitbox
                 float hitboxEdgeDist = actualClosestNPC.Distance(player.Center) - generousHitboxWidth;
 
                 if (hitboxEdgeDist < 0)

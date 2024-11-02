@@ -59,11 +59,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             if (player.altFunctionUse == 2)
             {
-                for (int i = 0; i < 1; i++)
-                {
-                    Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
-                    Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), damage, knockback, player.whoAmI);
-                }
+                Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
+                Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), damage, knockback, player.whoAmI);
 
                 Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), ModContent.DustType<LightDust>(), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(0.4f, 0.8f));
                 dust.noGravity = true;
