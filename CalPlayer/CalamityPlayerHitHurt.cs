@@ -517,7 +517,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.5f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -599,7 +599,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.5f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -795,7 +795,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += 0.5;
+                contactDamageReduction += Buffs.StatBuffs.TarragonCloak.ContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 contactDamageReduction += 0.5;
@@ -1738,8 +1738,8 @@ namespace CalamityMod.CalPlayer
             double damageMult = 1D;
             if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
                 damageMult += 0.15;
-            if (enraged) // Demonshade Enrage increases incoming damage by 25%.
-                damageMult += 0.25;
+            if (enraged) // Demonshade Enrage
+                damageMult += DemonshadeHelm.MultDamageTakenBoost;
 
             modifiers.SourceDamage *= (float)damageMult;
             #endregion
@@ -2210,7 +2210,7 @@ namespace CalamityMod.CalPlayer
 
                 if (absorber)
                 {
-                    int healAmt = (int)(hurtInfo.Damage / 20D);
+                    int healAmt = (int)(hurtInfo.Damage * TheAbsorber.DamageTakenHealedPercent);
                     Player.HealPlayer(healAmt);
                 }
 

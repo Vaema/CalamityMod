@@ -19,7 +19,10 @@ namespace CalamityMod.Items.Armor.Demonshade
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DemonshadeEnrage");
         internal static string ShadowScytheEntitySourceContext => "SetBonus_Calamity_Demonshade";
+
         public static int DevilDamage = 1000;
+        public static float MultDamageBoost = 0.5f;
+        public static double MultDamageTakenBoost = 0.25D;
 
         public override void SetDefaults()
         {
@@ -45,7 +48,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         public override void UpdateArmorSet(Player player)
         {
             var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
             var modPlayer = player.Calamity();
             modPlayer.dsSetBonus = true;
             modPlayer.wearingRogueArmor = true;

@@ -1,12 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class Mushy : ModBuff
     {
+        public static int DefenseBoost = 8;
+        public static int RegenBoost = 2;
+        public override LocalizedText Description => base.Description.WithFormatArgs(DefenseBoost, RegenBoost.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

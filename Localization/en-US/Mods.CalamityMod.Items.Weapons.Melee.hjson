@@ -1009,7 +1009,7 @@ RemsRevenge: {
 	DisplayName: Rem's Revenge
 	Tooltip:
 		'''
-		Summons blood explosions and lowers enemy defense on hit
+		Summons blood explosions and lowers enemy defense by {0} on hit
 		'A deadly morning star befitting its demonic owner'
 		'''
 }

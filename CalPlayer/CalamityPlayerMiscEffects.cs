@@ -38,9 +38,11 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
@@ -1990,7 +1992,7 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 
             if (kamiBoost)
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
+                Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
 
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
@@ -2013,9 +2015,9 @@ namespace CalamityMod.CalPlayer
             // Absorber bonus
             if (absorber)
             {
-                Player.moveSpeed += 0.12f;
-                Player.jumpSpeedBoost += 0.6f;
-                Player.thorns += 3.5f;
+                Player.moveSpeed += TheAbsorber.MoveSpeedBoost;
+                Player.jumpSpeedBoost += TheAbsorber.JumpSpeedBoost;
+                Player.thorns += TheAbsorber.ThornsBoost;
             }
 
             // Nimble Bounder bonus
@@ -2850,7 +2852,7 @@ namespace CalamityMod.CalPlayer
 
             if (brutalCarnage)
             {
-                Player.GetDamage<MeleeDamageClass>() += 0.2f;
+                Player.GetDamage<MeleeDamageClass>() += BrutalCarnage.MeleeDamageBoost;
             }
 
             // Trinket of Chi bonus
@@ -2875,8 +2877,8 @@ namespace CalamityMod.CalPlayer
 
             if (AbsorberRegen)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.08f;
-                Player.endurance += 0.05f;
+                Player.GetDamage<GenericDamageClass>() += TheAbsorber.AuraDamageBoost;
+                Player.endurance += TheAbsorber.AuraDamageReductionBoost;
             }
 
             if (crawCarapace)
@@ -3147,10 +3149,10 @@ namespace CalamityMod.CalPlayer
                 if (Player.wingTimeMax < 0)
                     Player.wingTimeMax = 0;
 
-                if (Player.wingTimeMax > 400)
-                    Player.wingTimeMax = 400;
+                if (Player.wingTimeMax > IcarusFolly.MaxFlightTimeCap)
+                    Player.wingTimeMax = IcarusFolly.MaxFlightTimeCap;
 
-                Player.wingTimeMax = (int)(Player.wingTimeMax * 0.66);
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - IcarusFolly.FlightTimeLossPercent));
             }
 
             if (DoGExtremeGravity)
@@ -3158,10 +3160,10 @@ namespace CalamityMod.CalPlayer
                 if (Player.wingTimeMax < 0)
                     Player.wingTimeMax = 0;
 
-                if (Player.wingTimeMax > 400)
-                    Player.wingTimeMax = 400;
+                if (Player.wingTimeMax > Buffs.StatDebuffs.DoGExtremeGravity.MaxFlightTimeCap)
+                    Player.wingTimeMax = Buffs.StatDebuffs.DoGExtremeGravity.MaxFlightTimeCap;
 
-                Player.wingTimeMax = (int)(Player.wingTimeMax * 0.75);
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - Buffs.StatDebuffs.DoGExtremeGravity.FlightTimeLossPercent));
             }
 
             if (bounding)
@@ -3172,7 +3174,7 @@ namespace CalamityMod.CalPlayer
 
             if (mushy)
             {
-                Player.statDefense += 8;
+                Player.statDefense += Mushy.DefenseBoost;
                 if (fungalSymbiote)
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
             }  
@@ -3210,7 +3212,7 @@ namespace CalamityMod.CalPlayer
 
             if (wither && !purity)
             {
-                Player.statDefense -= WitherDebuff.DefenseReduction;
+                Player.statDefense -= RemsRevenge.WitherDefenseReduction;
             }
 
             if (gState)
@@ -3272,13 +3274,13 @@ namespace CalamityMod.CalPlayer
 
             if (sandsWindBuff)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.12f;
-                Player.statDefense += 12;
+                Player.GetDamage<GenericDamageClass>() += PrimordialEarth.BuffDamageBoost;
+                Player.statDefense += PrimordialEarth.BuffDefenseBoost;
             }
             if (aeolianEarthBuff)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.18f;
-                Player.endurance += 0.08f;
+                Player.GetDamage<GenericDamageClass>() += PrimordialAncient.BuffDamageBoost;
+                Player.endurance += PrimordialAncient.BuffDamageReductionBoost;
             }
 
             if (frostFlare)

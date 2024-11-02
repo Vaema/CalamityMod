@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,7 +31,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = LifeJelly.AuraLifetime + 10;
         }
 
         public override void AI()
@@ -85,7 +86,7 @@ namespace CalamityMod.Projectiles.Healing
                     dust.noGravity = true;
                 }
 
-                if (Framecounter == 1800)
+                if (Framecounter == LifeJelly.AuraLifetime)
                 {
                     ShinkGrow = 2;
                 }

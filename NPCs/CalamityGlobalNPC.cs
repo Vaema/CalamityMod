@@ -17,6 +17,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
@@ -1148,7 +1149,7 @@ namespace CalamityMod.NPCs
             // Kami Debuff from Yanmei's Knife
             if (kamiFlu > 0)
             {
-                int baseKamiFluDoTValue = (int)(250 * sicknessDamageMult);
+                int baseKamiFluDoTValue = (int)(YanmeisKnife.DebuffDoT * sicknessDamageMult);
                 ApplyDPSDebuff(baseKamiFluDoTValue, baseKamiFluDoTValue / 10, ref npc.lifeRegen, ref damage);
             }
 
@@ -3584,7 +3585,7 @@ namespace CalamityMod.NPCs
 
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
-            int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? WitherDebuff.DefenseReduction : 0) + miscDefenseLoss;
+            int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
             modifiers.ArmorPenetration += defenseReduction;
 
             // DR applies after vanilla defense.
@@ -3668,7 +3669,7 @@ namespace CalamityMod.NPCs
             if (absorberAffliction > 0)
                 calcDR *= 0.8f;
             if (npc.Calamity().kamiFlu > 0)
-                calcDR *= KamiFlu.MultiplicativeDamageReduction;
+                calcDR *= YanmeisKnife.DebuffDamageReductionMult;
             if (npc.Calamity().aCrunch > 0)
                 calcDR *= ArmorCrunch.MultiplicativeDamageReductionEnemy;
             if (npc.Calamity().crumble > 0)
@@ -5652,7 +5653,7 @@ namespace CalamityMod.NPCs
                 if (vulnerabilityHex > 0)
                     npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
                 else if (kamiFlu > 360)
-                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-YanmeisKnife.DebuffNPCSpeedCap), new Vector2(YanmeisKnife.DebuffNPCSpeedCap));
 
                 // Then debuffs which apply a multiplier to velocity.
                 // These multipliers can stack with each other, even if you'll rarely see this on a boss.

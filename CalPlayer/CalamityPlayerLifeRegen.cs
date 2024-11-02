@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
@@ -628,7 +629,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += CaribbeanRum.RegenBoost;
 
             if (mushy)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += Mushy.RegenBoost;
 
             if (permafrostsConcoction)
             {
@@ -647,13 +648,13 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
             if (PinkJellyRegen)
-                Player.lifeRegen += 4;
+                Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
             if (GreenJellyRegen)
-                Player.lifeRegen += 5;
+                Player.lifeRegen += Items.Accessories.GrandGelatin.AuraRegenBoost;
 
             if (AbsorberRegen)
-                Player.lifeRegen += 6;
+                Player.lifeRegen += TheAbsorber.AuraRegenBoost;
 
             if (hallowedRegen)
                 Player.lifeRegen += 3;
