@@ -44,8 +44,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
             float servantAndProjectileVelocity = (death ? 8f : 6f) + (masterMode ? 2f : 0f);
 
-            float enrageScale = bossRush ? 1f : masterMode ? 0.5f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = bossRush ? 2.25f : masterMode ? 0.5f : 0f;
+            if (Main.IsItDay())
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
                 enrageScale += 2f;
