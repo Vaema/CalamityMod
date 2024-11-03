@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -211,6 +212,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+
             Player Owner = Main.player[Projectile.owner];
             if (Projectile.Calamity().stealthStrike)
             {

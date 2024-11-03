@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
@@ -363,6 +364,8 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HolyFlames>(), 90);
+
             // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
             {

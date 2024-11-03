@@ -5622,7 +5622,7 @@ namespace CalamityMod.NPCs
             {
                 int maxStacks = 300; // Time in frames needed to reach max power
                 int fastestBurnRate = 2;
-                int slowestBurnRate = 20;
+                int slowestBurnRate = 15;
                 float burnPower = Utils.Remap(warbannerBurnStacks, 0, maxStacks, slowestBurnRate, fastestBurnRate, true);
 
                 float sizeBonus = (1 + Utils.GetLerpValue(0, 170, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f)));
@@ -5643,10 +5643,10 @@ namespace CalamityMod.NPCs
                     SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
                     warbannerBurnStacks++;
                 }
-                if (warbannerBurnIntensity > 2 && npc.CanBeMoved(true))
+                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved(true))
                 {
-                    npc.velocity *= 0.99f - 0.25f * Utils.GetLerpValue(2, 3, warbannerBurnIntensity);
-                    if (npc.velocity.Length() > 5) // Repel leaping enemies
+                    npc.velocity *= 1f - 0.25f * Utils.GetLerpValue(2.5f, 3, warbannerBurnIntensity);
+                    if (npc.velocity.Length() > 5 && warbannerBurnIntensity > 2.85f) // Repel leaping enemies
                         npc.velocity = -npc.velocity * 0.7f;
                 }
                 if (warbannerBurnTime == 0)
