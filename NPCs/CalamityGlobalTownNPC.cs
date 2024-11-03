@@ -9,6 +9,8 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
 using CalamityMod.Items.Potions;
@@ -77,7 +79,6 @@ namespace CalamityMod.NPCs
             "XiaoEn0426", // <@!440448864772816896> (xiaoen0426)
             "Jeffred", // <@!295362230038560768> (paladinsamuel)
             "The Cooler Arthur", // <@!568263512523014154> (gokuartillery)
-            "Markie", // <@!291141964039061504> (markie_)
             "Shark", // <@!874464051697172492> (congratsistrash)
             "Sagi", // <@!508233115781693441> (sagittariod)
         };
@@ -1165,8 +1166,10 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
                 .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .Add(ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
                 .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode); // Vanilla sells these in Hardmode, we just make them available at all times
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
+                .Add(ItemType<AstralGrassSeeds>(), Condition.NotBloodMoon, Condition.Hardmode);
             }
 
             if (type == NPCID.GoblinTinkerer)

@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
@@ -8,6 +9,10 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class VigorousCandle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
+
+        public static double PercentHealthPerSecond = 0.004D;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(PercentHealthPerSecond.ToPercent());
+
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.PinkCandle>());

@@ -20,6 +20,7 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
@@ -300,13 +301,7 @@ namespace CalamityMod.CalPlayer
                 if (silvaCountdown == silvaReviveDuration && !hasSilvaEffect)
                 {
                     SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-
                     Player.AddBuff(ModContent.BuffType<SilvaRevival>(), silvaReviveDuration);
-
-                    if (silvaWings)
-                    {
-                        Player.HealPlayer(Player.statLifeMax2 / 3);
-                    }
                 }
 
                 hasSilvaEffect = true;
@@ -522,7 +517,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -604,7 +599,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -800,7 +795,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += 0.5;
+                contactDamageReduction += Buffs.StatBuffs.TarragonCloak.ContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 contactDamageReduction += 0.5;
@@ -871,7 +866,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction -= 0.1;
 
             if (corrEffigy)
-                contactDamageReduction -= 0.05;
+                contactDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (contactDamageReduction > 0D)
@@ -1126,7 +1121,7 @@ namespace CalamityMod.CalPlayer
                 projectileDamageReduction -= 0.1;
 
             if (corrEffigy)
-                projectileDamageReduction -= 0.05;
+                projectileDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (projectileDamageReduction > 0D)
@@ -1743,8 +1738,8 @@ namespace CalamityMod.CalPlayer
             double damageMult = 1D;
             if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
                 damageMult += 0.15;
-            if (enraged) // Demonshade Enrage increases incoming damage by 25%.
-                damageMult += 0.25;
+            if (enraged) // Demonshade Enrage
+                damageMult += DemonshadeHelm.MultDamageTakenBoost;
 
             modifiers.SourceDamage *= (float)damageMult;
             #endregion
@@ -2215,7 +2210,7 @@ namespace CalamityMod.CalPlayer
 
                 if (absorber)
                 {
-                    int healAmt = (int)(hurtInfo.Damage / 20D);
+                    int healAmt = (int)(hurtInfo.Damage * TheAbsorber.DamageTakenHealedPercent);
                     Player.HealPlayer(healAmt);
                 }
 

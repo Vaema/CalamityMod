@@ -3,9 +3,13 @@ using System.Linq;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Fishing.BrimstoneCragCatches;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
@@ -408,15 +412,15 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.lifeRegen < 0)
                 {
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < Bloodfin.DebuffedRegenTimeFloor)
+                        Player.lifeRegenTime = Bloodfin.DebuffedRegenTimeFloor;
 
-                    Player.lifeRegen += 10;
+                    Player.lifeRegen += Bloodfin.DebuffedRegenBoost;
                 }
                 else
                 {
-                    Player.lifeRegen += 5;
-                    Player.lifeRegenTime += 10;
+                    Player.lifeRegen += Bloodfin.RegenBoost;
+                    Player.lifeRegenTime += Bloodfin.RegenTimeBoost;
                 }
 
                 if (bloodfinTimer > 0)
@@ -424,9 +428,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.whoAmI == Main.myPlayer && bloodfinTimer <= 0)
                 {
-                    bloodfinTimer = 30;
+                    bloodfinTimer = Bloodfin.FramesForExtraRegen;
 
-                    if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
+                    if (Player.statLife < (int)(Player.statLifeMax2 * Bloodfin.ExtraRegenHealthThreshold) && !noLifeRegen)
                         Player.HealPlayer(1, HealTextType.None);
                 }
             }
@@ -625,7 +629,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += CaribbeanRum.RegenBoost;
 
             if (mushy)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += Mushy.RegenBoost;
 
             if (permafrostsConcoction)
             {
@@ -644,13 +648,13 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
             if (PinkJellyRegen)
-                Player.lifeRegen += 4;
+                Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
             if (GreenJellyRegen)
-                Player.lifeRegen += 5;
+                Player.lifeRegen += Items.Accessories.GrandGelatin.AuraRegenBoost;
 
             if (AbsorberRegen)
-                Player.lifeRegen += 6;
+                Player.lifeRegen += TheAbsorber.AuraRegenBoost;
 
             if (hallowedRegen)
                 Player.lifeRegen += 3;
@@ -734,10 +738,28 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegenTime += 4;
             }
 
+            if (silvaWings)
+            {
+                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
+                    silvaWingsLifeRegenTimer = 0;
+                else
+                {
+                    silvaWingsLifeRegenTimer++;
+                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
+                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
+                }
+
+                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
+                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
+                Player.lifeRegen += lifeRegenBoost;
+            }
+            else
+                silvaWingsLifeRegenTimer = 0;
+
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
-                pinkCandleHealFraction += Player.statLifeMax2 * CirrusPinkCandleBuff.PercentHealthPerSecond / 60;
+                pinkCandleHealFraction += Player.statLifeMax2 * VigorousCandle.PercentHealthPerSecond / 60;
 
                 if (pinkCandleHealFraction >= 1D)
                 {

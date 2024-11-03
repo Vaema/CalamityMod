@@ -661,8 +661,8 @@ PrimordialAncient: {
 	Tooltip:
 		'''
 		Casts five primordial sand blasts that converge at your cursor after a moment and create a giant explosion
-		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Aeolian Earth Buff
-		The Aeolian Earth Buff increases your damage reduction by 8% and damage by 18%
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.AeolianEarthBuff.DisplayName} buff
+		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}% and damage by {1}%
 		'''
 }
 
@@ -671,8 +671,8 @@ PrimordialEarth: {
 	Tooltip:
 		'''
 		Casts two enchanted blasts of sand that coverge with each other and explode
-		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
-		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
+		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0} and damage by {1}%
 		'''
 }
 
@@ -749,7 +749,7 @@ Serpentine: {
 	Tooltip:
 		'''
 		Casts a serpent that follows the mouse cursor
-		Ignores 15 points of enemy Defense
+		{$Common.ArmorPenetration}
 		'''
 }
 

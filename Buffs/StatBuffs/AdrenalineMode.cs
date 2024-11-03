@@ -23,6 +23,11 @@ namespace CalamityMod.Buffs.StatBuffs
             player.Calamity().AdrenalineTrail = true;
         }
 
+        public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
+        {
+            tip = base.Description.Format((1f + Main.player[Main.myPlayer].Calamity().GetAdrenalineDamage()).Round());
+        }
+
         internal static void DrawEffects(PlayerDrawSet drawInfo)
         {
             Player Player = drawInfo.drawPlayer;
