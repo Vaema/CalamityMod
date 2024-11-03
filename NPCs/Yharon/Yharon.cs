@@ -3266,7 +3266,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 // Turn into dust on death.
                 if (NPC.life <= 0)
-                    DeathAshParticle.CreateAshesFromNPC(NPC);
+                    DeathAshParticle.CreateAshesFromNPC(NPC, Vector2.Zero);
             }
         }
         #endregion

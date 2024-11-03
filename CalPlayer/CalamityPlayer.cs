@@ -524,7 +524,8 @@ namespace CalamityMod.CalPlayer
         public bool dodgeScarf = false;
         public bool evasionScarf = false;
         public bool badgeOfBravery = false;
-        public bool warbannerOfTheSun = false;
+        public bool WarbanneroftheRighteous = false;
+        public bool warbannerGlow = false;
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
@@ -1758,7 +1759,8 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
-            warbannerOfTheSun = false;
+            WarbanneroftheRighteous = false;
+            warbannerGlow = false;
             aSpark = false;
             transformer = false;
             hideOfDeus = false;

@@ -53,7 +53,10 @@ namespace CalamityMod.Particles
         {
             if (!FadeIn)
             {
-                Scale *= 0.95f;
+                if ((float)Time / (float)Lifetime < 0.5f)
+                {
+                    Scale *= 0.95f;
+                }
                 Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             }
             else
@@ -67,7 +70,11 @@ namespace CalamityMod.Particles
                     Scale = MathHelper.Lerp(Scale, FadeInScale, -0.21f);
                 }
             }
-            Velocity *= 0.95f;
+            if ((float)Time / (float)Lifetime < 0.8f)
+            {
+                Velocity *= 0.95f;
+                EndVelocity *= 0.95f;
+            }
 
             Velocity = new Vector2(MathHelper.Lerp(Velocity.X, EndVelocity.X, LerpRate), MathHelper.Lerp(Velocity.Y, EndVelocity.Y, LerpRate));
 

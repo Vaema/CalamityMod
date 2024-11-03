@@ -89,6 +89,7 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Packets;
 using CalamityMod.ExtraTextures;
 using MonoMod.Utils;
+using CalamityMod.Dusts;
 
 namespace CalamityMod.NPCs
 {
@@ -284,6 +285,14 @@ namespace CalamityMod.NPCs
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
+        public int warbannerBurnTimer = 0; // The duration of the debuff
+        public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
+        public int warbannerBurnDamage = 0; // Damage of the hits based on player's damage
+        public Vector2 warbannerBurnDirection;
+        public float warbannerBurnIntensity = 0;
+        public bool warbannerBurnMarked = false;
+        public bool warbannerBurnHideEffects = false;
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
@@ -519,6 +528,14 @@ namespace CalamityMod.NPCs
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.warbannerBurnTime = warbannerBurnTime;
+            myClone.warbannerBurnTimer = warbannerBurnTimer;
+            myClone.warbannerBurnStacks = warbannerBurnStacks;
+            myClone.warbannerBurnDamage = warbannerBurnDamage;
+            myClone.warbannerBurnDirection = warbannerBurnDirection;
+            myClone.warbannerBurnIntensity = warbannerBurnIntensity;
+            myClone.warbannerBurnMarked = warbannerBurnMarked;
+            myClone.warbannerBurnHideEffects = warbannerBurnHideEffects;
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
@@ -5591,6 +5608,75 @@ namespace CalamityMod.NPCs
 
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
+
+            if (warbannerBurnTimer > 0)
+                warbannerBurnTimer--;
+            if (warbannerBurnTimer == 0 && warbannerBurnMarked)
+            {
+                warbannerBurnTime = 0;
+                warbannerBurnDamage = 0;
+                warbannerBurnMarked = false;
+                warbannerBurnStacks = 0;
+            }
+            if (warbannerBurnMarked)
+            {
+                int maxStacks = 300; // Time in frames needed to reach max power
+                int fastestBurnRate = 2;
+                int slowestBurnRate = 20;
+                float burnPower = Utils.Remap(warbannerBurnStacks, 0, maxStacks, slowestBurnRate, fastestBurnRate, true);
+
+                float sizeBonus = (1 + Utils.GetLerpValue(0, 170, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f)));
+
+                if (!warbannerBurnHideEffects)
+                {
+                    Lighting.AddLight(npc.Center, Color.Gold.ToVector3() * 0.3f * warbannerBurnIntensity);
+                }
+                if (warbannerBurnStacks == maxStacks && !warbannerBurnHideEffects)
+                {
+                    // Sound and visual for hitting max stacks
+                    for (int i = 0; i < 15; i++)
+                    {
+                        Particle spark = new SparkParticle(npc.Center, new Vector2(13, 13).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 1f), true, 45, 0.85f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    SoundStyle fullPower = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
+                    SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
+                    warbannerBurnStacks++;
+                }
+                if (warbannerBurnIntensity > 2 && npc.CanBeMoved(true))
+                {
+                    npc.velocity *= 0.99f - 0.25f * Utils.GetLerpValue(2, 3, warbannerBurnIntensity);
+                    if (npc.velocity.Length() > 5) // Repel leaping enemies
+                        npc.velocity = -npc.velocity * 0.7f;
+                }
+                if (warbannerBurnTime == 0)
+                {
+                    if (!warbannerBurnHideEffects)
+                    {
+                        int particleLevel = (int)(MathHelper.Clamp((slowestBurnRate - burnPower) * 0.15f, 1, 2) * warbannerBurnIntensity);
+                        for (int d = 0; d < particleLevel; d++)
+                        {
+                            Color color = Main.rand.NextBool() ? Color.Goldenrod : Color.Lerp(Color.OrangeRed, Color.Orange, Main.rand.NextFloat(0, 1)); ;
+                            Vector2 sparkPos = npc.Center - warbannerBurnDirection * 220 * Utils.GetLerpValue(0, 200, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f));
+                            float velAdjust = Main.rand.NextFloat(2, 7) * warbannerBurnIntensity * sizeBonus;
+                            Vector2 endVel = warbannerBurnDirection * velAdjust;
+                            Vector2 startVel = (warbannerBurnDirection * velAdjust).RotatedByRandom(0.6f * warbannerBurnIntensity);
+                            Particle sparks = new VelChangingSpark(sparkPos, startVel, endVel, "CalamityMod/Particles/SmallBloom", Main.rand.Next(18, 22 + 1), Main.rand.NextFloat(0.1f, 0.25f) * sizeBonus, color * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.1f);
+                            GeneralParticleHandler.SpawnParticle(sparks);
+                            Dust lust2 = Dust.NewDustPerfect(sparkPos, ModContent.DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.7f, 1.1f) * sizeBonus);
+                            lust2.noGravity = true;
+                            lust2.color = color;
+                            lust2.noLightEmittence = true;
+                        }
+                    }
+                    var player = Main.LocalPlayer;
+                    Projectile burnHit = Projectile.NewProjectileDirect(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<WarbannerDamage>(), (int)(warbannerBurnDamage * warbannerBurnIntensity), 0, Main.myPlayer, npc.whoAmI);
+                    burnHit.ArmorPenetration = 50;
+                    warbannerBurnTime = (int)(burnPower + (3 - warbannerBurnIntensity) * 4);
+                }
+                warbannerBurnTime--;
+            }
+
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -6391,7 +6477,7 @@ namespace CalamityMod.NPCs
         public override void HitEffect(NPC npc, NPC.HitInfo hit)
         {
             if (npc.life <= 0 && npc.Organic() && ashesOnDeath > 0)
-                DeathAshParticle.CreateAshesFromNPC(npc);
+                DeathAshParticle.CreateAshesFromNPC(npc, Vector2.Zero);
 
             // Cultist shield flicker
             if (npc.type == NPCID.CultistBoss)

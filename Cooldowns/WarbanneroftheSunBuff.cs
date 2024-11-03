@@ -14,19 +14,19 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
 {
-    public class WarbanneroftheSunBuff : CooldownHandler
+    public class WarbanneroftheRighteousBuff : CooldownHandler
     {
-        public float CompletionPercentage => Utils.GetLerpValue(40, 0, instance.timeLeft);
+        public float CompletionPercentage => Utils.GetLerpValue(80, 0, instance.timeLeft);
         private bool IsEmpty => CompletionPercentage == 0;
-        private float TextXOffset => (instance.timeLeft < 20 ? -11 : -18f);
+        private float TextXOffset => (instance.timeLeft <= 20 ? -11 : -18f);
         private Vector2 TextPosition => new(TextXOffset, 15);
         private Color TextColor => Color.White;
         private Color TextBorderColor => Color.Black;
 
-        public static new string ID => "WarbanneroftheSunBuff";
+        public static new string ID => "WarbanneroftheRighteousBuff";
         public override bool CanTickDown => false;
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
-        public override bool ShouldDisplay => instance.player.Calamity().warbannerOfTheSun;
+        public override bool ShouldDisplay => instance.player.Calamity().WarbanneroftheRighteous;
         public override string Texture => "CalamityMod/Cooldowns/" + ID;
 
         public override Color CooldownStartColor => IsEmpty ? Color.DimGray : Color.Lerp(Color.SlateGray, Color.DarkGoldenrod, CompletionPercentage);

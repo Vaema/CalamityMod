@@ -1966,12 +1966,14 @@ VoltaicJelly: {
 		'''
 }
 
-WarbanneroftheSun: {
-	DisplayName: Warbanner of the Sun
+WarbanneroftheRighteous: {
+	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Increases melee damage, true melee damage and melee speed the closer you are to enemies
-		These stat boosts max out at 20%
+		15% increased melee speed
+		Melee damage increased by 20% when close to enemies, but all damage is decreased by 60% when far away
+		Emit a blazing aura that burns and repels nearby enemies
+		Enemies take increased damage the closer they are to you and the longer they are in the aura
 		'''
 }
 
