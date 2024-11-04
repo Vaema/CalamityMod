@@ -5,6 +5,7 @@ AbyssBreathLevel1: Slightly reduces breath loss in the abyss
 AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss
 AlcoholWarning: Drinking more than 3 different alcohols might not end well with your liver
+ArmorPenetration: Ignores {0} points of enemy Defense
 CanMineUelibloom: Can mine Uelibloom Ore
 NotConsumable: Not consumable
 RogueDamage: "{0}% increased rogue damage"

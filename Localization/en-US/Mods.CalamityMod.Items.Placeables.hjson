@@ -172,7 +172,7 @@ ChargingStationItem: {
 	DisplayName: Charging Station
 	Tooltip:
 		'''
-		Charges Draedon's Arsenal items using Power Cells
+		Charges Draedon's Arsenal items using [i:CalamityMod/DraedonPowerCell] Draedon Power Cells
 		Place both an item and Power Cells into the Charging Station to charge the item
 		'''
 }
@@ -251,8 +251,8 @@ PowerCellFactoryItem: {
 	DisplayName: Power Cell Factory
 	Tooltip:
 		'''
-		Produces Draedon Power Cells over time
-		One cell is produced every 15 seconds
+		Produces [i:CalamityMod/DraedonPowerCell] Draedon Power Cells over time
+		One cell is produced every {0} seconds
 		'''
 }
 
@@ -540,8 +540,8 @@ CorruptionEffigy: {
 	DisplayName: Corruption Effigy
 	Tooltip:
 		'''
-		<right> when placed to gain 10% increased movement speed and critical strike chance
-		However, this comes at a cost of 5% damage reduction
+		<right> when placed to gain {0}% increased movement speed and critical strike chance
+		However, this comes at a cost of {1}% damage reduction
 		This cannot be stacked with Crimson Effigy
 		'''
 }
@@ -550,7 +550,7 @@ AltarOfTheAccursedItem: {
 	DisplayName: Altar of the Accursed
 	Tooltip:
 		'''
-		Offer Ashes of Calamity at this altar to summon the Witch
+		Offer [i:CalamityMod/AshesofCalamity] {$Items.Materials.AshesofCalamity.DisplayName} at this altar to summon the Witch
 		Doing so will create a square arena of blocks, with the altar at its center
 		The Witch enrages while you are outside of the arena
 		{$CommonItemTooltip.SpecialCrafting}
@@ -634,8 +634,8 @@ CrimsonEffigy: {
 	DisplayName: Crimson Effigy
 	Tooltip:
 		'''
-		<right> when placed to gain 15% damage and 10 defense
-		However, this comes at a cost of 10% maximum health
+		<right> when placed to gain {0}% damage and {1} defense
+		However, this comes at a cost of {2}% maximum health
 		This cannot be stacked with Corruption Effigy
 		'''
 }
@@ -656,7 +656,7 @@ EffigyOfDecay: {
 		'''
 		When placed down, nearby players can breathe underwater
 		This effect does not work in the abyss
-		Nearby players are also immune to the sulphuric poisoning
+		Nearby players are also immune to the {$Buffs.SulphuricPoisoning.DisplayName}
 		'''
 }
 
@@ -779,8 +779,8 @@ ResilientCandle: {
 	DisplayName: Resilient Candle
 	Tooltip:
 		'''
-		<right> when placed to make defense block 10% more damage
-		(60% in Classic, 85% in Expert, and 110% in Master)
+		<right> when placed to make defense block {0}% more damage
+		({1}% in Classic, {2}% in Expert, and {3}% in Master)
 		This cannot be stacked with other Cirrus Candle buffs
 		'Neither rain nor wind can snuff its undying flame'
 		'''
@@ -800,8 +800,8 @@ SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
 		'''
-		<right> when placed to deal 1.07x damage to all enemies
-		The extra 0.07x damage bypasses enemy defense and damage reduction
+		<right> when placed to deal {0}x damage to all enemies
+		The extra {1}x damage bypasses enemy defense and damage reduction
 		This cannot be stacked with other Cirrus Candle buffs
 		'Its hateful glow flickers with ire'
 		'''
@@ -1031,7 +1031,7 @@ VigorousCandle: {
 	DisplayName: Vigorous Candle
 	Tooltip:
 		'''
-		<right> when placed to regenerate 0.4% of your maximum health per second
+		<right> when placed to regenerate {0}% of your maximum health per second
 		This regeneration is at full power even while moving and bypasses Revengeance Mode caps
 		This cannot be stacked with other Cirrus Candle buffs
 		'Its brilliant light suffuses those nearby with hope'
@@ -1042,7 +1042,7 @@ WeightlessCandle: {
 	DisplayName: Weightless Candle
 	Tooltip:
 		'''
-		<right> when placed to gain 10% increased movement speed, wing time and acceleration
+		<right> when placed to gain {0}% increased movement speed, wing time and acceleration
 		This cannot be stacked with other Cirrus Candle buffs
 		'The floating flame seems to uplift your very spirit'
 		'''
@@ -1053,7 +1053,7 @@ WulfrumLureItem: {
 	Tooltip:
 		'''
 		Consumes [i:CalamityMod/EnergyCore] Energy Cores to emit a wulfrum signal that lures Wulfrum automatons out
-		The signal lasts for 30 seconds
+		The signal lasts for {0} seconds
 		'''
 }
 

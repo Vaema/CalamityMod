@@ -33,12 +33,16 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
@@ -1988,7 +1992,7 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 
             if (kamiBoost)
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
+                Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
 
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
@@ -2011,9 +2015,9 @@ namespace CalamityMod.CalPlayer
             // Absorber bonus
             if (absorber)
             {
-                Player.moveSpeed += 0.12f;
-                Player.jumpSpeedBoost += 0.6f;
-                Player.thorns += 3.5f;
+                Player.moveSpeed += TheAbsorber.MoveSpeedBoost;
+                Player.jumpSpeedBoost += TheAbsorber.JumpSpeedBoost;
+                Player.thorns += TheAbsorber.ThornsBoost;
             }
 
             // Nimble Bounder bonus
@@ -2841,14 +2845,14 @@ namespace CalamityMod.CalPlayer
 
             if (graxDefense)
             {
-                Player.statDefense += 30;
-                Player.endurance += 0.1f;
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
+                Player.statDefense += Grax.DefenseBoost;
+                Player.endurance += Grax.DamageReductionBoost;
+                Player.GetDamage<GenericDamageClass>() += Grax.DamageBoost;
             }
 
             if (brutalCarnage)
             {
-                Player.GetDamage<MeleeDamageClass>() += 0.2f;
+                Player.GetDamage<MeleeDamageClass>() += BrutalCarnage.MeleeDamageBoost;
             }
 
             // Trinket of Chi bonus
@@ -2873,8 +2877,8 @@ namespace CalamityMod.CalPlayer
 
             if (AbsorberRegen)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.08f;
-                Player.endurance += 0.05f;
+                Player.GetDamage<GenericDamageClass>() += TheAbsorber.AuraDamageBoost;
+                Player.endurance += TheAbsorber.AuraDamageReductionBoost;
             }
 
             if (crawCarapace)
@@ -3005,8 +3009,8 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.bloodMoon)
                 {
-                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageMovementBoost;
-                    Player.moveSpeed += BloodyMary.DamageMovementBoost;
+                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
+                    Player.moveSpeed += BloodyMary.MoveSpeedBoost;
                 }
             }
 
@@ -3107,7 +3111,7 @@ namespace CalamityMod.CalPlayer
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
-                (blueCandle ? CirrusBlueCandleBuff.WingTimeBoost : 0D) +
+                (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
@@ -3145,10 +3149,10 @@ namespace CalamityMod.CalPlayer
                 if (Player.wingTimeMax < 0)
                     Player.wingTimeMax = 0;
 
-                if (Player.wingTimeMax > 400)
-                    Player.wingTimeMax = 400;
+                if (Player.wingTimeMax > IcarusFolly.MaxFlightTimeCap)
+                    Player.wingTimeMax = IcarusFolly.MaxFlightTimeCap;
 
-                Player.wingTimeMax = (int)(Player.wingTimeMax * 0.66);
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - IcarusFolly.FlightTimeLossPercent));
             }
 
             if (DoGExtremeGravity)
@@ -3156,10 +3160,10 @@ namespace CalamityMod.CalPlayer
                 if (Player.wingTimeMax < 0)
                     Player.wingTimeMax = 0;
 
-                if (Player.wingTimeMax > 400)
-                    Player.wingTimeMax = 400;
+                if (Player.wingTimeMax > Buffs.StatDebuffs.DoGExtremeGravity.MaxFlightTimeCap)
+                    Player.wingTimeMax = Buffs.StatDebuffs.DoGExtremeGravity.MaxFlightTimeCap;
 
-                Player.wingTimeMax = (int)(Player.wingTimeMax * 0.75);
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - Buffs.StatDebuffs.DoGExtremeGravity.FlightTimeLossPercent));
             }
 
             if (bounding)
@@ -3170,7 +3174,7 @@ namespace CalamityMod.CalPlayer
 
             if (mushy)
             {
-                Player.statDefense += 8;
+                Player.statDefense += Mushy.DefenseBoost;
                 if (fungalSymbiote)
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
             }  
@@ -3208,7 +3212,7 @@ namespace CalamityMod.CalPlayer
 
             if (wither && !purity)
             {
-                Player.statDefense -= WitherDebuff.DefenseReduction;
+                Player.statDefense -= RemsRevenge.WitherDefenseReduction;
             }
 
             if (gState)
@@ -3236,14 +3240,14 @@ namespace CalamityMod.CalPlayer
 
             if (corrEffigy)
             {
-                Player.moveSpeed += 0.1f;
-                Player.GetCritChance<GenericDamageClass>() += 10;
+                Player.moveSpeed += CorruptionEffigy.MoveSpeedBoost;
+                Player.GetCritChance<GenericDamageClass>() += CorruptionEffigy.CritBoost;
             }
 
             if (crimEffigy)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
-                Player.statDefense += 10;
+                Player.GetDamage<GenericDamageClass>() += CrimsonEffigy.DamageBoost;
+                Player.statDefense += CrimsonEffigy.DefenseBoost;
             }
 
             // The player's true max life value with Calamity adjustments
@@ -3270,13 +3274,13 @@ namespace CalamityMod.CalPlayer
 
             if (sandsWindBuff)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.12f;
-                Player.statDefense += 12;
+                Player.GetDamage<GenericDamageClass>() += PrimordialEarth.BuffDamageBoost;
+                Player.statDefense += PrimordialEarth.BuffDefenseBoost;
             }
             if (aeolianEarthBuff)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.18f;
-                Player.endurance += 0.08f;
+                Player.GetDamage<GenericDamageClass>() += PrimordialAncient.BuffDamageBoost;
+                Player.endurance += PrimordialAncient.BuffDamageReductionBoost;
             }
 
             if (frostFlare)
@@ -3851,7 +3855,9 @@ namespace CalamityMod.CalPlayer
                         if (amalgam)
                         {
                             // Every other frame, increase the buff timer by one frame. Thus, the buff lasts twice as long.
-                            if (Player.miscCounter % 2 == 0)
+                            // CIT 1NOV2024: Amalgam does not add to the buff time if it's at 2 or lower,
+                            // to prevent buff duration showing when using infinite buff features from other mods.
+                            if (Player.miscCounter % 2 == 0 && Player.buffTime[l] > 2)
                                 Player.buffTime[l] += 1;
 
                             // Buffs will not go away when you die, to prevent wasting potions.
@@ -4383,7 +4389,7 @@ namespace CalamityMod.CalPlayer
                 Player.endurance -= 0.1f;
 
             if (corrEffigy)
-                Player.endurance -= 0.05f;
+                Player.endurance -= CorruptionEffigy.DamageReductionLoss;
         }
         #endregion
 

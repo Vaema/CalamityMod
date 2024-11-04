@@ -1,11 +1,15 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Armor.Demonshade;
+using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
 {
     public class Enraged : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs((1D + DemonshadeHelm.MultDamageBoost).ToString(), (1D + DemonshadeHelm.MultDamageTakenBoost).ToString());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

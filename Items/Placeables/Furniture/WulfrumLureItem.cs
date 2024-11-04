@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
@@ -13,6 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public static int SignalTime = 30 * 60;
         public static int SpawnIntervals = 4 * 60;
         public static int MaxEnemiesPerWave = 3;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SignalTime.FramesToSeconds());
 
         public override void SetDefaults()
         {

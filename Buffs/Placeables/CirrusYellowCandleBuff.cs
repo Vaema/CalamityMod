@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Placeables.Furniture;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.NPC;
@@ -7,8 +8,6 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusYellowCandleBuff : ModBuff
     {
-        public static float ExtraChipDamageRatio = 0.07f;
-        
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:
@@ -30,7 +29,7 @@ namespace CalamityMod.Buffs.Placeables
         // Yellow Candle is implemented as a dirty modifier.
         internal static void ModifyHitInfo_Spite(ref HitInfo info)
         {
-            int damageBoost = (int)(info.SourceDamage * ExtraChipDamageRatio);
+            int damageBoost = (int)(info.SourceDamage * SpitefulCandle.ExtraChipDamageRatio);
             info.Damage += damageBoost;
         }
     }

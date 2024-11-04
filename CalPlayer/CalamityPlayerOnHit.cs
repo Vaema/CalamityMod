@@ -11,6 +11,7 @@ using CalamityMod.Enums;
 using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Ranged;
@@ -148,7 +149,7 @@ namespace CalamityMod.CalPlayer
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
         }
         #endregion
 
@@ -275,7 +276,7 @@ namespace CalamityMod.CalPlayer
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
@@ -601,9 +602,9 @@ namespace CalamityMod.CalPlayer
 
             if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
-                ursaSergeantCooldown = 300;
+                ursaSergeantCooldown = UrsaSergeant.MaxCooldown;
 
-                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(200);
+                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(UrsaSergeant.BaseSwipeDamage);
 
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
             }

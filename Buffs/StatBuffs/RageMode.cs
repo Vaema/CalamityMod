@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -6,12 +7,15 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class RageMode : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs((1f + BalancingConstants.DefaultRageDamageBoost).ToString("N2"));
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

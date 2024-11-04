@@ -164,7 +164,7 @@ BloodyMary: {
 	Tooltip:
 		'''
 		{0}% increased damage and movement speed during a Blood Moon
-		Reduces life regen by {1} HP/s and defense by {2}
+		Reduces life regen by {1} HP/s and defense by {2}%
 		{$Common.AlcoholWarning}
 		[c/B00BA5:'Extra spicy... and bloody!']
 		'''
