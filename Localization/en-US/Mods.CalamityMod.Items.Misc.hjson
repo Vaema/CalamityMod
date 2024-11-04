@@ -390,10 +390,10 @@ RelicOfConvergence: {
 	DisplayName: Relic of Convergence
 	Tooltip:
 		'''
-Creates a profaned crystal that channels healing energy at your cursor
-Once fully channeled, all players within the area of effect are healed for {0} HP
-Players other than yourself gain 50% extra healing
-Holding out the crystal heavily reduces the damage of all summons
+		Creates a profaned crystal that channels healing energy at your cursor
+		Once fully channeled, all players within the area of effect are healed for {0} HP
+		Players other than yourself gain 50% extra healing
+		Holding out the crystal heavily reduces the damage of all summons
 		'''
 }
 

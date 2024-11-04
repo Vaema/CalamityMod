@@ -183,18 +183,6 @@ namespace CalamityMod.Projectiles.Typeless
                 Vector2 drawPosition = (time >= CrystalsDrawTime ? Projectile.Center : Projectile.Center + drawPositionOffset + Main.rand.NextVector2Circular(12, 12));
 
                 Projectile.DrawProjectileWithBackglow(Color.Lerp(Color.Orchid, Color.Goldenrod, fade) with { A = 0 } * completion * 0.5f, Color.Lerp(Color.White, Color.White with { A = 0 }, fade * 0.5f) * MathHelper.Clamp(completion * 1.5f, time >= CrystalsDrawTime ? 0.8f : 0f, 1), 4f * completion + (fade * 3), crystalTexture, xPos: drawPosition.X, yPos: drawPosition.Y);
-
-                /*
-                Main.EntitySpriteDraw(crystalTexture,
-                                 drawPosition - Main.screenPosition,
-                                 null,
-                                 Color.White * opacity,
-                                 Projectile.rotation,
-                                 Projectile.Size * 0.5f,
-                                 Projectile.scale,
-                                 SpriteEffects.None,
-                                 0);
-                */
             }
             return false;
         }
