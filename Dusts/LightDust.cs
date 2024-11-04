@@ -17,7 +17,10 @@ namespace CalamityMod.Dusts
         {
             dust.rotation += MathF.Sign(dust.velocity.X);
             dust.velocity *= 0.98f;
-            dust.scale += 0.02f;
+            if (dust.noGravity)
+                dust.scale += 0.02f;
+            else
+                dust.scale -= 0.01f;
 
             float light = MathHelper.Clamp(dust.scale * 0.8f, 0f, 1f);
             if (!dust.noLightEmittence)
