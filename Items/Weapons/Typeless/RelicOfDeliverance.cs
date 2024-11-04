@@ -12,10 +12,11 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             Item.width = 32;
             Item.height = 46;
-            Item.damage = 1350;
-            Item.useAnimation = Item.useTime = 25;
+            Item.damage = 3333;
+            Item.useAnimation = Item.useTime = 35;
             Item.reuseDelay = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.UseSound = SoundID.Item46;
             Item.noMelee = true;
             Item.noUseGraphic = true;

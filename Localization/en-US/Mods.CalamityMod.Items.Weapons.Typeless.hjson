@@ -30,10 +30,11 @@ RelicOfDeliverance: {
 	DisplayName: Relic of Deliverance
 	Tooltip:
 		'''
-Press <left> to grab hold of the spear and steer it
-Press <left> again to while flying on the spear to drift, slowing your velocity but charging an extremley fast dash released when you let go of <left>
-If you loose too much velocity before releasing the charge, you will reset to minimum speed
-The spear can take you through walls but will warp you to the last open space if you are inside them too long
+		Press <left> to grab hold of the spear and steer it
+		Press <left> again to while flying on the spear to drift, slowing your velocity but charging an extremley fast dash released when you let go of <left>
+		If you loose too much velocity before releasing the charge, you will reset to minimum speed
+		The spear can take you through walls but will warp you to the last open space if you are inside them too long
+		Holding out the spear heavily reduces the damage of all summons
 		'''
 }
 

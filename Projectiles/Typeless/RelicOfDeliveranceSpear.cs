@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
-            Projectile.extraUpdates = 25;
+            Projectile.extraUpdates = 40 * Projectile.MaxUpdates;
         }
         public override void AI()
         {
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Typeless
                         driftPower = 1;
                         driftTimer = (int)(MathHelper.Clamp(driftTimer * 0.94f, 1, 300));
                     }
-                    Projectile.velocity *= 0.98f;
+                    Projectile.velocity *= (1f - 0.02f * (CalamityPlayer.areThereAnyDamnBosses ? 0.5f : 1));
                 }
 
                 Projectile.extraUpdates = 3;
@@ -292,7 +292,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 if (time % Projectile.MaxUpdates == 0)
                     respawnTimer++;
-                if (respawnTimer >= 180 && respawnPoint != Vector2.Zero)
+                if (respawnTimer >= 180)
                 {
                     Projectile.Center = respawnPoint;
                     Owner.Center = respawnPoint;
@@ -314,6 +314,8 @@ namespace CalamityMod.Projectiles.Typeless
 
                     KillProj();
                 }
+                if (respawnPoint == Vector2.Zero)
+                    respawnPoint = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 60;
 
                 if (SoundEngine.TryGetActiveSound(digSoundSlot, out var zound) && zound.IsPlaying)
                 {
@@ -411,7 +413,7 @@ namespace CalamityMod.Projectiles.Typeless
             modifiers.SourceDamage *= damageMult;
         }
         public override bool? CanDamage() => (Projectile.velocity == Vector2.Zero || drifting) ? false : null;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, 50, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30 * driftPowerScaling, 60 * driftPowerScaling, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPos = Owner.MountedCenter + (drifting ? idealVel : Projectile.velocity).SafeNormalize(Vector2.UnitX) * (55 - 35 * Utils.GetLerpValue(0, 25, driftTimer, true));

@@ -48,8 +48,6 @@ namespace CalamityMod.Projectiles.Typeless
                 return;
             }
 
-            player.GetDamage<SummonDamageClass>() -= 1f; // This is a summoner moment and a half
-
             UpdatePlayerVisuals(player);
 
             // Make a constant "magical" sound.
@@ -74,13 +72,6 @@ namespace CalamityMod.Projectiles.Typeless
                 fade = 1;
             }
 
-            // Make a sound when fully charged.
-            if (time == CrystalsDrawTime)
-            {
-                //SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, Projectile.Center);
-                //SoundStyle h = new("CalamityMod/Sounds/Item/MeldShoot");
-                //SoundEngine.PlaySound(h with { Volume = 0.4f, PitchVariance = 0.7f * completion }, Projectile.Center);
-            }
             // Create a circle of dust. The circle expands outward at first until it reaches its "destination" radius.
             // Once the circle is at its maximum size, some of the dust moves inward.
             if (time >= CrystalsDrawTime)
