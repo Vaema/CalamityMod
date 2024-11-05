@@ -949,6 +949,9 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
 
                     // Would be in the bag otherwise
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, 4));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, 4));
+
                     npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 

@@ -1476,7 +1476,7 @@ WulfrumBlunderbuss: {
 		'''
 		Consumes wulfrum scrap or silver coins to fire
 		The shot's spread can be diminished by aiming further away, at the cost of less damage
-		Ignores 3 points of enemy Defense
+		{$Common.ArmorPenetration}
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''

@@ -79,8 +79,6 @@ namespace CalamityMod.ILEditing
 
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
-        public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
-
         #region Punch Card Spawning Command
         private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
         {

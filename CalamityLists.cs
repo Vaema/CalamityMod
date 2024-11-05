@@ -2553,7 +2553,7 @@ namespace CalamityMod
                 { NPCID.LeechTail, 5000 },
 
                 // Tier 2
-                { NPCID.QueenSlimeBoss, 150000 }, // 30 seconds
+                { NPCID.QueenSlimeBoss, 200000 }, // 30 seconds
                 { NPCID.QueenSlimeMinionBlue, 6000 },
                 { NPCID.QueenSlimeMinionPink, 6000 },
                 { NPCID.QueenSlimeMinionPurple, 5000 },

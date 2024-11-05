@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.MaceFlails;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -8,6 +9,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class RemsRevenge : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static int WitherDefenseReduction = 20;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(WitherDefenseReduction);
+
         public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
         public override void SetDefaults()
         {

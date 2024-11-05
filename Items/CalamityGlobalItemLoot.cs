@@ -36,6 +36,9 @@ namespace CalamityMod.Items
             {
                 #region Boss Treasure Bags
                 case ItemID.KingSlimeBossBag:
+                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, 3); // 33% Katana
+                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, 3); // 33% Keybrand in Remix
+
                     loot.Add(new CommonDrop(ModContent.ItemType<CrownJewel>(), 10)); // 10% Crown Jewel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);

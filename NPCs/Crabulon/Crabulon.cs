@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.width = 196;
             NPC.height = 196;
             NPC.defense = 8;
-            NPC.LifeMaxNERB(3700, 4400, 680000);
+            NPC.LifeMaxNERB(3700, 4400, 500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;

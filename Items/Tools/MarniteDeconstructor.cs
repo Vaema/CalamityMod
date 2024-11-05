@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
@@ -11,13 +12,17 @@ namespace CalamityMod.Items.Tools
     public class MarniteDeconstructor : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Tools";
+
+        public static int ArmorPenetration = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 18;
             Item.damage = 6;
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
-            Item.ArmorPenetration = 10;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.hammer = 59;
             Item.tileBoost = 7;
             Item.useAnimation = 25;

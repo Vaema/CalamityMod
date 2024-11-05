@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (tile.WallType == WallID.EbonstoneUnsafe)
                 enrage = false;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
+            float enrageScale = 0f;
             if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
             {
                 calamityGlobalNPC.CurrentlyEnraged = !bossRush;

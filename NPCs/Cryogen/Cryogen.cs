@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
@@ -1460,7 +1461,20 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 string key = "Mods.CalamityMod.Status.Progression.IceOreText";
                 Color messageColor = Color.LightSkyBlue;
-                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, TileID.SnowBlock, TileID.IceBlock, TileID.CorruptIce, TileID.FleshIce, TileID.HallowedIce, ModContent.TileType<AstralSnow>(), ModContent.TileType<AstralIce>());
+
+                List<int> tileTypes = [
+                    TileID.SnowBlock,
+                    TileID.IceBlock,
+                    TileID.CorruptIce,
+                    TileID.FleshIce,
+                    TileID.HallowedIce,
+                    ModContent.TileType<AstralSnow>(),
+                    ModContent.TileType<AstralIce>()
+                ];
+                // In Drunk world, it can also generate in Jungle grass due to Jungle/Snow overlap
+                if (Main.drunkWorld)
+                    tileTypes.Add(TileID.JungleGrass);
+                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }

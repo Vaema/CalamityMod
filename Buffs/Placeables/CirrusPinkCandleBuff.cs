@@ -6,8 +6,6 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusPinkCandleBuff : ModBuff
     {
-        public static double PercentHealthPerSecond = 0.004D;
-        
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:

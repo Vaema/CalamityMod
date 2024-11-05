@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
 {
+    // Despite what it may seem with its name, this dye is intended to be based on Cryogen, not the Cryonic set
     public class CryonicDye : BaseDye
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CryonicDyeShader"), "DyePass").

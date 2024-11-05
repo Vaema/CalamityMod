@@ -1,14 +1,15 @@
 ﻿using CalamityMod.Items.Weapons.Typeless;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class KamiBuff : ModBuff
     {
-        public const float RunSpeedBoost = 0.15f;
-        public const float RunAccelerationBoost = 0.15f;
+        public override LocalizedText Description => base.Description.WithFormatArgs(YanmeisKnife.RunSpeedBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

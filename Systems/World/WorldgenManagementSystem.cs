@@ -105,6 +105,30 @@ namespace CalamityMod.Systems
                 }));
             }
 
+            // Move spawn point in Celebrationmk10 to not be in the Sulphurous Sea
+            int spawnPointIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
+            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.getGoodWorldGen)
+            {
+                tasks.Insert(spawnPointIndex + 1, new PassLegacy("Fix Tenth Anniversary Spawn", (progress, config) =>
+                {
+                    if ((Main.spawnTileX < Main.maxTilesX / 2 && GenVars.dungeonSide == -1) || (Main.spawnTileX > Main.maxTilesX / 2 && GenVars.dungeonSide == 1))
+                    {
+                        // Flip the side of the world you spawn on if it's the Dungeon side
+                        Main.spawnTileX = Main.maxTilesX - Main.spawnTileX;
+                        // Then fix the Y position of the spawn point
+                        for (int i = 0; i < Main.maxTilesY; i++)
+                        {
+                            if (Main.tile[Main.spawnTileX, i].HasTile)
+                            {
+                                Main.spawnTileY = i;
+                                break;
+                            }
+                        }
+                    }
+                        
+                }));
+            }
+
             // Mechanic Shed
             int mechanicIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sunflowers"));
             if (mechanicIndex != -1)
