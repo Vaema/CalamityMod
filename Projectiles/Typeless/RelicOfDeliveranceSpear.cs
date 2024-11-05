@@ -439,9 +439,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.35f;
-            int hitsToMinMult = 25;
+            float minMult = 0.01f;
+            int hitsToMinMult = 15;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+
             float driftMult = (driftPower == 1 ? 0.3f : driftPower == 2 ? 1.7f : 2.5f) * damageMult; // Drift power scaling is lower than regular
             modifiers.SourceDamage *= driftMult * ((Projectile.numHits == 0 && driftPower > 1) ? 1.9f : 1);
 
