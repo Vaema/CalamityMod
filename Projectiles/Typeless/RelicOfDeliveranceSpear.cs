@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Particles;
 using Microsoft.CodeAnalysis;
@@ -50,6 +52,9 @@ namespace CalamityMod.Projectiles.Typeless
         public Color bColor = Color.White;
         public SlotId digSoundSlot;
         public int digFXCooldown = 0;
+        public float ramLerp;
+
+        public float damageMult = 1;
 
         public override void SetStaticDefaults()
         {
@@ -67,15 +72,19 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
-            Projectile.extraUpdates = 40 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 40 * Projectile.MaxUpdates;
+            Projectile.extraUpdates = 3;
         }
         public override void AI()
         {
             if (killed)
                 return;
 
+            ramLerp = Utils.GetLerpValue(120 * driftPower, 0, boostTimer, true);
+            Owner.Calamity().rOfDelivarenceRam = false;
+
             float rate = Main.GlobalTimeWrappedHourly * 7;
+            Color powerColor = Color.Khaki;
             List<Color> eColors = new List<Color>()
             {
                 Color.Goldenrod,
@@ -87,7 +96,7 @@ namespace CalamityMod.Projectiles.Typeless
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            bColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            bColor = Color.Lerp(Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f), powerColor, Utils.Remap(ramLerp, 0.15f, 0.17f, 0.5f, 0, true) * (driftPower == 1 ? 0 : 1));
 
             if (Owner.dead || Owner.Calamity().mouseRight || !WorldGen.InWorld(Owner.Center.ToTileCoordinates().X, Owner.Center.ToTileCoordinates().Y, 20)) // Die if Owner dies or right clicks to exit
             {
@@ -120,7 +129,7 @@ namespace CalamityMod.Projectiles.Typeless
             Vector2 aimDir = Owner.Calamity().mouseWorld;
             
             idealVel = Utils.DirectionTo(Owner.Center, aimDir) * speed * driftPower;
-            driftPowerScaling = MathHelper.Lerp(driftPowerScaling, driftPower * 0.7f, 0.005f);
+            driftPowerScaling = MathHelper.Lerp(driftPowerScaling, driftPower * 0.7f, (driftPowerScaling > driftPower * 0.7f) ? 0.005f : 0.04f);
 
             if (time == 0)
             {
@@ -129,7 +138,7 @@ namespace CalamityMod.Projectiles.Typeless
                 velY = Projectile.velocity.Y;
             }
 
-            float lerpPower = (drifting ? 0 : (boosted && driftPower > 1) ? 0.01f * Utils.GetLerpValue(120 * driftPower, 0, boostTimer) : 0.02f);
+            float lerpPower = (drifting ? 0 : (boosted && driftPower > 1) ? 0.01f * ramLerp : 0.02f);
             velX = MathHelper.Lerp(Projectile.velocity.X, idealVel.X, lerpPower);
             velY = MathHelper.Lerp(Projectile.velocity.Y, idealVel.Y, lerpPower);
             
@@ -180,6 +189,17 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (!drifting)
             {
+                // Iframes for the ram
+                if (driftPower > 1 && ramLerp < 0.15f && !killed)
+                {
+                    Owner.Calamity().rOfDelivarenceRam = true;
+                    if (Main.rand.NextBool() || driftPower == 3)
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30 + Main.rand.NextVector2Circular(30, 30) * driftPowerScaling, Projectile.velocity * Main.rand.NextFloat(0.2f, 5), "CalamityMod/Particles/FullStar", false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(0.6f, 1.2f), Color.Khaki, new Vector2(2, 1), true, false, 0, false, false, 0.8f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+
                 if (driftPower > 2)
                     Projectile.extraUpdates = 5;
                 else
@@ -223,8 +243,12 @@ namespace CalamityMod.Projectiles.Typeless
                         }
                         if (driftPower > 1)
                             Owner.Calamity().GeneralScreenShakePower = (driftPower == 2 ? 6 : 9);
+                        else if (driftBadMult > 0.15f)
+                            driftBadMult -= 0.15f;
+                            
 
                         boostTimer = 120 * driftPower;
+                        Projectile.numHits = 0;
                     }
                     if (boostTimer > 0)
                         boostTimer--;
@@ -291,7 +315,10 @@ namespace CalamityMod.Projectiles.Typeless
                 }
 
                 if (time % Projectile.MaxUpdates == 0)
+                {
                     respawnTimer++;
+                    Projectile.soundDelay--;
+                }
                 if (respawnTimer >= 180)
                 {
                     Projectile.Center = respawnPoint;
@@ -359,13 +386,14 @@ namespace CalamityMod.Projectiles.Typeless
                     SoundEngine.PlaySound(sound with { Volume = 0.065f * driftPowerScaling, Pitch = Main.rand.NextFloat(-0.4f, -0.9f) + (driftPower == 3 ? 1.4f : 0), MaxInstances = -1 }, Owner.Center);
                 }
             }
-            if (time % Projectile.extraUpdates == 0 && digFXCooldown > 0)
+            if (time % Projectile.MaxUpdates == 0 && digFXCooldown > 0)
                 digFXCooldown--;
 
             Owner.Center = Projectile.Center;
             Owner.velocity = Projectile.velocity * Projectile.MaxUpdates;
             Owner.dashDelay = 0;
             Projectile.timeLeft++;
+            Owner.RemoveAllGrapplingHooks();
 
             Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3() * (driftPowerScaling + 0.5f));
 
@@ -400,17 +428,39 @@ namespace CalamityMod.Projectiles.Typeless
             if (inTiles && respawnPoint != Vector2.Zero)
             {
                 Projectile.Center = respawnPoint;
-                Owner.Center = respawnPoint;
+                if (!Owner.dead)
+                    Owner.Center = respawnPoint;
             }
             killed = true;
             Owner.fullRotationOrigin = Owner.Center - Owner.position;
             Owner.fullRotation = 0;
+            Owner.Calamity().rOfDelivarenceRam = false;
             Projectile.Kill();
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float damageMult = driftPowerScaling * 1.4f; // Drift power scaling is lower than regular
-            modifiers.SourceDamage *= damageMult;
+            float minMult = 0.35f;
+            int hitsToMinMult = 25;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float driftMult = (driftPower == 1 ? 0.3f : driftPower == 2 ? 1.7f : 2.5f) * damageMult; // Drift power scaling is lower than regular
+            modifiers.SourceDamage *= driftMult * ((Projectile.numHits == 0 && driftPower > 1) ? 1.9f : 1);
+
+            if (Projectile.numHits == 0 && driftPower > 1)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Particle spark = new GlowSparkParticle(Projectile.Center, Projectile.velocity, false, 18, 0.05f * driftPower, Color.Lerp(Color.White, Color.Orange, i * 0.2f) * 0.85f, new Vector2(4 + i * 0.55f, 0.4f + i * 0.1f), true, false, 1f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                SoundStyle sound = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                SoundEngine.PlaySound(sound with { Volume = 1, Pitch = Main.rand.NextFloat(0.2f, 0.4f) * damageMult }, Projectile.Center);
+            }
+            if (Projectile.soundDelay <= 0)
+            {
+                SoundStyle sound = new("CalamityMod/Sounds/Item/HolyColliderBigHit");
+                SoundEngine.PlaySound(sound with { Volume = 1, Pitch = Main.rand.NextFloat(-0.2f, -0.4f) * damageMult }, Projectile.Center);
+                Projectile.soundDelay = 25;
+            }
         }
         public override bool? CanDamage() => (Projectile.velocity == Vector2.Zero || drifting) ? false : null;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30 * driftPowerScaling, 60 * driftPowerScaling, targetHitbox);

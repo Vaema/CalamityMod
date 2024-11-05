@@ -580,6 +580,7 @@ namespace CalamityMod.CalPlayer
         public int gSabatonFall = 0;
         public bool gSabatonFalling = false;
         public int gSabatonTempJumpSpeed = 0;
+        public bool rOfDelivarenceRam = false;
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
@@ -2422,6 +2423,7 @@ namespace CalamityMod.CalPlayer
             gSabatonFall = 0;
             gSabatonFalling = false;
             gSabatonTempJumpSpeed = 0;
+            rOfDelivarenceRam = false;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             VoidCooldown = 0;

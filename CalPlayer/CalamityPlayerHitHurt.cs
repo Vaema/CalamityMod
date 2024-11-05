@@ -1579,6 +1579,30 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (rOfDelivarenceRam)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    // Ignore critters with the Guide to Critter Companionship
+                    if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
+                        continue;
+
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    {
+                        Rectangle npcHitbox = n.getRect();
+                        if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
+                        {
+                            // 17APR2024: Ozzatron: This item gives iframes when passing through enemies for projectile safety.
+                            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                            n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
+                            Player.GiveUniversalIFrames(InterstellarStompers.PassthroughIFrames, false);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
             // If no other effects occurred, run vanilla code
             return base.FreeDodge(info);
         }
