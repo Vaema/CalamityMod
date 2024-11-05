@@ -390,7 +390,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Skull shooting
             if ((handsDead || masterMode) && npc.ai[1] == 0f && !phase4)
             {
-                float skullProjFrequency = bossRush ? 10f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
+                float skullProjFrequency = bossRush ? 15f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
                 if (Main.getGoodWorld)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);

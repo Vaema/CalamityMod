@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Typeless
@@ -13,6 +14,17 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/YanmeiKnifeHit");
         public static readonly SoundStyle ExpireSound = new("CalamityMod/Sounds/Custom/YanmeiKnifeExpire");
+
+        public static int DebuffDuration = 600;
+        public static int DebuffDoT = 250;
+        public static float DebuffDamageReductionMult = 0.8f;
+        public static float DebuffNPCSpeedCap = 16f;
+
+        public static int BoostDuration = 600;
+        public static float RunSpeedBoost = 0.15f;
+        public static float RunAccelerationBoost = 0.15f;
+        public static float DamageBoost = 0.15f; // All 15% so we only need just one in the tooltip -- Same for the respective buff
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RunSpeedBoost.ToPercent(), BoostDuration.FramesToSeconds());
 
         public override void SetDefaults()
         {

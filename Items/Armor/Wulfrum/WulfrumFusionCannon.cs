@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -22,6 +23,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisShoot") { PitchVariance = 0.1f, Volume = 0.4f };
         public override string Texture => "CalamityMod/Items/Armor/Wulfrum/WulfrumFusionCannon";
 
+        public static int ArmorPenetration = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public bool noAnimation = false;
 
         public override void SetDefaults()
@@ -29,7 +33,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.width = 34;
             Item.height = 42;
             Item.damage = 6;
-            Item.ArmorPenetration = 10;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;

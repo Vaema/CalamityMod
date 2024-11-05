@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.Crags
 
         public override void AddRecipes()
         {
-            CreateRecipe(25).
+            CreateRecipe().
                 AddIngredient<BrimstoneSlag>().
                 AddTile(TileID.HeavyWorkBench).
                 Register();

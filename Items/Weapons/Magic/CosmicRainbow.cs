@@ -50,9 +50,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.RainbowGun).
+                AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.CrystalShard, 10).
                 AddIngredient(ItemID.SoulofLight, 10).
-                AddIngredient(ItemID.LunarBar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
