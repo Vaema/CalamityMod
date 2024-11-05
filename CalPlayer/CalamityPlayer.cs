@@ -520,6 +520,7 @@ namespace CalamityMod.CalPlayer
         public bool stressPills = false;
         public bool laudanum = false;
         public bool heartOfDarkness = false;
+        public bool profanedSoulRelicBuff = false;
         public bool draedonsHeart = false;
         public bool vexation = false;
         public bool dodgeScarf = false;
@@ -1803,6 +1804,7 @@ namespace CalamityMod.CalPlayer
             nucleogenesis = false;
             nuclearFuelRod = false;
             heartOfDarkness = false;
+            profanedSoulRelicBuff = false;
             shadowMinions = false;
             holyMinions = false;
             alchFlask = false;

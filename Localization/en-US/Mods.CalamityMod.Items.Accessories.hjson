@@ -1309,6 +1309,7 @@ ProfanedSoulCrystal: {
 	FullTooltip:
 		'''
 		Provides passive buffs depending on the time of day
+		Greatly boosts the power of the Guardian's relics
 		Grants additional effects if you have {0} minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active

@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Typeless
         public float driftBadMult = 1;
         public bool killed = false;
 
+        public float iframeLevel = 0.2f; // Determiones the level of dash iframes it gives when starting a dash, lower is less
+
         public float velX;
         public float velY;
 
@@ -72,7 +74,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 40 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 50 * Projectile.MaxUpdates;
             Projectile.extraUpdates = 3;
         }
         public override void AI()
@@ -96,7 +98,7 @@ namespace CalamityMod.Projectiles.Typeless
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            bColor = Color.Lerp(Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f), powerColor, Utils.Remap(ramLerp, 0.15f, 0.17f, 0.5f, 0, true) * (driftPower == 1 ? 0 : 1));
+            bColor = Color.Lerp(Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f), powerColor, Utils.Remap(ramLerp, iframeLevel, 0.17f, 0.5f, 0, true) * (driftPower == 1 ? 0 : 1));
 
             if (Owner.dead || Owner.Calamity().mouseRight || !WorldGen.InWorld(Owner.Center.ToTileCoordinates().X, Owner.Center.ToTileCoordinates().Y, 20)) // Die if Owner dies or right clicks to exit
             {
@@ -173,7 +175,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Projectile.extraUpdates = 3;
                 float sparkPower = Utils.GetLerpValue(0, 100, driftTimer);
-                if (time % Projectile.extraUpdates * 2 == 0)
+                if (time % Projectile.MaxUpdates * 2 == 0)
                 {
                     SoundStyle sound = new("CalamityMod/Sounds/Item/NullImpact");
                     SoundEngine.PlaySound(sound with { Volume = 0.045f, Pitch = (Main.rand.NextFloat(-0.2f, -0.4f) + sparkPower * 0.4f) + (driftPower == 2 ? 0.3f : driftPower == 3 ? 0.7f : 0), MaxInstances = -1 }, Projectile.Center);
@@ -190,7 +192,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (!drifting)
             {
                 // Iframes for the ram
-                if (driftPower > 1 && ramLerp < 0.15f && !killed)
+                if (driftPower > 1 && ramLerp < iframeLevel && !killed)
                 {
                     Owner.Calamity().rOfDelivarenceRam = true;
                     if (Main.rand.NextBool() || driftPower == 3)
@@ -380,7 +382,7 @@ namespace CalamityMod.Projectiles.Typeless
                 respawnTimer = 0;
                 respawnMult = 0f;
 
-                if (time % Projectile.extraUpdates * 2 == 0 && !drifting)
+                if (time % Projectile.MaxUpdates * 2 == 0 && !drifting)
                 {
                     SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                     SoundEngine.PlaySound(sound with { Volume = 0.065f * driftPowerScaling, Pitch = Main.rand.NextFloat(-0.4f, -0.9f) + (driftPower == 3 ? 1.4f : 0), MaxInstances = -1 }, Owner.Center);
@@ -443,8 +445,10 @@ namespace CalamityMod.Projectiles.Typeless
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
 
-            float driftMult = (driftPower == 1 ? 0.3f : driftPower == 2 ? 1.7f : 2.5f) * damageMult; // Drift power scaling is lower than regular
-            modifiers.SourceDamage *= driftMult * ((Projectile.numHits == 0 && driftPower > 1) ? 1.9f : 1);
+            float driftMult = (driftPower == 1 ? 0.3f : driftPower == 2 ? 1.6f : 2.5f) * damageMult; // Drift power scaling is lower than regular
+            
+            float totalMult = driftMult * ((Projectile.numHits == 0 && driftPower > 1) ? 1.9f : 1) * (Owner.Calamity().profanedSoulRelicBuff ? 8 : 1);
+            modifiers.SourceDamage *= totalMult;
 
             if (Projectile.numHits == 0 && driftPower > 1)
             {

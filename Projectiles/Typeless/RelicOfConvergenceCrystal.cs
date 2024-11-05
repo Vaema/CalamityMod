@@ -47,6 +47,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.Kill();
                 return;
             }
+            if (player.Calamity().profanedSoulRelicBuff)
+                Projectile.extraUpdates = 1;
 
             UpdatePlayerVisuals(player);
 
@@ -93,7 +95,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Player fella = Main.player[index];
                     if (Utils.Distance(fella.Center, player.Calamity().mouseWorld) < 138)
                     {
-                        fella.HealPlayer((int)(RelicOfConvergence.HealValue * (fella != player ? 1.5f : 1)), HealTextType.Broadcast);
+                        fella.HealPlayer((int)(RelicOfConvergence.HealValue * (fella != player ? 1.5f : 1) * (player.Calamity().profanedSoulRelicBuff ? 1.25f : 1)), HealTextType.Broadcast);
 
                         SoundStyle heal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianHeal");
                         SoundEngine.PlaySound(heal with { Volume = 1 / playerCount, MaxInstances = -1 }, fella.Center);

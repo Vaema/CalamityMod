@@ -247,7 +247,8 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.profanedCrystalAnim = maxPscAnimTime;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PscTransformAnimation>(), 0, 0f, player.whoAmI);
             }
-
+            if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+                player.Calamity().profanedSoulRelicBuff = true;
 
             modPlayer.profanedCrystalHide = hideVisual || modPlayer.profanedCrystalAnim > 0;
             modPlayer.pSoulShieldVisible = !hideVisual;
