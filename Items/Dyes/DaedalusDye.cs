@@ -1,19 +1,18 @@
 ﻿using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Dyes
 {
-    // Despite what it may seem with its name, this dye is intended to be based on Cryogen, not the Cryonic set
-    public class CryonicDye : BaseDye
+    public class DaedalusDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CryonicDyeShader"), "DyePass").
-            UseColor(new Color(138, 225, 255)).UseSecondaryColor(new Color(90, 90, 204)).UseImage("Images/Misc/Perlin");
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/DaedalusDyeShader"), "DyePass").
+            UseColor(new Color(59, 183, 255)).UseSecondaryColor(new Color(181, 45, 196)).UseImage(Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes3"));
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
