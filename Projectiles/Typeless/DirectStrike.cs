@@ -7,6 +7,7 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public bool sticky => Projectile.ai[1] > 0;
 
         public override void SetDefaults()
         {
@@ -19,6 +20,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.alpha = 255;
             Projectile.timeLeft = 2;
+        }
+        public override void AI()
+        {
+            if (sticky)
+                Projectile.Center = Main.npc[(int)Projectile.ai[0]].Center;
         }
 
         // If the AI parameter isn't a valid NPC slot, it can hit anything. Otherwise it can only hit one NPC.

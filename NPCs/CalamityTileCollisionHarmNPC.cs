@@ -1,8 +1,10 @@
 ﻿using System;
 using CalamityMod.Projectiles.Healing;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs
 {
@@ -24,6 +26,7 @@ namespace CalamityMod.NPCs
         private bool CheckTiles = false;
         private Vector2 ForcedVel = Vector2.Zero;
         private bool hitVoid = false;
+        private Player attacker;
 
         public int PotentialEnergyDamage
         {
@@ -66,10 +69,11 @@ namespace CalamityMod.NPCs
         /// Sets up a NPC to recieve fall damage when they hit the ground.
         /// </summary>
         /// <param name="npc">The npc to apply fall damage to</param>
+        /// <param name="player">The player applying fall damage to the npc</param>
         /// <param name="potentialDamage">The maximum fall damage taken by the npc once they hit the ground</param>
         /// <param name="terminalVelocityForFullDamage">The downwards velocity necessary to recieve the full fall damage. By default 10, the npc max fall speed</param>
         /// <param name="checkTiles">Will check for tiles in the collision instead of velocity</param>
-        public void ApplyCollisionDamage(NPC npc, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
+        public void ApplyCollisionDamage(NPC npc, Player player, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
         {
             //NPCs that don't collide with tiles simply don't get fall damage, lol.
             if (npc.noTileCollide)
@@ -81,6 +85,7 @@ namespace CalamityMod.NPCs
             terminalVelocityForFullFallDamage = terminalVelocityForFullDamage;
             CheckTiles = checkTiles;
             ForcedVel = forcedVel;
+            attacker = player;
         }
 
         public override void PostAI(NPC npc)
@@ -93,7 +98,10 @@ namespace CalamityMod.NPCs
 
                     if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
-                        npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
+                        int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                        Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, npc.velocity, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI, 1);
+                        wallImpact.DamageType = DamageClass.Melee;
+
                         PotentialEnergyDamage = 0;
                         hitVoid = false;
                     }
@@ -127,8 +135,10 @@ namespace CalamityMod.NPCs
                     //If the npc hit a tile/Came to a stop after falling
                     if (newVerticalVelocity == 0 && oldVerticalVelocity > 0) //Collision.SolidCollision(npc.Center, npc.width, npc.height))
                     {
-                        //I don't think a tile check below the npc is necessary but if we find weird edge cases ill add it
-                        npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
+                        int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                        Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI, 1);
+                        impact.DamageType = DamageClass.Melee;
+
                         PotentialEnergyDamage = 0;
                     }
 
