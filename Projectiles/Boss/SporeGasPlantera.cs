@@ -13,12 +13,17 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SporeGas;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 2;
             ProjectileID.Sets.TrailingMode[Type] = 0;
-            Main.instance.LoadProjectile(ProjectileID.SporeGas2);
-            Main.instance.LoadProjectile(ProjectileID.SporeGas3);
+
+            if (!Main.dedServ)
+            {
+                Main.instance.LoadProjectile(ProjectileID.SporeGas2);
+                Main.instance.LoadProjectile(ProjectileID.SporeGas3);
+            }
         }
 
         public override void SetDefaults()
