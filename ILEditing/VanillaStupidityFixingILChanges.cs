@@ -629,7 +629,7 @@ namespace CalamityMod.ILEditing
 
                 case 17:
                     item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    item.SetDefaults(ItemID.LavaFishingHook);
                     rewardItems.Add(item);
                     break;
 
@@ -653,7 +653,7 @@ namespace CalamityMod.ILEditing
 
                 case 21:
                     item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
                     rewardItems.Add(item);
                     break;
 
