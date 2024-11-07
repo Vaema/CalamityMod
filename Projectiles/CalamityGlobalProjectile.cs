@@ -92,6 +92,9 @@ namespace CalamityMod.Projectiles
         // Adds Brimstone flames to bullets, currently only used by Animosity
         public bool brimstoneBullets = false;
 
+        // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
+        public bool sharkBullets = false;
+
         // Adds fire to bullets, currently used by Thermocline Blaster
         public bool fireBullet = false;
 

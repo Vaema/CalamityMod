@@ -742,8 +742,9 @@ Megalodon: {
 	DisplayName: Megalodon
 	Tooltip:
 		'''
-		Rapidly fires alternating bullets and pressurized water jets
-		Water jets consume no ammo
+		Loads a 30 round magazine of bullets and pressurized water streams that are rapidly unleashed
+		After firing, the gun unleashes a massive homing rocket before reloading
+		Rocket damage is based on how many shots hit
 		'''
 }
 
