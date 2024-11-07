@@ -357,7 +357,6 @@ namespace CalamityMod.CalPlayer
                         }
 
                         int onHitDamage = Player.CalcIntDamage<RangedDamageClass>(0.2f * proj.damage);
-                        Player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
                         Projectile shock = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
                         shock.DamageType = proj.DamageType;
                         SoundStyle hitSound = new("CalamityMod/Sounds/Item/ElectricHit");

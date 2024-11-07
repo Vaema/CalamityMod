@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs
                     if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
                         int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, npc.velocity, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI, 1);
+                        Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
                         wallImpact.DamageType = DamageClass.Melee;
 
                         PotentialEnergyDamage = 0;
@@ -136,7 +136,7 @@ namespace CalamityMod.NPCs
                     if (newVerticalVelocity == 0 && oldVerticalVelocity > 0) //Collision.SolidCollision(npc.Center, npc.width, npc.height))
                     {
                         int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI, 1);
+                        Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI);
                         impact.DamageType = DamageClass.Melee;
 
                         PotentialEnergyDamage = 0;

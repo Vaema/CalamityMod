@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -128,11 +129,8 @@ namespace CalamityMod.Projectiles.Melee
                 if (dist <= radius)
                 {
                     int damage = (int)(Projectile.damage * ExplosionDamageMultiplier);
-                    bool crit = Main.rand.Next(100) <= owner.GetCritChance<MeleeDamageClass>() + 4;
-                    target.StrikeNPC(target.CalculateHitInfo(damage, 0, crit, 0));
-
-                    if (Main.netMode != NetmodeID.SinglePlayer)
-                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, target.whoAmI, damage, 0f, 0f, crit ? 1 : 0, 0, 0);
+                    Projectile something = Projectile.NewProjectileDirect(owner.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, owner.whoAmI, target.whoAmI);
+                    something.DamageType = DamageClass.Melee;
                 }
             }
         }
