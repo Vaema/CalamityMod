@@ -58,9 +58,9 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.timeLeft % 2 == 0 && Time > 12f && targetDist < 1400f)
             {
-                Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark2", false, 17, 0.05f, Color.Black, new Vector2(0.6f, 1.3f), false);
+                Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark2", false, 17, 0.052f, Color.Black, new Vector2(0.6f, 1.3f), false);
                 GeneralParticleHandler.SpawnParticle(spark);
-                Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 17, 0.025f, Color.LightGreen, new Vector2(0.6f, 1.3f), true, false);
+                Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 17, 0.027f, Color.LightGreen, new Vector2(0.6f, 1.3f), true, false);
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.color = InnerColor;
 
-                CalamityUtils.HomeInOnNPC(Projectile, false, 600f, 7f, 55f);
+                CalamityUtils.HomeInOnNPC(Projectile, false, 600f, 7f, 20f);
             }
         }
 
