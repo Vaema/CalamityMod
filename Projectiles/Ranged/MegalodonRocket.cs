@@ -15,6 +15,8 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/FishronRPG";
+
+        public static int Lifetime = 600;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -38,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
-            if (Projectile.timeLeft <= 597)
+            if (Projectile.timeLeft <= Lifetime - 3)
             {
                 AltSparkParticle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 15, 1f, Color.Gold * 0.1f);
                 GeneralParticleHandler.SpawnParticle(spark);

@@ -31,12 +31,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
+            //If the player is dead, kill the holdout.
             if (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type)
                 Projectile.Kill();
         }
 
         public override void HoldoutAI()
         {
+            //Pause to give the effect of reloading
             if (Time == 30)
             {
                 Player Owner = Main.player[Projectile.owner];
@@ -50,15 +52,32 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Time >= 90)
             {
-                if (framesBetweenShots == 0 && shotCounter <= 30)
+                if (framesBetweenShots == 0 && shotCounter <= 31)
                 {
-                    Main.NewText(Owner.Calamity().sharkGunDamageScaling);
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
-                    SoundEngine.PlaySound(fire with { Volume = 0.3f , Pitch = 0.4f, PitchVariance = 0.1f, MaxInstances = -1}, Projectile.Center);
-                    Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                    #region Debug Text Display
+                    //Main.NewText(shotCounter);
+                    //Main.NewText(Owner.Calamity().sharkGunDamageScaling);
+                    #endregion
+                    #region Visuals and Sounds
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
+                    SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.4f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
                     Particle sparker = new CritSpark(GunTipPosition, Vector2.Zero, Color.Gold, Color.LightGoldenrodYellow, 1.7f, 3, 0.5f, 3f);
                     GeneralParticleHandler.SpawnParticle(sparker);
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
+                    }
+                    #endregion
+
+                    //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
+                    framesBetweenShots = 4;
+                    OffsetLengthFromArm -= 3f;
+                    //Here we detect which ammo the bullets will use
+                    Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                    //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
                     if (!swapType)
                     {
                         Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -69,25 +88,19 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<MegalodonShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
-                    }
                     swapType = !swapType;
-                    framesBetweenShots = 4;
-                    OffsetLengthFromArm -= 3f;
                     shotCounter++;
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
-            Time++;
-            if (shotCounter == 30)
+            if (shotCounter == 31)
             {
-                SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotHeavy");
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
+                //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
+                #region Visuals and Sounds
+                SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotHeavy");
+                SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = 0.2f }, Projectile.Center);
                 for (int i = 0; i <= 13; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 1.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
@@ -107,17 +120,32 @@ namespace CalamityMod.Projectiles.Ranged
                 float rotation = Projectile.velocity.ToRotation();
                 Particle pulse = new DirectionalPulseRing(GunTipPosition, shootVelocity / 4, Color.Gray, new Vector2(1f, 2.5f), rotation, 0.03f, 0.3f, 20);
                 GeneralParticleHandler.SpawnParticle(pulse);
-                SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = 0.2f }, Projectile.Center);
-                Owner.Calamity().sharkGunDamageScaling++;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * (Owner.Calamity().sharkGunDamageScaling + 1), Projectile.knockBack, Projectile.owner);
+                //Extra sound and muzzle flash if the scaling is at max
+                if (Owner.Calamity().sharkGunDamageScaling == 30)
+                {
+                    SoundStyle fireperfect = new("CalamityMod/Sounds/Item/ShadowboltReflect");
+                    SoundEngine.PlaySound(fireperfect with { Volume = 0.6f, Pitch = 0f }, GunTipPosition);
+                    GenericSparkle sparker = new GenericSparkle(GunTipPosition, Vector2.Zero, Color.DarkGoldenrod, Color.Gold, Main.rand.NextFloat(1.1f, 1.8f), 10, 2f, 2.68f);
+                    GeneralParticleHandler.SpawnParticle(sparker);
+                }
+                #endregion
+
+                if(Owner.Calamity().sharkGunDamageScaling == 0)
+                {
+                    Owner.Calamity().sharkGunDamageScaling++;
+                }
+                //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
                 Main.NewText(Owner.Calamity().sharkGunDamageScaling);
+                //After firing the rocket, kill the projectile to allow left click to be held down
                 Projectile.Kill();
             }
+            Time++;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             if (Time < 2)
-                return false;
+            return false;
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
