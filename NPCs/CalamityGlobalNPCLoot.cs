@@ -1724,8 +1724,13 @@ DukeEditFailed:
 
             // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
             // This is type-indiscriminate and will also most probably hit modded NPCs too
-            int[] randomFoodItems = new int[]
+
+            // CIT 7NOV2024: Yeah it hits modded NPCs; in fact it removes GFB drops from Ravager and Deus
+            // Fixing this by making the code only run if the NPC is not a boss
+            if (!npc.boss)
             {
+                int[] randomFoodItems = new int[]
+{
                 ItemID.ApplePie,
                 ItemID.BananaSplit,
                 ItemID.BBQRibs,
@@ -1746,9 +1751,10 @@ DukeEditFailed:
                 ItemID.ShrimpPoBoy,
                 ItemID.Spaghetti,
                 ItemID.Steak
-            };
-            foreach (int foodItemID in randomFoodItems)
-                npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
+};
+                foreach (int foodItemID in randomFoodItems)
+                    npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
+            }
         }
         #endregion
 
