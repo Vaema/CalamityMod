@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
@@ -50,8 +51,10 @@ namespace CalamityMod.Items.Accessories.Wings
                 
                 if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
                 {
-                    Particle spark3 = new GlowOrbParticle(spawnPos, partVel, false, 19, partScale, Color.LightGreen, true, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark3);
+                    Dust dust = Dust.NewDustPerfect(spawnPos, ModContent.DustType<VoidDustInverted>(), partVel, 0, default, partScale * 2f);
+                    dust.noGravity = true;
+                    dust.color = Color.LightGreen;
+
                 }
                 if (Main.rand.NextBool())
                 {
@@ -60,8 +63,9 @@ namespace CalamityMod.Items.Accessories.Wings
 
                     if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
                     {
-                        Particle spark3 = new GlowOrbParticle(spawnPos2, partVel, false, 19, partScale * 0.7f, Color.LightGreen, true, false, false);
-                        GeneralParticleHandler.SpawnParticle(spark3);
+                        Dust dust = Dust.NewDustPerfect(spawnPos2, ModContent.DustType<VoidDustInverted>(), partVel, 0, default, partScale * 1.7f);
+                        dust.noGravity = true;
+                        dust.color = Color.LightGreen;
                     }
                 }
 

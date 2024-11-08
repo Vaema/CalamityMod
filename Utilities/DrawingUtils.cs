@@ -414,7 +414,7 @@ namespace CalamityMod
 
             Color color = new Color(250, 250, 250, item.alpha);
             if (item.type == ModContent.ItemType<GrandGuardian>())
-                color = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, item.alpha);
+                color = Color.White;
 
             spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
         }

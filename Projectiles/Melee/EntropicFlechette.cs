@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
+using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,11 +17,11 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public float sizeVariance = 2;
+        public float sizeVariance = 1;
         public int time = 60;
         public int spinDir = 100;
         public int waveOften = 40;
-        public float scaleVariance = 1;
+        NPC target;
 
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
@@ -32,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.timeLeft = 450;
+            Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -45,51 +47,56 @@ namespace CalamityMod.Projectiles.Melee
             {
                 spinDir = Main.rand.NextBool() ? 1 : -1;
                 waveOften = Main.rand.Next(10, 40 + 1);
-                scaleVariance = Main.rand.NextFloat(0.65f, 1f);
+                Projectile.scale = Main.rand.NextFloat(0.8f, 1.5f);
             }
 
-            if (time % 18 == 0)
-                sizeVariance = Main.rand.NextFloat(1.5f, 2.5f) * scaleVariance;
-            Projectile.scale = MathHelper.Lerp(Projectile.scale, sizeVariance, 0.09f);
-            if (time % 2 == 0 && time > 5)
+            if (Projectile.numHits > 0)
+                Projectile.extraUpdates = 2;
+            else
+                Projectile.extraUpdates = 1;
+
+            sizeVariance = Utils.GetLerpValue(-5, 60, Projectile.timeLeft, true);
+
+            if (time > 5)
             {
-                Particle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * 0.3f, false, 6, 0.7f, Color.Black);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
-            if (Main.rand.NextBool(8))
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? 278 : 263, -Projectile.velocity);
-                dust.scale = dust.type == 278 ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
-                dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
-                dust.noGravity = true;
-                dust.color = Color.LightGreen;
+                Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.4f, "CalamityMod/Particles/GlowSpark2", false, (int)MathHelper.Clamp(9 * sizeVariance, 3, 9), MathHelper.Clamp(0.03f * sizeVariance, 0.01f, 0.03f), Color.Black * 0.6f, new Vector2(1.2f, 0.5f), false, shrinkSpeed: 1.1f);
+                GeneralParticleHandler.SpawnParticle(spark2);
+
+                if (Main.rand.NextBool(8))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDustInverted>());
+                    dust.scale = Main.rand.NextFloat(0.6f, 1.1f);
+                    dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
+                    dust.noGravity = true;
+                    dust.color = Color.LightGreen;
+                }
             }
             if (time >= 5)
             {
                 if (Projectile.numHits < 1)
                 {
-                    NPC target = Projectile.Center.ClosestNPCAt(320);
+                    target = Projectile.Center.ClosestNPCAt(320);
 
                     if (target == null)
                     {
                         Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 14)
-                            Projectile.velocity += moveToMouse * 0.3f;
+                            Projectile.velocity += moveToMouse * 0.15f;
                         else
-                            Projectile.velocity *= 0.8f;
+                            Projectile.velocity *= 0.95f;
 
                         if (time % waveOften == 0)
                             spinDir *= -1;
 
-                        Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.05f, 0.15f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
+                        //Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.05f, 0.15f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
                     }
                     else
                     {
                         Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 14)
-                            Projectile.velocity += moveToEnemy * 0.8f;
+                        if (Projectile.velocity.Length() < 14 - 9 * Utils.GetLerpValue(280, 60, Projectile.timeLeft, true))
+                            Projectile.velocity += moveToEnemy * 0.55f;
                         else
-                            Projectile.velocity *= 0.7f;
+                            Projectile.velocity *= 0.95f;
                     }
                 }
                 else
@@ -97,11 +104,10 @@ namespace CalamityMod.Projectiles.Melee
                     if (time % waveOften == 0)
                         spinDir *= -1;
 
-                    Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.05f, 0.15f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
+                    Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.03f, 0.07f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
                 }
             }
-            if (Projectile.numHits > 0)
-                Projectile.extraUpdates = 2; 
+
             time++;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -128,11 +134,23 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/WaterFlavored");
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
             Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
-            Main.EntitySpriteDraw(tex.Value, generalDrawPos, null, Color.Black, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.4f, 1) * Projectile.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(tex.Value, generalDrawPos, null, Color.LightGreen with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.4f, 1) * Projectile.scale * 0.7f, SpriteEffects.None);
-            Main.EntitySpriteDraw(tex.Value, generalDrawPos, null, Color.LightGreen with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.4f, 1) * Projectile.scale * 0.5f, SpriteEffects.None);
+            float minSpeed = 6;
+            float maxSpeed = 14;
+            float totalScale = Projectile.scale * sizeVariance;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * Utils.Remap(Projectile.velocity.Length(), minSpeed, maxSpeed, 30, 7, true) * totalScale;
+                Vector2 aimDir = Utils.DirectionTo(Projectile.Center + rotationalDrawOffset, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 92);
+                Main.EntitySpriteDraw(tex.Value, generalDrawPos + rotationalDrawOffset, null, Color.Black * 0.8f, aimDir.ToRotation() + MathHelper.ToRadians(-90), tex.Size() * 0.5f, new Vector2(0.3f, 1) * totalScale, SpriteEffects.None);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 3f).ToRotationVector2() * 3;
+                Main.EntitySpriteDraw(tex2.Value, generalDrawPos + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, null, Color.LightGreen with { A = 0 }, Projectile.rotation, tex2.Size() * 0.5f, new Vector2(Utils.Remap(Projectile.velocity.Length(), minSpeed, maxSpeed, 0.7f, 0.25f, true), Utils.Remap(Projectile.velocity.Length(), minSpeed, maxSpeed, 0.7f, 1.7f, true)) * totalScale * 0.2f, SpriteEffects.None);
+            }
             return false;
         }
     }
