@@ -1147,7 +1147,6 @@ namespace CalamityMod.Items
 
             // This function is shorthand for appending a stat sheet to a pair of wings.
             void AddWingStats(float h, float a, int v, int f, string s = null) => EditTooltipByNum(0, (line) => line.Text += WingStatsTooltip(h, a, v, f, s));
-            void AddWingStats2(float h, float a, int v, int f, string s = null, string lineName = null) => EditTooltipByName(lineName, (line) => line.Text += WingStatsTooltip(h, a, v, f, s));
 
             if (item.type == ItemID.CreativeWings)
                 AddWingStats(3f, 1f, 0, 25);
@@ -1162,26 +1161,25 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 150);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(7.5f, 1f, 1, 160, "Increases mana regeneration rate");
+                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.ButterflyWings"));
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(6.75f, 1f, 1, 130);
 
             if (item.type == ItemID.BeeWings)
-                AddWingStats(7.5f, 1f, 1, 160, "Permanently gives the Honey buff");
+                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.BeeWings"));
 
             if (item.type == ItemID.HarpyWings)
-                AddWingStats(6.75f, 1f, 1, 130, "10% increased movement speed\n" +
-                    "With Harpy Ring or Angel Treads equipped, most attacks sometimes launch feathers");
+                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.HarpyWings"));
 
             if (item.type == ItemID.BoneWings)
-                AddWingStats(7.5f, 1f, 1, 240, "Halves flight time when taking a hit");
+                AddWingStats(7.5f, 1f, 1, 240, CalamityUtils.GetTextValue($"Vanilla.Wings.BoneWings"));
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(7.5f, 1f, 1, 160, "Multiplies all heat debuff damage by 1.25x");
+                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.FlameWings"));
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, "Multiplies all cold debuff damage by 1.25x");
+                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.FrozenWings"));
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170);
@@ -1190,8 +1188,7 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FinWings)
-                AddWingStats(6.75f, 1f, 1, 130, "Gills effect and you can move freely through liquids\n" +
-                    "You fall faster while submerged in liquid");
+                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.FinWings"));
 
             if (item.type == ItemID.FishronWings)
                 AddWingStats(8f, 2f, 2, 180);
@@ -1200,10 +1197,10 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 180);
 
             if (item.type == ItemID.LeafWings)
-                AddWingStats(7.5f, 1f, 1, 160, "+10 defense and permanent Dryad's Blessing");
+                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.LeafWings"));
 
             if (item.type == ItemID.BatWings)
-                AddWingStats(7.5f, 1f, 1, 160, "Improves vision");
+                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.BatWings"));
 
             // All developer wings have identical stats and no special effects
             if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
@@ -1217,7 +1214,7 @@ namespace CalamityMod.Items
             }
 
             if (item.type == ItemID.TatteredFairyWings)
-                AddWingStats(7.5f, 1f, 1, 180, "You leave a trail of fairy dust as you fly");
+                AddWingStats(7.5f, 1f, 1, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.TatteredFairyWings"));
 
             if (item.type == ItemID.SpookyWings)
                 AddWingStats(7.5f, 1f, 1, 180);
@@ -1226,26 +1223,25 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FestiveWings)
-                AddWingStats(7.5f, 1f, 1, 180, "Homing ornaments rain down as you fly");
+                AddWingStats(7.5f, 1f, 1, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.FestiveWings"));
 
             if (item.type == ItemID.MothronWings)
                 AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 25%");
+                AddWingStats(9f, 2.5f, 3, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.SolarWings"));
 
             if (item.type == ItemID.WingsStardust)
-                AddWingStats(9f, 2.5f, 3, 180, "Greatly increases Stardust armor's stardust guardian damage and attack range");
+                AddWingStats(9f, 2.5f, 3, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.StardustWings"));
 
             if (item.type == ItemID.WingsVortex)
-                AddWingStats(6.5f, 1.5f, 2, 180, "Prevents dashes from disabling Vortex armor's stealth ability");
+                AddWingStats(6.5f, 1.5f, 2, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.VortexWings"));
 
             if (item.type == ItemID.WingsNebula)
-                AddWingStats(6.5f, 1.5f, 2, 180, "Increases the pickup range of Nebula armor's nebula boosters");
+                AddWingStats(6.5f, 1.5f, 2, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.NebulaWings"));
 
-            // Betsy's Wings (and dev wings) are the only wings without "Allows flight and free fall"
             if (item.type == ItemID.BetsyWings)
-                AddWingStats2(6f, 2.5f, 2, 150, null, "Equipable");
+                AddWingStats(6f, 2.5f, 2, 150);
 
             if (item.type == ItemID.RainbowWings)
                 AddWingStats(7f, 2.5f, 2, 100);
