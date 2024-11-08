@@ -21,6 +21,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static int boomTime = 6;
 
+        public override Color? TooltipExtensionColor => new Color(255, 140, 0);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
