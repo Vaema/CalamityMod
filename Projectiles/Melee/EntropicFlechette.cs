@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override void AI()
@@ -57,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
 
             sizeVariance = Utils.GetLerpValue(-5, 60, Projectile.timeLeft, true);
 
-            if (time > 5)
+            if (time > 65)
             {
                 Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.4f, "CalamityMod/Particles/GlowSpark2", false, (int)MathHelper.Clamp(9 * sizeVariance, 3, 9), MathHelper.Clamp(0.03f * sizeVariance, 0.01f, 0.03f), Color.Black * 0.6f, new Vector2(1.2f, 0.5f), false, shrinkSpeed: 1.1f);
                 GeneralParticleHandler.SpawnParticle(spark2);
@@ -69,9 +70,10 @@ namespace CalamityMod.Projectiles.Melee
                     dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
                     dust.noGravity = true;
                     dust.color = Color.LightGreen;
+                    dust.noLightEmittence = true;
                 }
             }
-            if (time >= 5)
+            if (time >= 35)
             {
                 if (Projectile.numHits < 1)
                 {
@@ -94,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 14 - 9 * Utils.GetLerpValue(280, 60, Projectile.timeLeft, true))
-                            Projectile.velocity += moveToEnemy * 0.55f;
+                            Projectile.velocity = Projectile.velocity * 0.95f + moveToEnemy * 0.9f;
                         else
                             Projectile.velocity *= 0.95f;
                     }
