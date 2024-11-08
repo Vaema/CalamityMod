@@ -7,8 +7,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class Malachite : RogueWeapon
+    // Have to directly implement the interface instead of extending LegendaryItem since it already extends RogueWeapon
+    public class Malachite : RogueWeapon, IHoldShiftTooltipItem
     {
+        public string ExtensionIndicatorKey => "Items.Misc.LegendaryShortTooltip";
+        public Color? ExtensionIndicatorColor => null;
+        public string TooltipExtensionKey => "LegendaryText";
+        public Color? TooltipExtensionColor => Color.Lime;
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
