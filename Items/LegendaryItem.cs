@@ -12,7 +12,8 @@ namespace CalamityMod.Items
         public Color? ExtensionIndicatorColor => null;
 
         // All full flavor tooltips use the same localization key.
-        // Unfortunately, as full tooltip color is different for each item, it must be set manually.
+        // Flavor tooltip color defaults to none, but can be overriden as desired for each item.
         public string TooltipExtensionKey => "LegendaryText";
+        public virtual Color? TooltipExtensionColor => null;
     }
 }

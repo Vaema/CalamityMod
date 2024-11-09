@@ -162,7 +162,7 @@ CelestialOnion: {
 	Tooltip:
 		'''
 		Permanently increases the number of accessory slots
-		This item does nothing in Master Mode
+		Enables Demon Heart's accessory slot instead in Master Mode
 		Alien power pulses inside its layers
 		'''
 }

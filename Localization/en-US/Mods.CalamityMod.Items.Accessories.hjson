@@ -226,7 +226,7 @@ AscendantInsignia: {
 	DisplayName: Ascendant Insignia
 	Tooltip:
 		'''
-		Increases wing flight time by 30%, movement and jump speed by 10%, and acceleration by 1.1x
+		Increases wing flight time by 50%, movement and jump speed by 10%, and acceleration by 1.5x
 		Pressing [KEY] will give you the power of ascension, providing infinite flight time for 4 seconds
 		Ascension has a 40 second cooldown
 		'''

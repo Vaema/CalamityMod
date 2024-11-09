@@ -1,9 +1,11 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.EntitySources;
 using CalamityMod.Enums;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -89,10 +91,10 @@ namespace CalamityMod.CalPlayer
 
                             // Duplicated from the way TML edits vanilla ram dash damage (and Shield of Cthulhu)
                             int dashDamage = (int)Player.GetTotalDamage(hitContext.damageClass).ApplyTo(hitContext.BaseDamage);
-                            float dashKB = Player.GetTotalKnockback(hitContext.damageClass).ApplyTo(hitContext.BaseKnockback);
-                            bool rollCrit = Main.rand.Next(100) < Player.GetTotalCritChance(hitContext.damageClass);
+                            
+                            Projectile ram = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), dashDamage, 0f, Player.whoAmI, n.whoAmI);
+                            ram.DamageType = hitContext.damageClass;
 
-                            Player.ApplyDamageToNPC(n, dashDamage, dashKB, hitContext.HitDirection, rollCrit, hitContext.damageClass, true);
                             if (n.Calamity().dashImmunityTime[Player.whoAmI] < 12)
                                 n.Calamity().dashImmunityTime[Player.whoAmI] = 12;
 
@@ -563,15 +565,18 @@ namespace CalamityMod.CalPlayer
                     if (myRect.Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                     {
                         int hitDirection = Math.Sign(Player.velocity.X);
-
+                        
                         // Use the player's facing direction as a fallback if they are not making any horizontal movement.
                         if (hitDirection == 0)
                             hitDirection = Player.direction;
 
-                        // TODO -- This should probably use DirectStrike?
-                        // If this does use DirectStrike, remember to remove the Old Fashioned bonus as it'd be a projectile.
+                        Vector2 hitVelocity = new Vector2(2 * hitDirection, 0); // Projectile velocity will determine the hit directon of direct strikes
+
                         if (Player.whoAmI == Main.myPlayer)
-                            Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
+                        {
+                            Projectile ram = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), n.Center, hitVelocity, ModContent.ProjectileType<DirectStrike>(), (int)Damage, Knockback, Player.whoAmI, n.whoAmI);
+                            ram.DamageType = DamageClass.Summon;
+                        }
 
                         // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
                         n.Calamity().dashImmunityTime[Player.whoAmI] = NPCImmuneTime;
