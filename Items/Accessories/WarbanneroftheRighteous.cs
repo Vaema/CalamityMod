@@ -69,11 +69,8 @@ namespace CalamityMod.Items.Accessories
                 player.AddCooldown(WarbanneroftheRighteousBuff.ID, maxValue);
             }
 
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
-
-            // If damage is positive, boost melee damage, but negative damage is universal
             if (bonus > 0)
-                player.GetDamage<MeleeDamageClass>() += bonus;
+                player.GetDamage<GenericDamageClass>() += bonus;
             else
                 player.GetDamage<GenericDamageClass>() += bonus;
 

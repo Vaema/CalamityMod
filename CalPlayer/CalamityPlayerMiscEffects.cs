@@ -1462,12 +1462,21 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceEffect > 0)
             {
-                // Adds a floor for defense and dr at 100 and 15% respectivley, will not ignore defense damage
+                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                {
+                    int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                    rOfResilienceCooldown = cooldownTime;
+                    Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                    SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
+                    SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                }
+
+                // Adds a floor for defense and dr at 150 and 10% respectivley, will not ignore defense damage
                 if (Player.Calamity().rOfResilienceCooldown > 300 || Player.Calamity().rOfResilienceCooldown == 0)
                 {
                     float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? 1 : Utils.GetLerpValue(300, 600, Player.Calamity().rOfResilienceCooldown, true));
-                    int maxDefFloor = (int)(100 * fadeStats);
-                    float MaxDRFloor = 0.15f * fadeStats;
+                    int maxDefFloor = (int)(150 * fadeStats);
+                    float MaxDRFloor = 0.10f * fadeStats;
                     if (Player.statDefense < maxDefFloor)
                         Player.statDefense += maxDefFloor - Player.statDefense;
                     if (Player.endurance < MaxDRFloor)
