@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                     swapType = !swapType;
                     shotCounter++;
                     if (shotCounter == 30)
-                        framesBetweenShots = 15;
+                        framesBetweenShots = 18;
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
