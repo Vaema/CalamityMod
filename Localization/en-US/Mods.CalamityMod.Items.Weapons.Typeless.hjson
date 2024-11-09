@@ -41,22 +41,6 @@ RelicOfDeliverance: {
 		'''
 }
 
-RelicOfResilience: {
-	DisplayName: Relic of Resilience
-	Tooltip:
-		'''
-		Summons an artifact at the mouse position
-		The artifact is damaged by enemies and all projectiles
-		When destroyed, the artifact explodes into a rotating burst of shards
-		If an enemy is in the area of the shards, its next attack will be 45% weaker
-		This effect has a cooldown
-		After 5 seconds, the shards come together to reform the original artifact
-		This reformation can happen 3 times before needing to be re-summoned
-		You gain a 5 second cooldown when summoning a new artifact
-		If an artifact already exists, using this item again will relocate it to the cursor
-		'''
-}
-
 Skynamite: {
 	DisplayName: Skynamite
 	Tooltip:

@@ -216,6 +216,8 @@ namespace CalamityMod.CalPlayer
         public int GalaxyHammer = 0;
         public bool despoilerNerf = false;
         public int amputatorBuff = 0;
+        public int rOfResilienceCooldown = 0;
+        public int rOfResilienceEffect = 0;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -2438,6 +2440,8 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+            rOfResilienceCooldown = 0;
+            rOfResilienceEffect = 0;
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;

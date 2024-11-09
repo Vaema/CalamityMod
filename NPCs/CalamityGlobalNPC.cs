@@ -328,7 +328,6 @@ namespace CalamityMod.NPCs
         public int sulphurPoison = 0;
         public int ladHearts = 0;
         public int kamiFlu = 0;
-        public int relicOfResilienceCooldown = 0;
         public int relicOfResilienceWeakness = 0;
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
@@ -565,7 +564,6 @@ namespace CalamityMod.NPCs
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.kamiFlu = kamiFlu;
-            myClone.relicOfResilienceCooldown = relicOfResilienceCooldown;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.GaussFluxTimer = GaussFluxTimer;
             myClone.sagePoisonTime = sagePoisonTime;
@@ -3691,6 +3689,8 @@ namespace CalamityMod.NPCs
                 calcDR *= ArmorCrunch.MultiplicativeDamageReductionEnemy;
             if (npc.Calamity().crumble > 0)
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
+            if (relicOfResilienceWeakness > 0)
+                calcDR *= 0.65f;
 
 
             return calcDR;
@@ -5590,10 +5590,6 @@ namespace CalamityMod.NPCs
                 sulphurPoison--;
             if (sagePoisonTime > 0)
                 sagePoisonTime--;
-            if (relicOfResilienceCooldown > 0)
-                relicOfResilienceCooldown--;
-            if (relicOfResilienceWeakness > 0)
-                relicOfResilienceWeakness--;
             if (GaussFluxTimer > 0)
                 GaussFluxTimer--;
             if (ladHearts > 0)
@@ -5607,6 +5603,9 @@ namespace CalamityMod.NPCs
 
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
+
+            if (relicOfResilienceWeakness > 0)
+                relicOfResilienceWeakness--;
 
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
@@ -7129,6 +7128,9 @@ namespace CalamityMod.NPCs
 
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
+
+            if (relicOfResilienceWeakness > 0)
+                ProfanedWeakness.DrawEffects(npc, ref drawColor);
 
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);

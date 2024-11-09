@@ -27,6 +27,7 @@ using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Cryogen;
@@ -803,12 +804,6 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().tSad > 0)
                 contactDamageReduction += 0.5;
 
-            if (npc.Calamity().relicOfResilienceWeakness > 0)
-            {
-                contactDamageReduction += Items.Weapons.Typeless.RelicOfResilience.WeaknessDR;
-                npc.Calamity().relicOfResilienceWeakness = 0;
-            }
-
             if (eskimoSet)
             {
                 if (npc.coldDamage)
@@ -1518,6 +1513,15 @@ namespace CalamityMod.CalPlayer
                 shouldTriggerBeeCooldown = false;
                 if (hurtInfo.Damage > 0)
                     theBeeCooldown = TheBee.CooldownLength;
+            }
+
+            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
+            {
+                int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                rOfResilienceCooldown = cooldownTime;
+                Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
             }
 
             if (alchFlask)

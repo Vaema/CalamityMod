@@ -2,12 +2,7 @@ AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
 ArcZap.DisplayName: Arc Zap
-ArtifactOfResilienceShard1.DisplayName: Artifact Shard
-ArtifactOfResilienceShard2.DisplayName: Artifact Shard
-ArtifactOfResilienceShard3.DisplayName: Artifact Shard
-ArtifactOfResilienceShard4.DisplayName: Artifact Shard
-ArtifactOfResilienceShard5.DisplayName: Artifact Shard
-ArtifactOfResilienceShard6.DisplayName: Artifact Shard
+ArtifactOfResilienceShards.DisplayName: Artifact Shard
 AscendantAura.DisplayName: Ascendant Aura
 AstralFallingSand.DisplayName: Astral Falling Sand
 AstralSandBallFalling.DisplayName: Astral Sand
@@ -140,3 +135,4 @@ YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
+RelicGuard.DisplayName: Relic Guard

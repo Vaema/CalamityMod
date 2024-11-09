@@ -899,6 +899,7 @@ namespace CalamityMod
                 ProjectileType<FinalDawnFireSlash>(),
 
                 ProjectileType<RelicOfDeliveranceSpear>(),
+                ProjectileType<ArtifactOfResilienceShards>(),
 
                 // Some hostile boss projectiles
                 ProjectileID.SaucerDeathray,
@@ -2031,6 +2032,7 @@ namespace CalamityMod
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
                 ProjectileType<RelicOfDeliveranceSpear>(),
+                ProjectileType<ArtifactOfResilienceShards>(),
                 ProjectileType<RespiteblockHoldout>(),
                 ProjectileType<SacrificeProjectile>(),
                 ProjectileType<SnapClamProj>(),

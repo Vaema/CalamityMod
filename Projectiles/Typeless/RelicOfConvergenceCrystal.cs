@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<RelicOfConvergence>();
         public int SoundInterval = 25;
         public int TotalCrystalsToDraw = 3;
-        public int CrystalsDrawTime = 50;
+        public int CrystalsDrawTime = 40;
         public float MaxCrystalOffsetRadius = 80f;
         public float MaxDustOffsetRadius = 70f;
 
@@ -33,12 +33,12 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 120;
         }
 
         public override void AI()
         {
-            completion = Utils.GetLerpValue(180, 0, Projectile.timeLeft, true);
+            completion = Utils.GetLerpValue(120, 0, Projectile.timeLeft, true);
             fade = MathHelper.Lerp(fade, 0, 0.04f);
 
             Player player = Main.player[Projectile.owner];
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Typeless
                     }
                 }
 
-                Projectile.soundDelay = (int)(SoundInterval * (time >= CrystalsDrawTime ? 1 - 0.8f * completion : 0.5f));
+                Projectile.soundDelay = (int)(SoundInterval * (time >= CrystalsDrawTime ? 1 - 0.9f * completion : 0.5f));
                 fade = 1;
             }
 

@@ -1024,7 +1024,7 @@ PearlAura: {
 
 ProfanedWeakness: {
 	DisplayName: Profaned Weakness
-	Description: You do less damage
+	Description: You take more damage
 }
 
 TemporalSadness: {

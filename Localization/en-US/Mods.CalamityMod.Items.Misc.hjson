@@ -428,3 +428,14 @@ SuperDummy: {
 		Right click to kill all super dummies
 		'''
 }
+
+RelicOfResilience: {
+	DisplayName: Relic Of Resilience
+	Tooltip:
+		'''
+		1...
+		2...
+		30...
+		rocks hmmmmmmm
+		'''
+}
