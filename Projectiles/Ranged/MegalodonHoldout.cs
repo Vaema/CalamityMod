@@ -97,7 +97,6 @@ namespace CalamityMod.Projectiles.Ranged
             if (shotCounter == 31)
             {
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
-                //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
                 #region Visuals and Sounds
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotHeavy");
                 SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = 0.2f }, Projectile.Center);
@@ -130,13 +129,15 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 #endregion
 
-                if(Owner.Calamity().sharkGunDamageScaling == 0)
+                //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
+                if (Owner.Calamity().sharkGunDamageScaling == 0)
                 {
                     Owner.Calamity().sharkGunDamageScaling++;
                 }
+                //Debug text
+                Main.NewText(Owner.Calamity().sharkGunDamageScaling);
                 //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
-                Main.NewText(Owner.Calamity().sharkGunDamageScaling);
                 //After firing the rocket, kill the projectile to allow left click to be held down
                 Projectile.Kill();
             }

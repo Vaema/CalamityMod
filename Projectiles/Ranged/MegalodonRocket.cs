@@ -75,10 +75,17 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(AbyssGravel.MineSound, Projectile.position);
-            SoundEngine.PlaySound(GiantClam.SlamSound, Projectile.position);
-            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.5f), Projectile.position);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Volume = 0.6f , Pitch = 0.8f }, Projectile.position);
+            if (Main.zenithWorld)
+            {
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MegalodonMissileMax") with { Volume = 1.5f }, Projectile.position);
+            }
+            else
+            {
+                SoundEngine.PlaySound(AbyssGravel.MineSound, Projectile.position);
+                SoundEngine.PlaySound(GiantClam.SlamSound, Projectile.position);
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.5f), Projectile.position);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Volume = 0.6f, Pitch = 0.8f }, Projectile.position);
+            }
 
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Blue, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 1f, 0f, 25));
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 0.5f, 0f, 15));
