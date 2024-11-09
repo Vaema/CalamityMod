@@ -14,19 +14,13 @@ namespace CalamityMod.Systems
     {
         public override void OnModLoad()
         {
-            // Mount balancing occurs during runtime and is undone when Calamity is unloaded.
-            Mount.mounts[MountID.Unicorn].dashSpeed *= CalamityPlayer.UnicornSpeedNerfPower;
-            Mount.mounts[MountID.Unicorn].runSpeed *= CalamityPlayer.UnicornSpeedNerfPower;
-
+            // Mount balancing occurs during runtime and is undone when Calamity is unloaded
             // Buff DCU's pickaxe power to equal PML pickaxe capabilities
             Mount.drillPickPower = 225;
         }
 
         public override void Unload()
         {
-            Mount.mounts[MountID.Unicorn].dashSpeed /= CalamityPlayer.UnicornSpeedNerfPower;
-            Mount.mounts[MountID.Unicorn].runSpeed /= CalamityPlayer.UnicornSpeedNerfPower;
-
             Mount.drillPickPower = 210;
         }
     }

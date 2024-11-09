@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
@@ -11,11 +12,16 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Serpentine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public static int ArmorPenetration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
             Item.damage = 10;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
             Item.useTime = 35;

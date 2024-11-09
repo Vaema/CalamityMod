@@ -742,12 +742,12 @@ namespace CalamityMod.Items
             if (item.type == ItemID.CelestialStone)
             {
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("CelestialStone"));
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SunMoonStones"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
             }
             if (item.type == ItemID.CelestialShell)
             {
                 EditTooltipByNum(4, (line) => line.Text += AddedTooltip("CelestialStone"));
-                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("SunMoonStones"));
+                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
             }
 
             // Mana Flower tinker buffs.
@@ -1232,7 +1232,7 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 30%");
+                AddWingStats(9f, 2.5f, 3, 180, "Increases Solar Flare armor's dash velocity by 25%");
 
             if (item.type == ItemID.WingsStardust)
                 AddWingStats(9f, 2.5f, 3, 180, "Greatly increases Stardust armor's stardust guardian damage and attack range");

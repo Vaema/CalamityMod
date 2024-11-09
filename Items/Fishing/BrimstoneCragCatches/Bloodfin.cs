@@ -10,10 +10,19 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
     public class Bloodfin : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
+
+        public static int RegenBoost = 5;
+        public static int RegenTimeBoost = 10;
+
+        public static int DebuffedRegenBoost = 10; // Does not stack with above
+        public static int DebuffedRegenTimeFloor = 1800;
+
+        public static double ExtraRegenHealthThreshold = 0.75D;
+        public static int FramesForExtraRegen = 30;
+
         public static int BuffType = ModContent.BuffType<BloodfinBoost>();
         public static int BuffDuration = 10;
-
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), DebuffedRegenBoost.ToRegenPerSecond(), FramesForExtraRegen.FramesToSeconds(), ExtraRegenHealthThreshold.ToPercent(), BuffDuration);
 
         public override void SetStaticDefaults()
         {

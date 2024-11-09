@@ -283,11 +283,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     npc.noTileCollide = true;
 
                                     npc.ai[2] += 1f;
-                                    float jumpVelocity = bossRush ? 30f : death ? 26f : 24f;
+                                    float jumpVelocity = death ? 26f : 24f;
                                     if (enrage)
                                         jumpVelocity *= 1.25f;
                                     if (turboEnrage)
-                                        jumpVelocity *= 1.5f;
+                                        jumpVelocity *= 1.25f;
 
                                     float minJumpTime = 15f;
                                     float maxJumpTime = 45f;
@@ -318,7 +318,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
                                             speedMult += distanceBelowTarget * multiplier;
 
-                                        float speedMultLimit = turboEnrage ? 3.5f : enrage ? 3f : 2.5f;
+                                        float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
                                         if (speedMult > speedMultLimit)
                                             speedMult = speedMultLimit;
 
@@ -372,7 +372,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (enrage)
                                         jumpVelocity *= 1.25f;
                                     if (turboEnrage)
-                                        jumpVelocity *= 1.5f;
+                                        jumpVelocity *= 1.25f;
 
                                     float minJumpTime = 15f;
                                     float maxJumpTime = 45f;
@@ -403,7 +403,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
                                             speedMult += distanceBelowTarget * multiplier;
 
-                                        float speedMultLimit = turboEnrage ? 3.5f : enrage ? 3f : 2.5f;
+                                        float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
                                         if (speedMult > speedMultLimit)
                                             speedMult = speedMultLimit;
 
@@ -437,7 +437,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
                                 speedMult += distanceBelowTarget * multiplier;
 
-                            float speedMultLimit = turboEnrage ? 3.5f : enrage ? 3f : 2.5f;
+                            float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
                             if (speedMult > speedMultLimit)
                                 speedMult = speedMultLimit;
 
@@ -647,7 +647,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             void CustomGravity(bool isSlamming)
             {
-                float gravity = turboEnrage ? (Main.getGoodWorld ? 1.2f : 0.9f) : enrage ? 0.75f : (!leftFistAlive && !rightFistAlive) ? 0.45f : 0.3f;
+                float gravity = turboEnrage ? (Main.getGoodWorld ? 1.15f : 0.85f) : enrage ? 0.75f : (!leftFistAlive && !rightFistAlive) ? 0.45f : 0.3f;
                 float maxFallSpeed = reduceFallSpeed ? 12f : turboEnrage ? (Main.getGoodWorld ? 40f : 30f) : enrage ? 25f : (!leftFistAlive && !rightFistAlive) ? 15f : 10f;
                 if (isSlamming && !reduceFallSpeed)
                 {

@@ -559,6 +559,10 @@ namespace CalamityMod
         // The text is a separate rule so it doesn't show up on the non-Trasher Fishing Rod drop which only occurs if the Angler is not fed to a Trasher
         public static IItemDropRuleCondition TrasherText => CalamityConditions.TrasherTextCondition.ToDropCondition(ShowItemDropInUI.Always);
 
+        // Remix seed drop rules
+        public static IItemDropRuleCondition Remix => Condition.RemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
+        public static IItemDropRuleCondition NotRemix => Condition.NotRemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
+
         // Get Fixed Boi seed drop rule
         public static IItemDropRuleCondition GFB => Condition.ZenithWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
 

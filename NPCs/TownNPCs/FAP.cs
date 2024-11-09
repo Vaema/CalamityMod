@@ -662,6 +662,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>()) || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>());
                 if (hasVodka)
                     return Main.hardMode;
+                else
+                    return DownedBossSystem.downedCalamitasClone || NPC.downedPlantBoss;
             }
             return false;
         }

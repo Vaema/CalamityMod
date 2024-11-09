@@ -20,6 +20,7 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
@@ -300,13 +301,7 @@ namespace CalamityMod.CalPlayer
                 if (silvaCountdown == silvaReviveDuration && !hasSilvaEffect)
                 {
                     SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-
                     Player.AddBuff(ModContent.BuffType<SilvaRevival>(), silvaReviveDuration);
-
-                    if (silvaWings)
-                    {
-                        Player.HealPlayer(Player.statLifeMax2 / 3);
-                    }
                 }
 
                 hasSilvaEffect = true;
@@ -522,7 +517,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -604,7 +599,7 @@ namespace CalamityMod.CalPlayer
 
             // Demonshade enrage
             if (enraged)
-                totalDamageMult += 0.65f;
+                totalDamageMult += DemonshadeHelm.MultDamageBoost;
             // Withering enchantment when it's draining your HP
             if (witheredDebuff && witheringWeaponEnchant)
                 totalDamageMult += 0.6f;
@@ -800,7 +795,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += 0.5;
+                contactDamageReduction += Buffs.StatBuffs.TarragonCloak.ContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 contactDamageReduction += 0.5;
@@ -871,7 +866,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction -= 0.1;
 
             if (corrEffigy)
-                contactDamageReduction -= 0.05;
+                contactDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (contactDamageReduction > 0D)
@@ -1126,7 +1121,7 @@ namespace CalamityMod.CalPlayer
                 projectileDamageReduction -= 0.1;
 
             if (corrEffigy)
-                projectileDamageReduction -= 0.05;
+                projectileDamageReduction -= CorruptionEffigy.DamageReductionLoss;
 
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (projectileDamageReduction > 0D)
@@ -1185,60 +1180,91 @@ namespace CalamityMod.CalPlayer
             if (crawCarapace)
             {
                 npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
+                Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 7;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
-                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(40);
+                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
                 }
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    float accuracy = Main.rand.NextFloat(-0.4f, 0.4f);
+                    float powerMult = (1 - Math.Abs(accuracy));
+
+                    Vector2 dustVel = (pushVel).SafeNormalize(Vector2.UnitY).RotatedBy(accuracy * 2) * Main.rand.NextFloat(4, 7) * powerMult;
+                    Vector2 fxPos = Player.Center + dustVel;
+
+                    Dust dust = Dust.NewDustPerfect(fxPos, Main.rand.NextBool(4) ? 249 : 115, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.2f));
+                    dust.noGravity = true;
+                    dust.noGravity = true;
+                    dust.fadeIn = 1f;
+                }
             }
 
             if (baroclaw)
             {
-                npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
-                npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
+                Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 15;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(250);
-                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(250);
+                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+                    
+                    npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
+                    npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
                 }
                 SoundEngine.PlaySound(BaroclawHit, Player.Center);
-                Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
-                Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
-                for (int i = 0; i < 9; i++)
+
+                for (int i = 0; i < 17; i++)
                 {
-                    int sparkLifetime = Main.rand.Next(12, 18);
-                    float sparkScale = Main.rand.NextFloat(0.8f, 1f) * 0.955f;
-                    Color sparkColor = Color.Lerp(Color.RoyalBlue, Color.DarkBlue, Main.rand.NextFloat(0.7f));
-                    sparkColor = Color.Lerp(sparkColor, Color.RoyalBlue, Main.rand.NextFloat());
-                    Vector2 sparkVelocity = splatterDirection.RotatedByRandom(0.6f) * Main.rand.NextFloat(12f, 25f);
-                    sparkVelocity.Y -= 5.5f;
-                    SparkParticle spark = new SparkParticle(Player.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    float accuracy = Main.rand.NextFloat(-0.55f, 0.55f);
+                    float powerMult = (1 - Math.Abs(accuracy));
+                    Vector2 fxVel = (pushVel).SafeNormalize(Vector2.UnitY).RotatedBy(accuracy) * Main.rand.NextFloat(5, 12) * powerMult;
+                    Vector2 dustVel = (pushVel).SafeNormalize(Vector2.UnitY).RotatedBy(accuracy * 2) * Main.rand.NextFloat(10, 20) * powerMult;
+                    Vector2 fxPos = Player.Center + fxVel;
+                    Color fxColor = Color.Lerp(Color.RoyalBlue, Color.DarkBlue, Main.rand.NextFloat(1f));
+
+                    Particle fx = new CustomSpark(fxPos, fxVel, "CalamityMod/Particles/PointParticle", false, (int)(Main.rand.Next(22, 40 + 1) * powerMult), Main.rand.NextFloat(1.95f, 2.2f) * powerMult, fxColor, new Vector2(0.5f, 1.1f), extraRotation: 0, shrinkSpeed: Main.rand.NextFloat(0.1f, 0.3f) + (1 - powerMult) * 0.3f);
+                    GeneralParticleHandler.SpawnParticle(fx);
+
+                    if (i % 3 == 0)
+                    {
+                        Dust dust = Dust.NewDustPerfect(fxPos, 278, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.1f));
+                        dust.noGravity = true;
+                        dust.color = Color.Gold;
+                        dust.noGravity = false;
+                    }
                 }
             }
 
             if (absorber)
             {
-                npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
+                Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 22;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(350);
-                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(350);
+                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+                    
+                    npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
                 }
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
-                Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
-                Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
-                for (int i = 0; i < 12; i++)
+
+                for (int i = 0; i < 25; i++)
                 {
-                    int sparkLifetime = Main.rand.Next(11, 16);
-                    float sparkScale = Main.rand.NextFloat(1.8f, 2.8f) * 0.955f;
-                    Color sparkColor = Color.Lerp(Color.DarkSeaGreen, Color.MediumSeaGreen, Main.rand.NextFloat(0.7f));
-                    sparkColor = Color.Lerp(sparkColor, Color.DarkSeaGreen, Main.rand.NextFloat());
-                    Vector2 sparkVelocity = splatterDirection.RotatedByRandom(0.6f) * Main.rand.NextFloat(12f, 25f);
-                    sparkVelocity.Y -= 4.7f;
-                    SparkParticle spark = new SparkParticle(Player.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    float accuracy = Main.rand.NextFloat(-0.7f, 0.7f);
+                    float powerMult = (1 - Math.Abs(accuracy));
+                    Vector2 fxVel = (pushVel).SafeNormalize(Vector2.UnitY).RotatedBy(accuracy) * Main.rand.NextFloat(10, 18) * powerMult;
+                    Vector2 dustVel = (pushVel).SafeNormalize(Vector2.UnitY).RotatedBy(accuracy * 2) * Main.rand.NextFloat(15, 30) * powerMult;
+                    Vector2 fxPos = Player.Center + fxVel;
+                    Color fxColor = Color.Lerp(Color.DarkSeaGreen, Color.MediumSeaGreen, Main.rand.NextFloat(1f));
+
+                    Particle fx = new CustomSpark(fxPos, fxVel, "CalamityMod/Particles/Sparkle", false, (int)(Main.rand.Next(32, 50 + 1) * powerMult), Main.rand.NextFloat(2.25f, 2.5f) * powerMult, fxColor, new Vector2(0.5f, 1.1f), extraRotation: 0, shrinkSpeed: Main.rand.NextFloat(0.1f, 0.3f) + (1 - powerMult) * 0.3f);
+                    GeneralParticleHandler.SpawnParticle(fx);
+
+                    Dust dust = Dust.NewDustPerfect(fxPos, ModContent.DustType<LightDust>(), dustVel, 0, default, Main.rand.NextFloat(0.95f, 2.1f));
+                    dust.noGravity = true;
+                    dust.color = fxColor;
                 }
             }
 
@@ -1743,8 +1769,8 @@ namespace CalamityMod.CalPlayer
             double damageMult = 1D;
             if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
                 damageMult += 0.15;
-            if (enraged) // Demonshade Enrage increases incoming damage by 25%.
-                damageMult += 0.25;
+            if (enraged) // Demonshade Enrage
+                damageMult += DemonshadeHelm.MultDamageTakenBoost;
 
             modifiers.SourceDamage *= (float)damageMult;
             #endregion
@@ -2215,7 +2241,7 @@ namespace CalamityMod.CalPlayer
 
                 if (absorber)
                 {
-                    int healAmt = (int)(hurtInfo.Damage / 20D);
+                    int healAmt = (int)(hurtInfo.Damage * TheAbsorber.DamageTakenHealedPercent);
                     Player.HealPlayer(healAmt);
                 }
 

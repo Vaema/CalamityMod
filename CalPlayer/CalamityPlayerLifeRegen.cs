@@ -3,9 +3,13 @@ using System.Linq;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Fishing.BrimstoneCragCatches;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
@@ -143,9 +147,13 @@ namespace CalamityMod.CalPlayer
             if (CalamityGlobalNPC.aquaticScourge >= 0 && Main.zenithWorld)
             {
                 NPC AS = Main.npc[CalamityGlobalNPC.aquaticScourge];
-                //if the player is 50 blocks or more away from the head
-                if (AS.life < AS.lifeMax) //Only poison when damaged
-                    ASPoisonLevel = Utils.GetLerpValue(800f, 1600f, Vector2.Distance(Player.Center, AS.Center), true);
+                float scoogDistance = Vector2.Distance(Player.Center, AS.Center);
+                // GFB Aquatic Scourge poisons you if:
+                // 1. You are over 50 blocks away from the head
+                // 2. You are under 250 blocks away from the head (so that people halfway across the world aren't getting killed for no reason)
+                // 3. Aquatic Scourge has been damaged
+                if (AS.life < AS.lifeMax && scoogDistance < 4000f)
+                    ASPoisonLevel = Utils.GetLerpValue(800f, 1600f, scoogDistance, true);
             }
 
             bool ASPoisoning = ASPoisonLevel > 0f;
@@ -154,7 +162,7 @@ namespace CalamityMod.CalPlayer
                 float increment = 1f / SulphSeaWaterSafetyTime;
                 //No way to mitigate AS Poisoning
                 if (ASPoisoning)
-                    increment *= 4f + (8f * ASPoisonLevel);
+                    increment *= 3f + (6f * ASPoisonLevel);
                 if (sulphurskin && !ASPoisoning)
                     increment *= 0.5f;
                 if (sulphurSet && !ASPoisoning)
@@ -404,15 +412,15 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.lifeRegen < 0)
                 {
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < Bloodfin.DebuffedRegenTimeFloor)
+                        Player.lifeRegenTime = Bloodfin.DebuffedRegenTimeFloor;
 
-                    Player.lifeRegen += 10;
+                    Player.lifeRegen += Bloodfin.DebuffedRegenBoost;
                 }
                 else
                 {
-                    Player.lifeRegen += 5;
-                    Player.lifeRegenTime += 10;
+                    Player.lifeRegen += Bloodfin.RegenBoost;
+                    Player.lifeRegenTime += Bloodfin.RegenTimeBoost;
                 }
 
                 if (bloodfinTimer > 0)
@@ -420,9 +428,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.whoAmI == Main.myPlayer && bloodfinTimer <= 0)
                 {
-                    bloodfinTimer = 30;
+                    bloodfinTimer = Bloodfin.FramesForExtraRegen;
 
-                    if (Player.statLife < (int)(Player.statLifeMax2 * 0.75) && !noLifeRegen)
+                    if (Player.statLife < (int)(Player.statLifeMax2 * Bloodfin.ExtraRegenHealthThreshold) && !noLifeRegen)
                         Player.HealPlayer(1, HealTextType.None);
                 }
             }
@@ -620,11 +628,8 @@ namespace CalamityMod.CalPlayer
             if (caribbeanRum)
                 Player.lifeRegen += CaribbeanRum.RegenBoost;
 
-            if (aChicken)
-                Player.lifeRegen += 1;
-
             if (mushy)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += Mushy.RegenBoost;
 
             if (permafrostsConcoction)
             {
@@ -643,13 +648,13 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
             if (PinkJellyRegen)
-                Player.lifeRegen += 4;
+                Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
             if (GreenJellyRegen)
-                Player.lifeRegen += 5;
+                Player.lifeRegen += Items.Accessories.GrandGelatin.AuraRegenBoost;
 
             if (AbsorberRegen)
-                Player.lifeRegen += 6;
+                Player.lifeRegen += TheAbsorber.AuraRegenBoost;
 
             if (hallowedRegen)
                 Player.lifeRegen += 3;
@@ -733,10 +738,28 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegenTime += 4;
             }
 
+            if (silvaWings)
+            {
+                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
+                    silvaWingsLifeRegenTimer = 0;
+                else
+                {
+                    silvaWingsLifeRegenTimer++;
+                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
+                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
+                }
+
+                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
+                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
+                Player.lifeRegen += lifeRegenBoost;
+            }
+            else
+                silvaWingsLifeRegenTimer = 0;
+
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
-                pinkCandleHealFraction += Player.statLifeMax2 * CirrusPinkCandleBuff.PercentHealthPerSecond / 60;
+                pinkCandleHealFraction += Player.statLifeMax2 * VigorousCandle.PercentHealthPerSecond / 60;
 
                 if (pinkCandleHealFraction >= 1D)
                 {

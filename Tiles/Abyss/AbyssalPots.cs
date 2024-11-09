@@ -44,15 +44,18 @@ namespace CalamityMod.Tiles.Abyss
                     }
                 }
 
-                // 1 in 400 for a Coin Portal
+                // Coin Portal @ 0.25% (varies with luck)
                 if (Player.GetClosestRollLuck(i, j, 400) == 0f)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                         Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 16, j * 16 + 16, 0f, -12f, ProjectileID.CoinPortal, 0, 0f, Main.myPlayer);
                 }
-                // Followed by a 1 in 4 for a bomb in For The Worthy worlds
-                else if (Main.getGoodWorld && Main.rand.NextBool(4))
+                // FTW/GFB drop bombs @ 16.63%
+                else if (Main.getGoodWorld && Main.rand.NextBool(6))
                     Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 16, j * 16 + 8, (float)Main.rand.Next(-100, 101) * 0.002f, 0f, ProjectileID.Bomb, 0, 0f, Player.FindClosest(new Vector2(i * 16, j * 16), 16, 16));
+                // Remix/GFB drop fallen stars @ 19.95% (@ 16.68% GFB)
+                else if (Main.remixWorld && Main.rand.NextBool(5))
+                    yield return new Item(ItemID.FallenStar);
                 else
                     yield return new Item(ModContent.ItemType<AbyssalTreasure>());
             }

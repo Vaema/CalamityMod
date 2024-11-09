@@ -255,7 +255,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (Main.remixWorld)
             {
                 enrage = !bossRush &&
-                    (player.position.Y < Main.UnderworldLayer * 0.8f || player.position.Y > Main.UnderworldLayer ||
+                    (player.position.Y < Main.UnderworldLayer * 16 * 0.8f || player.position.Y > Main.UnderworldLayer * 16 ||
                     (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
             }
 

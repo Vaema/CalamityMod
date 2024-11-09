@@ -102,11 +102,11 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f || bossRush;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = bossRush ? 0.5f : 0f;
             if (biomeEnraged && (!player.ZoneUnderworldHeight || bossRush))
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
-                enrageScale += 1f;
+                enrageScale += 0.5f;
             }
             if (biomeEnraged && (!modPlayer.ZoneCalamity || bossRush))
             {
@@ -247,7 +247,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.Distance(player.Center) < 160f)
                         npc.localAI[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
-                    if (npc.localAI[1] >= (bossRush ? 60f : death ? 120f : 180f))
+                    if (npc.localAI[1] >= (bossRush ? 90f : death ? 120f : 180f))
                     {
                         npc.TargetClosest();
                         npc.localAI[1] = 0f;
@@ -301,7 +301,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                npc.alpha += bossRush ? 15 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
+                npc.alpha += bossRush ? 8 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (npc.alpha >= 255)
                 {
                     int spawnType = brimmy.currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();

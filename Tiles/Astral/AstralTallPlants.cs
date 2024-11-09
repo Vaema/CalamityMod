@@ -65,9 +65,6 @@ namespace CalamityMod.Tiles.Astral
             {
                 if (nearestPlayer.ActiveItem().type == ItemID.Sickle)
                     yield return new Item(ItemID.Hay, Main.rand.Next(2, 4 + 1));
-
-                if (Main.rand.NextBool(20))
-                    yield return new Item(ModContent.ItemType<Items.Placeables.Astral.AstralGrassSeeds>());
             }
         }
 

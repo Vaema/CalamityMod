@@ -79,8 +79,6 @@ namespace CalamityMod.ILEditing
 
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
-        public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
-
         #region Punch Card Spawning Command
         private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
         {
@@ -552,6 +550,9 @@ namespace CalamityMod.ILEditing
             if (Main.gameMenu || !player.active)
                 return proj;
 
+            if (!projectile.TryGetGlobalProjectile<CalamityGlobalProjectile>(out var calProj))
+                return proj;
+
             // Old Fashioned
             if (spawnSource is EntitySource_Parent parentSource)
             {
@@ -563,7 +564,7 @@ namespace CalamityMod.ILEditing
                 *This rules out items such as Bombs or Shield of Cthulhu (hypothetically were it to spawn projectiles)
                 *This source is *not* from item use, but is still used for a multitude of purposes in weapons */
                 if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
-                    projectile.Calamity().buffedByOldFashioned = false;
+                    calProj.buffedByOldFashioned = false;
 
                 // 3. NPCs: Not considered at all; no effect
 
@@ -574,15 +575,15 @@ namespace CalamityMod.ILEditing
                     // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
                     if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item is Item usedItem
                     && usedItem.damage > 0 && usedItem.useAnimation > 0 && usedItem.type != ModContent.ItemType<WulfrumFusionCannon>())
-                        projectile.Calamity().buffedByOldFashioned = false;
+                        calProj.buffedByOldFashioned = false;
                     // 4B. Every non item-use source is assumed safe to buff
                     else
-                        projectile.Calamity().buffedByOldFashioned = true;
+                        calProj.buffedByOldFashioned = true;
                 }
 
                 // 5. Projectiles: Directly inherited by its parent projectile
                 else if (parentSource.Entity is Projectile parentProj)
-                    projectile.Calamity().buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
+                    calProj.buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
             }
 
             // Hellbound Enchantment
@@ -591,7 +592,7 @@ namespace CalamityMod.ILEditing
             {
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
                 if (player.Calamity().explosiveMinionsEnchant)
-                    projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+                    calProj.ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
             }
             // Minion shots inherit the "explode countdown" from the parent minion
             // This is only to inherit the damage scaling of the minion and does NOT mean the shot will explode too
@@ -599,7 +600,7 @@ namespace CalamityMod.ILEditing
             {
                 // Going down the chain
                 if (spawnSource is EntitySource_Parent trueSource && trueSource.Entity is Projectile parent)
-                    projectile.Calamity().ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
+                    calProj.ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
         }

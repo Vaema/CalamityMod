@@ -32,7 +32,7 @@
 
         // Altered run acceleration multiplier provided by Soaring Insignia via IL edit
         // This is a const because it replaces a hardcoded value in vanilla
-        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.1f; // Vanilla = 1.75f
+        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.25f; // Vanilla = 1.75f
         #endregion
 
         #region Immunity Frames
