@@ -150,6 +150,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.width = Projectile.height = ItemTexture is null ? 1 : ItemTexture.Width();
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void OnSpawn(IEntitySource source) => OffsetLengthFromArm = MaxOffsetLengthFromArm;
