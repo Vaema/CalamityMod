@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // Boost dmg in proportion to money, caps at 5 plat. Unless in Gfb cuz it would be funny
+            // Boost dmg in proportion to money, caps at 3 plat. Unless in Gfb cuz it would be funny
             if (Projectile.Calamity().stealthStrike)
             {
                 Player player = Main.player[Projectile.owner];
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Rogue
                     money = 3000000;
                 if (money != 0)
                 {
-                    modifiers.SourceDamage *= (float)(money / 1500000 + 1);
+                    modifiers.SourceDamage *= (float)(money / 1250000 + 1);
                     SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
                     for (int j = 0; j < 8; j++)
                     {
