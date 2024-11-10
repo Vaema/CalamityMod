@@ -3691,7 +3691,7 @@ namespace CalamityMod.NPCs
             if (npc.Calamity().crumble > 0)
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
             if (relicOfResilienceWeakness > 0)
-                calcDR *= 0.65f;
+                calcDR *= 0.5f;
 
 
             return calcDR;

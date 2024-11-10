@@ -10,7 +10,6 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static CalamityMod.Systems.LavaRenderingSystem;
 
 namespace CalamityMod.Projectiles.Typeless
 {

@@ -1,14 +1,11 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 

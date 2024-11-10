@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Security.Cryptography.X509Certificates;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -40,7 +36,7 @@ namespace CalamityMod.Projectiles.Typeless
         public float driftBadMult = 1;
         public bool killed = false;
 
-        public float iframeLevel = 0.2f; // Determiones the level of dash iframes it gives when starting a dash, lower is less
+        public float iframeLevel = 0.2f; // Decides the level of dash iframes it gives when starting a dash, lower is less
 
         public float velX;
         public float velY;
