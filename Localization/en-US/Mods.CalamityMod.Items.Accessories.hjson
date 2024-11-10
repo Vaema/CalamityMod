@@ -1411,7 +1411,7 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		6% increased damage
+		5% increased damage
 		Taking damage spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
