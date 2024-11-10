@@ -91,9 +91,9 @@ namespace CalamityMod.Projectiles.Ranged
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 0.5f, 0f, 15));
 
             for (int i = 0; i < 8; i++) GeneralParticleHandler.SpawnParticle(new BloodParticle2(Projectile.Center, new Vector2(Main.rand.NextFloat(6, 12), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), 12, Main.rand.NextFloat(0.3f, 0.4f), Color.DodgerBlue));
-            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, Color.RoyalBlue * 0.5f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.1f, 25);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, Color.RoyalBlue * 0.5f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.1f, 15);
             GeneralParticleHandler.SpawnParticle(pulse);
-            Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.CornflowerBlue, "CalamityMod/Particles/FlameExplosion2", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.07f, 25);
+            Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.CornflowerBlue, "CalamityMod/Particles/FlameExplosion2", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.07f, 15);
             GeneralParticleHandler.SpawnParticle(pulse2);
             for (int i = 0; i < 10; i++)
             {
