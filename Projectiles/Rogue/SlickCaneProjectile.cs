@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ownerHitCheck = true;
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 2;
+            Projectile.localNPCHitCooldown = 5;
             Projectile.alpha = 180;
             Projectile.scale = 1.25f;
         }
@@ -149,11 +149,11 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Player player = Main.player[Projectile.owner];
                 double money = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (money >= 5000000 && !Main.zenithWorld)
-                    money = 5000000;
+                if (money >= 3000000 && !Main.zenithWorld)
+                    money = 3000000;
                 if (money != 0)
                 {
-                    modifiers.SourceDamage *= (float)(money / 1250000 + 1);
+                    modifiers.SourceDamage *= (float)(money / 1500000 + 1);
                     SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
                     for (int j = 0; j < 8; j++)
                     {
