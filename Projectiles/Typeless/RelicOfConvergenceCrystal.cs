@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Typeless
         public float MaxCrystalOffsetRadius = 80f;
         public float MaxDustOffsetRadius = 70f;
 
+        private Player Owner => Main.player[Projectile.owner];
+
         public ref float time => ref Projectile.ai[0];
         public float completion = 0;
         public float fade = 0;
@@ -40,16 +42,15 @@ namespace CalamityMod.Projectiles.Typeless
             completion = Utils.GetLerpValue(120, 0, Projectile.timeLeft, true);
             fade = MathHelper.Lerp(fade, 0, 0.04f);
 
-            Player player = Main.player[Projectile.owner];
-            if (!player.channel)
+            if (!Owner.channel)
             {
                 Projectile.Kill();
                 return;
             }
-            if (player.Calamity().profanedSoulRelicBuff)
+            if (Owner.Calamity().profanedSoulRelicBuff)
                 Projectile.extraUpdates = 1;
 
-            UpdatePlayerVisuals(player);
+            UpdatePlayerVisuals(Owner);
 
             // Make a constant "magical" sound.
             if (Projectile.soundDelay <= 0)
@@ -64,7 +65,7 @@ namespace CalamityMod.Projectiles.Typeless
                     float numberOfDusts = 10f;
                     for (int i = 0; i < numberOfDusts; i++)
                     {
-                        Particle energy = new VelChangingSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9f, 18f), Utils.DirectionFrom(player.Calamity().mouseWorld, Projectile.Center) * 35, "CalamityMod/Particles/BloomCircle", 25, Main.rand.NextFloat(0.1f, 0.35f) * completion, Color.Lerp(Color.Orange, Color.Orchid, completion), new Vector2(1f, 1f), lerpRate: 0.04f, shrinkSpeed: 0.15f);
+                        Particle energy = new VelChangingSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9f, 18f), Utils.DirectionFrom(Owner.Calamity().mouseWorld, Projectile.Center) * 35, "CalamityMod/Particles/BloomCircle", 25, Main.rand.NextFloat(0.1f, 0.35f) * completion, Color.Lerp(Color.Orange, Color.Orchid, completion), new Vector2(1f, 1f), lerpRate: 0.04f, shrinkSpeed: 0.15f);
                         GeneralParticleHandler.SpawnParticle(energy);
                     }
                 }
@@ -77,37 +78,41 @@ namespace CalamityMod.Projectiles.Typeless
             // Once the circle is at its maximum size, some of the dust moves inward.
             if (time >= CrystalsDrawTime)
             {
-                GeneratePassiveDust(player);
+                GeneratePassiveDust(Owner);
 
                 Lighting.AddLight(Projectile.Center, Color.Lerp(Color.Orange, Color.Orchid, completion).ToVector3() * (2.5f * (completion - 0.375f) + fade));
             }
-            if (Projectile.timeLeft == 1)
+
+            time++;
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.owner != Main.myPlayer || timeLeft > 2)
+                return;
+            
+            int playerCount = 0;
+            foreach (var fella in Main.ActivePlayers)
             {
-                int playerCount = 0;
-                foreach (Player fella in Main.ActivePlayers)
+                if (fella.Center.DistanceSQ(Owner.Calamity().mouseWorld) < 138f * 138f)
+                    playerCount++;
+            }
+            foreach (var bitch in Main.ActivePlayers)
+            {
+                if (bitch.Center.DistanceSQ(Owner.Calamity().mouseWorld) < 138f * 138f)
                 {
-                    if (Utils.Distance(fella.Center, player.Calamity().mouseWorld) < 138)
-                        playerCount++;
-                }
-                for (int index = 0; index < Main.player.Length; index++)
-                {
-                    Player fella = Main.player[index];
-                    if (Utils.Distance(fella.Center, player.Calamity().mouseWorld) < 138)
+                    bitch.HealPlayer((int)(RelicOfConvergence.HealValue * (bitch.whoAmI == Owner.whoAmI ? 1f : 1.5f) * (Owner.Calamity().profanedSoulRelicBuff ? 1.25f : 1f)));
+
+                    SoundStyle heal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianHeal");
+                    SoundEngine.PlaySound(heal with { Volume = 1 / playerCount, MaxInstances = -1 }, bitch.Center);
+
+                    for (int i = 0; i < 5; i++)
                     {
-                        fella.HealPlayer((int)(RelicOfConvergence.HealValue * (fella != player ? 1.5f : 1) * (player.Calamity().profanedSoulRelicBuff ? 1.25f : 1)), HealTextType.Broadcast);
-
-                        SoundStyle heal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianHeal");
-                        SoundEngine.PlaySound(heal with { Volume = 1 / playerCount, MaxInstances = -1 }, fella.Center);
-
-                        for (int i = 0; i < 5; i++) 
-                        {
-                            Particle spark = new CustomSpark(fella.Center + Main.rand.NextVector2Circular(15, 15), (-Vector2.UnitY * Main.rand.NextFloat(0.2f, 3f)), "CalamityMod/Particles/HealingPlus", false, Main.rand.Next(35, 50 + 1), Main.rand.NextFloat(1.1f, 1.9f), Color.Lerp(Color.Orchid, Color.White, i * 0.1f), Vector2.One, true, true, 0, false, false, 0.1f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
+                        Particle spark = new CustomSpark(bitch.Center + Main.rand.NextVector2Circular(15, 15), (-Vector2.UnitY * Main.rand.NextFloat(0.2f, 3f)), "CalamityMod/Particles/HealingPlus", false, Main.rand.Next(35, 50 + 1), Main.rand.NextFloat(1.1f, 1.9f), Color.Lerp(Color.Orchid, Color.White, i * 0.1f), Vector2.One, true, true, 0, false, false, 0.1f);
+                        GeneralParticleHandler.SpawnParticle(spark);
                     }
                 }
             }
-            time++;
         }
 
         public void UpdatePlayerVisuals(Player player)
@@ -115,7 +120,7 @@ namespace CalamityMod.Projectiles.Typeless
             Vector2 vel = Utils.DirectionTo(player.Center, player.Calamity().mouseWorld);
             float rot = vel.ToRotation() + (player.direction == -1 ? MathHelper.ToRadians(270f) : MathHelper.ToRadians(-90f));
 
-            player.direction = Math.Sign(vel.X);
+            player.ChangeDir(MathF.Sign(vel.X));
 
             Projectile.Center = player.Center + vel * 15f;
 

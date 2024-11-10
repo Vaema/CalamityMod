@@ -33,6 +33,11 @@ namespace CalamityMod.Items
             Item.shoot = ModContent.ProjectileType<RelicOfConvergenceCrystal>();
         }
 
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
+
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
             itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
