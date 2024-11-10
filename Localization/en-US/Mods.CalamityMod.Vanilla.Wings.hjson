@@ -16,8 +16,8 @@ HarpyWings:
 	With Harpy Ring or Angel Treads equipped, most attacks sometimes launch feathers
 	'''
 LeafWings: +10 defense and permanent Dryad's Blessing
-NebulaWings: Increases the pickup range of Nebula armor's nebula boosters
-SolarWings: Increases Solar Flare armor's dash velocity by 25%
-StardustWings: Greatly increases Stardust armor's stardust guardian damage and attack range
+WingsNebula: Increases the pickup range of Nebula armor's nebula boosters
+WingsSolar: Increases Solar Flare armor's dash velocity by 25%
+WingsStardust: Greatly increases Stardust armor's stardust guardian damage and attack range
 TatteredFairyWings: You leave a trail of fairy dust as you fly
-VortexWings: Prevents dashes from disabling Vortex armor's stealth ability
+WingsVortex: Prevents dashes from disabling Vortex armor's stealth ability

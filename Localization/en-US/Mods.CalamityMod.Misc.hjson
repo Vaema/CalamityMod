@@ -41,6 +41,15 @@ Tier2KnowledgeTooltip: The Planetoid schematic must be deciphered first
 Tier3KnowledgeTooltip: The Jungle schematic must be deciphered first
 Tier4KnowledgeTooltip: The Underworld schematic must be deciphered first
 Tier5KnowledgeTooltip: The Ice biome schematic must be deciphered first
+// Wing Tooltips and related string
+BadVertSpeed: Bad vertical speed
+AvVertSpeed: Average vertical speed
+GoodVertSpeed: Good vertical speed
+GreatVertSpeed: Great vertical speed
+ExcelVertSpeed: Excellent vertical speed
+HorizSpeed: "Horizontal speed: "
+AccelMult: "Acceleration multiplier: "
+FlightTime: "Flight time: "
 // Other CombatText uses and Item Messages
 ShiftToExpand: Hold SHIFT to see an expanded description
 LearnedSchematic: You learned how to create new things!

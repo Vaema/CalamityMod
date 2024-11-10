@@ -1127,20 +1127,20 @@ namespace CalamityMod.Items
 
             // This function produces a "stat sheet" for a pair of wings from the raw stats.
             // For "vertical speed", 0 = Bad, 1 = Average, 2 = Good, 3 = Great, 4 = Excellent.
-            string[] vertSpeedStrings = new string[] { "Bad vertical speed", "Average vertical speed", "Good vertical speed", "Great vertical speed", "Excellent vertical speed" };
+            string[] vertSpeedStrings = new string[] { "BadVertSpeed", "AvVertSpeed", "GoodVertSpeed", "GreatVertSpeed", "ExcelVertSpeed" };
             string WingStatsTooltip(float hSpeed, float accelMult, int vertSpeed, int flightTime, string extraTooltip = null)
             {
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
-                sb.Append($"Horizontal speed: {hSpeed:N2}\n");
-                sb.Append($"Acceleration multiplier: {accelMult:N1}\n");
-                sb.Append(vertSpeedStrings[vertSpeed]);
+                sb.Append(CalamityUtils.GetTextValue($"Misc.HorizSpeed") + $"{hSpeed:N2}\n");
+                sb.Append(CalamityUtils.GetTextValue($"Misc.AccelMult") + $"{accelMult:N1}\n");
+                sb.Append(CalamityUtils.GetTextValue($"Misc.{vertSpeedStrings[vertSpeed]}"));
                 sb.Append('\n');
-                sb.Append($"Flight time: {flightTime}");
+                sb.Append(CalamityUtils.GetTextValue($"Misc.FlightTime") + $"{flightTime}");
                 if (extraTooltip != null)
                 {
                     sb.Append('\n');
-                    sb.Append(extraTooltip);
+                    sb.Append(CalamityUtils.GetTextValue($"Vanilla.Wings.{extraTooltip}"));
                 }
                 return sb.ToString();
             }
@@ -1161,25 +1161,25 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 150);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.ButterflyWings"));
+                AddWingStats(7.5f, 1f, 1, 160, "ButterflyWings");
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(6.75f, 1f, 1, 130);
 
             if (item.type == ItemID.BeeWings)
-                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.BeeWings"));
+                AddWingStats(7.5f, 1f, 1, 160, "BeeWings");
 
             if (item.type == ItemID.HarpyWings)
-                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.HarpyWings"));
+                AddWingStats(6.75f, 1f, 1, 130, "HarpyWings");
 
             if (item.type == ItemID.BoneWings)
-                AddWingStats(7.5f, 1f, 1, 240, CalamityUtils.GetTextValue($"Vanilla.Wings.BoneWings"));
+                AddWingStats(7.5f, 1f, 1, 240, "BoneWings");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.FlameWings"));
+                AddWingStats(7.5f, 1f, 1, 160, "FlameWings");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.FrozenWings"));
+                AddWingStats(6.75f, 1f, 1, 130, "FrozenWings");
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170);
@@ -1188,7 +1188,7 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FinWings)
-                AddWingStats(6.75f, 1f, 1, 130, CalamityUtils.GetTextValue($"Vanilla.Wings.FinWings"));
+                AddWingStats(6.75f, 1f, 1, 130, "FinWings");
 
             if (item.type == ItemID.FishronWings)
                 AddWingStats(8f, 2f, 2, 180);
@@ -1197,10 +1197,10 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 180);
 
             if (item.type == ItemID.LeafWings)
-                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.LeafWings"));
+                AddWingStats(7.5f, 1f, 1, 160, "LeafWings");
 
             if (item.type == ItemID.BatWings)
-                AddWingStats(7.5f, 1f, 1, 160, CalamityUtils.GetTextValue($"Vanilla.Wings.BatWings"));
+                AddWingStats(7.5f, 1f, 1, 160, "BatWings");
 
             // All developer wings have identical stats and no special effects
             if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
@@ -1214,7 +1214,7 @@ namespace CalamityMod.Items
             }
 
             if (item.type == ItemID.TatteredFairyWings)
-                AddWingStats(7.5f, 1f, 1, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.TatteredFairyWings"));
+                AddWingStats(7.5f, 1f, 1, 180, "TatteredFairyWings");
 
             if (item.type == ItemID.SpookyWings)
                 AddWingStats(7.5f, 1f, 1, 180);
@@ -1223,22 +1223,22 @@ namespace CalamityMod.Items
                 AddWingStats(6.5f, 1f, 1, 170);
 
             if (item.type == ItemID.FestiveWings)
-                AddWingStats(7.5f, 1f, 1, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.FestiveWings"));
+                AddWingStats(7.5f, 1f, 1, 180, "FestiveWings");
 
             if (item.type == ItemID.MothronWings)
                 AddWingStats(7.5f, 1f, 1, 200);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(9f, 2.5f, 3, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.SolarWings"));
+                AddWingStats(9f, 2.5f, 3, 180, "WingsSolar");
 
             if (item.type == ItemID.WingsStardust)
-                AddWingStats(9f, 2.5f, 3, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.StardustWings"));
+                AddWingStats(9f, 2.5f, 3, 180, "WingsStardust");
 
             if (item.type == ItemID.WingsVortex)
-                AddWingStats(6.5f, 1.5f, 2, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.VortexWings"));
+                AddWingStats(6.5f, 1.5f, 2, 180, "WingsVortex");
 
             if (item.type == ItemID.WingsNebula)
-                AddWingStats(6.5f, 1.5f, 2, 180, CalamityUtils.GetTextValue($"Vanilla.Wings.NebulaWings"));
+                AddWingStats(6.5f, 1.5f, 2, 180, "WingsNebula");
 
             if (item.type == ItemID.BetsyWings)
                 AddWingStats(6f, 2.5f, 2, 150);
