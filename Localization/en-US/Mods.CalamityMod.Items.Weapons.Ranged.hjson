@@ -743,7 +743,7 @@ Megalodon: {
 	Tooltip:
 		'''
 		Loads a 30 round magazine of bullets and pressurized water streams that are rapidly unleashed
-		After firing, the gun unleashes a massive homing rocket before reloading
+		After firing, the gun unleashes a powerful homing rocket before reloading
 		Rocket damage is based on how many shots hit
 		'''
 }

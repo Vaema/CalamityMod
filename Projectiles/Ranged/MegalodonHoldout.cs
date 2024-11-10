@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
+        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 45).RotatedBy(0.18f * Projectile.direction);
 
         public int Time = 0;
         public int shotCounter = 0;
@@ -43,11 +44,6 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Player Owner = Main.player[Projectile.owner];
                 SoundEngine.PlaySound(SoundID.Item149, Projectile.Center);
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
-                    Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
-                }
                 Owner.Calamity().sharkGunDamageScaling = 0;
             }
             if (Time >= 90)
@@ -83,6 +79,12 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         CalamityGlobalProjectile cgp = scalingShot.Calamity();
                         cgp.sharkBullets = true;
+                        //Only eject casings from the gun if bullets are fired, preventing too many at once
+                        if (Main.netMode != NetmodeID.Server)
+                        {
+                            string goreType = "MegalodonCasing";
+                            Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                        }
                     }
                     if (swapType)
                     {
@@ -90,6 +92,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     swapType = !swapType;
                     shotCounter++;
+                    //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
                     if (shotCounter == 30)
                         framesBetweenShots = 18;
                 }

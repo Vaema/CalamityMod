@@ -19,6 +19,7 @@ AuricBullet.DisplayName: Auric Bullet
 AuroraFire.DisplayName: Aurora Blaze
 BallistaGreatArrow.DisplayName: Ballista Great Arrow
 BarinadeArrow.DisplayName: Fin Arrow
+BlahajBlast.DisplayName: Blahaj Blast
 BlightFlames.DisplayName: Blight Flames
 BlissfulBombardierDustProjectile.DisplayName: Holy Flare Dust
 BloodBoilerFire.DisplayName: Blood Fire
@@ -182,7 +183,6 @@ ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
 ScorpioRocket.DisplayName: Nano Missile
 ScorpioLargeRocket.DisplayName: Nano Nuke
-SeaDragonMuzzleBlast.DisplayName: Seadragon Muzzle Blast
 SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower

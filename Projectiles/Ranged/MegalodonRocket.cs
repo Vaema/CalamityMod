@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
-            if (Projectile.timeLeft <= Lifetime - 3)
+            if (Projectile.timeLeft <= Lifetime - 6)
             {
                 AltSparkParticle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 15, 1f, Color.Gold * 0.1f);
                 GeneralParticleHandler.SpawnParticle(spark);
