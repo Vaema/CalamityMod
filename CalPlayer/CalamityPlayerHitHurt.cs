@@ -1515,7 +1515,8 @@ namespace CalamityMod.CalPlayer
                     theBeeCooldown = TheBee.CooldownLength;
             }
 
-            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
+            // TODO: If possible, find a way to make it so parries don't activate the hit
+            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0 && hurtInfo.Damage > 1)
             {
                 int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                 rOfResilienceCooldown = cooldownTime;

@@ -433,9 +433,10 @@ RelicOfResilience: {
 	DisplayName: Relic Of Resilience
 	Tooltip:
 		'''
-		1...
-		2...
-		30...
-		rocks hmmmmmmm
+		While holding the item, rock shards surround you, dealing rapid damage to enemies they contact
+		While the shards are around you, your minimum defense is set to 150 and minimum dr to 10%
+		Nearby players gain this same bonus while you hold the item
+		Taking a hit or pressing <right> will pull in the shards, then blast them outward, inflicting a Profaned Weakness
+		This effect has a 10 second cooldown after you are hit
 		'''
 }

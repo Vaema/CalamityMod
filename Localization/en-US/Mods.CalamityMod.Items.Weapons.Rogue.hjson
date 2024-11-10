@@ -538,18 +538,6 @@ HeavenfallenStardisk: {
 		'''
 }
 
-HellsSun: {
-	DisplayName: Hell's Sun
-	Tooltip:
-		'''
-		Hurls up to 10 gravity-defying spiky balls
-		Once stationary, periodically emit small suns that explode on hit
-		Stealth strikes emit suns at a faster rate and last for a longer amount of time
-		Press <right> to delete all existing spiky balls
-		'The Subterranean Sun in the palm of your hand'
-		'''
-}
-
 Hypothermia: {
 	DisplayName: Hypothermia
 	Tooltip:

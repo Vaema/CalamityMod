@@ -76,6 +76,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 50 * Projectile.MaxUpdates;
             Projectile.extraUpdates = 3;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
         public override void AI()
         {
