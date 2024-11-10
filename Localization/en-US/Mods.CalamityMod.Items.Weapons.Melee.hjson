@@ -1081,9 +1081,10 @@ SeekingScorcher: {
 	DisplayName: Seeking Scorcher
 	Tooltip:
 		'''
-		Throws an unholy axe that rapidly and relentlessly seeks out enemies
-		The axe grows in damage and power the longer it remains flying
-		At max damage, hitting an enemy results in a massive crystalline explosion
+		Throws a hatchet which bounces up to {0} targets before returning
+		Crystallizes in place if all bounces have not been exhausted
+		Crystallized hatchets can be shattered by another hatchet
+		Doing so empowers the hatchet but prevents it from crystallizing
 		'May your enemies burn in hell for the sins they have committed'
 		'''
 }
