@@ -42,11 +42,6 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             //In flight effects
-            if (Main.rand.NextBool(8))
-            {
-                Particle mark = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 30, Main.rand.NextFloat(0.7f, 0.9f), Main.rand.NextBool() ? Color.Orchid : Color.OrangeRed, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
-                GeneralParticleHandler.SpawnParticle(mark);
-            }
             if (Main.rand.NextBool())
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
@@ -79,11 +74,6 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(orb1);
                 Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkOrange, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 2.1f, 20);
                 GeneralParticleHandler.SpawnParticle(orb2);
-                for (int i = 0; i < 14; i++)
-                {
-                    Particle mark = new CustomSpark(Projectile.Center, (new Vector2(19, 19).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 0.6f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 30, Main.rand.NextFloat(1.15f, 1.3f), Main.rand.NextBool(4) ? Color.Orchid : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
-                    GeneralParticleHandler.SpawnParticle(mark);
-                }
                 for (int i = 0; i < 18; i++)
                 {
                     Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(0.6f, 0.9f);
@@ -110,11 +100,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(blastRing);
                 Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.2f, 25, true, 0.9f);
                 GeneralParticleHandler.SpawnParticle(blastRing2);
-                for (int i = 0; i < 14; i++)
-                {
-                    Particle spark = new CustomSpark(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 30, Main.rand.NextFloat(2.45f, 2.7f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.35f, 0.4f));
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
+
                 for (int i = 0; i < 24; i++)
                 {
                     CritSpark spark2 = new CritSpark(Projectile.Center, new Vector2(40, 40).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f), Color.White, Color.Orchid, 0.9f, 35, 2f, 2.2f);
