@@ -232,7 +232,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            if (CrystalTimer >= CrystalTransformationTime)
+            if (CrystalTimer >= CrystalTransformationTime && PhaseTime > 0f)
             {
                 SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, Projectile.Center);
                 for (int i = 0; i < 9; i++)
@@ -327,6 +327,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Explode()
         {
+            PhaseTime = 0f;
             Projectile.Kill();
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorcherExplosion>(), (int)(Projectile.damage * ExplosionDamageMult), Projectile.knockBack, Projectile.owner);
 
