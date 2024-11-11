@@ -1941,6 +1941,7 @@ namespace CalamityMod.NPCs
                 case NPCID.BlackSlime:
                 case NPCID.BlueSlime:
                 case NPCID.CorruptSlime:
+                case NPCID.GoldenSlime:
                 case NPCID.GreenSlime:
                 case NPCID.IlluminantSlime:
                 case NPCID.JungleSlime:
@@ -2130,6 +2131,7 @@ namespace CalamityMod.NPCs
 
                 // Organic enemies.
                 case NPCID.HallowBoss:
+                case NPCID.Dandelion:
                 case NPCID.Gnome:
                 case NPCID.BloodEelHead:
                 case NPCID.BloodEelBody:
@@ -2210,6 +2212,7 @@ namespace CalamityMod.NPCs
                 case NPCID.ArmedZombiePincussion:
                 case NPCID.ArmedZombieSwamp:
                 case NPCID.ArmedZombieTwiggy:
+                case NPCID.ArmedTorchZombie:
                 case NPCID.BaldZombie:
                 case NPCID.BigBaldZombie:
                 case NPCID.BigFemaleZombie:
@@ -2230,6 +2233,7 @@ namespace CalamityMod.NPCs
                 case NPCID.SmallTwiggyZombie:
                 case NPCID.SmallZombie:
                 case NPCID.SwampZombie:
+                case NPCID.TorchZombie:
                 case NPCID.TwiggyZombie:
                 case NPCID.Zombie:
                 case NPCID.ZombieDoctor:
