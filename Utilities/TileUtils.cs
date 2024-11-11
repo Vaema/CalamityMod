@@ -115,6 +115,9 @@ namespace CalamityMod
         public static void DrawFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             int width = 16;
@@ -152,7 +155,7 @@ namespace CalamityMod
 
         public static void DrawFlameSparks(int dustType, int rarity, int i, int j)
         {
-            if (!Main.gamePaused && Main.instance.IsActive && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
+            if (!Main.gamePaused && Main.instance.IsActive && !Main.tile[i,j].IsTileActuallyInvisible() && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
             {
                 if (Main.rand.NextBool(rarity))
                 {
@@ -226,6 +229,13 @@ namespace CalamityMod
 
             return uniqueAnimationFrame * animationFrameLength;
         }
+
+        /// <summary>
+        /// Checks whether or not the tile is actually able to be seen.
+        /// </summary>
+        /// <param name="tile">The tile being checked.</param>
+        /// <returns>Whether</returns>
+        public static bool IsTileActuallyInvisible(this Tile tile) => tile.IsTileInvisible && !Main.ShouldShowInvisibleWalls();
 
         /// <summary>
         /// Gets the color of a tile/wall after paint is applied

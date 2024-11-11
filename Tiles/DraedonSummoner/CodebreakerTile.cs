@@ -171,6 +171,8 @@ namespace CalamityMod.Tiles.DraedonSummoner
         {
             // These offsets start as the tile offsets, i.e. which sub-tile of the FrameImportant structure this specific location is.
             Tile t = Main.tile[i, j];
+            if (t.IsTileActuallyInvisible())
+                return false;
             int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
             int frameXPos = t.TileFrameX;
             int frameYPos = t.TileFrameY + Height * SheetSquare * (int)((Main.GlobalTimeWrappedHourly * 12f + left) % 8);
