@@ -19,6 +19,10 @@ namespace CalamityMod.Items
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
         }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {

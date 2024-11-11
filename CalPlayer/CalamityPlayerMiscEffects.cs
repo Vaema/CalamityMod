@@ -1449,7 +1449,7 @@ namespace CalamityMod.CalPlayer
                 for (int index = 0; index < Main.player.Length; index++)
                 {
                     Player fella = Main.player[index];
-                    if (Utils.Distance(fella.Center, Player.Center) < 650)
+                    if (Utils.Distance(fella.Center, Player.Center) < 650 && fella.team == Player.team)
                     {
                         fella.Calamity().rOfResilienceEffect = (fella != Player ? 120 : 2);
                     }
@@ -1491,6 +1491,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfShards == 0)
                     {
+                        rOfResilienceOrbitOffset = Main.rand.Next(0, 100 + 1);
                         SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                         SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
                     }

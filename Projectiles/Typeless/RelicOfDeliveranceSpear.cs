@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;
@@ -434,6 +435,7 @@ namespace CalamityMod.Projectiles.Typeless
             Owner.fullRotationOrigin = Owner.Center - Owner.position;
             Owner.fullRotation = 0;
             Owner.Calamity().rOfDelivarenceRam = false;
+            Projectile.netUpdate = true;
             Projectile.Kill();
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -507,6 +509,17 @@ namespace CalamityMod.Projectiles.Typeless
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             overWiresUI.Add(index);
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write7BitEncodedInt(driftPower);
+            writer.Write(driftPowerScaling);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            driftPower = reader.Read7BitEncodedInt();
+            driftPowerScaling = reader.Read();
         }
     }
 }

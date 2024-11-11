@@ -218,6 +218,7 @@ namespace CalamityMod.CalPlayer
         public int amputatorBuff = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
+        public int rOfResilienceOrbitOffset = 0;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;

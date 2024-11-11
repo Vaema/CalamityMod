@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             float sine = (float)Math.Sin(time * 0.03f * speedMult / MathHelper.Pi);
             float sine2 = (float)Math.Sin(time * (0.03f * 0.5f * speedMult) / MathHelper.Pi);
-            float sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (4.5f) / MathHelper.Pi);
+            float sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine = (float)Math.Sin((Main.GlobalTimeWrappedHourly + Owner.Calamity().rOfResilienceOrbitOffset) * (4.5f) / MathHelper.Pi);
 
             orbitSine = MathHelper.Lerp(Math.Abs(sine2), 0.1f, 1 - Math.Abs(sine2));
             float shardNumMult = Utils.GetLerpValue(-10, 30, Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtifactOfResilienceShards>()], true) * (Owner.Calamity().profanedSoulRelicBuff ? 2 : 1);
