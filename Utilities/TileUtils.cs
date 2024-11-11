@@ -137,6 +137,9 @@ namespace CalamityMod
 
         public static void DrawStaticFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
             Color drawColour = new Color(100, 100, 100, 0);
