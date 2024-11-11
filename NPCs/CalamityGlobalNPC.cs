@@ -2475,6 +2475,7 @@ namespace CalamityMod.NPCs
                 case NPCID.IceSlime:
                 case NPCID.SpikedIceSlime:
                 case NPCID.IceGolem:
+                case NPCID.IceMimic:
                 case NPCID.MisterStabby:
                 case NPCID.SnowBalla:
                 case NPCID.SnowmanGangsta:
