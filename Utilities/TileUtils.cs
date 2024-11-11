@@ -297,7 +297,7 @@ namespace CalamityMod
                 Texture2D sprite = TextureAssets.Wall[type].Value;
                 Vector2 offset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) - Vector2.One * 8f;
                 Rectangle frame = new Rectangle(sheetOffset[0] + tile.WallFrameX, sheetOffset[1] + tile.WallFrameY, 32, 32);
-                Color lightColor = Lighting.GetColor(i, j);
+                Color lightColor = tile.IsWallFullbright ? Color.White : Lighting.GetColor(i, j);
 
                 spriteBatch.Draw(sprite, offset, frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             });
