@@ -24,13 +24,17 @@ namespace CalamityMod.Items
             Item.height = 46;
             Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.DD2_DarkMageCastHeal;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<RelicOfConvergenceCrystal>();
+        }
+
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

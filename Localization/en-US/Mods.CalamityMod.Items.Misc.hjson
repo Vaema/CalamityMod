@@ -390,9 +390,9 @@ RelicOfConvergence: {
 	DisplayName: Relic of Convergence
 	Tooltip:
 		'''
-		Creates a profaned crystal that channels healing energy at your cursor
-		Once fully channeled, all players within the area of effect are healed for {0} HP
-		Players other than yourself gain 50% extra healing
+		Creates a profaned crystal at the cursor that channels a healing aura before shattering
+		All players within the area of effect are healed for {0} HP
+		Allies gain 50% extra healing
 		Holding out the crystal heavily reduces the damage of all summons
 		'''
 }
@@ -433,10 +433,10 @@ RelicOfResilience: {
 	DisplayName: Relic Of Resilience
 	Tooltip:
 		'''
-		While holding the item, rock shards surround you, dealing rapid damage to enemies they contact
-		While the shards are around you, your minimum defense is set to 150 and minimum dr to 10%
-		Nearby players gain this same bonus while you hold the item
-		Taking a hit or pressing <right> will pull in the shards, then blast them outward, inflicting a Profaned Weakness
-		This effect has a 10 second cooldown after you are hit
+		Holding this item creates an orbit of rock shards around you and nearby allies
+		While they orbit you, your minimum defense is set to 150 and minimum dr to 10%
+		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
+		This effect has a 10 second cooldown after taking a hit
+		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
 		'''
 }

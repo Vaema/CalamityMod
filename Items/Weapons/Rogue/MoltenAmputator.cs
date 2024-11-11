@@ -36,6 +36,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = speed;
             Item.DamageType = RogueDamageClass.Instance;
         }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
         public override bool AltFunctionUse(Player player) => true;
         public override float UseSpeedMultiplier(Player player)
         {

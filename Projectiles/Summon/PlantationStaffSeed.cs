@@ -20,7 +20,8 @@ namespace CalamityMod.Projectiles.Summon
             ProjectileID.Sets.MinionShot[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 3;
-            Main.instance.LoadProjectile(ProjectileID.PoisonSeedPlantera);
+            if (!Main.dedServ)
+                Main.instance.LoadProjectile(ProjectileID.PoisonSeedPlantera);
         }
 
         public override void SetDefaults()

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Items;
@@ -22,9 +24,14 @@ namespace CalamityMod.Projectiles.Typeless
         public float MaxCrystalOffsetRadius = 80f;
         public float MaxDustOffsetRadius = 70f;
 
+        private Player Owner => Main.player[Projectile.owner];
+        public List<bool> healList = new List<bool>(new bool[Main.maxPlayers]);
+
         public ref float time => ref Projectile.ai[0];
         public float completion = 0;
         public float fade = 0;
+        public Vector2 mousePos;
+        public bool playSound = true;
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -32,24 +39,25 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 125;
         }
 
         public override void AI()
         {
             completion = Utils.GetLerpValue(120, 0, Projectile.timeLeft, true);
             fade = MathHelper.Lerp(fade, 0, 0.04f);
+            if (Projectile.timeLeft >= 5)
+                mousePos = Owner.Calamity().mouseWorld;
 
-            Player player = Main.player[Projectile.owner];
-            if (!player.channel)
+            if (!Owner.channel)
             {
                 Projectile.Kill();
                 return;
             }
-            if (player.Calamity().profanedSoulRelicBuff)
+            if (Owner.Calamity().profanedSoulRelicBuff)
                 Projectile.extraUpdates = 1;
 
-            UpdatePlayerVisuals(player);
+            UpdatePlayerVisuals(Owner);
 
             // Make a constant "magical" sound.
             if (Projectile.soundDelay <= 0)
@@ -64,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
                     float numberOfDusts = 10f;
                     for (int i = 0; i < numberOfDusts; i++)
                     {
-                        Particle energy = new VelChangingSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9f, 18f), Utils.DirectionFrom(player.Calamity().mouseWorld, Projectile.Center) * 35, "CalamityMod/Particles/BloomCircle", 25, Main.rand.NextFloat(0.1f, 0.35f) * completion, Color.Lerp(Color.Orange, Color.Orchid, completion), new Vector2(1f, 1f), lerpRate: 0.04f, shrinkSpeed: 0.15f);
+                        Particle energy = new VelChangingSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9f, 18f), Utils.DirectionFrom(mousePos, Projectile.Center) * 35, "CalamityMod/Particles/BloomCircle", 25, Main.rand.NextFloat(0.1f, 0.35f) * completion, Color.Lerp(Color.Orange, Color.Orchid, completion), new Vector2(1f, 1f), lerpRate: 0.04f, shrinkSpeed: 0.15f);
                         GeneralParticleHandler.SpawnParticle(energy);
                     }
                 }
@@ -73,49 +81,57 @@ namespace CalamityMod.Projectiles.Typeless
                 fade = 1;
             }
 
-            // Create a circle of dust. The circle expands outward at first until it reaches its "destination" radius.
-            // Once the circle is at its maximum size, some of the dust moves inward.
-            if (time >= CrystalsDrawTime)
+            if (Projectile.timeLeft == 5)
             {
-                GeneratePassiveDust(player);
+                //if (Projectile.owner != Main.myPlayer)
+                    //return;
 
-                Lighting.AddLight(Projectile.Center, Color.Lerp(Color.Orange, Color.Orchid, completion).ToVector3() * (2.5f * (completion - 0.375f) + fade));
-            }
-            if (Projectile.timeLeft == 1)
-            {
-                int playerCount = 0;
-                foreach (Player fella in Main.ActivePlayers)
+                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
                 {
-                    if (Utils.Distance(fella.Center, player.Calamity().mouseWorld) < 138)
-                        playerCount++;
-                }
-                for (int index = 0; index < Main.player.Length; index++)
-                {
-                    Player fella = Main.player[index];
-                    if (Utils.Distance(fella.Center, player.Calamity().mouseWorld) < 138)
+                    Player player = Main.player[playerIndex];
+                    float targetDist = player.Center.DistanceSQ(mousePos);
+
+                    if (targetDist < 138f * 138f && player.team == Owner.team)
                     {
-                        fella.HealPlayer((int)(RelicOfConvergence.HealValue * (fella != player ? 1.5f : 1) * (player.Calamity().profanedSoulRelicBuff ? 1.25f : 1)), HealTextType.Broadcast);
-
-                        SoundStyle heal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianHeal");
-                        SoundEngine.PlaySound(heal with { Volume = 1 / playerCount, MaxInstances = -1 }, fella.Center);
-
-                        for (int i = 0; i < 5; i++) 
+                        if (healList[playerIndex] == false)
                         {
-                            Particle spark = new CustomSpark(fella.Center + Main.rand.NextVector2Circular(15, 15), (-Vector2.UnitY * Main.rand.NextFloat(0.2f, 3f)), "CalamityMod/Particles/HealingPlus", false, Main.rand.Next(35, 50 + 1), Main.rand.NextFloat(1.1f, 1.9f), Color.Lerp(Color.Orchid, Color.White, i * 0.1f), Vector2.One, true, true, 0, false, false, 0.1f);
-                            GeneralParticleHandler.SpawnParticle(spark);
+                            healList[playerIndex] = true;
+                            int trueHealValue = (int)(RelicOfConvergence.HealValue * (player.whoAmI == Owner.whoAmI ? 1f : 1.5f) * (Owner.Calamity().profanedSoulRelicBuff ? 1.25f : 1f));
+                            player.HealPlayer(trueHealValue, HealTextType.Local);
+
+                            if (playSound)
+                            {
+                                SoundStyle heal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianHeal");
+                                SoundEngine.PlaySound(heal with { Volume = 1, MaxInstances = -1 }, Projectile.Center);
+                                playSound = false;
+                            }
+
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Particle spark = new CustomSpark(player.Center + Main.rand.NextVector2Circular(15, 15), (-Vector2.UnitY * Main.rand.NextFloat(0.2f, 3f)), "CalamityMod/Particles/HealingPlus", false, Main.rand.Next(35, 50 + 1), Main.rand.NextFloat(1.1f, 1.9f), Color.Lerp(Color.Orchid, Color.White, i * 0.1f), Vector2.One, true, true, 0, false, false, 0.1f);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                            }
                         }
                     }
                 }
             }
+
+            if (time >= CrystalsDrawTime)
+            {
+                GeneratePassiveDust(Owner);
+
+                Lighting.AddLight(Projectile.Center, Color.Lerp(Color.Orange, Color.Orchid, completion).ToVector3() * (2.5f * (completion - 0.375f) + fade));
+            }
+
             time++;
         }
 
         public void UpdatePlayerVisuals(Player player)
         {
-            Vector2 vel = Utils.DirectionTo(player.Center, player.Calamity().mouseWorld);
+            Vector2 vel = Utils.DirectionTo(player.Center, mousePos);
             float rot = vel.ToRotation() + (player.direction == -1 ? MathHelper.ToRadians(270f) : MathHelper.ToRadians(-90f));
 
-            player.direction = Math.Sign(vel.X);
+            player.ChangeDir(MathF.Sign(vel.X));
 
             Projectile.Center = player.Center + vel * 15f;
 
@@ -135,28 +151,29 @@ namespace CalamityMod.Projectiles.Typeless
 
             for (float angle = 0f; angle <= MathHelper.TwoPi; angle += MathHelper.ToRadians(Main.rand.NextFloat(6f, 8f)))
             {
-                Vector2 drawPos = player.Calamity().mouseWorld + angle.ToRotationVector2() * radius;
+                Vector2 drawPos = mousePos + angle.ToRotationVector2() * radius;
                 Color useColor = Color.Lerp(Color.Orange, Color.Orchid, completion) * (completion - 0.25f);
                 float particleScale = 0.01f + fade * 0.08f + completion * 0.08f;
-                Particle aura = new CustomSpark(drawPos, Utils.DirectionTo(player.Calamity().mouseWorld, drawPos), "CalamityMod/Particles/SmallBloom", false, 4, particleScale, useColor, new Vector2(0.5f + completion, (2f - completion) * 7 - completion * 7));
+                Particle aura = new CustomSpark(drawPos, Utils.DirectionTo(mousePos, drawPos), "CalamityMod/Particles/SmallBloom", false, 4, particleScale, useColor, new Vector2(0.5f + completion, (2f - completion) * 7 - completion * 7));
                 GeneralParticleHandler.SpawnParticle(aura);
 
                 if (Main.rand.NextBool(70))
                 {
                     Dust dust2 = Dust.NewDustPerfect(Projectile.Center + angle.ToRotationVector2() * radius, ModContent.DustType<LightDust>());
-                    dust2.position = player.Calamity().mouseWorld + angle.ToRotationVector2() * radius;
+                    dust2.position = mousePos + angle.ToRotationVector2() * radius;
                     dust2.scale = Main.rand.NextFloat(1.4f, 1.9f) * completion;
                     dust2.noGravity = false;
                     dust2.velocity = new Vector2(0, Main.rand.NextFloat(1, 5));
                     dust2.color = useColor;
                 }
-                if (Projectile.timeLeft == 1)
+
+                if (Projectile.timeLeft == 5)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + angle.ToRotationVector2() * radius, ModContent.DustType<LightDust>());
                     dust.position = drawPos;
                     dust.scale = Main.rand.NextFloat(1.6f, 1.9f);
                     dust.noGravity = !Main.rand.NextBool(5);
-                    dust.velocity = Utils.DirectionTo(player.Calamity().mouseWorld, drawPos) * Main.rand.NextFloat(2f, 4f);
+                    dust.velocity = Utils.DirectionTo(mousePos, drawPos) * Main.rand.NextFloat(2f, 4f);
                     dust.color = Color.Orchid;
                     dust.noLightEmittence = true;
                 }

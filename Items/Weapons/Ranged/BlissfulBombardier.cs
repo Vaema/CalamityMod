@@ -41,7 +41,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
 
         // Makes the rotation of the mouse around the player sync in multiplayer.
-        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseRotationListener = true;
+            player.Calamity().mouseWorldListener = true;
+        }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>(Texture + "Glow").Value);
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             float sine = (float)Math.Sin(time * 0.03f * speedMult / MathHelper.Pi);
             float sine2 = (float)Math.Sin(time * (0.03f * 0.5f * speedMult) / MathHelper.Pi);
-            float sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (4.5f) / MathHelper.Pi);
+            float sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine = (float)Math.Sin((Main.GlobalTimeWrappedHourly + Owner.Calamity().rOfResilienceOrbitOffset) * (4.5f) / MathHelper.Pi);
 
             orbitSine = MathHelper.Lerp(Math.Abs(sine2), 0.1f, 1 - Math.Abs(sine2));
             float shardNumMult = Utils.GetLerpValue(-10, 30, Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtifactOfResilienceShards>()], true) * (Owner.Calamity().profanedSoulRelicBuff ? 2 : 1);
@@ -62,6 +63,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 burstTimer = 120;
                 Projectile.ai[1] = 1;
+                Projectile.netUpdate = true;
             }
             if (Owner.Calamity().rOfResilienceEffect == 0 && Projectile.ai[1] == 0)
             {
@@ -205,5 +207,17 @@ namespace CalamityMod.Projectiles.Typeless
                 overPlayers.Add(index);
         }
         public override bool? CanDamage() => (Projectile.ai[1] == -1 || burstTimer > 0) ? false : null;
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write7BitEncodedInt(burstTimer);
+            writer.Write7BitEncodedInt(Owner.Calamity().rOfResilienceCooldown);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            burstTimer = reader.Read7BitEncodedInt();
+            Owner.Calamity().rOfResilienceCooldown = reader.Read7BitEncodedInt();
+        }
     }
 }

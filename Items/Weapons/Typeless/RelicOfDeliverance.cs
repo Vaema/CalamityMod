@@ -27,6 +27,11 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.Calamity().CannotBeEnchanted = true;
         }
 
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
+
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
             itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
