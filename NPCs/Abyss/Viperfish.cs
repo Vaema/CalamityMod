@@ -159,7 +159,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
-            postLevi.Add(ModContent.ItemType<Lumenyl>(), 4);
             npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DepthCrusher>(), 10, 6));
         }
 
