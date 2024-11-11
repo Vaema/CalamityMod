@@ -1267,7 +1267,7 @@ namespace CalamityMod.NPCs
                 { NPCID.BigMimicCorruption, 0.3f },
                 { NPCID.BigMimicCrimson, 0.3f },
                 { NPCID.BigMimicHallow, 0.3f },
-                { NPCID.BigMimicJungle, 0.3f }, // unused vanilla enemy
+                { NPCID.BigMimicJungle, 0.3f },
                 { NPCID.BlueArmoredBones, 0.2f },
                 { NPCID.BlueArmoredBonesMace, 0.2f },
                 { NPCID.BlueArmoredBonesNoPants, 0.2f },
@@ -1950,6 +1950,7 @@ namespace CalamityMod.NPCs
                 case NPCID.PurpleSlime:
                 case NPCID.RainbowSlime:
                 case NPCID.RedSlime:
+                case NPCID.ShimmerSlime:
                 case NPCID.Slimeling:
                 case NPCID.SlimeMasked:
                 case NPCID.Slimer:
