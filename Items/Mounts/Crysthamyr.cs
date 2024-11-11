@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Mounts
             MountData.runSpeed = 5f;
             MountData.dashSpeed = 10f;
             MountData.swimSpeed = 6f;
-            MountData.acceleration = 0.6f;
+            MountData.acceleration = 1f;
 
             // Vertical movement
             MountData.fallDamage = 0f;

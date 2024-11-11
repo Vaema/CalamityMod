@@ -17,12 +17,12 @@ namespace CalamityMod.Items.Mounts
             MountData.buff = ModContent.BuffType<BumbledogeMount>();
 
             // Attack
-	    	MountData.abilityCooldown = 15;
+	    	MountData.abilityCooldown = 12;
 
             // Horizontal movement
             MountData.runSpeed = 10f;
             MountData.dashSpeed = 14.15f;
-            MountData.acceleration = 0.16f;
+            MountData.acceleration = 0.2f;
 
             // Vertical movement
             MountData.fallDamage = 0f;
