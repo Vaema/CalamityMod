@@ -24,7 +24,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
 
             // Specific hair drawing requirements: Hair must be drawing with 20% lightness, and you're not bald
             bool canReceiveHairSparkles = (drawInfo.fullHair || drawInfo.hatHair || drawInfo.drawsBackHairWithoutHeadgear || drawPlayer.head == -1 || drawPlayer.head == 0) && Main.rgbToHsl(drawInfo.colorHead).Z > 0.2f;
-            bool baldHairStyles = drawPlayer.hair == 12 || drawPlayer.hair == 76;
+            bool baldHairStyles = drawPlayer.hair == 15 || drawPlayer.hair == 76;
             return drawInfo.shadow == 0f && !drawPlayer.dead && !drawInfo.headOnlyRender && modPlayer.combHair && canReceiveHairSparkles && !baldHairStyles;
         }
 
