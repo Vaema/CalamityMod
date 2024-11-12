@@ -262,7 +262,7 @@ BurningRevelation: {
 	Tooltip:
 		'''
 		An ever burning yoyo that constantly charges power
-		Direct hits greatly increase the charge and releases profaned energy that scales with charge level
+		Direct hits greatly increase the charge and release profaned energy that scales with charge level
 		At maximum charge, the yoyo unleashes a volley of homing stars that gain damage the farther they travel
 		Stars with maximum damage let off an additional explosion on hit
 		'It burns, but you hold it close to your heart. Clarity and purpose fill your soul'
