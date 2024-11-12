@@ -2081,7 +2081,13 @@ SharkyPlush: {
 
 TheComb: {
 	DisplayName: The Comb
-	Tooltip: '''"We ain't found shit!"'''
+	Tooltip:
+		'''
+		Illuminates your hair with lustrous sparkles
+		Sparkles point to nearby treasure
+		This effect works in vanity slots
+		'We ain't found shit!'
+		'''
 }
 
 XyksBlessingBlue: {
