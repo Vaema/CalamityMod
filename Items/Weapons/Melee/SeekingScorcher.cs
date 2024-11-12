@@ -4,7 +4,6 @@ using CalamityMod.Rarities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -17,8 +16,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public static readonly SoundStyle HitSound =  new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact") { Volume = 0.5f, Pitch = 0.2f, PitchVariance = 0.2f };
         public static readonly SoundStyle ShatterSound =  new("CalamityMod/Sounds/Item/BlazingCoreParry") { Volume = 0.4f, PitchVariance = 0.2f };
         public static readonly SoundStyle LightShatterSound =  new("CalamityMod/Sounds/NPCKilled/CrownJewelShatter") { Pitch = 0.4f, PitchVariance = 0.3f };
-
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SeekingScorcherProj.MaxBounces);
 
         public override void SetDefaults()
         {
