@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldDurabilityMax = 25;
 
         // Interface stuff.
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
 
         public bool ShouldDrawDyeableShader
@@ -41,7 +41,10 @@ namespace CalamityMod.Items.Accessories
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                var player = OwnerPlayer;
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
+
+                var player = Main.player[OwnerPlayer];
                 if (player is null)
                     return false;
 
@@ -109,8 +112,12 @@ namespace CalamityMod.Items.Accessories
 
         // Complex drawcode which draws Profaned Soul shields on ALL players who have it available. Supposedly.
         // This is applied as IL (On hook) which draws right before Inferno Ring.
-        internal static void DrawProfanedSoulShields(Player player)
+        internal static void DrawProfanedSoulShields(int whoAmI)
         {
+            if (whoAmI < 0 || whoAmI >= Main.maxPlayers)
+                return;
+
+            var player = Main.player[whoAmI];
             if (player is null)
                 return;
 

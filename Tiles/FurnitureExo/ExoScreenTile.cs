@@ -56,6 +56,9 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoScreenGlow").Value;
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);

@@ -35,8 +35,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (cooldownTimer > 1)
             {
-                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot)
+                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot && !Main.mouseLeftRelease)
                     Projectile.ai[2] = 0;
                 if (cooldownTimer <= 18 && !hasPlayedReloadSound)
                 {

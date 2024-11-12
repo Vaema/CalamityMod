@@ -42,8 +42,8 @@ namespace CalamityMod.Projectiles.Magic
         public const float NormalEnemyLifeMaxDamageMult = 1f / 100f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 63;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 63;
         }
 
         public override void SetDefaults()

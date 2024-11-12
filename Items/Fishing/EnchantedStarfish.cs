@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Fishing
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
             // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ArcaneCrystal;
@@ -21,15 +21,16 @@ namespace CalamityMod.Items.Fishing
         {
             Item.width = 30;
             Item.height = 26;
-            Item.rare = ItemRarityID.Green;
             Item.useAnimation = 30;
             Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item29;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 50);
             Item.autoReuse = true;
             Item.consumable = true;
+
+            Item.value = Item.sellPrice(silver: 25);
+            Item.rare = ItemRarityID.Green;
         }
 
         public override bool? UseItem(Player player)

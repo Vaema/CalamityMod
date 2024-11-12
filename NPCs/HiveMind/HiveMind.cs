@@ -44,16 +44,13 @@ namespace CalamityMod.NPCs.HiveMind
         public static int normalIconIndex;
         public static int phase2IconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string normalIconPath = "CalamityMod/NPCs/HiveMind/HiveMind_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/HiveMind/HiveMindP2_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
-            normalIconIndex = ModContent.GetModBossHeadSlot(normalIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            
+            normalIconIndex = CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         // This block of values can be modified in SetDefaults() based on difficulty mode or something
@@ -116,8 +113,8 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -149,7 +146,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 15, 0, 0);
+            NPC.value = Item.buyPrice(0, 8, 0, 0);
             NPC.boss = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -325,7 +322,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (Main.dedServ)
                 return true;
 
-            Texture2D texture = IsPhaseTwo ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = IsPhaseTwo ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             SpriteEffects spriteEffects = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Vector2 origin = new Vector2(NPC.width / 2, NPC.height);
             Vector2 center = NPC.position - screenPos + origin;
@@ -414,7 +411,10 @@ namespace CalamityMod.NPCs.HiveMind
             else
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    SpawnStuff();
+                {
+                    if (NPC.Distance(Main.player[NPC.target].Center) > 80f)
+                        SpawnStuff();
+                }
 
                 state = nextState;
                 nextState = 0;
@@ -1086,14 +1086,17 @@ namespace CalamityMod.NPCs.HiveMind
                                         if (expertMode && NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxHearts)
                                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<DarkHeart>());
                                     }
-                                    else if (!NPC.AnyNPCs(NPCID.EaterofSouls))
+                                    else if (!NPC.AnyNPCs(NPCID.EaterofSouls) && NPC.Distance(Main.player[NPC.target].Center) > 80f)
                                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                                 }
 
                                 if (NPC.ai[0] == 6f)
                                 {
                                     NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
-                                    SpawnStuff();
+
+                                    if (NPC.Distance(Main.player[NPC.target].Center) > 80f)
+                                        SpawnStuff();
+
                                     state = 6;
                                     NPC.ai[0] = 0f;
                                     deceleration = NPC.velocity / decelerationTime;
@@ -1244,7 +1247,7 @@ namespace CalamityMod.NPCs.HiveMind
             for (int k = 0; k < hit.Damage / NPC.lifeMax * 100.0; k++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
 
-            if (!IsPhaseTwo)
+            if (!IsPhaseTwo && NPC.Distance(Main.player[NPC.target].Center) > 80f)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {

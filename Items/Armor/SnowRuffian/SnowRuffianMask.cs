@@ -71,6 +71,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
                 AddRecipeGroup("AnySnowBlock", 20).
                 AddIngredient(ItemID.FlinxFur).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SnowRuffianChestplate>()).
                 Register();
         }
     }

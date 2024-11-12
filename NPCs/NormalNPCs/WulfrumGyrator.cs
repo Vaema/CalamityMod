@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
+            Main.npcFrameCount[Type] = 10;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 5;
             NPC.lifeMax = 23;
             NPC.knockBackResist = 0.15f;
-            NPC.value = Item.buyPrice(0, 0, 1, 15);
+            NPC.value = Item.buyPrice(0, 0, 0, 75);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
@@ -87,9 +87,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.frameCounter += 1;
             }
-            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[NPC.type] / 2);
+            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[Type] / 2);
             if (Supercharged)
-                frame += Main.npcFrameCount[NPC.type] / 2;
+                frame += Main.npcFrameCount[Type] / 2;
 
             NPC.frame.Y = frame * frameHeight;
         }

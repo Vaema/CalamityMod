@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
+            Main.npcFrameCount[Type] = 9;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.7f,
@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.Hellhound;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath5;
             Banner = NPC.type;

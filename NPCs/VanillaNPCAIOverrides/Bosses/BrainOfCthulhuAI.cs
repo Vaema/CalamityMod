@@ -235,20 +235,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Rubber band movement
                         if (!despawn)
                         {
-                            Vector2 brainCenter = npc.Center;
-                            Vector2 destination = Main.player[npc.target].Center + (masterMode ? Main.player[npc.target].velocity * 20f * enrageScale : Vector2.Zero);
-                            float targetXDist = destination.X - brainCenter.X;
-                            float targetYDist = destination.Y - brainCenter.Y;
-                            float targetDistance = (float)Math.Sqrt(targetXDist * targetXDist + targetYDist * targetYDist);
                             float velocityScale = death ? 6f : 4.5f;
                             float velocityBoost = velocityScale * (1f - lifeRatio);
                             float nonChargeSpeed = (masterMode ? 24f : 18f) + velocityBoost + 3f * enrageScale;
                             if (Main.getGoodWorld)
                                 nonChargeSpeed *= 1.15f;
-
-                            targetDistance = nonChargeSpeed / targetDistance;
-                            targetXDist *= targetDistance;
-                            targetYDist *= targetDistance;
 
                             float minInertia = death ? 60f : 75f;
                             float maxInertia = death ? 80f : 100f;
@@ -257,10 +248,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 minInertia -= 10f;
                                 maxInertia -= 10f;
                             }
-
                             float inertia = MathHelper.Lerp(minInertia, maxInertia, lifeRatio);
-                            npc.velocity.X = (npc.velocity.X * inertia + targetXDist) / (inertia + 1f);
-                            npc.velocity.Y = (npc.velocity.Y * inertia + targetYDist) / (inertia + 1f);
+
+                            Vector2 destination = Main.player[npc.target].Center + (masterMode ? Main.player[npc.target].velocity * 20f * enrageScale : Vector2.Zero);
+                            Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitY) * nonChargeSpeed;
+                            npc.velocity = (npc.velocity * (inertia - 1f) + idealVelocity) / inertia;
                         }
                     }
 

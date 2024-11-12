@@ -29,9 +29,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 10;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -108,15 +108,15 @@ namespace CalamityMod.Projectiles.Summon
 
         internal void DetermineFrames()
         {
-            int startingFrame = Jumping ? Main.projFrames[Projectile.type] - 3 : 0;
-            int endingFrame = Jumping ? Main.projFrames[Projectile.type] - 4 : Main.projFrames[Projectile.type] - 4;
+            int startingFrame = Jumping ? Main.projFrames[Type] - 3 : 0;
+            int endingFrame = Jumping ? Main.projFrames[Type] - 4 : Main.projFrames[Type] - 4;
 
             if (Jumping)
                 JumpCountdown = 12f;
             else if (Math.Abs(Projectile.velocity.Y) <= Gravity && JumpCountdown > 0)
             {
-                startingFrame = Main.projFrames[Projectile.type] - 1;
-                endingFrame = Main.projFrames[Projectile.type] - 1;
+                startingFrame = Main.projFrames[Type] - 1;
+                endingFrame = Main.projFrames[Type] - 1;
                 JumpCountdown--;
             }
 

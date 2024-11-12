@@ -26,6 +26,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            Lighting.AddLight(Projectile.Center, 1f, 1f, 1f);
+
             //ai0 = timer, ai1 = laser size
             if (Projectile.ai[0] < 90f) //Before the laser
             {
@@ -65,5 +67,11 @@ namespace CalamityMod.Projectiles.Boss
 
         // Does no contact damage
         public override bool? CanDamage() => false;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, Color.LightGray, lightColor, 5f);
+            return false;
+        }
     }
 }

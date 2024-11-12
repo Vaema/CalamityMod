@@ -15,14 +15,14 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 52;
-            Projectile.height = 52;
+            Projectile.width = 100;
+            Projectile.height = 110;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 1;
+            Projectile.scale = 0.75f;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
             Projectile.DamageType = DamageClass.Summon;
@@ -68,14 +69,9 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Projectile.alpha);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

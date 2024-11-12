@@ -30,9 +30,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 12;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 12;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0
@@ -71,7 +71,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.lifeMax = 180;
             }
 
-            NPC.value = Item.buyPrice(0, 0, 3, 32);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.lavaImmune = false;
@@ -183,7 +183,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }
@@ -201,7 +201,7 @@ namespace CalamityMod.NPCs.AcidRain
                 return false;
             }
 
-            Texture2D headTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D headTexture = TextureAssets.Npc[Type].Value;
             Texture2D tailTexture = TailTexture.Value;
             Vector2[] segmentPositions = (Vector2[])NPC.oldPos.Clone();
 

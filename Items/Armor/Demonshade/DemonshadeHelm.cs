@@ -20,6 +20,10 @@ namespace CalamityMod.Items.Armor.Demonshade
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DemonshadeEnrage");
         internal static string ShadowScytheEntitySourceContext => "SetBonus_Calamity_Demonshade";
 
+        public static int DevilDamage = 1000;
+        public static float MultDamageBoost = 0.5f;
+        public static double MultDamageTakenBoost = 0.25D;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -44,7 +48,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         public override void UpdateArmorSet(Player player)
         {
             var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
             var modPlayer = player.Calamity();
             modPlayer.dsSetBonus = true;
             modPlayer.wearingRogueArmor = true;
@@ -59,12 +63,10 @@ namespace CalamityMod.Items.Armor.Demonshade
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<DemonshadeRedDevil>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Demonshade Red Devils spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    var baseDamage = player.ApplyArmorAccDamageBonusesTo(10000);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(DevilDamage);
 
                     var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 0f, 0f);
-                    devil.originalDamage = baseDamage;
+                    devil.originalDamage = DevilDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 1f;
@@ -82,6 +84,7 @@ namespace CalamityMod.Items.Armor.Demonshade
             CreateRecipe().
                 AddIngredient<ShadowspecBar>(12).
                 AddTile<DraedonsForge>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DemonshadeBreastplate>()).
                 Register();
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
@@ -79,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Time % 4 == 0)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + (Projectile.velocity.RotatedBy(MathHelper.ToRadians(45f * Projectile.direction)) * 10) + Main.rand.NextVector2Circular(13, 13) + Projectile.velocity * Main.rand.Next(10, 20 + 1), Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.01f, -0.25f) * Projectile.direction) * 4, ModContent.ProjectileType<RespiteblockBlood>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + (Projectile.velocity.RotatedBy(MathHelper.ToRadians(45f * Projectile.direction)) * 10) + Main.rand.NextVector2Circular(13, 13) + Projectile.velocity * Main.rand.Next(10, 20 + 1), Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.01f, -0.25f) * Projectile.direction) * 4, ModContent.ProjectileType<RespiteblockBlood>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner, 0);
             }
 
             DetermineVisuals(playerRotatedPosition);
@@ -116,10 +117,7 @@ namespace CalamityMod.Projectiles.Melee
 
             int heal = Main.rand.NextBool(4) ? 2 : 1;
             player.lifeSteal -= heal;
-            player.statLife += heal;
-            player.HealEffect(heal);
-            if (player.statLife > player.statLifeMax2)
-                player.statLife = player.statLifeMax2;
+            player.HealPlayer(heal);
         }
 
         public void PlayChainsawSounds()

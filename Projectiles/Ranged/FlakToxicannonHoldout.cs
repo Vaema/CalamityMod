@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
                 // Spawns the projectile.
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     GunTipPosition,
                     direction * itemShootSpeed,

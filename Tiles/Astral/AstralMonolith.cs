@@ -61,6 +61,8 @@ namespace CalamityMod.Tiles.Astral
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
 
             int xOffset = i % 4;
             int yOffset = j % 4;
@@ -77,7 +79,7 @@ namespace CalamityMod.Tiles.Astral
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralMonolithGlow").Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(50, 50, 50, 50));
             if (!tile.IsHalfBlock && tile.Slope == 0)
             {
                 Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
@@ -130,19 +132,6 @@ namespace CalamityMod.Tiles.Astral
                     yPos = 6;
                 }
             }
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
         }
 
         public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)

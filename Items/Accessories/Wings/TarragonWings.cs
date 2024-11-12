@@ -32,14 +32,8 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if ((player.armor[0].type == ModContent.ItemType<TarragonHeadMelee>() || player.armor[0].type == ModContent.ItemType<TarragonHeadRogue>() ||
-                player.armor[0].type == ModContent.ItemType<TarragonHeadSummon>() || player.armor[0].type == ModContent.ItemType<TarragonHeadMagic>() ||
-                player.armor[0].type == ModContent.ItemType<TarragonHeadRanged>()) &&
-                player.armor[1].type == ModContent.ItemType<TarragonBreastplate>() && player.armor[2].type == ModContent.ItemType<TarragonLeggings>())
-            {
-                player.statDefense += 15;
-                player.lifeRegen += 2;
-            }
+            player.statDefense += 15;
+            player.lifeRegen += 2;
 
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {

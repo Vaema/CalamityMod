@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,10 +8,35 @@ namespace CalamityMod.Items.Fishing
     public class StuffedFish : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
+        public static List<int> HerbDisplay = new List<int>
+        {
+            ItemID.Daybloom,
+            ItemID.Blinkroot,
+            ItemID.Waterleaf,
+            ItemID.Shiverthorn,
+            ItemID.Moonglow,
+            ItemID.Deathweed,
+            ItemID.Fireblossom
+        };
+        public static List<int> SeedDisplay = new List<int>
+        {
+            ItemID.DaybloomSeeds,
+            ItemID.BlinkrootSeeds,
+            ItemID.WaterleafSeeds,
+            ItemID.ShiverthornSeeds,
+            ItemID.MoonglowSeeds,
+            ItemID.DeathweedSeeds,
+            ItemID.FireblossomSeeds,
+            ItemID.GrassSeeds,
+            ItemID.JungleGrassSeeds,
+            ItemID.MushroomGrassSeeds,
+            ItemID.PumpkinSeed
+        };
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
@@ -19,8 +45,8 @@ namespace CalamityMod.Items.Fishing
             Item.height = 30;
             Item.maxStack = 9999;
             Item.consumable = true;
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
-            Item.value = Item.sellPrice(silver: 50);
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -66,7 +92,7 @@ namespace CalamityMod.Items.Fishing
             itemLoot.AddIf(() => Main.hardMode, ItemID.HallowedSeeds, 20, seedMin, seedMax);
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is null)
                 return;
 
@@ -104,6 +130,15 @@ namespace CalamityMod.Items.Fishing
                 }
             }
             */
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            int currentHerb = (int)(Main.GlobalTimeWrappedHourly * 1.5f) % HerbDisplay.Count;
+            list.FindAndReplace("[HERBS]", $"[i:{HerbDisplay[currentHerb]}]");
+
+            int currentSeed = (int)(Main.GlobalTimeWrappedHourly * 1.5f) % SeedDisplay.Count;
+            list.FindAndReplace("[SEEDS]", $"[i:{SeedDisplay[currentSeed]}]");
         }
     }
 }

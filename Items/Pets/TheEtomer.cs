@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,18 +16,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 34;
-            Item.damage = 0;
-            Item.useAnimation = Item.useTime = 20;
-            Item.shoot = ModContent.ProjectileType<RotomPet>();
-            Item.buffType = ModContent.BuffType<ElectricTroublemaker>();
-
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
+            Item.DefaultToVanitypet(ModContent.ProjectileType<RotomPet>(), ModContent.BuffType<ElectricTroublemaker>());
             Item.UseSound = SoundID.Item113;
-
-            Item.value = Item.buyPrice(gold: 4);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().devItem = true;
         }

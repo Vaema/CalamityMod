@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.TreasureBags;
@@ -61,7 +64,6 @@ using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Melee.MaceFlails;
@@ -77,8 +79,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class CalamityLists
+    public sealed class CalamityLists : ModSystem
     {
         public static IList<string> donatorList;
         public static List<int> projectileDestroyExceptionList;
@@ -158,7 +159,12 @@ namespace CalamityMod
 
         public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
 
-        public static void LoadLists()
+        /// <summary>
+        /// Each Sunken Sea subbiome has a correspoding spawn condition boolean value and a biome type.
+        /// </summary>
+        public static SortedDictionary<SunkenSeaBiomeFlags, (Func<NPCSpawnInfo, bool> SpawnCondition, int BiomeType)> SunkenSeaBiomeCorrespondentValues { get; private set; }
+
+        public override void OnModLoad()
         {
             donatorList = new List<string>()
             {
@@ -390,7 +396,7 @@ namespace CalamityMod
                 "Spider region",
                 "WinterTire",
                 "Nycro",
-                "Bewearium",
+                "Vyster", // previously "Bewearium"
                 "William",
                 "HellGoat2",
                 "116taj",
@@ -1776,7 +1782,8 @@ namespace CalamityMod
                 NPCID.SmallBaldZombie,
                 NPCID.BigZombie,
                 NPCID.SmallZombie,
-                NPCID.MaggotZombie
+                NPCID.MaggotZombie,
+                NPCType<BucketZombie>()
                 // halloween zombies not included because they don't drop shackles or zombie arms
             };
 
@@ -1958,6 +1965,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileID.PrincessWeapon,
                 ProjectileType<AnahitasArpeggioNote>(),
                 ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),
@@ -2015,7 +2023,7 @@ namespace CalamityMod
                 ProjectileType<PhotonRipperProjectile>(),
                 ProjectileType<PlaguedFuelPackCloud>(),
                 ProjectileType<PlantationStaffSporeCloud>(),
-                ProjectileType<PrismaticBeam>(),
+                ProjectileType<PrismaticRay>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
                 ProjectileType<RespiteblockHoldout>(),
@@ -2204,7 +2212,8 @@ namespace CalamityMod
                 ProjectileID.Bee,
                 ProjectileID.GiantBee,
                 ProjectileType<AeroExplosive>(),
-                ProjectileID.ScarabBomb
+                ProjectileID.ScarabBomb,
+                ProjectileID.TNTBarrel
             };
 
             ZeroContactDamageNPCList = new List<int>
@@ -2542,7 +2551,7 @@ namespace CalamityMod
                 { NPCID.LeechTail, 5000 },
 
                 // Tier 2
-                { NPCID.QueenSlimeBoss, 150000 }, // 30 seconds
+                { NPCID.QueenSlimeBoss, 200000 }, // 30 seconds
                 { NPCID.QueenSlimeMinionBlue, 6000 },
                 { NPCID.QueenSlimeMinionPink, 6000 },
                 { NPCID.QueenSlimeMinionPurple, 5000 },
@@ -2595,25 +2604,27 @@ namespace CalamityMod
                 // 9.5 minutes in total for vanilla Boss Rush bosses
             };
 
+            // NOTE: This does not account for Calamity's base value increases
             BossValues = new SortedDictionary<int, int>
             {
-                { NPCID.KingSlime, Item.buyPrice(0, 5) },
-                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10) },
-                { NPCID.QueenBee, Item.buyPrice(0, 15) },
-                { NPCID.SkeletronHead, Item.buyPrice(0, 20) },
-                { NPCID.Deerclops, Item.buyPrice(0, 20) },
-                { NPCID.WallofFlesh, Item.buyPrice(0, 25) },
-                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30) },
-                { NPCID.Spazmatism, Item.buyPrice(0, 40) },
-                { NPCID.Retinazer, Item.buyPrice(0, 40) },
-                { NPCID.TheDestroyer, Item.buyPrice(0, 40) },
-                { NPCID.SkeletronPrime, Item.buyPrice(0, 40) },
-                { NPCID.Plantera, Item.buyPrice(0, 50) },
-                { NPCID.HallowBoss, Item.buyPrice(0, 60) },
-                { NPCID.Golem, Item.buyPrice(0, 60) },
-                { NPCID.DukeFishron, Item.buyPrice(0, 75) },
-                { NPCID.CultistBoss, Item.buyPrice(1) },
-                { NPCID.MoonLordCore, Item.buyPrice(1, 50) }
+                { NPCID.KingSlime, Item.buyPrice(0, 2) },
+                { NPCID.EyeofCthulhu, Item.buyPrice(0, 2) },
+                // Evil bosses drop 5 gold in vanilla; unmodified
+                { NPCID.QueenBee, Item.buyPrice(0, 8) },
+                { NPCID.Deerclops, Item.buyPrice(0, 8) },
+                { NPCID.SkeletronHead, Item.buyPrice(0, 12) },
+                { NPCID.WallofFlesh, Item.buyPrice(0, 12) },
+                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 16) },
+                { NPCID.Spazmatism, Item.buyPrice(0, 16) },
+                { NPCID.Retinazer, Item.buyPrice(0, 16) },
+                { NPCID.TheDestroyer, Item.buyPrice(0, 16) },
+                { NPCID.SkeletronPrime, Item.buyPrice(0, 16) },
+                { NPCID.Plantera, Item.buyPrice(0, 20) },
+                { NPCID.Golem, Item.buyPrice(0, 25) },
+                { NPCID.HallowBoss, Item.buyPrice(0, 30) },
+                { NPCID.DukeFishron, Item.buyPrice(0, 30) },
+                { NPCID.CultistBoss, Item.buyPrice(0, 50) }
+                // Moon Lord drops 1 plat in vanilla; unmodified
             };
 
             bossTypes = new SortedDictionary<int, int>()
@@ -2712,9 +2723,19 @@ namespace CalamityMod
                 ItemType<Mycoroot>(),
                 ItemType<CosmicKunai>()
             };
+
+            SunkenSeaBiomeCorrespondentValues = new()
+            {
+                { SunkenSeaBiomeFlags.UndergroundDesert, (spawnInfo => spawnInfo.Player.ZoneDesert, -1 /* None needed. */) },
+                { SunkenSeaBiomeFlags.TimelessShores, (spawnInfo => spawnInfo.Player.Calamity().ZoneTimelessShores, GetInstance<TimelessShoresBiome>().Type) },
+                { SunkenSeaBiomeFlags.RadiantReefs, (spawnInfo => spawnInfo.Player.Calamity().ZoneRadiantReefs, GetInstance<RadiantReefsBiome>().Type) },
+                { SunkenSeaBiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
+                { SunkenSeaBiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
+                { SunkenSeaBiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
+            };
         }
 
-        public static void UnloadLists()
+        public override void Unload()
         {
             donatorList = null;
             projectileDestroyExceptionList = null;
@@ -2793,6 +2814,8 @@ namespace CalamityMod
             DisabledSummonerNerfMinions = null;
 
             VeneratedLocketBanlist = null;
+
+            SunkenSeaBiomeCorrespondentValues = null;
         }
     }
 }

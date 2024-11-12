@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 840;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 50;
-            Item.useTime = Item.useAnimation = 80; // 42 frames of firing animation
+            Item.useAnimation = Item.useTime = 80; // 42 frames of firing animation
             Item.knockBack = 2f;
             Item.shoot = ModContent.ProjectileType<ThunderboltHoldout>();
             Item.shootSpeed = 16f;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
-            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
             return false;
         }
     }

@@ -116,7 +116,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)
@@ -255,17 +255,6 @@ namespace CalamityMod.NPCs.Crags
         {
             if (hurtInfo.Damage > 0)
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
-        }
-
-        public override void OnKill()
-        {
-            // Increase the kill count of Scryllars for the Bestiary
-            if (NPC.GetWereThereAnyInteractions())
-            {
-                NPC nPC = new NPC();
-                nPC.SetDefaults(ModContent.NPCType<Scryllar>());
-                Main.BestiaryTracker.Kills.RegisterKill(nPC);
-            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)

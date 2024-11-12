@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using CalamityMod.Cooldowns;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
@@ -45,6 +47,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             if (Main.myPlayer == player.whoAmI)
                 player.Calamity().rightClickListener = true;
+
+
+            if (player.Calamity().cooldowns.TryGetValue(HellbornShots.ID, out var cooldown))
+            {
+                cooldown.timeLeft = 8 - player.Calamity().hellbornShots;
+            }
+            else
+            {
+                player.AddCooldown(HellbornShots.ID, 8);
+            }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

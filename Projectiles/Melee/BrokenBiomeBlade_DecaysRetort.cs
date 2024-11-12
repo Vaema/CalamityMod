@@ -104,8 +104,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!cannotLifesteal) //trolled
             {
-                Owner.statLife += BrokenBiomeBlade.EvilAttunement_Lifesteal;
-                Owner.HealEffect(BrokenBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
+                Owner.HealPlayer(BrokenBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
             }
 
             // Bounce off

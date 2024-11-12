@@ -44,10 +44,10 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 Vector2 dustCorner = Player.position - 2f * Vector2.One;
                 Vector2 dustVel = Player.velocity + new Vector2(0f, Main.rand.NextFloat(-11f, -2f));
-                int d = Dust.NewDust(dustCorner, Player.width + 4, Player.height + 4, Main.rand.NextBool(4) ? 300 : 323, dustVel.X, dustVel.Y);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].scale = hasDebuffResistance ? Main.rand.NextFloat(0.3f, 0.3f) : Main.rand.NextFloat(0.5f, 0.5f);
-                Main.dust[d].alpha = 235;
+                Dust moonDust = Dust.NewDustDirect(dustCorner, Player.width + 4, Player.height + 4, Main.rand.NextBool(4) ? 300 : 323, dustVel.X, dustVel.Y);
+                moonDust.noGravity = true;
+                moonDust.scale = hasDebuffResistance ? Main.rand.NextFloat(0.3f, 0.3f) : Main.rand.NextFloat(0.5f, 0.5f);
+                moonDust.alpha = 235;
             }
         }
 
@@ -64,10 +64,10 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 Vector2 dustCorner = npc.position - 2f * Vector2.One;
                 Vector2 dustVel = npc.velocity + new Vector2(0f, Main.rand.NextFloat(-11f, -2f));
-                int d = Dust.NewDust(dustCorner, npc.width + 4, npc.height + 4, Main.rand.NextBool(4) ? 300 : 323, dustVel.X, dustVel.Y);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].scale = Main.rand.NextFloat(0.5f, 0.5f);
-                Main.dust[d].alpha = 235;
+                Dust moonDust = Dust.NewDustDirect(dustCorner, npc.width + 4, npc.height + 4, Main.rand.NextBool(4) ? 300 : 323, dustVel.X, dustVel.Y);
+                moonDust.noGravity = true;
+                moonDust.scale = Main.rand.NextFloat(0.5f, 0.5f);
+                moonDust.alpha = 235;
             }
         }
     }

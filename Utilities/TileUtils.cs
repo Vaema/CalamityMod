@@ -21,6 +21,7 @@ using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -114,6 +115,9 @@ namespace CalamityMod
         public static void DrawFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             int width = 16;
@@ -133,6 +137,9 @@ namespace CalamityMod
 
         public static void DrawStaticFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
             Color drawColour = new Color(100, 100, 100, 0);
@@ -151,7 +158,7 @@ namespace CalamityMod
 
         public static void DrawFlameSparks(int dustType, int rarity, int i, int j)
         {
-            if (!Main.gamePaused && Main.instance.IsActive && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
+            if (!Main.gamePaused && Main.instance.IsActive && !Main.tile[i,j].IsTileActuallyInvisible() && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
             {
                 if (Main.rand.NextBool(rarity))
                 {
@@ -224,6 +231,90 @@ namespace CalamityMod
             uniqueAnimationFrame %= frameAmt;
 
             return uniqueAnimationFrame * animationFrameLength;
+        }
+
+        /// <summary>
+        /// Checks whether or not the tile is actually able to be seen.
+        /// </summary>
+        /// <param name="tile">The tile being checked.</param>
+        /// <returns>Whether</returns>
+        public static bool IsTileActuallyInvisible(this Tile tile) => tile.IsTileInvisible && !Main.ShouldShowInvisibleWalls();
+
+        /// <summary>
+        /// Gets the color of a tile/wall after paint is applied
+        /// </summary>
+        /// <param name="paintType">The ID of the paint, this can be received from the tile's TileColor or WallColor</param>
+        /// <param name="color">The base color to apply the paint to</param>
+        /// <param name="deepPaintOnly">Whether or not only deep paints should be included. Typically this should be set to false if this isn't being used for a glowmask</param>
+        /// <returns>The original color with paint applied</returns>
+        public static Color ApplyPaint(int paintType, Color color, bool deepPaintOnly = true)
+        {
+            if (paintType == PaintID.None)
+                return color;
+
+            bool isDeep = IsDeepPaint(paintType);
+            if (deepPaintOnly && !isDeep)
+                return color;
+
+            Color paintCol = WorldGen.paintColor(paintType);
+
+            if (paintType < PaintID.DeepRedPaint)
+            {
+                paintCol.R = (byte)((paintCol.R / 2f) + 128);
+                paintCol.G = (byte)((paintCol.G / 2f) + 128);
+                paintCol.B = (byte)((paintCol.B / 2f) + 128);
+            }
+            if (paintType == PaintID.ShadowPaint)
+            {
+                paintCol = Color.Black;
+            }
+            color = color.MultiplyRGB(paintCol);
+
+            return color;
+        }
+
+        private static bool IsDeepPaint(int paintType)
+        {
+            return PaintID.DeepRedPaint >= paintType && paintType <= PaintID.DeepPinkPaint;
+        }
+
+        /// <summary>
+        /// Draws placed wall with multiple variants, properly painted.
+        /// </summary>
+        /// <param name="spriteBatch">The sprite batch.</param>
+        /// <param name="type">The type of wall.</param>
+        /// <param name="i">The x co-ordinate of the wall.</param>
+        /// <param name="j">The y co-ordinate of the wall.</param>
+        /// <param name="sheetOffset">The offset within the spritesheet, similar to TileFrame.</param>
+        /// <returns>Whether or not PreDraw is drawn</returns>
+        public static bool DrawMultiVariantWall(this SpriteBatch spriteBatch, int type, int i, int j, int[] sheetOffset)
+        {
+            if (spriteBatch is null)
+                return true;
+
+            spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                Tile tile = Main.tile[i, j];
+    			Effect tileShader = Main.tileShader;
+                TreePaintingSettings settings = TreePaintSystemData.GetWallSettings(type);
+                int paintColor = tile.WallColor;
+			    tileShader.Parameters["leafHueTestOffset"]?.SetValue(settings.HueTestOffset);
+    			tileShader.Parameters["leafMinHue"]?.SetValue(settings.SpecialGroupMinimalHueValue);
+	    		tileShader.Parameters["leafMaxHue"]?.SetValue(settings.SpecialGroupMaximumHueValue);
+		    	tileShader.Parameters["leafMinSat"]?.SetValue(settings.SpecialGroupMinimumSaturationValue);
+			    tileShader.Parameters["leafMaxSat"]?.SetValue(settings.SpecialGroupMaximumSaturationValue);
+		    	tileShader.Parameters["invertSpecialGroupResult"]?.SetValue(settings.InvertSpecialGroupResult);
+	    		int index = Main.ConvertPaintIdToTileShaderIndex(paintColor, settings.UseSpecialGroups, settings.UseWallShaderHacks);
+    			tileShader.CurrentTechnique.Passes[index].Apply();
+
+                Texture2D sprite = TextureAssets.Wall[type].Value;
+                Vector2 offset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) - Vector2.One * 8f;
+                Rectangle frame = new Rectangle(sheetOffset[0] + tile.WallFrameX, sheetOffset[1] + tile.WallFrameY, 32, 32);
+                Color lightColor = tile.IsWallFullbright ? Color.White : Lighting.GetColor(i, j);
+
+                spriteBatch.Draw(sprite, offset, frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            });
+            return false;
         }
 
         public static Tile ParanoidTileRetrieval(int x, int y)
@@ -317,9 +408,11 @@ namespace CalamityMod
 
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
+        [Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
-            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
         /// <summary>
@@ -387,6 +480,7 @@ namespace CalamityMod
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
+            TileType<Stohne>(),
         });
 
         /// <summary>
@@ -559,6 +653,7 @@ namespace CalamityMod
             SetMerge(type, TileID.MarbleBlock);
             SetMerge(type, TileID.GraniteBlock);
             //Calam
+            SetMerge(type, TileType<AncientSmoothNavystone>());
             SetMerge(type, TileType<SmoothNavystone>());
             SetMerge(type, TileType<SmoothBrimstoneSlag>());
             SetMerge(type, TileType<SmoothAbyssGravel>());

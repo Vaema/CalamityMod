@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.frameCounter % 7 == 0)
             {
                 Projectile.frame++;
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                     Projectile.Kill();
             }
 
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<KamiFlu>(), 600);
+            target.AddBuff(ModContent.BuffType<KamiFlu>(), YanmeisKnife.DebuffDuration);
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 60; i++)
@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(YanmeisKnife.HitSound, Projectile.position);
                 Projectile.ai[0] = 1f;
             }
-            Main.player[Projectile.owner].AddBuff(ModContent.BuffType<KamiBuff>(), 600);
+            Main.player[Projectile.owner].AddBuff(ModContent.BuffType<KamiBuff>(), YanmeisKnife.BoostDuration);
         }
         public override Color? GetAlpha(Color lightColor) => new Color(0, 215, 0, 0);
     }

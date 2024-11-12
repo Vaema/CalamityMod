@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,6 +10,18 @@ namespace CalamityMod.Items.Accessories
     public class TheAbsorber : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float MoveSpeedBoost = 0.12f;
+        public static float JumpSpeedBoost = 0.6f; // Both 12% so we only need just one in the tooltip
+        public static float ThornsBoost = 3.5f;
+        public static int AuraLifetime = 1800;
+        public static int AuraRegenBoost = 6;
+        public static float AuraDamageBoost = 0.08f;
+        public static float AuraDamageReductionBoost = 0.05f;
+        public static float DamageTakenHealedPercent = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), AuraLifetime.FramesToSeconds(),
+        AuraRegenBoost.ToRegenPerSecond(), AuraDamageBoost.ToPercent(), AuraDamageReductionBoost.ToPercent(), DamageTakenHealedPercent.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 20;

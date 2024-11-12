@@ -123,7 +123,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.SunplateBlock, 75).
                 AddIngredient<DivineGeode>(15).
-                AddIngredient<CoreofSunlight>(7).
+                AddIngredient<EssenceofSunlight>(7).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -682,7 +682,13 @@ Kingsbane: {
 
 Leviatitan: {
 	DisplayName: Leviatitan
-	Tooltip: Converts musket balls into toxic and normal water blasts
+	Tooltip:
+		'''
+		Fires high velocity aqua blasts
+		Releases homing aberrations that shred enemy defense every six shots
+		<right> to vomit a meteor that explodes on hit
+		'The L in LMG stands for Leviathan'
+		'''
 }
 
 LunarianBow: {
@@ -777,15 +783,6 @@ MineralMortar: {
 		'''
 }
 
-MolecularManipulator: {
-	DisplayName: Molecular Manipulator
-	Tooltip:
-		'''
-		Fires a fast null bullet that distorts NPC stats
-		'Is it nullable or not? Let's find out!'
-		'''
-}
-
 MonolithBow: {
 	DisplayName: Monolith Bow
 	Tooltip: ""
@@ -833,8 +830,27 @@ NullificationPistol: {
 	DisplayName: Nullification Pistol
 	Tooltip:
 		'''
-		Fires a fast null bullet that distorts NPC stats
-		'Is it nullable or not? Let's find out!'
+		Fires discrete bolts of polarized energy. <right> to swap modes
+		Positive energy splits into three piercing beams
+		Negative energy shoots rapidly and homes in on enemies
+		All shots blow away enemies at close range
+		Each mode weakens with continuous use and resets to full power when swapped
+		'Weaponizing alien tech? Now that's what I like to hear!'
+		'''
+}
+
+OntologicalDespoiler: {
+	DisplayName: Ontological Despoiler
+	Tooltip:
+		'''
+		Condenses chargeable pockets of concentrated unreality. <right> to swap modes
+		Unstable condensate shots trifurcate and pierce enemies
+		Null condensate shots fire rapidly and home in on enemies
+		At 50% charge or higher, rate of fire significantly increases
+		Fully charged unstable condensate lobs a homing disruption sphere
+		Fully charged null condensate emits a hitscan null-annihilation beam
+		Each mode charges slower when used repeatedly and resets to full speed when swapped
+		'Rob them of continuity and the laws of physics they hold so dear.'
 		'''
 }
 
@@ -1277,6 +1293,18 @@ Svantechnical: {
 		'''
 }
 
+TauCannon: {
+	DisplayName: Tau Cannon
+	Tooltip:
+		'''
+		A bulky assault rifle with three charge levels that fires astral energy
+		Charge level one fires a burst of bolts
+		Charge level two fires a beam of energy that quickly fizzles out
+		Charge level three fires a massive laser and creates astral portals around you
+		'This weapon is very ethically questionable'
+		'''
+}
+
 TelluricGlare: {
 	DisplayName: Telluric Glare
 	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
@@ -1433,7 +1461,7 @@ WulfrumBlunderbuss: {
 		'''
 		Consumes wulfrum scrap or silver coins to fire
 		The shot's spread can be diminished by aiming further away, at the cost of less damage
-		Ignores 3 points of enemy Defense
+		{$Common.ArmorPenetration}
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''

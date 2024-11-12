@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void SetStaticDefaults()
         {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(140, 9f, 2.6f);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 9f, 2.6f);
         }
 
         public override void SetDefaults()

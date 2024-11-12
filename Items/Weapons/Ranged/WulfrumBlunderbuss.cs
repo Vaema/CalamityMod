@@ -8,6 +8,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
@@ -20,6 +21,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f };
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.1f };
+
+        public static int ArmorPenetration = 3;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
 
         public static float MinSpreadDistance = 460f;
         public static float MaxSpreadDistance = 60f;
@@ -36,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 23;
             Item.height = 8;
             Item.damage = 11;
-            Item.ArmorPenetration = 3;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 55;
             Item.useAnimation = 55;

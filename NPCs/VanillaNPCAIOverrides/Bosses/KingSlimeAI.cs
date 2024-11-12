@@ -221,12 +221,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            int despawnDistance = 500;
-            if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
+            int despawnDistance = 60;
+            int forceDespawnDistance = 300;
+            if ((Main.player[npc.target].dead && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance) || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > forceDespawnDistance)
             {
                 CalamityUtils.CalamityTargeting(npc, default);
 
-                if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
+                if ((Main.player[npc.target].dead && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance) || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > forceDespawnDistance)
                 {
                     if (npc.timeLeft > 10)
                         npc.timeLeft = 10;

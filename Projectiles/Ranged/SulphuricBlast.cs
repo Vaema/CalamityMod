@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Ranged
         public const int TotalSecondsToStick = 8;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 20;
+            Main.projFrames[Type] = 20;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.FinalExtraUpdate())
                 Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
 
             Projectile.StickyProjAI(8);
             Projectile.Opacity = Utils.GetLerpValue(CalamityUtils.SecondsToFrames(TotalSecondsToStick), CalamityUtils.SecondsToFrames(TotalSecondsToStick * 0.5f), Projectile.localAI[0], true);
@@ -80,8 +80,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int projFrame = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int projFrame = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = projFrame * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, projFrame)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)projFrame / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

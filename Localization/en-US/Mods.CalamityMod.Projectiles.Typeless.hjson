@@ -76,8 +76,9 @@ HydrothermicSphere.DisplayName: Hydrothermic Sphere
 JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
-LunicBeam.DisplayName: Beam
-MagnusBeam.DisplayName: Beam
+LunicBeam.DisplayName: Lunic Seeker
+MagnusBeam.DisplayName: Magnus Seeker
+MagnusBoom.DisplayName: Nebula Blast
 MythrilFlare.DisplayName: Mythril Flare
 NanoFlare.DisplayName: Nano Flare
 Nanotech.DisplayName: Nanoblade
@@ -121,6 +122,7 @@ SulphuricAcidBubbleFriendly.DisplayName: Acid Bubble
 SulphurousSandBallGun.DisplayName: Sulphurous Sand
 TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
+TatteredFairyDust.DisplayName: Tattered Fairy Dust
 TeslaAura.DisplayName: Tesla's Electricity
 TitanHeartBoom.DisplayName: Titan Heart Boom
 UrsaSlash.DisplayName: Ursa Slash
@@ -135,3 +137,4 @@ WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
+XykDeathAnim.DisplayName: Xyk Death Animation

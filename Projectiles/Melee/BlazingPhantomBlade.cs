@@ -26,10 +26,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.NoMeleeSpeedVelocityScaling[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.NoMeleeSpeedVelocityScaling[Type] = true;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Melee
             bool hyperBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile;
             bool sunlightBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile * 2f;
 
-            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Microsoft.Xna.Framework.Rectangle rectangle = asset.Frame(1, 4);
             Vector2 origin = rectangle.Size() / 2f;
             float num = Projectile.scale * 1.1f;

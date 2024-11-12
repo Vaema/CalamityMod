@@ -302,7 +302,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             if (CurrentAttackState == AttackState.UpwardsThrust)
             {
                 target.velocity.Y -= 12 * (float)Math.Sqrt(target.knockBackResist);
-                target.FlungNPC().ApplyCollisionDamage(target, 50, Vector2.Zero, 5f);
+                target.FlungNPC().ApplyCollisionDamage(target, Owner, 50, Vector2.Zero, 5f);
             }
 
             target.AddBuff(BuffID.Poisoned, 180);
@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, AppropriateRotation + MathHelper.PiOver2 * 1.5f - MathHelper.ToRadians(12), texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

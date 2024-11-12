@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -14,31 +15,28 @@ namespace CalamityMod.Items.Potions
     {
         public new string LocalizationCategory => "Items.Potions";
         public static int BuffType = BuffID.WellFed2;
-        public static int BuffDuration = 60 * 3600;
-        public static int SicknessDuration = 50 * 60;
+        public static int BuffDuration = CalamityUtils.MinutesToFrames(60);
+        public static int SicknessDuration = CalamityUtils.SecondsToFrames(50);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration / 3600);
 
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
+            // Even though this uses the drinking animation, it does not use DrinkParticleColors
+            // This is so that dusts fly out (like Bowl of Soup) instead of drip down (like Apple Juice)
+            ItemID.Sets.FoodParticleColors[Type] = new Color[4] {
+                new Color(185, 117, 70),
+                new Color(214, 98, 44),
+                new Color(235, 156, 117),
+                new Color(89, 54, 46)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+            Item.DefaultToHealingPotion(28, 18, 120);
+            Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.Green;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.potion = true;
-            Item.healLife = 120;
-            Item.healMana = 150;
         }
 
         public override void ModifyTooltips(List<TooltipLine> list)

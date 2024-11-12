@@ -1,6 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Events;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.NPCs.AquaticScourge;
 using Terraria;
 using Terraria.ID;

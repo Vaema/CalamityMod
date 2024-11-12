@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -124,7 +124,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D drawTex = Main.zenithWorld ? TextureAssets.Npc[ModContent.NPCType<Leviathan>()].Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D drawTex = Main.zenithWorld ? TextureAssets.Npc[ModContent.NPCType<Leviathan>()].Value : TextureAssets.Npc[Type].Value;
             Rectangle frame = Main.zenithWorld ? drawTex.Frame(2, 3, 0, 0) : NPC.frame;
             Vector2 origin = new Vector2(drawTex.Width / 2, drawTex.Height / 2);
 
@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.Leviathan
             }
             else
             {
-                drawPos -= new Vector2(drawTex.Width, drawTex.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                drawPos -= new Vector2(drawTex.Width, drawTex.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                 drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             }
             Color color = Main.zenithWorld ? Color.Purple : drawColor;

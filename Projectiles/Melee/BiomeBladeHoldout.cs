@@ -2,6 +2,7 @@
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -127,22 +128,22 @@ namespace CalamityMod.Projectiles.Melee
             bool astral = Owner.Calamity().ZoneAstral;
             bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.TrueDefault];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.TrueDefault);
 
             if (desert || hell)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueHot];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueHot);
             if (snow)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueCold];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueCold);
             if (jungle || ocean)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueTropical];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueTropical);
             if (evil)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueEvil];
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueEvil);
             if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Holy];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Holy);
             if (astral)
-                attunement = Attunement.attunementArray[(int)AttunementID.Astral];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Astral);
             if (marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Marine];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Marine);
 
             //If the owner already had the attunement , break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
@@ -178,7 +179,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

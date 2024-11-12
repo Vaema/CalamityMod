@@ -36,6 +36,9 @@ namespace CalamityMod.Items
             {
                 #region Boss Treasure Bags
                 case ItemID.KingSlimeBossBag:
+                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, 3); // 33% Katana
+                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, 3); // 33% Keybrand in Remix
+
                     loot.Add(new CommonDrop(ModContent.ItemType<CrownJewel>(), 10)); // 10% Crown Jewel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -53,8 +56,8 @@ namespace CalamityMod.Items
                 // We don't care.
                 case ItemID.EaterOfWorldsBossBag:
                     var eowRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 120, 240); // 100% 120-240 Demonite Ore
-                    eowRevLCR.Add(ItemID.ShadowScale, 1, 60, 120); // 100% 60-120 Shadow Scale
+                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 90, 135); // 100% 90-135 Demonite Ore
+                    eowRevLCR.Add(ItemID.ShadowScale, 1, 35, 55); // 100% 35-55 Shadow Scale
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -64,9 +67,11 @@ namespace CalamityMod.Items
                 // This can theoretically be exploited by killing the boss on Expert, then turning on Rev to open the bags.
                 // We don't care.
                 case ItemID.BrainOfCthulhuBossBag:
+                    // BoC drops less partial loot than EoW
+                    // However, sell price is overall higher despite the lower yield
                     var bocRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 100, 180); // 100% 100-180 Crimtane Ore
-                    bocRevLCR.Add(ItemID.TissueSample, 1, 60, 120); // 100% 60-120 Tissue Sample
+                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 80, 120); // 100% 80-120 Crimtane Ore
+                    bocRevLCR.Add(ItemID.TissueSample, 1, 25, 40); // 100% 25-40 Tissue Sample
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -264,8 +269,8 @@ namespace CalamityMod.Items
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
-                    // The Celestial Onion only drops if the player hasn't used one, or if the world is not in Master Mode.
-                    loot.AddIf((info) => !info.player.Calamity().extraAccessoryML && !Main.masterMode, ModContent.ItemType<CelestialOnion>());
+                    // The Celestial Onion only drops if the player hasn't used one (or has not used Demon Heart in Master Mode as it alternatively functions as that there)
+                    loot.AddIf((info) => (!info.player.Calamity().extraAccessoryML && !Main.masterMode) || (!info.player.extraAccessory && Main.masterMode), ModContent.ItemType<CelestialOnion>());
                     break;
                 #endregion
 

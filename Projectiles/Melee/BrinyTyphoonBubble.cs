@@ -10,9 +10,11 @@ namespace CalamityMod.Projectiles.Melee
     public class BrinyTyphoonBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "Terraria/Images/Projectile_385";
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()

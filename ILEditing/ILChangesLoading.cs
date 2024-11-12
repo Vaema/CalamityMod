@@ -40,11 +40,9 @@ namespace CalamityMod.ILEditing
             // Graphics
             IL_Main.DoDraw += AdditiveDrawing;
             IL_Main.DoDraw += DrawFloralParadiseFog;
-            On_Main.DrawGore += DrawForegroundStuff;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;
             On_Main.DrawInfernoRings += DrawForegroundParticles;
-            On_TileDrawing.PreDrawTiles += ClearForegroundStuff;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
 
@@ -53,6 +51,11 @@ namespace CalamityMod.ILEditing
             On_Player.ApplyEquipFunctional += DyeableShadersRenderer.CheckAccessoryDetour;
             On_Player.ApplyEquipVanity_Item += DyeableShadersRenderer.CheckVanityDetour;
             On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
+
+            // Graphics (ModPlant stuff)
+            IL_TileDrawing.DrawSingleTile += DisableCullingForTreeAndCactus;
+            IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
+            On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
 
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
@@ -67,13 +70,15 @@ namespace CalamityMod.ILEditing
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             IL_Player.DashMovement += FixAllDashMechanics;
+            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
             On_WorldGen.CloseDoor += CloseDoor_LabDoorOverride;
             On_Item.AffixName += IncorporateEnchantmentInAffix;
-            On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateMinionExplodingCountdown;
+            On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
+            On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
             // TODO -- This should be unnecessary. There is now a TML hook for platform collision for ModNPCs.
             On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
@@ -91,7 +96,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
 
             //LavaStyles
-            if (CalamityMod.Instance.biomeLava == null)
+            if (ExternalMods.biomeLava == null)
             {
                 //Rendering/Drawing
                 IL_Main.DoDraw += DoDrawLavas;
@@ -138,7 +143,9 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
+            IL_Projectile.Damage += ReduceEoWGrenadeResist;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
+            IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
             IL_Player.UpdateBuffs += NerfSharpeningStation;
             IL_Player.UpdateBuffs += NerfBeetleScaleMail;
             IL_Player.UpdateBuffs += NerfNebulaArmorBaseLifeRegenAndDamage;
@@ -178,6 +185,7 @@ namespace CalamityMod.ILEditing
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
             IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
+            Terraria.GameContent.Biomes.On_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
             IL_Player.UpdateBuffs += RemoveFeralBiteRandomDebuffs;
@@ -197,8 +205,10 @@ namespace CalamityMod.ILEditing
             IL_Player.Update += PreventUFODismountInWater;
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
+            IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
+            IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

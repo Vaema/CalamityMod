@@ -42,6 +42,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             float transparency = 0.6f;
 
             // Must be set here 
@@ -58,20 +61,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Rectangle frame = new Rectangle(tile.TileFrameX + frameXOffset, tile.TileFrameY + frameYOffset, 16, 16);
 
             Color color = Lighting.GetColor(i, j) * transparency;
-            TileFramingSystem.SlopedGlowmask(in tile, i, j, tex, frame, GetDrawColour(i, j, color), default);
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 0 && colType <= 30)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            TileFramingSystem.SlopedGlowmask(in tile, i, j, tex, frame, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, color, false), default);
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

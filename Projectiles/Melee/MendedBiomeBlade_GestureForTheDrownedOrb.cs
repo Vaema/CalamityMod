@@ -33,9 +33,9 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            Main.projFrames[Projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()

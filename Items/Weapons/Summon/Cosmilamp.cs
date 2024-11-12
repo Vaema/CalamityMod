@@ -19,6 +19,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float LanternSummonCost = 2f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+
         public override void SetDefaults()
         {
             Item.width = 42;

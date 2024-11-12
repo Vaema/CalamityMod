@@ -272,13 +272,19 @@ namespace CalamityMod.Projectiles.Boss
             if (cannotBeHurt)
                 return true;
 
-            // Applies Vulnerability Hex and/or the effects of Supreme Cirrus' HAGE faces.
-            OnHitPlayer_Internal(player);
-
             // Compute distance for direct health reduction from overlap.
             float distSQ = Projectile.DistanceSQ(player.Center);
             float radiusSQ = CircularHitboxRadius * CircularHitboxRadius * Projectile.scale * Projectile.scale;
             float radiusRatio = distSQ / radiusSQ;
+
+            // If this code happens to run when the player is not colliding, don't apply any effects.
+            // The performance impact of verifying this is marginal, especially since there's only ever one of this projectile.
+            // == false is necessary since the method is a nullable.
+            if (Colliding(Projectile.Hitbox, player.Hitbox) == false) 
+                return false;
+
+            // Applies Vulnerability Hex and/or the effects of Supreme Cirrus' HAGE faces.
+            OnHitPlayer_Internal(player);
 
             // Check the player's speed. If they are moving fast enough, damage them more severely; this prevents trying to rush straight through the vortex.
             float playerSpeed = player.velocity.LengthSquared();
@@ -365,7 +371,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             lightColor.R = (byte)(255 * Projectile.Opacity);
             Main.spriteBatch.End();
             Effect shieldEffect = Filters.Scene["CalamityMod:HellBall"].GetShader().Shader;

@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldActiveDefense = 30;
         public static float ShieldActiveDamageReduction = 0.1f;
 
-        public Player OwnerPlayer { get; set; }
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;
 
         public bool ShouldDrawDyeableShader
@@ -50,7 +50,10 @@ namespace CalamityMod.Items.Accessories
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                var player = OwnerPlayer;
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
+
+                var player = Main.player[OwnerPlayer];
                 if (player is null)
                     return false;
 
@@ -109,7 +112,7 @@ namespace CalamityMod.Items.Accessories
             if (Texture == "CalamityMod/Items/Accessories/TheSponge")
             {
                 Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/TheSpongeShield").Value;
-                spriteBatch.Draw(tex, Item.Center - Main.screenPosition + new Vector2(0f, 0f), Main.itemAnimations[Item.type].GetFrame(tex), Color.Cyan * 0.5f, 0f, new Vector2(tex.Width / 2f, (tex.Height / 30f) * 0.8f), 1f, SpriteEffects.None, 0);
+                spriteBatch.Draw(tex, Item.Center - Main.screenPosition + new Vector2(0f, 0f), Main.itemAnimations[Type].GetFrame(tex), Color.Cyan * 0.5f, 0f, new Vector2(tex.Width / 2f, (tex.Height / 30f) * 0.8f), 1f, SpriteEffects.None, 0);
             }
         }
 
@@ -145,7 +148,7 @@ namespace CalamityMod.Items.Accessories
                     spriteBatch,
                     texture: tex,
                     position,
-                    Main.itemAnimations[Item.type].GetFrame(tex),
+                    Main.itemAnimations[Type].GetFrame(tex),
                     Color.Cyan * 0.4f,
                     itemColor,
                     origin,
@@ -172,7 +175,10 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            var player = OwnerPlayer;
+            if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                return;
+
+            var player = Main.player[OwnerPlayer];
             if (player is null)
                 return;
 

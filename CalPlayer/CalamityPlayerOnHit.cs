@@ -7,8 +7,11 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Ranged;
@@ -79,6 +82,7 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FlameWakerBoots = flameWakerBoots;
             target.Calamity().IncreasedHeatEffects_HellfireTreads = hellfireTreads;
+            target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
@@ -86,46 +90,6 @@ namespace CalamityMod.CalPlayer
 
             switch (item.type)
             {
-                case ItemID.CobaltSword:
-                    target.Calamity().cobaltNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ItemID.PalladiumSword:
-                    if (Player.moonLeech)
-                        return;
-                    Player.lifeRegenTime += 2;
-                    break;
-
-                case ItemID.MythrilSword:
-                    target.Calamity().mythrilNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ItemID.OrichalcumSword:
-                    if (Player.petalTimer > 0)
-                        Player.petalTimer /= 2;
-                    break;
-
-                case ItemID.AdamantiteSword:
-                    float slowDownMult = 0.5f;
-                    if (CalamityLists.enemyImmunityList.Contains(target.type) || target.boss)
-                        slowDownMult = 0.95f;
-                    target.velocity *= slowDownMult;
-                    break;
-
-                case ItemID.CandyCaneSword:
-
-                    if (Player.moonLeech || Player.lifeSteal <= 0f || target.lifeMax <= 5)
-                        return;
-
-                    int heal = 2;
-                    Player.lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
-
-                    break;
-
                 case ItemID.DeathSickle:
                     target.AddBuff(BuffType<WhisperingDeath>(), 120);
                     break;
@@ -171,12 +135,14 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.OnFire3, 120);
             }
 
+            bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
+
             ItemLifesteal(target, item, damageDone);
-            ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true));
+            ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
             NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
 
             // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
-            if (target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>())
+            if (targetIsDummy)
                 return;
 
             if (rageModeActive && shatteredCommunity)
@@ -232,6 +198,7 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             cgn.IncreasedHeatEffects_HellfireTreads = hellfireTreads;
+            cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
@@ -239,46 +206,6 @@ namespace CalamityMod.CalPlayer
 
             switch (proj.type)
             {
-                case ProjectileID.CobaltNaginata:
-                    target.Calamity().cobaltNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ProjectileID.PalladiumPike:
-                    if (Player.moonLeech)
-                        return;
-                    Player.lifeRegenTime += 2;
-                    break;
-
-                case ProjectileID.MythrilHalberd:
-                    target.Calamity().mythrilNerfTimer = CalamityGlobalNPC.cobaltAndMythrilNerfTime;
-                    break;
-
-                case ProjectileID.OrichalcumHalberd:
-                    if (Player.petalTimer > 0)
-                        Player.petalTimer /= 2;
-                    break;
-
-                case ProjectileID.AdamantiteGlaive:
-                    float slowDownMult = 0.5f;
-                    if (CalamityLists.enemyImmunityList.Contains(target.type) || target.boss)
-                        slowDownMult = 0.95f;
-                    target.velocity *= slowDownMult;
-                    break;
-
-                case ProjectileID.FruitcakeChakram:
-
-                    if (Player.moonLeech || Main.player[Main.myPlayer].lifeSteal <= 0f || target.lifeMax <= 5)
-                        return;
-
-                    int heal = 2;
-                    Main.player[Main.myPlayer].lifeSteal -= heal;
-                    Player.statLife += heal;
-                    Player.HealEffect(heal);
-                    if (Player.statLife > Player.statLifeMax2)
-                        Player.statLife = Player.statLifeMax2;
-
-                    break;
-
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
@@ -362,7 +289,7 @@ namespace CalamityMod.CalPlayer
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
             // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
@@ -462,8 +389,8 @@ namespace CalamityMod.CalPlayer
                         }
 
                         int onHitDamage = Player.CalcIntDamage<RangedDamageClass>(0.2f * proj.damage);
-                        Player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
-
+                        Projectile shock = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
+                        shock.DamageType = proj.DamageType;
                         SoundStyle hitSound = new("CalamityMod/Sounds/Item/ElectricHit");
                         SoundEngine.PlaySound(hitSound with { Volume = 0.2f, Pitch = 0.7f, PitchVariance = 0.2f }, proj.Center);
                     }
@@ -511,7 +438,8 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int onHitDamage = Player.CalcIntDamage<RangedDamageClass>(0.2f * proj.damage);
-                    Player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
+                    Projectile blast = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
+                    blast.DamageType = proj.DamageType;
 
                     SoundStyle hitSound = new("CalamityMod/Sounds/Item/HadalUrnClose");
                     SoundEngine.PlaySound(hitSound with { Volume = 0.4f, Pitch = 0.4f, PitchVariance = 0.2f }, proj.Center);
@@ -558,12 +486,14 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
+                bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
+
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
-                ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false));
+                ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
                 NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
-                if (target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>())
+                if (targetIsDummy)
                     return;
 
                 if (rageModeActive && shatteredCommunity)
@@ -573,7 +503,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Item
-        public void ItemOnHit(Item item, int damage, Vector2 position, bool crit, bool npcCheck)
+        public void ItemOnHit(Item item, int damage, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = Player.GetSource_ItemUse(item);
             if (!item.CountsAsClass<MeleeDamageClass>() && Player.meleeEnchant == 7)
@@ -588,7 +518,6 @@ namespace CalamityMod.CalPlayer
                 {
                     hideOfDeusTimer = 10;
                     int bulwarkStarDamage = (int)Player.GetTotalDamage<MeleeDamageClass>().ApplyTo(320);
-                    bulwarkStarDamage = Player.ApplyArmorAccDamageBonusesTo(bulwarkStarDamage);
 
                     for (int n = 0; n < 3; n++)
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileType<AstralStar>(), bulwarkStarDamage, 5f, Player.whoAmI);
@@ -607,7 +536,6 @@ namespace CalamityMod.CalPlayer
                         });
 
                         int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
-                        astralStarDamage = Player.ApplyArmorAccDamageBonusesTo(astralStarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 12f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -624,24 +552,10 @@ namespace CalamityMod.CalPlayer
                     {
                         // Ataxia True Melee Geysers: 15%, softcap starts at 300 base damage
                         int geyserDamage = CalamityUtils.DamageSoftCap(damage * 0.15, 45);
-                        geyserDamage = Player.ApplyArmorAccDamageBonusesTo(geyserDamage);
 
                         Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI, 0f, 0f);
                     }
-                    if (soaring)
-                    {
-                        double useTimeMultiplier = 0.85 + (item.useTime * item.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
-                        double wingTimeFraction = Player.wingTimeMax / 20D;
 
-                        // TODO -- this scaling function is probably totally screwed. What is it supposed to do?
-                        double meleeStatMultiplier = (double)(Player.GetTotalDamage<MeleeDamageClass>().Additive * (float)(Player.GetTotalCritChance<MeleeDamageClass>() / 10f));
-
-                        if (Player.wingTime < Player.wingTimeMax)
-                            Player.wingTime += (int)(useTimeMultiplier * (wingTimeFraction + meleeStatMultiplier));
-
-                        if (Player.wingTime > Player.wingTimeMax)
-                            Player.wingTime = Player.wingTimeMax;
-                    }
                     if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                         bloodflareMeleeHits++;
                 }
@@ -650,7 +564,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Proj On Hit
-        public void ProjOnHit(Projectile proj, Vector2 position, bool crit, bool npcCheck)
+        public void ProjOnHit(Projectile proj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             CalamityGlobalProjectile modProj = proj.Calamity();
             var source = proj.GetSource_FromThis();
@@ -663,7 +577,6 @@ namespace CalamityMod.CalPlayer
             if (alchFlask && AlchFlaskCooldown == 0 && proj.type != ProjectileType<BasicPlagueBee>())
             {
                 int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(10);
-                seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
                 Vector2 seekerVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
 
                 Projectile bee = Projectile.NewProjectileDirect(source, position, seekerVelocity, ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
@@ -696,7 +609,6 @@ namespace CalamityMod.CalPlayer
                         });
 
                         int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
-                        astralStarDamage = Player.ApplyArmorAccDamageBonusesTo(astralStarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 25f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -721,16 +633,15 @@ namespace CalamityMod.CalPlayer
 
             if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
-                ursaSergeantCooldown = 300;
+                ursaSergeantCooldown = UrsaSergeant.MaxCooldown;
 
-                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(200);
-                ursaSlashdamage = Player.ApplyArmorAccDamageBonusesTo(ursaSlashdamage);
+                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(UrsaSergeant.BaseSwipeDamage);
 
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
             }
 
             if (proj.CountsAsClass<MeleeDamageClass>())
-                MeleeOnHit(proj, modProj, position, crit, npcCheck);
+                MeleeOnHit(proj, modProj, position, crit, npcCheck, targetIsDummy);
             if (proj.CountsAsClass<RangedDamageClass>())
                 RangedOnHit(proj, modProj, position, crit, npcCheck);
             if (proj.CountsAsClass<MagicDamageClass>())
@@ -742,32 +653,17 @@ namespace CalamityMod.CalPlayer
         }
 
         #region Melee
-        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = proj.GetSource_FromThis();
             Item heldItem = Player.ActiveItem();
 
             if (proj.IsTrueMelee())
             {
-                if (soaring)
-                {
-                    double useTimeMultiplier = 0.85 + (heldItem.useTime * heldItem.useAnimation / 3600D); //28 * 28 = 784 is average so that equals 784 / 3600 = 0.217777 + 1 = 21.7% boost
-                    double wingTimeFraction = Player.wingTimeMax / 20D;
-
-                    // TODO -- this scaling function is probably totally screwed. What is it supposed to do?
-                    double meleeStatMultiplier = (double)(Player.GetTotalDamage<MeleeDamageClass>().Additive * (float)(Player.GetTotalCritChance<MeleeDamageClass>() / 10f));
-
-                    if (Player.wingTime < Player.wingTimeMax)
-                        Player.wingTime += (int)(useTimeMultiplier * (wingTimeFraction + meleeStatMultiplier));
-
-                    if (Player.wingTime > Player.wingTimeMax)
-                        Player.wingTime = Player.wingTimeMax;
-                }
                 if (hideOfDeus && hideOfDeusTimer == 0)
                 {
                     hideOfDeusTimer = 10;
                     int bulwarkStarDamage = (int)Player.GetTotalDamage<MeleeDamageClass>().ApplyTo(320);
-                    bulwarkStarDamage = Player.ApplyArmorAccDamageBonusesTo(bulwarkStarDamage);
 
                     for (int n = 0; n < 3; n++)
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileType<AstralStar>(), bulwarkStarDamage, 5f, Player.whoAmI);
@@ -780,7 +676,6 @@ namespace CalamityMod.CalPlayer
                 {
                     // Ataxia Melee Geysers: 15%, softcap starts at 240 base damage
                     int geyserDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.15, 36);
-                    geyserDamage = Player.ApplyArmorAccDamageBonusesTo(geyserDamage);
 
                     Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 0f, Player.whoAmI, 0f, 0f);
                 }
@@ -803,7 +698,7 @@ namespace CalamityMod.CalPlayer
                     for (int l = 0; l < 2; l++)
                     {
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        int leafDamage = Player.ApplyArmorAccDamageBonusesTo(0.25f * proj.damage);
+                        int leafDamage = (int)(0.25f * proj.damage);
                         int leaf = Projectile.NewProjectile(source, position, velocity, ProjectileID.Leaf, leafDamage, 0f, Player.whoAmI);
                         if (leaf.WithinBounds(Main.maxProjectiles))
                         {
@@ -816,7 +711,7 @@ namespace CalamityMod.CalPlayer
                         for (int projCount = 0; projCount < 2; projCount++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                            int energyDamage = Player.ApplyArmorAccDamageBonusesTo(0.33f * proj.damage);
+                            int energyDamage = (int)(0.33f * proj.damage);
                             Projectile.NewProjectile(source, proj.Center, velocity, ProjectileType<TarraEnergy>(), energyDamage, 0f, proj.owner);
                         }
                     }
@@ -831,7 +726,7 @@ namespace CalamityMod.CalPlayer
             var source = proj.GetSource_FromThis();
             if (ataxiaMage && ataxiaDmg <= 0)
             {
-                int orbDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.6f);
+                int orbDamage = (int)(proj.damage * 0.6f);
 
                 CalamityUtils.SpawnOrb(proj, orbDamage, ProjectileType<HydrothermicSphere>(), 800f, 20f);
                 int cooldown = (int)(orbDamage * 0.5);
@@ -847,7 +742,7 @@ namespace CalamityMod.CalPlayer
                 {
                     bloodflareMageCooldown = 120;
                     // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
-                    int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
+                    int bloodflareFireballDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250);
 
                     int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
                     if (fire.WithinBounds(Main.maxProjectiles))
@@ -862,7 +757,7 @@ namespace CalamityMod.CalPlayer
                 silvaMageCooldown = 300;
                 SoundEngine.PlaySound(SoundID.Zombie103, proj.Center); //So scuffed, just because zombie sounds werent ported normally
                 // Silva Mage Blasts: 800 + 60%, softcap on the whole combined thing starts at 1400
-                int silvaBurstDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(800.0 + 0.6 * proj.damage, 1400));
+                int silvaBurstDamage = CalamityUtils.DamageSoftCap(800.0 + 0.6 * proj.damage, 1400);
                 Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<SilvaBurst>(), silvaBurstDamage, 8f, Player.whoAmI);
             }
         }
@@ -902,7 +797,6 @@ namespace CalamityMod.CalPlayer
                         if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(10))
                         {
                             int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
-                            damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                             Projectile.NewProjectile(source, proj.position, proj.velocity, ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
@@ -959,28 +853,24 @@ namespace CalamityMod.CalPlayer
                     if (nucleogenesis)
                     {
                         int apparatusDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(60);
-                        apparatusDamage = Player.ApplyArmorAccDamageBonusesTo(apparatusDamage);
                         Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<ApparatusExplosion>(), apparatusDamage, 4f, proj.owner);
                         summonProjCooldown = 100f;
                     }
                     else if (starbusterCore)
                     {
                         int starburstDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(40);
-                        starburstDamage = Player.ApplyArmorAccDamageBonusesTo(starburstDamage);
                         Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<SummonAstralExplosion>(), starburstDamage, 3.5f, proj.owner);
                         summonProjCooldown = 60f;
                     }
                     else if (nuclearFuelRod)
                     {
                         int nuclearDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(20);
-                        nuclearDamage = Player.ApplyArmorAccDamageBonusesTo(nuclearDamage);
                         Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<IrradiatedAura>(), nuclearDamage, 0f, proj.owner);
                         summonProjCooldown = 60f;
                     }
                     else if (jellyChargedBattery)
                     {
                         int batteryDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(15);
-                        batteryDamage = Player.ApplyArmorAccDamageBonusesTo(batteryDamage);
                         CalamityUtils.SpawnOrb(proj, batteryDamage, ProjectileType<EnergyOrb>(), 800f, 15f);
                         summonProjCooldown = 60f;
                     }
@@ -994,7 +884,6 @@ namespace CalamityMod.CalPlayer
                         Vector2 spawnPosition = position - new Vector2(0f, 920f).RotatedByRandom(0.3f);
                         float speed = Main.rand.NextFloat(17f, 23f);
                         int hallowedDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(50);
-                        hallowedDamage = Player.ApplyArmorAccDamageBonusesTo(hallowedDamage);
                         Projectile.NewProjectile(source, spawnPosition, Vector2.Normalize(position - spawnPosition) * speed, ProjectileType<HallowedStarSummon>(), hallowedDamage, 3f, proj.owner);
                     }
                 }
@@ -1010,7 +899,6 @@ namespace CalamityMod.CalPlayer
             if (modProj.stealthStrike && dragonScales && Main.projectile.Count(proj => proj.type == Type && proj.active) < 1)
             {
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(DragonScales.TornadoBaseDamage);
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                 int projectileIndex = Projectile.NewProjectile(spawnSource, proj.Center.X, proj.Center.Y, 0f, 0f, ProjectileType<DragonScalesInfernado>(), damage, 15f, Main.myPlayer, 10f, 9f); //First overload seems to deal with timing, second is segment amount
                 if (projectileIndex.WithinBounds(Main.maxProjectiles))
                     Main.projectile[projectileIndex].netUpdate = true;
@@ -1025,33 +913,33 @@ namespace CalamityMod.CalPlayer
                 {
                     case 0:
                         // Exodus Rogue Stars: 80%
-                        int starDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.8f);
+                        int starDamage = (int)(proj.damage * 0.8f);
                         CalamityUtils.SpawnOrb(proj, starDamage, ProjectileType<EmpyreanStellarDetritus>(), 800f, Main.rand.Next(15, 30));
                         xerocDmg += (int)(starDamage * 0.5f);
                         break;
 
                     case 1:
                         // Exodus Rogue Orbs: 60%
-                        int orbDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.6f);
+                        int orbDamage = (int)(proj.damage * 0.6f);
                         CalamityUtils.SpawnOrb(proj, orbDamage, ProjectileType<EmpyreanMarble>(), 800f, 30f);
                         xerocDmg += (int)(orbDamage * 0.5f);
                         break;
 
                     case 2:
                         // Exodus Rogue Fire: 15%
-                        int fireDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.15f);
+                        int fireDamage = (int)(proj.damage * 0.15f);
                         Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<EmpyreanEmber>(), fireDamage, 0f, proj.owner, 0f, 0f);
                         break;
 
                     case 3:
                         // Exodus Rogue Blast: 20%
-                        int blastDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.2f);
+                        int blastDamage = (int)(proj.damage * 0.2f);
                         Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<EmpyreanBlast>(), blastDamage, 0f, proj.owner, 0f, 0f);
                         break;
 
                     case 4:
                         // Exodus Rogue Bubble: 60%
-                        int bubbleDamage = Player.ApplyArmorAccDamageBonusesTo(proj.damage * 0.6f);
+                        int bubbleDamage = (int)(proj.damage * 0.6f);
                         CalamityUtils.SpawnOrb(proj, bubbleDamage, ProjectileType<EmpyreanGlob>(), 800f, 15f);
                         xerocDmg += (int)(bubbleDamage * 0.5);
                         break;
@@ -1071,14 +959,12 @@ namespace CalamityMod.CalPlayer
                         Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                         Vector2 velocity = (position - source) / 40f;
                         int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(120);
-                        damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                         Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
                     }
                 }
                 else if (moonCrown)
                 {
                     int lunarFlareDamage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(MoonstoneCrown.BaseDamage);
-                    lunarFlareDamage = Player.ApplyArmorAccDamageBonusesTo(lunarFlareDamage);
                     float lunarFlareKB = 3f;
 
                     for (int i = 0; i < 3; i++)
@@ -1100,7 +986,6 @@ namespace CalamityMod.CalPlayer
                         Vector2 velocity = new Vector2(speedX, speedY);
 
                         int featherDamage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(25);
-                        featherDamage = Player.ApplyArmorAccDamageBonusesTo(featherDamage);
 
                         int feather = Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<StickyFeather>(), featherDamage, 3f, proj.owner);
                         if (feather.WithinBounds(Main.maxProjectiles))
@@ -1123,7 +1008,6 @@ namespace CalamityMod.CalPlayer
                     xVector *= 10f;
                     yVector *= 10f;
                     int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
-                    damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                     int eater = Projectile.NewProjectile(spawnSource, proj.Center.X, proj.Center.Y, xVector, yVector, ProjectileType<ForbiddenCircletEater>(), damage, proj.knockBack, proj.owner);
                     if (eater.WithinBounds(Main.maxProjectiles))
@@ -1135,17 +1019,14 @@ namespace CalamityMod.CalPlayer
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
             {
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
                 for (int dustexplode = 0; dustexplode < 180; dustexplode++)
                 {
-                    Vector2 dustd = new Vector2(17f, 17f).RotatedBy(MathHelper.ToRadians(dustexplode * 2));
-                    int d = Dust.NewDust(proj.Center, proj.width, proj.height, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd.X, dustd.Y, 100, default, 1f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].position = proj.Center;
-                    Main.dust[d].velocity *= 0.1f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
+                    dust.noGravity = true;
                 }
                 titanCooldown = 15;
             }
@@ -1173,7 +1054,6 @@ namespace CalamityMod.CalPlayer
                         if (type != -1)
                         {
                             int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
-                            damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                             float speed = Main.rand.NextFloat(5f, 11f);
                             int cloud = Projectile.NewProjectile(spawnSource, position, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, type, damage, proj.knockBack, Player.whoAmI);
@@ -1182,16 +1062,6 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-            }
-
-            if (shadow && shadowPotCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
-            {
-                int randrot = Main.rand.Next(-30, 391);
-                Vector2 SoulSpeed = new Vector2(13f, 13f).RotatedBy(MathHelper.ToRadians(randrot));
-                int soul = Projectile.NewProjectile(spawnSource, proj.Center, SoulSpeed, ProjectileType<PenumbraSoul>(), (int)(proj.damage * 0.1), 3f, proj.owner, 0f, 0f);
-                if (soul.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[soul].DamageType = DamageClass.Generic;
-                shadowPotCooldown = 30;
             }
 
             if (raiderTalisman && modProj.stealthStrike)
@@ -1211,7 +1081,6 @@ namespace CalamityMod.CalPlayer
                 {
                     // Umbraphile Rogue Blasts: 20%, softcap starts at 50 base damage
                     int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.20, 50);
-                    umbraBlastDamage = Player.ApplyArmorAccDamageBonusesTo(umbraBlastDamage);
 
                     Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<UmbraphileBoom>(), umbraBlastDamage, 0f, Player.whoAmI);
                 }
@@ -1221,7 +1090,6 @@ namespace CalamityMod.CalPlayer
                     {
                         Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f);
                         int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(9);
-                        damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
                         int spark = Projectile.NewProjectile(spawnSource, position, velocity, ProjectileType<EGloveSpark>(), damage, 0f, Player.whoAmI);
                         if (spark.WithinBounds(Main.maxProjectiles))

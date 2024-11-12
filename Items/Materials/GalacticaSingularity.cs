@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(4, 24));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
             ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
         }
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 28;
             Item.height = 28;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 96);
+            Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Red;
         }
         public override void AddRecipes()

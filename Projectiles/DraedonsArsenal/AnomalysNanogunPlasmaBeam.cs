@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.timeLeft = 12;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Main.projFrames[Projectile.type] = 18;
+            Main.projFrames[Type] = 18;
         }
 
         public override void AI()
@@ -122,9 +122,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         private void DrawPlasmaBeam(Color beamColor, float scale, int startFrame = 0, int middleFrame = 0, int endFrame = 0)
         {
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, startFrame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, middleFrame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, endFrame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, startFrame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, middleFrame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, endFrame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,

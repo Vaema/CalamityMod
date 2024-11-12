@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<FrostbatMinion>();
             Item.knockBack = 1f;
 
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             (Item.width, Item.height) = (50, 50);
             Item.mana = 10;
             Item.noMelee = true;
@@ -31,22 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile frostbatMinion = Projectile.NewProjectileDirect(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-
-            int minionIndex = 0;
-            foreach (var proj in Main.ActiveProjectiles)
-            {
-                if ((proj.type != frostbatMinion.type && proj.type != ModContent.ProjectileType<FlarebatMinion>()) || proj.owner != frostbatMinion.owner)
-                    continue;
-
-                if (proj.type == frostbatMinion.type)
-                    proj.ModProjectile<FrostbatMinion>().MinionIndex = minionIndex;
-                else
-                    proj.ModProjectile<FlarebatMinion>().MinionIndex = minionIndex;
-
-                minionIndex++;
-            }
-
+            Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             return false;
         }
     }

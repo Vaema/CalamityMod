@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 7;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = new Rectangle(0, 36 * Projectile.frame, 38, 34);
             Vector2 origin = !CanComePeekOut ? new Vector2(15, 23) : frame.Size() / 2f;
 

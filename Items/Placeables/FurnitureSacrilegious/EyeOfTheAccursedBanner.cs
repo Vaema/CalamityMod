@@ -11,17 +11,8 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 36;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = Item.buyPrice(0, 0, 10, 0);
-            Item.createTile = ModContent.TileType<EyeOfTheAccursedBannerTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<EyeOfTheAccursedBannerTile>());
+            Item.value = Item.sellPrice(silver: 2);
         }
 
         public override void AddRecipes()

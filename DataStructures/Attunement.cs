@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Enums;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -22,24 +23,6 @@ namespace CalamityMod.DataStructures
     // TODO -- Attunements should be managed by an Attunement ModSystem
     public abstract class Attunement
     {
-        public static Attunement[] attunementArray;
-
-        public static void Load()
-        {
-            attunementArray = new Attunement[] {
-                  new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
-                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(), new MarineAttunement(),
-                  new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
-                  new PhoenixAttunement(), new AriesAttunement(), new PolarisAttunement(), new AndromedaAttunement(),
-                  null
-             };
-        }
-
-        public static void Unload()
-        {
-            attunementArray = null;
-        }
-
         public AttunementID id;
 
         public virtual LocalizedText AttunementName => CalamityUtils.GetText($"Attunement.{GetType().Name}.Name");
@@ -581,8 +564,7 @@ namespace CalamityMod.DataStructures
             {
                 if (!player.moonLeech)
                 {
-                    player.statLife += OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal;
-                    player.HealEffect(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
+                    player.HealPlayer(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
                 }
 
                 Procced = false;

@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -8,27 +10,29 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class Moonshine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static int DefenseBoost = 10;
+        public static float DamageReductionBoost = 0.03f;
+        public static int RegenLoss = 1;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseBoost, DamageReductionBoost.ToPercent(), RegenLoss.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            // Another clear drink
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(237, 237, 218, 128),
+                new Color(227, 219, 191, 128),
+                new Color(209, 204, 194, 128)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.rare = ItemRarityID.Yellow;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<MoonshineBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(480f);
+            Item.DefaultToFood(24, 28, ModContent.BuffType<MoonshineBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Yellow;
         }
     }
 }

@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             if (Projectile.ai[2] > 0 && time == 30)
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Projectile.velocity, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Projectile.velocity, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
 
             time++;
         }

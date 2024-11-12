@@ -1,6 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Enums;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -16,8 +16,8 @@ namespace CalamityMod.ILEditing
 
         private static bool AdjustShimmerRequirements(On_ShimmerTransforms.orig_IsItemTransformLocked orig, int type)
         {
-            //Rod of Harmony / psc requires Draedong and SCal dead instead of Moon Lord.
-            if (type == ItemID.RodofDiscord || type == ModContent.ItemType<ProfanedSoulCrystal>())
+            //Rod of Harmony requires Draedong and SCal dead instead of Moon Lord.
+            if (type == ItemID.RodofDiscord)
             {
                 return !DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs;
             }
@@ -80,15 +80,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
 
-            // Find the Frog Leg jump speed bonus and reduce it to 1.2f.
-            // I don't know if this fucking does anything anymore, but I'm leaving it in just in case.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(2.4f)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Frog Leg jump speed boost value.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 1.2f); // Decrease to 1.2f.
+            // CIT 22SEP2024: Removed the edit intended to decrease Frog Leg's jump speed boost,
+            // as it was not doing anything due to vanilla changing how Frog Leg's jump speed boost is applied.
 
             // Remove the jump height addition from the Werewolf buff (Moon Charm).
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))
@@ -445,7 +438,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Damage Variance Dampening and Luck Removal
-        private static int AdjustDamageVariance(Terraria.On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
+        private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
             // Change the default damage variance from +-15% to +-5%.
             // If other mods decide to change the scale, they can override this. We're solely killing the default value.
@@ -468,6 +461,35 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_I4_M1); // Replace the 1000 with -1, no NPC can have less than -1 HP on spawn, so it fails to run.
+        }
+        #endregion
+
+        #region Reduce Eater of Worlds Grenade Resist
+        private static void ReduceEoWGrenadeResist(ILContext il)
+        {
+            // Reduce Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            var cursor = new ILCursor(il);
+
+            // Of course, this is 800 lines into Projectile.Damage, so we must do funky things.
+            for (int f = 0; f < 2; f++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(1002)))
+                {
+                    LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchDiv()))
+            {
+                LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                return;
+            }
+
+            // Remove the division instruction, then pop the 5 off the stack to destroy it. Replace it with loading a 0.4 and then multiplying by it.
+            cursor.Remove();
+            cursor.EmitPop();
+            cursor.EmitLdcR4(0.4f);
+            cursor.EmitMul();
         }
         #endregion
 
@@ -542,6 +564,21 @@ namespace CalamityMod.ILEditing
             // Replace the value entirely.
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.BeetleScaleMailMeleeSpeedPerBeetle);
+        }
+        #endregion
+
+        #region Vortex Booster Keeps Vortex Stealth When Dashing
+        private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
+        {
+            // Allows for Vortex Booster to keep Vortex armor's stealth when dashing
+            bool vortexStealth = self.vortexStealthActive;
+            orig(self);
+
+            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
+            {
+                if (vortexStealth && !self.vortexStealthActive)
+                    self.vortexStealthActive = true;
+            }
         }
         #endregion
 
@@ -621,6 +658,54 @@ namespace CalamityMod.ILEditing
 
             // Swap the threshold with Calamity's value.
             cursor.Next.Operand = BalancingConstants.NebulaManaRegenFrameCounterThreshold;
+        }
+        #endregion
+
+        #region Stardust Guardian Buffs
+        private static void StardustGuardianAttackBuffs(ILContext il)
+        {
+            // Increase the Stardust Guardian's attack range while wearing Stardust Wings.
+            var cursor = new ILCursor(il);
+
+            // Move to the label after the instruction that sets num3 to 500f.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(100f)))
+                {
+                    LogFailure("Stardust Guardian Buffs", "Could not move to after the Stardust Guardian's attack range.");
+                    return;
+                }
+            }
+
+            // Define a label for the branch statement.
+            var label = il.DefineLabel();
+
+            // Load Player.wingsLogic, and check if it's Stardust Wings.
+            // If it is, increase the two attack range variables.
+            cursor.Emit(OpCodes.Ldloc_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
+            cursor.Emit(OpCodes.Bne_Un, label);
+
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 4);
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 5);
+
+            cursor.MarkLabel(label);
+
+            // Now, increase the Stardust Guardian's move speed when attacking targets.
+            // This is applied regardless of having Stardust Wings.
+            // This jumps to the base speed value when moving towards a target.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(6f)))
+            {
+                LogFailure("Stardust Guardian Buffs", "Could not locate the Stardust Guardian's attack move speed.");
+                return;
+            }
+
+            // Remove and replace with a higher value.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_R4, 12f);
         }
         #endregion
 

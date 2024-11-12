@@ -26,13 +26,13 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 27;
-            NPCID.Sets.ExtraFramesCount[NPC.type] = 11;
-            NPCID.Sets.AttackFrameCount[NPC.type] = 6;
-            NPCID.Sets.DangerDetectRange[NPC.type] = 700;
-            NPCID.Sets.AttackType[NPC.type] = 1;
-            NPCID.Sets.AttackTime[NPC.type] = 30;
-            NPCID.Sets.AttackAverageChance[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 27;
+            NPCID.Sets.ExtraFramesCount[Type] = 11;
+            NPCID.Sets.AttackFrameCount[Type] = 6;
+            NPCID.Sets.DangerDetectRange[Type] = 700;
+            NPCID.Sets.AttackType[Type] = 1;
+            NPCID.Sets.AttackTime[Type] = 30;
+            NPCID.Sets.AttackAverageChance[Type] = 5;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<ForestBiome>(AffectionLevel.Like)
@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[NPC.type] : 0);
+            int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[Type] : 0);
             if (NPC.velocity.Y == 0f)
             {
                 if (NPC.direction == 1)
@@ -90,7 +90,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (NPC.direction == -1)
                     NPC.spriteDirection = -1;
 
-                int nonAttackFrames = Main.npcFrameCount[NPC.type] - NPCID.Sets.AttackFrameCount[NPC.type];
+                int nonAttackFrames = Main.npcFrameCount[Type] - NPCID.Sets.AttackFrameCount[Type];
                 if (NPC.ai[0] == 23f)
                 {
                     NPC.frameCounter += 1D;
@@ -276,7 +276,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     if (NPC.ai[1] < 10f)
                         num254 = 0;
 
-                    num254 = Main.npcFrameCount[NPC.type] - 2;
+                    num254 = Main.npcFrameCount[Type] - 2;
                     NPC.frame.Y = frameHeight * num254;
                 }
                 else if (NPC.ai[0] == 10f || NPC.ai[0] == 13f) // Attacking
@@ -312,7 +312,7 @@ namespace CalamityMod.NPCs.TownNPCs
                         NPC.frameCounter = 0D;
                     }
 
-                    float num260 = NPC.ai[1] / (float)NPCID.Sets.AttackTime[NPC.type];
+                    float num260 = NPC.ai[1] / (float)NPCID.Sets.AttackTime[Type];
                     int num261 = 0;
                     num261 = ((num260 > 0.65f) ?
                         nonAttackFrames : ((num260 > 0.5f) ?
@@ -621,7 +621,7 @@ namespace CalamityMod.NPCs.TownNPCs
                         NPC.frameCounter = 0D;
                     }
 
-                    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - extraFrameAmt)
+                    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - extraFrameAmt)
                         NPC.frame.Y = walkFrameHeightLimit;
                 }
 

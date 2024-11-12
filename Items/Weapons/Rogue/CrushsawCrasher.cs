@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 38;
             Item.height = 22;
-            Item.damage = 85;
+            Item.damage = 81;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;

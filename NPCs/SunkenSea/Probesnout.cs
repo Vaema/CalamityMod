@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
@@ -76,6 +75,10 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
+
+        protected override float SpawningChance => 0f;
+
         private int AnimationFrames = 8;
 
         private int TimePerAnimationFrame = 5;
@@ -88,7 +91,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region AI
 
-        protected override void CreatureOnSpawn()
+        protected override void BehaviorOnSpawn()
         {
             CurrentBehavior = IdleBehavior;
 
@@ -279,8 +282,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Other ModNPC Overrides
 
-        protected override void ExtraSetStaticDefaults()
+        public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 15;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
@@ -288,6 +292,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             NPC.lifeMax = 5;
 
             NPC.aiStyle = -1;
@@ -298,22 +304,22 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.width = 44;
             NPC.height = 55;
-
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         #endregion
 
         #region Syncing
 
-        protected override void SendMoreExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer)
         {
+            base.SendExtraAI(writer);
             writer.Write7BitEncodedInt(AnimationFrames);
             writer.Write7BitEncodedInt(TimePerAnimationFrame);
         }
 
-        protected override void ReceiveMoreExtraAI(BinaryReader reader)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
+            base.ReceiveExtraAI(reader);
             AnimationFrames = reader.Read7BitEncodedInt();
             TimePerAnimationFrame = reader.Read7BitEncodedInt();
         }
@@ -323,9 +329,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
     public class ProbesnoutGold : Probesnout
     {
-        protected override void ExtraSetStaticDefaults()
+        public override void SetStaticDefaults()
         {
-            base.ExtraSetStaticDefaults();
+            base.SetStaticDefaults();
             this.HideFromBestiary();
         }
 

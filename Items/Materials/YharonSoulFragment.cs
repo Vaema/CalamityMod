@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
 
         }
 
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
             Item.width = 10;
             Item.height = 14;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 45);
+            Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Violet>();
         }
     }

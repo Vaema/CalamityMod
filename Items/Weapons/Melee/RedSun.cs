@@ -108,7 +108,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.AntlionClaw).
                 AddIngredient<ForsakenSaber>().
                 AddIngredient<ShadowspecBar>(5).
-                AddIngredient<CoreofSunlight>(5).
+                AddIngredient<EssenceofSunlight>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

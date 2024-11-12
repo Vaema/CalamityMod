@@ -3,6 +3,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -138,17 +139,17 @@ namespace CalamityMod.Projectiles.Melee
             bool astral = Owner.Calamity().ZoneAstral;
             bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind);
             if (desert || hell)
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
+                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
             if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
-                attunement = Attunement.attunementArray[(int)AttunementID.FlailBlade];
+                attunement = AttunementSystem.FindOrNull(AttunementID.FlailBlade);
             if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
+                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
             if (astral || marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Shockwave);
             if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check  at the end so it may override hallowed variants of biomes
+                attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind); //Putting holy check  at the end so it may override hallowed variants of biomes
 
             //If the owner already had the attunement , break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
@@ -196,7 +197,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChanneledState == 0f && ChannelTimer > 10f)
             {
-                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, 1, 0, 0);
 
                 return false;
@@ -204,7 +205,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

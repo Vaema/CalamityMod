@@ -166,19 +166,42 @@ namespace CalamityMod.NPCs
                             return false;
                         });
 
-                        int[] mimicItems = new int[]
-                        {
+                        // Yes, Mimics have three separate loot tables which we must reintegrate
+                        int[] normalMimicItems =
+                        [
                             ItemID.MagicDagger,
                             ItemID.CrossNecklace,
                             ItemID.PhilosophersStone,
                             ItemID.StarCloak,
                             ItemID.TitanGlove,
                             ItemID.DualHook
-                        };
+                        ];
+                        int[] remixPreHardMimicItems =
+                        [
+                            ItemID.BandofRegeneration,
+                            ItemID.MagicMirror,
+                            ItemID.CloudinaBottle,
+                            ItemID.HermesBoots,
+                            ItemID.ShoeSpikes,
+                            ItemID.Mace
+                        ];
+                        int[] remixHardmodeMimicItems =
+                        [
+                            ItemID.WandofSparking,
+                            ItemID.CrossNecklace,
+                            ItemID.PhilosophersStone,
+                            ItemID.StarCloak,
+                            ItemID.TitanGlove,
+                            ItemID.DualHook
+                        ];
 
                         // Mimics will not drop any items if spawned from statues.
-                        var notStatue = npcLoot.DefineConditionalDropSet(new Conditions.NotFromStatue());
-                        notStatue.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, mimicItems));
+                        var notRemix = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !(npc.SpawnedFromStatue || Main.remixWorld)));
+                        var remixPreHM = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !npc.SpawnedFromStatue && Main.remixWorld && !Main.hardMode));
+                        var remixHardmode = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !npc.SpawnedFromStatue && Main.remixWorld && Main.hardMode));
+                        notRemix.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, normalMimicItems));
+                        remixPreHM.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, remixPreHardMimicItems));
+                        remixHardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, remixHardmodeMimicItems));
                     }
                     catch (ArgumentNullException) { }
                     break;
@@ -236,17 +259,39 @@ namespace CalamityMod.NPCs
                             return false;
                         });
 
-                        int[] iceMimicItems = new int[]
-                        {
+                        // Yes, Ice Mimics have three separate loot tables which me must reintegrate
+                        int[] normalIceMimicItems =
+                        [
                             ItemID.Frostbrand,
                             ItemID.IceBow,
                             ItemID.FlowerofFrost
-                        };
+                        ];
+                        int[] remixPreHardIceMimicItems =
+                        [
+                            ItemID.IceBoomerang,
+                            ItemID.IceBlade,
+                            ItemID.IceBow,
+                            ItemID.IceSkates,
+                            ItemID.BlizzardinaBottle,
+                            ItemID.FlurryBoots
+                        ];
+                        int[] remixHardmodeIceMimicItems =
+                        [
+                            ItemID.Frostbrand,
+                            ItemID.SnowballCannon,
+                            ItemID.FlowerofFrost
+                        ];
 
                         // Ice Mimics will not drop any items if spawned from statues.
-                        var notStatue = npcLoot.DefineConditionalDropSet(new Conditions.NotFromStatue());
-                        notStatue.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, iceMimicItems));
-                        notStatue.Add(ItemID.ToySled, 20, 1, 1);
+                        var notRemix = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !(npc.SpawnedFromStatue || Main.remixWorld)));
+                        var remixPreHM = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !npc.SpawnedFromStatue && Main.remixWorld && !Main.hardMode));
+                        var remixHardmode = npcLoot.DefineConditionalDropSet(DropHelper.If(() => !npc.SpawnedFromStatue && Main.remixWorld && Main.hardMode));
+                        notRemix.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, normalIceMimicItems));
+                        remixPreHM.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, remixPreHardIceMimicItems));
+                        remixHardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, remixHardmodeIceMimicItems));
+
+                        // Independent from all of the Remix madness, Ice Mimics have a 5% chance to drop Toy Sled.
+                        npcLoot.DefineConditionalDropSet(new Conditions.NotFromStatue()).Add(ItemID.ToySled, 20);
                     }
                     catch (ArgumentNullException) { }
                     break;
@@ -279,10 +324,12 @@ namespace CalamityMod.NPCs
 
                 // Shark
                 // Shark Tooth Necklace @ 4% Normal, 6.67% Expert+
-                // Joyful Heart @ 4% Normal, 6.67% Expert+
+                // Joyful Heart @ 5%
+                // Sharky Plush @ 1%
                 case NPCID.Shark:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.SharkToothNecklace, 25, 15));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<JoyfulHeart>(), 25, 15));
+                    npcLoot.Add(ModContent.ItemType<JoyfulHeart>(), 20);
+                    npcLoot.Add(ModContent.ItemType<SharkyPlush>(), 100);
                     break;
 
                 // Blood Jelly, Fungo Fish
@@ -466,9 +513,9 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 10);
                     break;
 
-                // Ghost Bracelet @ 10% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
+                // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
                 case NPCID.Ghost:
-                    npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 10);
+                    npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
                     break;
                 #endregion
 
@@ -902,6 +949,9 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
 
                     // Would be in the bag otherwise
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, 4));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, 4));
+
                     npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
@@ -1674,8 +1724,13 @@ DukeEditFailed:
 
             // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
             // This is type-indiscriminate and will also most probably hit modded NPCs too
-            int[] randomFoodItems = new int[]
+
+            // CIT 7NOV2024: Yeah it hits modded NPCs; in fact it removes GFB drops from Ravager and Deus
+            // Fixing this by making the code only run if the NPC is not a boss
+            if (!npc.boss)
             {
+                int[] randomFoodItems = new int[]
+{
                 ItemID.ApplePie,
                 ItemID.BananaSplit,
                 ItemID.BBQRibs,
@@ -1696,9 +1751,10 @@ DukeEditFailed:
                 ItemID.ShrimpPoBoy,
                 ItemID.Spaghetti,
                 ItemID.Steak
-            };
-            foreach (int foodItemID in randomFoodItems)
-                npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
+};
+                foreach (int foodItemID in randomFoodItems)
+                    npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
+            }
         }
         #endregion
 
@@ -1765,9 +1821,6 @@ DukeEditFailed:
             if (npc.AnyInteractions())
                 SplittingWormBestiaryUpdate(npc);
 
-            // Check whether bosses should be spawned naturally as a result of this NPC's death.
-            CheckBossSpawn(npc);
-
             // Determine whether this NPC is the second Twin killed in a fight, regardless of which Twin it is.
             bool lastTwinStanding = false;
             if (npc.type == NPCID.Retinazer)
@@ -1778,7 +1831,7 @@ DukeEditFailed:
             // On-kill NON-LOOT behavior for Eater of Worlds
             if ((npc.boss && (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)) || npc.type == NPCID.BrainofCthulhu)
             {
-                SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Demolitionist }, NPC.downedBoss2);
+                SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad }, NPC.downedBoss2);
                 SetNewBossJustDowned(npc);
             }
 
@@ -1791,7 +1844,7 @@ DukeEditFailed:
                     break;
 
                 case NPCID.EyeofCthulhu:
-                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad, NPCID.Demolitionist }, NPC.downedBoss1);
+                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad }, NPC.downedBoss1);
                     SetNewBossJustDowned(npc);
                     break;
 
@@ -1805,7 +1858,7 @@ DukeEditFailed:
                     break;
 
                 case NPCID.SkeletronHead:
-                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad, NPCID.Demolitionist }, NPC.downedBoss3);
+                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad }, NPC.downedBoss3);
                     SetNewBossJustDowned(npc);
 
                     // First kill: Notify of Abyss chests being unlocked.
@@ -1821,7 +1874,7 @@ DukeEditFailed:
                     break;
 
                 case NPCID.WallofFlesh:
-                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant, NPCID.BestiaryGirl, ModContent.NPCType<THIEF>() }, Main.hardMode);
+                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant, NPCID.BestiaryGirl }, Main.hardMode);
                     SetNewBossJustDowned(npc);
 
                     if (!Main.hardMode && !BossRushEvent.BossRushActive)
@@ -1847,7 +1900,7 @@ DukeEditFailed:
                     break;
 
                 case NPCID.TheDestroyer:
-                    SetNewShopVariable(new int[] { NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
+                    SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
@@ -1859,7 +1912,7 @@ DukeEditFailed:
                 case NPCID.Retinazer:
                     if (lastTwinStanding)
                     {
-                        SetNewShopVariable(new int[] { NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
+                        SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
                         SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                         SetNewBossJustDowned(npc);
 
@@ -1869,7 +1922,7 @@ DukeEditFailed:
                     break;
 
                 case NPCID.SkeletronPrime:
-                    SetNewShopVariable(new int[] { NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
+                    SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
@@ -2134,89 +2187,6 @@ DukeEditFailed:
             }
 
             return true;
-        }
-        #endregion
-
-        #region Check Boss Spawn
-        // TODO -- not loot code, should be moved eventually
-        private void CheckBossSpawn(NPC npc)
-        {
-            if ((npc.type == ModContent.NPCType<PhantomSpirit>() || npc.type == ModContent.NPCType<PhantomSpiritS>() || npc.type == ModContent.NPCType<PhantomSpiritM>() ||
-                npc.type == ModContent.NPCType<PhantomSpiritL>()) && !NPC.AnyNPCs(ModContent.NPCType<Polterghast.Polterghast>()) && !DownedBossSystem.downedPolterghast)
-            {
-                CalamityMod.ghostKillCount++;
-                if (CalamityMod.ghostKillCount == 10)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
-                    Color messageColor = Color.Cyan;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                else if (CalamityMod.ghostKillCount == 20)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
-                    Color messageColor = Color.Cyan;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-
-                if (CalamityMod.ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int lastPlayer = npc.lastInteraction;
-
-                    if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                    {
-                        lastPlayer = npc.FindClosestPlayer();
-                    }
-
-                    if (lastPlayer >= 0)
-                    {
-                        SoundEngine.PlaySound(Polterghast.Polterghast.SpawnSound, Main.player[lastPlayer].Center);
-                        NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<Polterghast.Polterghast>());
-                        CalamityMod.ghostKillCount = 0;
-                    }
-                }
-            }
-
-            bool normalShark = npc.type == NPCID.SandShark || npc.type == NPCID.SandsharkHallow || npc.type == NPCID.SandsharkCorrupt || npc.type == NPCID.SandsharkCrimson;
-            if (NPC.downedPlantBoss && (normalShark || (npc.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld)) && !NPC.AnyNPCs(ModContent.NPCType<GreatSandShark.GreatSandShark>()))
-            {
-                CalamityMod.sharkKillCount++;
-                if (CalamityMod.sharkKillCount == 4)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
-                    Color messageColor = Color.Goldenrod;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                else if (CalamityMod.sharkKillCount == 8)
-                {
-                    string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
-                    Color messageColor = Color.Goldenrod;
-
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                if (CalamityMod.sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    {
-                        SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
-                    }
-
-                    int lastPlayer = npc.lastInteraction;
-
-                    if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                    {
-                        lastPlayer = npc.FindClosestPlayer();
-                    }
-
-                    if (lastPlayer >= 0)
-                    {
-                        NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<GreatSandShark.GreatSandShark>());
-                        CalamityMod.sharkKillCount = -5;
-                    }
-                }
-            }
         }
         #endregion
     }

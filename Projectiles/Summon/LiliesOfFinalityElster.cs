@@ -304,7 +304,7 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 bulletSpawnPosition = Projectile.Center - Vector2.UnitX * 15f * Projectile.spriteDirection;
             Vector2 bulletVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(bulletSpawnPosition, Target, Elster_BulletProjectileSpeed, Elster_BulletMaxUpdates);
 
-            Projectile.NewProjectileDirect(
+            Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 bulletSpawnPosition,
                 //Vector2.UnitX * Elster_BulletProjectileSpeed * Projectile.spriteDirection,
@@ -403,7 +403,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(5, 9, (int)Animation, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

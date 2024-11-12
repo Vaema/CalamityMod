@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 3;
+            Main.npcFrameCount[Type] = 3;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
                 AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
@@ -70,7 +70,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
-            NPC.value = Item.buyPrice(0, 60, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 50, 0);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.noTileCollide = true;
@@ -878,7 +878,7 @@ namespace CalamityMod.NPCs.Leviathan
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<LeviathanMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<AnahitaMask>(), 7);
-                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
+                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
@@ -929,7 +929,7 @@ namespace CalamityMod.NPCs.Leviathan
             Texture2D texture = AttackTexture.Value;
             if (NPC.ai[0] == 1f || NPC.Calamity().newAI[3] < 180f)
             {
-                texture = TextureAssets.Npc[NPC.type].Value;
+                texture = TextureAssets.Npc[Type].Value;
             }
             SpriteEffects spriteEffects = SpriteEffects.FlipHorizontally;
             float xOffset = -50f;

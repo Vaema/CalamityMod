@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -79,14 +79,14 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.width = 196;
             NPC.height = 196;
             NPC.defense = 8;
-            NPC.LifeMaxNERB(3700, 4400, 680000);
+            NPC.LifeMaxNERB(3700, 4400, 500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.boss = true;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 10, 0, 0);
+            NPC.value = Item.buyPrice(0, 5, 0, 0);
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
@@ -739,7 +739,7 @@ namespace CalamityMod.NPCs.Crabulon
                         stomping = false;
 
                     NPC.frameCounter += 0.15;
-                    NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                    NPC.frameCounter %= Main.npcFrameCount[Type];
                     int frame = (int)NPC.frameCounter;
                     NPC.frame.Y = frame * frameHeight;
                 }
@@ -778,7 +778,7 @@ namespace CalamityMod.NPCs.Crabulon
                     stomping = false;
 
                 NPC.frameCounter += 0.15f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -792,7 +792,7 @@ namespace CalamityMod.NPCs.Crabulon
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D textureIdle = TextureAssets.Npc[NPC.type].Value;
+            Texture2D textureIdle = TextureAssets.Npc[Type].Value;
             Texture2D glowIdle = Texture_Glow.Value;
             Texture2D textureWalk = AltTexture.Value;
             Texture2D glowWalk = AltTexture_Glow.Value;
@@ -804,13 +804,13 @@ namespace CalamityMod.NPCs.Crabulon
             int ClonesOnEachSide = Main.zenithWorld ? 2 : 0;
             for (int c = 0 - ClonesOnEachSide; c < 1 + ClonesOnEachSide; c++)
             {
-                Vector2 drawOrigin = new Vector2(textureIdle.Width / 2, textureIdle.Height / Main.npcFrameCount[NPC.type] / 2);
+                Vector2 drawOrigin = new Vector2(textureIdle.Width / 2, textureIdle.Height / Main.npcFrameCount[Type] / 2);
                 Vector2 drawPos = NPC.Center - screenPos + (Vector2.UnitX * textureIdle.Width * c * 1.6f);
                 // Jumping
                 if (NPC.ai[0] > 2f && NPC.velocity.Y != 0f)
                 {
                     drawOrigin = new Vector2(textureAttack.Width / 2, textureAttack.Height / 2);
-                    drawPos -= new Vector2(textureAttack.Width, textureAttack.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    drawPos -= new Vector2(textureAttack.Width, textureAttack.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
                     spriteBatch.Draw(textureAttack, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
@@ -820,7 +820,7 @@ namespace CalamityMod.NPCs.Crabulon
                 else if (NPC.ai[0] == 1f)
                 {
                     drawOrigin = new Vector2(textureWalk.Width / 2, textureWalk.Height / 2);
-                    drawPos -= new Vector2(textureWalk.Width, textureWalk.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    drawPos -= new Vector2(textureWalk.Width, textureWalk.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
                     spriteBatch.Draw(textureWalk, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
@@ -829,7 +829,7 @@ namespace CalamityMod.NPCs.Crabulon
                 // Standing still
                 else
                 {
-                    drawPos -= new Vector2(textureIdle.Width, textureIdle.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    drawPos -= new Vector2(textureIdle.Width, textureIdle.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
                     spriteBatch.Draw(textureIdle, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);

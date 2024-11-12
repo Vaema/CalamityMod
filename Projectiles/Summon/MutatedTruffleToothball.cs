@@ -11,6 +11,8 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
 
+        public override string Texture => "CalamityMod/NPCs/OldDuke/OldDukeToothBall";
+
         public ref float TargetShotID => ref Projectile.ai[0];
 
         public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Type] = true;

@@ -300,7 +300,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // Draw the chum itself and its jaw, rotated by localai[0]
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1 ? jawTexture.Width - 22 : 22, 4);
             Vector2 npcOffset = NPC.Center - screenPos;

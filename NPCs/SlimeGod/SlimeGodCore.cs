@@ -90,12 +90,12 @@ namespace CalamityMod.NPCs.SlimeGod
 
             NPC.defense = 6;
             NPC.LifeMaxNERB(420);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 0, 0);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();
@@ -220,47 +220,28 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
+            // Used to gauge how aggressive the core is, based on Paladins alive
+            // Stay near the Paladins and do nothing else at level 0
+            // Fire projectiles at level 1
+            // Charge at level 2
+            // Follow the player around instead of the Paladins at level 3
+            // Buff a Paladin far sooner, fire more projectiles, and charge faster at level 4
+            int aggressionLevel = 0;
+            if (!NPC.AnyNPCs(ModContent.NPCType<EbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<CrimulanPaladin>()))
+            {
+                aggressionLevel = 1;
+                int splitPaladinCount = NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) + NPC.CountNPCS(ModContent.NPCType<SplitCrimulanPaladin>());
+                if (splitPaladinCount < 2)
+                    aggressionLevel = 4;
+                else if (splitPaladinCount < 3)
+                    aggressionLevel = 3;
+                else if (splitPaladinCount < 4)
+                    aggressionLevel = 2;
+            }
+
             // Enrage based on large slimes
-            bool purpleSlimeAlive = false;
-            bool redSlimeAlive = false;
-
-            if (CalamityGlobalNPC.slimeGodPurple != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
-                {
-                    if (buffedSlime == 1)
-                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 1f;
-                    else
-                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 0f;
-
-                    calamityGlobalNPC.newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
-                    calamityGlobalNPC.newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
-
-                    // Despawn check
-                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
-
-                    purpleSlimeAlive = true;
-                }
-            }
-
-            if (CalamityGlobalNPC.slimeGodRed != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
-                {
-                    if (buffedSlime == 2)
-                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 1f;
-                    else
-                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 0f;
-
-                    NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
-                    NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
-
-                    // Despawn check
-                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
-
-                    redSlimeAlive = true;
-                }
-            }
+            bool purpleSlimeAlive = EbonianPaladinAlive(NPC);
+            bool redSlimeAlive = CrimulanPaladinAlive(NPC);
 
             // Start shooting blobs more often, move faster and buff large slimes more often if one type of large slime is dead
             bool phase2 = !purpleSlimeAlive || !redSlimeAlive;
@@ -418,7 +399,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.timeLeft = 1800;
 
             // Hide inside large slime
-            float hideInsideLargeSlimePhaseGateValue = phase2 ? 300f : 900f;
+            float hideInsideLargeSlimePhaseGateValue = aggressionLevel == 4 ? 120f : phase2 ? 300f : 900f;
             float hideInsideLargeSlimePhaseDuration = 600f;
             float exitLargeSlimeGateValue = hideInsideLargeSlimePhaseGateValue + hideInsideLargeSlimePhaseDuration;
             calamityGlobalNPC.newAI[2] += 1f;
@@ -502,11 +483,12 @@ namespace CalamityMod.NPCs.SlimeGod
             // Avoid cheap bullshit
             NPC.damage = 0;
 
-            if (expertMode)
+            if (expertMode && aggressionLevel >= 1)
             {
-                float divisor = bossRush ? 90f : death ? 180f : revenge ? 240f : 300f;
-                if (phase2)
-                    divisor /= 2;
+                float divisor = bossRush ? 50f : death ? 90f : revenge ? 120f : 150f;
+                divisor -= (aggressionLevel - 1) * 10f;
+                if (aggressionLevel == 4)
+                    divisor *= 0.5f;
 
                 if (calamityGlobalNPC.newAI[2] % divisor == 0f)
                 {
@@ -515,7 +497,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         if (Main.rand.NextBool())
                         {
-                            float projectileVelocity = 4f;
+                            float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                             int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
@@ -523,7 +505,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         }
                         else
                         {
-                            float projectileVelocity = 8f;
+                            float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
                             int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
@@ -540,49 +522,64 @@ namespace CalamityMod.NPCs.SlimeGod
             buffedSlime = 0;
 
             float flySpeed = death ? 15f : revenge ? 13.5f : expertMode ? 12f : 9f;
+            flySpeed += aggressionLevel;
+            if (aggressionLevel == 4)
+                flySpeed += 3f;
             if (phase2)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.1f;
             if (bossRush)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.2f;
             if (Main.getGoodWorld)
-                flySpeed *= 1.25f;
+                flySpeed *= 1.3f;
 
             Vector2 flyDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
-            Vector2 flyDestination = GetFlyDestination(player);
+            Vector2 flyDestination = aggressionLevel >= 3 ? player.Center : GetFlyDestination(player);
             Vector2 idealVelocity = (flyDestination - flyDirection).SafeNormalize(Vector2.UnitY) * flySpeed;
 
             float distanceFromFlyDestination = NPC.Distance(flyDestination);
 
-            NPC.ai[0] -= 1f;
-            if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
+            if (aggressionLevel >= 2)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
+                NPC.ai[0] -= 1f;
+                if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
+                {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
 
-                if (distanceFromFlyDestination < 200f)
-                    NPC.ai[0] = 20f;
+                    if (distanceFromFlyDestination < 200f)
+                        NPC.ai[0] = 20f;
 
-                if (NPC.velocity.X < 0f)
-                    NPC.direction = -1;
-                else
-                    NPC.direction = 1;
+                    if (NPC.velocity.X < 0f)
+                        NPC.direction = -1;
+                    else
+                        NPC.direction = 1;
 
-                NPC.rotation += NPC.direction * 0.3f;
+                    NPC.rotation += NPC.direction * 0.3f;
 
-                return;
+                    return;
+                }
             }
 
-            float inertia = 50f;
-            if (Main.getGoodWorld)
-                inertia *= 0.8f;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                inertia -= Main.rand.Next(31);
+            if (distanceFromFlyDestination < 150f && aggressionLevel < 2)
+            {
+                if (NPC.velocity.Length() > flySpeed * 0.2f)
+                    NPC.velocity *= 0.9f;
+            }
+            else
+            {
+                float inertia = 50f;
+                inertia -= aggressionLevel * 3f;
+                if (Main.getGoodWorld)
+                    inertia *= 0.8f;
+                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                    inertia *= Main.rand.NextFloat(0.2f, 1f);
 
-            NPC.velocity = (NPC.velocity * inertia + idealVelocity) / (inertia + 1f);
-            if (distanceFromFlyDestination < 350f)
-                NPC.velocity = (NPC.velocity * 10f + idealVelocity) / 11f;
-            if (distanceFromFlyDestination < 300f)
-                NPC.velocity = (NPC.velocity * 7f + idealVelocity) / 8f;
+                NPC.velocity = (NPC.velocity * inertia + idealVelocity) / (inertia + 1f);
+                if (distanceFromFlyDestination < 350f)
+                    NPC.velocity = (NPC.velocity * 10f + idealVelocity) / 11f;
+                if (distanceFromFlyDestination < 300f)
+                    NPC.velocity = (NPC.velocity * 7f + idealVelocity) / 8f;
+            }
 
             NPC.rotation = NPC.velocity.X * 0.05f;
         }
@@ -665,11 +662,11 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Color drawColorAlpha = buffedSlime != 0f ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
+            Color drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
             Texture2D pog = ZenithSeedEyeTexture.Value;
@@ -701,7 +698,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (!Main.zenithWorld)
             {
                 Vector2 drawPositionAdjustment = halfSize - screenPos + new Vector2(0f, NPC.gfxOffY);
-                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f;
+                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[Type] * 1.5f;
                 int twoConst = 2;
                 int coreID = 1;
 
@@ -728,7 +725,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Reset the color
-            drawColorAlpha = NPC.GetAlpha(drawColor);
+            drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
 
             // Draw the base texture
             spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -778,8 +775,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 return;
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
-
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedSlimeGod);
 
             // Mark the Slime God as dead
             DownedBossSystem.downedSlimeGod = true;

@@ -8,7 +8,7 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -598,11 +598,11 @@ namespace CalamityMod.CalPlayer
         public override void GetFishingLevel(Item fishingRod, Item bait, ref float fishingLevel)
         {
             if ((ZoneAstral || ZoneAbyss || ZoneSulphur) && bait.type == ModContent.ItemType<ArcturusAstroidean>())
-                fishingLevel = fishingLevel * 1.1f;
+                fishingLevel = fishingLevel * ArcturusAstroidean.FishingPowerBiomeMult;
             if (Player.ZoneSnow && fishingRod.type == ModContent.ItemType<VerstaltiteFishingRod>())
-                fishingLevel = fishingLevel * 1.1f;
+                fishingLevel = fishingLevel * VerstaltiteFishingRod.FishingPowerBiomeMult;
             if (Player.ZoneSkyHeight && fishingRod.type == ModContent.ItemType<HeronRod>())
-                fishingLevel = fishingLevel * 1.1f;
+                fishingLevel = fishingLevel * HeronRod.FishingPowerBiomeMult;
 
             // Prevent the player from fishing if they have the Bloodworm
             if (bait.type == ModContent.ItemType<BloodwormItem>())
