@@ -187,8 +187,8 @@ BlissfulBombardier: {
 	DisplayName: Blissful Bombardier
 	Tooltip:
 		'''
-		Launches a large crystal missile into the sky which releases mini missiles before falling back down at your cursor
-		The crystal missile have homing, the little ones dont, I cant be bothered to tooltip rn
+		Launches a crystalline missile high into the sky, raining holy fire on the cursor
+		The missile relentlessly seeks out a target before bursting into a massive explosion
 		'''
 }
 
@@ -985,8 +985,8 @@ PristineFury: {
 	DisplayName: Pristine Fury
 	Tooltip:
 		'''
-		Fires an intense helix of profaned flames that burst into a column of smoke
-		Press <right> to disperse flamable crystaline powder
+		Fires an intense helix of flames that burst into a column of smoke
+		<right> to disperse flammable crystalline powder
 		Powder can be ignited, causuing it to explode for extra damage
 		Both helix flames and other nearby explosions can ignite the powder
 		Uses gel for ammo
@@ -1320,8 +1320,8 @@ TelluricGlare: {
 	Tooltip:
 		'''
 		Rapidly fires volleys of arrows
-		Every other arrow is converted into radiant arrows
-		Converts wooden arrows into colossal radiant arrows which pierce and deal increased damage
+		Every other arrow is converted into radiant greatarrows which pierce but quicky dissapear after striking
+		Wooden arrows are converted into more powerful greatarrows that deal increased damage
 		75% chance to save ammo
 		'''
 }

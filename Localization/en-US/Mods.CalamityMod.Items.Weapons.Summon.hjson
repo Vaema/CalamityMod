@@ -250,7 +250,14 @@ DankStaff: {
 
 DazzlingStabberStaff: {
 	DisplayName: Dazzling Stabber Staff
-	Tooltip: Summons three holy blades made of profaned materials to fight for you
+	Tooltip:
+		'''
+		Summons three holy daggers made of profaned materials to fight for you
+		Holy flame daggers gallantly turn all that oppose them to ashes
+		Crystalline daggers gracefully carve foes to ribbons
+		Profane daggers brutishtly splinter and reform eternally
+		'Ever onward, towards Her future'
+		'''
 }
 
 DeathstareRod: {

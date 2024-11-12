@@ -261,10 +261,11 @@ BurningRevelation: {
 	DisplayName: Burning Revelation
 	Tooltip:
 		'''
-		A high IQ yoyo that charges power over time. hits create explosions scaling with power and greatly increase the charge.
-		After reaching max charge the yoyo will discharge its charge as homing profaned stars that deal more damage the further they travel
-		Stars with max damage explode for extra damage on hit
-		An exceptionally agile yoyo that ignores tiles
+		An ever burning yoyo that constantly charges power
+		Direct hits greatly increase the charge and releases profaned energy that scales with charge level
+		At maximum charge, the yoyo unleashes a volley of homing stars that gain damage the farther they travel
+		Stars with maximum damage let off an additional explosion on hit
+		'It burns, but you hold it close to your heart. Clarity and purpose fill your soul'
 		'''
 }
 
@@ -723,11 +724,11 @@ HolyCollider: {
 	DisplayName: Holy Collider
 	Tooltip:
 		'''
-		Swings a massive holy sword that can be charged for higher damage
-		Charged swings create four holy flares that float around the point of impact
-		Flares can be stuck by the blade and will gain increased liftime from uncharged hits
+		Swings a holy greatsword that can be charged for higher damage
+		Charged swings create four lingering flares that float around the point of impact
+		Striking a flare with an uncharged strike will push it around and extend its lifetime
 		Charged swings can empower flares, turning them into massive fireballs on hit and launching them to your cursor
-		Holding <right> while swinging will do repeated uncharged slashes that create spreads of flame on hit
+		Holding <right> while swinging will repeatedly do uncharged slashes that create a spread of flames on hit
 		'''
 }
 
@@ -1081,10 +1082,10 @@ SeekingScorcher: {
 	DisplayName: Seeking Scorcher
 	Tooltip:
 		'''
-		Throws a hatchet which bounces up to {0} targets before returning
+		Throws a massive crystalline axe which bounces to three additional targets after hitting
 		Crystallizes in place if all bounces have not been exhausted
-		Crystallized hatchets can be shattered by another hatchet
-		Doing so empowers the hatchet but prevents it from crystallizing
+		Crystallized hatchets can be shattered by another axe
+		Doing so empowers the hatchet based on the amount shattered but prevents it from crystallizing
 		'May your enemies burn in hell for the sins they have committed'
 		'''
 }
