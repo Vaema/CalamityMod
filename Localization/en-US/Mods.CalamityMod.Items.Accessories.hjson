@@ -2079,6 +2079,11 @@ SharkyPlush: {
 	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
 }
 
+TheComb: {
+	DisplayName: The Comb
+	Tooltip: '''"We ain't found shit!"'''
+}
+
 XyksBlessingBlue: {
 	DisplayName: Xyk's Blessing (Blue)
 	Tooltip:
