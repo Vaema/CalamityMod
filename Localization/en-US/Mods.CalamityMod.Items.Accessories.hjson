@@ -2083,9 +2083,8 @@ TheComb: {
 	DisplayName: The Comb
 	Tooltip:
 		'''
-		Illuminates your hair with lustrous sparkles
-		Sparkles point to nearby treasure
-		This effect works in vanity slots
+		Gives the wearer's hair a lustrous finish
+		Sparkles are attracted to nearby chests
 		'We ain't found shit!'
 		'''
 }

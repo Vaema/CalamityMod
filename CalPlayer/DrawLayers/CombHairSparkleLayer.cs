@@ -84,7 +84,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
 
                 Dust sparkle = Dust.NewDustDirect(area.TopLeft(), area.Width, area.Height, DustID.GoldCoin, Alpha: 150, Scale: 0.3f);
                 sparkle.fadeIn = 1f;
-                sparkle.velocity = ChestPosition == Vector2.Zero ? (sparkle.velocity * 0.1f) : (ChestPosition - sparkle.position).SafeNormalize(Vector2.Zero);
+                sparkle.velocity = ChestPosition == Vector2.Zero ? (sparkle.velocity * 0.1f) : (ChestPosition - sparkle.position).SafeNormalize(Vector2.Zero) * 0.5f;
                 sparkle.noLight = true;
                 sparkle.shader = shader;
                 drawInfo.DustCache.Add(sparkle.dustIndex);
@@ -96,7 +96,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 Rectangle areaB = Utils.CenteredRectangle(drawInfo.Position + drawPlayer.Size * 0.5f + new Vector2(drawPlayer.direction * -14, 0f), new Vector2(4f, 30f));
                 Dust sparkleB = Dust.NewDustDirect(areaB.TopLeft(), areaB.Width, areaB.Height, DustID.GoldCoin, Alpha: 150, Scale: 0.3f);
                 sparkleB.fadeIn = 1f;
-                sparkleB.velocity = ChestPosition == Vector2.Zero ? (sparkleB.velocity * 0.1f) : (ChestPosition - sparkleB.position).SafeNormalize(Vector2.Zero);
+                sparkleB.velocity = ChestPosition == Vector2.Zero ? (sparkleB.velocity * 0.1f) : (ChestPosition - sparkleB.position).SafeNormalize(Vector2.Zero) * 0.5f;
                 sparkleB.noLight = true;
                 sparkleB.shader = shader;
                 drawInfo.DustCache.Add(sparkleB.dustIndex);
