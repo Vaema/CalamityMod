@@ -352,7 +352,7 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
 
             // 35% resist to Sulphuric Acid Cannon's Explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
 
             // 25% resist to Corinth Prime's Grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
