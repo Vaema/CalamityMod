@@ -2036,7 +2036,7 @@ namespace CalamityMod
                 ProjectileType<StarmageddonBinaryStarCenter>(),
                 ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<StickyBol>(),
-                ProjectileType<SulphuricBlast>(),
+                ProjectileType<AcidRocket>(),
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
