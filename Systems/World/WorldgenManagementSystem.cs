@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.World;
@@ -573,7 +574,7 @@ namespace CalamityMod.Systems
                         }
                     }
 
-                    // Adds Desert Medallion to Sandstone Chests at a 20% chance
+                    // Adds Desert Medallion and The Comb to Sandstone Chests, each at a 20% chance
                     if (isSandstoneChest)
                     {
                         float rng = WorldGen.genRand.NextFloat();
@@ -584,6 +585,18 @@ namespace CalamityMod.Systems
                                 if (chest.item[inventoryIndex].IsAir)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<DesertMedallion>());
+                                    chest.item[inventoryIndex].stack = 1;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (rng < 0.4f)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (chest.item[inventoryIndex].IsAir)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<TheComb>());
                                     chest.item[inventoryIndex].stack = 1;
                                     break;
                                 }

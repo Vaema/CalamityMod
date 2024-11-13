@@ -61,6 +61,8 @@ namespace CalamityMod.Tiles.Astral
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
 
             int xOffset = i % 4;
             int yOffset = j % 4;

@@ -93,9 +93,8 @@ AlluringBait: {
 	DisplayName: Alluring Bait
 	Tooltip:
 		'''
-		Increases fishing power by 30
-		Greatly increases chance of catching potion ingredient fish
-		Potion ingredient fish yield is increased
+		Increases fishing power by 10
+		Increases the yield of potion ingredient fish
 		'''
 }
 
@@ -706,7 +705,12 @@ ElysianAegis: {
 
 EnchantedPearl: {
 	DisplayName: Enchanted Pearl
-	Tooltip: Increases fishing power by 10 and crate catch chance by 10%
+	Tooltip:
+		'''
+		Increases fishing power by 10
+		Increases chance to catch crates and loot-containing fish by 15%
+		Crates are 25% more likely to be higher quality
+		'''
 }
 
 EtherealExtorter: {
@@ -1412,7 +1416,7 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		6% increased damage
+		5% increased damage
 		Taking damage spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
@@ -1633,8 +1637,7 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		32% increased jump speed and allows auto-jump
-		Increased fall damage resistance by 35 blocks
+		32% increased jump speed, allows auto-jump, and negates fall damage
 		Grants the ability to swim, climb walls, dash, and dodge attacks
 		'''
 	HoldShiftTooltip:
@@ -1650,7 +1653,8 @@ StatisVoidSash: {
 	Tooltip:
 		'''
 		32% increased jump speed, allows auto-jump, and negates fall damage
-		Can swim, climb walls, dash, and dodge attacks
+		Grants the ability to swim, climb walls, dash, and dodge attacks
+		Dashes leave homing scythes in your wake
 		'''
 	HoldShiftTooltip:
 		'''
@@ -1747,11 +1751,9 @@ SupremeBaitTackleBoxFishingStation: {
 	DisplayName: Supreme Bait Tackle Box Fishing Station
 	Tooltip:
 		'''
-		Increases fishing skill by 80, and crate catch chance by 10%
+		Increases fishing power by 50
 		Fishing line will never break and decreases chance of bait consumption
-		Allows fishing in lava
-		Sonar potion effect
-		The ultimate fishing accessory
+		Allows fishing in lava and detects hooked fish
 		'''
 }
 
@@ -2080,6 +2082,16 @@ PunchCard: {
 SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
+}
+
+TheComb: {
+	DisplayName: The Comb
+	Tooltip:
+		'''
+		Gives the wearer's hair a lustrous finish
+		Sparkles are attracted to nearby chests
+		'We ain't found shit!'
+		'''
 }
 
 XyksBlessingBlue: {

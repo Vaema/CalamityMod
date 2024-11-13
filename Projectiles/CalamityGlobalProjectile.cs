@@ -13,11 +13,9 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -25,6 +23,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -194,7 +193,7 @@ namespace CalamityMod.Projectiles
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
             // which is way too early, the projectile's own initialization isn't even done yet
-            
+
             CreatedByPlayerDash = source is ProjectileSource_PlayerDashHit;
 
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
@@ -3440,7 +3439,7 @@ namespace CalamityMod.Projectiles
 
                 if (NPC.downedMoonlord)
                 {
-                    if (CalamityLists.dungeonProjectileBuffList.Contains(projectile.type))
+                    if (BuffedDungeonProjectilesList.Includes(projectile.type))
                     {
                         // ai[1] being set to 1 is done only by the Calamity usages of these projectiles in Skeletron and Skeletron Prime boss fights
                         bool isSkeletronBossProjectile = (projectile.type == ProjectileID.RocketSkeleton || projectile.type == ProjectileID.Shadowflames) && projectile.ai[1] > 0f;
@@ -3455,7 +3454,7 @@ namespace CalamityMod.Projectiles
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (CalamityLists.eventProjectileBuffList.Contains(projectile.type))
+                    if (EventProjectileBuffList.Includes(projectile.type))
                         projectile.damage += 15;
                 }
 
@@ -3888,7 +3887,7 @@ namespace CalamityMod.Projectiles
                 }
 
                 // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
-                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>())
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -4136,7 +4135,7 @@ namespace CalamityMod.Projectiles
                                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                                 bool success = WorldGen.GrowPalmTree(i, j);
                                 if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                                    WorldGen.TreeGrowFXCheck(i, j);
                             }
                             else if (tile.TileType == ModContent.TileType<SpineSapling>())
                             {

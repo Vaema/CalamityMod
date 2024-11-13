@@ -42,6 +42,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             float transparency = 0.6f;
 
             // Must be set here 

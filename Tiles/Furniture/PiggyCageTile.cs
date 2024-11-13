@@ -65,6 +65,9 @@ namespace CalamityMod.Tiles.Furniture
         // Since this uses a custom top sprite, all drawing must be redone
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             Tile tile = Main.tile[i, j];
             var zero = Main.drawToScreen ? Vector2.Zero : new(Main.offScreenRange, Main.offScreenRange);
             var drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + zero + CalamityUtils.TileDrawOffset + Vector2.UnitY * 2;
