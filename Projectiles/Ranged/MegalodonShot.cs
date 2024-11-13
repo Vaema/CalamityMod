@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Main.rand.NextBool(3))
                 {
                     Color smokeColor = Color.MediumBlue;
-                    Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), smokeColor, 30, Main.rand.NextFloat(0.6f, 0.8f), 0.3f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), smokeColor, 30, Main.rand.NextFloat(0.5f, 0.7f), 0.3f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
             }

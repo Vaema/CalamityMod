@@ -14,8 +14,6 @@ namespace CalamityMod.Projectiles.Ranged
     public class MegalodonRocket : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/FishronRPG";
-
         public static int Lifetime = 600;
         public override void SetStaticDefaults()
         {
@@ -26,8 +24,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = 46;
+            Projectile.height = 38;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
@@ -39,6 +37,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            //Rotation
+            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) * Projectile.direction;
+
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
             if (Projectile.timeLeft <= Lifetime - 6)
             {
@@ -49,15 +51,14 @@ namespace CalamityMod.Projectiles.Ranged
                     SparkParticle spark2 = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(15, 15) - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * Main.rand.NextFloat(0.5f, 1.5f), false, Main.rand.Next(9, 12 + 1), 0.4f, Color.OrangeRed);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
-                int smokyFire2 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 0.5f);
-                Main.dust[smokyFire2].scale = 0.1f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[smokyFire2].fadeIn = 1.5f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[smokyFire2].noGravity = true;
-                Main.dust[smokyFire2].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
-                smokyFire2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
-                Main.dust[smokyFire2].scale = 1f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[smokyFire2].noGravity = true;
-                Main.dust[smokyFire2].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch, Projectile.velocity, 500, default, 0.5f);
+                dust.scale = Main.rand.NextFloat(0.7f, 1.5f);
+                dust.velocity = Projectile.velocity * Main.rand.NextFloat(-3, 3);
+                dust.noGravity = true;
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Smoke, Projectile.velocity, 500, default, 0.5f);
+                dust2.scale = Main.rand.NextFloat(0.7f, 1.5f);
+                dust2.velocity = Projectile.velocity * Main.rand.NextFloat(-3, 3);
+                dust2.noGravity = true;
             }
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 12f, 20f);
         }
@@ -90,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Blue, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 1f, 0f, 25));
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 0.5f, 0f, 15));
 
-            for (int i = 0; i < 8; i++) GeneralParticleHandler.SpawnParticle(new BloodParticle2(Projectile.Center, new Vector2(Main.rand.NextFloat(6, 12), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), 12, Main.rand.NextFloat(0.3f, 0.4f), Color.DodgerBlue));
+            for (int i = 0; i < 8; i++) GeneralParticleHandler.SpawnParticle(new BloodParticle2(Projectile.Center, new Vector2(Main.rand.NextFloat(6, 12), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), 12, Main.rand.NextFloat(0.3f, 0.4f), Color.DarkGoldenrod * 0.8f));
             Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, Color.RoyalBlue * 0.5f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.1f, 15);
             GeneralParticleHandler.SpawnParticle(pulse);
             Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.CornflowerBlue, "CalamityMod/Particles/FlameExplosion2", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.07f, 15);
