@@ -54,6 +54,9 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree1Glow").Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
@@ -67,6 +70,9 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree2Glow").Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
@@ -80,6 +86,9 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree3Glow").Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 

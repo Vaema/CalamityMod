@@ -1411,7 +1411,7 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		6% increased damage
+		5% increased damage
 		Taking damage spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
@@ -1632,8 +1632,7 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		32% increased jump speed and allows auto-jump
-		Increased fall damage resistance by 35 blocks
+		32% increased jump speed, allows auto-jump, and negates fall damage
 		Grants the ability to swim, climb walls, dash, and dodge attacks
 		'''
 	HoldShiftTooltip:
@@ -1649,7 +1648,8 @@ StatisVoidSash: {
 	Tooltip:
 		'''
 		32% increased jump speed, allows auto-jump, and negates fall damage
-		Can swim, climb walls, dash, and dodge attacks
+		Grants the ability to swim, climb walls, dash, and dodge attacks
+		Dashes leave homing scythes in your wake
 		'''
 	HoldShiftTooltip:
 		'''
@@ -2077,6 +2077,16 @@ PunchCard: {
 SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
+}
+
+TheComb: {
+	DisplayName: The Comb
+	Tooltip:
+		'''
+		Gives the wearer's hair a lustrous finish
+		Sparkles are attracted to nearby chests
+		'We ain't found shit!'
+		'''
 }
 
 XyksBlessingBlue: {

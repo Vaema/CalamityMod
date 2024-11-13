@@ -293,6 +293,9 @@ namespace CalamityMod.Tiles.Crags.Tree
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             Tile tile = Framing.GetTileSafely(i, j);
             float xOff = (float)Math.Sin((j * 19) * 0.04f) * 1.2f;
 

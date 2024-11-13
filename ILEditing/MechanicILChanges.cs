@@ -1914,7 +1914,7 @@ namespace CalamityMod.ILEditing
                 return;
 
             var glowMaskTile = GlowMaskTile.InstanceLookup[type];
-            if (glowMaskTile is null)
+            if (glowMaskTile is null || !TileDrawing.IsVisible(drawData.tileCache))
                 return;
 
             var glowMask = glowMaskTile.GlowMask;

@@ -466,14 +466,14 @@ namespace CalamityMod.NPCs.Abyss
             aewMinionCondition.Add(ModContent.ItemType<AbyssShellFossil>(), 50);
 
             // Post-Polterghast: Soul Edge, Eidolic Wail, Stardust Staff
-            LeadingConditionRule postPolter = npcLoot.DefineConditionalDropSet(DropHelper.PostPolter());
+            LeadingConditionRule postPolter = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedPolterghast));
             aewMinionCondition.Add(postPolter);
             postPolter.Add(ModContent.ItemType<VoidEdge>(), 3);
             postPolter.Add(ModContent.ItemType<EidolicWail>(), 3);
             postPolter.Add(ModContent.ItemType<EidolonStaff>(), 3);
 
             // Post-Leviathan: 6-8 Lumenyl (8-11 on Expert)
-            LeadingConditionRule postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            LeadingConditionRule postLevi = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedLeviathan));
             aewMinionCondition.Add(postLevi);
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 6, 8, 8, 11));
 

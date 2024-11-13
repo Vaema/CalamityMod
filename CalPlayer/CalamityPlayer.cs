@@ -113,6 +113,7 @@ namespace CalamityMod.CalPlayer
         public float healingPotionMultiplier = 1f;
         public bool heldGaelsLastFrame = false;
         internal bool hadNanomachinesLastFrame = false;
+        public bool combHair;
         public bool disableVoodooSpawns = false;
         public bool disablePerfCystSpawns = false;
         public bool disableHiveCystSpawns = false;
@@ -1609,6 +1610,7 @@ namespace CalamityMod.CalPlayer
             ResetRogueStealth();
 
             calamityBonusLuck = 0f;
+            combHair = false;
 
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);

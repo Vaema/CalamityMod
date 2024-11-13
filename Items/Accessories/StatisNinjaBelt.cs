@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -28,10 +29,10 @@ namespace CalamityMod.Items.Accessories
         {
             player.autoJump = true;
             player.jumpSpeedBoost += 1.6f;
-            player.extraFall += 35;
+            player.noFallDmg = true;
             player.blackBelt = true;
-            player.dashType = 1;
-            player.Calamity().DashID = string.Empty;
+            player.dashType = 0;
+            player.Calamity().DashID = StatisNinjaBeltDash.ID;
             player.spikedBoots = 2;
             player.accFlipper = true;
         }

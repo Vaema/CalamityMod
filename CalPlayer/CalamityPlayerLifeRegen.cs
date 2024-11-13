@@ -557,7 +557,7 @@ namespace CalamityMod.CalPlayer
             // Yes, really, there's a list of conditions under which life regen doesn't work
             // even if it's life regen that normally works during a damage over time debuff.
             //
-            // 1. No life regen bool (Blood Boiler usage or wearing Omega Blue armor)
+            // 1. No life regen bool (Omega Blue armor)
             // 2. Being too far from Providence cocoon ("Holy Inferno")
             // 3. Air drowning in the Abyss
             //

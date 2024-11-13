@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.rBrain = true;
-            player.GetDamage<GenericDamageClass>() += 0.06f;
+            player.GetDamage<GenericDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

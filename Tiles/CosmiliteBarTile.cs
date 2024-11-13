@@ -19,10 +19,5 @@ namespace CalamityMod.Tiles
             type = ModContent.DustType<CosmiliteBarDust>();
             return true;
         }
-
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            return false;
-        }
     }
 }
