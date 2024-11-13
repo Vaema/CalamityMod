@@ -3,6 +3,15 @@ Brimrose: {
 	Tooltip: Summons a brimrose mount
 }
 
+ExoArmamentsKit: {
+	DisplayName: Exo Armaments Kit
+	Tooltip:
+		'''
+		Summons a rideable war machine
+		'A superweapon just right for your stature'
+		'''
+}
+
 ExoThrone: {
 	DisplayName: Exo Box
 	Tooltip:
