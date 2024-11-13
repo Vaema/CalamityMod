@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
@@ -86,15 +85,6 @@ namespace CalamityMod.Items
             else
                 text = GetTextValue("Items.Misc.SpawnBlockersOff");
             tooltips.FindAndReplace("[STATE]", text);
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("IronBar", 10).
-                AddIngredient<SulphuricScale>().
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

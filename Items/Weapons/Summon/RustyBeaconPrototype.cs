@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -43,15 +42,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("AnySilverBar", 10).
-                AddIngredient<SulphuricScale>(3).
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

@@ -1,5 +1,3 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Tiles.Furniture;
 using Terraria;
 using Terraria.ID;
@@ -15,14 +13,6 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.DefaultToPlaceableTile(ModContent.TileType<EffigyOfDecayPlaceable>());
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Blue;
-        }
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Acidwood>(10).
-                AddIngredient<SulphuricScale>(2).
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }
