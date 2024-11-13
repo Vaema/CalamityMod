@@ -597,7 +597,7 @@ namespace CalamityMod
             if (a.R > b.R) return true;
             if (a.G > b.G) return true;
             if (a.B > b.B) return true;
-            if (includeAlpha && a.A > b.B) return true;
+            if (includeAlpha && a.A > b.A) return true;
             return false;
         }
 
