@@ -1,14 +1,12 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -82,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Player player = Main.player[Projectile.owner];
             //Dont drop money from Dummies, WoF eyes and worm segments to make grinding money a bit harder and not give money from Dummies since that was apparently happening
-            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !CalamityLists.needsDebuffIconDisplayList.Contains(target.type))
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !NeedsDebuffIconDisplayList.Includes(target.type))
             {
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes

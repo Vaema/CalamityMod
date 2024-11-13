@@ -93,9 +93,8 @@ AlluringBait: {
 	DisplayName: Alluring Bait
 	Tooltip:
 		'''
-		Increases fishing power by 30
-		Greatly increases chance of catching potion ingredient fish
-		Potion ingredient fish yield is increased
+		Increases fishing power by 10
+		Increases the yield of potion ingredient fish
 		'''
 }
 
@@ -706,7 +705,12 @@ ElysianAegis: {
 
 EnchantedPearl: {
 	DisplayName: Enchanted Pearl
-	Tooltip: Increases fishing power by 10 and crate catch chance by 10%
+	Tooltip:
+		'''
+		Increases fishing power by 10
+		Increases chance to catch crates and loot-containing fish by 15%
+		Crates are 25% more likely to be higher quality
+		'''
 }
 
 EtherealExtorter: {
@@ -1746,11 +1750,9 @@ SupremeBaitTackleBoxFishingStation: {
 	DisplayName: Supreme Bait Tackle Box Fishing Station
 	Tooltip:
 		'''
-		Increases fishing skill by 80, and crate catch chance by 10%
+		Increases fishing power by 50
 		Fishing line will never break and decreases chance of bait consumption
-		Allows fishing in lava
-		Sonar potion effect
-		The ultimate fishing accessory
+		Allows fishing in lava and detects hooked fish
 		'''
 }
 

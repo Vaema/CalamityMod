@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -25,23 +24,18 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -49,7 +43,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Renderers;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
@@ -697,7 +690,7 @@ namespace CalamityMod.CalPlayer
             {
                 Item heldItem = Player.ActiveItem();
 
-                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type))
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !DisabledSummonerNerfMinionList.Includes(proj.type))
                     modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
@@ -912,7 +905,7 @@ namespace CalamityMod.CalPlayer
         {
             // TODO -- Evolution dodge isn't actually a dodge and you'll still get hit for 1.
             // This should probably be changed so that when the evolution reflects it gives you 1 frame of guaranteed free dodging everything.
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1045,7 +1038,7 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.25;
             }
 
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
                 if (daedalusReflect && !disableAllDodges && !evolution && !Player.HasCooldown(GlobalDodge.ID))
@@ -1467,7 +1460,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1624,7 +1617,7 @@ namespace CalamityMod.CalPlayer
             {
                 double maxCooldownDurationDamagePercent = 0.5;
                 int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-                
+
                 // Just in case...
                 if (maxCooldownDurationDamageValue <= 0)
                     maxCooldownDurationDamageValue = 1;
@@ -2458,7 +2451,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<DrataliornusBow>()] != 0)
             {
-                foreach(Projectile p in Main.ActiveProjectiles)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
                     if (p.type == ModContent.ProjectileType<DrataliornusBow>() && p.owner == Player.whoAmI)
                     {
@@ -2933,7 +2926,7 @@ namespace CalamityMod.CalPlayer
             bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
             if (!externalFlagsAppropriate)
                 return;
-            
+
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.
             int defenseDamageTaken = defenseDamage;
 

@@ -7,6 +7,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -841,16 +842,7 @@ namespace CalamityMod.NPCs.TownNPCs
             else if (deaths > 100)
                 text += " " + this.GetLocalizedValue("Death100");
 
-            IList<string> donorList = new List<string>(CalamityLists.donatorList);
-            int maxDonorsListed = 25;
-            string[] donors = new string[maxDonorsListed];
-            for (int i = 0; i < maxDonorsListed; i++)
-            {
-                donors[i] = donorList[Main.rand.Next(donorList.Count)];
-                donorList.Remove(donors[i]);
-            }
-
-            text += ("\n\n" + this.GetLocalization("DonorShoutout").Format(donors));
+            text += "\n\n" + this.GetLocalization("DonorShoutout").Format(DonatorsNameList.GetRandomDonors());
 
             return text;
         }

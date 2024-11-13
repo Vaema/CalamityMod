@@ -1716,22 +1716,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Loom);
             r.Register();
             r.DisableDecraft();
-
-            // Band of Regeneration
-            r = Recipe.Create(ItemID.BandofRegeneration);
-            r.AddIngredient(ItemID.Shackle);
-            r.AddIngredient(ItemID.LifeCrystal, 1);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Flare Gun
-            r = Recipe.Create(ItemID.FlareGun);
-            r.AddRecipeGroup(AnyCopperBar, 5);
-            r.AddIngredient(ItemID.Torch, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
         }
         #endregion
 

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().alluringBait = true;
-            player.fishingSkill += 30;
+            player.fishingSkill += 10;
         }
     }
 }

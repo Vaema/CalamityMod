@@ -4,16 +4,17 @@ using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Enums;
 using static Terraria.Player;
 
 namespace CalamityMod
@@ -431,7 +432,7 @@ namespace CalamityMod
         public static int GetExtraHitIFrames(this Player player, HurtInfo hurtInfo)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            
+
             int extraIFrames = 0;
             if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
                 extraIFrames += 30;
@@ -880,7 +881,7 @@ namespace CalamityMod
         /// <param name="player">The player using the holdout.</param>
         /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
         public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
-        
+
         /// <summary>
         /// A shorthand bool to check if the held item should trigger Calamity's summon damage penalty.
         /// </summary>
@@ -905,10 +906,10 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityLists.BlacklistedWeaponsWithToolPower.Contains(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(item.type);
+                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;

@@ -45,6 +45,7 @@ using CalamityMod.Projectiles.Ranged;
 using Steamworks;
 using CalamityMod.Particles;
 using Terraria.Utilities.Terraria.Utilities;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -1612,7 +1613,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = CalamityLists.debuffList.Contains(buffID);
+                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;
