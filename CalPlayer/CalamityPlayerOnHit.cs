@@ -158,7 +158,6 @@ namespace CalamityMod.CalPlayer
             {
                 var source = item.GetSource_FromThis();
                 int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                 Vector2 position = target.Center + new Vector2(0, -750);
 
                 Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1);
@@ -297,9 +296,10 @@ namespace CalamityMod.CalPlayer
             bool spawnChance = (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, (proj.minion ? 6 : 1), 6));
             if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
             {
+                proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
+
                 var source = proj.GetSource_FromThis();
                 int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
-                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                 Vector2 position = target.Center + new Vector2(0, -750);
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1, target.whoAmI);

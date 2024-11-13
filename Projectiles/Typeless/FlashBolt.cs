@@ -108,6 +108,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.325f, 0.2f, 14);
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
+            Main.NewText(Projectile.damage); // Remember to remove this before you finish the branch
         }
         public override bool PreDraw(ref Color lightColor)
         {
