@@ -49,10 +49,10 @@ namespace CalamityMod.CalPlayer.DrawLayers
             var shader = GameShaders.Armor.GetSecondaryShader(dyeIndex == -1 ? 0 : drawPlayer.dye[dyeIndex % 10].dye, drawPlayer);
 
             // Now detect if there are chests nearby
-            int LeftRange = Utils.Clamp((int)drawPlayer.MountedCenter.X / 16 - 60, 2, Main.maxTilesX - 2);
-            int RightRange = Utils.Clamp((int)drawPlayer.MountedCenter.X / 16 + 60, 2, Main.maxTilesX - 2);
-            int TopRange = Utils.Clamp((int)drawPlayer.MountedCenter.Y / 16 - 60, 2, Main.maxTilesY - 2);
-            int BottomRange = Utils.Clamp((int)drawPlayer.MountedCenter.Y / 16 + 60, 2, Main.maxTilesY - 2);
+            int LeftRange = Utils.Clamp((int)drawPlayer.MountedCenter.X / 16 - 50, 2, Main.maxTilesX - 2);
+            int RightRange = Utils.Clamp((int)drawPlayer.MountedCenter.X / 16 + 50, 2, Main.maxTilesX - 2);
+            int TopRange = Utils.Clamp((int)drawPlayer.MountedCenter.Y / 16 - 50, 2, Main.maxTilesY - 2);
+            int BottomRange = Utils.Clamp((int)drawPlayer.MountedCenter.Y / 16 + 50, 2, Main.maxTilesY - 2);
 
             float range = 50000f;
             Vector2 ChestPosition = Vector2.Zero;
@@ -84,7 +84,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
 
                 Dust sparkle = Dust.NewDustDirect(area.TopLeft(), area.Width, area.Height, DustID.GoldCoin, Alpha: 150, Scale: 0.3f);
                 sparkle.fadeIn = 1f;
-                sparkle.velocity = ChestPosition == Vector2.Zero ? (sparkle.velocity * 0.1f) : (ChestPosition - sparkle.position).SafeNormalize(Vector2.Zero) * 0.5f;
+                sparkle.velocity = ChestPosition == Vector2.Zero ? (sparkle.velocity * 0.1f) : (ChestPosition - sparkle.position).SafeNormalize(Vector2.Zero) * 0.2f;
                 sparkle.noLight = true;
                 sparkle.shader = shader;
                 drawInfo.DustCache.Add(sparkle.dustIndex);
@@ -96,7 +96,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 Rectangle areaB = Utils.CenteredRectangle(drawInfo.Position + drawPlayer.Size * 0.5f + new Vector2(drawPlayer.direction * -14, 0f), new Vector2(4f, 30f));
                 Dust sparkleB = Dust.NewDustDirect(areaB.TopLeft(), areaB.Width, areaB.Height, DustID.GoldCoin, Alpha: 150, Scale: 0.3f);
                 sparkleB.fadeIn = 1f;
-                sparkleB.velocity = ChestPosition == Vector2.Zero ? (sparkleB.velocity * 0.1f) : (ChestPosition - sparkleB.position).SafeNormalize(Vector2.Zero) * 0.5f;
+                sparkleB.velocity = ChestPosition == Vector2.Zero ? (sparkleB.velocity * 0.1f) : (ChestPosition - sparkleB.position).SafeNormalize(Vector2.Zero) * 0.2f;
                 sparkleB.noLight = true;
                 sparkleB.shader = shader;
                 drawInfo.DustCache.Add(sparkleB.dustIndex);
