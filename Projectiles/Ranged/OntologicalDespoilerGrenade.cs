@@ -50,10 +50,6 @@ namespace CalamityMod.Projectiles.Ranged
             color3 = Color.Lerp(Owner.shirtColor, Color.White, 0.2f);
             color4 = Color.Lerp(Owner.shirtColor, Color.White, 0.4f);
 
-            // Remove this when ranger doesnt get +1 extra update for free
-            if (Projectile.extraUpdates > 3)
-                Projectile.extraUpdates = 3;
-
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             Projectile.frameCounter++;
