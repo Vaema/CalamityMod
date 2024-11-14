@@ -1,5 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +11,9 @@ namespace CalamityMod.Projectiles.Typeless
     public class ExoTankMissile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
+        public static Asset<Texture2D> Glow;
+        public override void Load() => Glow = ModContent.Request<Texture2D>(Texture + "Glow");
 
         public override void SetStaticDefaults()
         {
@@ -38,5 +43,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
+
+        public override void PostDraw(Color lightColor)
+        {
+            if (Glow != null)
+            {
+                Rectangle frame = Glow.Value.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+                Main.EntitySpriteDraw(Glow.Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            }
+        }
     }
 }

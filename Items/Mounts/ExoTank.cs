@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Buffs.Mounts;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,9 +14,33 @@ namespace CalamityMod.Items.Mounts
 {
     public class ExoTank : ModMount
     {
+        public static int DashDamage = 2000;
+
+        public static int MissileDamage = 1000;
+        public static int MissileAttackRate = 6;
+        public static int MissileLauncherFrameCount = 8;
+
+        public static int MinigunDamage = 400;
+        public static int MinigunAttackRate = 4;
+        public static int MinigunFrameCount = 4;
+
+        protected class ExoTankData
+        {
+            internal int MinigunFrame;
+            internal int MinigunFrameCounter;
+            internal float MinigunRotation;
+
+            public ExoTankData()
+            {
+                MinigunFrame = 0;
+                MinigunFrameCounter = 0;
+                MinigunRotation = 0f;
+            }
+        }
+
         public override void SetStaticDefaults()
         {
-            MountData.spawnDust = DustID.Iron;
+            MountData.spawnDust = DustID.Platinum;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<ExoTankBuff>();
 
@@ -75,102 +99,195 @@ namespace CalamityMod.Items.Mounts
             }
         }
 
+        public override void SetMount(Player player, ref bool skipDust) => player.mount._mountSpecificData = new ExoTankData();
+
         public override void UpdateEffects(Player player)
         {
             if (Main.myPlayer == player.whoAmI)
             {
                 Mount tank = player.mount;
+                var data = (ExoTankData)player.mount._mountSpecificData;
+                ref float minigunRotation = ref data.MinigunRotation;
 
                 // Find the closest NPC targetable by the tank
                 float range = 960f; // 60 tiles
                 int targetNPC = -1;
+                bool canFireLasers = true;
+                Vector2 gunPosition = player.Center + Vector2.UnitX * 52f * player.direction - Vector2.UnitY * 10f;
                 foreach (NPC target in Main.ActiveNPCs)
                 {
                     if (!target.CanBeChasedBy(tank))
                         continue;
 
-                    Vector2 targetDif = target.Center - player.Center;
+                    Vector2 targetDif = target.Center - gunPosition;
+                    float angle = MathF.Abs(targetDif.ToRotation());
 
-                    // The tank has a sight line of 120 degrees, similar to Toy Tank
-                    if (player.direction == 1 && MathF.Abs(targetDif.ToRotation()) > MathHelper.ToRadians(60f))
-                        continue;
+                    // The tank has a base sight line of 120 degrees, equal to Toy Tank
+                    // However, the laser cannon can only pivot up to 36 degrees and any further will not fire out lasers
+                    if (player.direction == 1)
+                    {
+                        if (angle > MathHelper.ToRadians(60f))
+                            continue;
 
-                    if (player.direction == -1 && MathF.Abs(targetDif.ToRotation()) < MathHelper.ToRadians(120f))
-                        continue;
+                        canFireLasers = angle <= MathHelper.ToRadians(18f);
+                    }
+                    else
+                    {
+                        if (angle < MathHelper.ToRadians(120f))
+                            continue;
+
+                        canFireLasers = angle >= MathHelper.ToRadians(162f);
+                    }
 
                     float distance = targetDif.Length();
-                    if (distance < range && Collision.CanHitLine(player.Center, 0, 0, target.position, target.width, target.height))
+                    if (distance < range && Collision.CanHitLine(gunPosition, 0, 0, target.position, target.width, target.height))
                     {
                         range = distance;
                         targetNPC = target.whoAmI;
                     }
                 }
+
+                var source = new EntitySource_Mount(player, Type);
+                // Release 3 missiles matching the animation frames
+                if ((int)tank._frameExtraCounter % MissileAttackRate == 0)
+                {
+                    if (tank._frameExtra > 0 && tank._frameExtra < 4)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 rocketPos = player.Center - Vector2.UnitX * (60f - 4f * i - 6f * tank._frameExtra) * player.direction - Vector2.UnitY * (72f - 8f * i);
+                            Vector2 rocketVel = (Vector2.UnitX * player.direction).RotatedBy(-MathHelper.PiOver4 * player.direction) * 10f;
+                            int rocketDamage = (int)player.GetBestClassDamage().ApplyTo(MissileDamage);
+                            float rocketKB = 1f;
+                            Projectile.NewProjectile(source, rocketPos, rocketVel, ModContent.ProjectileType<ExoTankMissile>(), rocketDamage, rocketKB, player.whoAmI);
+                        }
+                    }
+                }
+
                 if (targetNPC != -1)
                 {
                     tank._aiming = true;
-
-                    if (tank._frameExtraCounter % 5f == 0f)
+                    if (!canFireLasers)
                     {
-                        // Release 3 missiles matching the animation frames
-                        if (tank._frameExtra > 0 && tank._frameExtra < 4)
-                        {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                Vector2 rocketPos = player.Center - Vector2.UnitX * (60f - 4f * i - 6f * tank._frameExtra) * player.direction - Vector2.UnitY * (72f - 8f * i);
-                                Vector2 rocketVel = (Vector2.UnitX * player.direction).RotatedBy(-MathHelper.PiOver4 * player.direction) * 10f;
-                                int rocketDamage = (int)player.GetBestClassDamage().ApplyTo(800);
-                                float rocketKB = 1f;
-                                Projectile.NewProjectile(new EntitySource_Parent(player), rocketPos, rocketVel, ModContent.ProjectileType<ExoTankMissile>(), rocketDamage, rocketKB, player.whoAmI);
-                            }
-                        }
+                        minigunRotation = 0f;
+                        return;
+                    }
 
-                        // Fires a bullet on every frame switch
-                        Vector2 bulletPos = player.Center + Main.rand.NextVector2Circular(3f, 3f) + Vector2.UnitX * 80f * player.direction - Vector2.UnitY * 10f;
-                        Vector2 bulletVel = (Main.npc[targetNPC].Center - bulletPos).SafeNormalize(Vector2.UnitX * player.direction) * Main.rand.NextFloat(10f, 12f);
-                        int bulletDamage = (int)player.GetBestClassDamage().ApplyTo(400);
+                    float idealRotation = (Main.npc[targetNPC].Center - gunPosition).SafeNormalize(Vector2.UnitX * player.direction).ToRotation();
+                    /*
+                    // Cap the rotation 
+                    // EDIT: This looks jarring if you can't fire lasers and the lasers are pointless if they are shot anyway. Re-add if we wanted it to shoot something again
+                    if (!canFireLasers)
+                        idealRotation = (player.direction == 1 ? MathHelper.ToRadians(18f) : MathHelper.ToRadians(162f)) * MathF.Sign(idealRotation);
+                    */
+
+                    minigunRotation = idealRotation + (player.direction == 1 ? 0f : MathHelper.Pi);
+
+                    // Fires a bullet on every frame switch
+                    if (data.MinigunFrameCounter % MinigunAttackRate == 0)
+                    {
+                        Vector2 bulletPos = player.Center + Vector2.UnitX * 28f * player.direction - Vector2.UnitY * 10f + (idealRotation * (player.direction == 1 ? 1.33f : 1f)).ToRotationVector2() * 38f;
+                        Vector2 bulletVel = (Main.npc[targetNPC].Center - bulletPos).SafeNormalize(Vector2.UnitX * player.direction) * Main.rand.NextFloat(15f, 16f);
+                        int bulletDamage = (int)player.GetBestClassDamage().ApplyTo(MinigunDamage);
                         float bulletKB = 1f;
-                        Projectile laser = Projectile.NewProjectileDirect(new EntitySource_Parent(player), bulletPos, bulletVel, ModContent.ProjectileType<AtlasMunitionsLaser>(), bulletDamage, bulletKB, player.whoAmI);
-                        if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
-                            laser.DamageType = DamageClass.Generic;
+                        Projectile.NewProjectile(source, bulletPos, bulletVel, ModContent.ProjectileType<ExoTankLaser>(), bulletDamage, bulletKB, player.whoAmI);
+
+                        Vector2 flashPos = bulletPos + bulletVel.SafeNormalize(Vector2.Zero) * 36f * (player.direction == 1 ? 1f : 1.33f);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(flashPos, DustID.FireworksRGB);
+                            dust.noGravity = true;
+                            dust.noLight = true;
+                            dust.velocity = bulletVel.RotatedByRandom(MathHelper.ToRadians(5f)) * Main.rand.NextFloat(0.5f, 1f);
+                            dust.color = Color.Lerp(Color.OrangeRed, Color.Red, Main.rand.NextFloat(0f, 0.8f));
+                            dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
+                        }
+                        // Muzzle flash
+                        // This would be attached to the gun but the frame rate is too fast for only one to exist at a time
+                        Projectile.NewProjectile(source, flashPos, bulletVel, ModContent.ProjectileType<ExoTankMuzzleFlash>(), 0, 0f, player.whoAmI);
                     }
                 }
                 else
+                {
                     tank._aiming = false;
+                    minigunRotation = 0f;
+                }
             }
         }
 
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
-            // Locked to 2 states: moving and not moving
+            // Ground dust as you travel (State 1 indicates running on the ground)
+            if (state == 1 && Math.Abs(velocity.X) > mountedPlayer.mount.RunSpeed)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Dust ground = Dust.NewDustDirect(mountedPlayer.BottomLeft - Vector2.UnitX * 40f, mountedPlayer.width + 80, 6, DustID.Platinum);
+                    ground.velocity = new Vector2(velocity.X * 0.15f, Main.rand.NextFloat(-2f, 0f));
+                    ground.noLight = true;
+                    ground.scale = Main.rand.NextFloat(0.2f, 0.8f);
+                    ground.fadeIn = Main.rand.NextFloat(1f, 1.5f);
+                    ground.shader = GameShaders.Armor.GetSecondaryShader(mountedPlayer.cMount, mountedPlayer);
+                }
+                if (mountedPlayer.cMount == 0)
+                {
+                    float direction = Math.Sign(velocity.X);
+                    mountedPlayer.position += new Vector2(direction * 24f, 0f);
+                    mountedPlayer.FloorVisuals(true);
+                    mountedPlayer.position -= new Vector2(direction * 24f, 0f);
+                }
+            }
+
+            // Animation frames locked to 2 states: moving and not moving
             if (state != 0)
                 state = 1;
 
             // Advances weapon frames while attacking OR while not attacking but mid-animation
             Mount tank = mountedPlayer.mount;
-            if (tank._aiming || tank._frameExtraCounter > 0)
+            if (tank._aiming || (tank._frameExtraCounter >= MissileAttackRate))
                 tank._frameExtraCounter++;
+            else if (tank._frameExtraCounter > 0f)
+                tank._frameExtraCounter = 0f;
 
-            if (tank._frameExtraCounter >= 40f)
+            if (tank._frameExtraCounter >= MissileAttackRate * MissileLauncherFrameCount)
             {
                 tank._frameExtraCounter = 0f;
                 tank._frameExtra = 0;
             }
-            tank._frameExtra = (int)tank._frameExtraCounter / 5 % 8;
+            tank._frameExtra = (int)tank._frameExtraCounter / MissileAttackRate;
+
+            // Minigun has a separate custom frame counter
+            var data = (ExoTankData)tank._mountSpecificData;
+            ref int minigunFrame = ref data.MinigunFrame;
+            ref int minigunFrameCounter = ref data.MinigunFrameCounter;
+            if (tank._aiming || minigunFrameCounter > 0)
+                minigunFrameCounter++;
+
+            if (minigunFrameCounter >= MinigunAttackRate * MinigunFrameCount)
+            {
+                minigunFrameCounter = 0;
+                minigunFrame = 0;
+            }
+            minigunFrame = minigunFrameCounter / MinigunAttackRate;
             return true;
         }
 
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
-            // Modify frames for backTextureExtra (minigun) and its glow
+            // Modify everything for backTextureExtra (minigun) and its glow
             if (drawType == 1)
             {
-                frame = texture.Frame(1, 4, 0, drawPlayer.mount._frameExtra % 4);
-                drawPosition += Vector2.UnitY * -6f * CalamityUtils.Convert01To010(drawPlayer.mount._frameExtraCounter / 39f);
+                var data = (ExoTankData)drawPlayer.mount._mountSpecificData;
+                frame = texture.Frame(1, MinigunFrameCount, 0, data.MinigunFrame);
+                drawPosition += new Vector2(drawPlayer.direction == 1 ? 15f : -15f, 7f);
+                spriteEffects = drawPlayer.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                rotation = data.MinigunRotation;
+                drawOrigin = new Vector2(drawPlayer.direction == 1 ? 0f : 80f, 12f);
             }
 
-            // frontTexture (missile launcher) and its glow
+            // Frames for frontTexture (missile launcher) and its glow
             if (drawType == 2)
-                frame = texture.Frame(1, 8, 0, drawPlayer.mount._frameExtra);
+                frame = texture.Frame(1, MissileLauncherFrameCount, 0, drawPlayer.mount._frameExtra);
 
             return true;
         }
