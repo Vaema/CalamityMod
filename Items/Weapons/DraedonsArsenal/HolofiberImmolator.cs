@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
+    [LegacyName("MatterModulator")]
     public class HolofiberImmolator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";

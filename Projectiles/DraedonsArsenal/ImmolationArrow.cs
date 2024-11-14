@@ -16,7 +16,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public ref float time => ref Projectile.ai[0];
         public Color mainColor = Color.Lerp(Color.Chartreuse, Color.White, 0.35f);
 
-        // Vanilla sticky code is jank, So I did my own (for better or worse)
         public NPC chosenTarget;
         public bool stuckInTarget = false;
         public bool stuckInGround = false;
@@ -110,7 +109,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 20)
-                            Projectile.velocity += moveTotarget * 0.28f;
+                            Projectile.velocity = Projectile.velocity * 0.95f + moveTotarget * 0.28f;
                         else
                             Projectile.velocity *= 0.8f;
                     }
