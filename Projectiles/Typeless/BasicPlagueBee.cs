@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = 2;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
