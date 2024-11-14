@@ -108,14 +108,13 @@ namespace CalamityMod.Projectiles.Typeless
                 Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.325f, 0.2f, 14);
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
-            Main.NewText(Projectile.damage); // Remember to remove this before you finish the branch
         }
         public override bool PreDraw(ref Color lightColor)
         {
             return false;
         }
 
-        // Theres some leftover code here for an explosion on hit, in case we want that
+        // Theres some leftover code here for an explosion on hit, in case we want that, if we are sure we dont, feel free to remove it
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 60 * sizeMult * (Projectile.numHits > 1 ? 3 : 1), targetHitbox);
         public override bool? CanCutTiles() => false;
     }
