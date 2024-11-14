@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
-        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 45).RotatedBy(0.18f * Projectile.direction);
+        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 50).RotatedBy(0.13f * Projectile.direction);
 
         public int Time = 0;
         public int shotCounter = 0;
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Main.netMode != NetmodeID.Server)
                 {
                     string goreType = "MegalodonMag";
-                    Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 9), Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
+                    Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
                 }
                 //Set the scaling to 0 whenever it reloads
                 Owner.Calamity().sharkGunDamageScaling = 0;
