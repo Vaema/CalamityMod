@@ -3415,16 +3415,12 @@ namespace CalamityMod.Projectiles
                 }
                 else
                 {
-                    if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
-                    {
-                        if (projectile.type != ProjectileType<RicoshotCoin>())
-                            projectile.extraUpdates += 1;
-                        if (projectile.type == ProjectileID.MechanicalPiranha)
-                        {
-                            projectile.localNPCHitCooldown *= 2;
-                            projectile.timeLeft *= 2;
-                        }
-                    }
+                    // 13NOV2024: Ozzatron: Removed Deadshot Brooch extra updates.
+                    // This mechanic was fundamentally unacceptable and was an invisible controlling hand that affected the development of dozens of ranged weapons.
+                    // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
+                    // I don't care. This effect had to be removed.
+                    //
+                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
 
                     if (modPlayer.camper && !player.StandingStill())
                         projectile.damage = (int)(projectile.damage * 0.1);

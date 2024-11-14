@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (curves > 1)
                         {
-                            Projectile.Center += Main.rand.NextVector2Circular(250, 250);
+                            Projectile.Center += Main.rand.NextVector2Circular(100, 100);
                             Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.6f, 0f, scalingTimerMax / 2, false);
                             GeneralParticleHandler.SpawnParticle(blastRing);
                             for (int i = 0; i < 2; i++)
