@@ -505,7 +505,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             return false;
         }
-        // Force the spear to have "priority" when drawing so that it draws over the Owner.
+        // Force the spear to have "priority" when drawing so that it draws over the player.
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             overWiresUI.Add(index);

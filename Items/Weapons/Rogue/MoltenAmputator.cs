@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
 using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;

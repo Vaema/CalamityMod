@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/NPCs/NormalNPCs/ImpiousImmolator";
 
         private float count = 0f;
-        public bool flaping = false;
+        public bool flapping = false;
         public NPC targeted;
         public int maxTargetDistance = 500; // Since they move, the targeting distance is lower than normal
 
@@ -52,12 +52,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             Projectile.frameCounter++;
-            flaping = false;
+            flapping = false;
             if (Projectile.frameCounter > 5)
             {
                 Projectile.frame++;
                 if (Projectile.frame == 2)
-                    flaping = true;
+                    flapping = true;
                 Projectile.frameCounter = 0;
             }
             if (Projectile.frame > 3)
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
 
-            if (flaping)
+            if (flapping)
                 Projectile.velocity += -Vector2.UnitY * 4.6f;
             else
                 Projectile.velocity += Vector2.UnitY * 0.2f;
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 moveDir = Utils.DirectionTo(Projectile.Center, player.Center);
                 // If there's no target and the player isnt too close, flap closer them a bit (woah non stationary sentry crazy)
-                if (flaping && Utils.Distance(player.Center, Projectile.Center) > 300)
+                if (flapping && Utils.Distance(player.Center, Projectile.Center) > 300)
                 {
                     SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.3f, Pitch = 0.8f }, Projectile.Center);
                     Projectile.velocity += (moveDir * Main.rand.NextFloat(3f, 5f)).RotatedByRandom(0.4f);

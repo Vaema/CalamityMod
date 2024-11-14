@@ -1967,7 +1967,7 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Tiershift Mini NukeOfBliss 1s to post Moon Lord.
+            // Tiershift Mini Nuke 1s to post Moon Lord.
             r = Recipe.Create(ItemID.MiniNukeI, 333);
             r.AddIngredient(ItemID.RocketIII, 333);
             r.AddIngredient(ItemID.LunarBar);
@@ -1975,7 +1975,7 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Tiershift Mini NukeOfBliss 2s to post Moon Lord.
+            // Tiershift Mini Nuke 2s to post Moon Lord.
             r = Recipe.Create(ItemID.MiniNukeII, 333);
             r.AddIngredient(ItemID.RocketIV, 333);
             r.AddIngredient(ItemID.LunarBar);

@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             Vector2 distanceFromDestination = destination - NPC.Center;
 
-            // Distance where Ares NukeOfBliss Arm stops moving
+            // Distance where Ares Nuke Arm stops moving
             float movementDistanceGateValue = 50f;
 
             // Gate values
@@ -472,7 +472,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             EnergyDrawer.Update();
 
-            // Smooth movement towards the location Ares Gauss NukeOfBliss is meant to be at
+            // Smooth movement towards the location Ares Gauss Nuke is meant to be at
             CalamityUtils.SmoothMovement(NPC, movementDistanceGateValue, distanceFromDestination, baseVelocity, 0f, false);
 
             // Update the telegraph sound if it's being played. Immediately stop it if Ares just begun transitioning to his laserbeam attack, since that automatically resets all impending cannon shots.
