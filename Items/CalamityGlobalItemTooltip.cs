@@ -16,6 +16,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Prefixes;
 using CalamityMod.World;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -1127,16 +1128,15 @@ namespace CalamityMod.Items
 
             // This function produces a "stat sheet" for a pair of wings from the raw stats.
             // For "vertical speed", 0 = Bad, 1 = Average, 2 = Good, 3 = Great, 4 = Excellent.
-            string[] vertSpeedStrings = new string[] { "BadVertSpeed", "AvVertSpeed", "GoodVertSpeed", "GreatVertSpeed", "ExcelVertSpeed" };
+            string[] vertSpeedStrings = new string[] { "VertSpeedQuality1", "VertSpeedQuality2", "VertSpeedQuality3", "VertSpeedQuality4", "VertSpeedQuality5" };
             string WingStatsTooltip(float hSpeed, float accelMult, int vertSpeed, int flightTime, string extraTooltip = null)
             {
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
-                sb.Append(CalamityUtils.GetTextValue($"Misc.HorizSpeed") + $"{hSpeed:N2}\n");
-                sb.Append(CalamityUtils.GetTextValue($"Misc.AccelMult") + $"{accelMult:N1}\n");
-                sb.Append(CalamityUtils.GetTextValue($"Misc.{vertSpeedStrings[vertSpeed]}"));
-                sb.Append('\n');
-                sb.Append(CalamityUtils.GetTextValue($"Misc.FlightTime") + $"{flightTime}");
+                sb.Append(CalamityUtils.GetText($"Misc.HorizSpeed").Format(hSpeed.ToString("N2")) + $"\n");
+                sb.Append(CalamityUtils.GetText($"Misc.AccelMult").Format(accelMult.ToString("N1")) + $"\n");
+                sb.Append(CalamityUtils.GetText($"Misc.{vertSpeedStrings[vertSpeed]}") + $"\n");
+                sb.Append(CalamityUtils.GetText($"Misc.FlightTime").Format(flightTime.ToString()));
                 if (extraTooltip != null)
                 {
                     sb.Append('\n');
