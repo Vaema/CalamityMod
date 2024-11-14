@@ -3161,7 +3161,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            int mark = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
+                            int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
                             if (mark.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[mark].DamageType = DamageClass.Generic;
                         }
@@ -4263,8 +4263,9 @@ namespace CalamityMod.CalPlayer
                     var MedallionSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RustyMedallion>()));
                     int d = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(RustyMedallion.AcidDropBaseDamage);
 
-                    Vector2 startingPosition = Main.MouseWorld - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
-                    Vector2 directionToMouse = (Main.MouseWorld - startingPosition).SafeNormalize(Vector2.UnitX);
+                    Vector2 mouse = Player.ClampedMouseWorld();
+                    Vector2 startingPosition = mouse - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
+                    Vector2 directionToMouse = (mouse - startingPosition).SafeNormalize(Vector2.UnitX);
                     int drop = Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<AcidBarrelDrop>(), d, 0f, Player.whoAmI, 3);
                     if (drop.WithinBounds(Main.maxProjectiles))
                     {

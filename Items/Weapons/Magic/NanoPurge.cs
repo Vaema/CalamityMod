@@ -43,6 +43,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<NanoPurgeHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }

@@ -81,6 +81,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 if (Charge > 0 && player.controlUp)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     float angle = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).ToRotation();
                     Vector2 laserVector = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 600;
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, laserVector, ProjectileType<TrueAncientBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI);

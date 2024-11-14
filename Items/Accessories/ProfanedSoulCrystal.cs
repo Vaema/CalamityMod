@@ -292,6 +292,8 @@ namespace CalamityMod.Items.Accessories
                     player.Calamity().profanedSoulWeaponType = weaponType;
                     player.Calamity().profanedSoulWeaponUsage = 0;
                 }
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 correctedVelocity = Main.MouseWorld - player.Center;
                 correctedVelocity.Normalize();
                 bool empowered = player.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;

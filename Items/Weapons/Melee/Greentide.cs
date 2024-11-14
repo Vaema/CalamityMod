@@ -62,6 +62,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for aiming a projectile
             NPC target2 = player.Calamity().mouseWorld.ClosestNPCAt(300);
             if (target2 == null)
                 target2 = target;
