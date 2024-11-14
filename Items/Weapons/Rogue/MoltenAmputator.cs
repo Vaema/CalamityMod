@@ -86,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 SoundStyle fire = new("CalamityMod/Sounds/Item/SpearofDestiny");
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = (player.Calamity().amputatorBuff > 0 ? -0.4f + (player.Calamity().amputatorBuff * 0.02f) : Main.rand.NextFloat(-0.4f, -0.65f)) }, position);
                 // Since the positioning of the scythe is important, its velocity is based on your mouse position
-                Vector2 staticSpeed = Utils.DirectionTo(position, position + velocity) * Utils.Distance(position, player.Calamity().mouseWorld) * 0.022f;
+                Vector2 staticSpeed = Utils.DirectionTo(position, position + velocity) * Utils.Distance(position, player.ClampedMouseWorld()) * 0.022f;
                 // "fast toss" is the stealth, if you need to change stealth values, change those
                 int fastTossDamage = (int)(damage * 0.65f);
                 Projectile scythe = Projectile.NewProjectileDirect(source, position, staticSpeed.RotatedByRandom((player.Calamity().amputatorBuff > 0 ? 0.7f : 0)), type, fastToss ? fastTossDamage : damage, knockback, player.whoAmI, 0, 0, 0);

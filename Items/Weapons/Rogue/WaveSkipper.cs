@@ -40,6 +40,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 for (int i = -SpreadAngle; i < SpreadAngle * 2; i += SpreadAngle)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 spreadVelocity = player.SafeDirectionTo(Main.MouseWorld).RotatedBy(MathHelper.ToRadians(i)) * Item.shootSpeed;
                     int stealth = Projectile.NewProjectile(source, position, spreadVelocity, ModContent.ProjectileType<WaveSkipperProjectile>(), damage, knockback, player.whoAmI);
                     if (stealth.WithinBounds(Main.maxProjectiles))

@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            Vector2 mouse = player.ClampedMouseWorld();
             float randomAngleOffset = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < 3; i++)
             {
@@ -51,13 +52,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 switch (i)
                 {
                     case 0:
-                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
                         break;
                     case 1:
-                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
                         break;
                     case 2:
-                        Projectile.NewProjectile(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
+                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
                         break;
                 }
             }

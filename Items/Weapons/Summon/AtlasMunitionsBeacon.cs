@@ -82,9 +82,11 @@ namespace CalamityMod.Items.Weapons.Summon
                     ModContent.ProjectileType<AtlasMunitionsAutocannon>(),
                     ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()
                 });
-                position = Main.MouseWorld - Vector2.UnitY * 1020f;
-                velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(9f, 10f);
-                Projectile.NewProjectile(source, position, velocity, type, Item.damage, knockback, player.whoAmI, Main.MouseWorld.Y - 40f);
+
+                Vector2 mouse = player.ClampedMouseWorld();
+                position = mouse - Vector2.UnitY * 1020f;
+                velocity = (mouse - position).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(9f, 10f);
+                Projectile.NewProjectile(source, position, velocity, type, Item.damage, knockback, player.whoAmI, mouse.Y - 40f);
                 player.UpdateMaxTurrets();
             }
             return false;
