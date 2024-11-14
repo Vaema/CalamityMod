@@ -4,6 +4,8 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Materials;
+using CalamityMod.Rarities;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
@@ -18,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 62;
             Item.height = 34;
-            Item.damage = 60;
+            Item.damage = 135;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 8;
             Item.useAnimation = Item.useTime = UseTime;
@@ -27,8 +29,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 3f;
-            Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<NanoPurgeHoldout>();
             Item.shootSpeed = 16f;
@@ -49,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.LaserMachinegun).
-                AddIngredient(ItemID.FragmentVortex, 6).
+                AddIngredient<UelibloomBar>(7).
                 AddIngredient(ItemID.Nanites, 100).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
