@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
@@ -874,6 +875,25 @@ namespace CalamityMod
                 player.shield = -1;
         }
         #endregion
+
+        /// <summary>
+        /// Used to limit the cursor up to a 1080p monitor. A similar method is used for items such as Zenith in vanilla.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <returns>The current position of the player's mouse, clamped to a 1920x1080 screen.</returns>
+        public static Vector2 ClampedMouseWorld(this Player player)
+        {
+            // 13NOV2024: Ozzatron
+            // CONSIDER -- Check all uses of mouseWorld in the mod and replace them with this utility if it allows influencing the capacity of player attack.
+            // 1920x1080 is a baseline for player mouse-reach and we should not allow higher resolution players to have more combat leverage.
+            // This is a balancing concern.
+            Vector2 mouseWorld = player.Calamity().mouseWorld;
+            
+            // Clamp each axis
+            mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
+            mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);
+            return mouseWorld;
+        }
 
         /// <summary>
         /// A shorthand bool to check if the player can continue using the holdout or not.

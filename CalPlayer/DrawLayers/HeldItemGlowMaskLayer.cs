@@ -98,6 +98,10 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/VernalBolterGlow").Value;
             else if (itemType == ModContent.ItemType<VividClarity>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value;
+            else if (itemType == ModContent.ItemType<TelluricGlare>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/TelluricGlareGlow").Value;
+            else if (itemType == ModContent.ItemType<BlissfulBombardier>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
 
             if (glowMask == default)
                 return;

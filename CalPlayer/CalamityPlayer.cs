@@ -212,6 +212,10 @@ namespace CalamityMod.CalPlayer
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
         public bool despoilerNerf = false;
+        public int amputatorBuff = 0;
+        public int rOfResilienceCooldown = 0;
+        public int rOfResilienceEffect = 0;
+        public int rOfResilienceOrbitOffset = 0;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -516,12 +520,14 @@ namespace CalamityMod.CalPlayer
         public bool stressPills = false;
         public bool laudanum = false;
         public bool heartOfDarkness = false;
+        public bool profanedSoulRelicBuff = false;
         public bool draedonsHeart = false;
         public bool vexation = false;
         public bool dodgeScarf = false;
         public bool evasionScarf = false;
         public bool badgeOfBravery = false;
-        public bool warbannerOfTheSun = false;
+        public bool WarbanneroftheRighteous = false;
+        public bool warbannerGlow = false;
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
@@ -576,6 +582,7 @@ namespace CalamityMod.CalPlayer
         public int gSabatonFall = 0;
         public bool gSabatonFalling = false;
         public int gSabatonTempJumpSpeed = 0;
+        public bool rOfDelivarenceRam = false;
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
@@ -1757,7 +1764,8 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
-            warbannerOfTheSun = false;
+            WarbanneroftheRighteous = false;
+            warbannerGlow = false;
             aSpark = false;
             transformer = false;
             hideOfDeus = false;
@@ -1797,6 +1805,7 @@ namespace CalamityMod.CalPlayer
             nucleogenesis = false;
             nuclearFuelRod = false;
             heartOfDarkness = false;
+            profanedSoulRelicBuff = false;
             shadowMinions = false;
             holyMinions = false;
             alchFlask = false;
@@ -2419,6 +2428,7 @@ namespace CalamityMod.CalPlayer
             gSabatonFall = 0;
             gSabatonFalling = false;
             gSabatonTempJumpSpeed = 0;
+            rOfDelivarenceRam = false;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             VoidCooldown = 0;
@@ -2429,6 +2439,8 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+            rOfResilienceCooldown = 0;
+            rOfResilienceEffect = 0;
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
@@ -4781,6 +4793,10 @@ namespace CalamityMod.CalPlayer
 
             // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
             if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+                playerUsingWeapon = false;
+
+            // Molten Amputator consumes stealth in a special way
+            if (it.type == ModContent.ItemType<MoltenAmputator>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.

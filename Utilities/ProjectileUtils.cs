@@ -674,14 +674,14 @@ namespace CalamityMod
             return false;
         }
 
-        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
             // Use a fallback for the frame.
             frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
 
-            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
             for (int i = 0; i < 10; i++)
@@ -710,17 +710,17 @@ namespace CalamityMod
             }
         }
 
-        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
+        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
             // Use a fallback for the frame.
             frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
 
-            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects);
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects, xPos, yPos);
             Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, effects, 0f);
         }
 

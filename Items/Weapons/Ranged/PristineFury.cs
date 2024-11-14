@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -10,12 +11,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class PristineFury : ModItem, ILocalizedModType
+    public class PristineFury : LegendaryItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int frameCounter = 0;
         public int frame = 0;
         public bool Trail = true;
+        public int shotCount = 0;
+
+        public static int boomTime = 6;
+
+        public override Color? TooltipExtensionColor => new Color(255, 140, 0);
 
         public override void SetStaticDefaults()
         {
@@ -55,15 +61,19 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             if (player.altFunctionUse == 2)
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
-                    Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), damage, knockback, player.whoAmI);
-                }
+                Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
+                Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), damage, knockback, player.whoAmI);
+
+                Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), ModContent.DustType<LightDust>(), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(0.4f, 0.8f));
+                dust.noGravity = true;
+                dust.color = Color.Orchid;
+
+                CritSpark spark = new CritSpark(position + velocity * 3f + new Vector2(0, -3), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 1.8f), Color.White, Color.Orchid, 0.9f, 18, 2f, 2.2f);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
             else
             {
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, Trail ? 1 : 0);
+                Projectile.NewProjectile(source, position, velocity * 0.8f, type, damage, knockback, player.whoAmI, Trail ? 1 : 0, 0, shotCount);
                 Trail = !Trail;
                 for (int i = 0; i <= 2; i++)
                 {
@@ -72,6 +82,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
                 CritSpark spark = new CritSpark(position + velocity * 3f + new Vector2(0, -3), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 1.8f), Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed, Color.OrangeRed, 0.9f, 18, 2f, 1.9f);
                 GeneralParticleHandler.SpawnParticle(spark);
+                shotCount += 1;
             }
             return false;
         }

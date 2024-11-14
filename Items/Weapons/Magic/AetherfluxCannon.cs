@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<NanoPurge>().
-                AddIngredient<PurgeGuzzler>().
                 AddIngredient<AuricBar>(5).
                 AddIngredient<UelibloomBar>(12).
                 AddIngredient<DivineGeode>(8).

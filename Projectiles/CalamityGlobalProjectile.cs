@@ -3422,6 +3422,9 @@ namespace CalamityMod.Projectiles
                     if (modPlayer.camper && !player.StandingStill())
                         projectile.damage = (int)(projectile.damage * 0.1);
 
+                    if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
+                        projectile.damage = (int)(projectile.damage * 0.1);
+
                     if (projectile.CountsAsClass<RogueDamageClass>() && stealthStrike)
                     {
                         int gloveArmorPenAmt = modPlayer.nanotech ? 15 : 8;

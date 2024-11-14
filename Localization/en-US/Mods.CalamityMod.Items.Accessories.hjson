@@ -1313,6 +1313,7 @@ ProfanedSoulCrystal: {
 	FullTooltip:
 		'''
 		Provides passive buffs depending on the time of day
+		Greatly boosts the power of the Guardian's relics
 		Grants additional effects if you have {0} minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active
@@ -1968,12 +1969,14 @@ VoltaicJelly: {
 		'''
 }
 
-WarbanneroftheSun: {
-	DisplayName: Warbanner of the Sun
+WarbanneroftheRighteous: {
+	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Increases melee damage, true melee damage and melee speed the closer you are to enemies
-		These stat boosts max out at 20%
+		Damage is increased by 20% when close to enemies, but decreased by 60% when none are nearby
+		Emit a blazing aura that burns and repels nearby enemies
+		Enemies take increasing damage the closer they are to you and the longer they are near you
+		Effects are transparent and silent if visibility is disabled
 		'''
 }
 

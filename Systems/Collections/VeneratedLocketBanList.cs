@@ -19,7 +19,6 @@ namespace CalamityMod.Systems.Collections
                 ItemType<PoisonPack>(),
                 ItemType<SkyStabber>(),
                 ItemType<Nychthemeron>(),
-                ItemType<HellsSun>(),
                 ItemType<GodsParanoia>(),
                 ItemType<SlickCane>(),
                 ItemType<Mycoroot>(),
