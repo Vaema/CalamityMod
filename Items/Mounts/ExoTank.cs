@@ -64,9 +64,12 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameStart = MountData.inAirFrameStart;
             if (Main.netMode != NetmodeID.Server)
             {
-                MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTankExtra");
-                MountData.backTextureExtraGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTankExtraGlow");
+                // back (back layer) -> backExtra (gun) -> front (launcher) -> frontExtra (front layer)
+                MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_BackGun");
+                MountData.backTextureExtraGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_BackGunGlow");
                 MountData.frontTextureGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_FrontGlow");
+                MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_FrontLayer");
+                MountData.frontTextureExtraGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_FrontLayerGlow");
                 MountData.textureWidth = MountData.backTexture.Width();
                 MountData.textureHeight = MountData.backTexture.Height();
             }
@@ -106,7 +109,7 @@ namespace CalamityMod.Items.Mounts
                 {
                     tank._aiming = true;
 
-                    if (tank._frameExtraCounter == 0f)
+                    if (tank._frameExtraCounter % 5f == 0f)
                     {
                         // Release 3 missiles matching the animation frames
                         if (tank._frameExtra > 0 && tank._frameExtra < 4)
@@ -122,7 +125,7 @@ namespace CalamityMod.Items.Mounts
                         }
 
                         // Fires a bullet on every frame switch
-                        Vector2 bulletPos = player.Center + Main.rand.NextVector2Circular(3f, 3f) + Vector2.UnitX * 80f * player.direction - Vector2.UnitY * 8f;
+                        Vector2 bulletPos = player.Center + Main.rand.NextVector2Circular(3f, 3f) + Vector2.UnitX * 80f * player.direction - Vector2.UnitY * 10f;
                         Vector2 bulletVel = (Main.npc[targetNPC].Center - bulletPos).SafeNormalize(Vector2.UnitX * player.direction) * Main.rand.NextFloat(10f, 12f);
                         int bulletDamage = (int)player.GetBestClassDamage().ApplyTo(400);
                         float bulletKB = 1f;
@@ -144,23 +147,29 @@ namespace CalamityMod.Items.Mounts
 
             // Advances weapon frames while attacking OR while not attacking but mid-animation
             Mount tank = mountedPlayer.mount;
-            if (tank._aiming || tank._frameExtra > 0)
+            if (tank._aiming || tank._frameExtraCounter > 0)
                 tank._frameExtraCounter++;
 
-            if (tank._frameExtraCounter >= 5f)
+            if (tank._frameExtraCounter >= 40f)
             {
                 tank._frameExtraCounter = 0f;
-                tank._frameExtra++;
-                if (tank._frameExtra >= 8)
-                    tank._frameExtra = 0;
+                tank._frameExtra = 0;
             }
+            tank._frameExtra = (int)tank._frameExtraCounter / 5 % 8;
             return true;
         }
 
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
-            // Modify frames for backTextureExtra (weapons) and its glow
+            // Modify frames for backTextureExtra (minigun) and its glow
             if (drawType == 1)
+            {
+                frame = texture.Frame(1, 4, 0, drawPlayer.mount._frameExtra % 4);
+                drawPosition += Vector2.UnitY * -6f * CalamityUtils.Convert01To010(drawPlayer.mount._frameExtraCounter / 39f);
+            }
+
+            // frontTexture (missile launcher) and its glow
+            if (drawType == 2)
                 frame = texture.Frame(1, 8, 0, drawPlayer.mount._frameExtra);
 
             return true;
