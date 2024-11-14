@@ -15,12 +15,14 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public const int UseTime = 36;
+        public static Color mainColor = Color.Goldenrod;
+        public static Color accentColor = Color.LightGreen;
 
         public override void SetDefaults()
         {
             Item.width = 94;
             Item.height = 54;
-            Item.damage = 285;
+            Item.damage = 355;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useAnimation = Item.useTime = UseTime;
