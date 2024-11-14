@@ -39,29 +39,32 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int dustCount = 16;
-            bool sideways = Main.rand.NextBool(6);
-            float generalAngularOffset = Main.rand.NextFloatDirection() * MathHelper.Pi / 24f;
-            if (sideways)
-                dustCount += 36;
-
-            for (int i = 0; i < dustCount; i++)
+            if (Main.rand.NextBool())
             {
-                float offsetAngle = MathHelper.TwoPi * i / dustCount;
-
-                float unitOffsetX = MathF.Pow(MathF.Cos(offsetAngle), 3f);
-                float unitOffsetY = MathF.Pow(MathF.Sin(offsetAngle), 3f);
-
-                Vector2 puffDustVelocity = new Vector2(unitOffsetX, unitOffsetY) * 5f;
+                int dustCount = 16;
+                bool sideways = Main.rand.NextBool(6);
+                float generalAngularOffset = Main.rand.NextFloatDirection() * MathHelper.Pi / 24f;
                 if (sideways)
-                    puffDustVelocity = puffDustVelocity.RotatedBy(MathHelper.PiOver4) * 1.7f;
-                else
-                    puffDustVelocity = puffDustVelocity.RotatedBy(generalAngularOffset);
+                    dustCount += 36;
 
-                Dust magic = Dust.NewDustPerfect(target.Center, 182, puffDustVelocity);
-                magic.scale = sideways ? 1.8f : 1f;
-                magic.fadeIn = 0.5f;
-                magic.noGravity = true;
+                for (int i = 0; i < dustCount; i++)
+                {
+                    float offsetAngle = MathHelper.TwoPi * i / dustCount;
+
+                    float unitOffsetX = MathF.Pow(MathF.Cos(offsetAngle), 3f);
+                    float unitOffsetY = MathF.Pow(MathF.Sin(offsetAngle), 3f);
+
+                    Vector2 puffDustVelocity = new Vector2(unitOffsetX, unitOffsetY) * 5f;
+                    if (sideways)
+                        puffDustVelocity = puffDustVelocity.RotatedBy(MathHelper.PiOver4) * 1.7f;
+                    else
+                        puffDustVelocity = puffDustVelocity.RotatedBy(generalAngularOffset);
+
+                    Dust magic = Dust.NewDustPerfect(target.Center, 182, puffDustVelocity);
+                    magic.scale = sideways ? 1.8f : 1f;
+                    magic.fadeIn = 0.5f;
+                    magic.noGravity = true;
+                }
             }
         }
     }

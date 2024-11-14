@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -38,6 +39,17 @@ namespace CalamityMod.Projectiles.Typeless
 
             CalamityUtils.HomeInOnNPC(Projectile, false, 1200f, 15f, 20f);
             Projectile.rotation = Projectile.velocity.ToRotation();
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.5f, 0.5f))) * (Main.rand.NextFloat(3f, 10f));
+                Color sparkColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.4f);
+                SparkParticle spark = new SparkParticle(Projectile.Center, velocity, false, 15, Main.rand.NextFloat(0.2f, 1f), sparkColor);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);

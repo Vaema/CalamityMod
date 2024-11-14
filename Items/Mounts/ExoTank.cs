@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs.Mounts;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -16,22 +18,29 @@ namespace CalamityMod.Items.Mounts
     {
         public static int DashDamage = 2000;
 
+        public static int MaxHoverTime = 600;
+
         public static int MissileDamage = 1000;
         public static int MissileAttackRate = 6;
         public static int MissileLauncherFrameCount = 8;
+        public static readonly SoundStyle MissileLaunchSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisApolloDash") { Volume = 0.5f };
 
         public static int MinigunDamage = 400;
         public static int MinigunAttackRate = 4;
         public static int MinigunFrameCount = 4;
 
-        protected class ExoTankData
+        public class ExoTankData
         {
+            internal bool Hovering;
+            internal int HoverTime;
             internal int MinigunFrame;
             internal int MinigunFrameCounter;
             internal float MinigunRotation;
 
             public ExoTankData()
             {
+                Hovering = false;
+                HoverTime = MaxHoverTime;
                 MinigunFrame = 0;
                 MinigunFrameCounter = 0;
                 MinigunRotation = 0f;
@@ -45,9 +54,9 @@ namespace CalamityMod.Items.Mounts
             MountData.buff = ModContent.BuffType<ExoTankBuff>();
 
             // Horizontal movement
-            MountData.runSpeed = 9f;
+            MountData.runSpeed = 10f;
             MountData.dashSpeed = 22.5f;
-            MountData.swimSpeed = 9f;
+            MountData.swimSpeed = 10f;
             MountData.acceleration = 0.5f;
 
             // Vertical movement
@@ -101,6 +110,18 @@ namespace CalamityMod.Items.Mounts
 
         public override void SetMount(Player player, ref bool skipDust) => player.mount._mountSpecificData = new ExoTankData();
 
+        public override void Dismount(Player player, ref bool skipDust)
+        {
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.owner == player.whoAmI && proj.type == ModContent.ProjectileType<ExoTankHoverThrust>())
+                {
+                    proj.Kill();
+                    break;
+                }
+            }
+        }
+
         public override void UpdateEffects(Player player)
         {
             if (Main.myPlayer == player.whoAmI)
@@ -148,11 +169,15 @@ namespace CalamityMod.Items.Mounts
                 }
 
                 var source = new EntitySource_Mount(player, Type);
+
                 // Release 3 missiles matching the animation frames
                 if ((int)tank._frameExtraCounter % MissileAttackRate == 0)
                 {
                     if (tank._frameExtra > 0 && tank._frameExtra < 4)
                     {
+                        if (tank._frameExtra == 1)
+                            SoundEngine.PlaySound(MissileLaunchSound, player.Center);
+
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 rocketPos = player.Center - Vector2.UnitX * (60f - 4f * i - 6f * tank._frameExtra) * player.direction - Vector2.UnitY * (72f - 8f * i);
@@ -186,6 +211,8 @@ namespace CalamityMod.Items.Mounts
                     // Fires a bullet on every frame switch
                     if (data.MinigunFrameCounter % MinigunAttackRate == 0)
                     {
+                        SoundEngine.PlaySound(CommonCalamitySounds.ExoLaserShootSound with { Volume = 0.32f }, player.Center);
+
                         Vector2 bulletPos = player.Center + Vector2.UnitX * 28f * player.direction - Vector2.UnitY * 10f + (idealRotation * (player.direction == 1 ? 1.33f : 1f)).ToRotationVector2() * 38f;
                         Vector2 bulletVel = (Main.npc[targetNPC].Center - bulletPos).SafeNormalize(Vector2.UnitX * player.direction) * Main.rand.NextFloat(15f, 16f);
                         int bulletDamage = (int)player.GetBestClassDamage().ApplyTo(MinigunDamage);
@@ -217,6 +244,37 @@ namespace CalamityMod.Items.Mounts
 
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
+            Mount tank = mountedPlayer.mount;
+            var data = (ExoTankData)tank._mountSpecificData;
+
+            // Hover effect
+            // If grounded, your hover time is reset to max
+            ref int hoverTime = ref data.HoverTime;
+            ref bool hovering = ref data.Hovering;
+            if (state <= 1)
+            {
+                hoverTime = MaxHoverTime;
+                hovering = false;
+            }
+            else
+            {
+                if (mountedPlayer.controlJump && mountedPlayer.TryingToHoverDown && hoverTime > 0)
+                {
+                    var source = new EntitySource_Mount(mountedPlayer, Type);
+                    if (mountedPlayer.ownedProjectileCounts[ModContent.ProjectileType<ExoTankHoverThrust>()] < 1)
+                        Projectile.NewProjectile(source, mountedPlayer.Bottom, Vector2.Zero, ModContent.ProjectileType<ExoTankHoverThrust>(), 0, 0f, mountedPlayer.whoAmI);
+
+                    hoverTime--;
+                    hovering = true;
+                    mountedPlayer.velocity.Y -= 0.4f * mountedPlayer.gravDir;
+                    mountedPlayer.velocity.Y *= 0.9f;
+                    if (MathF.Abs(mountedPlayer.velocity.Y) < 0.05f)
+                        mountedPlayer.velocity.Y = 0.00001f;
+                }
+                else
+                    hovering = false;
+            }
+
             // Ground dust as you travel (State 1 indicates running on the ground)
             if (state == 1 && Math.Abs(velocity.X) > mountedPlayer.mount.RunSpeed)
             {
@@ -243,7 +301,6 @@ namespace CalamityMod.Items.Mounts
                 state = 1;
 
             // Advances weapon frames while attacking OR while not attacking but mid-animation
-            Mount tank = mountedPlayer.mount;
             if (tank._aiming || (tank._frameExtraCounter >= MissileAttackRate))
                 tank._frameExtraCounter++;
             else if (tank._frameExtraCounter > 0f)
@@ -257,7 +314,6 @@ namespace CalamityMod.Items.Mounts
             tank._frameExtra = (int)tank._frameExtraCounter / MissileAttackRate;
 
             // Minigun has a separate custom frame counter
-            var data = (ExoTankData)tank._mountSpecificData;
             ref int minigunFrame = ref data.MinigunFrame;
             ref int minigunFrameCounter = ref data.MinigunFrameCounter;
             if (tank._aiming || minigunFrameCounter > 0)
