@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Mounts
 {
     public class ExoTank : ModMount
     {
-        public static int DashDamage = 2000;
+        public static int DashDamage = 6000;
 
         public static int MaxHoverTime = 600;
 

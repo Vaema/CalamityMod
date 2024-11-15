@@ -36,8 +36,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.frameCounter++;
             Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Type];
 
-            Projectile.Center = Owner.Bottom + Vector2.UnitY * (Projectile.height / 2);// + Vector2.UnitX * (Owner.direction == 1 ? 0f : 8f);
-            Projectile.spriteDirection = Owner.direction;
+            Projectile.Center = Owner.Bottom + Vector2.UnitY * (Projectile.height / 2);
+            Projectile.spriteDirection = Projectile.direction = Owner.direction;
             Projectile.timeLeft = 2;
 
             // Left thruster
