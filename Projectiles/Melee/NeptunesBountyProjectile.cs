@@ -115,6 +115,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.netUpdate = true;
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
                 Projectile.Center = Owner.MountedCenter + Projectile.velocity * 12f;
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 28;
                 startDamage = Projectile.damage;
                 Projectile.spriteDirection = Projectile.direction;
@@ -144,7 +145,7 @@ namespace CalamityMod.Projectiles.Melee
                 Time = 0;
 
                 bool foundTarget = false;
-                NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(5000);
+                NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
                 if (target != null)
                 {
                     NPCDestination = target.Center + target.velocity * 5f;
