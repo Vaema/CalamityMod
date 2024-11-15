@@ -131,6 +131,7 @@ namespace CalamityMod.Projectiles.Summon
                     ExitChargeModeEarly(player);
                 }
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 player.velocity = Vector2.Lerp(player.velocity, Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * RightIconLungeSpeed, 0.225f);
                 Projectile.rotation = player.velocity.ToRotation() + MathHelper.PiOver2;
             }
@@ -331,7 +332,10 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
                     int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(LaserBaseDamage);
+
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 laserVelocity = (Main.MouseWorld - (Main.player[Projectile.owner].Center + new Vector2(Projectile.spriteDirection == 1 ? 48f : 22f, -28f))).SafeNormalize(Vector2.UnitX * Projectile.spriteDirection);
+
                     Projectile deathLaser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
                                                                            Projectile.Center,
                                                                            laserVelocity,

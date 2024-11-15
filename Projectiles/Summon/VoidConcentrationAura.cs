@@ -48,6 +48,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void HandleRightClick()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 velocity = Main.MouseWorld - Main.player[Projectile.owner].Center;
             velocity.Normalize();
             velocity *= 2f;

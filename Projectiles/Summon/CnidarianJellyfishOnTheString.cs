@@ -71,6 +71,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void Initialize()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary -- the helper function caps this based on whip range
             //Initialize the segments
             SetOrigin(Owner.Calamity().mouseWorld);
 
@@ -106,6 +107,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Owner.channel)
                 Projectile.timeLeft = FadeoutTime;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary -- the helper function caps this based on whip range
             SetOrigin(Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 10f));
 
             SimulateSegments();

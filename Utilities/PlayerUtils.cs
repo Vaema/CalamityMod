@@ -883,10 +883,6 @@ namespace CalamityMod
         /// <returns>The current position of the player's mouse, clamped to a 1920x1080 screen.</returns>
         public static Vector2 ClampedMouseWorld(this Player player)
         {
-            // 13NOV2024: Ozzatron
-            // CONSIDER -- Check all uses of mouseWorld in the mod and replace them with this utility if it allows influencing the capacity of player attack.
-            // 1920x1080 is a baseline for player mouse-reach and we should not allow higher resolution players to have more combat leverage.
-            // This is a balancing concern.
             Vector2 mouseWorld = player.Calamity().mouseWorld;
             
             // Clamp each axis
