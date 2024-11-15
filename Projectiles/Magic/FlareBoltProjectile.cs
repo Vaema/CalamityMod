@@ -1,4 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Build.Construction;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -8,98 +13,111 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class FlareBoltProjectile : ModProjectile, ILocalizedModType
     {
+        public ref float time => ref Projectile.ai[0];
+        public int wallBounces = 0;
+        public float fadeIn = 0;
+        public bool launch = true;
+        public Color bColor = Color.OrangeRed;
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 2;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 16;
             Projectile.height = 16;
             Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = 4;
-            Projectile.timeLeft = 480;
+            Projectile.penetrate = 5;
+            Projectile.timeLeft = 240;
+            Projectile.extraUpdates = 2;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = -1;
         }
-
         public override void AI()
         {
-            if (Projectile.alpha > 0)
+            Player Owner = Main.player[Projectile.owner];
+            Lighting.AddLight(Projectile.Center, bColor.ToVector3());
+            fadeIn = Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true);
+            float velFade = Utils.GetLerpValue(1.5f, 6.5f, Projectile.velocity.Length(), true);
+            Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * Owner.HeldItem.shootSpeed;
+            Projectile.scale = fadeIn * 1.5f;
+            if (fadeIn < 1) // Hold the projectile in front of the player while they case the spell
             {
-                Projectile.alpha -= 25;
-                if (Projectile.alpha < 0)
-                    Projectile.alpha = 0;
-            }
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.45f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.1f / 255f);
-            for (int i = 0; i < 2; i++)
-            {
-                float shortXVel = Projectile.velocity.X / 3f * (float)i;
-                float shortYVel = Projectile.velocity.Y / 3f * (float)i;
-                int fourConst = 4;
-                int fireDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, DustID.InfernoFork, 0f, 0f, 100, default, 1.2f);
-                Dust dust = Main.dust[fireDust];
-                dust.noGravity = true;
-                dust.velocity *= 0.1f;
-                dust.velocity += Projectile.velocity * 0.1f;
-                dust.position.X -= shortXVel;
-                dust.position.Y -= shortYVel;
-            }
-            if (Main.rand.NextBool(10))
-            {
-                int otherFourConst = 4;
-                int fireDustSmol = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, DustID.InfernoFork, 0f, 0f, 100, default, 0.6f);
-                Main.dust[fireDustSmol].velocity *= 0.25f;
-                Main.dust[fireDustSmol].velocity += Projectile.velocity * 0.5f;
-            }
-            Projectile.rotation += 0.3f * (float)Projectile.direction;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.penetrate--;
-            if (Projectile.penetrate <= 0)
-            {
-                Projectile.Kill();
+                Projectile.Center = Owner.Center + velocity.SafeNormalize(Vector2.UnitX) * 48;
             }
             else
             {
-                if (Projectile.velocity.X != oldVelocity.X)
+                if (launch) // On launch, spawns some effects and launch the projectile at the mouse
                 {
-                    Projectile.velocity.X = -oldVelocity.X;
+                    Projectile.tileCollide = true;
+                    Projectile.velocity = velocity;
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HalleysInfernoShoot") with { Volume = 0.45f, Pitch = 0.3f }, Projectile.Center);
+                    for (int i = 0; i < 20; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1.5f, 3.5f));
+                        dust.noGravity = false;
+                        dust.scale = Main.rand.NextFloat(0.85f, 1.4f);
+                        dust.color = bColor;
+                        dust.noLightEmittence = true;
+                        if (i % 3 == 0)
+                        {
+                            float variance = Main.rand.NextFloat(-0.6f, 0.6f);
+                            float fxScale = Main.rand.NextFloat(1.5f, 1.7f) - Math.Abs(variance);
+                            Vector2 fxVelocity = Projectile.velocity.RotatedBy(variance) * Main.rand.NextFloat(0.6f, 1f) * (1 - Math.Abs(variance));
+
+                            Particle fx = new CustomSpark(Projectile.Center, fxVelocity * 1.3f, "CalamityMod/Particles/FireTypeParticle", false, 22, fxScale, Color.Lerp(bColor, Color.Red, 0.5f), new Vector2(1.8f, 1f), true, false, shrinkSpeed: 0.2f);
+                            GeneralParticleHandler.SpawnParticle(fx);
+                        }
+                    }
+                    launch = false;
                 }
-                if (Projectile.velocity.Y != oldVelocity.Y)
+
+                if (Main.rand.NextBool(10) && velFade > 0.1f)
                 {
-                    Projectile.velocity.Y = -oldVelocity.Y;
+                    Particle fx = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(8, 8), -Projectile.velocity * 0.9f, "CalamityMod/Particles/FireTypeParticle", false, 32, 1.15f, Color.Lerp(bColor, Color.Red, 0.5f), new Vector2(0.8f, 1f), true, false);
+                    GeneralParticleHandler.SpawnParticle(fx);
                 }
-                SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
+                if (Main.rand.NextBool(6))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<LightDust>(), -Projectile.velocity * 0.5f);
+                    dust.noGravity = false;
+                    dust.scale = Main.rand.NextFloat(0.85f, 1.4f);
+                    dust.color = bColor;
+                    dust.noLightEmittence = true;
+                }
+
+                Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 11, 0.3f, bColor * 0.9f, new Vector2(1, 1f), true, false, shrinkSpeed: 0.7f * velFade);
+                GeneralParticleHandler.SpawnParticle(trail);
             }
+            // Gain gravity after a while
+            // This makes it more useful on the surface where you otherwise have less tiles to work with
+            if (Projectile.timeLeft < 120)
+            {
+                Projectile.velocity *= 0.98f;
+            }
+            else if (wallBounces > 1) // If you only have one bounce before death, reduce lifetime to start falling faster
+                Projectile.timeLeft--;
+            Projectile.rotation += 0.3f * Projectile.direction;
+            time++;
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
             return false;
         }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-            for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-            }
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire, 180);
+            target.AddBuff(BuffID.OnFire, 90);
+            if (Projectile.damage > 1)
+                Projectile.damage = (int)(Projectile.damage * 0.85f);
+        }
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.numHits < 4)
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FireImplosion>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Projectile.DrawProjectileWithBackglow(bColor with { A = 0 }, Color.White, 2f * fadeIn);
+            return false;
         }
     }
 }

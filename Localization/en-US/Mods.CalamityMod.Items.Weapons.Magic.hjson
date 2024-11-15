@@ -359,7 +359,12 @@ FrigidflashBolt: {
 
 FrostBolt: {
 	DisplayName: Frost Bolt
-	Tooltip: Casts a slow-moving ball of frost
+	Tooltip:
+		'''
+		Casts a ball of frost that bounces off tiles
+		When hitting a tile, a small frost burst is produced
+		Frost projectiles will fall to the ground after enough time has passed
+		'''
 }
 
 Genesis: {
