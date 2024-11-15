@@ -21,8 +21,9 @@ namespace CalamityMod.Items.Mounts
         public static int MaxHoverTime = 600;
 
         public static int MissileDamage = 1000;
-        public static int MissileAttackRate = 6;
+        public static int MissileAttackRate = 4;
         public static int MissileLauncherFrameCount = 8;
+        public static int MissileReuseDelay = 28; // Total use time = AttackRate * FrameCount + ReuseDelay (AttackRate being the "use animation" for the clockwork weapon)
         public static readonly SoundStyle MissileLaunchSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisApolloDash") { Volume = 0.5f };
 
         public static int MinigunDamage = 400;
@@ -72,7 +73,7 @@ namespace CalamityMod.Items.Mounts
                 array[l] = 76;
 
             MountData.playerYOffsets = array;
-            MountData.playerHeadOffset = 0;
+            MountData.playerHeadOffset = 80;
             MountData.bodyFrame = 3;
             MountData.xOffset = 0;
             MountData.yOffset = -16;
@@ -306,12 +307,13 @@ namespace CalamityMod.Items.Mounts
             else if (tank._frameExtraCounter > 0f)
                 tank._frameExtraCounter = 0f;
 
-            if (tank._frameExtraCounter >= MissileAttackRate * MissileLauncherFrameCount)
+            int totalUseTime = MissileReuseDelay + MissileAttackRate * MissileLauncherFrameCount;
+            if (tank._frameExtraCounter >= totalUseTime)
             {
                 tank._frameExtraCounter = 0f;
                 tank._frameExtra = 0;
             }
-            tank._frameExtra = (int)tank._frameExtraCounter / MissileAttackRate;
+            tank._frameExtra = (int)Utils.Remap(tank._frameExtraCounter, MissileReuseDelay, totalUseTime, 0f, MissileLauncherFrameCount, true);
 
             // Minigun has a separate custom frame counter
             ref int minigunFrame = ref data.MinigunFrame;

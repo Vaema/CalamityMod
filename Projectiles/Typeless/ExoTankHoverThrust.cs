@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Mounts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -35,8 +36,23 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.frameCounter++;
             Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Type];
 
-            Projectile.Center = Owner.Bottom + Vector2.UnitY * (Projectile.height / 2) + Vector2.UnitX * (Owner.direction == 1 ? 0f : 8f);
+            Projectile.Center = Owner.Bottom + Vector2.UnitY * (Projectile.height / 2);// + Vector2.UnitX * (Owner.direction == 1 ? 0f : 8f);
+            Projectile.spriteDirection = Owner.direction;
             Projectile.timeLeft = 2;
+
+            // Left thruster
+            Dust flame = Dust.NewDustPerfect(Projectile.Top - Vector2.UnitX * Main.rand.NextFloat(44f, 64f) * Owner.direction, DustID.BlueTorch);
+            flame.noGravity = true;
+            flame.noLight = true;
+            flame.velocity = Owner.velocity + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(6f)) * Main.rand.NextFloat(5f, 12f);
+            flame.scale = Main.rand.NextFloat(0.5f, 1.5f);
+
+            // Right thruster
+            flame = Dust.NewDustPerfect(Projectile.Top + Vector2.UnitX * Main.rand.NextFloat(30f, 50f) * Owner.direction, DustID.BlueTorch);
+            flame.noGravity = true;
+            flame.noLight = true;
+            flame.velocity = Owner.velocity + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(6f)) * Main.rand.NextFloat(5f, 12f);
+            flame.scale = Main.rand.NextFloat(0.5f, 1.5f);
         }
 
         public override bool ShouldUpdatePosition() => false;

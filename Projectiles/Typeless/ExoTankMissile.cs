@@ -43,12 +43,16 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnKill(int timeLeft)
         {
+            Color boomColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.4f) * 0.6f;
+            CustomPulse boom = new (Projectile.Center, Vector2.Zero, boomColor, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.08f, 24);
+            GeneralParticleHandler.SpawnParticle(boom);
+
             for (int i = 0; i < 5; i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.5f, 0.5f))) * (Main.rand.NextFloat(3f, 10f));
-                Color sparkColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.4f);
-                SparkParticle spark = new SparkParticle(Projectile.Center, velocity, false, 15, Main.rand.NextFloat(0.2f, 1f), sparkColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                Color energyColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.4f);
+                SquishyLightParticle energy = new (Projectile.Center, velocity, Main.rand.NextFloat(0.1f, 0.5f), energyColor, 15, 1f, 2.5f);
+                GeneralParticleHandler.SpawnParticle(energy);
             }
         }
 
