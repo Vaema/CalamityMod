@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
             float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft);
             if (targetedNPC == null)
             {
-                Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
+                Vector2 position = (Owner.ClampedMouseWorld() + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 8)
                     Projectile.velocity += moveToMouse * (0.7f);

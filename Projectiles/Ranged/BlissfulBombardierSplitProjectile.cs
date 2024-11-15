@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-            if (Projectile.Center.Y > Owner.Calamity().mouseWorld.Y)
+            if (Projectile.Center.Y > Owner.ClampedMouseWorld().Y)
                 Projectile.tileCollide = true;
 
             //Animation

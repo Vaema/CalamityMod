@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     cloneOffset = cloneOffset.RotatedBy(counter * 0.06f);
                     if (Owner.controlUseItem)
                     {
-                        Projectile.Center = Main.MouseWorld + cloneOffset;
+                        Projectile.Center = Main.player[Projectile.owner].ClampedMouseWorld() + cloneOffset;
                         Projectile.velocity = Vector2.Zero;
                     }
                 }

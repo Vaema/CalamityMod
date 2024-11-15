@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (time > 20 && !returning && !shattered)
             {
-                Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                Vector2 moveToMouse = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 12)
                     Projectile.velocity += moveToMouse * ( 1 - (0.85f * Utils.GetLerpValue(returnTime / 2, 0, time, true)));
                 else

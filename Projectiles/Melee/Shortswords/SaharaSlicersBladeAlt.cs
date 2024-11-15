@@ -58,6 +58,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 dust.velocity = -Projectile.velocity * 0.5f;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float armPointingDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).ToRotation();
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, armPointingDirection - MathHelper.PiOver2);
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, 0);

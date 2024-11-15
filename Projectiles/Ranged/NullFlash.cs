@@ -70,6 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (target.CanBeMoved(true))
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Custom knockback
                 Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20;
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);

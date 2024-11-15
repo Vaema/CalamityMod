@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 mouse = Owner.Calamity().mouseWorld;
 
             Time++;

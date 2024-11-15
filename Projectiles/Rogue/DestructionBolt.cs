@@ -49,8 +49,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (time == 180 + timerOffset)
             {
-                MouseX = Owner.Calamity().mouseWorld.X;
-                MouseY = Owner.Calamity().mouseWorld.Y;
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                MouseX = mouse.X;
+                MouseY = mouse.Y;
             }
             else if (time < 180)
             {

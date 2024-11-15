@@ -99,6 +99,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (Animation == Charging) //first frame of release
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary; it is a binary above/below player
                 Animation = Main.MouseWorld.Y > player.Center.Y ? Plunging : Swinging;
                 float chargeModifier = ChargeLevel * 2.5f; //modify this to balance damage bonus from charging
 

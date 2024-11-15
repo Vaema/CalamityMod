@@ -162,6 +162,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void HandleChannelMovement(Vector2 playerRotatedPosition)
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealAimDirection = (Main.MouseWorld - playerRotatedPosition).SafeNormalize(Vector2.UnitX * Owner.direction);
 
             float angularAimVelocity = 0.15f;

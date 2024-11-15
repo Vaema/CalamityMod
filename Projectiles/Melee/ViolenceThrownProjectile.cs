@@ -70,10 +70,11 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            if (Projectile.WithinRange(Main.MouseWorld, Projectile.velocity.Length() * 0.7f))
-                Projectile.Center = Main.MouseWorld;
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Projectile.WithinRange(mouse, Projectile.velocity.Length() * 0.7f))
+                Projectile.Center = mouse;
             else
-                Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(Main.MouseWorld) * 19f) / 4f;
+                Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(mouse) * 19f) / 4f;
             Projectile.netSpam = 0;
             Projectile.netUpdate = true;
         }
