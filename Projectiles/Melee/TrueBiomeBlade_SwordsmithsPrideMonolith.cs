@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Melee
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
             Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f * Scale;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
             float opacity = MathHelper.Clamp(1f - ((Timer - 0.85f) / 0.15f), 0f, 1f);
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Melee
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
             Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f * Scale;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
             float opacity = MathHelper.Clamp(1f - ((Timer - 0.85f) / 0.15f), 0f, 1f);
