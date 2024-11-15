@@ -90,7 +90,7 @@ WhirlwindAttunement: {
 		Hold <left> to swing the sword around you, accelerating and dealing more damage over time
 		Homing astral energies are wildly fired around you while swinging
 		Once swung for long enough, releasing hurls the sword towards your cursor
-		Once pulled back, the hurled sword erupts into astral monoliths
+		The hurled sword erupts into astral monoliths on enemy hits
 		'''
 	PassiveDesc: Striking enemies occasionally spawns homing astral bombers that spread the Astral Infection
 }
@@ -137,6 +137,7 @@ PhoenixAttunement: {
 		Swing the sword around you, accelerating over time
 		The swirling nebula constantly emits homing cosmic bolts
 		Release to hurl the sword toward the cursor alongside 6 gigantic cosmic bolts
+		The hurled sword erupts into a blazing flame pillar on enemy hits
 		'''
 }
 

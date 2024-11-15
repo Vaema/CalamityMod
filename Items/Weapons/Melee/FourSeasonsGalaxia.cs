@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int AndromedaAttunement_BaseDamage = 1200;
         public static int AndromedaAttunement_DashHitIFrames = 20;
         public static float AndromedaAttunement_FullChargeBoost = 6f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
-        public static float AndromedaAttunement_StarDamageMultiplier = 1.2f;
+        public static float AndromedaAttunement_StarDamageMultiplier = 1f;
         public static float AndromedaAttunement_ChargeupBoltDamageMultiplier = 0.2f; //The shots fired as it charges
 
         public static int AriesAttunement_BaseDamage = 300;
@@ -125,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.rare = RarityType<Turquoise>();
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 24f;
             Item.reuseDelay = 30;
