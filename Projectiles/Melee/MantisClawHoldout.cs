@@ -69,6 +69,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Owner.Calamity().mouseWorldListener = true;
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 
                     Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * JetDamageMultiplier), 7, Owner.whoAmI);
 
@@ -127,6 +128,7 @@ namespace CalamityMod.Projectiles.Melee
 
                         Owner.Calamity().mouseWorldListener = true;
 
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile slash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 4f, Owner.whoAmI);
                         slash.rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
                     }

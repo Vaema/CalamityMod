@@ -229,6 +229,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void InitializationEffects(bool startInitialization)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //recalcualte the direction of the swing
             Projectile.velocity = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld);
             //Give the sword slash a random squouish
@@ -361,6 +362,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.timeLeft == 1 + (int)(SwingTime * (Exoblade.PercentageOfAnimationSpentLunging)))
                     SoundEngine.PlaySound(Exoblade.DashSound, Projectile.Center);
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld);
                 Projectile.oldPos = new Vector2[Projectile.oldPos.Length];
 
@@ -374,6 +376,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float rotationStrenght = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
                 float currentRotation = Projectile.velocity.ToRotation();
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 float idealRotation = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
 
                 Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrenght).ToRotationVector2();

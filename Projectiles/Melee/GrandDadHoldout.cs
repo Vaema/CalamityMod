@@ -51,6 +51,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
             base.OnSpawn(source);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Dad has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;

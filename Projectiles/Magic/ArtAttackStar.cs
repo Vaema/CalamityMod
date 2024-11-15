@@ -109,7 +109,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public void DoMouseMovement()
         {
-            Projectile.Center = Main.MouseWorld;
+            // 14NOV2024: Ozzatron: Art Attack is intentionally limited to clamped mouse so larger screens don't give an advantage.
+            // If this feels too weird on larger screens, this could be reverted. It is a rather unique case.
+
+            // Projectile.Center = Main.MouseWorld;
+            Projectile.Center = Owner.ClampedMouseWorld();
 
             // Continuously sync since mouse information is local.
             Projectile.netUpdate = true;

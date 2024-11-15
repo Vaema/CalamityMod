@@ -99,8 +99,9 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!initialized) //Initialization. create control points & shit)
             {
-                Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-                Reach = MathHelper.Clamp((Owner.Center - Owner.Calamity().mouseWorld).Length(), MinReach, MaxReach);
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                Projectile.velocity = Owner.SafeDirectionTo(mouse, Vector2.Zero);
+                Reach = MathHelper.Clamp((Owner.Center - mouse).Length(), MinReach, MaxReach);
                 SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);
                 controlPoint1 = Projectile.Center;
                 controlPoint2 = Projectile.Center;
@@ -131,6 +132,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.MountedCenter + SwingPosition(ratio);
             Projectile.direction = Projectile.spriteDirection = -Owner.direction;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Owner.itemRotation = MathHelper.WrapAngle(Owner.AngleTo(Owner.Calamity().mouseWorld) - (Owner.direction < 0 ? MathHelper.Pi : 0));
         }
         public void HookToTile()

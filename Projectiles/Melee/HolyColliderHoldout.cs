@@ -60,6 +60,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
             base.OnSpawn(source);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, it does not influence Holy Collider's projectile spawning
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;
@@ -381,6 +383,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     for (int i = 0; i < 8; i++)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile fadedFire = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -11).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1f), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.05), Projectile.knockBack, Projectile.owner, 10, target.whoAmI);
                         fadedFire.timeLeft = Main.rand.Next(40, 55 + 1);
                     }

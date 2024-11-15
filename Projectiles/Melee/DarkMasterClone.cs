@@ -72,6 +72,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] > 0)
             {
                 Projectile.ai[1] = 0;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 direction = Projectile.Center.DirectionTo(Main.MouseWorld);
                 Projectile.direction = Math.Sign(direction.X);
                 if (Projectile.owner == Main.myPlayer)

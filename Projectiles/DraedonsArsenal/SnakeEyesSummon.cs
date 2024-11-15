@@ -64,6 +64,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Checks if the minion can still exist given the player's circumstance.
             CheckMinionExistence();
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The properties of the minion's pupil, it looks around the target if there's one and to the mouse if there isn't any.
             EyeAngle = Projectile.SafeDirectionTo((Target is not null) ? Target.Center : Main.MouseWorld).ToRotation();
             EyeOutwardness = Utils.Remap(Projectile.Distance((Target is not null) ? Target.Center : Main.MouseWorld), 0f, 300f, 0f, 5f);
