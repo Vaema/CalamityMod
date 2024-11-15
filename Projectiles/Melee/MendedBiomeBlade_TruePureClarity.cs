@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.direction = Owner.velocity.X > 0f ? 1 : -1;
                 FlipAsSword = Owner.direction == -1 ? true : false;
                 RotationOffset = MathHelper.PiOver4 * Owner.direction;
-                Owner.itemAnimation = 5;
+                Owner.itemAnimation = 2;
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
                 Owner.Calamity().LungingDown = true;
 
@@ -197,6 +197,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Collision.SolidCollision(collisionCheckPos, 10, 10))
                 {
                     Projectile.timeLeft = 0;
+                    Owner.itemAnimation = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
                     Projectile.netUpdate = true;
@@ -253,6 +254,7 @@ namespace CalamityMod.Projectiles.Melee
             if (State == 1f)
                 Owner.velocity *= 0.33f;
 
+            Owner.itemAnimation = 0;
             Owner.Calamity().LungingDown = false;
 
             Projectile.active = false;
