@@ -20,14 +20,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 32;
             Item.damage = 19;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 300;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<Honeycomb>();

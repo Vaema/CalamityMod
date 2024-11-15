@@ -89,13 +89,9 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
         }
-
-        public override void OnKill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.rand.NextBool())
-            {
-                Item.NewItem(Projectile.GetSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<WulfrumKnife>());
-            }
+            SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

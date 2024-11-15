@@ -21,7 +21,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 30;
             Item.damage = 82;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 16;
             Item.useTime = 16;
@@ -29,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 60, 0);
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<FantasyTalismanProj>();

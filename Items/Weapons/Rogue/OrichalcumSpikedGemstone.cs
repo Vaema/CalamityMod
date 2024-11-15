@@ -19,14 +19,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 34;
             Item.damage = 40;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 13;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 2f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 1200;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<OrichalcumSpikedGemstoneProjectile>();

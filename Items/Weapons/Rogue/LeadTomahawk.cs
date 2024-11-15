@@ -20,7 +20,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 36;
             Item.damage = 14;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -28,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = false;
-            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 1, 0);
             Item.rare = ItemRarityID.White;
             Item.shoot = ModContent.ProjectileType<LeadTomahawkProj>();

@@ -23,13 +23,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 48;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = Item.sellPrice(0, 0, 0, 40);
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SludgeSplotchProj1>();

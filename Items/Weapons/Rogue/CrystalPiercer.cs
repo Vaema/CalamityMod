@@ -21,14 +21,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 62;
             Item.damage = 92;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 22;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 2500;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<CrystalPiercerProjectile>();

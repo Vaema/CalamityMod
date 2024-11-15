@@ -22,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 54;
             Item.damage = 28;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 11;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 2, 50);
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<GelDartProjectile>();

@@ -19,14 +19,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 40;
             Item.damage = 67;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 14;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 1600;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<AdamantiteThrowingAxeProjectile>();

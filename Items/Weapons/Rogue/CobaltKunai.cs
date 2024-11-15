@@ -19,14 +19,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 38;
             Item.damage = 58;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 900;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<CobaltKunaiProjectile>();

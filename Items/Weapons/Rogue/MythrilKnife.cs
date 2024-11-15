@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 40;
             Item.damage = 80;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -27,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = 1100;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<MythrilKnifeProjectile>();

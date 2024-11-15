@@ -20,8 +20,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.width = 38;
             Item.height = 38;
             Item.damage = 112;
-            Item.maxStack = 9999;
-            Item.consumable = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 10;

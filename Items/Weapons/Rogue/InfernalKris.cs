@@ -21,14 +21,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 24;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 5, 0);
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<InfernalKrisProjectile>();

@@ -22,12 +22,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 108;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = Item.useTime = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 1, 0, 0);
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<ShockGrenadeProjectile>();

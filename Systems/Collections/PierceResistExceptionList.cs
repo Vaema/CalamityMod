@@ -81,7 +81,6 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<SpiritCongregation>(),
                 ProjectileType<StarmageddonBinaryStarCenter>(),
                 ProjectileType<StellarStrikerHoldout>(),
-                ProjectileType<StickyBol>(),
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
