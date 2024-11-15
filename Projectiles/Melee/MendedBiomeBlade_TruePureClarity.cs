@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
-            // If the player stops using the weapon after hitting with it once, switch to lunge.
+            // If the player stops using the weapon after hitting with it three times, switch to lunge.
             if (Owner.CantUseHoldout())
             {
                 if (State == 0f && Projectile.numHits > 2)
