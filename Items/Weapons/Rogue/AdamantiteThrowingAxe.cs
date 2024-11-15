@@ -8,11 +8,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class AdamantiteThrowingAxe : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -25,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = 1600;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<AdamantiteThrowingAxeProjectile>();
             Item.shootSpeed = 12f;
@@ -49,8 +44,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.AdamantiteBar).
+            CreateRecipe().
+                AddIngredient(ItemID.AdamantiteBar, 10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

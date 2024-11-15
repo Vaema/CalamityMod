@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class MonkeyDarts : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 27;
@@ -27,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.useTime = 20;
             Item.useAnimation = 20;
-            Item.value = Item.buyPrice(0, 0, 4, 0);
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<MonkeyDart>();

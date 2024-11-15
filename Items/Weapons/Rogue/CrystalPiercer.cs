@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CrystalPiercer : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 62;
@@ -27,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = 2500;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<CrystalPiercerProjectile>();
             Item.shootSpeed = 20f;
@@ -53,8 +48,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient<CryonicBar>().
+            CreateRecipe().
+                AddIngredient<CryonicBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

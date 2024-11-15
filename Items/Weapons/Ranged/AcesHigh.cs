@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Revolver).
                 AddIngredient<ClaretCannon>().
-                AddIngredient<FantasyTalisman>(52).
+                AddIngredient<FantasyTalisman>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();

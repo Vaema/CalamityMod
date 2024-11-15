@@ -8,11 +8,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class PalladiumJavelin : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -25,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = 1200;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<PalladiumJavelinProjectile>();
             Item.shootSpeed = 12f;
@@ -45,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.PalladiumBar).
+            CreateRecipe().
+                AddIngredient(ItemID.PalladiumBar, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -790,20 +790,20 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 1-4 Shock Grenade @ 25%
+                // 5% chance to drop Shock Grenade
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
                 case NPCID.MartianEngineer:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 4, 1, 4);
+                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 20);
                     break;
 
                 // Martian Officer
-                // 3-8 Shock Grenade @ 33.33%
+                // 10% chance to drop Shock Grenade
                 case NPCID.MartianOfficer:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 3, 3, 8);
+                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 10);
                     break;
 
                 // Martian Walker

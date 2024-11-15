@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FantasyTalisman : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -28,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(0, 0, 60, 0);
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<FantasyTalismanProj>();
             Item.shootSpeed = 16.5f;
@@ -51,10 +46,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient<SolarVeil>(3).
-                AddIngredient(ItemID.Silk).
-                AddIngredient(ItemID.Ectoplasm).
+            CreateRecipe().
+                AddIngredient<SolarVeil>(10).
+                AddIngredient(ItemID.Silk, 10).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

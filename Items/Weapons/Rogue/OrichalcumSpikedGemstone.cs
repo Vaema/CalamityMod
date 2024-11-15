@@ -8,11 +8,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class OrichalcumSpikedGemstone : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 14;
@@ -25,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = 1200;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<OrichalcumSpikedGemstoneProjectile>();
             Item.shootSpeed = 12f;
@@ -49,8 +44,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.OrichalcumBar).
+            CreateRecipe().
+                AddIngredient(ItemID.OrichalcumBar, 10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

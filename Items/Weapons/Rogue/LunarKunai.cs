@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class LunarKunai : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 38;
@@ -28,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.value = Item.sellPrice(copper: 24);
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<LunarKunaiProj>();
             Item.shootSpeed = 22f;
@@ -82,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(333).
+            CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
