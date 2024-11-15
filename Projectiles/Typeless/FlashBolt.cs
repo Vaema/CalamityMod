@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -24,7 +22,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.DamageType = AverageDamageClass.Instance;
-            Projectile.penetrate = -1; // Actually only hits once
+            Projectile.penetrate = 1; // Survives through its first hit by "cheating" and incrementing its own pierce counter
             Projectile.extraUpdates = 75;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -86,6 +84,9 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            // Stops the projectile from deleting itself, while maintaining the masquerade 
+            Projectile.penetrate++;
+            
             //colorValue = Main.rand.Next(0, 10);
             target.AddBuff(BuffID.Electrified, 180);
             Projectile.timeLeft = 25;
