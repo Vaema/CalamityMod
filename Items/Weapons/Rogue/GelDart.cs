@@ -11,11 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class GelDart : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -29,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(0, 0, 2, 50);
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<GelDartProjectile>();
             Item.shootSpeed = 14f;
@@ -55,9 +50,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<PurifiedGel>(2).
-                AddIngredient<BlightedGel>(2).
+            CreateRecipe().
+                AddIngredient<PurifiedGel>(18).
+                AddIngredient<BlightedGel>(18).
                 AddTile<StaticRefiner>().
                 Register();
         }

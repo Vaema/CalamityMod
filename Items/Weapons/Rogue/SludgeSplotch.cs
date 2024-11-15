@@ -11,11 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SludgeSplotch : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -28,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.value = Item.sellPrice(0, 0, 0, 40);
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SludgeSplotchProj1>();
             Item.shootSpeed = 10f;
@@ -54,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<BlightedGel>(15).
-                AddRecipeGroup("Boss2Material").
+            CreateRecipe().
+                AddIngredient<BlightedGel>(50).
+                AddRecipeGroup("Boss2Material", 8).
                 Register();
         }
     }

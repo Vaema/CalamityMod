@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FeatherKnife : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -32,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = Item.sellPrice(copper: 60);
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
 
@@ -57,8 +52,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<AerialiteBar>().
+            CreateRecipe().
+                AddIngredient<AerialiteBar>(6).
+                AddIngredient(ItemID.SunplateBlock, 4).
                 AddTile(TileID.SkyMill).
                 Register();
         }

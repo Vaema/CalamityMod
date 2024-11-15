@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ToothBall : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -55,10 +50,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.CrimtaneBar).
-                AddIngredient<BloodSample>().
-                AddIngredient(ItemID.Vertebrae).
+            CreateRecipe().
+                AddIngredient(ItemID.CrimtaneBar, 4).
+                AddIngredient<BloodSample>(12).
+                AddIngredient(ItemID.Vertebrae, 4).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

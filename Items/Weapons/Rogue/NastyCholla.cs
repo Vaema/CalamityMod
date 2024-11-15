@@ -10,12 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class NastyCholla : RogueWeapon
     {
         public static int BaseDamage = 15;
-
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -28,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 20;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
-            Item.value = Item.buyPrice(0, 0, 0, 50);
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
             Item.shoot = ModContent.ProjectileType<NastyChollaBol>();
             Item.shootSpeed = 8f;
@@ -58,8 +52,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(10).
-                AddIngredient(ItemID.Cactus).
+            CreateRecipe().
+                AddIngredient(ItemID.Cactus, 8).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

@@ -9,11 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class IronFrancisca : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -27,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = false;
-            Item.value = Item.buyPrice(0, 0, 1, 0);
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
             Item.shoot = ModContent.ProjectileType<IronFranciscaProj>();
             Item.shootSpeed = 12f;
@@ -51,9 +46,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.IronBar).
-                AddIngredient(ItemID.Wood).
+            CreateRecipe().
+                AddIngredient(ItemID.IronBar, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }
