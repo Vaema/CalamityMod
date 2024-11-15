@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 1;
             Projectile.Opacity = 0f;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;

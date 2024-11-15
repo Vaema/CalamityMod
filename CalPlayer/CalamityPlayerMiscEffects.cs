@@ -4,7 +4,6 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -47,20 +46,20 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
@@ -76,12 +75,10 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Events;
 using Terraria.GameInput;
-using Terraria.Graphics.Renderers;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
-using CalamityMod.Projectiles.Pets;
 
 namespace CalamityMod.CalPlayer
 {
@@ -373,7 +370,7 @@ namespace CalamityMod.CalPlayer
                         }
                         IsFirstDashFrame = false;
                     }
-                    
+
                     float sparkscale1 = MathF.Min(Player.velocity.X * dir * 0.08f, 1.2f);
                     Vector2 SparkVelocity1 = -Player.velocity.SafeNormalize(Vector2.UnitX) * 5;
 
@@ -555,7 +552,7 @@ namespace CalamityMod.CalPlayer
                         // If they're a boss, reduce the boss distance.
                         // Boss distance will always be >= enemy distance, so there's no need to do another check.
                         // Worm boss body and tail segments are not counted as bosses for this calculation.
-                        if (npc.IsABoss() && !CalamityLists.noRageWormSegmentList.Contains(npc.type))
+                        if (npc.IsABoss() && !NoRageWormSegmentList.Includes(npc.type))
                             bossDistance = hitboxEdgeDist;
                     }
                 }
@@ -1014,7 +1011,7 @@ namespace CalamityMod.CalPlayer
                         continue;
 
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DaawnlightSpiritOrigin>()));
-                    if (Main.myPlayer == Player.whoAmI && target.WithinRange(Player.Center , 2000f))
+                    if (Main.myPlayer == Player.whoAmI && target.WithinRange(Player.Center, 2000f))
                     {
                         Projectile.NewProjectile(source, target.Center, Vector2.Zero, bullseyeType, 0, 0f, Player.whoAmI, target.whoAmI);
 
@@ -1077,8 +1074,8 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
-                        int hasBuff = Player.buffType[l];
-                        if (Player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                        int buffID = Player.buffType[l];
+                        if (Player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
                             Player.buffTime[l]--;
                     }
                 }
@@ -1443,6 +1440,70 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (rOfResilienceEffect > 0)
+                rOfResilienceEffect--;
+            if (Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>()) // All players close to a player holding RoR get the benefits
+            {
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead)
+                {
+                    Projectile relic = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RelicGuard>(), 0, 0f, Player.whoAmI);
+                }
+                for (int index = 0; index < Main.player.Length; index++)
+                {
+                    Player fella = Main.player[index];
+                    if (Utils.Distance(fella.Center, Player.Center) < 650 && fella.team == Player.team)
+                    {
+                        fella.Calamity().rOfResilienceEffect = (fella != Player ? 120 : 2);
+                    }
+                }
+            }
+            if (rOfResilienceEffect > 0)
+            {
+                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                {
+                    int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                    rOfResilienceCooldown = cooldownTime;
+                    Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                    SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
+                    SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                }
+
+                // Adds a floor for defense and dr at 150 and 10% respectivley, will not ignore defense damage
+                if (Player.Calamity().rOfResilienceCooldown > 300 || Player.Calamity().rOfResilienceCooldown == 0)
+                {
+                    float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? 1 : Utils.GetLerpValue(300, 600, Player.Calamity().rOfResilienceCooldown, true));
+                    int maxDefFloor = (int)(150 * fadeStats);
+                    float MaxDRFloor = 0.10f * fadeStats;
+                    if (Player.statDefense < maxDefFloor)
+                        Player.statDefense += maxDefFloor - Player.statDefense;
+                    if (Player.endurance < MaxDRFloor)
+                        Player.endurance += MaxDRFloor - Player.endurance;
+                }
+
+                int numOfShards = 0;
+                for (int x = 0; x < Main.maxProjectiles; x++)
+                {
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<ArtifactOfResilienceShards>() && projectile.ai[1] == 0 && projectile.owner == Player.whoAmI)
+                    {
+                        numOfShards++;
+                    }
+                }
+                if (Player.miscCounter % (Player.Calamity().profanedSoulRelicBuff ? 4 : 8) == 0 && numOfShards < (Player.Calamity().profanedSoulRelicBuff ? 75 : 30) && Player.Calamity().rOfResilienceCooldown == 0)
+                {
+                    if (numOfShards == 0)
+                    {
+                        rOfResilienceOrbitOffset = Main.rand.Next(0, 100 + 1);
+                        SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
+                        SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
+                    }
+                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(420);
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
+                }
+            }
+            if (rOfResilienceCooldown > 0)
+                rOfResilienceCooldown--;
+
             if (unstableGraniteCore)
             {
                 zapActivity += 1;
@@ -1785,7 +1846,7 @@ namespace CalamityMod.CalPlayer
             // God Slayer Armor dash debuff immunity
             if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
             {
-                foreach (int debuff in CalamityLists.debuffList)
+                foreach (int debuff in DebuffsList.List)
                     Player.buffImmune[debuff] = true;
             }
 
@@ -1857,7 +1918,7 @@ namespace CalamityMod.CalPlayer
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
                 // You become immune to all debuffs
-                foreach (int debuff in CalamityLists.debuffList)
+                foreach (int debuff in DebuffsList.List)
                     Player.buffImmune[debuff] = true;
 
                 // Prevent thorns effects from being abused during invincibility
@@ -1932,12 +1993,12 @@ namespace CalamityMod.CalPlayer
 
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
-                    int hasBuff = Player.buffType[l];
-                    if (Player.buffTime[l] <= 2 && hasBuff == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
+                    int buffID = Player.buffType[l];
+                    if (Player.buffTime[l] <= 2 && buffID == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
                         if (Player.whoAmI == Main.myPlayer)
                             Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(25));
 
-                    bool shouldAffect = CalamityLists.debuffList.Contains(hasBuff);
+                    bool shouldAffect = DebuffsList.Includes(buffID);
                     if (shouldAffect)
                         Player.GetDamage<RogueDamageClass>() += 0.1f;
                 }
@@ -3080,7 +3141,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (CalamityLists.highTestFishList.Contains(Player.ActiveItem().type))
+            if (HighTestFishingPoleList.Includes(Player.ActiveItem().type))
                 Player.accFishingLine = true;
 
             if (planarSpeedBoost != 0)
@@ -3177,7 +3238,7 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense += Mushy.DefenseBoost;
                 if (fungalSymbiote)
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
-            }  
+            }
 
             if (omniscience)
             {
@@ -3849,8 +3910,8 @@ namespace CalamityMod.CalPlayer
             {
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
-                    int hasBuff = Player.buffType[l];
-                    if (CalamityLists.amalgamBuffList.Contains(hasBuff))
+                    int buffID = Player.buffType[l];
+                    if (AmalgamBuffList.Includes(buffID))
                     {
                         if (amalgam)
                         {
@@ -3861,14 +3922,14 @@ namespace CalamityMod.CalPlayer
                                 Player.buffTime[l] += 1;
 
                             // Buffs will not go away when you die, to prevent wasting potions.
-                            if (!Main.persistentBuff[hasBuff])
-                                Main.persistentBuff[hasBuff] = true;
+                            if (!Main.persistentBuff[buffID])
+                                Main.persistentBuff[buffID] = true;
                         }
                         else
                         {
                             // Reset buff persistence if Amalgam is removed.
-                            if (Main.persistentBuff[hasBuff] && !CalamityLists.persistentBuffList.Contains(hasBuff))
-                                Main.persistentBuff[hasBuff] = false;
+                            if (Main.persistentBuff[buffID] && !PersistentBuffList.Includes(buffID))
+                                Main.persistentBuff[buffID] = false;
                         }
                     }
                 }
@@ -4251,7 +4312,7 @@ namespace CalamityMod.CalPlayer
 
                 // Apply defense damage
                 Player.statDefense -= currentDefenseDamage;
-                
+
             }
 
             // Defense can never be reduced below zero, no matter what

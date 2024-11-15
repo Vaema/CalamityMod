@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -23,25 +22,19 @@ using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -49,7 +42,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Renderers;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
@@ -697,7 +689,7 @@ namespace CalamityMod.CalPlayer
             {
                 Item heldItem = Player.ActiveItem();
 
-                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type))
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !DisabledSummonerNerfMinionList.Includes(proj.type))
                     modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
@@ -803,12 +795,6 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().tSad > 0)
                 contactDamageReduction += 0.5;
 
-            if (npc.Calamity().relicOfResilienceWeakness > 0)
-            {
-                contactDamageReduction += Items.Weapons.Typeless.RelicOfResilience.WeaknessDR;
-                npc.Calamity().relicOfResilienceWeakness = 0;
-            }
-
             if (eskimoSet)
             {
                 if (npc.coldDamage)
@@ -912,7 +898,7 @@ namespace CalamityMod.CalPlayer
         {
             // TODO -- Evolution dodge isn't actually a dodge and you'll still get hit for 1.
             // This should probably be changed so that when the evolution reflects it gives you 1 frame of guaranteed free dodging everything.
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1045,7 +1031,7 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.25;
             }
 
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
                 if (daedalusReflect && !disableAllDodges && !evolution && !Player.HasCooldown(GlobalDodge.ID))
@@ -1467,7 +1453,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
+            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1518,6 +1504,16 @@ namespace CalamityMod.CalPlayer
                 shouldTriggerBeeCooldown = false;
                 if (hurtInfo.Damage > 0)
                     theBeeCooldown = TheBee.CooldownLength;
+            }
+
+            // TODO: If possible, find a way to make it so parries don't activate the hit
+            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0 && hurtInfo.Damage > 1)
+            {
+                int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                rOfResilienceCooldown = cooldownTime;
+                Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
             }
 
             if (alchFlask)
@@ -1605,6 +1601,30 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (rOfDelivarenceRam)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    // Ignore critters with the Guide to Critter Companionship
+                    if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
+                        continue;
+
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    {
+                        Rectangle npcHitbox = n.getRect();
+                        if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
+                        {
+                            // 17APR2024: Ozzatron: This item gives iframes when passing through enemies for projectile safety.
+                            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                            n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
+                            Player.GiveUniversalIFrames(InterstellarStompers.PassthroughIFrames, false);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
             // If no other effects occurred, run vanilla code
             return base.FreeDodge(info);
         }
@@ -1624,7 +1644,7 @@ namespace CalamityMod.CalPlayer
             {
                 double maxCooldownDurationDamagePercent = 0.5;
                 int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-                
+
                 // Just in case...
                 if (maxCooldownDurationDamageValue <= 0)
                     maxCooldownDurationDamageValue = 1;
@@ -1797,6 +1817,35 @@ namespace CalamityMod.CalPlayer
                     }
 
                     SoundEngine.PlaySound(BlazingCore.ParrySuccessSound, Player.Center);
+
+                    float power = 2;
+                    for (int i = 0; i < (int)(20 * power); i++)
+                    {
+                        if (Main.rand.NextBool())
+                        {
+                            Particle spark = new CustomSpark(Player.Center, ((new Vector2(19, 19) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 47, Main.rand.NextFloat(1.15f, 1.3f) * power, Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        else
+                        {
+                            bool isSpark = Main.rand.NextBool(5);
+                            Dust dust = Dust.NewDustPerfect(Player.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), ((new Vector2(15, 15) * power).RotatedByRandom(100)) * Main.rand.NextFloat(0.2f, 1f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.85f, 1.15f) * power * (isSpark ? 0.5f : 1);
+                            dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                            if (isSpark)
+                                dust.noGravity = false;
+                            else
+                                dust.noLightEmittence = true;
+                        }
+                    }
+
+                    Particle orb1 = new CustomPulse(Player.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1f, 0.8f), 0, 0, 0.14f * power, 25);
+                    GeneralParticleHandler.SpawnParticle(orb1);
+
+                    Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.Khaki, "CalamityMod/Particles/BloomRing", new Vector2(1f, 0.5f), 0, 0, 2.1f * power, 25);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+
                     blazingCoreSuccessfulParry = 60;
                     Player.AddCooldown(ParryCooldown.ID, 60 * 30, false, "blazingcore"); //cooldown is frames in seconds multiplied by the desired amount of seconds
                 }
@@ -2458,7 +2507,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<DrataliornusBow>()] != 0)
             {
-                foreach(Projectile p in Main.ActiveProjectiles)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
                     if (p.type == ModContent.ProjectileType<DrataliornusBow>() && p.owner == Player.whoAmI)
                     {
@@ -2933,7 +2982,7 @@ namespace CalamityMod.CalPlayer
             bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
             if (!externalFlagsAppropriate)
                 return;
-            
+
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.
             int defenseDamageTaken = defenseDamage;
 

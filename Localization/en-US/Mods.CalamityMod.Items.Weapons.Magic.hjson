@@ -678,7 +678,11 @@ PrimordialEarth: {
 
 PurgeGuzzler: {
 	DisplayName: Purge Guzzler
-	Tooltip: Emits three beams of holy energy in a tight spread
+	Tooltip:
+		'''
+		Fires a barrage of holy rays that converge into two massive sweeping beams
+		'Baptism by holy fire'
+		'''
 }
 
 RainbowPartyCannon: {
@@ -889,7 +893,7 @@ ThePrince: {
 	DisplayName: The Prince
 	Tooltip:
 		'''
-		Casts a holy fireball that explodes into 6 flames
+		Casts a holy fireball that explodes into six homing flames
 		'So you're telling me that the prince exploded, and then turned into a flower?'
 		-Dain, the sailor druid
 		'''

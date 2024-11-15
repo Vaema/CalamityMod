@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -26,7 +27,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             if (npc.Calamity().vaporfied < npc.buffTime[buffIndex])
                 npc.Calamity().vaporfied = npc.buffTime[buffIndex];
-            if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().vaporfied;
             npc.DelBuff(buffIndex);
             buffIndex--;

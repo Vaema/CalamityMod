@@ -18,31 +18,32 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 58;
             Item.height = 44;
-            Item.damage = 120;
+            Item.damage = 152;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 22;
-            Item.useTime = 24;
-            Item.useAnimation = 24;
+            Item.mana = 50;
+            Item.useTime = 38;
+            Item.useAnimation = 38;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
             Item.knockBack = 4.5f;
-            Item.UseSound = CommonCalamitySounds.LaserCannonSound;
-            Item.shoot = ModContent.ProjectileType<HolyLaser>();
+            Item.shoot = ModContent.ProjectileType<PurgeGuzzlerHoldout>();
             Item.shootSpeed = 6f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Fire extra lasers to the left and right
-            Projectile.NewProjectile(source, position, velocity.RotatedBy(-Spread), type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectile(source, position, velocity.RotatedBy(+Spread), type, damage, knockback, player.whoAmI);
-
-            // Still also fire the center laser
-            return true;
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
+            return false;
         }
     }
 }

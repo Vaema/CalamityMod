@@ -13,11 +13,9 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -25,6 +23,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -194,7 +193,7 @@ namespace CalamityMod.Projectiles
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
             // which is way too early, the projectile's own initialization isn't even done yet
-            
+
             CreatedByPlayerDash = source is ProjectileSource_PlayerDashHit;
 
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
@@ -3413,18 +3412,17 @@ namespace CalamityMod.Projectiles
                 }
                 else
                 {
-                    if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
-                    {
-                        if (projectile.type != ProjectileType<RicoshotCoin>())
-                            projectile.extraUpdates += 1;
-                        if (projectile.type == ProjectileID.MechanicalPiranha)
-                        {
-                            projectile.localNPCHitCooldown *= 2;
-                            projectile.timeLeft *= 2;
-                        }
-                    }
+                    // 13NOV2024: Ozzatron: Removed Deadshot Brooch extra updates.
+                    // This mechanic was fundamentally unacceptable and was an invisible controlling hand that affected the development of dozens of ranged weapons.
+                    // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
+                    // I don't care. This effect had to be removed.
+                    //
+                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
 
                     if (modPlayer.camper && !player.StandingStill())
+                        projectile.damage = (int)(projectile.damage * 0.1);
+
+                    if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                         projectile.damage = (int)(projectile.damage * 0.1);
 
                     if (projectile.CountsAsClass<RogueDamageClass>() && stealthStrike)
@@ -3437,7 +3435,7 @@ namespace CalamityMod.Projectiles
 
                 if (NPC.downedMoonlord)
                 {
-                    if (CalamityLists.dungeonProjectileBuffList.Contains(projectile.type))
+                    if (BuffedDungeonProjectilesList.Includes(projectile.type))
                     {
                         // ai[1] being set to 1 is done only by the Calamity usages of these projectiles in Skeletron and Skeletron Prime boss fights
                         bool isSkeletronBossProjectile = (projectile.type == ProjectileID.RocketSkeleton || projectile.type == ProjectileID.Shadowflames) && projectile.ai[1] > 0f;
@@ -3452,7 +3450,7 @@ namespace CalamityMod.Projectiles
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (CalamityLists.eventProjectileBuffList.Contains(projectile.type))
+                    if (EventProjectileBuffList.Includes(projectile.type))
                         projectile.damage += 15;
                 }
 
@@ -3885,7 +3883,7 @@ namespace CalamityMod.Projectiles
                 }
 
                 // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
-                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>())
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -4133,7 +4131,7 @@ namespace CalamityMod.Projectiles
                                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                                 bool success = WorldGen.GrowPalmTree(i, j);
                                 if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                                    WorldGen.TreeGrowFXCheck(i, j);
                             }
                             else if (tile.TileType == ModContent.TileType<SpineSapling>())
                             {

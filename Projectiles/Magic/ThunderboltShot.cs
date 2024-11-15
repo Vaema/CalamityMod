@@ -84,6 +84,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(BuffID.Electrified, 60);
             if (Projectile.numHits == 0)
                 Decay();
         }

@@ -58,7 +58,7 @@ namespace CalamityMod.Walls
                 int yPos = tile.WallFrameY;
                 int xPos = tile.WallFrameX;
                 Rectangle frame = new Rectangle(xPos, yPos, 32, 32);
-                Color lightColor = Lighting.GetColor(i, j);
+                Color lightColor = tile.IsWallFullbright ? Color.White : Lighting.GetColor(i, j);
 
                 spriteBatch.Draw(sprite, offset, frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 

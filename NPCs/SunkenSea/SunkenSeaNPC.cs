@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityLists;
 using static Terraria.Utilities.NPCUtils;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -204,12 +204,19 @@ namespace CalamityMod.NPCs.SunkenSea
             List<int> biomeTypes = [];
             foreach (var flag in Enum.GetValues<SunkenSeaBiomeFlags>())
             {
-                if (flag == SunkenSeaBiomeFlags.None || !BiomeDesignation.HasFlag(flag))
+                if (flag == SunkenSeaBiomeFlags.None)
                     continue;
-                BiomeSpawnConditions.Add(SunkenSeaBiomeCorrespondentValues[flag].SpawnCondition);
-                if (flag == SunkenSeaBiomeFlags.UndergroundDesert)
+
+                if (!BiomeDesignation.HasFlag(flag))
                     continue;
-                biomeTypes.Add(SunkenSeaBiomeCorrespondentValues[flag].BiomeType);
+
+                if (!SunkenSeaBiomeCorrespondentDict.TryGet(flag, out var spawnCondition, out var biomeType))
+                    continue;
+
+                // Apply Conditions and Biome Types
+                BiomeSpawnConditions.Add(spawnCondition);
+                if (flag != SunkenSeaBiomeFlags.UndergroundDesert)
+                    biomeTypes.Add(biomeType);
             }
             SpawnModBiomes = [.. biomeTypes];
         }

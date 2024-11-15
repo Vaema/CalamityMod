@@ -121,6 +121,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         {
             // These offsets start as the tile offsets, i.e. which sub-tile of the FrameImportant structure this specific location is.
             Tile t = Main.tile[i, j];
+            if (t.IsTileActuallyInvisible())
+                return false;
             int frameXPos = t.TileFrameX;
             int frameYPos = t.TileFrameY;
 

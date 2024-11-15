@@ -24,6 +24,8 @@ namespace CalamityMod.Tiles.FurnitureAuric
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             var tileCache = Main.tile[i, j];
+            if (tileCache.IsTileActuallyInvisible())
+                return;
             TileFramingSystem.SlopedGlowmask(in tileCache, i, j, TextureAssets.Tile[Type].Value, null, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Color.White), default);
         }
 

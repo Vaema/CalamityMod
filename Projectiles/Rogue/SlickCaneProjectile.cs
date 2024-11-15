@@ -1,14 +1,12 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -35,7 +33,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ownerHitCheck = true;
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 2;
+            Projectile.localNPCHitCooldown = 5;
             Projectile.alpha = 180;
             Projectile.scale = 1.25f;
         }
@@ -82,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Player player = Main.player[Projectile.owner];
             //Dont drop money from Dummies, WoF eyes and worm segments to make grinding money a bit harder and not give money from Dummies since that was apparently happening
-            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !CalamityLists.needsDebuffIconDisplayList.Contains(target.type))
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !NeedsDebuffIconDisplayList.Includes(target.type))
             {
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes
@@ -144,13 +142,13 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // Boost dmg in proportion to money, caps at 5 plat. Unless in Gfb cuz it would be funny
+            // Boost dmg in proportion to money, caps at 3 plat. Unless in Gfb cuz it would be funny
             if (Projectile.Calamity().stealthStrike)
             {
                 Player player = Main.player[Projectile.owner];
                 double money = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (money >= 5000000 && !Main.zenithWorld)
-                    money = 5000000;
+                if (money >= 3000000 && !Main.zenithWorld)
+                    money = 3000000;
                 if (money != 0)
                 {
                     modifiers.SourceDamage *= (float)(money / 1250000 + 1);

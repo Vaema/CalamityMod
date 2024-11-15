@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void OnSpawn(IEntitySource source)

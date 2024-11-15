@@ -1,19 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Enums;
 using static Terraria.Player;
 
 namespace CalamityMod
@@ -431,7 +433,7 @@ namespace CalamityMod
         public static int GetExtraHitIFrames(this Player player, HurtInfo hurtInfo)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            
+
             int extraIFrames = 0;
             if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
                 extraIFrames += 30;
@@ -875,12 +877,31 @@ namespace CalamityMod
         #endregion
 
         /// <summary>
+        /// Used to limit the cursor up to a 1080p monitor. A similar method is used for items such as Zenith in vanilla.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <returns>The current position of the player's mouse, clamped to a 1920x1080 screen.</returns>
+        public static Vector2 ClampedMouseWorld(this Player player)
+        {
+            // 13NOV2024: Ozzatron
+            // CONSIDER -- Check all uses of mouseWorld in the mod and replace them with this utility if it allows influencing the capacity of player attack.
+            // 1920x1080 is a baseline for player mouse-reach and we should not allow higher resolution players to have more combat leverage.
+            // This is a balancing concern.
+            Vector2 mouseWorld = player.Calamity().mouseWorld;
+            
+            // Clamp each axis
+            mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
+            mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);
+            return mouseWorld;
+        }
+
+        /// <summary>
         /// A shorthand bool to check if the player can continue using the holdout or not.
         /// </summary>
         /// <param name="player">The player using the holdout.</param>
         /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
         public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
-        
+
         /// <summary>
         /// A shorthand bool to check if the held item should trigger Calamity's summon damage penalty.
         /// </summary>
@@ -905,10 +926,10 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityLists.BlacklistedWeaponsWithToolPower.Contains(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(item.type);
+                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;

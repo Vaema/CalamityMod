@@ -12,7 +12,6 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
@@ -52,20 +51,17 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
-using CalamityMod.Waters;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.GameContent.Liquid;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Utilities.Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -113,6 +109,7 @@ namespace CalamityMod.CalPlayer
         public float healingPotionMultiplier = 1f;
         public bool heldGaelsLastFrame = false;
         internal bool hadNanomachinesLastFrame = false;
+        public bool combHair;
         public bool disableVoodooSpawns = false;
         public bool disablePerfCystSpawns = false;
         public bool disableHiveCystSpawns = false;
@@ -215,6 +212,10 @@ namespace CalamityMod.CalPlayer
         public int StellarHammer = 0;
         public int GalaxyHammer = 0;
         public bool despoilerNerf = false;
+        public int amputatorBuff = 0;
+        public int rOfResilienceCooldown = 0;
+        public int rOfResilienceEffect = 0;
+        public int rOfResilienceOrbitOffset = 0;
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         public int alcoholPoisonLevel = 0;
@@ -519,12 +520,14 @@ namespace CalamityMod.CalPlayer
         public bool stressPills = false;
         public bool laudanum = false;
         public bool heartOfDarkness = false;
+        public bool profanedSoulRelicBuff = false;
         public bool draedonsHeart = false;
         public bool vexation = false;
         public bool dodgeScarf = false;
         public bool evasionScarf = false;
         public bool badgeOfBravery = false;
-        public bool warbannerOfTheSun = false;
+        public bool WarbanneroftheRighteous = false;
+        public bool warbannerGlow = false;
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
@@ -579,6 +582,7 @@ namespace CalamityMod.CalPlayer
         public int gSabatonFall = 0;
         public bool gSabatonFalling = false;
         public int gSabatonTempJumpSpeed = 0;
+        public bool rOfDelivarenceRam = false;
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
@@ -1156,18 +1160,18 @@ namespace CalamityMod.CalPlayer
         public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
         public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
         public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
-        
+
         public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();
         public bool ZoneAbyss => ZoneAbyssLayer1 || ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4;
         public bool ZoneAbyssLayer1 => Player.InModBiome<AbyssLayer1Biome>();
         public bool ZoneAbyssLayer2 => Player.InModBiome<AbyssLayer2Biome>();
         public bool ZoneAbyssLayer3 => Player.InModBiome<AbyssLayer3Biome>();
         public bool ZoneAbyssLayer4 => Player.InModBiome<AbyssLayer4Biome>();
-        
+
         public bool ZoneFloralParadise => Player.InModBiome<FloralParadiseBiome>();
-        
+
         public bool ZoneCalamity => Player.InModBiome<BrimstoneCragsBiome>();
-        
+
         public bool ZoneAstral => Player.InModBiome<AstralInfectionBiome>() && !ZoneAbyss;
 
         public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
@@ -1608,6 +1612,7 @@ namespace CalamityMod.CalPlayer
             ResetRogueStealth();
 
             calamityBonusLuck = 0f;
+            combHair = false;
 
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);
@@ -1759,7 +1764,8 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
-            warbannerOfTheSun = false;
+            WarbanneroftheRighteous = false;
+            warbannerGlow = false;
             aSpark = false;
             transformer = false;
             hideOfDeus = false;
@@ -1799,6 +1805,7 @@ namespace CalamityMod.CalPlayer
             nucleogenesis = false;
             nuclearFuelRod = false;
             heartOfDarkness = false;
+            profanedSoulRelicBuff = false;
             shadowMinions = false;
             holyMinions = false;
             alchFlask = false;
@@ -2421,6 +2428,7 @@ namespace CalamityMod.CalPlayer
             gSabatonFall = 0;
             gSabatonFalling = false;
             gSabatonTempJumpSpeed = 0;
+            rOfDelivarenceRam = false;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             VoidCooldown = 0;
@@ -2431,6 +2439,8 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+            rOfResilienceCooldown = 0;
+            rOfResilienceEffect = 0;
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
@@ -4009,7 +4019,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Mana Cost
         public override void ModifyManaCost(Item item, ref float reduce, ref float mult)
         {
-            if (CalamityLists.MagicGunIDs.Contains(item.type) && meteorSet)
+            if (MagicGunIDList.Includes(item.type) && meteorSet)
             {
                 mult *= 0.33f;
             }
@@ -4165,7 +4175,7 @@ namespace CalamityMod.CalPlayer
                 var LocketSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<VeneratedLocket>()));
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
-                    if (!CalamityLists.VeneratedLocketBanlist.Contains(item.type))
+                    if (!VeneratedLocketBanList.Includes(item.type))
                     {
                         float veneratedCloneSpeed = item.shootSpeed;
                         Vector2 realPlayerPos = Player.RotatedRelativePoint(Player.MountedCenter, true);
@@ -4783,6 +4793,10 @@ namespace CalamityMod.CalPlayer
 
             // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
             if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+                playerUsingWeapon = false;
+
+            // Molten Amputator consumes stealth in a special way
+            if (it.type == ModContent.ItemType<MoltenAmputator>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.

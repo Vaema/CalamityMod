@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,13 +18,13 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerGrenade";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
         public bool explode = true;
-
-        public Color color1 = Color.DarkMagenta;
-        public Color color2 = Color.DarkOrchid;
-        public Color color3 = Color.Purple;
-        public Color color4 = Color.BlueViolet;
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Player Owner => Main.player[Projectile.owner];
+        public Color color1;
+        public Color color2;
+        public Color color3;
+        public Color color4;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -44,9 +45,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // Remove this when ranger doesnt get +1 extra update for free
-            if (Projectile.extraUpdates > 3)
-                Projectile.extraUpdates = 3;
+            color1 = Owner.shirtColor;
+            color2 = Color.Lerp(Owner.shirtColor, Color.Black, 0.3f);
+            color3 = Color.Lerp(Owner.shirtColor, Color.White, 0.2f);
+            color4 = Color.Lerp(Owner.shirtColor, Color.White, 0.4f);
 
             Projectile.rotation = Projectile.velocity.ToRotation();
 
@@ -64,18 +66,23 @@ namespace CalamityMod.Projectiles.Ranged
             if (time < 60)
                 Projectile.velocity *= 0.982f;
 
-            float rate = (Main.GlobalTimeWrappedHourly * 15);
-            List<Color> eColors = new List<Color>()
+            if (Owner.shirtColor != Color.White)
+            {
+                float rate = (Main.GlobalTimeWrappedHourly * 15);
+                List<Color> eColors = new List<Color>()
                 {
                     color1,
                     color2,
                     color3,
                     color4
                 };
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            }
+            else
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (time > 20)
             {
@@ -106,12 +113,13 @@ namespace CalamityMod.Projectiles.Ranged
                 explode = false;
 
             NPC targetedNPC = Projectile.Center.ClosestNPCAt(1200);
-            if (targetedNPC != null && time > 60 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 1200)
+            if (targetedNPC != null && time > 30 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 1200)
             {
                 Vector2 position = targetedNPC.Center;
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                Vector2 moveSpeed = moveToMouse * (Utils.GetLerpValue(570, 120, Projectile.timeLeft, true));
                 if (Projectile.velocity.Length() < 7 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true)))
-                    Projectile.velocity += moveToMouse * (0.1f * Utils.GetLerpValue(550, 60, Projectile.timeLeft, true) * 10);
+                    Projectile.velocity = Projectile.velocity * 0.99f + moveSpeed;
                 else
                     Projectile.velocity *= 0.94f;
                 explode = true;
@@ -129,17 +137,13 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int i = 0; i < 40; i++)
                 {
-                    Color useColor = Main.rand.Next(4) switch
-                    {
-                        0 => color1,
-                        1 => color2,
-                        2 => color3,
-                        _ => color4,
-                    };
+                    Color useColor = GetRandomColor();
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 6 * power).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.85f, 2.45f) * power;
                     dust.color = useColor;
+                    if (Owner.shirtColor == Color.White)
+                        useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
                     if (i % 2 == 0)
                     {
@@ -149,13 +153,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 for (int i = 0; i < 3; i++)
                 {
-                    Color useColor = Main.rand.Next(4) switch
-                    {
-                        0 => color1,
-                        1 => color2,
-                        2 => color3,
-                        _ => color4,
-                    };
+                    Color useColor = GetRandomColor();
                     Particle orb4 = new CustomPulse(Projectile.Center, Vector2.Zero, useColor, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.4f - i * 0.03f * power, 13);
                     GeneralParticleHandler.SpawnParticle(orb4);
                 }
@@ -165,13 +163,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float rot = Main.rand.NextFloat(-9, 9);
                 for (int i = 0; i < parts; i++)
                 {
-                    Color useColor = Main.rand.Next(4) switch
-                    {
-                        0 => color1,
-                        1 => color2,
-                        2 => color3,
-                        _ => color4,
-                    };
+                    Color useColor = GetRandomColor();
                     Particle orb2 = new CustomSpark(Projectile.Center, new Vector2(0, -15 * (i % 2 == 0 ? 1.8f : 1f) * power).RotatedBy(i * (MathHelper.ToRadians(360f) / parts)).RotatedBy(rot), "CalamityMod/Particles/VerticalSmear", false, 19, 3 * power, useColor, new Vector2(0.2f, 1));
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
@@ -192,19 +184,26 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    Color useColor = Main.rand.Next(4) switch
-                    {
-                        0 => color1,
-                        1 => color2,
-                        2 => color3,
-                        _ => color4,
-                    };
+                    Color useColor = GetRandomColor();
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.85f, 2.45f);
                     dust.color = useColor;
                 }
             }
+        }
+        public Color GetRandomColor()
+        {
+            Color useColor = Main.rand.Next(4) switch
+            {
+                0 => color1,
+                1 => color2,
+                2 => color3,
+                _ => color4,
+            };
+            if (Owner.shirtColor == Color.White)
+                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+            return useColor;
         }
         public override bool PreDraw(ref Color lightColor)
         {
