@@ -1124,6 +1124,15 @@ SpentFuelContainer: {
 		'''
 }
 
+SporeKnife: {
+	DisplayName: Spore Knife
+	Tooltip:
+		'''
+		Throws an overgrown dagger that bursts into a cloud of poisonous spores
+		Stealth strikes erupt into homing buds which cling to enemies and drain them
+		'''
+}
+
 StarofDestruction: {
 	DisplayName: Star of Destruction
 	Tooltip:
