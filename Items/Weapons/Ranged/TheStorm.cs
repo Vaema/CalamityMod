@@ -1,8 +1,6 @@
-﻿using System;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -35,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<Bolt>();
+            Item.shoot = ModContent.ProjectileType<TheStormLightningShot>();
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
         }
@@ -64,11 +62,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                 {
-                    Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, ModContent.ProjectileType<Bolt>(), (int)(damage * (i == 0 ? 1.5f : 1f)), knockback, -1, i == 0 ? 5 : 0);
+                    Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, ModContent.ProjectileType<TheStormLightningShot>(), (int)(damage * (i == 0 ? 1.5f : 1f)), knockback, -1, i == 0 ? 5 : 0);
                 }
                 else
                 {
-                    Projectile arrow1 = Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, i == 0 ? ModContent.ProjectileType<Bolt>() : type, damage, knockback);
+                    Projectile arrow1 = Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, i == 0 ? ModContent.ProjectileType<TheStormLightningShot>() : type, damage, knockback);
                     arrow1.noDropItem = true;
                     arrow1.tileCollide = false;
                 }
