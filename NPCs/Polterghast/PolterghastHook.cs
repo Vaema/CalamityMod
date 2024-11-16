@@ -162,7 +162,7 @@ namespace CalamityMod.NPCs.Polterghast
                     if (NPC.ai[2] > 40f)
                         NPC.ai[3] = 0f;
 
-                    if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == 20f)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == 20f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 192f)
                     {
                         float shotSpeed = 10f * tileEnrageMult;
                         int type = ModContent.ProjectileType<PhantomHookShot>();
