@@ -156,7 +156,7 @@ PolarisAttunement: {
 		'''
 		Channel Galaxia's power into a vortex of celestial energies
 		The vortex powers up over time and while hitting enemies
-		Release to fire a powerful star directly at your cursor
+		Release to fire a powerful star directly on your cursor that bombards nearby enemies with bolts
 		Attacking immediately after firing the star launches you toward it, damaging enemies
 		'''
 }

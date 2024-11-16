@@ -72,12 +72,6 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (proj.active && proj.type == ProjectileType<PolarisGazeStar>() && proj.owner == Owner.whoAmI)
                     {
-                        if (CalamityUtils.AngleBetween(Owner.Center - Main.MouseWorld, Owner.Center - proj.Center) > MathHelper.PiOver4)
-                        {
-                            proj.Kill();
-                            break;
-                        }
-
                         Wheel = proj;
                         Dashing = true;
                         DashStart = Owner.Center;
@@ -170,14 +164,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    int blastDamage = Owner.CalcIntDamage<MeleeDamageClass>(FourSeasonsGalaxia.PolarisAttunement_SlashBoltsDamage);
-                    for (int i = 0; i < 5; i++)
-                    {
-                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Main.rand.NextVector2CircularEdge(15, 15), ProjectileType<GalaxiaBolt>(), blastDamage, 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.02f);
-                        blast.timeLeft = 100;
-                    }
-
-
                     Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - DashStart / 2f, Vector2.Zero, ProjectileType<PolarisGazeDash>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_SlashDamageBoost), 0, Owner.whoAmI);
                     if (proj.ModProjectile is PolarisGazeDash dash)
                     {
@@ -237,7 +223,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float maxMultiplier = FourSeasonsGalaxia.PolarisAttunement_FullChargeDamage / (float)FourSeasonsGalaxia.PolarisAttunement_BaseDamage;
             float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
+            // Adjust the damage to make it constant based on the local iframes
             float damageReduction = Projectile.localNPCHitCooldown / (float)FourSeasonsGalaxia.PolarisAttunement_LocalIFrames;
 
             modifiers.SourceDamage *= damageMultiplier * damageReduction;
@@ -247,13 +233,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             float maxMultiplier = FourSeasonsGalaxia.PolarisAttunement_FullChargeDamage / (float)FourSeasonsGalaxia.PolarisAttunement_BaseDamage;
             float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
+            // Adjust the damage to make it constant based on the local iframes
             float damageReduction = Projectile.localNPCHitCooldown / (float)FourSeasonsGalaxia.PolarisAttunement_LocalIFrames;
 
             modifiers.SourceDamage *= damageMultiplier * damageReduction;
         }
-
-
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
@@ -267,10 +251,8 @@ namespace CalamityMod.Projectiles.Melee
             // get lifted up
             if (HitChargeCooldown <= 0)
             {
-                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); //Sizzle
-                Shred += 80; //Augment the shredspeed
-                if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
+                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); // Sizzle
+                Shred += 80; // Augment the shredspeed
 
                 // 17APR2024: Ozzatron: Galaxia's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
                 // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
@@ -285,7 +267,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCHit43, Projectile.Center);
             if (ShredRatio > 0.85 && Owner.whoAmI == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, direction * 36f, ProjectileType<PolarisGazeStar>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_ShotDamageBoost), Projectile.knockBack, Owner.whoAmI, Shred);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), Vector2.Zero, ProjectileType<PolarisGazeStar>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_ShotDamageBoost), Projectile.knockBack, Owner.whoAmI, Shred);
             }
             if (Dashing)
             {

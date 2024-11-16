@@ -46,7 +46,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int PolarisAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static int PolarisAttunement_LocalIFramesCharged = 16;
         public static float PolarisAttunement_SlashDamageBoost = 6f; //Keep in mind the slice always crits
-        public static int PolarisAttunement_SlashBoltsDamage = 1300;
         public static int PolarisAttunement_SlashIFrames = 20;
         public static float PolarisAttunement_ShotDamageBoost = 0.8f; //The shots fired if the dash connects
         public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gainted per second.
