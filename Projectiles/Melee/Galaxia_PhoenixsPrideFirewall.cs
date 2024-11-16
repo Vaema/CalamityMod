@@ -1,5 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
@@ -17,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public const int TornadoHeight = 480;
 
         public float Scale; // Size of the firewall, scales with NPC width
-        public float fadeOut = 0.75f; // Used to control the firewall fading out at the end of its lifespan
+        public float fadeOut = 0f; // Used to control the firewall fading in and out at the start and end of its lifespan
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
         public override void SetStaticDefaults() => ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
 
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = Scale;
             Projectile.timeLeft = 150;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = FourSeasonsGalaxia.PhoenixAttunement_FlamePillarLocalIFrames;
         }
 
         public override void AI()
@@ -48,7 +49,9 @@ namespace CalamityMod.Projectiles.Melee
             else
                 Projectile.Center = Target.Center + Target.velocity;
 
-            // Fade out at the end of its lifespan
+            // Fade in and out at the start and end of its lifespan
+            if (Projectile.timeLeft > 145)
+                fadeOut += 0.15f;
             if (Projectile.timeLeft < 15)
                 fadeOut -= 0.05f;
         }
@@ -64,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
                 ref _);
         }
 
-        public float WidthFunction(float completionRatio) => 50f * Scale * (completionRatio > 0.5f ? 1f : completionRatio * 2f);
+        public float WidthFunction(float completionRatio) => 50f * Scale * (completionRatio > 0.4f ? 1f : completionRatio * 2.5f);
 
         public override bool PreDraw(ref Color lightColor)
         {
