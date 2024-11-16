@@ -70,14 +70,7 @@ namespace CalamityMod.Projectiles.Typeless
                         targeted = null;
                     else
                         Projectile.timeLeft++;
-                    if (targeted != null)
-                    {
-                        Vector2 moveToTrackingPos = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 12 + (8 * Utils.GetLerpValue(60, 120, time, true)))
-                            Projectile.velocity += moveToTrackingPos * (0.6f + (4 * Utils.GetLerpValue(60, 120, time, true)));
-                        else
-                            Projectile.velocity *= 0.9f;
-                    }
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.5f, 12, 0.975f);
                 }
                 if (Projectile.scale < 1)
                     Projectile.scale += 0.0035f;

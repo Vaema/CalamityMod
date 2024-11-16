@@ -60,14 +60,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (chosenTarget == null || chosenTarget.life <= 0)
                     chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(700);
-                if (chosenTarget != null)
-                {
-                    Vector2 moveTotarget = (chosenTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 5)
-                        Projectile.velocity += moveTotarget * 0.15f;
-                    else
-                        Projectile.velocity *= 0.8f;
-                }
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.08f, 5, 0.99f, accelerate: true);
             }
 
             if (targetDist < 1400f)

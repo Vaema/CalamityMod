@@ -1,18 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -192,10 +186,8 @@ namespace CalamityMod.Projectiles.Rogue
                         }
                         if (target != null)
                         {
-                            if (Projectile.numHits <= 0 && Projectile.velocity.Length() < 15)
-                                Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.9f;
-                            else if (Projectile.numHits <= 0)
-                                Projectile.velocity *= 0.9f;
+                            if (Projectile.numHits <= 0)
+                                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.85f, 15, 0.97f);
                         }
                         else if (time == 150)
                         {

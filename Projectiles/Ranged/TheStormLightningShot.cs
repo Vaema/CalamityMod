@@ -81,11 +81,9 @@ namespace CalamityMod.Projectiles.Ranged
             closestTarget = Projectile.Center.ClosestNPCAt(900);
             if (closestTarget != null && homing && Projectile.ai[0] < 5)
             {
-                Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < MathHelper.Clamp(12 * Utils.GetLerpValue(75, 300, Projectile.timeLeft, true), 4, 12))
-                    Projectile.velocity += moveTotarget * Utils.GetLerpValue(300, 200, Projectile.timeLeft, true) * 1f;
-                else
-                    Projectile.velocity *= 0.85f;
+                float moveSpeed = Utils.GetLerpValue(300, 250, Projectile.timeLeft, true);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, closestTarget, true, moveSpeed, 12, 0.97f, accelerate: true);
+
                 colorValue = MathHelper.Lerp(50, 0, Utils.GetLerpValue(500, 0, Vector2.Distance(closestTarget.Center, Projectile.Center), true));
             }
             if (!homing && Projectile.velocity.Length() < 12)

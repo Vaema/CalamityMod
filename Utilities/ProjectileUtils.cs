@@ -131,6 +131,31 @@ namespace CalamityMod
             }
         }
 
+        /// <summary>
+        /// Xyk's version of homing code
+        /// Gives a projectile homing on a selected npc. It is recommended to use "Vector2.ClosestNPCAt(distance)" to get a target
+        /// </summary>
+        /// <param name="homingVelocity">The multiplier applied to the movement towrds the target.</param>
+        /// <param name="maxSpeed">The cap on velocity for the projectile.</param>
+        /// <param name="inertia">The inertia of the homing. Generally you want too keep this anywhere from 1 (high inertia), to 0.9f (low inertia).</param>
+        /// <param name="overspeedReduction">The speed reduction applied to the projectile if it goes above max speed.</param>
+        /// <param name="accelerate">If the projectile should accelerate to max speed when there is no target. Good for projectiles with small homing range</param>
+        public static void HomeInOnSelectedNPC(Projectile projectile, NPC target, bool ignoreTiles = true, float homingVelocity = 0.5f, float maxSpeed = 10, float inertia = 0.985f, float overspeedReduction = 0.95f, bool accelerate = false)
+        {
+            NPC targetedNPC = target;
+            if (targetedNPC != null && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, targetedNPC.Center, 1, 1)))
+            {
+                Vector2 position = targetedNPC.Center;
+                Vector2 moveToNPC = (position - projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (projectile.velocity.Length() < maxSpeed)
+                    projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
+                else
+                    projectile.velocity *= overspeedReduction;
+            }
+            if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
+                projectile.velocity *= 1.0055f;
+        }
+
         // NOTE - Do not under any circumstance use these predictive methods for enemies or bosses. It is intended for minions and player-created projectiles.
         // Due to its extremely precise nature, it will have little openings that allow players to react without dashing through the enemy.
         // The results will be neither fun nor fair.

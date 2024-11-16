@@ -1,8 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Potions;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -94,11 +91,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     else
                     {
-                        Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 14 - 9 * Utils.GetLerpValue(280, 60, Projectile.timeLeft, true))
-                            Projectile.velocity = Projectile.velocity * 0.95f + moveToEnemy * 0.9f;
-                        else
-                            Projectile.velocity *= 0.95f;
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.5f, 13, 0.98f);
                     }
                 }
                 else

@@ -1,16 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -133,11 +128,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
                     {
-                        Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 16)
-                            Projectile.velocity += moveTotarget * 0.85f;
-                        else
-                            Projectile.velocity *= 0.8f;
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.95f, 16, 0.96f);
                     }
                 }
             }
