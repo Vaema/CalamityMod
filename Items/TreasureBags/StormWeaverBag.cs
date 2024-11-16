@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Armor.Vanity;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
@@ -66,8 +67,8 @@ namespace CalamityMod.Items.TreasureBags
             }));
 
             // Equipment
+            itemLoot.Add(ModContent.ItemType<ArcFlashRing>());
             itemLoot.AddRevBagAccessories();
-            // Stay tuned for Definitely Not Charged Perforator Runald's Band As A Single Item
 
             // Vanity
             itemLoot.Add(ModContent.ItemType<StormWeaverMask>(), 7);
