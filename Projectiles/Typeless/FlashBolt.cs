@@ -24,8 +24,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.DamageType = AverageDamageClass.Instance;
             Projectile.penetrate = 1; // Survives through its first hit by "cheating" and incrementing its own pierce counter
             Projectile.extraUpdates = 75;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 200;
         }
 
