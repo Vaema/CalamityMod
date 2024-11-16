@@ -34,12 +34,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.extraUpdates = 2;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
-            Lighting.AddLight(Projectile.Center, iceColor.ToVector3());
+            Color lightColor = Color.Lerp(fireColor, iceColor, Utils.GetLerpValue(300, 0, Projectile.timeLeft, true));
+            Lighting.AddLight(Projectile.Center, lightColor.ToVector3());
             Vector2 mouse = Owner.Calamity().mouseWorld;
             fadeIn = launch ? Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true) : 1;
             Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * Owner.HeldItem.shootSpeed;
@@ -68,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (launch) // On launch, spawns some effects and launch the projectile at the mouse
                 {
                     Projectile.tileCollide = true;
-                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, mouse) * 0.007f;
+                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, mouse) * 0.01f;
                     Projectile.velocity = (bigMagic ? staticSpeed : velocity);
 
                     SoundEngine.PlaySound(FrigidflashBolt.UseSound with { Volume = 1f, Pitch = (bigMagic ? -0.15f : 0.15f) }, Projectile.Center);
@@ -111,7 +113,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (bigMagic)
             {
-                if (Projectile.timeLeft < 120)
+                if (Projectile.timeLeft < 145)
                 {
                     Projectile.velocity *= 0.98f;
                 }
@@ -143,6 +145,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.Kill();
                 return false;
             }
+
             // Allow bounced bolts to hit enemies already hit before the bounce
             for (int i = 0; i < Main.maxNPCs; i++)
                 Projectile.localNPCImmunity[i] = 0;
@@ -157,24 +160,80 @@ namespace CalamityMod.Projectiles.Magic
             }
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 
+            smallMagicExplosion();
+            
+            if (wallBounces >= 2)
+            {
+                Projectile.Kill();
+            }
+            wallBounces++;
+
+            return false;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            target.AddBuff(BuffID.OnFire3, 60);
+            target.AddBuff(BuffID.Frostburn2, 60);
+
+            float minMult = 0.2f;
+            int hitsToMinMult = 4;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
+        public override void OnKill(int timeLeft)
+        {
+            if (bigMagic) // Collapsing explosion for the big attack
+            {
+                // This explosion gets full damage because it spawns another itself, it actually only deals a portion of the projectile damage
+                Projectile bigBlast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FireImplosion>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                bigBlast.ArmorPenetration = 20; // Hits rapidly enough that it needs some
+                float rot = Main.rand.NextFloat(-2, 2);
+                for (int i = 0; i < 6; i++)
+                {
+                    Vector2 velocity = (MathHelper.TwoPi * i / 6f).ToRotationVector2().RotatedBy(rot - MathHelper.ToRadians(90)) * 8f;
+                    Particle trail = new VelChangingSpark(Projectile.Center + velocity * 20, -velocity * 0.2f, -velocity * 5f, "CalamityMod/Particles/IceTypeParticle", 55, 1.8f, Color.Lerp(iceColor, Color.White, 0.5f), new Vector2(1.1f, 1f), true, false, shrinkSpeed: 0.15f, lerpRate: 0.01f);
+                    GeneralParticleHandler.SpawnParticle(trail);
+                }
+                for (int n = 0; n < 15; n++)
+                {
+                    Vector2 vel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3, 15);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 14, ModContent.DustType<LightDust>(), -vel);
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(1.2f, 1.7f);
+                    dust.color = iceColor;
+                    dust.noLightEmittence = true;
+                }
+            }
+            else
+            {
+                if (wallBounces < 2)
+                {
+                    smallMagicExplosion();
+                }
+                SoundEngine.PlaySound(FrigidflashBolt.ProjDeathSound, Projectile.Center);
+            }
+        }
+        public void smallMagicExplosion()
+        {
             // Create Blast
             float blastSize = 80;
             float minMultiplier = 0.25f;
             int hitsToMinMult = 4;
             int debuff1 = BuffID.Frostburn2;
             int debuff2 = BuffID.OnFire3;
-            int debuffTime = 120;
-            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.25f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+            int debuffTime = 90;
+            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
             blast.localAI[0] = debuff1;
             blast.localAI[2] = debuff2;
-            blast.localAI[1] = blast.localAI[3] = debuffTime;
+            blast.localAI[1] = debuffTime;
+            //blast.localAI[3] = debuffTime;
             blast.timeLeft = 15;
             blast.DamageType = DamageClass.Magic;
 
             SoundEngine.PlaySound(SoundID.Item27 with { Volume = 0.5f, Pitch = 0.3f, MaxInstances = -1 }, Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item27 with { Volume = 0.5f, Pitch = -0.3f, MaxInstances = -1 }, Projectile.Center);
 
-            // "Snowflake" visual effect
+            // "Snowflake" visual effect, but now with fire too
             float rot = Main.rand.NextFloat(-2, 2);
             for (int i = 0; i < 6; i++)
             {
@@ -201,48 +260,6 @@ namespace CalamityMod.Projectiles.Magic
                 dust.noLightEmittence = true;
             }
 
-            if (wallBounces >= 2)
-            {
-                Projectile.Kill();
-            }
-            wallBounces++;
-
-            return false;
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            target.AddBuff(BuffID.OnFire3, 90);
-            target.AddBuff(BuffID.Frostburn2, 90);
-
-            float minMult = 0.1f;
-            int hitsToMinMult = 5;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
-        }
-        public override void OnKill(int timeLeft)
-        {
-            if (bigMagic) // Collapsing explosion for the big attack
-            {
-                Projectile bigBlast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FireImplosion>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
-                float rot = Main.rand.NextFloat(-2, 2);
-                for (int i = 0; i < 6; i++)
-                {
-                    Vector2 velocity = (MathHelper.TwoPi * i / 6f).ToRotationVector2().RotatedBy(rot - MathHelper.ToRadians(90)) * 8f;
-                    Particle trail = new VelChangingSpark(Projectile.Center + velocity * 20, -velocity * 0.2f, -velocity * 5f, "CalamityMod/Particles/IceTypeParticle", 55, 1.8f, Color.Lerp(iceColor, Color.White, 0.5f), new Vector2(1.1f, 1f), true, false, shrinkSpeed: 0.15f, lerpRate: 0.01f);
-                    GeneralParticleHandler.SpawnParticle(trail);
-                }
-                for (int n = 0; n < 15; n++)
-                {
-                    Vector2 vel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3, 15);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 14, ModContent.DustType<LightDust>(), -vel);
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(1.2f, 1.7f);
-                    dust.color = iceColor;
-                    dust.noLightEmittence = true;
-                }
-            }
-            else
-                SoundEngine.PlaySound(FrigidflashBolt.ProjDeathSound, Projectile.Center);
         }
         public override bool PreDraw(ref Color lightColor)
         {

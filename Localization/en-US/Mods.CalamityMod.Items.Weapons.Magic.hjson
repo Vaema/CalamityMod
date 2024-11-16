@@ -359,12 +359,12 @@ ForbiddenSun: {
 FrigidflashBolt: {
 	DisplayName: Frigidflash Bolt
 	Tooltip:
-        '''
-        Casts a fast ball of flash-freezing magma that bounces off tiles
-        When hitting a tile, a flarefrost burst is produced
-        Press <right> to cast a stronger version that upon expiration creates a collapsing vortex of frost and flame
-        the vortex will explode after fully collapsing
-        '''
+		'''
+		Casts a fast ball of flash-freezing magma that bounces off tiles
+		When hitting a tile, a flarefrost burst is produced
+		Press <right> to cast a stronger version that upon expiration creates a collapsing vortex of frost and flame
+		the vortex will explode after fully collapsing
+		'''
 }
 
 FrostBolt: {

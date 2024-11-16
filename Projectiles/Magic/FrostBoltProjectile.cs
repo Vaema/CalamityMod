@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Player Owner = Main.player[Projectile.owner];
             Lighting.AddLight(Projectile.Center, bColor.ToVector3());
-            fadeIn = Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f, time, true);
+            fadeIn = Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true);
             Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * Owner.HeldItem.shootSpeed;
             Projectile.scale = fadeIn;
             if (fadeIn < 1) // Hold the projectile in front of the player while they case the spell
@@ -143,6 +143,9 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn, 60);
+            // Since this reduces the damage of the projectile directly, the damage of its explosions is also decreased
+            // This is intedned for Frost Bolt, but is not kept for the upgrades
+            // Feel free to change this to use the same pierce reduction as its upgrades if this doesn't work out
             if (Projectile.damage > 1)
                 Projectile.damage = (int)(Projectile.damage * 0.85f);
         }

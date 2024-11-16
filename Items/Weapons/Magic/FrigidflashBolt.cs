@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 38;
             Item.height = 42;
-            Item.damage = 80;
+            Item.damage = 72;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 13;
             Item.useTime = 20;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override float UseSpeedMultiplier(Player player)
         {
             if (player.altFunctionUse == 2)
-                return 0.28f;
+                return 0.25f;
 
             return 1f;
         }
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2) // Right Click
             {
-                Projectile bigMagic = Projectile.NewProjectileDirect(source, position, velocity, type, (int)(damage * 4.5f), knockback, player.whoAmI, 0, 5);
+                Projectile bigMagic = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0, 5);
                 bigMagic.extraUpdates = 4;
                 bigMagic.timeLeft = 370;
                 bigMagic.penetrate = -1;

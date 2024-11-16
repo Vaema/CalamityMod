@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class FireImplosion : ModProjectile, ILocalizedModType
+    public class FireImplosion : ModProjectile, ILocalizedModType // Used by both Flare bolt and Frigidflash Bolt
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void AI()
         {
-            if (customKnockback == 0)
+            if (customKnockback == 0) // On spawn effects
             {
                 Projectile.scale = 0;
                 Projectile.alpha = 0;
@@ -65,12 +65,12 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.scale = 0.95f * Utils.GetLerpValue(42, 0, time, true) * Utils.GetLerpValue(40, 25, time, true);
                 time++;
             }
-            else
+            else // When the vortex is expanding out before it starts shrinking
             {
                 Projectile.scale = 0.95f * Utils.GetLerpValue(0, 15, boomTime, true);
                 boomTime++;
             }
-            if (Projectile.timeLeft <= 20)
+            if (Projectile.timeLeft <= 20) // Fizzles out at the end
             {
                 if ((frigidFlash && Projectile.timeLeft % 3 == 0) || !frigidFlash)
                 {
@@ -97,7 +97,30 @@ namespace CalamityMod.Projectiles.Magic
             }
             Lighting.AddLight(Projectile.Center, Color.Orange.ToVector3() * 2 * Projectile.scale);
             Projectile.rotation += 0.4f;
-            if (frigidFlash && Projectile.timeLeft == 1)
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (frigidFlash)
+            {
+                target.AddBuff(BuffID.OnFire3, 30);
+                target.AddBuff(BuffID.Frostburn2, 30);
+            }
+            else
+                target.AddBuff(BuffID.OnFire, 180);
+            pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center) * customKnockback;
+            float minMult = 0.4f;
+            int hitsToMinMult = 15;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult * (frigidFlash ? 0.5f : 1); // Frigidflash explosion are spawned at full power, so their damage is reduced here
+
+            if (target.CanBeMoved(false)) // The vortex sucks in enemies
+            {
+                target.velocity = (-pushVelocity);
+            }
+        }
+        public override void OnKill(int timeLeft)
+        {
+            if (frigidFlash)
             {
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash") with { Volume = 1, Pitch = -0.2f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.DeerclopsIceAttack with { Volume = 0.85f, Pitch = 0.1f }, Projectile.Center);
@@ -105,9 +128,15 @@ namespace CalamityMod.Projectiles.Magic
                 // Create Blast
                 float blastSize = 160;
                 float minMultiplier = 0.25f;
-                int hitsToMinMult = 6;
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
-                blast.timeLeft = 15;
+                int hitsToMinMult = 8;
+                int debuff1 = BuffID.Frostburn2;
+                int debuff2 = BuffID.OnFire3;
+                int debuffTime = 230;
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 4f), customKnockback * 2, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                blast.localAI[0] = debuff1;
+                blast.localAI[2] = debuff2;
+                blast.localAI[1] = debuffTime;
+                //blast.localAI[3] = debuffTime;
                 blast.DamageType = DamageClass.Magic;
 
                 // BIGGER "Snowflake" visual effect
@@ -137,22 +166,6 @@ namespace CalamityMod.Projectiles.Magic
                     Particle orb1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.DeepSkyBlue, Color.White, i * 0.15f), "CalamityMod/Particles/BloomCircle", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.6f, 0.8f - i * 0.07f, 20);
                     GeneralParticleHandler.SpawnParticle(orb1);
                 }
-            }
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            target.AddBuff((frigidFlash ? BuffID.OnFire3 : BuffID.OnFire), 180);
-            if (frigidFlash)
-                target.AddBuff(BuffID.Frostburn2, 180);
-            pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center) * customKnockback;
-            float minMult = 0.4f;
-            int hitsToMinMult = 15;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
-
-            if (target.CanBeMoved(false))
-            {
-                target.velocity = (-pushVelocity);
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
