@@ -153,6 +153,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float distanceFromAim = Projectile.Center.ShortestDistanceToLine(Owner.MountedCenter, Main.MouseWorld);
             float distanceFromPlayerAcrossSightLine = (Owner.MountedCenter - Projectile.Center.ClosestPointOnLine(Owner.MountedCenter, Main.MouseWorld)).Length();
 

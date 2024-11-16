@@ -51,6 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ProjectileType<BlissfulBombardierHoldout>(), 0, 0f, player.whoAmI);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // We set the rotation to the direction to the aim direction so the first frame doesn't appear bugged out.
             holdout.velocity = (new Vector2(MathHelper.Lerp(player.Calamity().mouseWorld.X, player.Center.X, 0.55f), player.Center.Y) + new Vector2(0, -500) - player.Center).SafeNormalize(Vector2.Zero);
             return false;

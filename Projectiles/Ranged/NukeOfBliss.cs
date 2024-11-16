@@ -41,7 +41,8 @@ namespace CalamityMod.Projectiles.Ranged
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            if (Projectile.Center.Y > Owner.Calamity().mouseWorld.Y && rainDownTimer <= 0)
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Projectile.Center.Y > mouse.Y && rainDownTimer <= 0)
                 Projectile.tileCollide = true;
 
             //Rotation
@@ -52,11 +53,11 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (rainDownTimer > 1) // Make sure the missiles are raining down from above your cursor
                 {
-                    Projectile.Center = new Vector2(Owner.Calamity().mouseWorld.X, Owner.Center.Y) + new Vector2(0, -600);
+                    Projectile.Center = new Vector2(mouse.X, Owner.Center.Y) + new Vector2(0, -600);
                 }
 
                 if (targeted == null || rainDownTimer > 0)
-                    targeted = (rainDownTimer == 0 ? Projectile.Center + Projectile.velocity * 4 : Owner.Calamity().mouseWorld).ClosestNPCAt(rainDownTimer == 0 ? 350 : 250);
+                    targeted = (rainDownTimer == 0 ? Projectile.Center + Projectile.velocity * 4 : mouse).ClosestNPCAt(rainDownTimer == 0 ? 350 : 250);
                 if (targeted != null && Projectile.Center.Y > targeted.Center.Y)
                     targeted = null;
 
@@ -69,6 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
                         SoundEngine.PlaySound(fire with { Volume = 0.45f, Pitch = (0 - 0.3f * Utils.GetLerpValue(0, 300, rainDownTimer, true)) }, Projectile.Center);
                         for (int i = 0; i < (isClusterRocket ? 4 : 2); i++)
                         {
+                            // 15NOV2024: Ozzatron: clamped mouse position is not used here intentionally so split rockets can attempt to go to your mouse's real position
                             Vector2 variance = (i % 2 == 0 ? 0.2f : 1) * (new Vector2(80 * (isClusterRocket ? 3 : 1), 0) * Main.rand.NextFloat(-1f, 1f));
                             Vector2 velocity = (((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(8, 12)) + variance * 0.008f;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + variance, velocity, ModContent.ProjectileType<BlissfulBombardierSplitProjectile>(), (int)(Projectile.damage * (isClusterRocket ? 0.15f : 0.3f)), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
@@ -90,7 +92,7 @@ namespace CalamityMod.Projectiles.Ranged
                     targeted = null;
                     Projectile.extraUpdates = 10;
                     Projectile.penetrate = 1;
-                    Projectile.velocity = ((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX) * 15;
+                    Projectile.velocity = ((targeted != null ? targeted.Center : mouse) - Projectile.Center).SafeNormalize(Vector2.UnitX) * 15;
                 }
                 if (rainDownTimer == 0)
                 {
@@ -98,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                     if (targeted != null && targeted.Center.Y > Projectile.Center.Y)
                     {
-                        Vector2 moveToTrackingPos = ((targeted != null ? targeted.Center : Owner.Calamity().mouseWorld) - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        Vector2 moveToTrackingPos = ((targeted != null ? targeted.Center : mouse) - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 15)
                             Projectile.velocity += moveToTrackingPos * 2.5f;
                         else

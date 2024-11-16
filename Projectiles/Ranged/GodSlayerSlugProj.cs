@@ -119,6 +119,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.netUpdate = true;
             Projectile.tileCollide = false;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+
             // Step 1 of the warp: Place the bullet behind the player, opposite the mouse cursor.
             Vector2 playerToMouseVec = CalamityUtils.SafeDirectionTo(Main.LocalPlayer, Main.MouseWorld, -Vector2.UnitY);
             float warpDist = Main.rand.NextFloat(70f, 96f);

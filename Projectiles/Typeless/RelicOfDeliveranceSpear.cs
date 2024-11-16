@@ -126,6 +126,8 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             float speed = (CalamityPlayer.areThereAnyDamnBosses ? 3f : 6f) * driftBadMult * (inTiles ? 0.65f : 1);
+
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimDir = Owner.Calamity().mouseWorld;
             
             idealVel = Utils.DirectionTo(Owner.Center, aimDir) * speed * driftPower;
@@ -207,6 +209,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 if (driftPower == 1 && driftBadMult == 1 && driftTimer > 0)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * (speed * 0.1f);
                     driftBadMult = 0.1f;
                 }
@@ -220,6 +223,8 @@ namespace CalamityMod.Projectiles.Typeless
                     {
                         driftBadMult = (driftPower > 1 ? 1 : time < 60 ? 0 : 0.35f);
                         driftTimer = 0;
+
+                        // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile.velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * speed * driftPower;
 
                         Particle pulse2 = new CustomPulse(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3.1f * driftPower, Color.Goldenrod * 0.8f, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Projectile.velocity.ToRotation(), 0f, 1.33f * driftPower, 25);

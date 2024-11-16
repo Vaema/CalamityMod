@@ -61,8 +61,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 }
                 f = Main.rand.NextFloat() * MathHelper.TwoPi;
             }
-            Vector2 mouseWorld = Main.MouseWorld;
-            Vector2 projSpawnPos = mouseWorld - projSpawnOffset;
+            Vector2 projSpawnPos = player.ClampedMouseWorld() - projSpawnOffset;
             Vector2 projVelocity = new Vector2(mouseXDist, mouseYDist).SafeNormalize(Vector2.UnitY) * projSpeed;
             projSpawnPos = projSpawnPos.SafeNormalize(projVelocity) * projSpeed;
             projSpawnPos = Vector2.Lerp(projSpawnPos, projVelocity, 0.25f);

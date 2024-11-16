@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Owner.active && !Owner.dead)
                 Projectile.Center = Owner.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 60f;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimVector = (Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true)).SafeNormalize(Vector2.UnitY);
             aimVector = Vector2.Normalize(Vector2.Lerp(aimVector, Vector2.Normalize(Projectile.velocity), PrismaticBreakerHoldout.LaserAimLag));
 

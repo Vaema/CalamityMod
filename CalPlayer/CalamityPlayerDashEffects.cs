@@ -397,6 +397,7 @@ namespace CalamityMod.CalPlayer
             direction = DashDirection.Directionless;
 
             // God Slayer armor's dash will dash towards the player's cursor.
+            // 14NOV2024: Ozzatron: Intentionally does not use clamped mouse position so that player dash direction is not strangely bent on larger screens.
             Vector2 dashVel = Main.MouseWorld - Player.Center;
             dashVel = dashVel.SafeNormalize(Vector2.UnitX) * UsedDash.CalculateDashSpeed(Player);
 

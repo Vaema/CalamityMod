@@ -76,10 +76,11 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.timeLeft <= 500 && Svant && goToMouse && Projectile.timeLeft % Projectile.extraUpdates == 0)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 mouseSpot = (player.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * homeSpeed;
                 Projectile.velocity.X = MathHelper.Lerp(Projectile.velocity.X, mouseSpot.X, 0.085f);
                 Projectile.velocity.Y = MathHelper.Lerp(Projectile.velocity.Y, mouseSpot.Y, 0.085f);
-                if (Vector2.Distance(Projectile.Center, player.Calamity().mouseWorld) < 80)
+                if (Vector2.Distance(Projectile.Center, player.ClampedMouseWorld()) < 80)
                 {
                     Projectile.timeLeft = 300;
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * homeSpeed / 2;

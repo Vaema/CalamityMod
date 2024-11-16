@@ -65,9 +65,10 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter) + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.45f;
             Projectile.rotation = SwingSine * MathHelper.ToRadians(87f);
 
-            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(Main.MouseWorld, Projectile.height + 15f))
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(mouse, Projectile.height + 15f))
             {
-                Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld);
+                Projectile.velocity = Projectile.SafeDirectionTo(mouse);
                 Projectile.netSpam = 0;
                 Projectile.netUpdate = true;
             }

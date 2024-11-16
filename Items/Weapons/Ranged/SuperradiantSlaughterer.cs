@@ -100,6 +100,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(Item.damage);
                 float kb = player.GetTotalKnockback<MeleeDamageClass>().ApplyTo(Item.knockBack);
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, player.SafeDirectionTo(player.Calamity().mouseWorld), Item.shoot, damage * 2, kb, player.whoAmI, ai1: 2f);
             }
         }

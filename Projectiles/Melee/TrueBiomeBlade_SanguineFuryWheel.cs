@@ -61,6 +61,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 initialized = true;
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();

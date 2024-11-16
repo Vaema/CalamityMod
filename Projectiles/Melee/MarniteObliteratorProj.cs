@@ -73,6 +73,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, result is clamped later
                     Vector2 newVelocity = Owner.Calamity().mouseWorld - Owner.MountedCenter;
 
                     if (Main.tile[Player.tileTargetX, Player.tileTargetY].HasTile)

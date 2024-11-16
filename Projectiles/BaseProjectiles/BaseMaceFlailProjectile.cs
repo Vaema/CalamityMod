@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -210,6 +210,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			Projectile.ownerHitCheck = true;
 			if (Projectile.owner == Main.myPlayer)
 			{
+				// 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
 				Vector2 toMouse = Owner.MountedCenter.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX * Owner.direction);
 				Owner.ChangeDir((toMouse.X > 0f).ToDirectionInt());
 				if (!Owner.channel)

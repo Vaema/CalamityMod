@@ -78,6 +78,7 @@ namespace CalamityMod.Projectiles.Typeless
                 dust.noLightEmittence = true;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             aimVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             float adjustedRot = aimVel.ToRotation();
             Projectile.rotation = Utils.AngleLerp(Projectile.rotation, adjustedRot + (MathHelper.ToRadians(90)), 0.05f);

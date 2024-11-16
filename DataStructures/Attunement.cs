@@ -439,6 +439,7 @@ namespace CalamityMod.DataStructures
             if (Procced)
             {
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);
+                // 14NOV2024: Ozzatron: clamped mouse world unnecessary here, just used for direction
                 Vector2 velocity = (Main.MouseWorld - player.Center).SafeNormalize(Vector2.UnitX) * 15f;
                 Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<SwordsmithsPrideAstralBomber>(), damage, 0f, player.whoAmI);
 

@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.myPlayer == player.whoAmI)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, the result is immediately normalized
                 Projectile.velocity = Main.MouseWorld - player.Center;
                 Projectile.velocity.Normalize();
             }
@@ -99,6 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
                     // Stealth Strike
                     if (player.Calamity().StealthStrikeAvailable() && Projectile.ai[1] != 1f)
                     {
+                        // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center,
                                                  player.SafeDirectionTo(Main.MouseWorld) * 28f,
                                                  ModContent.ProjectileType<FinalDawnThrow2>(),

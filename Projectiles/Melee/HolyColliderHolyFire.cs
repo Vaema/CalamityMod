@@ -80,6 +80,7 @@ namespace CalamityMod.Projectiles.Melee
                         SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.4f }, Projectile.Center);
 
                         Projectile.extraUpdates = 5;
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Vector2 vel = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -12;
                         Projectile.velocity = vel;
                         Projectile.penetrate = 1;

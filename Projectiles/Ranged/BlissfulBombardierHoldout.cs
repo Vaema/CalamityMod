@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
             // The vector between the player a relative point in the sky slightly based on mouse position, used for pointing the holdout.
-            Vector2 ownerToSky = new Vector2(MathHelper.Lerp(Owner.Calamity().mouseWorld.X, Owner.Center.X, 0.55f), Owner.Center.Y) + new Vector2(0, -500) - Owner.Center;
+            Vector2 ownerToSky = new Vector2(MathHelper.Lerp(Owner.ClampedMouseWorld().X, Owner.Center.X, 0.55f), Owner.Center.Y) + new Vector2(0, -500) - Owner.Center;
 
             // The direction this holdout's pointing at.
             float holdoutDirection = Projectile.velocity.ToRotation();

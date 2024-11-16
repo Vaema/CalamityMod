@@ -249,6 +249,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Photoviscerator itself
+
                 float interpolant = Utils.GetLerpValue(5f, 90f, Projectile.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant);

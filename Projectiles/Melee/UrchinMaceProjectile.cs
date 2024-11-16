@@ -167,6 +167,7 @@ namespace CalamityMod.Projectiles.Melee
             //Spawn a whirlpool typhoon after sending it out
             if (WindupProgress >= 1f && Projectile.owner == Main.myPlayer)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Main.MouseWorld - Owner.position).SafeNormalize(Vector2.One) * 25f, ModContent.ProjectileType<RedtideWhirlpool>(), (int)(Projectile.damage * whirlpoolDamageMultiplier), Projectile.knockBack, Projectile.owner, 0, 0f);
             }
 

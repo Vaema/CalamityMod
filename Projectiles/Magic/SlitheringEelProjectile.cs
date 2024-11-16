@@ -58,9 +58,10 @@ namespace CalamityMod.Projectiles.Magic
             else
                 Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.1f, 0f, 1f);
 
-            if (Projectile.timeLeft % 80f < 35f && Projectile.Distance(Main.MouseWorld) > 70f)
+            Vector2 mouse = Main.player[Projectile.owner].ClampedMouseWorld();
+            if (Projectile.timeLeft % 80f < 35f && Projectile.Distance(mouse) > 70f)
             {
-                float angleToTarget = Projectile.AngleTo(Main.MouseWorld);
+                float angleToTarget = Projectile.AngleTo(mouse);
                 float angleDifference = MathHelper.WrapAngle(angleToTarget - Projectile.velocity.ToRotation());
                 Projectile.velocity = Projectile.velocity.RotatedBy(angleDifference / 9f);
             }

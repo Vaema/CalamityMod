@@ -40,6 +40,7 @@ namespace CalamityMod.Items.Accessories
             var empowered = calPlayer.flameLickedShellEmpoweredParry;
 
             NPC target = player.Center.ClosestNPCAt(1300f, true, true);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 targetPosition = target?.Center ?? Main.MouseWorld;
             float projectileSpeed = 8f;
 

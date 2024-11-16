@@ -43,6 +43,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 vel = ((Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 7).RotatedBy(0.2f * curveDirection);
 
             if (curveDirection == 100)

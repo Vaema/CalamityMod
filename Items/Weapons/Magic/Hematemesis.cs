@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            position = Main.MouseWorld;
+            position = player.ClampedMouseWorld();
             for (int x = 0; x < 10; x++)
             {
                 Projectile.NewProjectile(source, position.X + (float)Main.rand.Next(-150, 150), position.Y + 600f, 0f, -10f, type, damage, knockback, player.whoAmI);

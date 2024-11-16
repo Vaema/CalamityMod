@@ -57,14 +57,15 @@ namespace CalamityMod.Projectiles.Magic
 
             if (time >= 500)
             {
+                Vector2 mouse = Owner.ClampedMouseWorld();
                 if (time == 500)
                 {
                     Projectile.penetrate = 1;
-                    Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 6;
+                    Projectile.velocity = (mouse - Projectile.Center).SafeNormalize(Vector2.UnitX) * 6;
                     launched = true;
                 }
 
-                float badDist = Vector2.Distance(Owner.Calamity().mouseWorld, Projectile.Center);
+                float badDist = Vector2.Distance(mouse, Projectile.Center);
                 if (badDist < 30)
                 {
                     time = 600;
@@ -84,7 +85,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (time < 550 && target == null)
                 {
                     if (Projectile.velocity.Length() < 6)
-                        Projectile.velocity += (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
+                        Projectile.velocity += (mouse - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
                     else
                         Projectile.velocity *= 0.9f;
                 }

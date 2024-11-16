@@ -47,6 +47,7 @@ namespace CalamityMod.Items.Weapons.Magic
             for (int i = 0; i < 2; i++)
             {
                 Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<WingmanHoldout>(), damage, knockback, player.whoAmI, 0, 0, i == 0 ? 1 : -1);
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             }
 

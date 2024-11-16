@@ -79,6 +79,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (time < 550 && target == null)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (Projectile.velocity.Length() < 6)
                         Projectile.velocity += (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
                     else

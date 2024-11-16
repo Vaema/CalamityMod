@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Typeless
             completion = Utils.GetLerpValue(120, 0, Projectile.timeLeft, true);
             fade = MathHelper.Lerp(fade, 0, 0.04f);
             if (Projectile.timeLeft >= 5)
-                mousePos = Owner.Calamity().mouseWorld;
+                mousePos = Owner.ClampedMouseWorld();
 
             if (!Owner.channel)
             {

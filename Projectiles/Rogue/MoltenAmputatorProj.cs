@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.Calamity().stealthStrike && time > returnTime * 0.2f)
                 {
-                    Vector2 moveToTrackingPos = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    Vector2 moveToTrackingPos = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX);
                     if (Projectile.velocity.Length() < 16 * Utils.GetLerpValue(returnTime * 0.7f, 0, time, true))
                         Projectile.velocity += moveToTrackingPos * (0.5f * Utils.GetLerpValue(returnTime * 0.7f, 0, time, true));
                     else

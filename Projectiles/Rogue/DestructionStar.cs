@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Rogue
             rot += (Utils.Remap(Projectile.timeLeft, 0, 240, 0.02f, 0.0015f)) * rotDirection;
 
             Player Owner = Main.player[Projectile.owner];
-            Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+            Vector2 moveToMouse = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX);
             if (Projectile.numHits == 0 || Projectile.Calamity().stealthStrike)
             {
                 if (Projectile.velocity.Length() < (Projectile.Calamity().stealthStrike ? 18 : 13) && time > 8)

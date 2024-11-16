@@ -97,7 +97,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 {
                     for (int i = 0; i < 7; i++)
                     {
-                        Vector2 spawnSpot = new Vector2(player.Calamity().mouseWorld.X, player.Center.Y) + new Vector2(Main.rand.NextFloat(-850, 850), Main.rand.NextFloat(-750, -1250));
+                        Vector2 clampedMouse = player.ClampedMouseWorld();
+                        Vector2 spawnSpot = new Vector2(clampedMouse.X, player.Center.Y) + new Vector2(Main.rand.NextFloat(-850, 850), Main.rand.NextFloat(-750, -1250));
                         Projectile comet = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), spawnSpot, Utils.DirectionTo(spawnSpot, player.Calamity().mouseWorld + Main.rand.NextVector2Circular(50, 50)) * Item.shootSpeed, Item.shoot, Item.damage / 3, Item.knockBack, player.whoAmI);
                         comet.extraUpdates = Main.rand.Next(2, 3 + 1);
                     }

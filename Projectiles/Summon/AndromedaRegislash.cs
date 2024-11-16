@@ -42,6 +42,8 @@ namespace CalamityMod.Projectiles.Summon
                     return;
                 }
                 SoundEngine.PlaySound(SoundID.DD2_DrakinShot, Projectile.Center);
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.rotation = Projectile.AngleTo(Main.MouseWorld);
                 Projectile.localAI[0] = 1f;
             }

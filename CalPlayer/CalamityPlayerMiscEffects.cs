@@ -802,7 +802,15 @@ namespace CalamityMod.CalPlayer
             if (!blazingCursorDamage)
                 return;
 
-            Rectangle sigilHitbox = Utils.CenteredRectangle(Main.MouseWorld, new Vector2(35f, 62f));
+            // 14NOV2024: Ozzatron: was not sure whether to let Calamity function outside normal cursor range. decided on no
+            //
+            // Check whether the mouse cursor is within the acceptable clamped range. If it's not, don't allow for damage.
+            Vector2 mouseTruePosition = Player.Calamity().mouseWorld;
+            Vector2 mouseClampedPosition = Player.ClampedMouseWorld();
+            if (mouseTruePosition != mouseClampedPosition)
+                return;
+
+            Rectangle sigilHitbox = Utils.CenteredRectangle(mouseClampedPosition, new Vector2(35f, 62f));
             int sigilDamage = (int)Player.GetBestClassDamage().ApplyTo(Calamity.BaseDamage);
 
             bool brightenedSigil = false;
@@ -819,7 +827,7 @@ namespace CalamityMod.CalPlayer
 
                     // Draw an expanding orb effect on the cursor based on the cursor focus value.
                     float cursorFocusRatio = target.Calamity().cursorFocus / (float)CalamityGlobalNPC.cursorFocusMax;
-                    StrongBloom indicator = new(Main.MouseWorld, Vector2.Zero, Color.Lerp(Color.Magenta, Color.Red, cursorFocusRatio), cursorFocusRatio * 0.7f, 2);
+                    StrongBloom indicator = new(mouseClampedPosition, Vector2.Zero, Color.Lerp(Color.Magenta, Color.Red, cursorFocusRatio), cursorFocusRatio * 0.7f, 2);
                     GeneralParticleHandler.SpawnParticle(indicator);
 
                     if (target.Calamity().cursorFocus >= CalamityGlobalNPC.cursorFocusMax)
@@ -3793,6 +3801,8 @@ namespace CalamityMod.CalPlayer
                 int dmg = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(30);
 
                 Vector2 startPos = Player.RotatedRelativePoint(Player.MountedCenter, true);
+
+                // 14NOV2024: Ozzatron: clamped mouse position is inappropriate to apply here due to excessive use of decompiled vanilla shitcode
                 Vector2 velocity = Main.MouseWorld - startPos;
                 if (Player.gravDir == -1f)
                 {

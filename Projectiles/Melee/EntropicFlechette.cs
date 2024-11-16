@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (target == null)
                     {
-                        Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        Vector2 moveToMouse = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 14)
                             Projectile.velocity += moveToMouse * 0.15f;
                         else

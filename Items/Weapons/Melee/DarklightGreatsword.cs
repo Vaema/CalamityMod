@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Weapons.Melee
             else
                 position += offset;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             type = Main.rand.NextBool() ? type : ModContent.ProjectileType<LightBeam>();
             Projectile.NewProjectile(source, position, velocity, type, (int)(damage * ProjectileDamageMultiplier), knockback * ProjectileDamageMultiplier, player.whoAmI);

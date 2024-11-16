@@ -84,6 +84,9 @@ namespace CalamityMod.Projectiles.Magic
                 dust.color = Color.Lime;
                 dust.noLightEmittence = true;
             }
+
+            Player owner = Main.player[Projectile.owner];
+
             if (!HasBounced)
             {
                 HasBounced = true;
@@ -95,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (!n.CanBeChasedBy(Projectile))
                         continue;
 
-                    float currentNPCDist = Vector2.Distance(n.Center, Main.MouseWorld);
+                    float currentNPCDist = Vector2.Distance(n.Center, owner.ClampedMouseWorld());
                     if (currentNPCDist < npcDistCheck)
                     {
                         npcDistCheck = currentNPCDist;
@@ -105,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the index is not default, smart bounce in the direction of that enemy.
                 if (index != -1)
                 {
-                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Main.player[Projectile.owner].ActiveItem().shootSpeed, 3);
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.ActiveItem().shootSpeed, 3);
                 }
                 else // Otherwise, use standard bouncing behavior.
                 {

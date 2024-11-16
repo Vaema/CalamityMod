@@ -44,7 +44,10 @@ namespace CalamityMod.Items.Weapons.Magic
             player.itemTime = Item.useTime;
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             Vector2 projRotation = Vector2.UnitX.RotatedBy((double)player.fullRotation, default);
+
+            // 14NOV2024: Ozzatron: clamped mouse position is inappropriate to apply here due to excessive use of decompiled vanilla shitcode
             Vector2 projSpawnPos = Main.MouseWorld - realPlayerPos;
+
             float velX = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
             float velY = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
             if (player.gravDir == -1f)

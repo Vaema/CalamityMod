@@ -127,6 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 //Take the direction the sword is swung. FUCK not controlling the swing direction more than just left/right :|
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();

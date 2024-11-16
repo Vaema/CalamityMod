@@ -86,6 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                     WindupSwingProgress = 2f;
                     PhaseTime = 0f;
                     Projectile.Center = Owner.MountedCenter + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 72f;
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * Projectile.velocity.Length();
                     Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X >= 0f).ToDirectionInt();
                     Projectile.netUpdate = true;

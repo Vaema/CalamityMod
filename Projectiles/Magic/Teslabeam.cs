@@ -191,9 +191,11 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
+
         // Gently adjusts the aim vector of the laser to point towards the mouse.
         private void UpdateAim(Vector2 source)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimVector = Vector2.Normalize(Main.MouseWorld - source);
             if (aimVector.HasNaNs())
                 aimVector = -Vector2.UnitY;

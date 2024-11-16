@@ -18,6 +18,10 @@ namespace CalamityMod.Projectiles.Typeless
         // Projectile.ai[0] is the size of the circular hitbox.
         // Projectile.ai[1] is the minimum multiplier on pierce damage.
         // Projectile.ai[2] is the number of hits to reach minimum pierce damage.
+
+        // You can use the local ai variables 0 - 2 to inflict up to two debuffs, if you need more than two debuffs just make your own projectile
+        // 0 and 2 are what debuff is being inflicted
+        // 1 is the debuff duration
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -52,9 +56,13 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.localAI[0] != 0)
+            if (Projectile.localAI[0] != 0) // Debuff 1
             {
                 target.AddBuff((int)(Projectile.localAI[0]), (int)(Projectile.localAI[1]));
+            }
+            if (Projectile.localAI[2] != 0) // Debuff 2
+            {
+                target.AddBuff((int)(Projectile.localAI[2]), (int)(Projectile.localAI[1]));
             }
             pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center) * customKnockback;
             float minMult = Projectile.ai[1];
@@ -71,15 +79,17 @@ namespace CalamityMod.Projectiles.Typeless
         {
             return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.ai[0], targetHitbox);
         }
-        public override void SendExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer) // Sending extra ai for the debuff infliction
         {
             writer.Write(Projectile.localAI[0]);
             writer.Write(Projectile.localAI[1]);
+            writer.Write(Projectile.localAI[2]);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.localAI[0] = reader.ReadSingle();
             Projectile.localAI[1] = reader.ReadSingle();
+            Projectile.localAI[2] = reader.ReadSingle();
         }
     }
 }
