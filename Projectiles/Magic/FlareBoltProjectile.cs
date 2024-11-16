@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 16;
             Projectile.height = 16;
             Projectile.friendly = true;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 240;
             Projectile.extraUpdates = 2;
             Projectile.tileCollide = false;
@@ -36,9 +36,10 @@ namespace CalamityMod.Projectiles.Magic
         {
             Player Owner = Main.player[Projectile.owner];
             Lighting.AddLight(Projectile.Center, bColor.ToVector3());
+            Vector2 mouse = Owner.Calamity().mouseWorld;
             fadeIn = Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true);
             float velFade = Utils.GetLerpValue(1.5f, 6.5f, Projectile.velocity.Length(), true);
-            Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * Owner.HeldItem.shootSpeed;
+            Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * Owner.HeldItem.shootSpeed;
             Projectile.scale = fadeIn * 1.5f;
             if (fadeIn < 1) // Hold the projectile in front of the player while they case the spell
             {
@@ -49,7 +50,10 @@ namespace CalamityMod.Projectiles.Magic
                 if (launch) // On launch, spawns some effects and launch the projectile at the mouse
                 {
                     Projectile.tileCollide = true;
-                    Projectile.velocity = velocity;
+
+                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, mouse) * 0.0165f;
+                    Projectile.velocity = staticSpeed;
+
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HalleysInfernoShoot") with { Volume = 0.45f, Pitch = 0.3f }, Projectile.Center);
                     for (int i = 0; i < 20; i++)
                     {
@@ -88,31 +92,26 @@ namespace CalamityMod.Projectiles.Magic
                 Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 11, 0.3f, bColor * 0.9f, new Vector2(1, 1f), true, false, shrinkSpeed: 0.7f * velFade);
                 GeneralParticleHandler.SpawnParticle(trail);
             }
-            // Gain gravity after a while
-            // This makes it more useful on the surface where you otherwise have less tiles to work with
+
             if (Projectile.timeLeft < 120)
             {
                 Projectile.velocity *= 0.98f;
             }
-            else if (wallBounces > 1) // If you only have one bounce before death, reduce lifetime to start falling faster
-                Projectile.timeLeft--;
+
             Projectile.rotation += 0.3f * Projectile.direction;
             time++;
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            return false;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             target.AddBuff(BuffID.OnFire, 90);
-            if (Projectile.damage > 1)
-                Projectile.damage = (int)(Projectile.damage * 0.85f);
+            float minMult = 0.1f;
+            int hitsToMinMult = 5;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override void OnKill(int timeLeft)
         {
-            if (Projectile.numHits < 4)
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FireImplosion>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FireImplosion>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
         }
         public override bool PreDraw(ref Color lightColor)
         {

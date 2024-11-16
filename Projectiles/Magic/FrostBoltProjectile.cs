@@ -103,9 +103,14 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 
             // Create Blast
-            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 80, 0.35f, 5);
-            blast.localAI[0] = BuffID.Frostburn;
-            blast.localAI[1] = 120;
+            float blastSize = 80;
+            float minMultiplier = 0.25f;
+            int hitsToMinMult = 4;
+            int debuff = BuffID.Frostburn;
+            int debuffTime = 120;
+            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+            blast.localAI[0] = debuff;
+            blast.localAI[1] = debuffTime;
             blast.timeLeft = 15;
             blast.DamageType = DamageClass.Magic;
 
