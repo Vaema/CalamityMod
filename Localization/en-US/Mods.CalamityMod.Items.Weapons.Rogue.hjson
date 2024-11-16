@@ -396,8 +396,9 @@ FantasyTalisman: {
 	Tooltip:
 		'''
 		Fires high velocity talismans that ignore gravity
-		Talismans attach to enemies, causing them to release lost souls
-		Stealth strikes release more souls and leave behind souls as they travel
+		Talismans attach to enemies, releasing vengeful souls that chase them down
+		Stealth strikes release more souls and erupt into lost souls on death
+'Good thing I didn't bet against you!'
 		'''
 }
 

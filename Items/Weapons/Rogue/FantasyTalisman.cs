@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 30;
             Item.height = 30;
-            Item.damage = 82;
+            Item.damage = 52;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 16;
-            Item.useTime = 16;
+            Item.useAnimation = 25;
+            Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
@@ -26,20 +26,31 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<FantasyTalismanProj>();
-            Item.shootSpeed = 16.5f;
+            Item.shootSpeed = 18f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.8f;
+        public override float StealthDamageMultiplier => 0.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
+            if (!player.Calamity().StealthStrikeAvailable())
             {
-                int stealth = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<FantasyTalismanStealth>(), damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
+                for (int i = -1; i <= 1; i++)
+                {
+                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 6f));
+                    Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
+                }
+            }
+            else if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
+            {
+                for (int i = -1; i <= 1; i++)
+                {
+                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 5f));
+                    int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<FantasyTalismanStealth>(), damage, knockback, player.whoAmI);
+                    if (stealth.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[stealth].Calamity().stealthStrike = true;
+                }
             }
             return true;
         }
