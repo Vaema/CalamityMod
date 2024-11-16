@@ -129,12 +129,12 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextBool())
             {
                 Vector2 smokeSpeed = direction.RotatedByRandom(MathHelper.PiOver4 * 0.3f) * Main.rand.NextFloat(10f, 30f) * (ShredRatio * 0.5f + 1f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f) * (ShredRatio * 0.5f + 1f), 0.8f, 0, false, 0, true);
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.5f, 1f) * (ShredRatio * 0.5f + 1f), 0.6f, 0, false, 0, true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
                 if (Main.rand.NextBool(3))
                 {
-                    Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Main.hslToRgb(0.55f, 1, 0.5f + 0.2f * ShredRatio), 20, Main.rand.NextFloat(0.4f, 0.7f) * (ShredRatio * 0.5f + 1f), 0.8f, 0, true, 0.01f, true);
+                    Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Main.hslToRgb(0.55f, 1, 0.5f + 0.2f * ShredRatio), 20, Main.rand.NextFloat(0.35f, 0.6f) * (ShredRatio * 0.5f + 1f), 0.6f, 0, true, 0.01f, true);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);
                 }
             }
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Scaling based on shred
             Projectile.localNPCHitCooldown = FourSeasonsGalaxia.PolarisAttunement_LocalIFrames - (int)(MathHelper.Lerp(0, FourSeasonsGalaxia.PolarisAttunement_LocalIFrames - FourSeasonsGalaxia.PolarisAttunement_LocalIFramesCharged, ShredRatio)); //Increase the hit frequency
-            Projectile.scale = 1f + (ShredRatio * 1f); //SWAGGER
+            Projectile.scale = 1f + (ShredRatio * 1.5f); //SWAGGER
 
 
             if ((Wheel == null || !Wheel.active) && Dashing)

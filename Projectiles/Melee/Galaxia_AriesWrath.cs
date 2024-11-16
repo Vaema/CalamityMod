@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Owner.CantUseHoldout() || Owner.HeldItem.type != ItemType<FourSeasonsGalaxia>())
             {
-                //Kill the projectile if too far away from the player or close enough to get "re-absorbed)
+                // Kill the projectile if too far away from the player or close enough to get "re-absorbed")
                 if ((Owner.Center - Projectile.Center).Length() < 30f || (Owner.Center - Projectile.Center).Length() > 2000f || Projectile.velocity.Length() > 100f)
                     Projectile.Kill();
 

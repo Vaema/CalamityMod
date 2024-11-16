@@ -40,34 +40,27 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float PhoenixAttunement_FullChargeDamageBoost = 2.1f;
         public static float PhoenixAttunement_ThrowDamageBoost = 3.2f;
 
-        public static int PolarisAttunement_BaseDamage = 350;
-        public static int PolarisAttunement_FullChargeDamage = 600;
+        public static int PolarisAttunement_BaseDamage = 400;
+        public static int PolarisAttunement_FullChargeDamage = 630;
         public static int PolarisAttunement_ShredIFrames = 10;
         public static int PolarisAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static int PolarisAttunement_LocalIFramesCharged = 16;
         public static float PolarisAttunement_SlashDamageBoost = 6f; //Keep in mind the slice always crits
         public static int PolarisAttunement_SlashIFrames = 20;
         public static float PolarisAttunement_ShotDamageBoost = 0.8f; //The shots fired if the dash connects
-        public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gainted per second.
+        public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gained per second.
 
-        public static int AndromedaAttunement_BaseDamage = 1200;
+        public static int AndromedaAttunement_BaseDamage = 1120;
         public static int AndromedaAttunement_DashHitIFrames = 20;
-        public static float AndromedaAttunement_FullChargeBoost = 6f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
+        public static float AndromedaAttunement_FullChargeMult = 3.5f; //The maxmimum damage multiplier of the lunge. Note that the lunge always crits.
         public static float AndromedaAttunement_StarDamageMultiplier = 1f;
-        public static float AndromedaAttunement_ChargeupBoltDamageMultiplier = 0.2f; //The shots fired as it charges
+        public static float AndromedaAttunement_ChargeupBoltDamageMultiplier = 0.2f; //Damage of shots fired as it charges
 
-        public static int AriesAttunement_BaseDamage = 300;
+        public static int AriesAttunement_BaseDamage = 375;
         public static int AriesAttunement_LocalIFrames = 10;
         public static int AriesAttunement_Reach = 650;
         public static float AriesAttunement_ChainDamageReduction = 0.2f;
         public static float AriesAttunement_OnHitBoltDamageReduction = 0.5f;
-
-        public static int CancerPassiveDamage = 725;
-        public static int CancerPassiveLifeSteal = 3;
-        public static float CancerPassiveLifeStealProc = 0.4f;
-        public static int CapricornPassiveDebuffTime = 200;
-
-
         #endregion
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Galaxia"; //Base sprite for stuff like item browser and shit. yeah

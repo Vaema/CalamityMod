@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Enums;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
@@ -576,6 +576,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
+            item.reuseDelay = 30;
         }
     }
 
@@ -600,6 +601,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
+            item.reuseDelay = 30;
         }
     }
 
@@ -624,6 +626,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
+            item.reuseDelay = 10;
         }
     }
 
@@ -649,6 +652,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
+            item.reuseDelay = 30;
         }
     }
 

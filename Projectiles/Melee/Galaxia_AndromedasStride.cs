@@ -218,7 +218,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 1f + FourSeasonsGalaxia.AndromedaAttunement_FullChargeBoost * (float)Math.Pow(Charge / MaxCharge, 2);
+            // Lunge always critically strikes
+            modifiers.SetCrit();
+            modifiers.SourceDamage *= (FourSeasonsGalaxia.AndromedaAttunement_FullChargeMult * (float)Math.Pow(Charge / MaxCharge, 2));
         }
 
         public override bool PreDraw(ref Color lightColor)
