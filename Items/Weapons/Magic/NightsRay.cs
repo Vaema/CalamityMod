@@ -44,6 +44,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).
+                AddCondition(Condition.NotRemixWorld).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.CrimsonRod).
@@ -52,7 +53,29 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).
+                AddCondition(Condition.NotRemixWorld).
                 Register();
+
+            // CIT 16NOV2024: Due to Wand of Sparking (and Frosting) being swapped with Magic Dagger in Remix, Night's Ray uses Magic Dagger in its recipe there.
+            CreateRecipe().
+                AddIngredient(ItemID.Vilethorn).
+                AddIngredient(ItemID.MagicMissile).
+                AddIngredient(ItemID.MagicDagger).
+                AddIngredient(ItemID.AmberStaff).
+                AddIngredient<PurifiedGel>(10).
+                AddTile(TileID.DemonAltar).
+                AddCondition(Condition.RemixWorld).
+                Register();
+            CreateRecipe().
+                AddIngredient(ItemID.CrimsonRod).
+                AddIngredient(ItemID.MagicMissile).
+                AddIngredient(ItemID.MagicDagger).
+                AddIngredient(ItemID.AmberStaff).
+                AddIngredient<PurifiedGel>(10).
+                AddTile(TileID.DemonAltar).
+                AddCondition(Condition.RemixWorld).
+                Register();
+
         }
     }
 }
