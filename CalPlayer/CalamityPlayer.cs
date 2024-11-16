@@ -507,6 +507,8 @@ namespace CalamityMod.CalPlayer
         public bool unstableGraniteCore = false;
         public bool regenator = false;
         public bool theBee = false;
+        public bool arcFlashRing = false;
+        public bool arcFlashRingVisual = false;
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
         public bool alluringBait = false;
@@ -1757,6 +1759,8 @@ namespace CalamityMod.CalPlayer
             regenator = false;
             deepDiver = false;
             theBee = false;
+            arcFlashRing = false;
+            arcFlashRingVisual = false;
             alluringBait = false;
             enchantedPearl = false;
             fishingStation = false;

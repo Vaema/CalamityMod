@@ -16,6 +16,7 @@ namespace CalamityMod.Particles
         public Vector2 Stretch = new Vector2(0.5f, 1.6f);
         public float ShrinkSpeed = 0;
         public bool Fliped = false;
+        public bool GlowFade = false;
 
         public override int FrameVariants => 3;
         public override string Texture => "CalamityMod/Particles/Bolt2";
@@ -23,7 +24,7 @@ namespace CalamityMod.Particles
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public BoltParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool glowCenter = false, bool fadeIn = false, float shrinkSpeed = 0)
+        public BoltParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool glowCenter = false, bool glowFade = false, bool fadeIn = false, float shrinkSpeed = 0)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -42,6 +43,8 @@ namespace CalamityMod.Particles
 
             if (FadeIn)
                 Scale = 0f;
+
+            GlowFade = glowFade;
         }
 
         public override void Update()
@@ -85,7 +88,7 @@ namespace CalamityMod.Particles
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, frame, col, Rotation, origin, scale, Fliped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             if (GlowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, frame, Color.Lerp(col, Color.White, 0.8f), Rotation, origin, scale * 0.8f, Fliped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, frame, Color.Lerp(col, Color.White, 0.8f) * (GlowFade ? Utils.GetLerpValue(Lifetime, 0, Time, true) : 1), Rotation, origin, scale * 0.8f, Fliped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
     }
 }
