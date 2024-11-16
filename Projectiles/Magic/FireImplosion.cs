@@ -136,7 +136,6 @@ namespace CalamityMod.Projectiles.Magic
                 blast.localAI[0] = debuff1;
                 blast.localAI[2] = debuff2;
                 blast.localAI[1] = debuffTime;
-                //blast.localAI[3] = debuffTime;
                 blast.DamageType = DamageClass.Magic;
 
                 // BIGGER "Snowflake" visual effect

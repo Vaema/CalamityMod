@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (launch) // On launch, spawns some effects and launch the projectile at the mouse
                 {
                     Projectile.tileCollide = true;
-                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, mouse) * 0.01f;
+                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, Owner.ClampedMouseWorld()) * 0.01f;
                     Projectile.velocity = (bigMagic ? staticSpeed : velocity);
 
                     SoundEngine.PlaySound(FrigidflashBolt.UseSound with { Volume = 1f, Pitch = (bigMagic ? -0.15f : 0.15f) }, Projectile.Center);
@@ -226,7 +226,6 @@ namespace CalamityMod.Projectiles.Magic
             blast.localAI[0] = debuff1;
             blast.localAI[2] = debuff2;
             blast.localAI[1] = debuffTime;
-            //blast.localAI[3] = debuffTime;
             blast.timeLeft = 15;
             blast.DamageType = DamageClass.Magic;
 

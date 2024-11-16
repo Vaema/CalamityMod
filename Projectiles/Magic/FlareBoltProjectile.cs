@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.tileCollide = true;
 
-                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, mouse) * 0.0165f;
+                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, Owner.ClampedMouseWorld()) * 0.0165f;
                     Projectile.velocity = staticSpeed;
 
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HalleysInfernoShoot") with { Volume = 0.45f, Pitch = 0.3f }, Projectile.Center);
