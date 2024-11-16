@@ -19,9 +19,9 @@ namespace CalamityMod.Projectiles.Typeless
         // Projectile.ai[1] is the minimum multiplier on pierce damage.
         // Projectile.ai[2] is the number of hits to reach minimum pierce damage.
 
-        // You can use the local ai variables 0 - 3 to inflict up to two debuffs, if you need more than two debuffs just make your own projectile
+        // You can use the local ai variables 0 - 2 to inflict up to two debuffs, if you need more than two debuffs just make your own projectile
         // 0 and 2 are what debuff is being inflicted
-        // 1 and 3 are the debuff duration
+        // 1 is the debuff duration
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (Projectile.localAI[2] != 0) // Debuff 2
             {
-                target.AddBuff((int)(Projectile.localAI[0]), (int)(Projectile.localAI[3]));
+                target.AddBuff((int)(Projectile.localAI[2]), (int)(Projectile.localAI[1]));
             }
             pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center) * customKnockback;
             float minMult = Projectile.ai[1];
@@ -84,14 +84,12 @@ namespace CalamityMod.Projectiles.Typeless
             writer.Write(Projectile.localAI[0]);
             writer.Write(Projectile.localAI[1]);
             writer.Write(Projectile.localAI[2]);
-            writer.Write(Projectile.localAI[3]);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.localAI[0] = reader.ReadSingle();
             Projectile.localAI[1] = reader.ReadSingle();
             Projectile.localAI[2] = reader.ReadSingle();
-            Projectile.localAI[3] = reader.ReadSingle();
         }
     }
 }
