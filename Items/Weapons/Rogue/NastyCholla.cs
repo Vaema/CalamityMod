@@ -9,12 +9,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class NastyCholla : RogueWeapon
     {
-        public static int BaseDamage = 15;
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 18;
-            Item.damage = BaseDamage;
+            Item.damage = 10;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 20;

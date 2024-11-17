@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 40;
             Item.height = 36;
-            Item.damage = 14;
+            Item.damage = 10;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 15;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-
+        public override float StealthDamageMultiplier => 3f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
