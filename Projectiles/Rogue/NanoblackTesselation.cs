@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class NanoblackTesselation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        internal static Asset<Texture2D> Glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/NanoblackTesselationGlow");
+        internal static Asset<Texture2D> Glow;
 
         // As Nanoblack Tesselations are not square, this is required for the glowmask to be rendered properly.
         private const int SpriteWidth = 52;
@@ -41,6 +41,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         // Tesselations can fire a maximum of four zero-point energy strikes.
         private int zeroPointStrikesPerformed = 0;
+
+        public override void Load() => Glow = ModContent.Request<Texture2D>(Texture + "Glow");
 
         public override void SetStaticDefaults()
         {
