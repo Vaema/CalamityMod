@@ -132,7 +132,7 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Xyk's version of homing code
+        /// Xyk's version of homing code<br />
         /// Gives a projectile homing on a selected npc. It is recommended to use "Vector2.ClosestNPCAt(distance)" to get a target
         /// </summary>
         /// <param name="homingVelocity">The multiplier applied to the movement towrds the target.</param>
