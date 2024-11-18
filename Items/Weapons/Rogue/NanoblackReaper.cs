@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -22,14 +23,21 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static float Knockback = 9f;
         public static float Speed = 16f;
 
+        public static int ArmorPenetration = 30;
+        // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it. Scary.
+        public static int ZeroPointArmorPenetration = 120; // Total: 150.
+        public static float TesselationDamageRatio = 0.25f;
+
+        public override float StealthDamageMultiplier => 1.0f;
+
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 64;
-            Item.damage = 130;
+            Item.damage = 315;
             Item.knockBack = Knockback;
-            Item.useTime = 6;
-            Item.useAnimation = 6;
+            Item.ArmorPenetration = ArmorPenetration;
+            Item.useTime = Item.useAnimation = 19;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -48,21 +56,28 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.StealthStrikeAvailable())
             {
-                int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
+                int stealthDamage = (int)(StealthDamageMultiplier * damage);
+
+                // Technically, NewProjectileDirect is optimal.
+                // However, it is unsafe, because it immediately indexes the array without checks, and will blow up on projectile caps.
+                int ssProjIdx = Projectile.NewProjectile(source, position, velocity, type, stealthDamage, knockback, player.whoAmI);
+                if (ssProjIdx.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[ssProjIdx].Calamity().stealthStrike = modPlayer.StealthStrikeAvailable();
                 return false;
             }
+
+            // In the case of non-stealth strikes, just spawn the projectile normally.
             return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GhoulishGouger>().
                 AddIngredient<MoltenAmputator>().
+                AddIngredient<GhoulishGouger>().
                 AddIngredient<ShadowspecBar>(5).
                 AddIngredient<EndothermicEnergy>(40).
                 AddIngredient<PlagueCellCanister>(20).

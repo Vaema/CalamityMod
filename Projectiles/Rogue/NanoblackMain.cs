@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,15 +12,34 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/NanoblackReaper";
 
-        private const float RotationIncrement = 0.22f;
+        internal const int UpdatesPerFrame = 3;
         private const int Lifetime = 240;
-        private const float ReboundTime = 50f;
-        private const int MinBladeTimer = 13;
-        private const int MaxBladeTimer = 18;
+        private static int InternalLifetime => Lifetime * UpdatesPerFrame;
+        private const float BoomerangReturnTime = 16f;
 
+        private const int BaseTesselationDelay = 6;
+        private static int InternalTesselationDelay => BaseTesselationDelay * UpdatesPerFrame;
+        private const float TesselationSpawnSpeed = 24f;
+
+        internal const float RotationIncrement = 0.22f;
+
+        private Player Owner => Main.player[Projectile.owner];
+        internal ref float RealFrameCounter => ref Projectile.ai[0];
+        internal ref float TesselationSpawnCooldown => ref Projectile.ai[1];
+        internal ref float LightspeedCarveState => ref Projectile.ai[2];
+        internal bool Returning
+        {
+            get => Projectile.localAI[0] != 0f;
+            set => Projectile.localAI[0] = (value ? 1f : 0f);
+        }
 
         public override void SetStaticDefaults()
         {
+            // Nanoblack Reaper does not spin exactly on the center of its sprite.
+            DrawOffsetX = -11;
+            DrawOriginOffsetY = -4;
+            DrawOriginOffsetX = 0;
+
             ProjectileID.Sets.TrailCacheLength[Type] = 7;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
@@ -32,111 +51,152 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
+            Projectile.MaxUpdates = UpdatesPerFrame;
+            Projectile.timeLeft = InternalLifetime;
+
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 2;
-            Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = 6 * UpdatesPerFrame;
+
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Returning);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            bool r = reader.ReadBoolean();
+            Returning = r;
+        }
+
+        // Nanoblack Reaper's AI has been converted into a trenchcoat function due to the needed expansion of the sub-functions.
         public override void AI()
         {
-            DrawOffsetX = -11;
-            DrawOriginOffsetY = -4;
-            DrawOriginOffsetX = 0;
+            if (Projectile.timeLeft == InternalLifetime)
+                FrameOneEffects();
 
-            // Initialize the frame counter and random blade delay on the very first frame.
-            if (Projectile.timeLeft == Lifetime)
-                Projectile.ai[1] = Projectile.Calamity().stealthStrike ? 4f : GetBladeDelay();
-
-            // Produces electricity and green firework sparks constantly while in flight.
-            if (Main.rand.NextBool(3))
-            {
-                int dustType = Main.rand.NextBool(5) ? 226 : 220;
-                float scale = 0.8f + Main.rand.NextFloat(0.3f);
-                float velocityMult = Main.rand.NextFloat(0.3f, 0.6f);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity = velocityMult * Projectile.velocity;
-                Main.dust[idx].scale = scale;
-            }
-
-            // ai[0] is a frame counter. ai[1] is a countdown to spawning the next nanoblack energy blade.
-            Projectile.ai[0] += 1f;
-            Projectile.ai[1] -= 1f;
+            InFlightVisualEffects();
+            UpdateAIVariables();
 
             // On the frame the scythe begins returning, send a net update.
-            if (Projectile.ai[0] == ReboundTime)
+            if (RealFrameCounter >= BoomerangReturnTime && RealFrameCounter < BoomerangReturnTime + 1f)
+            {
+                Returning = true;
                 Projectile.netUpdate = true;
+            }
 
             // The scythe runs its returning AI if the frame counter is greater than ReboundTime.
-            if (Projectile.ai[0] >= ReboundTime)
-            {
-                float returnSpeed = NanoblackReaper.Speed;
-                float acceleration = 2.4f;
-                Player owner = Main.player[Projectile.owner];
+            if (Returning)
+                BoomerangMovement();
 
-                // Delete the scythe if it's excessively far away.
-                Vector2 playerCenter = owner.Center;
-                float xDist = playerCenter.X - Projectile.Center.X;
-                float yDist = playerCenter.Y - Projectile.Center.Y;
-                float dist = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
-                if (dist > 3000f)
+            // Spawn Nanoblack Tesselations at a consistent and overwhelming rate while in flight.
+            if (TesselationSpawnCooldown <= 0f)
+            {
+                SpawnTesselation();
+                TesselationSpawnCooldown = InternalTesselationDelay;
+            }
+
+            RotateScytheInFlight();
+        }
+
+        private void FrameOneEffects()
+        {
+            // If you set these values, you were a fool. Nanoblack Reaper does not care.
+            RealFrameCounter = 0f;
+            TesselationSpawnCooldown = InternalTesselationDelay;
+            LightspeedCarveState = 0f;
+        }
+
+        // Produces electricity and green firework sparks constantly while in flight.
+        private void InFlightVisualEffects()
+        {
+            if (!Main.rand.NextBool(UpdatesPerFrame))
+                return;
+
+            int dustType = Main.rand.NextBool(5) ? DustID.Electric : 220 /* no DustID entry */;
+
+            Vector2 position = Main.rand.NextVector2FromRectangle(Projectile.Hitbox);
+            float scale = Main.rand.NextFloat(0.8f, 1.1f);
+            float velocityMult = Main.rand.NextFloat(0.3f, 0.6f);
+
+            Dust d = Dust.NewDustPerfect(position, dustType, Vector2.Zero, Scale: scale);
+            if (d is null || d.dustIndex == Main.maxDust)
+                return;
+
+            d.noGravity = true;
+            d.velocity = velocityMult * Projectile.velocity;
+        }
+
+        private void UpdateAIVariables()
+        {
+            // Only increment the real frame counter once per frame, on the final extra update of that frame.
+            if (Projectile.FinalExtraUpdate())
+            {
+                ++RealFrameCounter;
+            }
+
+            // Tesselation spawn cooldown decrements every update so that it may be out of sync with gameplay frames if needed.
+            --TesselationSpawnCooldown;
+        }
+
+        private void BoomerangMovement()
+        {
+            Player owner = Owner;
+            Vector2 toOwner = Projectile.SafeDirectionTo(owner.Center, -Vector2.UnitY);
+            float baseReturnSpeed = NanoblackReaper.Speed;
+            float currentReturnSpeed = baseReturnSpeed;
+
+            // Nanoblack Reaper's return speed increases sharply if it remains in flight for too long.
+            float returnSpeedIncreaseTime = BoomerangReturnTime * 2f;
+            if (RealFrameCounter >= returnSpeedIncreaseTime)
+                currentReturnSpeed *= 1f + 0.05f * (RealFrameCounter - returnSpeedIncreaseTime);
+
+            // Lerp into the desired velocity every update.
+            Vector2 desiredVelocity = currentReturnSpeed * toOwner;
+            float returnSharpness = 0.04f;
+            Projectile.velocity = Vector2.Lerp(Projectile.velocity, desiredVelocity, returnSharpness);
+
+            // Delete the projectile if it touches its owner.
+            if (Main.myPlayer == Projectile.owner)
+                if (Projectile.Hitbox.Intersects(owner.Hitbox))
                     Projectile.Kill();
+        }
 
-                dist = returnSpeed / dist;
-                xDist *= dist;
-                yDist *= dist;
+        // Spawns an individual Nanoblack Tesselation.
+        // Tesselations emit from the blade of the scythe and fly directly away, rapidly coming to a halt.
+        private void SpawnTesselation()
+        {
+            // Each tesselation randomly chooses which of its four zero-point energy strikes to fire first.
+            // For consistent RNG across clients, this randomness is executed even if the result is not used.
+            float zeroPointStrikeIndex = Main.rand.Next(4); // 0f, 1f, 2f or 3f
 
-                // Home back in on the player.
-                if (Projectile.velocity.X < xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X + acceleration;
-                    if (Projectile.velocity.X < 0f && xDist > 0f)
-                        Projectile.velocity.X += acceleration;
-                }
-                else if (Projectile.velocity.X > xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - acceleration;
-                    if (Projectile.velocity.X > 0f && xDist < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
-                    if (Projectile.velocity.Y < 0f && yDist > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
-                    if (Projectile.velocity.Y > 0f && yDist < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
+            if (Main.myPlayer != Projectile.owner)
+                return;
 
-                // Delete the projectile if it touches its owner.
-                if (Main.myPlayer == Projectile.owner)
-                    if (Projectile.Hitbox.Intersects(owner.Hitbox))
-                        Projectile.Kill();
-            }
+            int tessID = ModContent.ProjectileType<NanoblackTesselation>();
+            int tessDamage = (int)(NanoblackReaper.TesselationDamageRatio * Projectile.damage);
+            float tessKB = 1.5f;
 
-            // Create nanoblack energy blades at a somewhat-random rate while in flight. (or full-sized scythes afterimages if stealth strike)
-            if (Projectile.ai[1] <= 0f)
-            {
-                if (Projectile.Calamity().stealthStrike)
-                {
-                    SpawnScytheAfterimage();
-                    Projectile.ai[1] = 4f;
-                }
-                else
-                {
-                    SpawnEnergyBlade();
-                    Projectile.ai[1] = GetBladeDelay();
-                }
-            }
+            // The blade of Nanoblack Reaper is close enough to straight-right +X that using the rotation directly is fine.
+            float scytheBladeRotation = Projectile.rotation;
+            Vector2 spawnOffsetDir = scytheBladeRotation.ToRotationVector2();
+            Vector2 tessPos = Projectile.Center + spawnOffsetDir * 14f;
+            Vector2 tessVelDir = spawnOffsetDir.RotatedBy(-MathHelper.PiOver4); // close enough to a blade-egress vector
+            Vector2 tessVel = tessVelDir * TesselationSpawnSpeed;
 
-            // Rotate the scythe as it flies.
+            var source = Projectile.GetSource_FromThis();
+            int tessIdx = Projectile.NewProjectile(source, tessPos, tessVel, tessID, tessDamage, tessKB, Projectile.owner, ai1: zeroPointStrikeIndex);
+
+            // The spin direction of the scythe transfers to the tesselations.
+            if (tessIdx.WithinBounds(Main.maxProjectiles))
+                Main.projectile[tessIdx].direction = Projectile.direction;
+        }
+
+        private void RotateScytheInFlight()
+        {
             float spin = Projectile.direction <= 0 ? -1f : 1f;
             Projectile.rotation += spin * RotationIncrement;
         }
@@ -145,36 +205,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
-        }
-
-        private int GetBladeDelay()
-        {
-            return Main.rand.Next(MinBladeTimer, MaxBladeTimer + 1);
-        }
-
-        private void SpawnEnergyBlade()
-        {
-            int bladeID = ModContent.ProjectileType<NanoblackSplit>();
-            int bladeDamage = Projectile.damage / 3;
-            float bladeKB = 3f;
-            float spin = Projectile.direction <= 0 ? -1f : 1f;
-            float d = 16f;
-            float velocityMult = 0.9f;
-            Vector2 directOffset = new Vector2(Main.rand.NextFloat(-d, d), Main.rand.NextFloat(-d, d));
-            Vector2 velocityOffset = Main.rand.NextFloat(-velocityMult, velocityMult) * Projectile.velocity;
-            Vector2 pos = Projectile.Center + directOffset + velocityOffset;
-            if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, Vector2.Zero, bladeID, bladeDamage, bladeKB, Projectile.owner, 0f, spin);
-        }
-
-        private void SpawnScytheAfterimage()
-        {
-            int bladeID = ModContent.ProjectileType<NanoblackStealthSplit>();
-            int bladeDamage = Projectile.damage / 2;
-            float bladeKB = 4f;
-            float spin = Projectile.direction <= 0 ? -1f : 1f;
-            if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, bladeID, bladeDamage, bladeKB, Projectile.owner, 0f, spin);
         }
     }
 }

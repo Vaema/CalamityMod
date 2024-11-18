@@ -791,9 +791,13 @@ NanoblackReaper: {
 	DisplayName: Nanoblack Reaper
 	Tooltip:
 		'''
-		Unleashes a storm of nanoblack energy blades
-		Blades target bosses whenever possible
-		Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades
+		Throws a scythe which rapidly forms a swarm of nanoblack tesselations from hard light
+		Nanoblack tesselations each emit four instantaneous zero-point energy strikes
+		Zero-point energy strikes have 180 armor penetration and will target bosses whenever possible
+		Press <right> just as the scythe begins returning to carve through the enemy closest to your cursor at lightspeed
+		Lightspeed carves have 180 armor penetration. If timed in a 6-frame window, they supercrit with +100% critical strike chance
+		Carving with a scythe prevents it from spawning tesselations while returning
+		Stealth strikes cannot be returned manually, and let each tesselation automatically perform a perfect lightspeed carve
 		'''
 	HoldShiftTooltip:
 		'''
