@@ -133,13 +133,13 @@ namespace CalamityMod
 
         /// <summary>
         /// Xyk's version of homing code<br />
-        /// Gives a projectile homing on a selected npc. It is recommended to use "Vector2.ClosestNPCAt(distance)" to get a target
+        /// Gives a projectile homing on a selected npc. It is recommended to use <see cref="ClosestNPCAt"/> to get a target.
         /// </summary>
-        /// <param name="homingVelocity">The multiplier applied to the movement towrds the target.</param>
+        /// <param name="homingVelocity">The multiplier applied to the movement towards the target.</param>
         /// <param name="maxSpeed">The cap on velocity for the projectile.</param>
-        /// <param name="inertia">The inertia of the homing. Generally you want too keep this anywhere from 1 (high inertia), to 0.9f (low inertia).</param>
+        /// <param name="inertia">The inertia of the homing. Generally you want to keep this anywhere from 1 (high inertia), to 0.9f (low inertia).</param>
         /// <param name="overspeedReduction">The speed reduction applied to the projectile if it goes above max speed.</param>
-        /// <param name="accelerate">If the projectile should accelerate to max speed when there is no target. Good for projectiles with small homing range</param>
+        /// <param name="accelerate">If the projectile should accelerate to max speed when there is no target. Good for projectiles with small homing range.</param>
         public static void HomeInOnSelectedNPC(Projectile projectile, NPC target, bool ignoreTiles = true, float homingVelocity = 0.5f, float maxSpeed = 10, float inertia = 0.985f, float overspeedReduction = 0.95f, bool accelerate = false)
         {
             NPC targetedNPC = target;
