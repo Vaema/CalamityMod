@@ -138,13 +138,6 @@ namespace CalamityMod.CalPlayer
             ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
             NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
 
-            // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
-            if (targetIsDummy)
-                return;
-
-            if (rageModeActive && shatteredCommunity)
-                Player.GetModPlayer<ShatteredCommunityPlayer>().AccumulateRageDamage(damageDone);
-
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
@@ -157,8 +150,15 @@ namespace CalamityMod.CalPlayer
                 int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
                 Vector2 position = target.Center + new Vector2(0, -750);
 
-                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1);
+                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
             }
+
+            // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
+            if (targetIsDummy)
+                return;
+
+            if (rageModeActive && shatteredCommunity)
+                Player.GetModPlayer<ShatteredCommunityPlayer>().AccumulateRageDamage(damageDone);
         }
         #endregion
 
@@ -299,7 +299,7 @@ namespace CalamityMod.CalPlayer
                 int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
                 Vector2 position = target.Center + new Vector2(0, -750);
 
-                Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1, target.whoAmI);
+                Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
 
                 globalProj.spawnArcFlash = false;

@@ -21,9 +21,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SkytideDragoon>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SkytideDragoon";
-        public override float HitboxOutset => 185;
+        public override float HitboxOutset => 245;
 
-        public override Vector2 HitboxSize => new Vector2(240, 40); // long thin hitbox for a spear
+        public override Vector2 HitboxSize => new Vector2(40, 40); // long thin hitbox for a spear is done in collision, the X here determines hitbox width
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
         public override Vector2 SpriteOrigin => new(0, 135);
@@ -280,6 +280,12 @@ namespace CalamityMod.Projectiles.Melee
 
             ArmRotationOffset = MathHelper.ToRadians(-140f);
             ArmRotationOffsetBack = MathHelper.ToRadians(-140f);
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) // Custom collision since it's a spear
+        {
+            // Perform an AABB line collision check to check the whole spear.
+            float _ = float.NaN;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (Projectile.rotation - MathHelper.ToRadians(45)).ToRotationVector2() * HitboxOutset + tipOutset, HitboxSize.X * Projectile.scale, ref _);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

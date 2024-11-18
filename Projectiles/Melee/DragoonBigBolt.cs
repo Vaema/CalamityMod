@@ -52,10 +52,10 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (time < 120)
                     {
-                        float velMult = (Projectile.ai[1] == 0.5f ? 0.2f : 3);
+                        float velMult = (Projectile.ai[1] == 0.5f ? 0.2f : 3 * sizeMult);
                         Particle spark3 = new CustomSpark(pos, Projectile.velocity * 1.2f * velMult, "CalamityMod/Particles/GlowSpark", false, 11, 0.15f * sizeMult, usedColor, new Vector2(2f, 0.8f), true, true, shrinkSpeed: 1f);
                         GeneralParticleHandler.SpawnParticle(spark3);
-                        sizeMult *= 0.98f;
+                        sizeMult *= 0.97f;
                     }
                     Particle spark2 = new BoltParticle(pos, -Projectile.velocity * 0.05f, false, 30, 0.6f, usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(spark2);
