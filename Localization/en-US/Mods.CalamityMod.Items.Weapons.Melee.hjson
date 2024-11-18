@@ -1104,8 +1104,8 @@ SkytideDragoon: {
 	Tooltip:
 		'''
 		Calls down a thunderbolt to strike and charge the tip of the spear
-		Fire off the electricity as a spread of bolts that narrows as you spend the energy
-		Holding <right> when the spear is struck with lightning will cause you to catch and redirect the bolt at your cursor
+		Press <left> to discharge the electricity as a spread of bolts that narrows as you spend the energy
+		Hold <right> when the spear catches the thunderbolt to redirect it to the cursor
 		'''
 }
 
