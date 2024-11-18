@@ -20,6 +20,7 @@ namespace CalamityMod.Items.Mounts
             MountData.fallDamage = 0f;
             MountData.jumpHeight = 20;
             MountData.jumpSpeed = 15f;
+            MountData.constantJump = true;
 
             // Frames and offsets
             MountData.totalFrames = 4;
