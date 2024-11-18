@@ -53,7 +53,6 @@ AbyssalMirror: {
 		Enemies are less likely to target you, even in the abyss
 		Generate stealth 25% faster when standing still and 12% faster while moving
 		Grants the ability to dodge attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
-		'Light does not reach the depths of the ocean'
 		'''
 	HoldShiftTooltip:
 		'''
@@ -62,6 +61,7 @@ AbyssalMirror: {
 		This cooldown is shared with all other dodges and reflects
 		Dodging an attack gives stealth
 		'''
+	FlavorTooltip: "'Light does not reach the depths of the ocean'"
 }
 
 AeroStone: {
@@ -209,6 +209,17 @@ AquaticHeart: {
 		Attackers are inflicted with Glacial State
 		Gain a fragile ice barrier that grants 20% damage reduction for one hit
 		The ice shield regenerates after 30 seconds
+		'''
+}
+
+ArcFlashRing: {
+	DisplayName: Arc Flash Ring
+	Tooltip:
+		'''
+		Attacks have a 6% chance to call down a lightning bolt for 4x damage
+		The chance is reduced for each enemy an attack hits
+		The bolt's damage is based on non-crit damage, but can itself crit 
+		Bolts are transparent and silent if visibility is disabled
 		'''
 }
 
@@ -1313,6 +1324,7 @@ ProfanedSoulCrystal: {
 	FullTooltip:
 		'''
 		Provides passive buffs depending on the time of day
+		Greatly boosts the power of the Guardian's relics
 		Grants additional effects if you have {0} minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active
@@ -1968,12 +1980,14 @@ VoltaicJelly: {
 		'''
 }
 
-WarbanneroftheSun: {
-	DisplayName: Warbanner of the Sun
+WarbanneroftheRighteous: {
+	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Increases melee damage, true melee damage and melee speed the closer you are to enemies
-		These stat boosts max out at 20%
+		Damage is increased by 20% when close to enemies, but decreased by 60% when none are nearby
+		Emit a blazing aura that burns and repels nearby enemies
+		Enemies take increasing damage the closer they are to you and the longer they are near you
+		Effects are transparent and silent if visibility is disabled
 		'''
 }
 
@@ -2021,7 +2035,7 @@ YharimsGift: {
 		Flaming meteors rain down after getting hit
 		Volatile dragon dust trails behind you
 		Increases damage and movement speed by 15%
-		The power to kill a god pulses from within this artifact
+		[c/FCA92B:'The power to kill a god pulses from within this artifact']
 		'''
 }
 

@@ -78,6 +78,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public void SetPlayerArms(Player player)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Calculate the dirction in which the players arms should be pointing at.
             Vector2 playerToCursor = (player.Calamity().mouseWorld - player.Center).SafeNormalize(Vector2.UnitX);
             float armPointingDirection = (playerToCursor.ToRotation());

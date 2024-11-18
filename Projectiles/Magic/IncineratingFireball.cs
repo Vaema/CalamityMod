@@ -79,8 +79,9 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Vector2 projLocation = Owner.Center;
-                    float mouseDist = Vector2.Distance(Main.MouseWorld, projLocation);
-                    Vector2 mouseDiff = Main.MouseWorld - projLocation;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    float mouseDist = Vector2.Distance(mouse, projLocation);
+                    Vector2 mouseDiff = mouse - projLocation;
                     if (mouseDist > 128f)
                     {
                         mouseDiff.Normalize();

@@ -66,12 +66,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (targeted != null)
                 {
-                    float speedMult = 0.5f;
-                    Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < MathHelper.Clamp(25, 10, 25) * speedMult)
-                        Projectile.velocity += moveTotarget * (0.35f) * speedMult;
-                    else
-                        Projectile.velocity *= 0.9f;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.18f, 25, 0.99f, accelerate: true);
                     Projectile.extraUpdates = 3;
                 }
             }

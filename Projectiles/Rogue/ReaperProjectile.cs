@@ -1,18 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -117,6 +111,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 else
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for initial throw direction
                     Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                 }
                 Projectile.spriteDirection = Projectile.direction;
@@ -184,20 +179,19 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (time >= 150)
                     {
-                        NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(4000);
+                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
                         if (time == 150)
                         {
                             Projectile.extraUpdates = 25;
                         }
                         if (target != null)
                         {
-                            if (Projectile.numHits <= 0 && Projectile.velocity.Length() < 15)
-                                Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.9f;
-                            else if (Projectile.numHits <= 0)
-                                Projectile.velocity *= 0.9f;
+                            if (Projectile.numHits <= 0)
+                                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.85f, 15, 0.97f);
                         }
                         else if (time == 150)
                         {
+                            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for immediate direction impulse
                             Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                         }
                         Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 7, 0.13f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.65f, new Vector2(1, 0.3f), true, false, 1.3f);

@@ -65,6 +65,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (Owner.ActiveItem().shoot == Projectile.type)
                         scaleFactor6 = Owner.ActiveItem().shootSpeed * Projectile.scale;
 
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);
                     slashDirection.Normalize();
                     if (slashDirection.HasNaNs())

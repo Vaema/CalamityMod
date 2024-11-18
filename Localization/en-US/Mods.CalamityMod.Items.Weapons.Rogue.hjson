@@ -90,16 +90,6 @@ BouncingEyeball: {
 		'''
 }
 
-BouncySpikyBall: {
-	DisplayName: Bouncy Spiky Ball
-	Tooltip:
-		'''
-		Throws a very bouncy ball that ricochets off walls and enemies
-		Receives a small boost in damage and velocity after bouncing off an enemy
-		Stealth strikes throw four at once
-		'''
-}
-
 Brimblade: {
 	DisplayName: Brimblade
 	Tooltip:
@@ -396,8 +386,9 @@ FantasyTalisman: {
 	Tooltip:
 		'''
 		Fires high velocity talismans that ignore gravity
-		Talismans attach to enemies, causing them to release lost souls
-		Stealth strikes release more souls and leave behind souls as they travel
+		Talismans attach to enemies, releasing vengeful souls that chase them down
+		Stealth strikes release more souls and erupt into lost souls on death
+		'Good thing I didn't bet against you!'
 		'''
 }
 
@@ -535,18 +526,6 @@ HeavenfallenStardisk: {
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
 		Explodes into a star of astral bolts on hit
 		Stealth strikes throw three disks that rain astral energy bolts from the sky
-		'''
-}
-
-HellsSun: {
-	DisplayName: Hell's Sun
-	Tooltip:
-		'''
-		Hurls up to 10 gravity-defying spiky balls
-		Once stationary, periodically emit small suns that explode on hit
-		Stealth strikes emit suns at a faster rate and last for a longer amount of time
-		Press <right> to delete all existing spiky balls
-		'The Subterranean Sun in the palm of your hand'
 		'''
 }
 
@@ -746,17 +725,11 @@ MoltenAmputator: {
 	DisplayName: Molten Amputator
 	Tooltip:
 		'''
-		Throws a scythe that emits molten globs on enemy hits
-		Stealth strikes spawn molten globs periodically in flight and more on-hit
-		'''
-}
-
-MonkeyDarts: {
-	DisplayName: Monkey Darts
-	Tooltip:
-		'''
-		Stealth strikes throw 3 bouncing darts at high speed
-		'Perfect for popping'
+		Throw a spinning scythe that lingers at your cursor
+		<right> to recall all existing scythes
+		Recalling a scythe while it's on an enemy rends them for massive damage
+		<right> with a full stealth bar to empower yourself, greatly increasing attack speed for a short time
+		You cannot recall scythes thrown while empowered
 		'''
 }
 
@@ -860,16 +833,6 @@ Plaguenade: {
 		'''
 		Releases a swarm of angry plague bees
 		Stealth strikes spawn more bees and generate a larger explosion
-		'''
-}
-
-PoisonPack: {
-	DisplayName: Poison Pack
-	Tooltip:
-		'''
-		Throws up to 3 poisonous spiky balls
-		Stealth strikes cause the balls to release spore clouds
-		Press <right> to delete all existing spiky balls
 		'''
 }
 
@@ -1182,15 +1145,6 @@ StellarKnife: {
 		'''
 }
 
-StickySpikyBall: {
-	DisplayName: Sticky Spiky Ball
-	Tooltip:
-		'''
-		Throws a spiky ball that sticks to everything
-		Stealth strikes throw four at once and last a lot longer
-		'''
-}
-
 StormfrontRazor: {
 	DisplayName: Stormfront Razor
 	Tooltip:
@@ -1421,6 +1375,5 @@ WulfrumKnife: {
 		'''
 		Fires wulfrum knives in bursts of 3
 		Stealth strikes make the knife fly further and hit several times at once
-		Hold <right> to magnetize all nearby fallen knives back to you
 		'''
 }

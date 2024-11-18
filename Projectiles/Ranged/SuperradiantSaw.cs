@@ -61,10 +61,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // Deadshot Brooch makes me die inside
-            if (Projectile.MaxUpdates > 1)
-                Projectile.MaxUpdates = 1;
-
             // Timer and rotation
             Time++;
             Projectile.rotation += MathHelper.ToRadians(6f + 18f * SawLevel);
@@ -85,7 +81,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (Empowered && !Returning && Time > 30)
             {
                 float homingTurnSpeed = 0.2f;
-                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * SuperradiantSlaughterer.ShootSpeed;
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(mouse).ToRotation(), homingTurnSpeed).ToRotationVector2() * SuperradiantSlaughterer.ShootSpeed;
             }
 
             // Saws automatically return 2 seconds after hitting an enemy

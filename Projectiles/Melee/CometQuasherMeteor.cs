@@ -47,24 +47,20 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.extraUpdates++;
             if (time == 0)
             {
-                chosenTarget = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
+                chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(700);
                 if (chosenTarget != null)
                     Projectile.velocity = (chosenTarget.Center - Projectile.Center + chosenTarget.velocity * 8).SafeNormalize(Vector2.UnitX) * 3;
                 else
+                {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 3;
+                }
             }
             if (Projectile.numHits < 1)
             {
                 if (chosenTarget == null || chosenTarget.life <= 0)
-                    chosenTarget = Owner.Calamity().mouseWorld.ClosestNPCAt(700);
-                if (chosenTarget != null)
-                {
-                    Vector2 moveTotarget = (chosenTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 5)
-                        Projectile.velocity += moveTotarget * 0.15f;
-                    else
-                        Projectile.velocity *= 0.8f;
-                }
+                    chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(700);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.08f, 5, 0.99f, accelerate: true);
             }
 
             if (targetDist < 1400f)

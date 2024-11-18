@@ -58,7 +58,9 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.soundDelay = 30;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.One);
+
             //Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign(Projectile.velocity.X));

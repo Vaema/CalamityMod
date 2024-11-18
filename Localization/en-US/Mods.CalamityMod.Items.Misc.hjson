@@ -390,9 +390,10 @@ RelicOfConvergence: {
 	DisplayName: Relic of Convergence
 	Tooltip:
 		'''
-		Creates a profaned crystal that charges power
-		Holding out the crystal slows the player down
-		At the end of its life, the crystal heals the player for {0} HP
+		Creates a profaned crystal at the cursor that channels a healing aura before shattering
+		All players within the area of effect are healed for {0} HP
+		Allies gain 50% extra healing
+		Holding out the crystal heavily reduces the damage of all summons
 		'''
 }
 
@@ -425,5 +426,17 @@ SuperDummy: {
 		Regenerates 1 million life per second
 		Will not die when taking damage over time from debuffs
 		Right click to kill all super dummies
+		'''
+}
+
+RelicOfResilience: {
+	DisplayName: Relic Of Resilience
+	Tooltip:
+		'''
+		Holding this item creates orbiting rock shards around you and nearby allies
+		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
+		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
+		This effect has a 10 second cooldown after taking a hit
+		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
 		'''
 }

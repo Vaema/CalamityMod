@@ -153,6 +153,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!initialized) //Initialization. create control points & shit)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, result is clamped
                 Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 Reach = MathHelper.Clamp((Owner.Center - Owner.Calamity().mouseWorld).Length(), MinReach, MaxReach);
                 SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);

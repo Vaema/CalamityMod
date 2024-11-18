@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     ModContent.ProjectileType<EndoBeam>()
                 });
 
-                SummonEndoCooper(source, AttackMode, Main.MouseWorld, damage, Item.damage, knockback, player, out _, out _);
+                SummonEndoCooper(source, AttackMode, player.ClampedMouseWorld(), damage, Item.damage, knockback, player, out _, out _);
 
                 AttackMode++;
                 if (AttackMode > 3)

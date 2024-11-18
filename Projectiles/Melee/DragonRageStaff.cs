@@ -59,6 +59,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.ai[0] += 1f;
             Projectile.rotation += MathHelper.TwoPi * 2f / spinCycleTime * (float)direction;
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             int expectedDirection = (player.SafeDirectionTo(Main.MouseWorld).X > 0f).ToDirectionInt();
             if (Projectile.ai[0] % spinCycleTime > spinCycleTime * 0.5f && expectedDirection != Projectile.velocity.X)
             {

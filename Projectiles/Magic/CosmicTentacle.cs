@@ -43,6 +43,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 vel = ((Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 7).RotatedBy(0.2f * curveDirection);
 
             if (curveDirection == 100)
@@ -104,7 +105,7 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (curves > 1)
                         {
-                            Projectile.Center += Main.rand.NextVector2Circular(250, 250);
+                            Projectile.Center += Main.rand.NextVector2Circular(100, 100);
                             Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.6f, 0f, scalingTimerMax / 2, false);
                             GeneralParticleHandler.SpawnParticle(blastRing);
                             for (int i = 0; i < 2; i++)

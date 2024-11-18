@@ -802,7 +802,15 @@ namespace CalamityMod.CalPlayer
             if (!blazingCursorDamage)
                 return;
 
-            Rectangle sigilHitbox = Utils.CenteredRectangle(Main.MouseWorld, new Vector2(35f, 62f));
+            // 14NOV2024: Ozzatron: was not sure whether to let Calamity function outside normal cursor range. decided on no
+            //
+            // Check whether the mouse cursor is within the acceptable clamped range. If it's not, don't allow for damage.
+            Vector2 mouseTruePosition = Player.Calamity().mouseWorld;
+            Vector2 mouseClampedPosition = Player.ClampedMouseWorld();
+            if (mouseTruePosition != mouseClampedPosition)
+                return;
+
+            Rectangle sigilHitbox = Utils.CenteredRectangle(mouseClampedPosition, new Vector2(35f, 62f));
             int sigilDamage = (int)Player.GetBestClassDamage().ApplyTo(Calamity.BaseDamage);
 
             bool brightenedSigil = false;
@@ -819,7 +827,7 @@ namespace CalamityMod.CalPlayer
 
                     // Draw an expanding orb effect on the cursor based on the cursor focus value.
                     float cursorFocusRatio = target.Calamity().cursorFocus / (float)CalamityGlobalNPC.cursorFocusMax;
-                    StrongBloom indicator = new(Main.MouseWorld, Vector2.Zero, Color.Lerp(Color.Magenta, Color.Red, cursorFocusRatio), cursorFocusRatio * 0.7f, 2);
+                    StrongBloom indicator = new(mouseClampedPosition, Vector2.Zero, Color.Lerp(Color.Magenta, Color.Red, cursorFocusRatio), cursorFocusRatio * 0.7f, 2);
                     GeneralParticleHandler.SpawnParticle(indicator);
 
                     if (target.Calamity().cursorFocus >= CalamityGlobalNPC.cursorFocusMax)
@@ -1439,6 +1447,70 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (rOfResilienceEffect > 0)
+                rOfResilienceEffect--;
+            if (Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>()) // All players close to a player holding RoR get the benefits
+            {
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead)
+                {
+                    Projectile relic = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RelicGuard>(), 0, 0f, Player.whoAmI);
+                }
+                for (int index = 0; index < Main.player.Length; index++)
+                {
+                    Player fella = Main.player[index];
+                    if (Utils.Distance(fella.Center, Player.Center) < 650 && fella.team == Player.team)
+                    {
+                        fella.Calamity().rOfResilienceEffect = (fella != Player ? 120 : 2);
+                    }
+                }
+            }
+            if (rOfResilienceEffect > 0)
+            {
+                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                {
+                    int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                    rOfResilienceCooldown = cooldownTime;
+                    Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                    SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
+                    SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                }
+
+                // Adds a floor for defense and dr at 150 and 10% respectivley, will not ignore defense damage
+                if (Player.Calamity().rOfResilienceCooldown > 300 || Player.Calamity().rOfResilienceCooldown == 0)
+                {
+                    float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? 1 : Utils.GetLerpValue(300, 600, Player.Calamity().rOfResilienceCooldown, true));
+                    int maxDefFloor = (int)(150 * fadeStats);
+                    float MaxDRFloor = 0.10f * fadeStats;
+                    if (Player.statDefense < maxDefFloor)
+                        Player.statDefense += maxDefFloor - Player.statDefense;
+                    if (Player.endurance < MaxDRFloor)
+                        Player.endurance += MaxDRFloor - Player.endurance;
+                }
+
+                int numOfShards = 0;
+                for (int x = 0; x < Main.maxProjectiles; x++)
+                {
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<ArtifactOfResilienceShards>() && projectile.ai[1] == 0 && projectile.owner == Player.whoAmI)
+                    {
+                        numOfShards++;
+                    }
+                }
+                if (Player.miscCounter % (Player.Calamity().profanedSoulRelicBuff ? 4 : 8) == 0 && numOfShards < (Player.Calamity().profanedSoulRelicBuff ? 75 : 30) && Player.Calamity().rOfResilienceCooldown == 0)
+                {
+                    if (numOfShards == 0)
+                    {
+                        rOfResilienceOrbitOffset = Main.rand.Next(0, 100 + 1);
+                        SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
+                        SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
+                    }
+                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(420);
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
+                }
+            }
+            if (rOfResilienceCooldown > 0)
+                rOfResilienceCooldown--;
 
             if (unstableGraniteCore)
             {
@@ -3729,6 +3801,8 @@ namespace CalamityMod.CalPlayer
                 int dmg = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(30);
 
                 Vector2 startPos = Player.RotatedRelativePoint(Player.MountedCenter, true);
+
+                // 14NOV2024: Ozzatron: clamped mouse position is inappropriate to apply here due to excessive use of decompiled vanilla shitcode
                 Vector2 velocity = Main.MouseWorld - startPos;
                 if (Player.gravDir == -1f)
                 {

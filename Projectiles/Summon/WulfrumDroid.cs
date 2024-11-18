@@ -310,6 +310,7 @@ namespace CalamityMod.Projectiles.Summon
                     AyeAyeCaptainCooldown = 50f;
 
                     Player playerToBuff = Owner;
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is used to determine "player intent" for buffing and healing
                     float mouseDistanceToOwner = (Owner.MountedCenter - Owner.Calamity().mouseWorld).Length();
 
                     if (Main.netMode == NetmodeID.MultiplayerClient && mouseDistanceToOwner > 120f)

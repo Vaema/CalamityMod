@@ -23,6 +23,7 @@ namespace CalamityMod.Particles
         public Color AshColor;
         public Vector2 Center;
         public Vector2 Velocity;
+        public static Vector2 VelOverride;
         public Vector2 TopLeft => Center - Vector2.One * Scale * 3.5f;
         public Vector2 TopRight => Center + new Vector2(1f, -1f) * Scale * 3.5f;
         public Vector2 BottomRight => Center + Vector2.One * Scale * 3.5f;
@@ -84,12 +85,13 @@ namespace CalamityMod.Particles
             Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
 
-        public static void CreateAshesFromNPC(NPC npc)
+        public static void CreateAshesFromNPC(NPC npc, Vector2 velocityOverride)
         {
             // Don't create ashes serverside.
             if (Main.netMode == NetmodeID.Server)
                 return;
 
+            VelOverride = velocityOverride;
             PendingNPCsToDraw[npc] = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
         }
 
@@ -228,11 +230,19 @@ namespace CalamityMod.Particles
             float brightness = (AshColor.R + AshColor.G + AshColor.B) / 765f;
 
             Time++;
+
             Scale = MathHelper.Clamp(Scale - (brightness < 0.1f ? 0.08f : 0.008f), 0f, 1f);
+
 
             float dissipationFactor = Utils.GetLerpValue(6f, 16f, Velocity.Length(), true);
             float velocityInterpolant = Utils.GetLerpValue(25f - dissipationFactor * 10f, 80f - dissipationFactor * 45f, Time, true);
             Vector2 idealVelocity = new Vector2(Main.windSpeedCurrent * MathHelper.Lerp(0.8f, 1.2f, (float)Math.Sin(Center.Y / 50f + ID)) * 20f, (float)Math.Sin(Main.time / 20f + ID * 0.01f) * 3f - 1f);
+            if (VelOverride != Vector2.Zero)
+            {
+                Vector2 useVel = VelOverride.RotateRandom(0.01f * ID);
+                idealVelocity = new Vector2(useVel.X * MathHelper.Lerp(0.8f, 1.2f, (float)Math.Sin(Main.time / 20f + ID)), useVel.Y * MathHelper.Lerp(0.8f, 1.2f, (float)Math.Sin(Main.time / 20f + ID)));
+            }
+
             Velocity = Vector2.Lerp(Velocity, idealVelocity, velocityInterpolant * 0.16f);
             Center += Velocity;
         }

@@ -48,7 +48,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Electrified, 180);
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Electrified, 180);
 

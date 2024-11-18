@@ -101,10 +101,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public void UpdateAim()
         {
-            // Only execute the aiming code for the owner since Main.MouseWorld is a client-side variable.
+            // Only execute the aiming code for the owner since mouse position is a client-side variable.
             if (Main.myPlayer != Projectile.owner)
                 return;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealDirection = Owner.SafeDirectionTo(Main.MouseWorld, Vector2.UnitX * Owner.direction);
             Vector2 newAimDirection = Projectile.velocity.MoveTowards(idealDirection, 0.05f);
 

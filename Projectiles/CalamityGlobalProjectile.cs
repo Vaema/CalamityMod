@@ -88,6 +88,10 @@ namespace CalamityMod.Projectiles
         // If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime.
         public bool appliesSomaShred = false;
 
+        // Arc Flash bolt spawning management
+        public bool spawnArcFlash = true;
+        public int arcFlashCooldown = 0;
+
         // Adds Brimstone flames to bullets, currently only used by Animosity
         public bool brimstoneBullets = false;
 
@@ -3412,18 +3416,17 @@ namespace CalamityMod.Projectiles
                 }
                 else
                 {
-                    if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
-                    {
-                        if (projectile.type != ProjectileType<RicoshotCoin>())
-                            projectile.extraUpdates += 1;
-                        if (projectile.type == ProjectileID.MechanicalPiranha)
-                        {
-                            projectile.localNPCHitCooldown *= 2;
-                            projectile.timeLeft *= 2;
-                        }
-                    }
+                    // 13NOV2024: Ozzatron: Removed Deadshot Brooch extra updates.
+                    // This mechanic was fundamentally unacceptable and was an invisible controlling hand that affected the development of dozens of ranged weapons.
+                    // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
+                    // I don't care. This effect had to be removed.
+                    //
+                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
 
                     if (modPlayer.camper && !player.StandingStill())
+                        projectile.damage = (int)(projectile.damage * 0.1);
+
+                    if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                         projectile.damage = (int)(projectile.damage * 0.1);
 
                     if (projectile.CountsAsClass<RogueDamageClass>() && stealthStrike)
@@ -3918,7 +3921,14 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-
+                // Support to help things like holdout swords work with Arc Flash Ring
+                if (!spawnArcFlash && projectile.numHits == 0)
+                    spawnArcFlash = true;
+                // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
+                if (arcFlashCooldown >= 0)
+                    arcFlashCooldown--;
+                if (arcFlashCooldown == 0)
+                    spawnArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);

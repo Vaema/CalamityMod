@@ -20,7 +20,8 @@ namespace CalamityMod.Projectiles.Melee
         public List<Particle> Particles;
 
         Vector2 AnchorStart => Owner.Center;
-        Vector2 AnchorEnd => Owner.Calamity().mouseWorld;
+        // 14NOV2024: Ozzatron: I have no idea what this does so I clamped it
+        Vector2 AnchorEnd => Owner.ClampedMouseWorld();
         public Vector2 SizeVector => Utils.SafeNormalize(AnchorEnd - AnchorStart, Vector2.Zero) * MathHelper.Clamp((AnchorEnd - AnchorStart).Length(), 0, ArkoftheCosmos.MaxThrowReach);
 
         public override void SetStaticDefaults()

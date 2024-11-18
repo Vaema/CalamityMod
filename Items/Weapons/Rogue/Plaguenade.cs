@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Plaguenade : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -22,15 +17,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 63;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 15;
             Item.knockBack = 1.5f;
-            Item.maxStack = 9999;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(gold: 1);
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<PlaguenadeProj>();
@@ -52,9 +45,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.Beenade, 30).
-                AddIngredient<PlagueCellCanister>(5).
+            CreateRecipe().
+                AddIngredient(ItemID.Beenade, 100).
+                AddIngredient<PlagueCellCanister>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

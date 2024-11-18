@@ -247,7 +247,8 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.profanedCrystalAnim = maxPscAnimTime;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PscTransformAnimation>(), 0, 0f, player.whoAmI);
             }
-
+            if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+                player.Calamity().profanedSoulRelicBuff = true;
 
             modPlayer.profanedCrystalHide = hideVisual || modPlayer.profanedCrystalAnim > 0;
             modPlayer.pSoulShieldVisible = !hideVisual;
@@ -291,6 +292,8 @@ namespace CalamityMod.Items.Accessories
                     player.Calamity().profanedSoulWeaponType = weaponType;
                     player.Calamity().profanedSoulWeaponUsage = 0;
                 }
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 correctedVelocity = Main.MouseWorld - player.Center;
                 correctedVelocity.Normalize();
                 bool empowered = player.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;

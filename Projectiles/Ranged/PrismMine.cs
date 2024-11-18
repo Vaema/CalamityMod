@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.extraUpdates = 1;
             Projectile.localNPCHitCooldown = 7;
             Projectile.timeLeft = 280;
         }

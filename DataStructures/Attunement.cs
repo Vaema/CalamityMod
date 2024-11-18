@@ -495,6 +495,8 @@ namespace CalamityMod.DataStructures
             {
                 SoundEngine.PlaySound(SoundID.Item78);
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);
+
+                // 14NOV2024: Ozzatron: clamped mouse world unnecessary here, just used for direction
                 Projectile beamSword = Projectile.NewProjectileDirect(source, player.Center, player.SafeDirectionTo(Main.MouseWorld, Vector2.One) * 15f, ProjectileType<SwordsmithsPrideBeam>(), damage, 10f, player.whoAmI, 1f);
                 beamSword.timeLeft = 50;
                 UseTimer++;
@@ -638,7 +640,7 @@ namespace CalamityMod.DataStructures
             if (UseTimer % 500 == 449)
             {
                 SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
                 UseTimer++;
             }
         }
@@ -672,7 +674,7 @@ namespace CalamityMod.DataStructures
             if (UseTimer % 500 == 449)
             {
                 SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
                 UseTimer++;
             }
         }

@@ -2934,7 +2934,12 @@ namespace CalamityMod.NPCs.Providence
             if (player is null)
                 return;
             if (proj.Colliding(proj.Hitbox, player.Hitbox))
+            {
                 ApplyDebuffs(player, BaseDuration, NegativeHealValue);
+
+                if (proj.type == ModContent.ProjectileType<HolyBurnOrb>())
+                    proj.Kill();
+            }
         }
 
         // Include debuffs inflicted by Providence's projectiles for all her forms
