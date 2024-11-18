@@ -3,9 +3,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -26,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SkytideDragoon";
         public override float HitboxOutset => 185;
 
-        public override Vector2 HitboxSize => new Vector2(240, 40);
+        public override Vector2 HitboxSize => new Vector2(240, 40); // long thin hitbox for a spear
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
         public override Vector2 SpriteOrigin => new(0, 135);
@@ -38,13 +35,12 @@ namespace CalamityMod.Projectiles.Melee
         public float colorFadeIn = 0;
         public int useAnim;
         public int swingCount = 0;
-        public bool finalFlip = false;
         public float spearOutset = 0;
         public bool fireProj = true;
         public bool fancySwing => swingCount % 7 == 0;
         public bool redirected = false;
-        public int attackPower = 0;
-        public float attackMult = 0;
+        public int attackPower = 0; // How many swings you have left before you have to call another bolt
+        public float attackMult = 0; // A multiplier based on attack power that changes smoothly
         public Vector2 tipOutset;
 
         public Color color1 = Color.Orchid;
@@ -118,8 +114,6 @@ namespace CalamityMod.Projectiles.Melee
                 doSwing = true;
 
                 swingCount++;
-
-                finalFlip = false;
 
                 if (swingCount == 1 && Owner.Calamity().mouseRight)
                     redirected = true;
@@ -222,7 +216,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         if (fireProj && time >= (int)(timeMax * 0.7f))
                         {
-                            if (fancySwing)
+                            if (fancySwing) // Call down the bolt
                             {
                                 Owner.Calamity().GeneralScreenShakePower = 3f;
                                 SoundStyle sound = new("CalamityMod/Sounds/Item/SkytiedBolt");
@@ -232,14 +226,14 @@ namespace CalamityMod.Projectiles.Melee
                                 swingCount = 0;
                                 attackPower = 6;
                             }
-                            else if (redirected)
+                            else if (redirected) // Redirect the bolt
                             {
                                 Owner.Calamity().GeneralScreenShakePower = 4.5f;
                                 SoundStyle fire = new("CalamityMod/Sounds/Item/SkytiedBolt");
                                 SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
                                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/AuricBulletHit");
                                 SoundEngine.PlaySound(fire2 with { Volume = 0.5f, Pitch = 0.2f }, Projectile.Center);
-                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, aimVel.SafeNormalize(Vector2.UnitX) * -10, ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 10), Projectile.knockBack, Projectile.owner, 0, 1f);
+                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, aimVel.SafeNormalize(Vector2.UnitX) * -10, ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 1f);
                                 swingCount = -1;
                                 attackPower = 0;
                             }
@@ -249,7 +243,7 @@ namespace CalamityMod.Projectiles.Melee
                                 {
                                     float rot = (0.1f * attackPower * i / 6f);
                                     Vector2 vel = rot.ToRotationVector2().RotatedBy(aimVel.ToRotation()) * -7;
-                                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, vel, ModContent.ProjectileType<DragoonSmallBolt>(), (int)(Projectile.damage * 0.52), Projectile.knockBack, Projectile.owner, 0, rot);
+                                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, vel, ModContent.ProjectileType<DragoonSmallBolt>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0, rot);
                                 }
                                 attackPower--;
                             }
@@ -329,8 +323,9 @@ namespace CalamityMod.Projectiles.Melee
                 Color auraColor = Color.Lerp(color2, color1, colorFadeIn) with { A = 0 } * 0.15f * fadeIn;
                 for (int i = 0; i < 25; i++)
                 {
+                    // Outline effect
                     Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/SkytideDragoonGhost").Value;
-                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 8 * fadeIn;
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 7.2f * fadeIn;
                     Main.EntitySpriteDraw(centerTexture, drawPos + drawOffset, centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
 
@@ -343,12 +338,14 @@ namespace CalamityMod.Projectiles.Melee
                 float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 55.5f / MathHelper.Pi);
                 for (int i = 0; i < 6; i++)
                 {
+                    // While not super visible here, this hitbox extention effect looks great and I'll use it on stuff like Terra Lance later
                     Color tipColor = Color.Lerp(color2, color1, (i + 4) / 6) with { A = 0 } * 0.3f * fadeIn;
                     Vector2 scale = new Vector2(0.25f - i * 0.04f, (1.5f + i * 0.15f) * colorFadeIn) * (0.75f * colorFadeIn * Main.rand.NextFloat(0.9f, 1.1f) + 0.25f);
                     Main.EntitySpriteDraw(tex2.Value, Owner.Center - Main.screenPosition + fxPosRot.ToRotationVector2() * 130, null, tipColor, fxRot, tex2.Size() * 0.5f, scale, SpriteEffects.None);
                 }
                 for (int i = 0; i < 6; i++)
                 {
+                    // the electric orb at the tip
                     Color orbColor = Color.Lerp(Color.Lerp(color2, color1, (i + 2) / 6), Color.White,  i / 6) with { A = 0 } * 0.5f;
                     Vector2 scale = new Vector2(Math.Abs(sine * 0.5f) + 0.1f, 1) * (0.05f + i * 0.01f) * attackMult * Main.rand.NextFloat(0.9f, 1.1f) * 2;
                     Main.EntitySpriteDraw(orb.Value, Owner.Center - Main.screenPosition + fxPosRot.ToRotationVector2() * 180 + tipOutset, null, orbColor, Main.rand.NextFloat(-5, 5), orb.Size() * 0.5f, scale, SpriteEffects.None);

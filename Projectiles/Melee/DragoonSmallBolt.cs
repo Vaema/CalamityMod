@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,8 +11,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int time = 0;
-        public float colorValue = 0;
-        public float sizeMult = 1;
+        public float colorValue = 0; // The color fade from the first to second color
         public override void SetDefaults()
         {
             Projectile.width = 15;
@@ -22,9 +20,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 1; // Survives through its first hit by "cheating" and incrementing its own pierce counter
+            Projectile.penetrate = 3;
             Projectile.extraUpdates = 10;
             Projectile.timeLeft = 200;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -33,11 +33,7 @@ namespace CalamityMod.Projectiles.Melee
             colorValue = MathHelper.Lerp(colorValue, 50, 0.025f);
             Color usedColor = Color.Lerp(Color.Cyan, Color.Orchid, Utils.GetLerpValue(0, 50, colorValue)) * 0.7f;
 
-            if (time == 0)
-            {
-                sizeMult = 1;
-            }
-            Projectile.velocity = Projectile.velocity.RotatedBy(Projectile.ai[1] * 0.022f);
+            Projectile.velocity = Projectile.velocity.RotatedBy(Projectile.ai[1] * 0.022f); // Add some outward arc to the movement
 
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
@@ -47,12 +43,12 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 pos = Projectile.Center;
                 if (Projectile.timeLeft % 3 == 0)
                 {
-                    Particle spark2 = new BoltParticle(pos, -Projectile.velocity * 0.05f, false, 15, 0.4f * sizeMult, usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.5f);
+                    Particle spark2 = new BoltParticle(pos, -Projectile.velocity * 0.05f, false, 15, 0.4f, usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.5f);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
                 if (Main.rand.NextBool(35))
                 {
-                    Particle spark2 = new BoltParticle(pos, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 23, Main.rand.NextFloat(0.2f, 0.25f) * sizeMult, usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
+                    Particle spark2 = new BoltParticle(pos, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 23, Main.rand.NextFloat(0.2f, 0.25f), usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
                 if (time % 5 == 0)
@@ -64,22 +60,24 @@ namespace CalamityMod.Projectiles.Melee
             }
             time++;
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.5f;
+            int hitsToMinMult = 2; // Can only hit thrice
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Electrified, 180);
-            Projectile.timeLeft = 15;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 4; i++)
             {
                 Particle spark2 = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 13, Main.rand.NextFloat(0.3f, 0.35f), Main.rand.NextBool() ? Color.Orchid : Color.Cyan, new Vector2(1.8f, 0.8f), true, true, false, 0.9f);
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
             
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            return false;
-        }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
         public override bool? CanCutTiles() => false;
     }
 }

@@ -5,7 +5,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -27,6 +26,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 75;
             Projectile.timeLeft = 200;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -39,9 +40,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 colorValue += 30;
                 sizeMult = Projectile.ai[1];
-
-                SoundStyle fire = new("CalamityMod/Sounds/Item/ArcFlash");
-                SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Owner.Center);
             }
 
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
@@ -91,6 +89,13 @@ namespace CalamityMod.Projectiles.Melee
             }
             time++;
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.15f;
+            int hitsToMinMult = 3; // Damage falls off very fast, so small bolts are better multitarget
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Electrified, 300);
@@ -121,11 +126,13 @@ namespace CalamityMod.Projectiles.Melee
                         GeneralParticleHandler.SpawnParticle(orb2);
                     }
                 }
+                if (target.CanBeMoved(true))
+                {
+                    // Launch
+                    Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center).SafeNormalize(Vector2.UnitY) * -20;
+                    target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
+                }
             }
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45 * sizeMult * (Projectile.numHits > 0 ? 6 : 1), targetHitbox);
         public override bool? CanCutTiles() => false;

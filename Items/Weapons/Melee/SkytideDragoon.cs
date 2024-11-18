@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 86;
             Item.height = 94;
-            Item.damage = 315;
+            Item.damage = 345;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 35;
             Item.useTime = 35;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
         }
-        public override bool MeleePrefix() => true;
+        public override bool MeleePrefix() => true; // This spear can deal more damage with melee speed, no reason to limit it to godly
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/SkytideDragoonGlow").Value);
