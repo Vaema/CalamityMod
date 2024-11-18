@@ -90,15 +90,6 @@ BouncingEyeball: {
 		'''
 }
 
-BouncySpikyBall: {
-	DisplayName: Bouncy Spiky Ball
-	Tooltip:
-		'''
-		Throws a very bouncy ball that ricochets off walls and enemies
-		Receives a small boost in damage and velocity after bouncing off an enemy
-		Stealth strikes throw four at once
-		'''
-}
 
 Brimblade: {
 	DisplayName: Brimblade
@@ -743,15 +734,6 @@ MoltenAmputator: {
 		'''
 }
 
-MonkeyDarts: {
-	DisplayName: Monkey Darts
-	Tooltip:
-		'''
-		Stealth strikes throw 3 bouncing darts at high speed
-		'Perfect for popping'
-		'''
-}
-
 Mycoroot: {
 	DisplayName: Mycoroot
 	Tooltip:
@@ -855,15 +837,6 @@ Plaguenade: {
 		'''
 }
 
-PoisonPack: {
-	DisplayName: Poison Pack
-	Tooltip:
-		'''
-		Throws up to 3 poisonous spiky balls
-		Stealth strikes cause the balls to release spore clouds
-		Press <right> to delete all existing spiky balls
-		'''
-}
 
 Prismalline: {
 	DisplayName: Prismalline
@@ -1171,15 +1144,6 @@ StellarKnife: {
 		Throws knives that stop middair and then home into enemies
 		Stealth strikes throw a volley of 10 knives in a spread
 		'ZA WARUDO'
-		'''
-}
-
-StickySpikyBall: {
-	DisplayName: Sticky Spiky Ball
-	Tooltip:
-		'''
-		Throws a spiky ball that sticks to everything
-		Stealth strikes throw four at once and last a lot longer
 		'''
 }
 

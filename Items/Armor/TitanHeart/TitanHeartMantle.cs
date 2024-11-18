@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            player.Calamity().rogueAmmoCost *= 0.55f;
             // 15% attack speed penalty
             player.GetAttackSpeed<ThrowingDamageClass>() -= 0.15f;
         }
