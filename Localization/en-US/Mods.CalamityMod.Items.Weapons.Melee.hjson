@@ -1517,3 +1517,8 @@ YinYo: {
 		A very agile yoyo
 		'''
 }
+
+SkytideDragoon: {
+	DisplayName: Skytide Dragoon
+	Tooltip: ""
+}

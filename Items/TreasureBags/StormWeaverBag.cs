@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
@@ -61,7 +62,7 @@ namespace CalamityMod.Items.TreasureBags
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
-                ModContent.ItemType<StormDragoon>(),
+                ModContent.ItemType<SkytideDragoon>(),
                 ModContent.ItemType<TheStorm>(),
                 ModContent.ItemType<Thunderbolt>()
             }));
