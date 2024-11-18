@@ -77,18 +77,14 @@ namespace CalamityMod.Projectiles.Melee
                     target.whoAmI);
                     laser.ArmorPenetration = 100;
 
-                    int splits = 15;
-                    float splitVar = 1f / splits;
-
                     Vector2 start = Projectile.Center;
                     Vector2 end = target.Center;
                     Color color = Main.rand.NextBool() ? Color.Magenta : Color.HotPink;
-                    for (float i = 0f; i < 1f; i += splitVar)
-                    {
-                        Vector2 lerpVel = Vector2.Lerp(start, end, i);
-                        Particle spark = new CustomSpark(lerpVel, Projectile.SafeDirectionTo(target.Center), "CalamityMod/Particles/VoidBeamGlow", false, 4, (0.015f + 0.015f * (1 - i)) * 25.5f, color * 0.6f, new Vector2(2f * (1 - i), 1f + 1f * i), true, true, shrinkSpeed: 0.8f * (1 - i), glowOpacity: 0.45f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
+
+                    Vector2 lerpVel = Vector2.Lerp(start, end, 0.5f);
+                    float scale = 0.015f;
+                    Particle spark = new CustomSpark(lerpVel, Projectile.SafeDirectionTo(target.Center), "CalamityMod/Particles/BloomLineThick", false, 14, scale, color * 0.75f, new Vector2(1, (Utils.Distance(start, end) * 0.034f)), true, false, shrinkSpeed: 0.25f, glowOpacity: 0.65f);
+                    GeneralParticleHandler.SpawnParticle(spark);
                     targetCount++;
                 }
             }
