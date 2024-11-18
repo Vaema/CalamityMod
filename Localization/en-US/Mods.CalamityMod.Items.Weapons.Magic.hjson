@@ -346,8 +346,8 @@ FlareBolt: {
 	DisplayName: Flare Bolt
 	Tooltip:
 		'''
-		Casts a ball of flame that is cast towards your mouse
-		Upon expiration a collapsing vortex of flame is created, which pulls in enemies it hits
+		Casts a ball of flame
+		Balls of flame collapse into a swirling backdraft which pulls in enemies
 		'''
 }
 
@@ -362,8 +362,7 @@ FrigidflashBolt: {
 		'''
 		Casts a fast ball of flash-freezing magma that bounces off tiles
 		When hitting a tile, a flarefrost burst is produced
-		Press <right> to cast a stronger version that upon expiration creates a collapsing vortex of frost and flame
-		the vortex will explode after fully collapsing
+		Press <right> to cast an empowered ball that creates a collapsing flarefrost vortex which explodes
 		'''
 }
 
