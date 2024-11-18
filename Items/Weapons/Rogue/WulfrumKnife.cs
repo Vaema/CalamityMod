@@ -17,11 +17,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static readonly SoundStyle Throw1Sound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { Volume = 0.7f, PitchVariance = 0.4f };
         public static readonly SoundStyle TileHitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2) { Volume = 0.7f, PitchVariance = 0.4f, MaxInstances = 3 };
 
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public int shootCount = 0;
         public bool stealthStrikeStarted = false;
 
@@ -95,8 +90,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(50).
-                AddIngredient<WulfrumMetalScrap>().
+            CreateRecipe().
+                AddIngredient<WulfrumMetalScrap>(9).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

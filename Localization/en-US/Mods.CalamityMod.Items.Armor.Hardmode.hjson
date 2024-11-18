@@ -523,10 +523,7 @@ TitanHeartBoots: {
 
 TitanHeartMantle: {
 	DisplayName: Titan Heart Mantle
-	Tooltip:
-		'''
-		5% boosted rogue knockback but 15% lowered rogue attack speed
-		'''
+	Tooltip: 5% boosted rogue knockback but 15% lowered rogue attack speed
 }
 
 TitanHeartMask: {

@@ -90,7 +90,6 @@ BouncingEyeball: {
 		'''
 }
 
-
 Brimblade: {
 	DisplayName: Brimblade
 	Tooltip:
@@ -837,7 +836,6 @@ Plaguenade: {
 		'''
 }
 
-
 Prismalline: {
 	DisplayName: Prismalline
 	Tooltip:
@@ -1377,6 +1375,5 @@ WulfrumKnife: {
 		'''
 		Fires wulfrum knives in bursts of 3
 		Stealth strikes make the knife fly further and hit several times at once
-		Hold <right> to magnetize all nearby fallen knives back to you
 		'''
 }
