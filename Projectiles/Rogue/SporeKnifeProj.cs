@@ -56,16 +56,9 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Poisoned, 120);
         public override void OnKill(int timeLeft)
         {
-            // Spawn an on-hit explosion which deals 30% of the projectile's damage.
-            if (Projectile.owner == Main.myPlayer)
-            {
-                Projectile.damage = (int)(Projectile.damage * 0.3f);
-                Projectile.penetrate = -1;
-                Projectile.ExpandHitboxBy(100);
-                Projectile.usesLocalNPCImmunity = true;
-                Projectile.localNPCHitCooldown = 10;
-                Projectile.Damage();
-            }
+            #region Visuals and Sound
+            SoundEngine.PlaySound(SoundID.Grass with { Pitch = -0.5f, PitchVariance = 0.4f }, Projectile.Center);
+
             for (int i = 0; i < 18; i++)
             {
                 Vector2 smokeVel = Main.rand.NextVector2Unit() * Main.rand.NextVector2Circular(20f, 20f);
@@ -90,7 +83,17 @@ namespace CalamityMod.Projectiles.Rogue
             GeneralParticleHandler.SpawnParticle(blastRing);
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Green * 0.8f, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.04f, 0.07f, 20, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
-            SoundEngine.PlaySound(SoundID.Grass with { Pitch = -0.5f , PitchVariance = 0.4f }, Projectile.Center);
+            #endregion
+            // Spawn an on-hit explosion which deals 30% of the projectile's damage.
+            if (Projectile.owner == Main.myPlayer)
+            {
+                Projectile.damage = (int)(Projectile.damage * 0.3f);
+                Projectile.penetrate = -1;
+                Projectile.ExpandHitboxBy(120);
+                Projectile.usesLocalNPCImmunity = true;
+                Projectile.localNPCHitCooldown = 10;
+                Projectile.Damage();
+            }
             if (!Projectile.Calamity().stealthStrike)
                 return;
             else

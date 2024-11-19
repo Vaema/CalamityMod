@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/Boss/HomingGasBulb";
 
         public bool Sticky = false;
+        public static int Lifetime = 300;
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
@@ -23,7 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 50;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = Lifetime;
         }
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft <= 285 && target.CanBeChasedBy(Projectile);
 
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + MathHelper.ToRadians(90) * Projectile.direction;
-            if (!Sticky && Projectile.timeLeft <= 285)
+            if (!Sticky && Projectile.timeLeft <= Lifetime - 15)
             {
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 6.5f, 20f);
                 int dust = Dust.NewDust(Projectile.position - new Vector2(10, 10), 30, 30, DustID.JungleTorch, Projectile.velocity.X, Projectile.velocity.Y, 50, default, Main.rand.NextFloat(0.3f, 0.7f));
