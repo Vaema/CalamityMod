@@ -810,13 +810,13 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.15;
 
             if (abyssalDivingSuitPlates)
-                contactDamageReduction += 0.15 - abyssalDivingSuitPlateHits * 0.03;
+                contactDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
 
             if (aquaticHeartIce)
-                contactDamageReduction += 0.2;
+                contactDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
 
             if (encased)
-                contactDamageReduction += 0.3;
+                contactDamageReduction += PermafrostsConcoction.EncasedAllDamageReduction;
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 contactDamageReduction += 0.5;
@@ -1047,13 +1047,13 @@ namespace CalamityMod.CalPlayer
                 projectileDamageReduction += 0.15;
 
             if (abyssalDivingSuitPlates)
-                projectileDamageReduction += 0.15 - abyssalDivingSuitPlateHits * 0.03;
+                projectileDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
 
             if (aquaticHeartIce)
-                projectileDamageReduction += 0.2;
+                projectileDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
 
             if (encased)
-                projectileDamageReduction += 0.3;
+                projectileDamageReduction += PermafrostsConcoction.EncasedAllDamageReduction;
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 projectileDamageReduction += 0.5;

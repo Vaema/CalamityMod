@@ -644,7 +644,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 3;
 
             if (sRegen)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += SpiritGlyph.RegenBoost;
 
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
@@ -656,7 +656,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += TheAbsorber.AuraRegenBoost;
 
             if (hallowedRegen)
-                Player.lifeRegen += 3;
+                Player.lifeRegen += HallowedRune.RegenBoost;
 
             if (affliction || afflicted)
                 Player.lifeRegen += 1;
@@ -680,7 +680,7 @@ namespace CalamityMod.CalPlayer
 
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
-                Player.lifeRegen += 2;
+                Player.lifeRegen += PhantomicArtifact.RegenBoost;
                 if (Main.rand.NextBool())
                 {
                     Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);

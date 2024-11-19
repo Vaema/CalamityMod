@@ -24,6 +24,7 @@ using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.Prismatic;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Wulfrum;
@@ -2146,7 +2147,7 @@ namespace CalamityMod.CalPlayer
 
             if (encased)
             {
-                Player.statDefense += 30;
+                Player.statDefense += PermafrostsConcoction.EncasedDefenseBoost;
                 Player.frozen = true;
                 Player.velocity.X = 0f;
                 Player.velocity.Y = -0.4f; // Should negate gravity
@@ -2902,14 +2903,14 @@ namespace CalamityMod.CalPlayer
 
             if (rRage)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.1f;
-                Player.statDefense += 5;
+                Player.GetDamage<GenericDamageClass>() += ReaverHeadTank.ReaverRageDamageBoost;
+                Player.statDefense += ReaverHeadTank.ReaverRageDefenseBoost;
             }
 
             if (xWrath)
             { 
-            Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-            Player.GetCritChance<RogueDamageClass>() += 5;
+                Player.GetDamage<ThrowingDamageClass>() += 0.1f;
+                Player.GetCritChance<RogueDamageClass>() += 5;
             }
 
             if (graxDefense)
