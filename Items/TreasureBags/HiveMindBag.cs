@@ -73,7 +73,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Shadethrower>(),
                 ModContent.ItemType<ShaderainStaff>(),
                 ModContent.ItemType<DankStaff>(),
-                new WeightedItemStack(ModContent.ItemType<RotBall>(), 1f, 50, 75),
+                ModContent.ItemType<RotBall>(),
             }));
 
             // Equipment

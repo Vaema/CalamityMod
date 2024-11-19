@@ -8,26 +8,19 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CobaltKunai : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 14;
             Item.height = 38;
-            Item.damage = 58;
+            Item.damage = 56;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 900;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<CobaltKunaiProjectile>();
             Item.shootSpeed = 14f;
@@ -56,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.CobaltBar).
+            CreateRecipe().
+                AddIngredient(ItemID.CobaltBar, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

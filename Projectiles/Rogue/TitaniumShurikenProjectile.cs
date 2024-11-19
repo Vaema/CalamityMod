@@ -103,8 +103,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Main.myPlayer == Projectile.owner)
                         if (Projectile.Hitbox.Intersects(owner.Hitbox))
                         {
-                            Projectile.Kill(); //boomerangs return to you so you get a refund
-                            Item.NewItem(Projectile.GetSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<TitaniumShuriken>());
+                            Projectile.Kill();
                         }
                 }
 

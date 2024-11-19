@@ -75,7 +75,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Eviscerator>(),
                 ModContent.ItemType<BloodBath>(),
                 ModContent.ItemType<FleshOfInfidelity>(),
-                new WeightedItemStack(ModContent.ItemType<ToothBall>(), 1f, 50, 75),
+                ModContent.ItemType<ToothBall>(),
             }));
 
             // Equipment

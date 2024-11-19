@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Melee
                     else Owner.direction = 1;
                 }
                 
-                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(65f), 0.1f);
+                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
                 if (AnimationProgress < (useAnim / 3))
                 {

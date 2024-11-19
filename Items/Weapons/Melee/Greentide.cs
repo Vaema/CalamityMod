@@ -1,9 +1,7 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -47,12 +45,10 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = 0; i < 2; ++i)
             {
                 Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7f), knockback / 3, player.whoAmI, 1f, 0f);
-                tooth.penetrate = 2;
             }
             for (int i = 0; i < 2; ++i)
             {
                 Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7), knockback / 3, player.whoAmI, 1f, 0f);
-                tooth.penetrate = 2;
             }
             Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, (int)(damage), knockback, player.whoAmI, 2f, 0f);
             strongTooth.penetrate = -1;

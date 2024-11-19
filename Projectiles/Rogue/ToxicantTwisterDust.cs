@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation += 0.2f;
 
             targetedNPC = (Projectile.ai[1] > 90) ? Projectile.Center.ClosestNPCAt(1200) : null;
-            float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft);
+            float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft) * 0.5f;
             if (targetedNPC == null)
             {
                 Vector2 position = (Owner.ClampedMouseWorld() + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
@@ -60,12 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                Vector2 position = targetedNPC.Center;
-                Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 13 * moveSpeed)
-                    Projectile.velocity += moveToMouse * moveSpeed;
-                else
-                    Projectile.velocity *= 0.9f;
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, moveSpeed, 13, 0.98f);
                 if (Projectile.ai[1] % 2 == 0)
                     Projectile.timeLeft++; // Lasts longer if it has a target
             }

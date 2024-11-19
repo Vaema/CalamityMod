@@ -100,9 +100,10 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                     if (targeted != null && targeted.Center.Y > Projectile.Center.Y)
                     {
+                        // Since this uses either mouse or target position, it will not use the homing Utility
                         Vector2 moveToTrackingPos = ((targeted != null ? targeted.Center : mouse) - Projectile.Center).SafeNormalize(Vector2.UnitX);
                         if (Projectile.velocity.Length() < 15)
-                            Projectile.velocity += moveToTrackingPos * 2.5f;
+                            Projectile.velocity = Projectile.velocity * 0.98f + moveToTrackingPos * 2.5f;
                         else
                             Projectile.velocity *= 0.9f;
                     }

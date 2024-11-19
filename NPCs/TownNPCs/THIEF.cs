@@ -315,7 +315,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
                 .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
                 .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
-                .Add(ModContent.ItemType<MonkeyDarts>(), Condition.DownedPlantera)
                 .Add(ModContent.ItemType<GloveOfPrecision>(), Condition.DownedPlantera)
                 .Add(ModContent.ItemType<GloveOfRecklessness>(), Condition.DownedPlantera)
                 .AddWithCustomValue(ModContent.ItemType<EtherealExtorter>(), Item.buyPrice(1), Condition.DownedGolem)

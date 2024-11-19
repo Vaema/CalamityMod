@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Typeless
         public int time = 0;
         public float colorValue = 0;
         public float sizeMult = 1;
+        public bool invalidTarget => (Projectile.ai[0] < 0f || Projectile.ai[0] > 199f);
         public override void SetDefaults()
         {
             Projectile.width = 60;
@@ -45,6 +46,11 @@ namespace CalamityMod.Projectiles.Typeless
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Owner.Center);
                 }
             }
+
+            // If the target is dead, remove them as a target and hit anything
+            NPC target = (invalidTarget ? null : Main.npc[(int)Projectile.ai[0]]);
+            if (target == null || !target.active || target.life <= 0)
+                Projectile.ai[0] = -1;
 
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
@@ -84,7 +90,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             // Stops the projectile from deleting itself, while maintaining the masquerade 
             Projectile.penetrate++;
-            
+
             //colorValue = Main.rand.Next(0, 10);
             target.AddBuff(BuffID.Electrified, 180);
             Projectile.timeLeft = 25;
@@ -108,13 +114,13 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
+        public override bool? CanHitNPC(NPC target)
         {
+            if (invalidTarget || Projectile.ai[0] == target.whoAmI)
+                return null;
             return false;
         }
-
-        // Theres some leftover code here for an explosion on hit, in case we want that, if we are sure we dont, feel free to remove it
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 60 * sizeMult * (Projectile.numHits > 1 ? 3 : 1), targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 60 * sizeMult, targetHitbox);
         public override bool? CanCutTiles() => false;
     }
 }

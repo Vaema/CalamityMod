@@ -91,12 +91,12 @@ namespace CalamityMod.Items
                     {
                         ItemID.BeeKeeper,
                         ItemID.BeesKnees,
-                        ItemID.BeeGun
+                        ItemID.BeeGun,
+                        ModContent.ItemType<HardenedHoneycomb>(),
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, queenBeeWeapons));
                     loot.Add(ModContent.ItemType<TheBee>(), 10); // 10% The Bee
                     loot.Add(ItemID.Stinger, 1, 8, 12); // 100% 8-12 Stinger
-                    loot.Add(ModContent.ItemType<HardenedHoneycomb>(), 1, 50, 75); // 100% 50-75 Hardened Honeycomb
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;

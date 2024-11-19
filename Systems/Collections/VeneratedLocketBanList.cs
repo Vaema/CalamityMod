@@ -16,7 +16,6 @@ namespace CalamityMod.Systems.Collections
         {
             List =
             [
-                ItemType<PoisonPack>(),
                 ItemType<SkyStabber>(),
                 ItemType<Nychthemeron>(),
                 ItemType<GodsParanoia>(),

@@ -72,15 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 NPC target = Projectile.Center.ClosestNPCAt(550);
-
-                if (target != null)
-                {
-                    Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 6)
-                        Projectile.velocity += moveToEnemy * 0.3f;
-                    else
-                        Projectile.velocity *= 0.85f;
-                }
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.15f, 6, 0.98f, accelerate: true);
 
                 if (time < 550 && target == null)
                 {
@@ -109,13 +101,13 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.05f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.4f);
 
             Player Owner = Main.player[Projectile.owner];
             if (target.CanBeMoved(true))
             {
                 // Custom knockback
-                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 2);
+                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
             }
         }

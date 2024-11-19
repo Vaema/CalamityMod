@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 240;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -55,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (!Projectile.CountsAsClass<ThrowingDamageClass>())
             {
-                int cap = 5;
+                int cap = 10;
                 float capDamageFactor = 0.05f;
                 int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
                 modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
