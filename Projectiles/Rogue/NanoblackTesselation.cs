@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Rogue
             CurrentSpin = StartingRotationIncrement;
 
             // Create particles to visually flavor the spawning of the projectile.
-            CreationDestructionVFX();
+            CreationDestructionVFX(false);
         }
 
         private void ProcessSpin()
@@ -214,7 +214,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft) => CreationDestructionVFX(true);
 
-        private void CreationDestructionVFX(bool killed)
+        private void CreationDestructionVFX(bool killed = false)
         {
             float sparkSpeed = 2f;
             float baseRot = MathHelper.PiOver2;
