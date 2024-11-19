@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FeatherKnife : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -22,21 +17,20 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.damage = 18;
+            Item.damage = 25;
             Item.useAnimation = Item.useTime = 20;
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.maxStack = 9999;
             Item.shoot = ModContent.ProjectileType<FeatherKnifeProjectile>();
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = Item.sellPrice(copper: 60);
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -59,8 +53,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<AerialiteBar>().
+            CreateRecipe().
+                AddIngredient<AerialiteBar>(6).
+                AddIngredient(ItemID.SunplateBlock, 4).
                 AddTile(TileID.SkyMill).
                 Register();
         }

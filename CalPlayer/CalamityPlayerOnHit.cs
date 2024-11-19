@@ -25,6 +25,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -137,16 +138,27 @@ namespace CalamityMod.CalPlayer
             ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
             NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
 
+            // Ursa Sergeant slash cooldown is reset on kill
+            if (ursaSergeant && target.life <= 0 && target.realLife == -1)
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+
+            // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
+            // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
+            if (arcFlashRing && (Main.rand.Next(0, 100) < 6))
+            {
+                var source = item.GetSource_FromThis();
+                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
+                Vector2 position = target.Center + new Vector2(0, -750);
+
+                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
+            }
+
             // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
             if (targetIsDummy)
                 return;
 
             if (rageModeActive && shatteredCommunity)
                 Player.GetModPlayer<ShatteredCommunityPlayer>().AccumulateRageDamage(damageDone);
-
-            // Ursa Sergeant slash cooldown is reset on kill
-            if (ursaSergeant && target.life <= 0 && target.realLife == -1)
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
         }
         #endregion
 
@@ -274,6 +286,26 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
+
+            CalamityGlobalProjectile globalProj = proj.Calamity();
+            // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
+            // Minions ignore the chance penalty on penetration
+            bool spawnChance = (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, (proj.minion ? 6 : 1), 6));
+            if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
+            {
+                proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
+
+                var source = proj.GetSource_FromThis();
+                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
+                Vector2 position = target.Center + new Vector2(0, -750);
+
+                Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
+                bolt.DamageType = hit.DamageType;
+
+                globalProj.spawnArcFlash = false;
+                // This is really only used for long lasting projectiles and contact damage minions
+                globalProj.arcFlashCooldown = 90;
+            }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {

@@ -103,7 +103,8 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 previousVelocity = Projectile.velocity;
 
                 // If not sufficiently close to the mouse, move towards it.
-                if (!Projectile.WithinRange(Main.MouseWorld, 80f))
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                if (!Projectile.WithinRange(mouse, 80f))
                     MoveTowardsMouse();
 
                 // Otherwise slow down to a point.
@@ -195,7 +196,7 @@ namespace CalamityMod.Projectiles.Magic
             // Make inertia become more significant the more power the congregation has, due to growing size.
             float inertia = MathHelper.Lerp(18f, 40f, CurrentPower);
 
-            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Main.MouseWorld + HoverOffset);
+            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Owner.ClampedMouseWorld() + HoverOffset);
             Vector2 directionToOwner = Projectile.SafeDirectionTo(Owner.Center);
             Vector2 idealVelocity = Vector2.Lerp(directionToMouseOffset, directionToOwner, 0.25f) * MovementSpeed;
 

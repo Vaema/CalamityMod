@@ -79,6 +79,8 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 speed = player.ActiveItem().shootSpeed * Projectile.scale;
             }
+
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;
 
             // Sync if a velocity component changes.

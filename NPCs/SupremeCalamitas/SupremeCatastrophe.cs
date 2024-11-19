@@ -612,7 +612,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
 
                     }
-                    DeathAshParticle.CreateAshesFromNPC(NPC);
+                    DeathAshParticle.CreateAshesFromNPC(NPC, Vector2.Zero);
                 }
             }
         }

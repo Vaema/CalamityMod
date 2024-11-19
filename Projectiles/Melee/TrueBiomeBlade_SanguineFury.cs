@@ -106,6 +106,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (proj.active && proj.type == ProjectileType<SanguineFuryWheel>() && proj.owner == Owner.whoAmI)
                     {
+                        // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         if (CalamityUtils.AngleBetween(Owner.Center - Owner.Calamity().mouseWorld, Owner.Center - proj.Center) > MathHelper.PiOver4)
                         {
                             proj.Kill();
@@ -139,6 +140,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Lighting.AddLight(Projectile.Center, new Vector3(1f, 0.56f, 0.56f) * ShredRatio);
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Manage position and rotation
             direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             direction.Normalize();

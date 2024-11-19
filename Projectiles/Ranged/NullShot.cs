@@ -117,12 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
                 NPC targetedNPC = Projectile.Center.ClosestNPCAt(700);
                 if (targetedNPC != null && time > 30 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 700)
                 {
-                    Vector2 position = targetedNPC.Center;
-                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(150, 0, Projectile.timeLeft, true) * 2))
-                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(300, 150, Projectile.timeLeft, true));
-                    else
-                        Projectile.velocity *= 0.9f;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, 0.2f, 8, 0.97f, accelerate: true);
                 }
             }
             else

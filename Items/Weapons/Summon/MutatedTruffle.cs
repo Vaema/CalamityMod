@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             // Only one can be summoned.
             if (player.ownedProjectileCounts[type] < 1 && player.maxMinions >= 3)
-                Projectile.NewProjectile(source, Main.MouseWorld, Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
 
             return false;
         }

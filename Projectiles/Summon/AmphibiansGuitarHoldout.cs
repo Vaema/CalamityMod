@@ -61,6 +61,7 @@ namespace CalamityMod.Projectiles.Summon
             // The center of the player, taking into account if they have a mount or not.
             Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The vector between the player and the mouse, used for pointing the holdout.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - armPosition;
 

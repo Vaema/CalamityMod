@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         //Player can only do the run attack while moving fast horizontally in the direction of the thrust, but remaining on the ground
         public bool CanRunAttack => Owner.velocity.Y >= -0.8f && Owner.velocity.Y <= 7f && Math.Abs(Owner.velocity.X) >= Owner.maxRunSpeed * 0.7f && Math.Sign(Owner.velocity.X) == ChargeDirection && Owner.channel && !RunBroken;
         //You can only start a run attack if you meet the other conditions, but ALSO you can't do it if you are aiming too much upwards or downwards
-        public bool CanStartRunAttack => CanRunAttack && Math.Abs(Owner.Calamity().mouseWorld.Y - Owner.MountedCenter.Y) <= 300;
+        public bool CanStartRunAttack => CanRunAttack && Math.Abs(Owner.ClampedMouseWorld().Y - Owner.MountedCenter.Y) <= 300;
         public ref float RunTimer => ref Projectile.ai[0];
         //The window of time during which the run hasn't fully started, and is indentical to the regular thrust's start. This tells us when we can no longer do this switch.
         public bool FullyRunning => RunTimer > InitializationTime;

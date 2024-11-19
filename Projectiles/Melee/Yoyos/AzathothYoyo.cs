@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -40,6 +41,15 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             {
                 if (Projectile.owner == Main.myPlayer)
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 0.55f), ModContent.ProjectileType<CosmicOrb>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f, 0f);
+            }
+            if (Main.rand.NextBool((int)(MaxUpdates / 2)))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(1.85f, 2.2f));
+                dust.color = Main.rand.NextBool() ? Color.Magenta : Color.HotPink;
+                bool b = !Main.rand.NextBool(3);
+                dust.scale -= b ? 0.8f : 0;
+                dust.velocity *= b ? 0.4f : 1;
+                dust.noGravity = !b;
             }
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();

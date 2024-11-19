@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[1] > 20f)
             {
-                Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, circleRange).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
+                Vector2 position = (Owner.ClampedMouseWorld() + ((new Vector2(0, circleRange).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 18)
                     Projectile.velocity += moveToMouse * circleSpeed;

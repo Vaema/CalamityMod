@@ -9,26 +9,19 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class WebBall : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 18;
-            Item.damage = 12;
+            Item.damage = 11;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.maxStack = 9999;
-            Item.consumable = true;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 20;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
-            Item.value = Item.buyPrice(0, 0, 0, 30);
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
             Item.shoot = ModContent.ProjectileType<WebBallBol>();
             Item.shootSpeed = 6.5f;
@@ -49,8 +42,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(50).
-                AddIngredient(ItemID.Cobweb, 10).
+            CreateRecipe().
+                AddIngredient(ItemID.Cobweb, 30).
                 Register();
         }
     }

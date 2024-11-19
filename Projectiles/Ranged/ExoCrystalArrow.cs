@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
             Projectile.arrow = true;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;

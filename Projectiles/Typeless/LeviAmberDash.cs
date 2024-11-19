@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (target.CanBeMoved(true))
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Launch
                 Vector2 launchVel = (Owner.Calamity().mouseWorld - target.Center).SafeNormalize(Vector2.UnitY) * 16;
                 target.velocity = launchVel;

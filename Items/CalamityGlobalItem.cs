@@ -263,12 +263,14 @@ namespace CalamityMod.Items
         {
             CalamityPlayer modPlayer = player.Calamity();
             var playerSource = player.GetSource_FromThis();
+            Vector2 mouse = player.ClampedMouseWorld();
+
             if (Main.myPlayer == player.whoAmI && player.Calamity().cursedSummonsEnchant)
             {
                 if (NPC.CountNPCS(ModContent.NPCType<CalamitasEnchantDemon>()) < 2)
                 {
-                    CalamityNetcode.NewNPC_ClientSide(Main.MouseWorld, ModContent.NPCType<CalamitasEnchantDemon>(), player);
-                    SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, Main.MouseWorld);
+                    CalamityNetcode.NewNPC_ClientSide(mouse, ModContent.NPCType<CalamitasEnchantDemon>(), player);
+                    SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, mouse);
                 }
             }
 
@@ -287,7 +289,7 @@ namespace CalamityMod.Items
                 int monsterDamage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(remainingMana * damagePerManaConsumed);
 
                 // Spawn the Mana Monster
-                Vector2 shootVelocity = player.SafeDirectionTo(Main.MouseWorld, -Vector2.UnitY).RotatedByRandom(0.07f) * Main.rand.NextFloat(4f, 5f);
+                Vector2 shootVelocity = player.SafeDirectionTo(mouse, -Vector2.UnitY).RotatedByRandom(0.07f) * Main.rand.NextFloat(4f, 5f);
                 Projectile.NewProjectile(source, player.Center + shootVelocity, shootVelocity, ModContent.ProjectileType<ManaMonster>(), monsterDamage, 0f, player.whoAmI);
 
                 // Set the player's mana to zero.
@@ -694,6 +696,7 @@ namespace CalamityMod.Items
                         if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
                         {
                             p.rotation = MathHelper.PiOver2 + MathHelper.PiOver4;
+                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                             p.velocity = p.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 22f;
                             p.rotation += p.velocity.ToRotation();
                             p.ai[0] = 180f;
@@ -742,7 +745,8 @@ namespace CalamityMod.Items
                 }
                 if (canContinue && count > 0)
                 {
-                    NPC unluckyTarget = CalamityUtils.MinionHoming(Main.MouseWorld, 1000f, player);
+                    Vector2 mouse = player.ClampedMouseWorld();
+                    NPC unluckyTarget = CalamityUtils.MinionHoming(mouse, 1000f, player);
                     if (unluckyTarget != null)
                     {
                         int pointyThingyAmount = count;
@@ -755,7 +759,7 @@ namespace CalamityMod.Items
                             if (Main.projectile.Length == Main.maxProjectiles)
                                 break;
                             int GlacialEmbraceDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(80);
-                            int projj = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
+                            int projj = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
                             Main.projectile[projj].originalDamage = 80;
 
                             angle += angleVariance;

@@ -1,16 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -63,6 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[2] > 0 && time == 0)
             {
                 closestTarget = Projectile.Center.ClosestNPCAt(2000);
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 storedVelocity = ((closestTarget == null ? Owner.Calamity().mouseWorld : closestTarget.Center) - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 Projectile.alpha = 255;
                 Projectile.velocity = Vector2.Zero;
@@ -132,11 +128,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
                     {
-                        Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 16)
-                            Projectile.velocity += moveTotarget * 0.85f;
-                        else
-                            Projectile.velocity *= 0.8f;
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.95f, 16, 0.96f);
                     }
                 }
             }
@@ -207,6 +199,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                     Projectile.Center = portalSpot;
 
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (closestTarget == null)
                         Projectile.velocity = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -16;
                     else
@@ -323,6 +316,8 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Main.EntitySpriteDraw(portal.Value, portalDrawPos, null, Color.Black * (1 - fading * 0.3f), 0, portal.Size() * 0.5f, 1.8f * portalFading, SpriteEffects.None);
                 Main.EntitySpriteDraw(portal.Value, portalDrawPos, null, Color.LightGreen with { A = 0 } * (1 - fading), 0, portal.Size() * 0.5f, 1.1f * portalFading, SpriteEffects.None);
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 expectedVel = ((closestTarget == null ? Owner.Calamity().mouseWorld : closestTarget.Center) - portalSpot).SafeNormalize(Vector2.UnitX);
                 if (true)
                 {

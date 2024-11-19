@@ -47,8 +47,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
-            Projectile north = Projectile.NewProjectileDirect(source, Main.MouseWorld + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
-            Projectile south = Projectile.NewProjectileDirect(source, Main.MouseWorld - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+            Vector2 mouse = player.ClampedMouseWorld();
+            Projectile north = Projectile.NewProjectileDirect(source, mouse + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+            Projectile south = Projectile.NewProjectileDirect(source, mouse - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
             north.originalDamage = Item.damage;
             south.originalDamage = Item.damage;
             north.ai[1] = 1f;

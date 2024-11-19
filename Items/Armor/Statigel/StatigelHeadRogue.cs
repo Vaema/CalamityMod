@@ -40,7 +40,6 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().rogueAmmoCost *= 0.66f;
             player.GetDamage<ThrowingDamageClass>() += 0.1f;
             player.GetCritChance<ThrowingDamageClass>() += 7;
             player.moveSpeed += 0.05f;

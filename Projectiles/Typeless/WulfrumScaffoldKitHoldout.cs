@@ -83,6 +83,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
+            // 15NOV2024: Ozzatron: Intentionally not clamping Wulfrum Scaffolds despite combat applicability due to them being mechanically closer to a UI feature.
+
             if (Owner.channel && CanOwnerGoOn)
             {
                 //Initialize the position

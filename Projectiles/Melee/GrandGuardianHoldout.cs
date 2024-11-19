@@ -51,6 +51,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
             base.OnSpawn(source);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Guardian has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;
@@ -111,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                     
                 
-                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(65f), 0.1f);
+                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
                 if (AnimationProgress < (useAnim / 3))
                 {
@@ -224,14 +226,6 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
-                //Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 45, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(4) ? Color.DarkOrchid : Color.DodgerBlue);
-                //GeneralParticleHandler.SpawnParticle(spark2);
-                if (Main.rand.NextBool(3))
-                {
-                    //Particle spark3 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 45, Main.rand.NextFloat(0.3f, 1f), Color.Lavender);
-                    //GeneralParticleHandler.SpawnParticle(spark3);
-                }
-
                 Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.7f));
                 dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                 dust2.noGravity = true;

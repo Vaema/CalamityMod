@@ -397,6 +397,7 @@ namespace CalamityMod.CalPlayer
             direction = DashDirection.Directionless;
 
             // God Slayer armor's dash will dash towards the player's cursor.
+            // 14NOV2024: Ozzatron: Intentionally does not use clamped mouse position so that player dash direction is not strangely bent on larger screens.
             Vector2 dashVel = Main.MouseWorld - Player.Center;
             dashVel = dashVel.SafeNormalize(Vector2.UnitX) * UsedDash.CalculateDashSpeed(Player);
 
@@ -511,6 +512,22 @@ namespace CalamityMod.CalPlayer
                 damageHitbox.Width = 2;
                 damageHitbox.Inflate(6, 12);
                 float damage = Player.GetTotalDamage<SummonDamageClass>().ApplyTo(800f);
+                float knockback = 10f;
+                int NPCImmuneTime = 30;
+                int playerImmuneTime = 6;
+                DoMountDashDamage(damageHitbox, damage, knockback, NPCImmuneTime, playerImmuneTime);
+            }
+
+            if (Player.mount.Active && Player.mount.Type == ModContent.MountType<ExoTank>() && Math.Abs(Player.velocity.X) > Player.mount.RunSpeed)
+            {
+                Rectangle damageHitbox = Player.getRect();
+
+                if (Player.direction == 1)
+                    damageHitbox.Offset(Player.width - 1, 0);
+
+                damageHitbox.Width = 2;
+                damageHitbox.Inflate(6, 12);
+                float damage = Player.GetTotalDamage<SummonDamageClass>().ApplyTo(ExoTank.DashDamage);
                 float knockback = 10f;
                 int NPCImmuneTime = 30;
                 int playerImmuneTime = 6;

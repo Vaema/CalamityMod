@@ -69,6 +69,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
                 return false;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+
             if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
             {
                 Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));

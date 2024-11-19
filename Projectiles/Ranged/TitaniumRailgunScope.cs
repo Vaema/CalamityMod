@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Player Owner => Main.player[Projectile.owner];
 
+        // 15NOV2024: Ozzatron: clamped mouse position unnecessary. All uses are direction only.
         public Vector2 MousePosition => Owner.Calamity().mouseWorld - Owner.MountedCenter;
         public const float WeaponLength = 52f;
         public const float MaxSightAngle = MathHelper.Pi * (2f / 3f);

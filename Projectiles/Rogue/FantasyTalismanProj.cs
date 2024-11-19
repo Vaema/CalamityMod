@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 600;
+            Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -42,10 +43,9 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.timeLeft % 10 == 0)
                 {
-                    if (Main.rand.NextBool())
+                    if (Main.rand.NextBool(8))
                     {
-                        int spiritDamage = Projectile.damage / 2;
-                        Projectile ghost = CalamityUtils.SpawnOrb(Projectile, spiritDamage, ProjectileID.SpectreWrath, 800f, 4f);
+                        Projectile ghost = CalamityUtils.SpawnOrb(Projectile, (int)(Projectile.damage * 0.4f), ProjectileID.SpectreWrath, 1000f, 4f);
                         if (ghost.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
                             ghost.DamageType = RogueDamageClass.Instance;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(3);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(12);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

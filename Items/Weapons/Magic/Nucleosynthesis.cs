@@ -64,6 +64,7 @@ namespace CalamityMod.Items.Weapons.Magic
             else
                 return false;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 spawnOffset = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedBy(offsetAngle) * -Main.rand.NextFloat(40f, 96f);
             Vector2 shootDirection = (Main.MouseWorld - (position + spawnOffset)).SafeNormalize(Vector2.UnitX * player.direction);
             int beam = Projectile.NewProjectile(source, position + spawnOffset, shootDirection * shootSpeed, type, damage, knockback, player.whoAmI);

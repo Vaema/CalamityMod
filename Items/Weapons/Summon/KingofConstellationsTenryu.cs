@@ -56,7 +56,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static void SpawnDragon(int head, int body, int tail, Vector2 spawnPos, Player player, EntitySource_ItemUse_WithAmmo source, int damage, float knockback)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.NewProjectile(source, spawnPos, player.DirectionTo(Main.MouseWorld) * 3, head, damage, knockback, player.whoAmI);
+            // okay but seriously why are you multiplying zero by three
             Projectile.NewProjectile(source, spawnPos, Vector2.Zero * 3, tail, damage, knockback, player.whoAmI);
             for (var i = 0; i < 20; i++)
             {

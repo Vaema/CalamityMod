@@ -109,8 +109,9 @@ namespace CalamityMod.Projectiles.Magic
                     float degreesAmt = Main.zenithWorld ? 51.428f : 60f;
                     Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + Projectile.ai[2]);
 
-                    Projectile.Center = Owner.Calamity().mouseWorld + musicNoteRotationOffset * 220f;
-                    playerDirection = Projectile.Center - Owner.Calamity().mouseWorld;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    Projectile.Center = mouse + musicNoteRotationOffset * 220f;
+                    playerDirection = Projectile.Center - mouse;
                     playerDirection.Normalize();
                     playerDirection *= -9.2f;
                     Projectile.velocity = playerDirection;

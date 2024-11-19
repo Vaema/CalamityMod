@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 128;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.mana = 10;
+            Item.mana = 100;
             Item.useAnimation = Item.useTime = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             //CalamityUtils.OnlyOneSentry(player, type);
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();

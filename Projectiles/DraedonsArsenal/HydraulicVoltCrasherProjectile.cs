@@ -79,6 +79,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     modItem.Charge -= HydraulicVoltCrasher.HoldoutChargeUse;
 
                     float speed = Owner.inventory[Owner.selectedItem].shootSpeed * Projectile.scale;
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 toPointTo = Main.MouseWorld;
                     if (Owner.gravDir == -1f)
                     {

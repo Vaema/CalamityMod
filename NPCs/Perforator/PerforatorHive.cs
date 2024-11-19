@@ -583,7 +583,7 @@ namespace CalamityMod.NPCs.Perforator
                     ModContent.ItemType<Eviscerator>(),
                     ModContent.ItemType<BloodBath>(),
                     ModContent.ItemType<FleshOfInfidelity>(),
-                    new WeightedItemStack(ModContent.ItemType<ToothBall>(), 1f, 30, 50),
+                    ModContent.ItemType<ToothBall>(),
                 }));
 
                 // Materials

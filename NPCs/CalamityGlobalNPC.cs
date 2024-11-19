@@ -10,10 +10,12 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
+using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
@@ -89,9 +91,6 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.ExtraTextures;
-using MonoMod.Utils;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs
 {
@@ -287,6 +286,14 @@ namespace CalamityMod.NPCs
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
+        public int warbannerBurnTimer = 0; // The duration of the debuff
+        public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
+        public int warbannerBurnDamage = 0; // Damage of the hits based on player's damage
+        public Vector2 warbannerBurnDirection;
+        public float warbannerBurnIntensity = 0;
+        public bool warbannerBurnMarked = false;
+        public bool warbannerBurnHideEffects = false;
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
@@ -323,7 +330,6 @@ namespace CalamityMod.NPCs
         public int sulphurPoison = 0;
         public int ladHearts = 0;
         public int kamiFlu = 0;
-        public int relicOfResilienceCooldown = 0;
         public int relicOfResilienceWeakness = 0;
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
@@ -522,6 +528,14 @@ namespace CalamityMod.NPCs
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.warbannerBurnTime = warbannerBurnTime;
+            myClone.warbannerBurnTimer = warbannerBurnTimer;
+            myClone.warbannerBurnStacks = warbannerBurnStacks;
+            myClone.warbannerBurnDamage = warbannerBurnDamage;
+            myClone.warbannerBurnDirection = warbannerBurnDirection;
+            myClone.warbannerBurnIntensity = warbannerBurnIntensity;
+            myClone.warbannerBurnMarked = warbannerBurnMarked;
+            myClone.warbannerBurnHideEffects = warbannerBurnHideEffects;
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
@@ -552,7 +566,6 @@ namespace CalamityMod.NPCs
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.kamiFlu = kamiFlu;
-            myClone.relicOfResilienceCooldown = relicOfResilienceCooldown;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.GaussFluxTimer = GaussFluxTimer;
             myClone.sagePoisonTime = sagePoisonTime;
@@ -3626,10 +3639,10 @@ namespace CalamityMod.NPCs
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             // Cirrus being active makes the extra DR cease to function
             bool cirrusBossActive = false;
-            if (CalamityGlobalNPC.SCal != -1)
+            if (SCal != -1)
             {
-                if (Main.npc[CalamityGlobalNPC.SCal].active)
-                    cirrusBossActive = Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
+                if (Main.npc[SCal].active)
+                    cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
             bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
@@ -3676,6 +3689,8 @@ namespace CalamityMod.NPCs
                 calcDR *= ArmorCrunch.MultiplicativeDamageReductionEnemy;
             if (npc.Calamity().crumble > 0)
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
+            if (relicOfResilienceWeakness > 0)
+                calcDR *= 0.5f;
 
 
             return calcDR;
@@ -5575,10 +5590,6 @@ namespace CalamityMod.NPCs
                 sulphurPoison--;
             if (sagePoisonTime > 0)
                 sagePoisonTime--;
-            if (relicOfResilienceCooldown > 0)
-                relicOfResilienceCooldown--;
-            if (relicOfResilienceWeakness > 0)
-                relicOfResilienceWeakness--;
             if (GaussFluxTimer > 0)
                 GaussFluxTimer--;
             if (ladHearts > 0)
@@ -5592,6 +5603,78 @@ namespace CalamityMod.NPCs
 
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
+
+            if (relicOfResilienceWeakness > 0)
+                relicOfResilienceWeakness--;
+
+            if (warbannerBurnTimer > 0)
+                warbannerBurnTimer--;
+            if (warbannerBurnTimer == 0 && warbannerBurnMarked)
+            {
+                warbannerBurnTime = 0;
+                warbannerBurnDamage = 0;
+                warbannerBurnMarked = false;
+                warbannerBurnStacks = 0;
+            }
+            if (warbannerBurnMarked)
+            {
+                int maxStacks = 300; // Time in frames needed to reach max power
+                int fastestBurnRate = 2;
+                int slowestBurnRate = 15;
+                float burnPower = Utils.Remap(warbannerBurnStacks, 0, maxStacks, slowestBurnRate, fastestBurnRate, true);
+
+                float sizeBonus = (1 + Utils.GetLerpValue(0, 170, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f)));
+
+                if (!warbannerBurnHideEffects)
+                {
+                    Lighting.AddLight(npc.Center, Color.Gold.ToVector3() * 0.3f * warbannerBurnIntensity);
+                }
+                if (warbannerBurnStacks == maxStacks && !warbannerBurnHideEffects)
+                {
+                    // Sound and visual for hitting max stacks
+                    for (int i = 0; i < 15; i++)
+                    {
+                        Particle spark = new SparkParticle(npc.Center, new Vector2(13, 13).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 1f), true, 45, 0.85f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    SoundStyle fullPower = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
+                    SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
+                    warbannerBurnStacks++;
+                }
+                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved(true))
+                {
+                    npc.velocity *= 1f - 0.25f * Utils.GetLerpValue(2.5f, 3, warbannerBurnIntensity);
+                    if (npc.velocity.Length() > 5 && warbannerBurnIntensity > 2.85f) // Repel leaping enemies
+                        npc.velocity = -npc.velocity * 0.7f;
+                }
+                if (warbannerBurnTime == 0)
+                {
+                    if (!warbannerBurnHideEffects)
+                    {
+                        int particleLevel = (int)(MathHelper.Clamp((slowestBurnRate - burnPower) * 0.15f, 1, 2) * warbannerBurnIntensity);
+                        for (int d = 0; d < particleLevel; d++)
+                        {
+                            Color color = Main.rand.NextBool() ? Color.Goldenrod : Color.Lerp(Color.OrangeRed, Color.Orange, Main.rand.NextFloat(0, 1)); ;
+                            Vector2 sparkPos = npc.Center - warbannerBurnDirection * 220 * Utils.GetLerpValue(0, 200, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f));
+                            float velAdjust = Main.rand.NextFloat(2, 7) * warbannerBurnIntensity * sizeBonus;
+                            Vector2 endVel = warbannerBurnDirection * velAdjust;
+                            Vector2 startVel = (warbannerBurnDirection * velAdjust).RotatedByRandom(0.6f * warbannerBurnIntensity);
+                            Particle sparks = new VelChangingSpark(sparkPos, startVel, endVel, "CalamityMod/Particles/SmallBloom", Main.rand.Next(18, 22 + 1), Main.rand.NextFloat(0.1f, 0.25f) * sizeBonus, color * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.1f);
+                            GeneralParticleHandler.SpawnParticle(sparks);
+                            Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.7f, 1.1f) * sizeBonus);
+                            lust2.noGravity = true;
+                            lust2.color = color;
+                            lust2.noLightEmittence = true;
+                        }
+                    }
+                    var player = Main.LocalPlayer;
+                    Projectile burnHit = Projectile.NewProjectileDirect(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<WarbannerDamage>(), (int)(warbannerBurnDamage * warbannerBurnIntensity), 0, Main.myPlayer, npc.whoAmI);
+                    burnHit.ArmorPenetration = 50;
+                    warbannerBurnTime = (int)(burnPower + (3 - warbannerBurnIntensity) * 4);
+                }
+                warbannerBurnTime--;
+            }
+
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -6239,6 +6322,9 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
+            if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
+                modifiers.SourceDamage *= 0.1f;
+
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
                 EditWhipTagDamage(projectile, npc, ref modifiers);
         }
@@ -6393,7 +6479,7 @@ namespace CalamityMod.NPCs
         public override void HitEffect(NPC npc, NPC.HitInfo hit)
         {
             if (npc.life <= 0 && npc.Organic() && ashesOnDeath > 0)
-                DeathAshParticle.CreateAshesFromNPC(npc);
+                DeathAshParticle.CreateAshesFromNPC(npc, Vector2.Zero);
 
             // Cultist shield flicker
             if (npc.type == NPCID.CultistBoss)
@@ -7044,6 +7130,9 @@ namespace CalamityMod.NPCs
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
+            if (relicOfResilienceWeakness > 0)
+                ProfanedWeakness.DrawEffects(npc, ref drawColor);
+
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
@@ -7386,7 +7475,7 @@ namespace CalamityMod.NPCs
                         spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
 
                         // Shred stack display
-                        if (currentDebuffs[i] == TextureAssets.Buff[ModContent.BuffType<Shred>()].Value)
+                        if (currentDebuffs[i] == TextureAssets.Buff[BuffType<Shred>()].Value)
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
                 }

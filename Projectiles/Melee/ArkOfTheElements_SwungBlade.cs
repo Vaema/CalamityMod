@@ -143,6 +143,7 @@ namespace CalamityMod.Projectiles.Melee
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the result is capped separately
                 if (Thrown)
                     ThrowReach = MathHelper.Clamp((Owner.Center - Owner.Calamity().mouseWorld).Length(), ThrowReachMin, ThrowReachMax);
 

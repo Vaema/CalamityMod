@@ -23,7 +23,8 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 PreviousEnd = Vector2.Zero;
 
         Vector2 AnchorStart => Owner.Center;
-        Vector2 AnchorEnd => Owner.Calamity().mouseWorld;
+        // 14NOV2024: Ozzatron: I have no idea what this does so I clamped it
+        Vector2 AnchorEnd => Owner.ClampedMouseWorld();
         public Vector2 SizeVector => Utils.SafeNormalize(AnchorEnd - AnchorStart, Vector2.Zero) * MathHelper.Clamp((AnchorEnd - AnchorStart).Length(), 0, FourSeasonsGalaxia.AriesAttunement_Reach);
 
         public override void SetStaticDefaults()
@@ -79,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Particles.Clear();
 
-                PreviousEnd = Owner.Calamity().mouseWorld - Owner.Center;
+                PreviousEnd = Owner.ClampedMouseWorld() - Owner.Center;
                 Projectile.ai[0] = 1;
                 Vector2 previousStar = Projectile.Center;
                 Vector2 offset;
@@ -134,7 +135,7 @@ namespace CalamityMod.Projectiles.Melee
             Timer++;
 
             //Reset the constellation if the mouse goes too far
-            if ((Owner.Calamity().mouseWorld - Owner.Center - PreviousEnd).Length() > 120)
+            if ((Owner.ClampedMouseWorld() - Owner.Center - PreviousEnd).Length() > 120)
                 Timer = ConstellationSwapTime;
         }
 

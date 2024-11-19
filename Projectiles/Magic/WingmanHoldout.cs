@@ -126,6 +126,7 @@ namespace CalamityMod.Projectiles.Magic
             // The center of the player, taking into account if they have a mount or not.
             Vector2 ownerPosition = Owner.MountedCenter;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The vector between the player and the mouse.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - ownerPosition;
 
@@ -181,6 +182,7 @@ namespace CalamityMod.Projectiles.Magic
 
         private void Shoot(bool isGrenade)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
 
             // The position of the tip of the gun.

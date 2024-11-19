@@ -155,6 +155,7 @@ namespace CalamityMod.Projectiles.Magic
 
         private void Shoot(bool isGrenade)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
 
             // The position of the tip of the gun.

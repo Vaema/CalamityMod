@@ -159,12 +159,12 @@ namespace CalamityMod.Projectiles.Magic
 
                     SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");
                     SoundEngine.PlaySound(explo with { Volume = 0.75f, Pitch = 0.35f }, Projectile.Center);
-                    mousePos = Main.MouseWorld;
+                    mousePos = Main.player[Projectile.owner].ClampedMouseWorld();
                     goToCursor = true;
                 }
                 if (goToCursor)
                 {
-                    mousePos = Main.MouseWorld;
+                    mousePos = Main.player[Projectile.owner].ClampedMouseWorld();
                     if (time == 355)
                     {
                         CenterX = Projectile.Center.X;

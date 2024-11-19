@@ -49,7 +49,8 @@ namespace CalamityMod.Projectiles.Magic
             // Summon a bunch of cool things the moment the book is created, assuming an NPC is near the mouse position.
             if (Main.myPlayer == Projectile.owner && Time == 1f)
             {
-                NPC target = Main.MouseWorld.ClosestNPCAt(4400f, true, true);
+                // 14NOV2024: Ozzatron: Eternity's range is so absurdly high (more than two 1080p screens wide) that it doesn't really matter whether this is capped.
+                NPC target = player.ClampedMouseWorld().ClosestNPCAt(4400f, true, true);
 
                 if (target != null)
                 {
