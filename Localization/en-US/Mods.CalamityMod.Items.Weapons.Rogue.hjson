@@ -153,8 +153,8 @@ ContaminatedBile: {
 	DisplayName: Contaminated Bile
 	Tooltip:
 		'''
-		Throws a flask of sickly green, irradiated bile which explodes on collision
-		Stealth strikes make the explosion much more violent and powerful
+		Throws a flask of irradiated bile which shatters and lingers in a cloud
+		Stealth strikes cause sulphuric bubbles to quickly rise from the cloud
 		'''
 }
 
