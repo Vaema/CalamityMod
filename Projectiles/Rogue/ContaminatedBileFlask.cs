@@ -4,6 +4,7 @@ using Terraria.Audio;
 using CalamityMod.Particles;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -19,19 +20,16 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
             Projectile.tileCollide = true;
+            Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
             Projectile.alpha = 0;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
-            if (Projectile.ai[0]++ > 45f)
-            {
-                if (Projectile.velocity.Y < 10f)
-                    Projectile.velocity.Y += 0.15f;
-            }
-
-            Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.Length());
+            float rotateratio = 0.002f;
+            float rotation = (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * rotateratio;
+            Projectile.rotation += rotation * Projectile.direction;
         }
 
         public override void OnKill(int timeLeft)

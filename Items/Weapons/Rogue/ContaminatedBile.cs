@@ -19,12 +19,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4.5f;
-            Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Blue;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ContaminatedBileFlask>();
-            Item.shootSpeed = 15f;
+            Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
