@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -17,7 +19,7 @@ namespace CalamityMod.Projectiles.Rogue
         private static int InternalLifetime => Lifetime * UpdatesPerFrame;
         private const float BoomerangReturnTime = 16f;
 
-        private const int BaseTesselationDelay = 6;
+        private const int BaseTesselationDelay = 4;
         private static int InternalTesselationDelay => BaseTesselationDelay * UpdatesPerFrame;
         private const float TesselationSpawnSpeed = 24f;
 
@@ -116,7 +118,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Main.rand.NextBool(UpdatesPerFrame))
                 return;
 
-            int dustType = Main.rand.NextBool(5) ? DustID.Electric : 220 /* no DustID entry */;
+            int dustType = Main.rand.NextBool(5) ? ModContent.DustType<VoidDust>() : ModContent.DustType<VoidDustInverted>();
 
             Vector2 position = Main.rand.NextVector2FromRectangle(Projectile.Hitbox);
             float scale = Main.rand.NextFloat(0.8f, 1.1f);
@@ -126,6 +128,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (d is null || d.dustIndex == Main.maxDust)
                 return;
 
+            d.color = NanoblackReaper.NanoblackDustColor1;
             d.noGravity = true;
             d.velocity = velocityMult * Projectile.velocity;
         }
@@ -165,13 +168,16 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.Kill();
         }
 
-        // Spawns an individual Nanoblack Tesselation.
-        // Tesselations emit from the blade of the scythe and fly directly away, rapidly coming to a halt.
+        // Spawns a triangular lattice of three Nanoblack Tesselations. All tesselations emit from the blade of the scythe.
         private void SpawnTesselation()
         {
-            // Each tesselation randomly chooses which of its four zero-point energy strikes to fire first.
-            // For consistent RNG across clients, this randomness is executed even if the result is not used.
-            float zeroPointStrikeIndex = Main.rand.Next(4); // 0f, 1f, 2f or 3f
+            int numTessSpawns = 3;
+            
+            // Each tesselation spawns with a random delay before it chooses to fire.
+            // For consistent RNG iteration, these RNG values are obtained even if they are not needed.
+            static float GetStrikeDelay() => Main.rand.NextFloat(NanoblackTesselation.MinDelay, NanoblackTesselation.MaxDelay);float[] zeroPointStrikeDelays = new float[numTessSpawns];
+            for (int i = 0; i < numTessSpawns; ++i)
+                zeroPointStrikeDelays[i] = GetStrikeDelay();
 
             if (Main.myPlayer != Projectile.owner)
                 return;
@@ -181,24 +187,36 @@ namespace CalamityMod.Projectiles.Rogue
             float tessKB = 1.5f;
 
             // The blade of Nanoblack Reaper is close enough to straight-right +X that using the rotation directly is fine.
-            float scytheBladeRotation = Projectile.rotation;
+            float scytheBladeRotation = Projectile.rotation * Projectile.spriteDirection;
             Vector2 spawnOffsetDir = scytheBladeRotation.ToRotationVector2();
             Vector2 tessPos = Projectile.Center + spawnOffsetDir * 14f;
             Vector2 tessVelDir = spawnOffsetDir.RotatedBy(-MathHelper.PiOver4); // close enough to a blade-egress vector
-            Vector2 tessVel = tessVelDir * TesselationSpawnSpeed;
+            Vector2 tessBaseVel = tessVelDir * TesselationSpawnSpeed;
 
             var source = Projectile.GetSource_FromThis();
-            int tessIdx = Projectile.NewProjectile(source, tessPos, tessVel, tessID, tessDamage, tessKB, Projectile.owner, ai1: zeroPointStrikeIndex);
 
-            // The spin direction of the scythe transfers to the tesselations.
-            if (tessIdx.WithinBounds(Main.maxProjectiles))
-                Main.projectile[tessIdx].direction = Projectile.direction;
+            for (int i = 0; i < numTessSpawns; ++i)
+            {
+                Vector2 tessVel = tessBaseVel.RotatedBy(i * NanoblackReaper.TwoPiOver3);
+                float delay = zeroPointStrikeDelays[i];
+                int tessIdx = Projectile.NewProjectile(source, tessPos, tessVel, tessID, tessDamage, tessKB, Projectile.owner, ai0: delay);
+
+                // The spin direction of the scythe transfers to the tesselations.
+                if (tessIdx.WithinBounds(Main.maxProjectiles))
+                {
+                    Projectile tess = Main.projectile[tessIdx];
+                    tess.direction = tess.spriteDirection = Projectile.spriteDirection;
+                }
+            }
         }
 
         private void RotateScytheInFlight()
         {
             float spin = Projectile.direction <= 0 ? -1f : 1f;
             Projectile.rotation += spin * RotationIncrement;
+
+            // When thrown left, Nanoblack Reaper is still thrown scythe-head first.
+            Projectile.spriteDirection = Projectile.direction;
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -11,10 +11,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    // Deny me no longer!
+    // Bleak, directionless slaughter.
+    // A celebration of the vices that brought Her to this point.
     [LegacyName("NanoblackReaperMelee", "NanoblackReaperRogue")]
     public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
     {
+        // Right triangles, and like triangles.
+        internal const float PiOver3 = MathHelper.Pi / 3f;
+        internal const float TwoPiOver3 = MathHelper.TwoPi / 3f;
+
+        internal static readonly Color NanoblackDustColor1 = new Color(52, 239, 184); // #34EFB8
+        internal static readonly Color TesselationParticleColor = new Color(79, 240, 168); // 4FF0A8
+        internal static readonly Color ZeroPointLineColor = new Color(24, 191, 160); // #1FBFA0
+        internal static readonly Color ZeroPointImpactColor = new Color(31, 223, 128, 96); // #1FDF80
+
         public bool ShowExtensionIndicator => false;
         public bool HasFlavorTooltip => true;
         public Color? TooltipExtensionColor => new Color(31, 223, 128); // #1FDF80
