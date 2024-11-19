@@ -48,6 +48,9 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile bubble = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(70, 70), Vector2.UnitY * Main.rand.NextFloat(-3.5f, -5f), ModContent.ProjectileType<SulphuricAcidBubbleFriendly>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
                     if (bubble.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
+                        //We mark it as a stealth strike to change its dust
+                        bubble.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
+                        bubble.DamageType = RogueDamageClass.Instance;
                         bubble.timeLeft = 45;
                     }
                 }
