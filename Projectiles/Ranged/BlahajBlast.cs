@@ -113,8 +113,11 @@ namespace CalamityMod.Projectiles.Ranged
             //Only increase damage of the rocket on the first hit
             if (Projectile.numHits == 0)
             {
-                Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().sharkGunDamageScaling++;
+                for (int i = 0; i <= 1; i++)
+                {
+                    Player Owner = Main.player[Projectile.owner];
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + Main.rand.NextVector2Circular(150, 150), Projectile.velocity, ModContent.ProjectileType<SeaDragonRocket>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
             }
             for (int i = 0; i < 4; ++i)
             {
