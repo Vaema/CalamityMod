@@ -1,4 +1,7 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -10,64 +13,97 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        public ref float time => ref Projectile.ai[0];
+        public bool attacking => Projectile.ai[1] == 5; //  If the missile is launched at the enemy
+        public ref float moveSpeed => ref Projectile.ai[2]; // Some speed variation applied to the missiles based on spawn order
         public override void SetDefaults()
         {
             Projectile.width = 18;
             Projectile.height = 18;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 95;
+            Projectile.timeLeft = 600;
+            Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            if (Projectile.ai[1] == 0f)
-            {
-                Projectile.ai[1] = 1f;
-            }
+            Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.5f);
+            Player Owner = Main.player[Projectile.owner];
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeadragonHoldout>()] <= 0 && !attacking) // If no holdout exists and not attacking then die
+                Projectile.Kill();
+            if (attacking) // Fly at the enemy
             {
-                Projectile.tileCollide = false;
-                Projectile.ai[1] = 0f;
-                Projectile.alpha = 255;
-                Projectile.position.X = Projectile.Center.X;
-                Projectile.position.Y = Projectile.Center.Y;
-                Projectile.width = 200;
-                Projectile.height = 200;
-                Projectile.position.X -= (float)(Projectile.width / 2);
-                Projectile.position.Y -= (float)(Projectile.height / 2);
-                Projectile.knockBack = 10f;
+                NPC chosenTarget = Projectile.Center.ClosestNPCAt(600);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.4f + moveSpeed, 16, 0.985f);
+                if (chosenTarget != null)
+                    Projectile.timeLeft++; // Don't die if you have a target to home in on
             }
-            else
+            else // Swarm around the player until ready to be fired
             {
-                if (Math.Abs(Projectile.velocity.X) >= 8f || Math.Abs(Projectile.velocity.Y) >= 8f)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        float halfX = 0f;
-                        float halfY = 0f;
-                        if (j == 1)
-                        {
-                            halfX = Projectile.velocity.X * 0.5f;
-                            halfY = Projectile.velocity.Y * 0.5f;
-                        }
-                    }
-                }
+                Vector2 circle = Owner.Center + new Vector2(0, -195 + moveSpeed * 25).RotatedBy(time * 0.05f);
+                Vector2 moveToEnemy = (circle - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (Projectile.velocity.Length() < 12)
+                    Projectile.velocity = Projectile.velocity * 0.97f + moveToEnemy * moveSpeed;
+                else
+                    Projectile.velocity *= 0.9f;
             }
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 12f, 20f);
+            if (Main.rand.NextBool(3))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.1f, 0.5f));
+                dust.noGravity = false;
+                dust.scale = 0.9f;
+                dust.color = Color.DodgerBlue;
+                dust.noLightEmittence = true;
+            }
+            time++;
         }
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.ExpandHitboxBy(192);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item110, Projectile.position);
+            // Explode on kill if attacking, else just poof out
+            if (attacking)
+            {
+                SoundEngine.PlaySound(SoundID.Item110, Projectile.Center);
+
+                // Create Blast (If you want to know how to use this blast, check the projectile, it tells you exactly how to use it!)
+                float blastSize = 80;
+                float minMultiplier = 0.25f;
+                int hitsToMinMult = 5;
+                int debuff = ModContent.BuffType<CrushDepth>();
+                int debuffTime = 120;
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                blast.localAI[0] = debuff;
+                blast.localAI[1] = debuffTime;
+                blast.timeLeft = 2;
+                blast.DamageType = Projectile.DamageType;
+
+                // Add visuals here
+                for (int i = 0; i < 20; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9, 12));
+                    dust.noGravity = true;
+                    dust.scale = 1.8f;
+                    dust.color = Color.Cyan;
+                    dust.noLightEmittence = true;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 6));
+                    dust.noGravity = false;
+                    dust.scale = 0.8f;
+                    dust.color = Color.AliceBlue;
+                    dust.noLightEmittence = true;
+                }
+            }
         }
+        public override bool? CanDamage() => (attacking ? null : false); // Can't hit if not attacking
     }
 }

@@ -13,6 +13,7 @@ using Terraria.ID;
 using Steamworks;
 using CalamityMod.Projectiles.Turret;
 using Mono.Cecil;
+using CalamityMod.Projectiles.Rogue;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -103,10 +104,15 @@ namespace CalamityMod.Projectiles.Ranged
                 if (framesBetweenShots == 0)
                 {
                     Projectile.Kill();
-                }
-                else
-                {
-                    framesBetweenShots--;
+                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    {
+                        Projectile projectile = Main.projectile[x];
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
+                        {
+                            projectile.ai[1] = 5;
+                            projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
+                        }
+                    }
                 }
             }
             Time++;

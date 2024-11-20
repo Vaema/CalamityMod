@@ -110,14 +110,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
-            //Only increase damage of the rocket on the first hit
+            //Only spawn rocket on the first hit
             if (Projectile.numHits == 0)
             {
-                for (int i = 0; i <= 1; i++)
-                {
-                    Player Owner = Main.player[Projectile.owner];
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + Main.rand.NextVector2Circular(150, 150), Projectile.velocity, ModContent.ProjectileType<SeaDragonRocket>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                }
+                Player Owner = Main.player[Projectile.owner];
+                Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + Main.rand.NextVector2Circular(150, 150), Vector2.Zero, ModContent.ProjectileType<SeaDragonRocket>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                fishy.ai[2] = ((Owner.Calamity().sharkGunDamageScaling + 1) * 0.02f) + 0.1f;
             }
             for (int i = 0; i < 4; ++i)
             {
