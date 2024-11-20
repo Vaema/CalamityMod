@@ -86,14 +86,14 @@ namespace CalamityMod.Projectiles.Ranged
                     float scale = Main.rand.NextFloat(0.8f, 1.1f);
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust2.noGravity = true;
                         dust2.scale = scale;
                         dust2.color = baseColor;
                     }
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, /*Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : */ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, ModContent.DustType<VoidDustInverted>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust3.noGravity = true;
                         dust3.scale = scale;
                         dust3.color = baseColor;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else if (Main.rand.NextBool(13))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), Projectile.ai[1] == 5 ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.05f, 1.65f);
                     dust.color = baseColor;
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Projectile.ai[1] == 5 ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust.color = baseColor;

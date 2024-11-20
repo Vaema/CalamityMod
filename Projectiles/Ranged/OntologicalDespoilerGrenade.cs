@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (Main.rand.NextBool(3))
                 {
-                    Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                    Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset, ModContent.DustType<VoidDustInverted>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                     dust3.noGravity = true;
                     dust3.scale = scale;
                     dust3.color = baseColor;
@@ -130,12 +130,12 @@ namespace CalamityMod.Projectiles.Ranged
                 Owner.Calamity().GeneralScreenShakePower = 8.5f;
                 float power = 1.5f;
 
-                for (int i = 0; i < 40; i++)
+                for (int i = 0; i < 55; i++)
                 {
                     Color useColor = GetRandomColor();
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 6 * power).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (Main.rand.NextBool(6) ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), (Projectile.velocity * 6 * power).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(1.85f, 2.45f) * power;
+                    dust.scale = Main.rand.NextFloat(1.75f, 2.25f) * power;
                     dust.color = useColor;
                     if (Owner.shirtColor == Color.White)
                         useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < 20; i++)
                 {
                     Color useColor = GetRandomColor();
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), (Projectile.velocity * 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.85f, 2.45f);
                     dust.color = useColor;
