@@ -110,8 +110,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (framesBetweenShots == 0)
                 {
-                    SoundStyle hitSound = new("CalamityMod/Sounds/Custom/AuricMine", 3);
-                    SoundEngine.PlaySound(hitSound with { Pitch = 1.1f , Volume = 2f }, Projectile.Center);
+                    SoundStyle hitSound = new("CalamityMod/Sounds/Custom/RogueStealth");
+                    SoundEngine.PlaySound(hitSound with { Pitch = 0.8f , Volume = 2f }, Projectile.Center);
                     Particle Star = new CritSpark(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 28), Vector2.Zero, Color.Goldenrod, Color.OrangeRed, 2f, 20, 0.2f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
                     Projectile.Kill();

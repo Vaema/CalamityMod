@@ -95,13 +95,10 @@ namespace CalamityMod.Projectiles.Ranged
                 blast.DamageType = Projectile.DamageType;
 
                 // Add visuals here
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9, 12));
-                    dust.noGravity = true;
-                    dust.scale = 1.8f;
-                    dust.color = Color.Cyan;
-                    dust.noLightEmittence = true;
+                    Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.LightPink : Color.SkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
+                    GeneralParticleHandler.SpawnParticle(Star);
                 }
             }
             else
