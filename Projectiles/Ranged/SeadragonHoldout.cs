@@ -94,7 +94,14 @@ namespace CalamityMod.Projectiles.Ranged
                     swapType = !swapType;
                     shotCounter++;
                     if (shotCounter == 50)
+                    {
                         framesBetweenShots = 18;
+                    }
+                    if (Main.zenithWorld && shotCounter == 35)
+                    {
+                        SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/YouKnowWhatThatMeans");
+                        SoundEngine.PlaySound(joke with { Volume = 1f }, Projectile.Center);
+                    }
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
@@ -115,6 +122,18 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             projectile.ai[1] = 5;
                             projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
+                        }
+                        if (Main.zenithWorld && projectile.type != ModContent.ProjectileType<SeaDragonRocket>())
+                        {
+                            SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/FISH");
+                            SoundEngine.PlaySound(joke with { Volume = 0.35f, MaxInstances = -1 }, projectile.Center);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projectile.Center, (Vector2.One * 10).RotatedByRandom(100), ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage + projectile.damage) * 3, Projectile.knockBack, Projectile.owner);
+                                fishy.ai[2] = Main.rand.NextFloat(0.1f, 0.4f);
+                                fishy.ai[1] = 5;
+                            }
+                            projectile.timeLeft = 1;
                         }
                     }
                 }
