@@ -608,6 +608,7 @@ namespace CalamityMod.CalPlayer
         public bool holyMinions = false;
         public bool alchFlask = false;
         public bool toxicHeart = false;
+        public bool toxicHeartVisuals = false;
         public bool abaddon = false;
 
         public bool aeroStone = false;
@@ -1820,6 +1821,7 @@ namespace CalamityMod.CalPlayer
             holyMinions = false;
             alchFlask = false;
             toxicHeart = false;
+            toxicHeartVisuals = false;
             abaddon = false;
             aeroStone = false;
             lifejelly = false;
