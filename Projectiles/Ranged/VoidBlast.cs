@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class Voidragon : ModProjectile, ILocalizedModType
+    public class VoidBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
@@ -31,11 +31,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Projectile.soundDelay == 0)
-            {
-                Projectile.soundDelay = 150 + Main.rand.Next(40);
-                SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
-            }
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 12f)
             {

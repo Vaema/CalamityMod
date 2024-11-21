@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -52,13 +53,23 @@ namespace CalamityMod.Projectiles.Ranged
                 else
                     Projectile.velocity *= 0.9f;
             }
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(10))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.1f, 0.5f));
-                dust.noGravity = false;
-                dust.scale = 0.9f;
-                dust.color = Color.DodgerBlue;
-                dust.noLightEmittence = true;
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
+                trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;
+                trailDust.noGravity = true;
+                if (attacking)
+                {
+                    Particle trail = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(10, 10), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, 15, Main.rand.NextFloat(0.6f, 0.8f), Color.RoyalBlue);
+                    GeneralParticleHandler.SpawnParticle(trail);
+                }
+            }
+            if (Main.rand.NextBool(8) && !attacking)
+            {
+                Particle Star = new CritSpark(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f), Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
+                GeneralParticleHandler.SpawnParticle(Star);
             }
             time++;
         }
@@ -68,7 +79,8 @@ namespace CalamityMod.Projectiles.Ranged
             // Explode on kill if attacking, else just poof out
             if (attacking)
             {
-                SoundEngine.PlaySound(SoundID.Item110, Projectile.Center);
+                SoundStyle hitSound = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
+                SoundEngine.PlaySound(hitSound with { Volume = 2f }, Projectile.Center);
 
                 // Create Blast (If you want to know how to use this blast, check the projectile, it tells you exactly how to use it!)
                 float blastSize = 80;
@@ -83,7 +95,7 @@ namespace CalamityMod.Projectiles.Ranged
                 blast.DamageType = Projectile.DamageType;
 
                 // Add visuals here
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(9, 12));
                     dust.noGravity = true;
@@ -94,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 7; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 6));
                     dust.noGravity = false;
