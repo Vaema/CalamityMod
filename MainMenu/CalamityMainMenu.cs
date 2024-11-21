@@ -39,6 +39,7 @@ namespace CalamityMod.MainMenu
             internal set;
         } = new();
 
+        public float remixLogoRotation = 0f;
         public override string DisplayName => "Calamity Style";
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Logo");
@@ -135,11 +136,24 @@ namespace CalamityMod.MainMenu
             Main.time = 27000;
             Main.dayTime = true;
 
+            // Adjust rotation based on secret seeds; only Drunk world and Remix touch this, with GFB leeching off those two
+            // Standard rotation is none; Drunk world makes it spin out, so it can use the vanilla rotation due to disappearing
+            // Remix makes it flip upside down, and in GFB it will spin forever 
+            if (WorldGen.remixWorldGen)
+            {
+                remixLogoRotation += MathHelper.Pi / 50f;
+                if (remixLogoRotation >= MathHelper.Pi && !WorldGen.everythingWorldGen)
+                    remixLogoRotation = MathHelper.Pi;
+            }
+            else
+                remixLogoRotation = 0f;
+            float rotationSecretSeedAdjusted = WorldGen.remixWorldGen ? remixLogoRotation : WorldGen.drunkWorldGen ? logoRotation : 0f;
+
             // Draw the logo using a different spritebatch blending setting so it doesn't have a horrible yellow glow
             Vector2 drawPos = new Vector2(Main.screenWidth / 2f, 100f);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, logoRotation, Logo.Value.Size() * 0.5f, logoScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
             return false;
