@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -62,13 +63,13 @@ namespace CalamityMod.Projectiles.Ranged
                 trailDust.noGravity = true;
                 if (attacking)
                 {
-                    Particle trail = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(10, 10), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, 15, Main.rand.NextFloat(0.6f, 0.8f), Color.RoyalBlue);
+                    Particle trail = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(10, 10), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, 15, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.NextBool(3) ? Color.SeaGreen : Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
             if (Main.rand.NextBool(8) && !attacking)
             {
-                Particle Star = new CritSpark(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f), Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
+                Particle Star = new CritSpark(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f), Color.SkyBlue, Main.rand.NextBool(3) ? Color.SeaGreen : Color.SkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
                 GeneralParticleHandler.SpawnParticle(Star);
             }
             time++;
@@ -79,9 +80,10 @@ namespace CalamityMod.Projectiles.Ranged
             // Explode on kill if attacking, else just poof out
             if (attacking)
             {
-                SoundStyle hitSound = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
-                SoundEngine.PlaySound(hitSound with { Volume = 2f }, Projectile.Center);
-
+                SoundStyle hitSound = new SoundStyle("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
+                SoundEngine.PlaySound(hitSound with { Volume = 1.5f , Pitch = 0.7f , MaxInstances = -1 }, Projectile.Center);
+                SoundStyle hitSound2 = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
+                SoundEngine.PlaySound(hitSound2 with { Volume = 3f }, Projectile.Center);
                 // Create Blast (If you want to know how to use this blast, check the projectile, it tells you exactly how to use it!)
                 float blastSize = 80;
                 float minMultiplier = 0.25f;
@@ -97,9 +99,13 @@ namespace CalamityMod.Projectiles.Ranged
                 // Add visuals here
                 for (int i = 0; i < 3; i++)
                 {
-                    Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.LightPink : Color.SkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
+                    Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.HotPink : Color.SeaGreen, Main.rand.NextFloat(0.6f, 0.9f), 30, 0.4f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
                 }
+                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.SeaGreen, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.02f, 12, true);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+                Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.25f, 12, true, 0.9f);
+                GeneralParticleHandler.SpawnParticle(blastRing2);
             }
             else
             {
