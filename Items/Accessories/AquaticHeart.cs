@@ -11,6 +11,10 @@ namespace CalamityMod.Items.Accessories
     public class AquaticHeart : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float WaterSpeedBoost = 0.15f;
+        public static double IceShieldAllDamageReduction = 0.2D;
+
         public override void Load()
         {
             // All code below runs only if we're not loading on a server

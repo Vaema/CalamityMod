@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.toxicHeart = true;
+            modPlayer.toxicHeartVisuals = !hideVisual;
         }
     }
 }

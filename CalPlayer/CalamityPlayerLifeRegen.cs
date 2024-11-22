@@ -644,7 +644,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 3;
 
             if (sRegen)
-                Player.lifeRegen += 2;
+                Player.lifeRegen += SpiritGlyph.RegenBoost;
 
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
@@ -656,7 +656,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += TheAbsorber.AuraRegenBoost;
 
             if (hallowedRegen)
-                Player.lifeRegen += 3;
+                Player.lifeRegen += HallowedRune.RegenBoost;
 
             if (affliction || afflicted)
                 Player.lifeRegen += 1;
@@ -680,7 +680,7 @@ namespace CalamityMod.CalPlayer
 
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
-                Player.lifeRegen += 2;
+                Player.lifeRegen += PhantomicArtifact.RegenBoost;
                 if (Main.rand.NextBool())
                 {
                     Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
@@ -900,16 +900,27 @@ namespace CalamityMod.CalPlayer
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
+                float minLifeRegen = -20; // Fastest rate
+                float maxLifeRegen = 15; // Slowest rate
                 int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(200);
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
-                pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
+                float lifeRegenRate = Utils.Remap(Player.lifeRegen, minLifeRegen, maxLifeRegen, 20, 1, true);
+
+                if (pulseRate < lifeRegenRate) // Jump to fastest pulse rate and slowly slow down if life regen increases
+                    pulseRate = lifeRegenRate;
+                else
+                    pulseRate = MathHelper.Lerp(pulseRate, lifeRegenRate, 0.002f);
+
                 if (pulseCounter >= 420)
                 {
                     Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
-                    float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
-                    SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
-                    SoundEngine.PlaySound(heartbeat with { Volume = soundVolume, PitchVariance = 0.2f }, Player.Center);
+                    if (toxicHeartVisuals)
+                    {
+                        float soundVolume = Utils.Remap(Player.lifeRegen, minLifeRegen, maxLifeRegen, 1f, 0.3f, true);
+                        SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
+                        SoundEngine.PlaySound(heartbeat with { Volume = soundVolume, PitchVariance = 0.2f }, Player.Center);
+                    }
                 }
                 else
                 {

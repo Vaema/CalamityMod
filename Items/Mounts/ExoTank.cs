@@ -151,14 +151,16 @@ namespace CalamityMod.Items.Mounts
                         if (angle > MathHelper.ToRadians(60f))
                             continue;
 
-                        canFireLasers = angle <= MathHelper.ToRadians(18f);
+                        if (canFireLasers && angle > MathHelper.ToRadians(18f))
+                            continue;
                     }
                     else
                     {
                         if (angle < MathHelper.ToRadians(120f))
                             continue;
 
-                        canFireLasers = angle >= MathHelper.ToRadians(162f);
+                        if (canFireLasers && angle < MathHelper.ToRadians(162f))
+                            continue;
                     }
 
                     float distance = targetDif.Length();
@@ -166,6 +168,7 @@ namespace CalamityMod.Items.Mounts
                     {
                         range = distance;
                         targetNPC = target.whoAmI;
+                        canFireLasers = (player.direction == 1 ? angle <= MathHelper.ToRadians(18f) : angle >= MathHelper.ToRadians(162f));
                     }
                 }
 

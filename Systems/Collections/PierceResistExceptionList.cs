@@ -6,6 +6,7 @@ using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Projectiles.Typeless;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -32,6 +33,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileID.Terragrim,
                 ProjectileType<AcidicSaxBubble>(),
                 ProjectileType<AcidRocket>(),
+                ProjectileType<ArtifactOfResilienceShards>(),
                 ProjectileType<BasherHoldout>(),
                 ProjectileType<BlushieStaffProj>(),
                 ProjectileType<BonebreakerProjectile>(),
@@ -54,6 +56,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<HellbornHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
+                ProjectileType<HolyColliderHoldout>(),
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),
@@ -72,8 +75,10 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<PrismaticRay>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
+                ProjectileType<RelicOfDeliveranceSpear>(),
                 ProjectileType<RespiteblockHoldout>(),
                 ProjectileType<SacrificeProjectile>(),
+                ProjectileType<SkytideDragoonHoldout>(),
                 ProjectileType<SnapClamProj>(),
                 ProjectileType<SnapClamStealth>(),
                 ProjectileType<Snowflake>(),

@@ -16,14 +16,20 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor;
+using CalamityMod.Items.Armor.Auric;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
+using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
+using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
@@ -603,6 +609,7 @@ namespace CalamityMod.CalPlayer
         public bool holyMinions = false;
         public bool alchFlask = false;
         public bool toxicHeart = false;
+        public bool toxicHeartVisuals = false;
         public bool abaddon = false;
 
         public bool aeroStone = false;
@@ -1815,6 +1822,7 @@ namespace CalamityMod.CalPlayer
             holyMinions = false;
             alchFlask = false;
             toxicHeart = false;
+            toxicHeartVisuals = false;
             abaddon = false;
             aeroStone = false;
             lifejelly = false;
@@ -3878,7 +3886,7 @@ namespace CalamityMod.CalPlayer
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
-                    (aquaticHeartWaterBuff ? 0.15f : 0f) +
+                    (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (kamiBoost ? YanmeisKnife.RunAccelerationBoost : 0f) +
@@ -3895,7 +3903,7 @@ namespace CalamityMod.CalPlayer
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
-                    (aquaticHeartWaterBuff ? 0.15f : 0f) +
+                    (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (kamiBoost ? YanmeisKnife.RunSpeedBoost : 0f) +
@@ -4299,6 +4307,66 @@ namespace CalamityMod.CalPlayer
         #region Frame Effects
         public override void FrameEffects()
         {
+            // Mannequin frame effects
+            // These "players" never load Calamity's equippable bools so they need to be manually loaded
+            if (Player.isDisplayDollOrInanimate)
+            {
+                // Body
+                if (Player.armor[1].type == ModContent.ItemType<AuricTeslaBodyArmor>())
+                    Player.body = EquipLoader.GetEquipSlot(Mod, "AuricTeslaBodyArmor", EquipType.Body);
+                else if (Player.armor[1].type == ModContent.ItemType<DaedalusBreastplate>())
+                    Player.body = EquipLoader.GetEquipSlot(Mod, "DaedalusBreastplate", EquipType.Body);
+                else if (Player.armor[1].type == ModContent.ItemType<EmpyreanCloak>())
+                    Player.body = EquipLoader.GetEquipSlot(Mod, "EmpyreanCloak", EquipType.Body);
+                else if (Player.armor[1].type == ModContent.ItemType<SnowRuffianChestplate>())
+                    Player.body = EquipLoader.GetEquipSlot(Mod, "SnowRuffianChestplate", EquipType.Body);
+                else if (Player.armor[1].type == ModContent.ItemType<VictideBreastplate>())
+                    Player.body = EquipLoader.GetEquipSlot(Mod, "VictideBreastplate", EquipType.Body);
+
+                // Legs
+                if (Player.armor[2].type == ModContent.ItemType<VictideGreaves>())
+                    Player.legs = EquipLoader.GetEquipSlot(Mod, "VictideGreaves", EquipType.Legs);
+
+                // Set Bonus
+                if (Player.armor[0].type == ModContent.ItemType<SnowRuffianMask>()
+                && Player.armor[1].type == ModContent.ItemType<SnowRuffianChestplate>()
+                && Player.armor[2].type == ModContent.ItemType<SnowRuffianGreaves>())
+                    snowRuffianSet = true;
+
+                // Accessories
+                for (int i = 3; i < 8; i++)
+                {
+                    Item vanity = Player.armor[i];
+
+                    if (vanity.type == ModContent.ItemType<AbandonedWulfrumHelmet>())
+                        Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
+                    if (vanity.type == ModContent.ItemType<AbyssalDivingSuit>())
+                        abyssalDivingSuitForce = true;
+                    if (vanity.type == ModContent.ItemType<AquaticHeart>())
+                        aquaticHeartForce = true;
+                    if (vanity.type == ModContent.ItemType<CrystalHeartVodka>())
+                        Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped = true;
+                    if (vanity.type == ModContent.ItemType<GhostBracelet>())
+                        ghostBracelet = true;
+                    if (vanity.type == ModContent.ItemType<HapuFruit>())
+                        Player.GetModPlayer<HapuFruitPlayer>().vanityEquipped = true;
+                    if (vanity.type == ModContent.ItemType<OracleHeadphones>())
+                        Player.GetModPlayer<OracleHeadphonesPlayer>().vanityEquipped = true;
+                    if (vanity.type == ModContent.ItemType<Popo>())
+                        snowmanForce = true;
+                    if (vanity.type == ModContent.ItemType<ProfanedSoulCrystal>())
+                        profanedCrystalForce = true;
+                    if (vanity.type == ModContent.ItemType<PunchCard>())
+                        punchCard = true;
+                    if (vanity.type == ModContent.ItemType<SharkyPlush>())
+                        Player.GetModPlayer<SharkyPlushPlayer>().vanityEquipped = true;
+                    if (vanity.type == ModContent.ItemType<XyksBlessingBlue>())
+                        Player.GetModPlayer<XyksBlessingBluePlayer>().vanityEquipped = true;
+                    if (vanity.type == ModContent.ItemType<XyksBlessingOrange>())
+                        Player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
+                }
+            }
+
             if (Player.Calamity().andromedaState == AndromedaPlayerState.LargeRobot ||
                 Player.Calamity().andromedaState == AndromedaPlayerState.SpecialAttack)
             {
