@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 rainbowVel = Vector2.Normalize(Main.MouseWorld - rainbowPos) * Item.shootSpeed;
             Projectile.NewProjectile(source, rainbowPos, rainbowVel, type, damage, knockback, Main.myPlayer);
 
-            double rotationOffset = Math.Sin(Main.GlobalTimeWrappedHourly * (MathHelper.Pi / 1.5f)) * 0.4f;
+            double rotationOffset = Math.Sin((Main.GameUpdateCount / 60f) * (MathHelper.Pi / 1.5f)) * 0.4f;
             Projectile star = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(rotationOffset), ModContent.ProjectileType<PrismaticWave>(), damage, knockback, Main.myPlayer, 0f, Main.rand.Next(12), 1f);
             star.DamageType = DamageClass.Magic;
             star.scale = 0.7f;
