@@ -38,8 +38,7 @@ namespace CalamityMod.ILEditing
             exoDoorClosed = ModContent.TileType<ExoDoorClosed>();
 
             // Graphics
-            IL_Main.DoDraw += AdditiveDrawing;
-            IL_Main.DoDraw += DrawFloralParadiseFog;
+            IL_Main.DoDraw += CustomDoDrawChanges;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;
             On_Main.DrawInfernoRings += DrawForegroundParticles;
@@ -63,7 +62,6 @@ namespace CalamityMod.ILEditing
             On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
             On_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
-            IL_Projectile.Damage += RemoveLunaticCultistHomingResist;
 
             // Mechanics / features
             On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
@@ -143,12 +141,10 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
-            IL_Projectile.Damage += ReduceEoWGrenadeResist;
+            IL_Projectile.Damage += VanillaBossResistChanges;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
-            IL_Player.UpdateBuffs += NerfSharpeningStation;
-            IL_Player.UpdateBuffs += NerfBeetleScaleMail;
-            IL_Player.UpdateBuffs += NerfNebulaArmorBaseLifeRegenAndDamage;
+            IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
             // Movement speed balance
@@ -158,14 +154,10 @@ namespace CalamityMod.ILEditing
             IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
-            // Life regen balance
-            IL_Player.UpdateLifeRegen += PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen;
-            IL_Player.UpdateLifeRegen += RemoveNebulaLifeBoosterDoTImmunity;
-
-            // Mana regen balance
+            // Life regen and mana regen balance
+            IL_Player.UpdateLifeRegen += UpdateLifeRegenBalancingChanges;
+            IL_Player.UpdateManaRegen += UpdateManaRegenBalancingChanges;
             IL_Player.Update += ManaRegenDelayAdjustment;
-            IL_Player.UpdateManaRegen += ManaRegenAdjustment;
-            IL_Player.UpdateManaRegen += NerfNebulaArmorManaRegen;
 
             // Item prefix changes
             On_Player.GrantPrefixBenefits += PrefixChanges;
@@ -189,7 +181,6 @@ namespace CalamityMod.ILEditing
             Terraria.GameContent.Biomes.On_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
-            IL_Player.UpdateBuffs += RemoveFeralBiteRandomDebuffs;
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
