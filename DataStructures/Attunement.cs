@@ -627,7 +627,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 10;
+            item.reuseDelay = 12;
         }
     }
 
