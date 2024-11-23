@@ -371,6 +371,15 @@ BabyGhostBellJar: {
 	Tooltip: ""
 }
 
+CalamityCanvas: {
+	DisplayName: Calamity Canvas
+	Tooltip:
+		'''
+		<right> when placed to open a UI that allows you to zoom into specific sections of the painting
+		'Embrace chaos'
+		'''
+}
+
 CirrusCouch: {
 	DisplayName: Cirrus Couch
 	Tooltip: This shouldn't exist...

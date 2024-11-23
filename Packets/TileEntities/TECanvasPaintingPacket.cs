@@ -1,0 +1,51 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.TileEntities;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria;
+
+namespace CalamityMod.Packets
+{
+    public sealed class TECanvasPaintingPacket : CalamityPacket
+    {
+        public static TECanvasPaintingPacket Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.UpdateCanvasPainting;
+
+        public static void Send(TECanvasPainting cellFactory, float posX, float posY, float scale, int toClient = -1, int ignoreClient = -1)
+        {
+            if (cellFactory is null)
+                return;
+
+            var packet = Instance.CreateBasePacket();
+            packet.WriteTileEntityID(cellFactory);
+            packet.Write(posX);
+            packet.Write(posY);
+            packet.Write(scale);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var painting = packet.ReadTileEntity<TECanvasPainting>();
+            float posX = packet.ReadSingle();
+            float posY = packet.ReadSingle();
+            float scale = packet.ReadSingle();
+
+            if (painting is null)
+                return;
+
+            painting.framePosition = new Microsoft.Xna.Framework.Vector2(posX, posY);
+            painting.scale = scale;
+
+            // When a server gets this packet, it immediately sends an equivalent packet to all clients.
+            if (Main.dedServ)
+                Send(painting, posX, posY, scale);
+        }
+    }
+}

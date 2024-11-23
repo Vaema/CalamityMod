@@ -194,6 +194,7 @@ namespace CalamityMod.CalPlayer
         public int CurrentlyViewedFactoryID = -1;
         public int CurrentlyViewedChargerID = -1;
         public int CurrentlyViewedHologramID = -1;
+        public int CurrentlyViewedCanvasID = -1;
         public string CurrentlyViewedHologramText;
         #endregion
 
@@ -3013,6 +3014,7 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedFactoryID = -1;
             CurrentlyViewedChargerID = -1;
             CurrentlyViewedHologramID = -1;
+            CurrentlyViewedCanvasID = -1;
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 

@@ -245,6 +245,7 @@ namespace CalamityMod
         UpdateCodebreakerContainedStuff,
         UpdateCodebreakerDecryptCountdown,
         UnlockAbyssChests,
+        UpdateCanvasPainting,
 
         // Draedon Summoner
         CodebreakerSummonStuff,
