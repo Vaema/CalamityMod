@@ -75,8 +75,6 @@ namespace CalamityMod.Projectiles.Magic
             else
                 Lighting.AddLight(Projectile.Center, 0f, 0f, 1.25f);
 
-            Main.NewText(NoteSequence);
-
             if (AIState == 0f) // Orbiting the player
             {
                 // Keeps the projectile alive for as long as the weapon is being channeled
