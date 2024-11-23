@@ -2,6 +2,7 @@
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -19,6 +20,7 @@ namespace CalamityMod.Projectiles.Magic
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
+        private bool _hasSpawned;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -43,6 +45,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
+            if (!_hasSpawned)
+            {
+                NoteSequence = Owner.ownedProjectileCounts[Type] - 1;
+                _hasSpawned = true;
+            }
+            
             Timer++;
 
             // Slight size oscillation
@@ -67,6 +75,7 @@ namespace CalamityMod.Projectiles.Magic
             else
                 Lighting.AddLight(Projectile.Center, 0f, 0f, 1.25f);
 
+            Main.NewText(NoteSequence);
 
             if (AIState == 0f) // Orbiting the player
             {
@@ -81,7 +90,6 @@ namespace CalamityMod.Projectiles.Magic
                 // If the player stops using the weapon, switch to fade away mode
                 if (Owner.releaseUseItem)
                 {
-                    AnahitasArpeggio.MusicNoteAmt = 0;
                     Owner.Calamity().arpeggioCooldown = 40;
                     AIState = 1f;
                 }
@@ -197,5 +205,9 @@ namespace CalamityMod.Projectiles.Magic
             if (!SoundEngine.TryGetActiveSound(SingularSoundInstanceSystem.SoundSlot, out var activeSound))
                 SingularSoundInstanceSystem.PlaySingleInstance(AnahitasArpeggio.HitSound, 60, 60, Owner);
         }
+
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(Projectile.localAI[1]);
+
+        public override void ReceiveExtraAI(BinaryReader reader) => Projectile.localAI[1] = reader.ReadSingle();
     }
 }
