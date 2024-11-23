@@ -28,6 +28,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.HoldUp;
         }
 
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
         public override void AddRecipes()
         {
             CreateRecipe().

@@ -3,7 +3,6 @@ using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -20,7 +19,7 @@ namespace CalamityMod.Projectiles.Summon
 
         private ref float SpawnTimer => ref Projectile.ai[0];
 
-        private float ArmSwing => MathHelper.PiOver4 + Utils.Remap(MathF.Sin(Main.GlobalTimeWrappedHourly * 6.7f), -1f, 1f, -MathHelper.ToRadians(15f), MathHelper.ToRadians(15f));
+        private static float ArmSwing => MathHelper.PiOver4 + Utils.Remap(MathF.Sin(Main.GlobalTimeWrappedHourly * 6.7f), -1f, 1f, -MathHelper.ToRadians(15f), MathHelper.ToRadians(15f));
 
         private static readonly int MinionType = ModContent.ProjectileType<AmphibiansGuitarMinion>();
 
@@ -34,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             SpawnTimer++;
-            if (SpawnTimer > 19f && Owner.ownedProjectileCounts[MinionType] < 8)
+            if (SpawnTimer > 19f && Owner.ownedProjectileCounts[MinionType] < 8 && Main.myPlayer == Projectile.owner)
             {
                 Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
@@ -46,8 +45,6 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.owner,
                     Owner.ownedProjectileCounts[MinionType]);
                 SpawnTimer = 0f;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
             }
 
             ManageHoldout();
@@ -67,10 +64,6 @@ namespace CalamityMod.Projectiles.Summon
 
             // The direction this holdout's pointing at.
             float holdoutDirection = Projectile.velocity.ToRotation();
-
-            // A range from -1 to 1 for when the holdout is pointing downards of upwards, respectively.
-            // Used for the offsets.
-            float proximityLookingUpwards = Vector2.Dot(ownerToMouse.SafeNormalize(Vector2.Zero), -Vector2.UnitY * Owner.gravDir);
 
             int direction = MathF.Sign(ownerToMouse.X);
 

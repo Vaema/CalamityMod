@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (KeepRefreshingLifetime == true)
                 Timer++;
 
-            if (Projectile.timeLeft <= 1 || (KeepRefreshingLifetime == false && Main.myPlayer == Projectile.owner))
+            if (Projectile.timeLeft <= 1 || (KeepRefreshingLifetime == false))
             {
                 if (SoundEngine.TryGetActiveSound(OrbSoundSlot, out var ChargeSound))
                     ChargeSound?.Stop();

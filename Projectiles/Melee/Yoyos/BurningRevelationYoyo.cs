@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public float fade = 0;
         public int hitCooldown = 0;
 
-        public float yoyoPower = 0;
+        public ref float yoyoPower => ref Projectile.ai[2];
         public int yoyoPowerMax = 1000;
 
         public bool cloneYoyo = false;
@@ -211,7 +211,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 480);
         }
+
         public override bool? CanDamage() => canDamage ? null : false;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
