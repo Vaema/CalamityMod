@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.MainMenu
 {
-    public class CalamityMainMenu : ModMenu
+    public class CalamityClassicMainMenu : ModMenu
     {
         public class Cinder
         {
@@ -40,7 +40,7 @@ namespace CalamityMod.MainMenu
         } = new();
 
         public float remixLogoRotation = 0f;
-        public override string DisplayName => "Calamity Style";
+        public override string DisplayName => "Calamity Style - Classic";
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Logo");
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");
@@ -53,7 +53,7 @@ namespace CalamityMod.MainMenu
         // Before drawing the logo, draw the entire Calamity background. This way, the typical parallax background is skipped entirely.
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/MenuBackground").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/ClassicMenuBackground").Value;
 
             // Calculate the draw position offset and scale in the event that someone is using a non-16:9 monitor
             Vector2 drawOffset = Vector2.Zero;
