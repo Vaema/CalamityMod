@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.BaseItems;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useAnimation = Item.useTime = 80;
             Item.useTurn = true;
             Item.knockBack = 8f;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BalefulHarvesterHoldout>();
             Item.noMelee = true;

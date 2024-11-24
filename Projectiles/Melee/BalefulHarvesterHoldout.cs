@@ -1,17 +1,17 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using Terraria.Localization;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria;
-using Terraria.Audio;
-using CalamityMod.CalPlayer;
-using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -184,6 +184,17 @@ namespace CalamityMod.Projectiles.Melee
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
+            // Whoa on-hit effects !!!
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 sparkVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(4.5f, 6.5f);
+                CustomSprite critSpark = new(target.Center, sparkVel, 40, "CalamityMod/Particles/CritSpark", 1f, new Color(255, 85, 0), frameCount: 4, frame: Main.rand.Next(4));
+                GeneralParticleHandler.SpawnParticle(critSpark);
+            }
+            DesertProwlerSkullParticle skullEffect = new(target.Center, Vector2.Zero, Color.OrangeRed, Color.Black, 1f, 180f);
+            GeneralParticleHandler.SpawnParticle(skullEffect);
+
+            // Debuff and actually spawning the projectiles
             target.AddBuff(BuffID.OnFire3, 300);
             CalamityPlayer.HorsemansBladeOnHit(Owner, target.whoAmI, Projectile.damage, Projectile.knockBack * 0.5f, 0, ModContent.ProjectileType<BalefulHarvesterProjectile>());
         }
@@ -214,17 +225,17 @@ namespace CalamityMod.Projectiles.Melee
             if (time > (int)(timeMax * 0.1f) && doSwing)
             {
                 Asset<Texture2D> vanillaSmear = TextureAssets.Projectile[997];
-                Rectangle realVanillaSmearFrame = vanillaSmear.Frame(1, 4, 0, 0);
+                Rectangle vanillaSmearFrame = vanillaSmear.Frame(1, 4, 0, 0);
                 Asset<Texture2D> smear = ModContent.Request<Texture2D>("CalamityMod/Particles/SemiCircularSmearSwipe");
                 float smearOpacity = CalamityUtils.Convert01To010(time / timeMax);
-                Main.EntitySpriteDraw(vanillaSmear.Value, Projectile.Center - Main.screenPosition, realVanillaSmearFrame, new Color(193, 83, 43) * smearOpacity * 0.75f, FinalRotation - MathHelper.PiOver2, realVanillaSmearFrame.Size() / 2f, 1.25f, SpriteEffects.None);
+                Main.EntitySpriteDraw(vanillaSmear.Value, Projectile.Center - Main.screenPosition, vanillaSmearFrame, new Color(193, 83, 43) * smearOpacity * 0.75f, FinalRotation - MathHelper.PiOver2, vanillaSmearFrame.Size() / 2f, 1.25f, SpriteEffects.None);
                 Main.EntitySpriteDraw(smear.Value, Projectile.Center - Main.screenPosition, null, new Color(247, 115, 0) * smearOpacity, FinalRotation, smear.Size() / 2f, 1.8f, SpriteEffects.None);
 
                 if (smearOpacity > 0.65f)
                 {
                     Vector2 sparklePos = Projectile.Center - Main.screenPosition - (Vector2.UnitY.RotatedBy(FinalRotation + MathHelper.PiOver4 * Owner.direction) * 120f);
                     Asset<Texture2D> bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-                    Main.EntitySpriteDraw(bloom.Value, sparklePos, null, Color.White, 0f, bloom.Size() / 2f, 0.2f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(bloom.Value, sparklePos, null, Color.White * 0.75f, 0f, bloom.Size() / 2f, 0.2f, SpriteEffects.None);
                     Asset<Texture2D> sparkle = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar");
                     Main.EntitySpriteDraw(sparkle.Value, sparklePos, null, Color.Orange, 0f, sparkle.Size() / 2f, 2f, SpriteEffects.None);
                 }
