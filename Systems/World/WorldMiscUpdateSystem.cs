@@ -437,7 +437,7 @@ namespace CalamityMod.Systems
         #region Handle Primordial Wyrm Spawns
         public static void TrySpawnAEoW(Player player, CalamityPlayer modPlayer)
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient || !(modPlayer.ZoneAbyss || Main.zenithWorld) || !player.chaosState || player.dead)
+            if (Main.netMode == NetmodeID.MultiplayerClient || !(modPlayer.ZoneAbyss || Main.zenithWorld) || !player.chaosState || player.dead || BossRushEvent.BossRushActive)
                 return;
 
             bool adultWyrmAlive = CalamityGlobalNPC.adultEidolonWyrmHead != -1 && Main.npc[CalamityGlobalNPC.adultEidolonWyrmHead].active;
