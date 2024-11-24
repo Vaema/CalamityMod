@@ -73,7 +73,7 @@ namespace CalamityMod.UI
 
             // Draw a background square panel, then draw the actual painting
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, baseDrawPos, new Rectangle(0, 0, (int)dimension, (int)dimension), Color.Gray, 0, new Vector2(0, 0), 1f, 0, 0);
             spriteBatch.Draw(tex, posterDrawPos, null, Color.White, 0, new Vector2(0, 0), sizeRatio, 0, 0);
 

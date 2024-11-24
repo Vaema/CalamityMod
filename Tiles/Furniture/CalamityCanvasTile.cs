@@ -87,9 +87,10 @@ namespace CalamityMod.Tiles.Furniture
                 int fPY = (int)cube.framePosition.Y;
                 int scale = (int)(baseDimension * cube.scale);
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
                 spriteBatch.Draw(texture, pos - Main.screenPosition, new Rectangle(fPX, fPY, scale, scale), Lighting.GetColor(i, j), 0, new Vector2(0, 0), 1 / cube.scale, 0, 0);
-                spriteBatch.ExitShaderRegion();
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null);
             }
             return false;
         }
