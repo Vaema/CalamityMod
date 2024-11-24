@@ -36,6 +36,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 5f;
         }
 
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.Calamity().burningSeaBurnOut <= 0;
 
         public override void AddRecipes()

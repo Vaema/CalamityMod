@@ -91,6 +91,8 @@ namespace CalamityMod.Projectiles.Magic
 
                     Vector2 orbAttemptedVelocity = Vector2.Zero.MoveTowards(projLocation - Projectile.Center, 25f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, orbAttemptedVelocity, 0.08f);
+
+                    Projectile.netUpdate = true;
                 }
 
                 // Slowly increase in size as the fireball is charged up.
