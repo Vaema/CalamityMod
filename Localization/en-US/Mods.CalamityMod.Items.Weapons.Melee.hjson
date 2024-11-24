@@ -166,7 +166,7 @@ BalefulHarvester: {
 	Tooltip:
 		'''
 		A flaming scythe which is rapidly swung around three times in succession
-		Enemy hits summons flaming skulls that split into homing fire orbs
+		Enemy hits summon flaming skulls that split into homing fire orbs
 		'''
 }
 
