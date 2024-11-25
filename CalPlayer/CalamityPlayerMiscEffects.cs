@@ -2792,6 +2792,14 @@ namespace CalamityMod.CalPlayer
                     auralisAuroraCounter = 0;
                     auralisAuroraCooldown = CalamityUtils.SecondsToFrames(30f);
                 }
+                else if (auralisAuroraCounter > chargeDuration)
+                {
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        GlowSquareParticle fancySquares = new(Player.Center, Vector2.Zero, false, 2, 6.25f, new Color(92, 89, 251), true, MathHelper.ToRadians(auralisAuroraCounter * 2f * i));
+                        GeneralParticleHandler.SpawnParticle(fancySquares);
+                    }
+                }
 
                 if (auralisAuroraCounter > 0 && auralisAuroraCounter < chargeDuration && !usingScope)
                     auralisAuroraCounter--;
