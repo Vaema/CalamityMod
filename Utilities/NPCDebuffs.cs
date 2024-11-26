@@ -35,6 +35,7 @@ using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -99,13 +100,13 @@ namespace CalamityMod
             //
 
             // All bosses and several enemies are automatically immune to Pearl Aura.
-            if (CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss)
+            if (EnemyImmunitiesList.Includes(npc.type) || npc.boss)
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][ModContent.BuffType<PearlAura>()] = true;
 
             // Make all Cal NPCs immune to confused unless otherwise specified
             // Extra note: Clams are not in this list as they initially immune to Confused, but are no longer immune once aggro'd. This is set in their AI().
             bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(ModContent.GetInstance<CalamityMod>().Name);
-            if (!CalamityLists.confusionEnemyList.Contains(npc.type) && cal)
+            if (!ConfusionDebuffImmunitiesList.Includes(npc.type) && cal)
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 
             // Sets certain vanilla NPCs and all town NPCs to be immune to most debuffs.

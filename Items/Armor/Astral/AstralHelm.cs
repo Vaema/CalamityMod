@@ -53,6 +53,7 @@ namespace CalamityMod.Items.Armor.Astral
                 AddIngredient<AstralBar>(8).
                 AddIngredient(ItemID.MeteoriteBar, 6).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AstralBreastplate>()).
                 Register();
         }
     }

@@ -95,6 +95,7 @@ namespace CalamityMod.Projectiles.Magic
         // Adjusts the aim vector of the staff to point towards the mouse. This is Last Prism code.
         private void UpdateAim(Vector2 source, float speed)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimVector = Vector2.Normalize(Main.MouseWorld - source);
             if (aimVector.HasNaNs())
                 aimVector = -Vector2.UnitY;

@@ -56,16 +56,16 @@ namespace CalamityMod.UI.DebuffSystem
                 switch (i)
                 {
                     case 0:
-                        path += "Heat";
-                        break;
-                    case 1:
-                        path += "Sickness";
-                        break;
-                    case 2:
                         path += "Cold";
                         break;
-                    case 3:
+                    case 1:
                         path += "Electricity";
+                        break;
+                    case 2:
+                        path += "Heat";
+                        break;
+                    case 3:
+                        path += "Sickness";
                         break;
                     case 4:
                         path += "Water";

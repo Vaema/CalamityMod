@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<FlurrystormCannon>();
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()

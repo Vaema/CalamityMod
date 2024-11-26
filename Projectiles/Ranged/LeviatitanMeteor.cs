@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/Melee/AftershockRock";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public static int Lifetime = 600;
         public override void SetDefaults()
@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 38;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = Lifetime;
             Projectile.DamageType = DamageClass.Ranged;
         }
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

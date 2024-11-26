@@ -55,7 +55,7 @@ namespace CalamityMod.Tiles.AstralDesert
             return Color.White * MathHelper.Lerp(0.05f, 0.75f, brightness);
         }
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
 
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 

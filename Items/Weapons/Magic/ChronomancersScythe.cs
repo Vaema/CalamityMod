@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.IceSickle).
                 AddIngredient(ItemID.FastClock).
                 AddIngredient(ItemID.LunarBar, 10).
-                AddIngredient<CoreofEleum>(6).
+                AddIngredient<EssenceofEleum>(6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

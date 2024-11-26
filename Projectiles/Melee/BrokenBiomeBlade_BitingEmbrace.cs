@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6; //The true trolling is that we only really use this for the third swing.
+            Main.projFrames[Type] = 6; //The true trolling is that we only really use this for the third swing.
         }
         public override void SetDefaults()
         {
@@ -127,6 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 //Take the direction the sword is swung. FUCK not controlling the swing direction more than just left/right :|
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
@@ -153,7 +154,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = Owner.Center + (direction * ThrustDisplaceRatio() * 60);
 
                 Projectile.frameCounter++;
-                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Projectile.type])
+                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Type])
                     Projectile.frame++;
 
                 if (Main.rand.NextBool())

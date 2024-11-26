@@ -116,6 +116,9 @@ namespace CalamityMod.Tiles.BaseTiles
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             var tile = Main.tile[i, j];
             var texture = TextureAssets.Tile[Type].Value;
 

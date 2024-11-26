@@ -124,6 +124,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
@@ -149,7 +150,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = Owner.Center + (direction * ThrustDisplaceRatio() * 60);
 
                 Projectile.frameCounter++;
-                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Projectile.type])
+                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Type])
                     Projectile.frame++;
 
                 if (Main.rand.NextBool() && Owner.whoAmI == Main.myPlayer)

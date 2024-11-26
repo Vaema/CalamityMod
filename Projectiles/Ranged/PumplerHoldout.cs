@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 9;
+            Main.projFrames[Type] = 9;
         }
 
         private Player Owner => Main.player[Projectile.owner];
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.frameCounter >= 10) //10 fps anim
                 {
                     Projectile.frame++;
-                    if (Projectile.frame >= Main.projFrames[Projectile.type] - 1)
+                    if (Projectile.frame >= Main.projFrames[Type] - 1)
                         Projectile.frame = 0;
                     Projectile.frameCounter = 0;
                 }
@@ -174,6 +174,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Pumpler itself
+
                 float interpolant = Utils.GetLerpValue(5f, 25f, Owner.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Owner.SafeDirectionTo(Main.MouseWorld), interpolant);
@@ -232,8 +234,8 @@ namespace CalamityMod.Projectiles.Ranged
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Frame(1, 9, 0, Projectile.frame);
-            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Frame(1, 9, 0, Projectile.frame);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             Main.spriteBatch.ExitShaderRegion();
 

@@ -30,8 +30,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
 
         }
         public override void SetDefaults()
@@ -154,8 +154,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1f + ScaleEquation();
             Projectile.timeLeft = 2;
 
-            Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Calamity().mouseWorld, 0.05f * ThrowDisplace());
-            Projectile.Center = Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 40f * ThrowDisplace());
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            Projectile.Center = Vector2.Lerp(Projectile.Center, mouse, 0.05f * ThrowDisplace());
+            Projectile.Center = Projectile.Center.MoveTowards(mouse, 40f * ThrowDisplace());
 
             if ((Projectile.Center - Owner.Center).Length() > FourSeasonsGalaxia.AriesAttunement_Reach)
                 Projectile.Center = Owner.Center + Owner.SafeDirectionTo(Projectile.Center, Vector2.Zero) * FourSeasonsGalaxia.AriesAttunement_Reach;

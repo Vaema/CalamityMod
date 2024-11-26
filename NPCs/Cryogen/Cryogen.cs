@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
@@ -1298,7 +1299,7 @@ namespace CalamityMod.NPCs.Cryogen
                 FireDrawer = null;
 
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (currentPhase)
             {
                 case 2:
@@ -1317,7 +1318,7 @@ namespace CalamityMod.NPCs.Cryogen
                     texture = Phase6Texture.Value;
                     break;
                 default:
-                    texture = TextureAssets.Npc[NPC.type].Value;
+                    texture = TextureAssets.Npc[Type].Value;
                     break;
             }
 
@@ -1327,9 +1328,9 @@ namespace CalamityMod.NPCs.Cryogen
 
             NPC.DrawBackglow(Main.zenithWorld ? Color.Red : BackglowColor, 4f, spriteEffects, NPC.frame, screenPos);
 
-            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 origin = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 drawPos = NPC.Center - screenPos;
-            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color overlay = Main.zenithWorld ? Color.Red : drawColor;
             spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(overlay), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -1460,7 +1461,20 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 string key = "Mods.CalamityMod.Status.Progression.IceOreText";
                 Color messageColor = Color.LightSkyBlue;
-                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, TileID.SnowBlock, TileID.IceBlock, TileID.CorruptIce, TileID.FleshIce, TileID.HallowedIce, ModContent.TileType<AstralSnow>(), ModContent.TileType<AstralIce>());
+
+                List<int> tileTypes = [
+                    TileID.SnowBlock,
+                    TileID.IceBlock,
+                    TileID.CorruptIce,
+                    TileID.FleshIce,
+                    TileID.HallowedIce,
+                    ModContent.TileType<AstralSnow>(),
+                    ModContent.TileType<AstralIce>()
+                ];
+                // In Drunk world, it can also generate in Jungle grass due to Jungle/Snow overlap
+                if (Main.drunkWorld)
+                    tileTypes.Add(TileID.JungleGrass);
+                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }

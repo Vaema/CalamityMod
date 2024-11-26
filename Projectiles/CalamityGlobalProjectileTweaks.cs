@@ -115,7 +115,9 @@ namespace CalamityMod.Projectiles
                 #region CATEGORY 2: Weapon/Enemy Balancing
                 { ProjectileID.AdamantiteChainsaw, standardChainsawTweaks },
                 { ProjectileID.AdamantiteDrill, standardDrillTweaks },
+                { ProjectileID.AdamantiteGlaive, Do(TrueMelee, LocalIFrames(7)) },
                 { ProjectileID.Anchor, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.Arkhalis, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.Bee, Do(PiercingExact(2)) },
                 { ProjectileID.BeeArrow, Do(PointBlank, ExtraUpdatesExact(1)) },
                 { ProjectileID.BlackCounterweight, counterweightTweaks },
@@ -129,6 +131,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
+                { ProjectileID.CobaltNaginata, Do(TrueMelee, LocalIFrames(9)) },
                 { ProjectileID.CrystalBullet, standardBulletTweaks },
                 { ProjectileID.CrystalVileShardHead, Do(LocalIFrames(23)) },
                 { ProjectileID.CrystalVileShardShaft, Do(LocalIFrames(23)) },
@@ -177,6 +180,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.MoonlordBullet, standardBulletTweaks }, // Luminite Bullet
                 { ProjectileID.MythrilChainsaw, standardChainsawTweaks },
                 { ProjectileID.MythrilDrill, standardDrillTweaks },
+                { ProjectileID.MythrilHalberd, Do(TrueMelee, LocalIFrames(8)) },
                 { ProjectileID.NanoBullet, standardBulletTweaks },
                 { ProjectileID.NebulaDrill, standardDrillTweaks },
                 { ProjectileID.NebulaLaser, Do(ExtraUpdatesDelta(-1)) },
@@ -202,6 +206,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(1)) }, // Beam Sword projectile
+                { ProjectileID.Terragrim, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.ThunderStaffShot, Do(PiercingExact(3)) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
@@ -211,15 +216,12 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
-                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(2), TimeLeftExact(1400)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
                 #region CATEGORY 3: True Melee support
-                { ProjectileID.AdamantiteGlaive, trueMelee },
-                { ProjectileID.Arkhalis, trueMeleeNoSpeed },
                 { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
-                { ProjectileID.CobaltNaginata, trueMelee },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
                 { ProjectileID.GoldShortswordStab, trueMelee },
@@ -229,7 +231,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.JoustingLance, trueMelee },
                 { ProjectileID.LeadShortswordStab, trueMelee },
                 { ProjectileID.MushroomSpear, trueMelee },
-                { ProjectileID.MythrilHalberd, trueMelee },
                 { ProjectileID.NebulaChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.ObsidianSwordfish, trueMelee },
                 { ProjectileID.OrichalcumHalberd, trueMelee },
@@ -243,7 +244,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Spear, trueMelee },
                 { ProjectileID.StardustChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.Swordfish, trueMelee },
-                { ProjectileID.Terragrim, trueMeleeNoSpeed },
                 { ProjectileID.TheRottedFork, trueMelee },
                 { ProjectileID.TinShortswordStab, trueMelee },
                 { ProjectileID.TitaniumTrident, trueMelee },

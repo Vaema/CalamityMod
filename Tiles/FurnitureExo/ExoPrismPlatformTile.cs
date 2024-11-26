@@ -54,6 +54,9 @@ namespace CalamityMod.Tiles.FurnitureExo
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             int xPos = tile.TileFrameX;
             int frameOffset = (i + j) % 6 * AnimationFrameHeight;
             int yPos = tile.TileFrameY + frameOffset;

@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 4000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 4000;
         }
 
         public override void SetDefaults()

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.FurnitureAshen;
 using Terraria;
 using Terraria.ID;

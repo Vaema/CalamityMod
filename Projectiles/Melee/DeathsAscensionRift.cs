@@ -73,6 +73,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item104 with { Pitch = 0.4f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item71 with { Pitch = -0.4f }, Projectile.Center);
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 direction = Projectile.Center.DirectionTo(Main.MouseWorld) * 12;
                 int spreadfactor = 9;
                 for (int index = 0; index < DeathsAscension.ScytheShotAmount; ++index)

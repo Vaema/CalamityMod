@@ -41,8 +41,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -76,6 +76,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 oldDirection = direction;
@@ -97,7 +98,9 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     CurrentState = 1f;
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
+
                     //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
                     for (int i = 0; i <= 8; i++)
                     {

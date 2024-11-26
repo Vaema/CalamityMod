@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (TileBounceDelay > 0)
                     TileBounceDelay--;
 
-                Vector2 mousePos = Owner.Calamity().mouseWorld;
+                Vector2 mousePos = Owner.ClampedMouseWorld();
                 if (Vector2.Distance(Projectile.Center, mousePos) > 115f && TileBounceDelay == 0)
                 {
                     float accelerationFactor = 12f; // Higher number = Takes longer to turn around.

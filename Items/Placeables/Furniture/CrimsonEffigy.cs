@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
@@ -8,6 +9,11 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class CrimsonEffigy : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
+
+        public static float DamageBoost = 0.15f;
+        public static int DefenseBoost = 10;
+        public static float MaxHealthLossPercent = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseBoost, MaxHealthLossPercent.ToPercent());
 
         public override void SetDefaults()
         {

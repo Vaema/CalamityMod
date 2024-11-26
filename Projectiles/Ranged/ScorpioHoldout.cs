@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Spawns the projectile.
-            Projectile.NewProjectileDirect(
+            Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 GunTipPosition,
                 projectileVelocity.RotatedByRandom(isRMB ? 0f : MathHelper.PiOver4) * projSpeed * (isRMB ? 1f : Main.rand.NextFloat(0.8f, 1f)),
@@ -194,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = Request<Texture2D>(GlowTexture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);

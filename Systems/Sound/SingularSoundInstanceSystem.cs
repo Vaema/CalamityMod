@@ -44,11 +44,13 @@ namespace CalamityMod.Systems
                 {
                     bool foundSound = SoundEngine.TryGetActiveSound(SoundSlot, out var activeSound);
                     // If an attached entity stops existing, so does the sound.
-                    if (!foundSound || (AttachedEntity != null && !AttachedEntity.active))
+                    if (!foundSound || AttachedEntity == null || !AttachedEntity.active)
                     {
                         currentlyPlaying = false;
                         maxPlaytime = 0;
                         AttachedEntity = null;
+                        activeSound?.Stop();
+                        SoundSlot = SlotId.Invalid;
                         return;
                     }
                     // Otherwise, attach to the entity.

@@ -425,6 +425,7 @@ namespace CalamityMod.Items.Accessories
                     SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, Player.Center);
                     if (Player.whoAmI == Main.myPlayer)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Vector2 velocity = (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * GrappleVelocity;
                         Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), Player.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, Player.whoAmI);
 

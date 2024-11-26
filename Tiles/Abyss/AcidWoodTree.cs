@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

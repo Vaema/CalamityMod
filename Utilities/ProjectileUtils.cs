@@ -131,6 +131,31 @@ namespace CalamityMod
             }
         }
 
+        /// <summary>
+        /// Xyk's version of homing code<br />
+        /// Gives a projectile homing on a selected npc. It is recommended to use <see cref="ClosestNPCAt"/> to get a target.
+        /// </summary>
+        /// <param name="homingVelocity">The multiplier applied to the movement towards the target.</param>
+        /// <param name="maxSpeed">The cap on velocity for the projectile.</param>
+        /// <param name="inertia">The inertia of the homing. Generally you want to keep this anywhere from 1 (high inertia), to 0.9f (low inertia).</param>
+        /// <param name="overspeedReduction">The speed reduction applied to the projectile if it goes above max speed.</param>
+        /// <param name="accelerate">If the projectile should accelerate to max speed when there is no target. Good for projectiles with small homing range.</param>
+        public static void HomeInOnSelectedNPC(Projectile projectile, NPC target, bool ignoreTiles = true, float homingVelocity = 0.5f, float maxSpeed = 10, float inertia = 0.985f, float overspeedReduction = 0.95f, bool accelerate = false)
+        {
+            NPC targetedNPC = target;
+            if (targetedNPC != null && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, targetedNPC.Center, 1, 1)))
+            {
+                Vector2 position = targetedNPC.Center;
+                Vector2 moveToNPC = (position - projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (projectile.velocity.Length() < maxSpeed)
+                    projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
+                else
+                    projectile.velocity *= overspeedReduction;
+            }
+            if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
+                projectile.velocity *= 1.0055f;
+        }
+
         // NOTE - Do not under any circumstance use these predictive methods for enemies or bosses. It is intended for minions and player-created projectiles.
         // Due to its extremely precise nature, it will have little openings that allow players to react without dashing through the enemy.
         // The results will be neither fun nor fair.
@@ -674,14 +699,14 @@ namespace CalamityMod
             return false;
         }
 
-        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
             // Use a fallback for the frame.
             frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
 
-            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
             for (int i = 0; i < 10; i++)
@@ -710,17 +735,17 @@ namespace CalamityMod
             }
         }
 
-        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None)
+        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
             // Use a fallback for the frame.
             frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
 
-            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects);
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects, xPos, yPos);
             Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, effects, 0f);
         }
 

@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1] += 0.01f;
             Projectile.scale = Projectile.ai[1];
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= (3 * Main.projFrames[Projectile.type]))
+            if (Projectile.ai[0] >= (3 * Main.projFrames[Type]))
             {
                 Projectile.Kill();
                 return;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             if (++Projectile.frameCounter >= 3)
             {
                 Projectile.frameCounter = 0;
-                if (++Projectile.frame >= Main.projFrames[Projectile.type])
+                if (++Projectile.frame >= Main.projFrames[Type])
                 {
                     Projectile.hide = true;
                 }
@@ -101,12 +101,12 @@ namespace CalamityMod.Projectiles.Melee
         {
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
             Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5f) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5f) / 16));
-            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
+            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Type])
             {
                 colorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
-            Texture2D texture2D33 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture2D33 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             return true;
         }
 

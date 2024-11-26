@@ -37,15 +37,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             modItem.MaxCharge = 200f;
         }
 
-        public override bool AltFunctionUse(Player player) => false;
-
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0 && Item.Calamity().Charge > 0;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
-            return false;
-        }
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override void AddRecipes()
         {

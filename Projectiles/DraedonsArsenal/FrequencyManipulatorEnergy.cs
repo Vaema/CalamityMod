@@ -19,8 +19,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int Lifetime = 240;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 

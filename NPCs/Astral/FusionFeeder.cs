@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Astral
             value.Position.X += 40f;
             value.Position.Y -= 6f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -128,9 +128,6 @@ namespace CalamityMod.NPCs.Astral
                 // Move towards the target and lunge at them, releasing meteors.
                 if (attemptingToAttackTarget)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     NPC.TargetClosest(true);
                     NPC.velocity += new Vector2(NPC.direction, NPC.directionY) * 0.15f;
                     NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -6f, 6f);
@@ -170,9 +167,6 @@ namespace CalamityMod.NPCs.Astral
                 }
                 else
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     // Rebound on collision.
                     if (NPC.collideX)
                     {
@@ -218,9 +212,6 @@ namespace CalamityMod.NPCs.Astral
             }
             else
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (NPC.velocity.Y == 0f)
                 {
                     // Search for any potential closer targets if attempting to attack.
@@ -293,7 +284,7 @@ namespace CalamityMod.NPCs.Astral
                 drawColor = Color.White;
 
             //draw shark
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             //draw glowmask
             spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos + offset, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);

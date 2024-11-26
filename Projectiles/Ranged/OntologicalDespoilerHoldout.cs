@@ -31,12 +31,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public ref float CurrentChargingFrames => ref Projectile.ai[0];
         public float ShotsLoaded = 1;
-        public Color baseColor = Color.White;
-
-        public Color color1 = Color.DarkMagenta;
-        public Color color2 = Color.DarkOrchid;
-        public Color color3 = Color.Purple;
-        public Color color4 = Color.BlueViolet;
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color color1;
+        public Color color2;
+        public Color color3;
+        public Color color4;
 
         public bool hasBegunFiring = false;
         public bool Positive => (Projectile.ai[2] == 0 || Projectile.ai[2] == 10);
@@ -74,24 +73,34 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            color1 = Owner.shirtColor;
+            color2 = Color.Lerp(Owner.shirtColor, Color.Black, 0.3f);
+            color3 = Color.Lerp(Owner.shirtColor, Color.White, 0.2f);
+            color4 = Color.Lerp(Owner.shirtColor, Color.White, 0.4f);
+
             if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
 
-            float rate = (Main.GlobalTimeWrappedHourly * 15);
-            List<Color> eColors = new List<Color>()
+            if (Owner.shirtColor != Color.White)
+            {
+                float rate = (Main.GlobalTimeWrappedHourly * 15);
+                List<Color> eColors = new List<Color>()
                 {
                     color1,
                     color2,
                     color3,
                     color4
                 };
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            }
 
             if ((!Positive && Projectile.ai[2] < 10) || Projectile.ai[2] == 15) // Color is white when Negative
                 baseColor = Color.White;
+            else if (Owner.shirtColor == Color.White)
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             #region Frame control
             Projectile.frameCounter++;
@@ -150,14 +159,9 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     for (int i = 0; i < 18; i++)
                     {
-                        Color useColor = Main.rand.Next(4) switch
-                        {
-                            0 => color1,
-                            1 => color2,
-                            2 => color3,
-                            _ => color4,
-                        };
-                        Dust dust = Dust.NewDustPerfect(Owner.Center, !Positive ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f));
+                        Color useColor = GetRandomColor();
+
+                        Dust dust = Dust.NewDustPerfect(Owner.Center, !Positive ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f));
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.9f, 1.25f);
                         dust.color = Projectile.ai[2] == 15 ? baseColor : useColor;
@@ -168,7 +172,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (Main.rand.NextBool() && Time > 1)
                 {
-                    Dust dust = Dust.NewDustPerfect(GunTipPosition - (Projectile.velocity * 60).RotatedBy(0.15f * Projectile.direction), Projectile.ai[2] == 15 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 14).RotatedBy(MathHelper.ToRadians(-135f) * Projectile.direction).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.6f, 1f));
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition - (Projectile.velocity * 60).RotatedBy(0.15f * Projectile.direction), Projectile.ai[2] == 15 ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), (Projectile.velocity * 14).RotatedBy(MathHelper.ToRadians(-135f) * Projectile.direction).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.6f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.8f, 0.9f) * Utils.GetLerpValue(-10, 15, Projectile.timeLeft);
                     dust.color = baseColor;
@@ -199,7 +203,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                         int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
-                        int charge2DamageNeg = Projectile.damage * 32;
+                        int charge2DamageNeg = Projectile.damage * 28;
 
                         if (Positive)
                         {
@@ -219,15 +223,10 @@ namespace CalamityMod.Projectiles.Ranged
 
                         for (int i = 0; i < 20; i++)
                         {
-                            Color useColor = Main.rand.Next(4) switch
-                            {
-                                0 => color1,
-                                1 => color2,
-                                2 => color3,
-                                _ => color4,
-                            };
+                            Color useColor = GetRandomColor();
+
                             float rand = Main.rand.NextFloat(0, 2.5f);
-                            Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, ModContent.DustType<VoidDust>(), shootVelocity.RotatedByRandom(0.12f + rand * 0.2f) * (Main.rand.NextFloat(2.5f, 6.3f) - rand));
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, (i % 2 == 0 ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), shootVelocity.RotatedByRandom(0.12f + rand * 0.2f) * (Main.rand.NextFloat(2.5f, 6.3f) - rand));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(1.55f, 1.85f);
                             dust.color = Positive ? useColor : baseColor;
@@ -275,7 +274,7 @@ namespace CalamityMod.Projectiles.Ranged
                         SoundEngine.PlaySound(OntologicalDespoiler.SmallShot, Projectile.position);
                         for (int i = 0; i < 3; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, !Positive ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 2.3f));
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, !Positive ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 2.3f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(1.15f, 1.35f);
                             dust.color = baseColor;
@@ -320,7 +319,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Vector2 dustVel = -Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(1.1f, 15.8f);
                         Vector2 addedPlace = Positive ? Vector2.Zero : dustVel * 3;
                         bool dustChance = Main.rand.NextBool((int)(30 * Utils.GetLerpValue(Charge2Frames, Charge1Frames, CurrentChargingFrames, true) + 1));
-                        int dustType = !Positive ? ModContent.DustType<VoidDust>() : ChargeLV1 ? (dustChance ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>()) : ModContent.DustType<LightDust>();
+                        int dustType = !Positive ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ChargeLV1 ? (dustChance ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>()) : ModContent.DustType<LightDust>();
                         
                         Dust dust = Dust.NewDustPerfect(GunTipPosition + (Positive ? Vector2.Zero : (dustVel * 15 * Utils.GetLerpValue(Charge1Frames, Charge2Frames, CurrentChargingFrames, true))), dustType, dustVel - addedPlace * Utils.GetLerpValue(Charge1Frames, Charge2Frames, CurrentChargingFrames, true));
                         dust.noGravity = true;
@@ -342,9 +341,9 @@ namespace CalamityMod.Projectiles.Ranged
                         GeneralParticleHandler.SpawnParticle(orb);
                         bool color = Main.rand.NextBool(4);
                         Vector2 dustVel = -Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(1.1f, 15.8f);
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<VoidDust>(), dustVel);
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, (color ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), dustVel);
                         dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.5f, 1.25f) * (color ? 1.8f : 1);
+                        dust.scale = Main.rand.NextFloat(0.5f, 1.25f);
                         dust.color = color ? Color.Black : baseColor;
                     }
                 }
@@ -355,14 +354,9 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV1, Projectile.Center);
                     for (int i = 0; i < 16; i++)
                     {
-                        Color useColor = Main.rand.Next(4) switch
-                        {
-                            0 => color1,
-                            1 => color2,
-                            2 => color3,
-                            _ => color4,
-                        };
-                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>());
+                        Color useColor = GetRandomColor();
+
+                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, !Positive ? (i % 2 == 0 ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>());
                         chargefull.velocity = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * 16f * (i % 2 == 0 ? 0.7f : 1);
                         chargefull.scale = Main.rand.NextFloat(1.1f, 1.3f);
                         chargefull.noGravity = true;
@@ -375,16 +369,11 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ChargeLV2 && !hasReachedLV2)
                 {
                     SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV2, Projectile.Center);
-                    for (int i = 0; i < 25; i++)
+                    for (int i = 0; i < 24; i++)
                     {
-                        Color useColor = Main.rand.Next(4) switch
-                        {
-                            0 => color1,
-                            1 => color2,
-                            2 => color3,
-                            _ => color4,
-                        };
-                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>());
+                        Color useColor = GetRandomColor();
+                        
+                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, !Positive ? (i % 2 == 0 ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>());
                         chargefull.velocity = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 22f * (i % 2 == 0 ? 0.7f : 1);
                         chargefull.scale = Main.rand.NextFloat(1.45f, 1.55f);
                         chargefull.noGravity = true;
@@ -412,7 +401,19 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound))
                 ChargeSound?.Stop();
         }
-
+        public Color GetRandomColor()
+        {
+            Color useColor = Main.rand.Next(4) switch
+            {
+                0 => color1,
+                1 => color2,
+                2 => color3,
+                _ => color4,
+            };
+            if (Owner.shirtColor == Color.White)
+                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+            return useColor;
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             if (Time < 3)

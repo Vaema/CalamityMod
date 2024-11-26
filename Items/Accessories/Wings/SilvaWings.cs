@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Accessories.Wings
     public class SilvaWings : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories.Wings";
+        public const int LifeRegenTimerMax = 900;
 
         public override void SetStaticDefaults()
         {
@@ -33,11 +34,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if ((player.armor[0].type == ModContent.ItemType<SilvaHeadSummon>() || player.armor[0].type == ModContent.ItemType<SilvaHeadMagic>()) &&
-                player.armor[1].type == ModContent.ItemType<SilvaArmor>() && player.armor[2].type == ModContent.ItemType<SilvaLeggings>())
-            {
-                player.Calamity().silvaWings = true;
-            }
+            player.Calamity().silvaWings = true;
 
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {

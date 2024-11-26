@@ -32,11 +32,11 @@ namespace CalamityMod.Buffs.StatDebuffs
 
             if (Main.rand.Next(5) >= 0)
             {
-                int dust = Dust.NewDust(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, ModContent.DustType<AbsorberDust>(), npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 2.5f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity.Y -= 1.8f;
-                Main.dust[dust].velocity.Y *= 2.5f;
-                Main.dust[dust].noGravity = true;
+                Dust dust = Dust.NewDustDirect(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, ModContent.DustType<AbsorberDust>(), npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 2.5f);
+                dust.noGravity = true;
+                dust.velocity.Y -= 1.8f;
+                dust.velocity.Y *= 2.5f;
+                dust.noGravity = true;
             }
         }
     }

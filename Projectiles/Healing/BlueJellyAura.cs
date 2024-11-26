@@ -4,7 +4,9 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,7 +38,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = CleansingJelly.AuraLifetime + 10;
         }
 
         public override void AI()
@@ -55,8 +57,8 @@ namespace CalamityMod.Projectiles.Healing
                     CleansingEffect = 1;
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
-                        int hasBuff = player.buffType[l];
-                        if (player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                        int buffID = player.buffType[l];
+                        if (player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
                         {
                             player.buffTime[l] *= 0;
                         }
@@ -110,7 +112,7 @@ namespace CalamityMod.Projectiles.Healing
                     dust.noGravity = true;
                 }
 
-                if (Framecounter == 1800)
+                if (Framecounter == CleansingJelly.AuraLifetime)
                 {
                     ShinkGrow = 2;
                 }

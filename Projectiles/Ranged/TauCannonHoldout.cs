@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items;
+﻿using System.IO;
+using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -93,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             CalamityGlobalItem modItem = Owner.ActiveItem().Calamity();
 
-            if (Owner.CantUseHoldout() && KeepRefreshingLifetime == true)
+            if (Owner.CantUseHoldout() && KeepRefreshingLifetime)
             {
                 KeepRefreshingLifetime = false;
                 Projectile.timeLeft = State switch
@@ -103,6 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
                     AIState.Level3 => 95 + CoolingDownTime + 1,
                     _ => 0,
                 };
+                Projectile.netUpdate = true;
             }
 
             if (KeepRefreshingLifetime == false && Main.myPlayer == Projectile.owner)
@@ -111,9 +113,9 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     case AIState.Level1:
 
-                        if (Projectile.timeLeft % 4 == 0 && Projectile.timeLeft > CoolingDownTime)
+                        if (Projectile.timeLeft % 4 == 0 && Projectile.timeLeft > CoolingDownTime && Main.myPlayer == Projectile.owner)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                                 GunTipPosition,
                                 Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.25f) * HeldItem.shootSpeed,
                                 ProjectileType<TauCannonBolt>(),
@@ -123,18 +125,20 @@ namespace CalamityMod.Projectiles.Ranged
                             OffsetLengthFromArm -= 5f;
                             SoundEngine.PlaySound(BoltShootSound with { Volume = 0.3f, Pitch = 0.8f }, GunTipPosition);
                         }
-                        if (!HasShotBeam)
-                            modItem.Charge -= 0.2f;
 
-                        HasShotBeam = true;
+                        if (!HasShotBeam)
+                        {
+                            modItem.Charge -= 0.2f;
+                            HasShotBeam = true;
+                        }
 
                         break;
 
                     case AIState.Level2:
 
-                        if (!HasShotBeam)
+                        if (!HasShotBeam && Main.myPlayer == Projectile.owner)
                         {
-                            Projectile.NewProjectileDirect(
+                            Projectile.NewProjectile(
                                 Projectile.GetSource_FromThis(),
                                 GunTipPosition,
                                 Projectile.velocity,
@@ -143,13 +147,10 @@ namespace CalamityMod.Projectiles.Ranged
                                 Projectile.knockBack * 3,
                                 Projectile.owner,
                                 ai1: Projectile.whoAmI);
-                            HasShotBeam = true;
                             OffsetLengthFromArm -= 25f;
-                            SoundEngine.PlaySound(SmallBeamSound, GunTipPosition);
-
                             modItem.Charge -= 0.8f;
-
                             HasShotBeam = true;
+                            SoundEngine.PlaySound(SmallBeamSound, GunTipPosition);
                         }
 
                         break;
@@ -160,7 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             if (Projectile.owner == Main.myPlayer)
                             {
-                                Projectile.NewProjectileDirect(
+                                Projectile.NewProjectile(
                                     Projectile.GetSource_FromThis(),
                                     GunTipPosition + Projectile.velocity * 25f,
                                     Projectile.velocity,
@@ -174,7 +175,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 int randomPortalAmount = Main.rand.Next(4, 5+1);
                                 for (int i = 0; i < randomPortalAmount; i++)
                                 {
-                                    Projectile.NewProjectileDirect(
+                                    Projectile.NewProjectile(
                                         Projectile.GetSource_FromThis(),
                                         Owner.Center + Main.rand.NextVector2CircularEdge(480f, 480f) * Main.rand.NextFloat(0.8f, 1.2f),
                                         Vector2.Zero,
@@ -186,7 +187,6 @@ namespace CalamityMod.Projectiles.Ranged
                             }
 
                             modItem.Charge -= 2.5f;
-
                             HasShotBeam = true;
                         }
 
@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            if (Projectile.timeLeft < CoolingDownTime && KeepRefreshingLifetime == false && Timer > TimePerCharge)
+            if (Projectile.timeLeft < CoolingDownTime && !KeepRefreshingLifetime && Timer > TimePerCharge)
             {
                 if (Projectile.timeLeft % 3 == 0)
                 {
@@ -248,7 +248,7 @@ namespace CalamityMod.Projectiles.Ranged
                     sound.Position = Projectile.Center;
             }
 
-            if (KeepRefreshingLifetime == true)
+            if (KeepRefreshingLifetime)
             {
                 if (Main.rand.NextBool(4))
                 {
@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (KeepRefreshingLifetime == true)
                 Timer++;
 
-            if (Projectile.timeLeft <= 1 || (KeepRefreshingLifetime == false && Main.myPlayer == Projectile.owner))
+            if (Projectile.timeLeft <= 1 || (KeepRefreshingLifetime == false))
             {
                 if (SoundEngine.TryGetActiveSound(OrbSoundSlot, out var ChargeSound))
                     ChargeSound?.Stop();
@@ -360,5 +360,9 @@ namespace CalamityMod.Projectiles.Ranged
 
             return false;
         }
+
+        public override void SendExtraAIHoldout(BinaryWriter writer) => writer.Write7BitEncodedInt(Projectile.timeLeft);
+
+        public override void ReceiveExtraAIHoldout(BinaryReader reader) => Projectile.timeLeft = reader.Read7BitEncodedInt();
     }
 }

@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         // Clone of Typeless/GenericElectricSpark but specfically benefits from whips
-        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
+        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Type] = true;
 
         public override void SetDefaults()
         {

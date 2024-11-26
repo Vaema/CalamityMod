@@ -66,6 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Projectile.timeLeft == MaxTwirlTime)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                     SoundEngine.PlaySound(SoundID.Item71, Projectile.Center);
                     for (int i = 0; i < 4; i++)

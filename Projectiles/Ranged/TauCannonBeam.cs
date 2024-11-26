@@ -69,7 +69,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AttachToSomething()
         {
-            if (Owner == null || !Owner.active || Owner.dead || Owner.CCed || Owner.noItems || Owner.ownedProjectileCounts[ProjectileType<TauCannonHoldout>()] == 0) return;
+            if (Owner == null || !Owner.active || Owner.dead || Owner.CCed || Owner.noItems || Owner.ownedProjectileCounts[ProjectileType<TauCannonHoldout>()] == 0 || Holdout.ModProjectile<TauCannonHoldout>() == null) 
+                return;
             Projectile.Center = Holdout.ModProjectile<TauCannonHoldout>().GunTipPosition + Holdout.velocity * (IsStage3Laser ? 20f : 5f);
         }
 
@@ -78,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             Owner ??= Main.player[Projectile.owner];
             Projectile.localNPCHitCooldown = IsStage3Laser ? 4 : -1;
 
-            float Lifet = (Lifetime - time);
+            float Lifet = Lifetime - time;
             if (!SoundEngine.TryGetActiveSound(BigBeamSoundSlot, out var sound))
                 BigBeamSoundSlot = SoundEngine.PlaySound(BigBeamSound with { Volume = 0.01f, IsLooped = true }, Projectile.Center);
             else
@@ -86,11 +87,6 @@ namespace CalamityMod.Projectiles.Ranged
                 sound.Position = Projectile.Center;
                 sound.Volume = Utils.GetLerpValue(0, 20, Lifet, true) * 100;
                 sound.Pitch = (1 - 1 * Utils.GetLerpValue(0, 20, Lifet, true)) * -1;
-            }
-            if (Lifet <= 1)
-            {
-                if (SoundEngine.TryGetActiveSound(BigBeamSoundSlot, out var ChargeSound))
-                    ChargeSound?.Stop();
             }
 
             Vector2 effectsPosition = Vector2.Lerp(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Main.rand.NextFloat());
@@ -108,6 +104,12 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             time++;
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (SoundEngine.TryGetActiveSound(BigBeamSoundSlot, out var ChargeSound))
+                ChargeSound?.Stop();
         }
     }
 }

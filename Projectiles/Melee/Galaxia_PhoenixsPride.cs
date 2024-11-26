@@ -44,8 +44,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -79,6 +79,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 initialized = true;
@@ -102,6 +103,7 @@ namespace CalamityMod.Projectiles.Melee
                         Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
 
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                     //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
                     for (int i = 0; i <= 8; i++)
@@ -201,6 +203,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
 
                     float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     float mouseAngleAdjusted = MathHelper.WrapAngle(Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One).ToRotation()) + MathHelper.Pi;
                     float deltaAngleShoot = Math.Abs(MathHelper.WrapAngle(rotationAdjusted - mouseAngleAdjusted));
 
@@ -208,9 +211,12 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         if (Owner.whoAmI == Main.myPlayer)
                         {
+                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One) * 15f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.PhoenixAttunement_BoltDamageReduction), 0f, Owner.whoAmI, 0.1f, MathHelper.Pi * 0.02f);
                         }
                         CanDirectFire = false;
+
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         AngleReset = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One).ToRotation();
                     }
 

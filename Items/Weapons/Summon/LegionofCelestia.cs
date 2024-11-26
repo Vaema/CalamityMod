@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<PlantationStaff>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentStardust, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

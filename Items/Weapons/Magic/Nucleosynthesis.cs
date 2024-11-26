@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -64,6 +64,7 @@ namespace CalamityMod.Items.Weapons.Magic
             else
                 return false;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 spawnOffset = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedBy(offsetAngle) * -Main.rand.NextFloat(40f, 96f);
             Vector2 shootDirection = (Main.MouseWorld - (position + spawnOffset)).SafeNormalize(Vector2.UnitX * player.direction);
             int beam = Projectile.NewProjectile(source, position + spawnOffset, shootDirection * shootSpeed, type, damage, knockback, player.whoAmI);
@@ -85,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Photosynthesis>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentNebula, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

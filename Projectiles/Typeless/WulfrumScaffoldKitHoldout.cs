@@ -83,6 +83,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
+            // 15NOV2024: Ozzatron: Intentionally not clamping Wulfrum Scaffolds despite combat applicability due to them being mechanically closer to a UI feature.
+
             if (Owner.channel && CanOwnerGoOn)
             {
                 //Initialize the position
@@ -140,7 +142,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.myPlayer != Owner.whoAmI)
                 return false;
 
-            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Effect tileEffect = Filters.Scene["CalamityMod:WulfrumScaffoldSelection"].GetShader().Shader;
 

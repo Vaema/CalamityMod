@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
-            ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
+            ItemID.Sets.GamepadWholeScreenUseRange[Type] = true;
+            ItemID.Sets.LockOnIgnoresCollision[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            position = Main.MouseWorld;
+            position = player.ClampedMouseWorld();
             var projectile = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
             projectile.originalDamage = Item.damage;
             player.UpdateMaxTurrets();

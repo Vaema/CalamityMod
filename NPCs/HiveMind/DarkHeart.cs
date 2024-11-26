@@ -14,8 +14,8 @@ namespace CalamityMod.NPCs.HiveMind
     {
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
@@ -56,7 +56,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -94,25 +94,18 @@ namespace CalamityMod.NPCs.HiveMind
                 if (NPC.velocity.Y > 0f)
                     NPC.velocity.Y *= deceleration;
 
-                NPC.velocity.Y -= acceleration;
-
-                if (NPC.velocity.Y > velocity)
-                    NPC.velocity.Y = velocity;
+                NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y - acceleration, -velocity * 1.5f, velocity);
             }
             else if (NPC.position.Y < Main.player[NPC.target].position.Y - 450f)
             {
                 if (NPC.velocity.Y < 0f)
                     NPC.velocity.Y *= deceleration;
 
-                NPC.velocity.Y += acceleration;
-
-                if (NPC.velocity.Y < -velocity)
-                    NPC.velocity.Y = -velocity;
+                NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y + acceleration, -velocity, velocity * 1.5f);
             }
 
             bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 300f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
             float distanceX = masterMode ? 200f : 400f;
-            float velocityX = velocity * 1.5f;
             if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
                 dropRain = false;
@@ -120,10 +113,7 @@ namespace CalamityMod.NPCs.HiveMind
                 if (NPC.velocity.X > 0f)
                     NPC.velocity.X *= deceleration;
 
-                NPC.velocity.X -= acceleration;
-
-                if (NPC.velocity.X > velocityX)
-                    NPC.velocity.X = velocityX;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X - acceleration, -velocity * 1.5f, velocity);
             }
             if (NPC.Center.X < Main.player[NPC.target].Center.X - distanceX)
             {
@@ -132,16 +122,13 @@ namespace CalamityMod.NPCs.HiveMind
                 if (NPC.velocity.X < 0f)
                     NPC.velocity.X *= deceleration;
 
-                NPC.velocity.X += acceleration;
-
-                if (NPC.velocity.X < -velocityX)
-                    NPC.velocity.X = -velocityX;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X + acceleration, -velocity, velocity * 1.5f);
             }
 
             if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                float rainDropRate = Main.getGoodWorld ? 8f : death ? 16f : revenge ? 20f : 24f;
+                float rainDropRate = Main.getGoodWorld ? 10f : death ? 20f : revenge ? 25f : 30f;
                 if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;

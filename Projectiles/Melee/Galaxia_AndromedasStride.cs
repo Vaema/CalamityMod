@@ -101,6 +101,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (State == 0f)
             {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.Center = Owner.Center + (direction * 70f * ChargeDisplacement());
@@ -114,9 +115,7 @@ namespace CalamityMod.Projectiles.Melee
                     for (int i = 0; i < 5; i++)
                     {
                         Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_BoltsDamageReduction), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
-                        {
-                            blast.timeLeft = 30;
-                        }
+                        blast.timeLeft = 30;
                     }
 
                     SoundEngine.PlaySound(SoundID.Item79, Projectile.Center);
@@ -148,9 +147,7 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 9; i++)
                         {
                             Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 9f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_BoltsDamageReduction), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
-                            {
-                                blast.timeLeft = 50;
-                            }
+                            blast.timeLeft = 50;
                         }
 
                         OverCharge = 20f;

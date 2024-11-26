@@ -60,6 +60,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient(ItemID.SunplateBlock, 3).
                 AddIngredient(ItemID.Feather).
                 AddTile(TileID.SkyMill).
+                SortAfterFirstRecipesOf(ModContent.ItemType<AerospecHat>()).
                 Register();
         }
     }

@@ -90,8 +90,8 @@ namespace CalamityMod.NPCs.SlimeGod
 
             NPC.defense = 6;
             NPC.LifeMaxNERB(420);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -666,7 +666,7 @@ namespace CalamityMod.NPCs.SlimeGod
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
             Texture2D pog = ZenithSeedEyeTexture.Value;
@@ -698,7 +698,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (!Main.zenithWorld)
             {
                 Vector2 drawPositionAdjustment = halfSize - screenPos + new Vector2(0f, NPC.gfxOffY);
-                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f;
+                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[Type] * 1.5f;
                 int twoConst = 2;
                 int coreID = 1;
 
@@ -775,8 +775,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 return;
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
-
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedSlimeGod);
 
             // Mark the Slime God as dead
             DownedBossSystem.downedSlimeGod = true;

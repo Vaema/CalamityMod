@@ -36,10 +36,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 rainbowPos = player.Center + (Vector2.Normalize(velocity) * Main.rand.NextFloat(-36f, 36f)).RotatedBy(MathHelper.PiOver2);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 rainbowVel = Vector2.Normalize(Main.MouseWorld - rainbowPos) * Item.shootSpeed;
             Projectile.NewProjectile(source, rainbowPos, rainbowVel, type, damage, knockback, Main.myPlayer);
 
-            double rotationOffset = Math.Sin(Main.GlobalTimeWrappedHourly * (MathHelper.Pi / 1.5f)) * 0.4f;
+            double rotationOffset = Math.Sin((Main.GameUpdateCount / 60f) * (MathHelper.Pi / 1.5f)) * 0.4f;
             Projectile star = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(rotationOffset), ModContent.ProjectileType<PrismaticWave>(), damage, knockback, Main.myPlayer, 0f, Main.rand.Next(12), 1f);
             star.DamageType = DamageClass.Magic;
             star.scale = 0.7f;
@@ -50,9 +51,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.RainbowGun).
+                AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.CrystalShard, 10).
                 AddIngredient(ItemID.SoulofLight, 10).
-                AddIngredient(ItemID.LunarBar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.Other
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
             NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             if (!Main.dedServ)
             {
                 DeathAnimationTexture = ModContent.Request<Texture2D>(Texture + "DEATH", AssetRequestMode.AsyncLoad);
@@ -130,6 +130,8 @@ namespace CalamityMod.NPCs.Other
             aiSwitchCounter++;
             if (ajitPaiDidNothingWrong && invincibleCounter < 6000)
             {
+                // On a technical level, the defense/DR stat is not being increased, but for player purposes he may as well be
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = true;
                 invincibleCounter++;
             }
             NPC.alpha -= 100;
@@ -155,6 +157,7 @@ namespace CalamityMod.NPCs.Other
             // Trigger the death animation
             else if (NPC.life <= 1 && invincibleCounter >= 6000)
             {
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = false;
                 NPC.life = 1;
                 if (!Dying)
                 {
@@ -419,7 +422,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 

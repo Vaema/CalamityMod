@@ -1,18 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -37,8 +31,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -117,6 +111,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 else
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for initial throw direction
                     Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                 }
                 Projectile.spriteDirection = Projectile.direction;
@@ -184,20 +179,19 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (time >= 150)
                     {
-                        NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(4000);
+                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
                         if (time == 150)
                         {
                             Projectile.extraUpdates = 25;
                         }
                         if (target != null)
                         {
-                            if (Projectile.numHits <= 0 && Projectile.velocity.Length() < 15)
-                                Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.9f;
-                            else if (Projectile.numHits <= 0)
-                                Projectile.velocity *= 0.9f;
+                            if (Projectile.numHits <= 0)
+                                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.85f, 15, 0.97f);
                         }
                         else if (time == 150)
                         {
+                            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for immediate direction impulse
                             Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                         }
                         Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 7, 0.13f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.65f, new Vector2(1, 0.3f), true, false, 1.3f);
@@ -249,13 +243,13 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     Particle Smear = new CustomPulse(rainSpot, Vector2.Zero, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-5, 5), 0, 0.35f, 12);
                     GeneralParticleHandler.SpawnParticle(Smear);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
                 }
                 else // Radiation Burst
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0, MaxInstances = -1 }, Projectile.Center);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + target.velocity * 32, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + target.velocity * 32, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
                 }
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);
@@ -282,7 +276,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (spinning)
             {
                 Main.EntitySpriteDraw(p.Value, drawPos + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4, null, Color.Chartreuse with { A = 0 } * 0.45f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, p.Size() * 0.5f, new Vector2(0.9f - 0.3f * Utils.GetLerpValue(25, 0, time, true), 1 + 0.6f * Utils.GetLerpValue(25, 0, time, true)) * Main.rand.NextFloat(1.25f, 1.4f), SpriteEffects.None);
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Chartreuse * 0.5f, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Chartreuse * 0.5f, 1);
             }
             return false;
         }

@@ -139,7 +139,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
         // For drawing the floating icon
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].TileFrameX < 36)
+            if (Main.tile[i, j].TileFrameX < 36 || Main.tile[i, j].IsTileActuallyInvisible())
                 return;
 
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/MonolithOfTheAccursedTile_IconRight").Value;

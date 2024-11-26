@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Armor.Mollusk
                 AddIngredient<MolluskHusk>(15).
                 AddIngredient<SeaPrism>(25).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<MolluskShelleggings>()).
                 Register();
         }
     }

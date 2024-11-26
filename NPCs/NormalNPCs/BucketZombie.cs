@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 3;
+            Main.npcFrameCount[Type] = 3;
             NPCID.Sets.Zombies[Type] = true;
         }
 

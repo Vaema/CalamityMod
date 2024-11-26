@@ -55,9 +55,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 17;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 17;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
@@ -316,7 +316,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 if (CurrentFrame < 9)
                     CurrentFrame = 9f;
                 CurrentFrame++;
-                if (CurrentFrame >= Main.npcFrameCount[NPC.type])
+                if (CurrentFrame >= Main.npcFrameCount[Type])
                     CurrentFrame = 9f;
                 NPC.frameCounter = 0;
             }
@@ -369,7 +369,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

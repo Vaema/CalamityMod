@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
         public int time = 0;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 14;
+            Main.projFrames[Type] = 14;
         }
 
         public bool Slashing = false;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.frameCounter <= 1)
                 return false;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects spriteEffects = Projectile.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
@@ -158,6 +158,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 speed = player.ActiveItem().shootSpeed * Projectile.scale;
             }
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;
 
             // Sync if a velocity component changes.

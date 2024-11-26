@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
         bool neartarget = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -132,8 +132,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int textureheight = tex.Height / Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int textureheight = tex.Height / Main.projFrames[Type];
             int y = textureheight * Projectile.frame;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y, tex.Width, textureheight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)tex.Width / 2f, (float)textureheight / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

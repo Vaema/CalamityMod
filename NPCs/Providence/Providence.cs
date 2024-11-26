@@ -168,8 +168,8 @@ namespace CalamityMod.NPCs.Providence
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 3;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 3;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -189,16 +189,16 @@ namespace CalamityMod.NPCs.Providence
 
                 // Normal textures
                 TextureAlt = ModContent.Request<Texture2D>(ProviPath + "Alt", AssetRequestMode.AsyncLoad);
-                TextureAltNight =  ModContent.Request<Texture2D>(ProviPath + "AltNight", AssetRequestMode.AsyncLoad);
-                TextureAttack =  ModContent.Request<Texture2D>(ProviPath + "Attack", AssetRequestMode.AsyncLoad);
-                TextureAttackNight =  ModContent.Request<Texture2D>(ProviPath + "AttackNight", AssetRequestMode.AsyncLoad);
-                TextureAttackAlt =  ModContent.Request<Texture2D>(ProviPath + "AttackAlt", AssetRequestMode.AsyncLoad);
-                TextureAttackAltNight =  ModContent.Request<Texture2D>(ProviPath + "AttackAltNight", AssetRequestMode.AsyncLoad);
-                TextureDefense =  ModContent.Request<Texture2D>(ProviPath + "Defense", AssetRequestMode.AsyncLoad);
-                TextureDefenseNight =  ModContent.Request<Texture2D>(ProviPath + "DefenseNight", AssetRequestMode.AsyncLoad);
-                TextureDefenseAlt =  ModContent.Request<Texture2D>(ProviPath + "DefenseAlt", AssetRequestMode.AsyncLoad);
-                TextureDefenseAltNight =  ModContent.Request<Texture2D>(ProviPath + "DefenseAltNight", AssetRequestMode.AsyncLoad);
-                TextureNight =  ModContent.Request<Texture2D>(ProviPath + "Night", AssetRequestMode.AsyncLoad);
+                TextureAltNight = ModContent.Request<Texture2D>(ProviPath + "AltNight", AssetRequestMode.AsyncLoad);
+                TextureAttack = ModContent.Request<Texture2D>(ProviPath + "Attack", AssetRequestMode.AsyncLoad);
+                TextureAttackNight = ModContent.Request<Texture2D>(ProviPath + "AttackNight", AssetRequestMode.AsyncLoad);
+                TextureAttackAlt = ModContent.Request<Texture2D>(ProviPath + "AttackAlt", AssetRequestMode.AsyncLoad);
+                TextureAttackAltNight = ModContent.Request<Texture2D>(ProviPath + "AttackAltNight", AssetRequestMode.AsyncLoad);
+                TextureDefense = ModContent.Request<Texture2D>(ProviPath + "Defense", AssetRequestMode.AsyncLoad);
+                TextureDefenseNight = ModContent.Request<Texture2D>(ProviPath + "DefenseNight", AssetRequestMode.AsyncLoad);
+                TextureDefenseAlt = ModContent.Request<Texture2D>(ProviPath + "DefenseAlt", AssetRequestMode.AsyncLoad);
+                TextureDefenseAltNight = ModContent.Request<Texture2D>(ProviPath + "DefenseAltNight", AssetRequestMode.AsyncLoad);
+                TextureNight = ModContent.Request<Texture2D>(ProviPath + "Night", AssetRequestMode.AsyncLoad);
 
                 // Fire glowmasks
                 Texture_Glow = ModContent.Request<Texture2D>(GlowPath + "Glow", AssetRequestMode.AsyncLoad);
@@ -217,16 +217,10 @@ namespace CalamityMod.NPCs.Providence
                 // Crystal glowmasks
                 Texture_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "Glow2", AssetRequestMode.AsyncLoad);
                 TextureAlt_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AltGlow2", AssetRequestMode.AsyncLoad);
-                TextureAltNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AltGlow2Night", AssetRequestMode.AsyncLoad);
                 TextureAttack_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AttackGlow2", AssetRequestMode.AsyncLoad);
-                TextureAttackNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AttackGlow2Night", AssetRequestMode.AsyncLoad);
                 TextureAttackAlt_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AttackAltGlow2", AssetRequestMode.AsyncLoad);
-                TextureAttackAltNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "AttackAltGlow2Night", AssetRequestMode.AsyncLoad);
                 TextureDefense_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "DefenseGlow2", AssetRequestMode.AsyncLoad);
-                TextureDefenseNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "DefenseGlow2Night", AssetRequestMode.AsyncLoad);
                 TextureDefenseAlt_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "DefenseAltGlow2", AssetRequestMode.AsyncLoad);
-                TextureDefenseAltNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "DefenseAltGlow2Night", AssetRequestMode.AsyncLoad);
-                TextureNight_Glow_2 = ModContent.Request<Texture2D>(GlowPath + "Glow2Night", AssetRequestMode.AsyncLoad);
             }
             #endregion
         }
@@ -2139,7 +2133,7 @@ namespace CalamityMod.NPCs.Providence
 
             Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
             Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
-            Texture2D textureGlow2 = offColor ? TextureNight_Glow_2.Value : Texture_Glow_2.Value;
+            Texture2D textureGlow2 = Texture_Glow_2.Value;
 
             void drawProvidenceInstance(Vector2 drawOffset, Color? colorOverride)
             {
@@ -2175,13 +2169,13 @@ namespace CalamityMod.NPCs.Providence
                         {
                             texture = offColor ? TextureDefenseNight.Value : TextureDefense.Value;
                             textureGlow = offColor ? TextureDefenseNight_Glow.Value : TextureDefense_Glow.Value;
-                            textureGlow2 = offColor ? TextureDefenseNight_Glow_2.Value : TextureDefense_Glow_2.Value;
+                            textureGlow2 = TextureDefense_Glow_2.Value;
                         }
                         else
                         {
                             texture = offColor ? TextureDefenseAltNight.Value : TextureDefenseAlt.Value;
                             textureGlow = offColor ? TextureDefenseAltNight_Glow.Value : TextureDefenseAlt_Glow.Value;
-                            textureGlow2 = offColor ? TextureDefenseAltNight_Glow_2.Value : TextureDefenseAlt_Glow_2.Value;
+                            textureGlow2 = TextureDefenseAlt_Glow_2.Value;
                         }
                     }
                     else
@@ -2191,19 +2185,19 @@ namespace CalamityMod.NPCs.Providence
                             case 1:
                                 texture = offColor ? TextureAltNight.Value : TextureAlt.Value;
                                 textureGlow = offColor ? TextureAltNight_Glow.Value : TextureAlt_Glow.Value;
-                                textureGlow2 = offColor ? TextureAltNight_Glow_2.Value : TextureAlt_Glow_2.Value;
+                                textureGlow2 = TextureAlt_Glow_2.Value;
                                 break;
 
                             case 2:
                                 texture = offColor ? TextureAttackNight.Value : TextureAttack.Value;
                                 textureGlow = offColor ? TextureAttackNight_Glow.Value : TextureAttack_Glow.Value;
-                                textureGlow2 = offColor ? TextureAttackNight_Glow_2.Value : TextureAttack_Glow_2.Value;
+                                textureGlow2 = TextureAttack_Glow_2.Value;
                                 break;
 
                             case 3:
                                 texture = offColor ? TextureAttackAltNight.Value : TextureAttackAlt.Value;
                                 textureGlow = offColor ? TextureAttackAltNight_Glow.Value : TextureAttackAlt_Glow.Value;
-                                textureGlow2 = offColor ? TextureAttackAltNight_Glow_2.Value : TextureAttackAlt_Glow_2.Value;
+                                textureGlow2 = TextureAttackAlt_Glow_2.Value;
                                 break;
 
                             default:
@@ -2216,7 +2210,7 @@ namespace CalamityMod.NPCs.Providence
                         spriteEffects = SpriteEffects.FlipHorizontally;
 
                     // Draw the main boss texture + its afterimages
-                    Vector2 RotationCenter = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+                    Vector2 RotationCenter = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
                     Color BaseColor = Color.White;
                     float Brightness = 0.5f; // Ranges from 0 (full vibrance) to 1 (pure white)
                     int maxAfterimages = 5;
@@ -2233,14 +2227,14 @@ namespace CalamityMod.NPCs.Providence
                                 AfterimageColor = colorOverride.Value;
 
                             Vector2 AfterimageBodyPosition = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                            AfterimageBodyPosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                            AfterimageBodyPosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                             AfterimageBodyPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                             spriteBatch.Draw(texture, AfterimageBodyPosition, NPC.frame, AfterimageColor.MultiplyRGBA(Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)), NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
                         }
                     }
 
                     Vector2 BasePosition = NPC.Center - screenPos;
-                    BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     BasePosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                     Color finalDrawColor = NPC.IsABestiaryIconDummy ? Color.White : (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity;
                     spriteBatch.Draw(texture, BasePosition, NPC.frame, finalDrawColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
@@ -2309,7 +2303,7 @@ namespace CalamityMod.NPCs.Providence
                                 AfterimageWingColor = colorOverride.Value;
 
                             Vector2 AfterimageGlowPosition = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                            AfterimageGlowPosition -= new Vector2(textureGlow.Width, textureGlow.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                            AfterimageGlowPosition -= new Vector2(textureGlow.Width, textureGlow.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                             AfterimageGlowPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                             spriteBatch.Draw(textureGlow, AfterimageGlowPosition, NPC.frame, AfterimageWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
@@ -2940,7 +2934,12 @@ namespace CalamityMod.NPCs.Providence
             if (player is null)
                 return;
             if (proj.Colliding(proj.Hitbox, player.Hitbox))
+            {
                 ApplyDebuffs(player, BaseDuration, NegativeHealValue);
+
+                if (proj.type == ModContent.ProjectileType<HolyBurnOrb>())
+                    proj.Kill();
+            }
         }
 
         // Include debuffs inflicted by Providence's projectiles for all her forms

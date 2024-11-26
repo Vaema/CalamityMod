@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 16;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 16;
         }
 
         public override void SetDefaults()
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 

@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -66,7 +66,7 @@ namespace CalamityMod.NPCs.Other
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[NPC.type] * frameHeight;
+            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[Type] * frameHeight;
         }
 
         public override Color? GetAlpha(Color drawColor)

@@ -8,18 +8,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class TitaniumShuriken : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 34;
             Item.damage = 41;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 9;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -27,8 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 2000;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<TitaniumShurikenProjectile>();
             Item.shootSpeed = 16f;
@@ -60,8 +53,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.TitaniumBar).
+            CreateRecipe().
+                AddIngredient(ItemID.TitaniumBar, 10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

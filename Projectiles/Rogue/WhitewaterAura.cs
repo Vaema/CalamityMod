@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 7;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Player player = Main.player[playerIndex];
                 float targetDist = Vector2.Distance(player.Center, Projectile.Center);
 
-                if (targetDist < 200f * areaScale && time % 6 == 0)
+                if (targetDist < 200f * areaScale && time % 12 == 0)
                 {
                     player.HealPlayer(1);
                 }

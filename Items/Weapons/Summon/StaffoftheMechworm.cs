@@ -55,19 +55,21 @@ namespace CalamityMod.Items.Weapons.Summon
             if (Main.myPlayer != owner.whoAmI)
                 return;
 
-            int curr = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MechwormHead>(), damage, knockback, owner.whoAmI, 0f, 0f);
+            Vector2 mouse = owner.ClampedMouseWorld();
+
+            int curr = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<MechwormHead>(), damage, knockback, owner.whoAmI, 0f, 0f);
             if (Main.projectile.IndexInRange(curr))
                 Main.projectile[curr].originalDamage = baseDamage;
-            curr = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MechwormBody>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
+            curr = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<MechwormBody>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
             if (Main.projectile.IndexInRange(curr))
                 Main.projectile[curr].originalDamage = baseDamage;
             int prev = curr;
-            curr = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MechwormBody>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
+            curr = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<MechwormBody>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
             if (Main.projectile.IndexInRange(curr))
                 Main.projectile[curr].originalDamage = baseDamage;
             Main.projectile[prev].localAI[1] = curr;
             prev = curr;
-            curr = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MechwormTail>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
+            curr = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<MechwormTail>(), damage, knockback, owner.whoAmI, Main.projectile[curr].identity, 0f);
             if (Main.projectile.IndexInRange(curr))
                 Main.projectile[curr].originalDamage = baseDamage;
             Main.projectile[prev].localAI[1] = curr;

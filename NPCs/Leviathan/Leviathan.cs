@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 3;
+            Main.npcFrameCount[Type] = 3;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
                 AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 900;
             NPC.height = 450;
             NPC.defense = 40;
-            NPC.DR_NERD(0.35f);
+            NPC.DR_NERD(0.3f);
             NPC.LifeMaxNERB(60000, 72000, 600000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -929,7 +929,7 @@ namespace CalamityMod.NPCs.Leviathan
             Texture2D texture = AttackTexture.Value;
             if (NPC.ai[0] == 1f || NPC.Calamity().newAI[3] < 180f)
             {
-                texture = TextureAssets.Npc[NPC.type].Value;
+                texture = TextureAssets.Npc[Type].Value;
             }
             SpriteEffects spriteEffects = SpriteEffects.FlipHorizontally;
             float xOffset = -50f;

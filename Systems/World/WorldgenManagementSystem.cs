@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.World;
@@ -101,6 +103,30 @@ namespace CalamityMod.Systems
                         if (GiantHive.CanPlaceGiantHive(origin, GenVars.structures))
                             break;
                     }
+                }));
+            }
+
+            // Move spawn point in Celebrationmk10 to not be in the Sulphurous Sea
+            int spawnPointIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
+            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.getGoodWorldGen)
+            {
+                tasks.Insert(spawnPointIndex + 1, new PassLegacy("Fix Tenth Anniversary Spawn", (progress, config) =>
+                {
+                    if ((Main.spawnTileX < Main.maxTilesX / 2 && GenVars.dungeonSide == -1) || (Main.spawnTileX > Main.maxTilesX / 2 && GenVars.dungeonSide == 1))
+                    {
+                        // Flip the side of the world you spawn on if it's the Dungeon side
+                        Main.spawnTileX = Main.maxTilesX - Main.spawnTileX;
+                        // Then fix the Y position of the spawn point
+                        for (int i = 0; i < Main.maxTilesY; i++)
+                        {
+                            if (Main.tile[Main.spawnTileX, i].HasTile)
+                            {
+                                Main.spawnTileY = i;
+                                break;
+                            }
+                        }
+                    }
+                        
                 }));
             }
 
@@ -362,7 +388,8 @@ namespace CalamityMod.Systems
             // Insert the Astral biome generation right before the final hardmode announcement.
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
             {
-                AstralBiome.PlaceAstralMeteor();
+                //Delaying it a bit so that weaker pcs dont suffer - Shade
+                ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
             }));
         }
         #endregion
@@ -547,7 +574,7 @@ namespace CalamityMod.Systems
                         }
                     }
 
-                    // Adds Desert Medallion to Sandstone Chests at a 20% chance
+                    // Adds Desert Medallion and The Comb to Sandstone Chests, each at a 20% chance
                     if (isSandstoneChest)
                     {
                         float rng = WorldGen.genRand.NextFloat();
@@ -558,6 +585,18 @@ namespace CalamityMod.Systems
                                 if (chest.item[inventoryIndex].IsAir)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<DesertMedallion>());
+                                    chest.item[inventoryIndex].stack = 1;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (rng < 0.4f)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (chest.item[inventoryIndex].IsAir)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<TheComb>());
                                     chest.item[inventoryIndex].stack = 1;
                                     break;
                                 }

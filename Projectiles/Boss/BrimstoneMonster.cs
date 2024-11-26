@@ -7,6 +7,7 @@ using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -350,7 +351,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int buffType = target.buffType[l];
-                            if (target.buffTime[l] > 0 && CalamityLists.amalgamBuffList.Contains(buffType))
+                            if (target.buffTime[l] > 0 && AmalgamBuffList.Includes(buffType))
                             {
                                 target.DelBuff(l);
                                 l--;
@@ -371,7 +372,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             lightColor.R = (byte)(255 * Projectile.Opacity);
             Main.spriteBatch.End();
             Effect shieldEffect = Filters.Scene["CalamityMod:HellBall"].GetShader().Shader;

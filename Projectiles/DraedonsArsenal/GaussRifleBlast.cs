@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
         }
 

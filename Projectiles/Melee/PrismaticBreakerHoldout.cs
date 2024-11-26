@@ -71,6 +71,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.ownedProjectileCounts[ModContent.ProjectileType<PrismaticMagicCircle>()] > 0)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 aimVector = (Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true)).SafeNormalize(Vector2.UnitY);
                 aimVector = Vector2.Normalize(Vector2.Lerp(aimVector, Vector2.Normalize(storedVelocity), LaserAimLag));
 

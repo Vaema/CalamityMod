@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -136,8 +136,8 @@ namespace CalamityMod.Projectiles.Summon
 
             // Open the mouth prior to firing.
             if (Time % canisterShootRate > canisterShootRate - 20)
-                Projectile.frame = (int)(Main.projFrames[Projectile.type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
-            Projectile.frame %= Main.projFrames[Projectile.type];
+                Projectile.frame = (int)(Main.projFrames[Type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
+            Projectile.frame %= Main.projFrames[Type];
 
             Vector2 spawnPosition = Projectile.Center;
             float shootSpeed = MathHelper.Lerp(8f, 29f, Utils.GetLerpValue(90f, 850f, target.Distance(spawnPosition), true));
@@ -251,10 +251,10 @@ namespace CalamityMod.Projectiles.Summon
                                  0);
             }
 
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
-                             headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             headTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              lightColor,
                              Projectile.rotation,
                              Projectile.Size * 0.5f,

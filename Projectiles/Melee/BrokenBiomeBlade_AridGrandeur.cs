@@ -111,6 +111,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Lighting.AddLight(Projectile.Center, new Vector3(1f, 0.56f, 0.56f) * ShredRatio);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Manage position and rotation
             direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             direction.Normalize();

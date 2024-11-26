@@ -39,7 +39,13 @@ namespace CalamityMod.Systems
                     SkyManager.Instance.Update(new GameTime());
             }
 
-            player.ManageSpecialBiomeVisuals("CalamityMod:BossRush", isActive);
+            if (SkyManager.Instance["CalamityMod:BossRush"] != null && isActive != SkyManager.Instance["CalamityMod:BossRush"].IsActive())
+            {
+                if (isActive)
+                    SkyManager.Instance.Activate("CalamityMod:BossRush");
+                else
+                    SkyManager.Instance.Deactivate("CalamityMod:BossRush");
+            }
         }
 
         public override float GetWeight(Player player) => 1f;

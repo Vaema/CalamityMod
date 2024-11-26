@@ -58,7 +58,9 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.soundDelay = 30;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.One);
+
             //Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
@@ -87,7 +89,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (!Projectile.active)
                 return false;
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
             Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.25f + 0.75f);
             SpriteEffects effect = SpriteEffects.None;
