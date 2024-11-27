@@ -218,6 +218,9 @@ namespace CalamityMod.Items.Weapons.Melee
 
             if (secondaryAttunement != null)
                 secondaryAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)secondaryAttunement.id));
+
+            if (mainAttunement == secondaryAttunement)
+                secondaryAttunement = null;
         }
 
         private static int ClampAttunementRange(int input)
