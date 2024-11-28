@@ -84,6 +84,8 @@ namespace CalamityMod
         public static string FramesToSeconds(this int frame) => float.Parse((frame / 60f).ToString("N2")).ToString();
         public static string Round(this float percent, string precision = "N4") => float.Parse((percent).ToString(precision)).ToString();
         public static string Round(this double percent, string precision = "N4") => float.Parse((percent).ToString(precision)).ToString();
+        public static string ToMph(this float velocity) => (velocity * 216000f / 42240f).ToString("N0");
+        public static string ToMphps(this float velocity) => (velocity * 60f * 216000f / 42240f).ToString("N2");
         public static string ToRegenPerSecond(this int regen) => float.Parse((regen * 0.5f).ToString("N2")).ToString();
         public static string ToJumpSpeedPercent(this float boost) => float.Parse((boost * 20f).ToString("N2")).ToString();
         public static string ToPercent(this float percent) => float.Parse((percent * 100f).ToString("N4")).ToString();
