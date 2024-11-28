@@ -1135,11 +1135,11 @@ namespace CalamityMod.Items
                 sb.Append('\n');
                 if (Main.keyState.IsKeyDown(Keys.LeftShift))
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * 5.01f).ToMph(), (asc + rise + fall).ToMphps()));
+                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format((rAcc * 0.08f).ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * 5.01f).ToMph(), (asc + rise + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');
-                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hStat.ToMph(), hStat.ToMphps()));
+                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hStat.ToMph(), (hStat * 0.08f).ToMphps()));
                     }
                 }
                 else
