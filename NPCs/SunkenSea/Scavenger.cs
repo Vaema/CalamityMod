@@ -3,14 +3,22 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Steamworks;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
@@ -19,6 +27,12 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class Scavenger : ModNPC
     {
+        public static Asset<Texture2D> walkTexture;
+
+        public static Asset<Texture2D> inspectTexture;
+
+        public static Asset<Texture2D> giveTexture;
+
         // Items that can be given to the Scavenger
         public static Dictionary<int, int> currencies = new Dictionary<int, int>();
 
@@ -48,6 +62,19 @@ namespace CalamityMod.NPCs.SunkenSea
         // Used during trading and as a cooldown
         public ref float TradeTimer => ref NPC.ai[3];
 
+        public ref float WalkTimer => ref NPC.Calamity().newAI[0];
+
+        public ref float TurnTimer => ref NPC.Calamity().newAI[1];
+
+        public ref float WalkOrStand => ref NPC.Calamity().newAI[2];
+
+        public bool ShouldUseWalkingFrames => NPC.velocity.X != 0 && ((WalkOrStand == 1 && Phase == (int)PhaseType.Idle) || (Phase == (int)PhaseType.FoundItem));
+
+        public bool ShouldUseInspectionFrames => Phase == (int)PhaseType.Bartering && TradeTimer < 80;
+
+        public bool ShouldUseGivingFrames => Phase == (int)PhaseType.Bartering && TradeTimer >= 80;
+
+
         public enum PhaseType
         {
             Idle = 0,
@@ -59,28 +86,24 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
-            Main.npcFrameCount[Type] = 4;
+            Main.npcFrameCount[Type] = 7;
 
             // Fill the currency list
             // The key is the item type, the value is how many rolls the item provides
-            currencies.Add((int)ItemID.CopperCoin, 1);
-            currencies.Add((int)ItemID.SilverCoin, 5);
-            currencies.Add((int)ItemID.GoldCoin, 10);
-            currencies.Add((int)ItemID.PlatinumCoin, 20);
-            currencies.Add((int)ItemID.WhitePearl, 5);
-            currencies.Add((int)ItemID.BlackPearl, 10);
-            currencies.Add((int)ItemID.PinkPearl, 20);
+            currencies.Add((int)ItemID.WhitePearl, 1);
+            currencies.Add((int)ItemID.BlackPearl, 2);
+            currencies.Add((int)ItemID.PinkPearl, 5);
 
             // Fill the rewards list
             // The key is the item type, the value is the item's rarity
-            rewards.Add(ModContent.ItemType<Baroclaw>(), 10f);
-            rewards.Add(ModContent.ItemType<PearlShard>(), 2f);
-            rewards.Add(ModContent.ItemType<HalibutCannon>(), 20f);
-            rewards.Add(ModContent.ItemType<PrismShard>(), 1f);
-            rewards.Add(ModContent.ItemType<Navystone>(), 1f);
-            rewards.Add(ModContent.ItemType<AmidiasSpark>(), 5f);
-            rewards.Add(ModContent.ItemType<Earth>(), 100f);
-            rewards.Add(ModContent.ItemType<AbandonedWulfrumHelmet>(), 10f);
+            rewards.Add(ModContent.ItemType<Driftwood>(), 0.5f);
+            rewards.Add(ModContent.ItemType<BurntSienna>(), 15f);
+            rewards.Add(ModContent.ItemType<Runestone>(), 0.2f);
+            rewards.Add(ModContent.ItemType<RuneSand>(), 0.2f);
+            rewards.Add(ModContent.ItemType<AmidiasSpark>(), 15f);
+            rewards.Add(ItemID.PalmWoodBreastplate, 10f);
+            rewards.Add(ItemID.PalmWoodHelmet, 10f);
+            rewards.Add(ItemID.PalmWoodGreaves, 10f);
 
             // Fill the drop pool
             foreach (var v in rewards)
@@ -88,14 +111,20 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Have the value act as a divisor since WeightedRandom prioritizes higher values
                 rewardsRoll.Add(v.Key, 1 / v.Value);
             }
+
+            if (!Main.dedServ)
+            {
+                walkTexture = ModContent.Request<Texture2D>(Texture + "Walking");
+                inspectTexture = ModContent.Request<Texture2D>(Texture + "Inspecting");
+                giveTexture = ModContent.Request<Texture2D>(Texture + "Giving");
+            }
         }
 
         public override void SetDefaults()
         {
-            NPC.noGravity = true;
             NPC.damage = 20;
             NPC.width = 48;
-            NPC.height = 69;
+            NPC.height = 48;
             NPC.defense = 5;
             NPC.lifeMax = 350;
             NPC.aiStyle = -1;
@@ -111,7 +140,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -135,16 +164,48 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
+            // Initialize its direction
+            if (NPC.direction == 0)
+                NPC.direction = Main.rand.NextBool() ? -1 : 1;
+
             switch (Phase)
             {
                 // Do idle stuff, actual behavior not determined rn
                 case (int)PhaseType.Idle:
-                    NPC.noGravity = false;
-                    NPC.noTileCollide = false;
+
+                    // Decide if it should walk or sit
+                    float movementSpeed = 1f;
+                    if (WalkTimer <= 0)
+                    {
+                        WalkTimer = Main.rand.Next(180, 340);
+                        WalkOrStand = WalkOrStand <= 0 ? 1 : -1;
+                    }
+                    // If it bumps into something, turn around
+                    if (TurnTimer <= 0 && NPC.velocity.X == 0 && WalkOrStand == 1)
+                    {
+                        NPC.direction *= -1;
+                        TurnTimer = 30;
+                    }
+                    // Move
+                    if (!NPC.justHit)
+                    {
+                        if (WalkOrStand == 1)
+                            NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, NPC.direction * movementSpeed, 0.05f);
+                        else if (NPC.velocity.Y == 0)
+                            NPC.velocity.X *= 0.95f;
+                    }
+                    else if (WalkOrStand == -1)
+                    {
+                        WalkTimer = 0;
+                    }
+
+                    StepUp();
+
                     // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
                     if (TradeTimer >= 0 && HeldItemIndex <= -1)
                     {
                         float curDist = 0;
+                        int currencyRarity = 0;
                         foreach (Item i in Main.ActiveItems)
                         {
                             if (!i.active)
@@ -161,6 +222,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 if (distance < curDist || curDist == 0)
                                 {
                                     HeldItemIndex = i.whoAmI;
+                                    currencyRarity = currencies[i.type];
                                 }
                                 curDist = distance;
                             }
@@ -170,6 +232,24 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             NPC.netUpdate = true;
                             Phase = (int)PhaseType.FoundItem;
+                            TurnTimer = 0;
+                            WalkTimer = 0;
+                            if (NPC.velocity.Y == 0)
+                                NPC.velocity.Y = -5;
+
+                            SoundEngine.PlaySound(SoundID.NPCHit51 with { Pitch = -0.4f }, NPC.Center);
+
+                            EmoteExpressionParticle.EmoteType eType = currencyRarity >= 5 ? EmoteExpressionParticle.EmoteType.DoubleExclamation : EmoteExpressionParticle.EmoteType.Exclamation;
+                            
+                            var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
+                            Particle emote = new EmoteExpressionParticle(
+                                NPC.Center + emoteDirection * 2f,
+                                emoteDirection,
+                                2.2f,
+                                Color.YellowGreen,
+                                Main.rand.Next(30, 46),
+                                eType);
+                            GeneralParticleHandler.SpawnParticle(emote);
                         }
                     }
                     // Increment the trade timer back to zero if it is below zero
@@ -179,11 +259,15 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Go to the item
                 case (int)PhaseType.FoundItem:
                     {
+                        NPC.direction = NPC.velocity.X.DirectionalSign();
+
                         // If the item is no longer valid, go back to idle behaviour
                         if (HeldItemIndex <= -1)
                         {
                             NPC.netUpdate = true;
                             Phase = (int)PhaseType.Idle;
+                            TurnTimer = 0;
+                            WalkTimer = 0;
                             return;
                         }
                         
@@ -195,19 +279,45 @@ namespace CalamityMod.NPCs.SunkenSea
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Idle;
+                            TurnTimer = 0;
+                            WalkTimer = 0;
                             break;
                         }
 
+                        // If it gets stuck, jump
+                        if (NPC.velocity.X == 0)
+                        {
+                            WalkTimer--;
+                            if (WalkTimer <= -30 && NPC.velocity.Y == 0)
+                            {
+                                WalkTimer = 120;
+                                NPC.velocity.Y = -6;
+                                TurnTimer--;
+                            }
+                        }
+
                         // Movement goes here
-                        NPC.noGravity = true;
-                        NPC.noTileCollide = true;
-                        NPC.velocity = NPC.DirectionTo(targetItem.Center) * 10;
+                        NPC.velocity.X = NPC.DirectionTo(targetItem.Center).X * 3;
+                        StepUp();
+
+                        // If 3 jumps fail, give up
+                        if (TurnTimer <= -3)
+                        {
+                            TurnTimer = 0;
+                            WalkTimer = 0;
+                            NPC.netUpdate = true;
+                            HeldItemIndex = -1;
+                            Phase = (int)PhaseType.Idle;
+                            TradeTimer = -CalamityUtils.SecondsToFrames(4);
+                        }
+
+                        int grabRangeX = 5;
+                        Rectangle itemGrabHitbox = new Rectangle((int)NPC.position.X - grabRangeX, (int)NPC.Center.Y, (int)NPC.width + grabRangeX * 2, (int)(NPC.height * 0.5f) + 20);
 
                         // Grab the item if close enough
-                        if (targetItem.Distance(NPC.Center) < 20)
+                        if (itemGrabHitbox.Distance(targetItem.position) < 5)
                         {
                             NPC.netUpdate = true;
-                            NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Bartering;
                             // If the item's stack is 1, despawn the item. Otherwise decrement its stack by 1.
                             if (targetItem.stack == 1)
@@ -216,21 +326,16 @@ namespace CalamityMod.NPCs.SunkenSea
                                 targetItem.stack--;
                             // Set the crab's held item type
                             HeldItemType = targetItem.type;
+                            TurnTimer = 0;
+                            WalkTimer = 0;
                         }
                     }
                     break;
                 // Ponder the held item then give a reward back
                 case (int)PhaseType.Bartering:
                     {
-                        NPC.noGravity = false;
-                        NPC.noTileCollide = false;
+                        NPC.velocity.X *= NPC.velocity.Y != 0 ? 0.96f : 0.9f;
                         TradeTimer++;
-                        // Do little hops (placeholder?)
-                        if (TradeTimer % 40 == 0 && TradeTimer < (50 * 2))
-                        {
-                            NPC.velocity.Y = -4;
-                        }
-
                         // Calculate the reward
                         if (TradeTimer == 132)
                         {
@@ -239,7 +344,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
 
                         // After some time, spit out a reward and go back to idle with a cooldown
-                        if (TradeTimer > (50 * 2) + 100)
+                        if (TradeTimer > 160)
                         {
                             NPC.netUpdate = true;
                             HeldItemIndex = -1;
@@ -251,14 +356,22 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Spawn the reward
                             if (HeldItemType > 0)
                             {
-                                int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X, (int)NPC.Center.Y - 80, NPC.width, NPC.height), HeldItemType);
-                                Main.item[i].velocity = new Vector2(Main.rand.NextFloat(-4f, 4f), -4);
+                                int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X + NPC.direction * 20, (int)NPC.Center.Y - 20, NPC.width, NPC.height), HeldItemType);
+                                Main.item[i].velocity = new Vector2(NPC.direction * 4, -1);
                             }
                             HeldItemType = 0;
                         }
                     }
                     break;
             }
+
+            if (WalkTimer > 0)
+                WalkTimer--;
+
+            if (TurnTimer > 0)
+                TurnTimer--;
+
+            NPC.spriteDirection = NPC.direction;
         }
         
         public int CalculateReward()
@@ -297,23 +410,83 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public static bool IsPassableTile(int x, int y)
+        {
+            return (!Main.tile[x, y].HasUnactuatedTile ||
+                !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
+        }
+
+        public void StepUp()
+        {
+            Vector2 position = NPC.position;
+            position.X += NPC.velocity.X;
+            int x = (int)((position.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1)) * NPC.direction) / 16f);
+            int y = (int)((position.Y + (float)NPC.height - 1f) / 16f);
+
+            if ((float)(x * 16) >= position.X + (float)NPC.width || (float)(x * 16 + 16) <= position.X)
+                return;
+
+            bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
+            bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
+            bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
+            bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
+            bool tile3AbovePassable = !Main.tile[x - NPC.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - NPC.direction, y - 3].TileType];
+
+            if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
+            {
+                float npcBottom = (float)(y * 16);
+                if (Main.tile[x, y].IsHalfBlock)
+                {
+                    npcBottom += 8f;
+                }
+                if (Main.tile[x, y - 1].IsHalfBlock)
+                {
+                    npcBottom -= 8f;
+                }
+                if (npcBottom < position.Y + (float)NPC.height)
+                {
+                    float percentageTileRisen = position.Y + (float)NPC.height - npcBottom;
+                    if (percentageTileRisen <= 16.1f)
+                    {
+                        NPC.gfxOffY += NPC.position.Y + (float)NPC.height - npcBottom;
+                        NPC.position.Y = npcBottom - (float)NPC.height;
+                        if (percentageTileRisen < 9f)
+                        {
+                            NPC.stepSpeed = 1f;
+                        }
+                        else
+                        {
+                            NPC.stepSpeed = 2f;
+                        }
+                    }
+                }
+            }
+        }
+
         public override void FindFrame(int frameHeight)
         {
-            if (Phase != (int)PhaseType.Bartering)
-                NPC.frame.Y = 0;
-            else
+            float frameCount = Main.npcFrameCount[Type] - 1;
+
+            if (ShouldUseWalkingFrames)
+                frameCount = 5;
+            else if (ShouldUseInspectionFrames)
+                frameCount = 23;
+            else if (ShouldUseGivingFrames)
+                frameCount = 12;
+
+            NPC.frameCounter++;
+            if (NPC.frameCounter > 6)
             {
-                if (TradeTimer < 66)
-                    NPC.frame.Y = frameHeight;
-                else if (TradeTimer < 133)
-                    NPC.frame.Y = frameHeight * 2;
-                else
-                    NPC.frame.Y = frameHeight * 3;
+                NPC.frame.Y++;
+                NPC.frameCounter = 0;
             }
-            /*NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;*/
+
+            // Reset frame when transitioning to giving animation
+            if (NPC.frame.Y >= frameCount || (Phase == (int)PhaseType.Bartering && TradeTimer == 80))
+            {
+                NPC.frame.Y = 0;
+                NPC.frameCounter = 0;
+            }
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -352,17 +525,37 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);
-            Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            int frameCount = Main.npcFrameCount[Type];
+            float extraPosOffset = 0;
+            if (ShouldUseWalkingFrames)
+            {
+                texture = walkTexture.Value;
+                frameCount = 6;
+            }
+            else if (ShouldUseInspectionFrames)
+            {
+                texture = inspectTexture.Value;
+                frameCount = 24;
+                extraPosOffset = 6;
+            }
+            else if (ShouldUseGivingFrames)
+            {
+                texture = giveTexture.Value;
+                frameCount = 13;
+            }
+            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / frameCount / 2);
+            Vector2 npcOffset = NPC.Center - screenPos + Vector2.UnitY * extraPosOffset;
+            npcOffset -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, npcOffset, texture.Frame(1, frameCount, 0, NPC.frame.Y), NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            Texture2D item = TextureAssets.Item[HeldItemType].Value;
-            Vector2 itemOffset = TradeTimer > 133 ? new Vector2(0, -40) : new Vector2(-8, 30);
-            if (TradeTimer < 66 || TradeTimer > 133)
+            // my dreams devoured
+            // legacy code for visually holding an item
+            /*Texture2D item = TextureAssets.Item[HeldItemType].Value;
+            Vector2 itemOffset = new Vector2(NPC.direction == 1 ? 8 : -8, 20);
+            if (TradeTimer < 80)
                 spriteBatch.Draw(item, npcOffset + itemOffset, null, drawColor, 0, new Vector2(item.Width / 2, item.Height), 1f, spriteEffects, 0);
-
+            */
             return false;
         }
     }
