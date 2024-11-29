@@ -12,22 +12,23 @@ namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings, EquipType.Shoes)]
     [LegacyName("InfinityBoots", "SeraphTracers")]
-    public class TracersCelestial : ModItem, ILocalizedModType
+    public class TracersCelestial : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
+        public override float BonusAscentWhileFalling => 0.75f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 2.5f;
+        public override float BaseAscent => 0.125f;
 
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 9f, 2.6f);
-        }
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 9f, 2.6f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -59,15 +60,6 @@ namespace CalamityMod.Items.Accessories.Wings
             player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
             modPlayer.tracersCelestial = true;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.75f;
-            ascentWhenRising = 0.15f;
-            maxCanAscendMultiplier = 1f;
-            maxAscentMultiplier = 2.5f;
-            constantAscend = 0.125f;
         }
 
         public override void AddRecipes()
