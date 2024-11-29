@@ -21,6 +21,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -1127,19 +1128,25 @@ namespace CalamityMod.Items
             #region Wing Stat Tooltips
 
             // This function produces a "stat sheet" for a pair of wings from the raw stats.
-            string WingStatsTooltip(int time, float run, float rAcc, bool hover, float hStat, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null)
+            string WingStatsTooltip(WingStats stats, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null)
             {
+                int time = stats.FlyTime;
+                float run = stats.AccRunSpeedOverride;
+                float rAcc = stats.AccRunAccelerationMult * 0.08f;
+                bool hover = stats.HasDownHoverStats;
+                float hSpeed = stats.DownHoverSpeedOverride;
+                float hAcc = stats.DownHoverAccelerationMult * 0.08f;
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
                 sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * 5.01f).ToMph()));
                 sb.Append('\n');
                 if (Main.keyState.IsKeyDown(Keys.LeftShift))
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format((rAcc * 0.08f).ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * 5.01f).ToMph(), (asc + rise + fall).ToMphps()));
+                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * 5.01f).ToMph(), (asc + rise + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');
-                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hStat.ToMph(), (hStat * 0.08f).ToMphps()));
+                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hSpeed.ToMph(), hAcc.ToMphps()));
                     }
                 }
                 else
@@ -1154,61 +1161,61 @@ namespace CalamityMod.Items
             }
 
             // This function is shorthand for appending a stat sheet to a pair of wings.
-            void AddWingStats(int time, float run, float rAcc, bool hover, float hStat, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null) => EditTooltipByNum(0, (line) => line.Text += WingStatsTooltip(time, run, rAcc, hover, hStat, fall, rise, rMax, tMax, asc, extraKey));
+            void AddWingStats(int slot, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null) => EditTooltipByNum(0, (line) => line.Text += WingStatsTooltip(ArmorIDs.Wing.Sets.Stats[slot], fall, rise, rMax, tMax, asc, extraKey));
 
             if (item.type == ItemID.CreativeWings)
-                AddWingStats(25, 3f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.AngelWings)
-                AddWingStats(100, 6.25f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.DemonWings)
-                AddWingStats(100, 6.25f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.Jetpack)
-                AddWingStats(150, 6.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(160, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.FairyWings)
-                AddWingStats(130, 6.75f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.BeeWings)
-                AddWingStats(160, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BeeWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BeeWings");
 
             if (item.type == ItemID.HarpyWings)
-                AddWingStats(130, 6.75f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "HarpyWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "HarpyWings");
 
             if (item.type == ItemID.BoneWings)
-                AddWingStats(240, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f, "BoneWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f, "BoneWings");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(160, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FlameWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FlameWings");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(130, 6.75f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FrozenWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FrozenWings");
 
             if (item.type == ItemID.GhostWings)
-                AddWingStats(170, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
 
             if (item.type == ItemID.BeetleWings)
-                AddWingStats(170, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
 
             if (item.type == ItemID.FinWings)
-                AddWingStats(130, 6.75f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FinWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FinWings");
 
             if (item.type == ItemID.FishronWings)
-                AddWingStats(180, 8f, 2f, false, -1f, 0.75f, 0.15f, 1f, 2.5f, 0.125f);
+                AddWingStats(item.wingSlot, 0.75f, 0.15f, 1f, 2.5f, 0.125f);
 
             if (item.type == ItemID.SteampunkWings)
-                AddWingStats(180, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f);
 
             if (item.type == ItemID.LeafWings)
-                AddWingStats(160, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "LeafWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "LeafWings");
 
             if (item.type == ItemID.BatWings)
-                AddWingStats(160, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BatWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BatWings");
 
             // All developer wings have identical stats and no special effects
             if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
@@ -1218,48 +1225,48 @@ namespace CalamityMod.Items
                 item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
                 item.type == ItemID.SafemanWings)
             {
-                AddWingStats(150, 7f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
             }
 
             // Except these ones that hover
             if (item.type == ItemID.SkiphsWings || item.type == ItemID.BejeweledValkyrieWing)
-                AddWingStats(150, 6f, 1f, true, 10.8f, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.TatteredFairyWings)
-                AddWingStats(180, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f, "TatteredFairyWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f, "TatteredFairyWings");
 
             if (item.type == ItemID.SpookyWings)
-                AddWingStats(180, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f);
 
             if (item.type == ItemID.Hoverboard)
-                AddWingStats(170, 6.5f, 1f, true, 10f, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
 
             if (item.type == ItemID.FestiveWings)
-                AddWingStats(180, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f, "FestiveWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f, "FestiveWings");
 
             if (item.type == ItemID.MothronWings)
-                AddWingStats(170, 7.5f, 1f, false, -1f, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
 
             if (item.type == ItemID.WingsSolar)
-                AddWingStats(180, 9f, 2.5f, false, -1f, 0.85f, 0.15f, 1f, 3f, 0.135f, "WingsSolar");
+                AddWingStats(item.wingSlot, 0.85f, 0.15f, 1f, 3f, 0.135f, "WingsSolar");
 
             if (item.type == ItemID.WingsStardust)
-                AddWingStats(180, 9f, 2.5f, false, -1f, 0.85f, 0.15f, 1f, 3f, 0.135f, "WingsStardust");
+                AddWingStats(item.wingSlot, 0.85f, 0.15f, 1f, 3f, 0.135f, "WingsStardust");
 
             if (item.type == ItemID.WingsVortex)
-                AddWingStats(180, 6.5f, 1.5f, true, 10.8f, 0.5f, 0.1f, 1f, 2.45f, 0.15f, "WingsVortex");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 1f, 2.45f, 0.15f, "WingsVortex");
 
             if (item.type == ItemID.WingsNebula)
-                AddWingStats(180, 6.5f, 1.5f, true, 10.8f, 0.5f, 0.1f, 1f, 2.45f, 0.15f, "WingsNebula");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 1f, 2.45f, 0.15f, "WingsNebula");
 
             if (item.type == ItemID.BetsyWings)
-                AddWingStats(150, 7f, 2.5f, true, 10.8f, 0.75f, 0.15f, 1f, 2.5f, 0.125f);
+                AddWingStats(item.wingSlot, 0.75f, 0.15f, 1f, 2.5f, 0.125f);
 
             if (item.type == ItemID.RainbowWings)
-                AddWingStats(100, 8f, 2f, false, -1f, 0.85f, 0.15f, 1f, 2.5f, 0.125f);
+                AddWingStats(item.wingSlot, 0.85f, 0.15f, 1f, 2.5f, 0.125f);
 
             if (item.type == ItemID.LongRainbowTrailWings)
-                AddWingStats(180, 8f, 2.75f, true, 11.6f, 0.95f, 0.15f, 1f, 4.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.95f, 0.15f, 1f, 4.5f, 0.1f);
             #endregion
 
             // Provide the full stats of every vanilla grappling hook

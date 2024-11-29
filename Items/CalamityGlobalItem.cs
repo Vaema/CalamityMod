@@ -140,23 +140,31 @@ namespace CalamityMod.Items
 
             #region Vanilla Wing Tweaks
             // 170 -> 240 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings] = new WingStats(240, 7.5f, 1f);
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
             // 170 -> 200 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings] = new WingStats(200, 7.5f);
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings].FlyTime = 200;
 
             // (Empress Wings) 150 -> 100 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings] = new WingStats(100, 8f, 2f);
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings].FlyTime = 100;
 
             // 12 -> 10.8 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f); // (Lazure)
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings] = new WingStats(150, 7f, 2.5f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex] = new WingStats(180, 6.5f, 1.5f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula] = new WingStats(180, 6.5f, 1.5f, true, 10.8f, 10.8f);
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverSpeedOverride = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverAccelerationMult = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverSpeedOverride = 10.8f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverAccelerationMult = 10.8f;
 
             // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 11.6 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings] = new WingStats(180, 8f, 2.75f, true, 11.6f, 11.6f);
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 11.6f;
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 11.6f;
             #endregion
         }
 
