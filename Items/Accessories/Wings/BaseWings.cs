@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CalamityMod.Balancing;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
@@ -66,14 +67,15 @@ namespace CalamityMod.Items.Accessories.Wings
             bool hover = stats.HasDownHoverStats;
             float hSpeed = stats.DownHoverSpeedOverride;
             float hAcc = stats.DownHoverAccelerationMult * 0.08f;
+            float baseJumpSpeed = (CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : 5.01f) + 1f;
             StringBuilder sb = new StringBuilder(512);
             sb.Append('\n');
-            sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (MaxAscentSpeed * 5.01f).ToMph()));
+            sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (MaxAscentSpeed * baseJumpSpeed).ToMph()));
             sb.Append('\n');
             if (Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), BaseAscent.ToMphps(),
-                (BaseAscent + BonusAscentWhileRising).ToMphps(), (RisingSpeedThreshold * 5.01f).ToMph(),
+                (BaseAscent + BonusAscentWhileRising).ToMphps(), (RisingSpeedThreshold * baseJumpSpeed).ToMph(),
                 (BaseAscent + BonusAscentWhileRising + BonusAscentWhileFalling).ToMphps()));
                 if (hover)
                 {

@@ -149,7 +149,7 @@ namespace CalamityMod.ILEditing
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            IL_Player.Update += BaseJumpHeightAdjustment;
+            IL_Player.Update += BaseJumpSpeedAdjustment;
             IL_Player.Update += RunSpeedAdjustments;
             IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;

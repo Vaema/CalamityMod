@@ -1136,13 +1136,14 @@ namespace CalamityMod.Items
                 bool hover = stats.HasDownHoverStats;
                 float hSpeed = stats.DownHoverSpeedOverride;
                 float hAcc = stats.DownHoverAccelerationMult * 0.08f;
+                float baseJumpSpeed = (CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : 5.01f) + 1f;
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
-                sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * 5.01f).ToMph()));
+                sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * baseJumpSpeed).ToMph()));
                 sb.Append('\n');
                 if (Main.keyState.IsKeyDown(Keys.LeftShift))
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * 5.01f).ToMph(), (asc + rise + fall).ToMphps()));
+                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + rise + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');

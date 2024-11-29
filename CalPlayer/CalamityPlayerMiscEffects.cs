@@ -90,11 +90,9 @@ namespace CalamityMod.CalPlayer
         {
             // No category
 
-            // Give the player a 24% jump speed boost while wings are equipped, otherwise grant 4% more jump speed so that players can jump 7 tiles high
+            // Give the player a 20% jump speed boost while wings are equipped
             if (Player.wingsLogic > 0)
-                Player.jumpSpeedBoost += 1.2f;
-            else if (CalamityServerConfig.Instance.FasterJumpSpeed)
-                Player.jumpSpeedBoost += 0.2f;
+                Player.jumpSpeedBoost += 1f;
 
             // Decrease the counter on Fearmonger set turbo regeneration
             if (fearmongerRegenFrames > 0)
