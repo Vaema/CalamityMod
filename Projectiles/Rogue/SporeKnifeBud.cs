@@ -10,11 +10,15 @@ namespace CalamityMod.Projectiles.Ranged
     public class SporeKnifeBud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Boss/HomingGasBulb";
+        public override string Texture => "CalamityMod/Projectiles/Summon/PlantationStaffTentacle";
 
         public bool Sticky = false;
         public static int Lifetime = 300;
-        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            Main.projFrames[Type] = 4;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -30,9 +34,18 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            //Animation
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter > 6)
+            {
+                Projectile.frame++;
+                Projectile.frameCounter = 0;
+            }
+            if (Projectile.frame >= Main.projFrames[Type])
+                Projectile.frame = 0;
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + MathHelper.ToRadians(90) * Projectile.direction;
+            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
             if (!Sticky && Projectile.timeLeft <= Lifetime - 15)
             {
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 6.5f, 20f);
