@@ -106,39 +106,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.Center + DistanceFromPlayer;
             Projectile.scale = 1.4f + ((float)Math.Sin(Timer / 160f * MathHelper.Pi) * 0.6f); //SWAGGER
 
-            if (Timer > ParryTime)
-                return;
-
-            if (AlreadyParried == 0)
-            {
-                float collisionPoint = 0f;
-                float bladeLength = 80f * Projectile.scale;
-
-                for (int k = 0; k < Main.maxProjectiles; k++)
-                {
-                    Projectile proj = Main.projectile[k];
-
-                    if (proj.active && proj.hostile && proj.damage > 1 && //Only parry harmful projectiles
-                        proj.velocity.Length() * (proj.extraUpdates + 1) > 1f && //Only parry projectiles that move semi-quickly
-                        proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
-                        Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
-                    {
-                        GeneralParryEffects();
-
-                        //Reduce the projectile's damage by 50 for a second.
-                        if (proj.Calamity().flatDR < 50)
-                            proj.Calamity().flatDR = 50;
-                        if (proj.Calamity().flatDRTimer < 60)
-                            proj.Calamity().flatDRTimer = 60;
-
-                        //Bounce off the player if they are in the air
-                        if (Owner.velocity.Y != 0)
-                            Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
-                        break;
-                    }
-                }
-            }
-
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign(Projectile.velocity.X));

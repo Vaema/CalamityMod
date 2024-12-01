@@ -1,6 +1,8 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,12 +14,12 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class SwordsmithsPrideBeam : ModProjectile, ILocalizedModType
+    public class EarthenTidesBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public NPC target;
         public Player Owner => Main.player[Projectile.owner];
-        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_SwordsmithsPrideBeam";
+        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesBeam";
 
         public override void SetStaticDefaults()
         {
@@ -32,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
             AIType = ProjectileID.LightBeam;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 80;
+            Projectile.timeLeft = 150;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
@@ -40,26 +42,42 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-
-            if (target == null)
+            // Sword beams home
+            if (Projectile.timeLeft < 120)
             {
+                // Find the closest target
+                float npcDistCompare = 240f;
+                int index = -1;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (!n.CanBeChasedBy(Projectile, false))
+                        continue;
+
+                    float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                    if ((currentNPCDist < npcDistCompare) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
+                    {
+                        npcDistCompare = currentNPCDist;
+                        index = n.whoAmI;
+                    }
+                }
+                // Homing will prioritize an enemy that is marked
                 foreach (Projectile proj in Main.projectile)
                 {
                     if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)
                     {
-                        target = Main.npc[(int)proj.ai[0]];
-                        break;
+                        if (Vector2.Distance(Main.npc[(int)proj.ai[0]].Center, Projectile.Center) < 560f)
+                        {
+                            index = (int)proj.ai[0];
+                            break;
+                        }
                     }
                 }
-            }
-
-            else if ((Projectile.Center - target.Center).Length() >= (Projectile.Center + Projectile.velocity - target.Center).Length() && CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver4) //Home in
-            {
-                Projectile.timeLeft = 70; //Remain alive
-                float angularTurnSpeed = MathHelper.ToRadians(MathHelper.Lerp(15, 2.5f, MathHelper.Clamp(Projectile.Distance(target.Center) / 10f, 0f, 1f)));
-                float idealDirection = Projectile.AngleTo(target.Center);
-                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, angularTurnSpeed);
-                Projectile.velocity = updatedDirection.ToRotationVector2() * Projectile.velocity.Length();
+                // If we found an enemy, curve towards them
+                if (index != -1)
+                {
+                    float homingTurnSpeed = 0.05f;
+                    Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.npc[index].Center).ToRotation(), homingTurnSpeed).ToRotationVector2() * 10f;
+                }
             }
 
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
@@ -71,12 +89,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 75)
+            if (Projectile.timeLeft > 145)
                 return false;
 
             DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
 
-            Main.spriteBatch.End(); //Haha sup babe what if i restarted the spritebatch way too many times haha /blushes
+            Main.spriteBatch.End(); //Yippee wahoo spritebatch restarting!
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
@@ -101,17 +119,12 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            int debuffTime = 90;
-            target.AddBuff(BuffType<ArmorCrunch>(), debuffTime);
-        }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.WhirlwindAttunement_SwordBeamProc)
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_SwordBeamProc)
                 sword.OnHitProc = true;
         }
 
-        public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.HotPink, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f));
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f));
     }
 }

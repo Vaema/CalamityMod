@@ -47,14 +47,18 @@ namespace CalamityMod.Projectiles.Melee
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint);
         }
 
-        public void GeneralParryEffects()
+        public void GeneralParryEffects(bool npcHit)
         {
             TrueArkoftheAncients sword = (Owner.HeldItem.ModItem as TrueArkoftheAncients);
-            if (sword != null)
+            if (sword != null && npcHit)
                 sword.Charge = 10f;
+
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
-            SoundEngine.PlaySound(SoundID.Item67);
-            CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
+            if (npcHit)
+                SoundEngine.PlaySound(SoundID.Item67);
+
+            Color parryTextColor = npcHit ? new Color(111, 247, 200) : new Color(98, 161, 139);
+            CombatText.NewText(Projectile.Hitbox, parryTextColor, CalamityUtils.GetTextValue("Misc.ArkParry"), true);
             AlreadyParried = 1f;
         }
 
@@ -63,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
             if (AlreadyParried > 0)
                 return;
 
-            GeneralParryEffects();
+            GeneralParryEffects(true);
 
             // 17APR2024: Ozzatron: True Ark of the Ancients is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
             // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
@@ -123,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                         proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
                         Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
                     {
-                        GeneralParryEffects();
+                        GeneralParryEffects(false);
 
                         //Reduce the projectile's damage by 80 for a second.
                         if (proj.Calamity().flatDR < 80)
