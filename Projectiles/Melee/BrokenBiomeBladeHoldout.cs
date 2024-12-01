@@ -120,28 +120,21 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(BrokenBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
 
             Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Default);
 
-            if (desert || hell)
+            if (hotAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Hot);
             }
-            if (snow)
+            if (coldAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Cold);
             }
-            if (jungle || ocean)
-            {
-                attunement = AttunementSystem.FindOrNull(AttunementID.Tropical);
-            }
-            if (evil)
+            if (evilAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Evil);
             }

@@ -136,16 +136,30 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             int inc;
-            for (int i = 0; i < 25; i = inc + 1)
+            //For use with Contaminated Bile's Stealth Strike
+            if (Projectile.Calamity().stealthStrike)
             {
-                int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 0, default, 1f);
-                Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
-                Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                Main.dust[toxicDust].velocity.Normalize();
-                Dust dust = Main.dust[toxicDust];
-                dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
-                Main.dust[toxicDust].alpha = Projectile.alpha;
-                inc = i;
+                for (int k = 0; k < 15; k++)
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.05f, 0.8f));
+                    dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool(3) ? Color.YellowGreen : Color.OliveDrab;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 25; i = inc + 1)
+                {
+                    int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 0, default, 1f);
+                    Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
+                    Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                    Main.dust[toxicDust].velocity.Normalize();
+                    Dust dust = Main.dust[toxicDust];
+                    dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
+                    Main.dust[toxicDust].alpha = Projectile.alpha;
+                    inc = i;
+                }
             }
         }
     }

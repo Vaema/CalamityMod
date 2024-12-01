@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -13,15 +15,18 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExtantAbhorrenceMonolith : ModProjectile, ILocalizedModType
+    public class SwordsmithsPrideMonolith : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_ExtantAbhorrenceMonolith";
+        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_SwordsmithsPrideMonolith";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
-        public ref float Variant => ref Projectile.ai[0]; //Yes
-        public ref float Size => ref Projectile.ai[1]; //Yes
-        public float WaitTimer; //How long till it appears fr. GOtta remember to sync that one
+        public ref float Variant => ref Projectile.ai[0];
+        public ref float Size => ref Projectile.ai[1];
+        public float Scale; // The scale multiplier based on the target's size
+        public Vector2 OriginDirection; // The direction of the original strike
+        public float Facing; // The direction of the original strike
+        public NPC Target; // The NPC to stick on top of
         public const float BaseWidth = 90f;
         public const float BaseHeight = 420f;
 
@@ -38,9 +43,6 @@ namespace CalamityMod.Projectiles.Melee
         public CurveSegment Hold = new CurveSegment(EasingType.ExpOut, 0.70f, 1f, -0.1f);
         internal float Height() => PiecewiseAnimation(Timer, new CurveSegment[] { Anticipate, Overextend, Unextend, Hold }) * BaseHeight * Size;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -49,10 +51,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 102;
+            Projectile.scale = Scale;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 20;
             Projectile.hide = true;
         }
-
-        public override bool? CanDamage() => WaitTimer <= 0;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -67,18 +70,22 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (WaitTimer > 0)
+            if (Projectile.velocity != Vector2.Zero)
             {
-                Projectile.timeLeft = 102;
-                WaitTimer--;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                Projectile.velocity = Vector2.Zero;
             }
+
+            if (!Target.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+            else
+                Projectile.Center = Target.Center;
 
             if (Projectile.timeLeft == 100)
             {
-                SurfaceUp();
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-                Projectile.velocity = Vector2.Zero;
-
                 if (Size >= 1) //Big monoliths create sparkles even before sprouting up
                 {
 
@@ -88,6 +95,20 @@ namespace CalamityMod.Projectiles.Melee
                         GeneralParticleHandler.SpawnParticle(Sparkle);
                     }
                 }
+
+                if (Projectile.ai[2] > 1f)
+                {
+                    if (Facing == 0)
+                    {
+                        SideSprouts(-1f, Size * 0.8f);
+                        SideSprouts(1f, Size * 0.8f);
+                    }
+                    else
+                    {
+                        SideSprouts(Facing, Size * 0.8f);
+                    }
+                }
+                
             }
 
             if (Projectile.timeLeft == 80)
@@ -113,59 +134,53 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        //Go up to the "surface" so you're not stuck in the middle of the ground like a complete moron.
-        public void SurfaceUp()
+        public void SideSprouts(float facing, float projSize)
         {
-            for (float i = 0; i < 40; i += 0.5f)
+            Vector2 monolithRotation = OriginDirection.RotatedBy(MathHelper.Pi / 9.5f * facing);
+            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, monolithRotation, ProjectileType<SwordsmithsPrideMonolith>(), Projectile.damage, 10f, Owner.whoAmI, Main.rand.Next(4), projSize, Projectile.ai[2] - 1f);
+            if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
             {
-                Vector2 positionToCheck = Projectile.Center + Projectile.velocity * i;
-                if (!Main.tile[(int)(positionToCheck.X / 16), (int)(positionToCheck.Y / 16)].IsTileSolid())
-                {
-                    Projectile.Center = Projectile.Center + Projectile.velocity * i;
-                    return;
-                }
+                monolith.Scale = Scale;
+                monolith.OriginDirection = monolithRotation;
+                monolith.Facing = facing;
+                monolith.Target = Target;
             }
-            Projectile.Center = Projectile.Center + Projectile.velocity * 40f;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                modifiers.SourceDamage *= TrueBiomeBlade.AstralAttunement_MonolithDamageFalloff;
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.WhirlwindAttunement_MonolithProc)
+                sword.OnHitProc = true;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (WaitTimer > 0)
-                return false;
+            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_SwordsmithsPrideMonolith").Value;
 
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_ExtantAbhorrenceMonolith").Value;
+            Vector2 Shake = Projectile.timeLeft < 70 ? Vector2.Zero : Vector2.One.RotatedByRandom(MathHelper.TwoPi) * (70 - Projectile.timeLeft / 30f) * 0.05f;
 
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f * Scale;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
             float opacity = MathHelper.Clamp(1f - ((Timer - 0.85f) / 0.15f), 0f, 1f);
 
-            Main.EntitySpriteDraw(tex, drawPosition, frame, lightColor * opacity, drawAngle, drawOrigin, drawScale, 0f, 0);
+            Main.EntitySpriteDraw(tex, drawPosition + Shake, frame, lightColor * opacity, drawAngle, drawOrigin, drawScale, 0f, 0);
 
             return false;
         }
         public override void PostDraw(Color lightColor)
         {
-            if (WaitTimer > 0)
-                return;
-
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_ExtantAbhorrenceMonolith_Glow").Value;
+            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_HeavensMonolith_Glow").Value;
 
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f * Scale;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
             float opacity = MathHelper.Clamp(1f - ((Timer - 0.85f) / 0.15f), 0f, 1f);
@@ -173,15 +188,16 @@ namespace CalamityMod.Projectiles.Melee
             Main.EntitySpriteDraw(tex, drawPosition, frame, Color.White * opacity, drawAngle, drawOrigin, drawScale, 0f, 0);
         }
 
-
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(WaitTimer);
+            writer.Write(Facing);
+            writer.WriteVector2(OriginDirection);
+
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            WaitTimer = reader.ReadSingle();
+            Facing = reader.ReadSingle();
+            OriginDirection = reader.ReadVector2();
         }
-
     }
 }

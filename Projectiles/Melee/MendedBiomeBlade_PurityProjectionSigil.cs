@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -44,6 +45,10 @@ namespace CalamityMod.Projectiles.Melee
             if (target.active)
             {
                 Projectile.Center = target.Center;
+
+                // TBB sigil marks the enemy with Armor Crunch
+                if (Projectile.ai[1] == 1f)
+                    target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 5);
             }
             else
                 Projectile.active = false;

@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetDefaults()
         {
             Projectile.width = 26;
-            Projectile.height = 58;
+            Projectile.height = 50;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -107,20 +107,18 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (KnifeType == 3)
                 {
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.4f) * Main.rand.NextFloat(2f, 8f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.65f, 1f);
-                        dust.color = Color.Goldenrod;
-                        dust.noLightEmittence = true;
-                    }
-                    Particle spark2 = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 14, Main.rand.NextFloat(0.9f, 1.2f), Color.Gold, new Vector2(1.3f, 0.5f), true, false, 0, false, false, 0);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.4f) * Main.rand.NextFloat(2f, 8f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.65f, 1f);
+                    dust.color = Color.Goldenrod;
+                    dust.noLightEmittence = true;
+
+                    Particle spark2 = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 14, Main.rand.NextFloat(0.9f, 1.2f), Color.Gold, new Vector2(0.5f, 1.5f), true, false, 0, false, false, -0.25f);
                     GeneralParticleHandler.SpawnParticle(spark2);
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Particle trail = new GlowSparkParticle(Projectile.Center + i * Projectile.velocity * 0.4f, -Projectile.velocity * 0.05f, false, 9, 0.05f, Color.Orange * 0.5f, new Vector2(1, 0.3f), true, false, 0.85f);
+                        Particle trail = new GlowSparkParticle(Projectile.Center + i * Projectile.velocity * 0.4f, -Projectile.velocity * 0.05f, false, 9, 0.05f, Color.Orange * 0.6f, new Vector2(1, 0.3f), true, false, 0.85f);
                         GeneralParticleHandler.SpawnParticle(trail);
                     }
 
@@ -214,12 +212,12 @@ namespace CalamityMod.Projectiles.Summon
             else if (Projectile.velocity.Length() < (KnifeType == 2 ? 15 : 40f))
                 Projectile.velocity *= 1.03f;
 
-            float angularTurnSpeed = 0.25f;
+            float angularTurnSpeed = 0.15f;
             float angleToTargetCoords = Projectile.AngleTo(storedPos);
 
             if (KnifeType == 3)
             {
-                if (!Projectile.WithinRange(storedPos, 100f))
+                if (!Projectile.WithinRange(storedPos, 50f))
                     Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(angleToTargetCoords, angularTurnSpeed).ToRotationVector2() * Projectile.velocity.Length();
             }
             if (KnifeType == 2)

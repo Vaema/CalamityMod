@@ -11,21 +11,23 @@ namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
     [LegacyName("DiscordianWings")]
-    public class HadalMantle : ModItem, ILocalizedModType
+    public class HadalMantle : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 7.75f, 1.5f);
-        }
+        public override float BonusAscentWhileFalling => 0.6f;
+        public override float BonusAscentWhileRising => 0.12f;
+        public override float RisingSpeedThreshold => 0.7f;
+        public override float MaxAscentSpeed => 1.75f;
+        public override float BaseAscent => 0.11f;
+
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 7.75f, 1.5f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -47,15 +49,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             player.noFallDmg = true;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.6f;
-            ascentWhenRising = 0.12f;
-            maxCanAscendMultiplier = 0.7f;
-            maxAscentMultiplier = 1.75f;
-            constantAscend = 0.11f;
         }
 
         public override void AddRecipes()

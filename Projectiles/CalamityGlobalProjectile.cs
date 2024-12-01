@@ -535,10 +535,15 @@ namespace CalamityMod.Projectiles
 
                 projectile.spriteDirection = projectile.direction;
 
-                if (projectile.direction < 0)
-                    projectile.rotation = (float)Math.Atan2(0f - projectile.velocity.Y, 0f - projectile.velocity.X);
+                if (revSkeletronAcceleratingSkull)
+                    projectile.rotation += MathHelper.Pi / 90f * projectile.velocity.Length() * projectile.direction;
                 else
-                    projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X);
+                {
+                    if (projectile.direction < 0)
+                        projectile.rotation = (float)Math.Atan2(0f - projectile.velocity.Y, 0f - projectile.velocity.X);
+                    else
+                        projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X);
+                }
 
                 return false;
             }
@@ -4498,6 +4503,17 @@ namespace CalamityMod.Projectiles
 
                 Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), value26, alpha5, projectile.rotation, origin12, vector39, spriteEffects);
 
+                return false;
+            }
+
+            if (projectile.type == ProjectileID.Skull)
+            {
+                if (projectile.ai[0] != -2f)
+                    return true;
+
+                Main.instance.LoadProjectile(ProjectileID.BoneGloveProj);
+                Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
+                Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 return false;
             }
 

@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.TileEntities
 {
@@ -21,7 +22,16 @@ namespace CalamityMod.TileEntities
         public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
-            return tile.HasTile && tile.TileType == ModContent.TileType<LabHologramProjector>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
+
+            int style = 0, alt = 0;
+            TileObjectData.GetTileInfo(tile, ref style, ref alt);
+            TileObjectData data = TileObjectData.GetTileData(tile.TileType, style, alt);
+
+            int sheetSquare = 16 + data.CoordinatePadding;
+            int FrameX = tile.TileFrameX / sheetSquare % data.Width;
+            int FrameY = tile.TileFrameY / sheetSquare % data.Height;
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<LabHologramProjector>() && FrameX == 0 && FrameY == 0;
         }
 
         // Check if the hologram should become visible.

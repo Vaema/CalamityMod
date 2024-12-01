@@ -129,29 +129,19 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(OmegaBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool hallow = Owner.ZoneHallow;
-            bool astral = Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
+            bool flailAttune = Owner.ZoneJungle || Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool pogoAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight || Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool whirlAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
-            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind);
-            if (desert || hell)
-                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
-            if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Shockwave);
+            if (flailAttune) //Check put after the desert check so ocean doesnt get overriden as desert
                 attunement = AttunementSystem.FindOrNull(AttunementID.FlailBlade);
-            if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
+            if (pogoAttune) //Evil check separated so that it overrides corrupted beach & snow biomes
                 attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
-            if (astral || marine)
-                attunement = AttunementSystem.FindOrNull(AttunementID.Shockwave);
-            if (hallow)
+            if (whirlAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind); //Putting holy check  at the end so it may override hallowed variants of biomes
 
-            //If the owner already had the attunement , break out of it (And unswap)
+            //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);

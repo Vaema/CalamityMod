@@ -92,14 +92,14 @@ namespace CalamityMod.ILEditing
             cursor.Next.Operand = 0;
         }
 
-        private const float VanillaBaseJumpHeight = 5.01f;
-        private static void BaseJumpHeightAdjustment(ILContext il)
+        private const float VanillaBaseJumpSpeed = 5.01f;
+        private static void BaseJumpSpeedAdjustment(ILContext il)
         {
             // Increase the base jump height of the player to make early game less of a slog.
             var cursor = new ILCursor(il);
 
             // The jumpSpeed variable is set to this specific value before anything else occurs.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpHeight)))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpSpeed)))
             {
                 LogFailure("Base Jump Height Buff", "Could not locate the jump height variable.");
                 return;
@@ -107,7 +107,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
         }
         #endregion
 
