@@ -369,6 +369,9 @@ namespace CalamityMod.Balancing
             #region Yharon
             // 15% resist to Time Bolt.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
+            // 15% resist to Old Reaper Stealth strikes' rain
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<RadiationRain>()))));
+
             #endregion
 
             #region Exo Mechs: Ares
