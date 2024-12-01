@@ -68,13 +68,13 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int k = 0; k < 11; k++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.JungleSpore, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(4f, 9f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.JungleSpore, new Vector2(6, 6).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(4f, 9f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                 dust.noGravity = false;
                 dust.alpha = Main.rand.Next(100, 120 + 1);
             }
             for (int k = 0; k < 11; k++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MagicMirror, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f), 0, Color.GreenYellow, Main.rand.NextFloat(0.6f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MagicMirror, new Vector2(6, 6).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.5f, 0.8f), 0, Color.GreenYellow, Main.rand.NextFloat(0.6f, 0.8f));
                 dust.noGravity = false;
                 dust.alpha = Main.rand.Next(100, 120 + 1);
             }
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Green * 0.8f, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.04f, 0.07f, 20, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
             #endregion
-            // Spawn an on-hit explosion which deals 30% of the projectile's damage.
+            //On hit, expand the hitbox and hit again for 30% of the projectile's damage
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.damage = (int)(Projectile.damage * 0.3f);

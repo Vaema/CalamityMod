@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Vector2 randVel = new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.04f, (Main.rand.NextBool(3) ? 0.4f : 0.5f));
+            Vector2 randVel = new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.04f, (Main.rand.NextBool(3) ? 0.4f : 0.5f));
             Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.GreenYellow, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.3f, 0.5f), 0.3f);
             GeneralParticleHandler.SpawnParticle(smoke);
             if (Main.rand.NextBool(2))
