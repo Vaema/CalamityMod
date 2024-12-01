@@ -24,8 +24,10 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
             TileObjectData.addAlternate(1);
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
