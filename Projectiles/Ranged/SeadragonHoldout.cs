@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
-                    SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.3f , PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
+                    SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.25f , PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
                     Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 10, true, 0.8f);
                     GeneralParticleHandler.SpawnParticle(sparker);
                     GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.SeaShell : Color.Silver * 0.9f, Color.HotPink, Main.rand.NextFloat(0.8f, 1.2f), 2, 0, 2.68f);
@@ -110,8 +110,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (framesBetweenShots == 0)
                 {
-                    SoundStyle hitSound = new("CalamityMod/Sounds/Custom/RogueStealth");
-                    SoundEngine.PlaySound(hitSound with { Pitch = 0.8f , Volume = 2f }, Projectile.Center);
+                    SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
+                    SoundEngine.PlaySound(hitSound with { Volume = 0.5f , Pitch = 0.8f }, Projectile.Center);
                     Particle Star = new CritSpark(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 28), Vector2.Zero, Color.Goldenrod, Color.OrangeRed, 2f, 20, 0.2f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
                     Projectile.Kill();

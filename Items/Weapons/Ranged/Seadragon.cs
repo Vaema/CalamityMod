@@ -15,10 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Seadragon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        // Odd shots are bullets (including the first). Even shots are water jets.
-        // The 9th shot adds a rocket. The 17th shot adds an ultra powerful muzzle blast, then resets the counter to 2.
-        // This is intentional so you don't get the muzzle blast instantly when you start firing and have to play around it.
-        private int shotCounter = 1;
 
         public override void SetDefaults()
         {
@@ -44,6 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override bool RangedPrefix() => true; //Can't scale with attack speed, but should still be able to recieve Unreal
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.95f && player.ownedProjectileCounts[Item.shoot] > 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

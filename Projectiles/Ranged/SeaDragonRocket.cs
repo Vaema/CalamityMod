@@ -1,12 +1,14 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -41,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (attacking) // Fly at the enemy
             {
                 NPC chosenTarget = Projectile.Center.ClosestNPCAt(600);
-                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.4f + moveSpeed, 16, 0.985f);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 1.5f + moveSpeed, 25, 0.985f);
                 if (chosenTarget != null)
                     Projectile.timeLeft++; // Don't die if you have a target to home in on
             }
@@ -75,15 +77,27 @@ namespace CalamityMod.Projectiles.Ranged
             time++;
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 velocity = (MathHelper.TwoPi * i / 15f).ToRotationVector2() * 3f;
+                Dust ring = Dust.NewDustPerfect(Projectile.Center, 66, velocity);
+                ring.noGravity = true;
+                ring.scale = Main.rand.NextFloat(0.5f, 0.7f);
+                ring.color = Color.CornflowerBlue;
+            }
+        }
+
         public override void OnKill(int timeLeft)
         {
             // Explode on kill if attacking, else just poof out
             if (attacking)
             {
-                SoundStyle hitSound = new SoundStyle("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
-                SoundEngine.PlaySound(hitSound with { Volume = 1.5f , Pitch = 0.7f , MaxInstances = -1 }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.NPCDeath19 with { Volume = 2.5f }, Projectile.position);
                 SoundStyle hitSound2 = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
-                SoundEngine.PlaySound(hitSound2 with { Volume = 3f }, Projectile.Center);
+                SoundEngine.PlaySound(hitSound2 with { Volume = 1.1f }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.8f) with { Volume = 1.1f }, Projectile.position);
                 // Create Blast (If you want to know how to use this blast, check the projectile, it tells you exactly how to use it!)
                 float blastSize = 80;
                 float minMultiplier = 0.25f;
@@ -102,10 +116,16 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.HotPink : Color.SeaGreen, Main.rand.NextFloat(0.6f, 0.9f), 30, 0.4f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
                 }
-                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.SeaGreen, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.02f, 12, true);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.25f, 12, true, 0.9f);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
+                int points = 4;
+                float radians = MathHelper.TwoPi / points;
+                Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f)).RotatedByRandom(100);
+                Color useColor = Main.rand.NextBool() ? Color.SkyBlue : Color.HotPink;
+                for (int k = 0; k < points; k++)
+                {
+                    Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f);
+                    Particle spark = new GlowSparkParticle((Projectile.Center + velocity * 7.5f), velocity * 0.5f, false, 11, 0.03f, useColor, new Vector2(1f, 0.4f), true, false);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
             }
             else
             {
