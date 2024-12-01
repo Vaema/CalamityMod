@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;

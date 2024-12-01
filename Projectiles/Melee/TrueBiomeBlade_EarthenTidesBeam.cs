@@ -80,15 +80,6 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            /*else if ((Projectile.Center - target.Center).Length() >= (Projectile.Center + Projectile.velocity - target.Center).Length() && CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver4) //Home in
-            {
-                Projectile.timeLeft = 70; //Remain alive
-                float angularTurnSpeed = MathHelper.ToRadians(MathHelper.Lerp(15, 2.5f, MathHelper.Clamp(Projectile.Distance(target.Center) / 10f, 0f, 1f)));
-                float idealDirection = Projectile.AngleTo(target.Center);
-                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, angularTurnSpeed);
-                Projectile.velocity = updatedDirection.ToRotationVector2() * Projectile.velocity.Length();
-            }*/
-
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
             int dustParticle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CursedTorch, 0f, 0f, 100, default, 0.9f);
             Main.dust[dustParticle].noGravity = true;

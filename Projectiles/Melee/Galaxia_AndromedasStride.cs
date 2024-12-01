@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 16;
         }
 
-        public override bool? CanDamage() => State == 1f;
+        public override bool? CanDamage() => State == 1f ? (bool?)null : false;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
