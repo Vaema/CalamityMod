@@ -72,8 +72,17 @@ namespace CalamityMod.Projectiles.Rogue
             bool shouldShutdown = false;
             if (!IsVanishing)
                 shouldShutdown = AttemptAttackThisFrame();
+
             if (shouldShutdown)
+            {
                 Projectile.timeLeft = VanishTime - 1;
+
+                // Spawn a particle when the Tesselation begins vanishing to make it look like it blinks out of existence.
+                float orbScale = 1.5f;
+                Color orbColor = NanoblackReaper.TesselationParticleColor;
+                Particle vanishOrb = new GlowOrbParticle(Projectile.Center, Projectile.velocity, false, 15, orbScale, orbColor);
+                GeneralParticleHandler.SpawnParticle(vanishOrb);
+            }
 
             ProcessSpin();
 
@@ -209,12 +218,13 @@ namespace CalamityMod.Projectiles.Rogue
                 Particle energyLine = new StaticGlowLine(Projectile.Center, strikeDest, lineVel, 7, xScale, xShrink, lineColor, true);
                 GeneralParticleHandler.SpawnParticle(energyLine);
 
-                // Draw four stacked glow orbs right at the start of the line.
-                // One glow orb was not glowy enough.
+                // Draw a stack of three glow orbs right at the start of the line. One glow orb was not glowy enough.
+                int numOrbs = 3;
                 float orbScale = 1.5f;
-                for (int i = 0; i < 4; ++i)
+                Vector2 orbVel = lineVel;
+                for (int i = 0; i < numOrbs; ++i)
                 {
-                    Particle energyOrb = new GlowOrbParticle(Projectile.Center, lineVel, false, 15, orbScale, lineColor);
+                    Particle energyOrb = new GlowOrbParticle(Projectile.Center, orbVel, false, 15, orbScale, lineColor);
                     GeneralParticleHandler.SpawnParticle(energyOrb);
                 }
             }
