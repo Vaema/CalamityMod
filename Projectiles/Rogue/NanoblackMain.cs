@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -201,11 +201,12 @@ namespace CalamityMod.Projectiles.Rogue
                 float delay = zeroPointStrikeDelays[i];
                 int tessIdx = Projectile.NewProjectile(source, tessPos, tessVel, tessID, tessDamage, tessKB, Projectile.owner, ai0: delay);
 
-                // The spin direction of the scythe transfers to the tesselations.
+                // The spin direction and stealth strike status of the scythe transfers to the tesselations.
                 if (tessIdx.WithinBounds(Main.maxProjectiles))
                 {
                     Projectile tess = Main.projectile[tessIdx];
                     tess.direction = tess.spriteDirection = Projectile.spriteDirection;
+                    tess.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
                 }
             }
         }
@@ -217,6 +218,25 @@ namespace CalamityMod.Projectiles.Rogue
 
             // When thrown left, Nanoblack Reaper is still thrown scythe-head first.
             Projectile.spriteDirection = Projectile.direction;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // No gameplay effects; just spawns slash impact particles at a slightly random angle.
+            Color color =  NanoblackReaper.NanoblackSlashColor1;
+            float scale = 0.12f;
+            Vector2 slashDir = -Projectile.velocity.SafeNormalize(-Vector2.UnitY);
+            Vector2 vel = 0.01f * slashDir.RotatedByRandom(MathHelper.Pi / 8f);
+
+            // scale of void sparks is arbitrarily multiplied by 0.357f. thanks!
+            float voidScale = scale / 0.357f;
+            Particle blackSpark = new VoidSparkParticle(Projectile.Center, vel, false, 12, voidScale, color, 1f);
+            GeneralParticleHandler.SpawnParticle(blackSpark);
+
+            float glowScale = scale * 0.333f;
+            Vector2 squashStretch = new(1.3333f, 0.8f);
+            Particle innerSpark = new GlowSparkParticle(Projectile.Center, vel, false, 11, glowScale, color, squashStretch, true, true, 1f);
+            GeneralParticleHandler.SpawnParticle(innerSpark);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -23,14 +23,14 @@ namespace CalamityMod.Projectiles.Rogue
         internal const int MaxDelay = 45;
 
         private const float TargetingRange = 600f;
-        private const float ZeroPointFiringRange = 2000f;
+        private const float FiringRange = 2000f;
 
         // Rotation speed is inherited directly from the scythe.
         private const float StartingRotationIncrement = NanoblackMain.RotationIncrement * NanoblackMain.UpdatesPerFrame;
         private const float DriftSpeed = 0.8f;
 
         private Player Owner => Main.player[Projectile.owner];
-        internal ref float ZeroPointStrikeDelay => ref Projectile.ai[0];
+        internal ref float AttackDelay => ref Projectile.ai[0];
         internal ref float CurrentSpin => ref Projectile.ai[1];
         private bool IsVanishing => Projectile.timeLeft < VanishTime;
 
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
             // If the Tesselation cannot attack, then it immediately transitions to vanishing.
             bool shouldShutdown = false;
             if (!IsVanishing)
-                shouldShutdown = AttemptZeroPointEnergyStrikeThisFrame();
+                shouldShutdown = AttemptAttackThisFrame();
             if (shouldShutdown)
                 Projectile.timeLeft = VanishTime - 1;
 
@@ -89,15 +89,30 @@ namespace CalamityMod.Projectiles.Rogue
         private void FrameOneEffects()
         {
             // Sanity check the firing delay.
-            if (ZeroPointStrikeDelay < MinDelay)
-                ZeroPointStrikeDelay = MinDelay;
-            else if (ZeroPointStrikeDelay > MaxDelay)
-                ZeroPointStrikeDelay = MaxDelay;
+            if (AttackDelay < MinDelay)
+                AttackDelay = MinDelay;
+            else if (AttackDelay > MaxDelay)
+                AttackDelay = MaxDelay;
 
             CurrentSpin = StartingRotationIncrement;
 
             // Create particles to visually flavor the spawning of the projectile.
-            CreationDestructionVFX(false);
+            {
+                float sparkSpeed = 2f;
+                float baseRot = MathHelper.PiOver2;
+                float scale = 0.018f;
+                int lifetime = 15;
+                Color color = NanoblackReaper.TesselationParticleColor;
+                Vector2 squashStretch = new(1f, 0.3f);
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    float rot = baseRot + i * NanoblackReaper.PiOver3;
+                    Vector2 sparkVel = sparkSpeed * rot.ToRotationVector2();
+                    Particle spark = new GlowSparkParticle(Projectile.Center, sparkVel, false, lifetime, scale, color, squashStretch, true, true, 1f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+            }
         }
 
         private void ProcessSpin()
@@ -111,12 +126,12 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         // Returns whether or not the Tesselation should shut down.
-        private bool AttemptZeroPointEnergyStrikeThisFrame()
+        private bool AttemptAttackThisFrame()
         {
             // If the attack isn't ready yet, don't perform it.
-            if (ZeroPointStrikeDelay > 0f)
+            if (AttackDelay > 0f)
             {
-                --ZeroPointStrikeDelay;
+                --AttackDelay;
                 return false;
             }
 
@@ -130,16 +145,16 @@ namespace CalamityMod.Projectiles.Rogue
 
             // Check firing range. Tesselations can fire across a whole 1080p screen, but it's not infinite distance.
             if (target is not null && target.active)
-                inFiringRange = target.DistanceSQ(Projectile.Center) < ZeroPointFiringRange * ZeroPointFiringRange;
+                inFiringRange = target.DistanceSQ(Projectile.Center) < FiringRange * FiringRange;
             if (!inFiringRange)
                 return true;
 
-            // At this point, the targeting is confirmed. Emit the strike.
-            EmitZeroPointEnergyStrike(target);
+            // At this point, the targeting is confirmed. Attack.
+            PerformAttack(target);
             return true;
         }
 
-        private void EmitZeroPointEnergyStrike(NPC target)
+        private void PerformAttack(NPC target)
         {
             // Exact visual offset of the zero-point energy strike is randomly chosen.
             // For consistent RNG across clients, this randomness is executed even if the result is not used.
@@ -159,36 +174,49 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 strikeDest = new(dartboardX, dartboardY);
             Vector2 offset = strikeDest - c;
 
-            int zpeID = ModContent.ProjectileType<NanoblackStrike>();
-            int zpeDamage = Projectile.damage; // same damage ratio as the tesselation itself
-            float zpeKB = 0f;
+            bool stealthStrikeAttack = Projectile.Calamity().stealthStrike;
 
-            var source = Projectile.GetSource_FromThis();
-            int zpeIdx = Projectile.NewProjectile(source, strikeDest, Vector2.Zero, zpeID, zpeDamage, zpeKB, Projectile.owner, ai0: target.whoAmI, ai1: offset.X, ai2: offset.Y);
-            if (zpeIdx.WithinBounds(Main.maxProjectiles))
+            // Stealth strike attack: Lightspeed carve
+            if (stealthStrikeAttack)
             {
-                Projectile zpe = Main.projectile[zpeIdx];
-                zpe.ArmorPenetration += NanoblackReaper.ZeroPointArmorPenetration; // Add excessive armor penetration.
-
-                // This consistently orients the visuals of the hitscan attack for flair.
-                zpe.direction = zpe.spriteDirection = Projectile.spriteDirection;
+                // int carveID = ModContent.ProjectileType<NanoblackStrike>();
+                // TODO -- actually perform a lightspeed carve
             }
 
-            // Draw a bright line of energy between the Tesselation and the spawned strike.
-            Vector2 lineVel = 3f * Projectile.velocity;
-            float xScale = 0.009f;
-            float xShrink = 0.88f;
-            Color lineColor = NanoblackReaper.ZeroPointLineColor;
-            Particle energyLine = new StaticGlowLine(Projectile.Center, strikeDest, lineVel, 7, xScale, xShrink, lineColor, true);
-            GeneralParticleHandler.SpawnParticle(energyLine);
-
-            // Draw four stacked glow orbs right at the start of the line.
-            // One glow orb was not glowy enough.
-            float orbScale = 1.5f;
-            for (int i = 0; i < 4; ++i)
+            // Standard attack: Hitscan zero-point energy strike
+            else
             {
-                Particle energyOrb = new GlowOrbParticle(Projectile.Center, lineVel, false, 15, orbScale, lineColor);
-                GeneralParticleHandler.SpawnParticle(energyOrb);
+                int zpeID = ModContent.ProjectileType<NanoblackStrike>();
+                int zpeDamage = Projectile.damage; // same damage ratio as the tesselation itself
+                float zpeKB = 0f;
+
+                var source = Projectile.GetSource_FromThis();
+                int zpeIdx = Projectile.NewProjectile(source, strikeDest, Vector2.Zero, zpeID, zpeDamage, zpeKB, Projectile.owner, ai0: target.whoAmI, ai1: offset.X, ai2: offset.Y);
+                if (zpeIdx.WithinBounds(Main.maxProjectiles))
+                {
+                    Projectile zpe = Main.projectile[zpeIdx];
+                    zpe.ArmorPenetration += NanoblackReaper.ZeroPointArmorPenetration; // Add excessive armor penetration.
+
+                    // This consistently orients the visuals of the hitscan attack for flair.
+                    zpe.direction = zpe.spriteDirection = Projectile.spriteDirection;
+                }
+
+                // Draw a bright line of energy between the Tesselation and the spawned strike.
+                Vector2 lineVel = 3f * Projectile.velocity;
+                float xScale = 0.009f;
+                float xShrink = 0.88f;
+                Color lineColor = NanoblackReaper.ZeroPointLineColor;
+                Particle energyLine = new StaticGlowLine(Projectile.Center, strikeDest, lineVel, 7, xScale, xShrink, lineColor, true);
+                GeneralParticleHandler.SpawnParticle(energyLine);
+
+                // Draw four stacked glow orbs right at the start of the line.
+                // One glow orb was not glowy enough.
+                float orbScale = 1.5f;
+                for (int i = 0; i < 4; ++i)
+                {
+                    Particle energyOrb = new GlowOrbParticle(Projectile.Center, lineVel, false, 15, orbScale, lineColor);
+                    GeneralParticleHandler.SpawnParticle(energyOrb);
+                }
             }
         }
 
@@ -210,23 +238,6 @@ namespace CalamityMod.Projectiles.Rogue
                 eff = SpriteEffects.FlipHorizontally;
             Vector2 origin = new Vector2(fWidthOverTwo, fHeightOverTwo);
             Main.EntitySpriteDraw(Glow.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, eff, 0);
-        }
-
-        public override void OnKill(int timeLeft) => CreationDestructionVFX(true);
-
-        private void CreationDestructionVFX(bool killed = false)
-        {
-            float sparkSpeed = 2f;
-            float baseRot = MathHelper.PiOver2;
-            float scale = 0.018f;
-            Color color = NanoblackReaper.TesselationParticleColor;
-            for (int i = 0; i < 6; ++i)
-            {
-                float rot = baseRot + i * NanoblackReaper.PiOver3;
-                Vector2 sparkVel = sparkSpeed * rot.ToRotationVector2();
-                Vector2 squashStretch = new(1f, 0.3f);
-                Particle p = new GlowSparkParticle(Projectile.Center, sparkVel, killed, 15, scale, color, squashStretch, true, true, 1f);
-            }
         }
     }
 }
