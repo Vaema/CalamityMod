@@ -156,10 +156,14 @@ namespace CalamityMod.Items
             EnchantmentTooltips(item, tooltips);
 
             // In GFB, replace all instances of "rogue" with "rouge".
-            if (Main.zenithWorld)
+            string[] rogueKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRogueUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRogueLowercase") };
+            string[] rougeKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase") };
+            for (int n = 0; n < rogueKey.Length; n++)
             {
-                tooltips.FindAndReplace("Rogue", "Rouge");
-                tooltips.FindAndReplace("rogue", "rouge");
+                if (Main.zenithWorld && rogueKey[n]!="")
+                {
+                    tooltips.FindAndReplace(rogueKey[n], rougeKey[n]);
+                }
             }
 
             // Everything below this line can only apply to modded items. If the item is vanilla, stop here for efficiency.
