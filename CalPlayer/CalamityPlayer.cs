@@ -1452,6 +1452,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Dragonblood Disgorger. </summary>
         public bool dragonFamily = false;
         public bool providenceStabber = false;
+        public bool seashineSwordBuff = false;
         public bool saros = false;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
@@ -2600,6 +2601,7 @@ namespace CalamityMod.CalPlayer
             powerfulRaven = false;
             dragonFamily = false;
             providenceStabber = false;
+            seashineSwordBuff = false;
             plaguebringerMK2 = false;
             igneousExaltation = false;
             GlacialEmbrace = false;

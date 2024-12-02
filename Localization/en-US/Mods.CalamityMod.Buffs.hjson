@@ -1603,3 +1603,8 @@ PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
 }
+
+SeashineSwordBuff: {
+	DisplayName: Seashine Sword Buff
+	Description: Mods.CalamityMod.Buffs.SeashineSwordBuff.Description
+}

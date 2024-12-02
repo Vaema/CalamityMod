@@ -923,3 +923,8 @@ AmphibiansGuitar: {
 		"I'll show you suffering!"
 		'''
 }
+
+SeashineSword: {
+	DisplayName: Seashine Sword
+	Tooltip: ""
+}
