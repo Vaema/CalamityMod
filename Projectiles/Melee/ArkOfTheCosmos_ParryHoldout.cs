@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight";
 
         private bool initialized = false;
-        const float MaxTime = 340;
+        internal const float MaxTime = 340;
         static float ParryTime = 15;
         public Vector2 DistanceFromPlayer => Projectile.velocity * 10 + Projectile.velocity * 10 * ThrustDisplaceRatio();
         public float Timer => MaxTime - Projectile.timeLeft;
