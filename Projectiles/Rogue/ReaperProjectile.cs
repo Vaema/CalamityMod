@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public int time = 0;
-        public int ChargeupTime = 56;
+        public int ChargeupTime = 50;
         public int Lifetime = 500;
         public bool spinning = false;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/TheOldReaper";
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (time >= 150)
                     {
-                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
+                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(2000);
                         if (time == 150)
                         {
                             Projectile.extraUpdates = 25;
