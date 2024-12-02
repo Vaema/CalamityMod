@@ -20,12 +20,13 @@ namespace CalamityMod.Items.Weapons.Rogue
         internal const float PiOver3 = MathHelper.Pi / 3f;
         internal const float TwoPiOver3 = MathHelper.TwoPi / 3f;
 
-        internal static readonly Color NanoblackSlashColor1 = new Color(47, 248, 211); // #2FF8D4
-        internal static readonly Color NanoblackSlashColor2 = new Color(15, 15, 15); // #0F0F0F
-        internal static readonly Color NanoblackDustColor1 = new Color(52, 239, 184); // #34EFB8
+        internal static readonly Color NanoblackSlashColor1     = new Color(47, 248, 211); // #2FF8D4
+        internal static readonly Color NanoblackSlashColor2     = new Color(15, 15, 15); // #0F0F0F
+        internal static readonly Color NanoblackDustColor1      = new Color(52, 239, 184); // #34EFB8
         internal static readonly Color TesselationParticleColor = new Color(79, 240, 168); // 4FF0A8
-        internal static readonly Color ZeroPointLineColor = new Color(24, 191, 160); // #1FBFA0
-        internal static readonly Color ZeroPointImpactColor = new Color(31, 223, 128, 96); // #1FDF80
+        internal static readonly Color ZeroPointLineColor       = new Color(24, 191, 160); // #1FBFA0
+        internal static readonly Color ZeroPointImpactColor     = new Color(31, 223, 128, 96); // #1FDF80
+        internal static readonly Color LightspeedCarveColor     = new Color(36, 252, 212); // #24FCD4
 
         public bool ShowExtensionIndicator => false;
         public bool HasFlavorTooltip => true;
@@ -38,6 +39,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static int ArmorPenetration = 30;
         // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it. Scary.
         public static int ZeroPointArmorPenetration = 120; // Total: 150.
+        public static int LightspeedCarveArmorPenetration = 120; // Total: 150.
         public static float TesselationDamageRatio = 0.25f;
 
         public override float StealthDamageMultiplier => 1.0f;

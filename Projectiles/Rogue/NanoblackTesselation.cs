@@ -188,8 +188,21 @@ namespace CalamityMod.Projectiles.Rogue
             // Stealth strike attack: Lightspeed carve
             if (stealthStrikeAttack)
             {
-                // int carveID = ModContent.ProjectileType<NanoblackStrike>();
-                // TODO -- actually perform a lightspeed carve
+                int carveID = ModContent.ProjectileType<NanoblackLightspeedCarve>();
+                int carveDamage = Projectile.damage; // same damage ratio as the tesselation itself
+                float carveKB = 0f;
+
+                // Carves are spawned with a target X/Y coordinate stored in ai[1] and ai[2].
+                // They can and will strike anything on the line indiscriminately.
+                var source = Projectile.GetSource_FromThis();
+                int carveIdx = Projectile.NewProjectile(source, Projectile.Center, Vector2.Zero, carveID, carveDamage, carveKB, Projectile.owner, ai1: dartboardX, ai2: dartboardY);
+                if (carveIdx.WithinBounds(Main.maxProjectiles))
+                {
+                    Projectile carve = Main.projectile[carveIdx];
+                    carve.ArmorPenetration += NanoblackReaper.LightspeedCarveArmorPenetration; // Add excessive armor penetration.
+                }
+
+                // There is no need to add visuals to the stealth strike. The carves are flashy enough.
             }
 
             // Standard attack: Hitscan zero-point energy strike

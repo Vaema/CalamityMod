@@ -63,16 +63,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Returning);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            bool r = reader.ReadBoolean();
-            Returning = r;
-        }
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(Returning);
+        public override void ReceiveExtraAI(BinaryReader reader) => Returning = reader.ReadBoolean();
 
         // Nanoblack Reaper's AI has been converted into a trenchcoat function due to the needed expansion of the sub-functions.
         public override void AI()

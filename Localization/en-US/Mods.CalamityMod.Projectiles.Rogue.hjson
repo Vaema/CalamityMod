@@ -179,6 +179,10 @@ MoltenAmputatorProj.DisplayName: Molten Amputator
 MoonSigil.DisplayName: Moon Sigil
 MycorootProj.DisplayName: Mycoroot
 MythrilKnifeProjectile.DisplayName: Mythril Knife
+NanoblackLightspeedCarve: {
+	Perfect: Wrath of the Superluminae
+	Standard: Light-speed Carve
+}
 NanoblackMain.DisplayName: Nanoblack Reaper
 NanoblackStrike.DisplayName: Zero-Point Energy Strike
 NanoblackTesselation.DisplayName: Nanoblack Tesselation
