@@ -181,110 +181,40 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
-            // NOTE: This massive if chain is also referenced in CalamityPlayer.PostNurseHeal
-            // TODO -- Change this into any kind of organized data list in order to eliminate these two if chains
+            for (int l = 0; l < Player.MaxBuffs; l++)
+            {
+                int buff = Player.buffType[l];
+                if (AlcoholsDict.TryGet(buff, out var level))
+                    alcoholPoisonLevel += level;
+            }
             if (vodka)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Vodka.RegenLoss;
-            }
             if (redWine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
-            }
-            if (grapeBeer)
-            {
-                alcoholPoisonLevel++;
-            }
             if (moonshine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Moonshine.RegenLoss;
-            }
-            if (rum)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (fabsolVodka)
-            {
-                alcoholPoisonLevel++;
-            }
             if (fireball)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Fireball.RegenLoss;
-            }
-            if (whiskey)
-            {
-                alcoholPoisonLevel++;
-            }
             if (everclear)
-            {
-                alcoholPoisonLevel += 2;
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-            }
             if (bloodyMary)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += BloodyMary.RegenLoss;
-            }
             if (tequila)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Tequila.RegenLoss;
-            }
             if (tequilaSunrise)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
-            }
             if (screwdriver)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Screwdriver.RegenLoss;
-            }
-            if (caribbeanRum)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (cinnamonRoll)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (oldFashioned)
-            {
-                alcoholPoisonLevel++;
-            }
             if (margarita)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Margarita.RegenLoss;
-            }
             if (starBeamRye)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += StarBeamRye.RegenLoss;
-            }
             if (moscowMule)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += MoscowMule.RegenLoss;
-            }
             if (whiteWine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += WhiteWine.RegenLoss;
-            }
             if (evergreenGin)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += EvergreenGin.RegenLoss;
-            }
-            if (Player.tipsy)
-            {
-                alcoholPoisonLevel++;
-            }
 
             if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
             {
@@ -701,7 +631,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int hasBuff = Player.buffType[l];
-                    lesserEffect = AlcoholsList.List.Contains(hasBuff);
+                    lesserEffect = AlcoholsDict.TryGet(hasBuff, out var a);
                 }
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;

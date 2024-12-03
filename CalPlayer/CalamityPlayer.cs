@@ -4754,32 +4754,8 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < Player.MaxBuffs; i++)
                 {
                     int buff = Player.buffType[i];
-
-                    // TODO -- Alcohol poisoning level is applied through a gigantic if chain
-                    // As such, there is currently no way to externally reference alcohol level through buff type so this is the method instead
-                    if (buff == BuffType<EverclearBuff>())
-                        Alcohol.Insert(0, new int[] { i, 2 });
-                    else if (buff == BuffType<BloodyMaryBuff>()
-                        || buff == BuffType<CaribbeanRumBuff>()
-                        || buff == BuffType<CinnamonRollBuff>()
-                        || buff == BuffType<EvergreenGinBuff>()
-                        || buff == BuffType<FabsolVodkaBuff>()
-                        || buff == BuffType<FireballBuff>()
-                        || buff == BuffType<GrapeBeerBuff>()
-                        || buff == BuffType<MargaritaBuff>()
-                        || buff == BuffType<MoonshineBuff>()
-                        || buff == BuffType<MoscowMuleBuff>()
-                        || buff == BuffType<OldFashionedBuff>()
-                        || buff == BuffType<RedWineBuff>()
-                        || buff == BuffType<RumBuff>()
-                        || buff == BuffType<ScrewdriverBuff>()
-                        || buff == BuffType<TequilaBuff>()
-                        || buff == BuffType<TequilaSunriseBuff>()
-                        || buff == BuffType<VodkaBuff>()
-                        || buff == BuffType<WhiskeyBuff>()
-                        || buff == BuffType<WhiteWineBuff>()
-                        || buff == BuffID.Tipsy)
-                        Alcohol.Insert(0, new int[] { i, 1 });
+                    if (AlcoholsDict.TryGet(buff, out int level))
+                        Alcohol.Insert(0, new int[] { i, level });
                 }
 
                 int poison = alcoholPoisonLevel;
