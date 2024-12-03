@@ -3078,18 +3078,13 @@ namespace CalamityMod.CalPlayer
                     if (Player.whoAmI == Main.myPlayer)
                     {
                         var source = Player.GetSource_Misc("1");
-                        for (int i = 0; i < 8; i++)
+                        for (int i = 0; i < 16; i++)
                         {
                             float ai1 = Main.rand.NextFloat() + 0.5f;
-                            float randomSpeed = (float)Main.rand.Next(1, 7);
-                            float randomSpeed2 = (float)Main.rand.Next(1, 7);
-                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                            int soul = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f) + randomSpeed, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
+                            Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                            int soul = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
                             if (soul.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[soul].DamageType = DamageClass.Generic;
-                            int soul2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f) + randomSpeed2, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
-                            if (soul2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[soul2].DamageType = DamageClass.Generic;
                         }
                     }
                 }
