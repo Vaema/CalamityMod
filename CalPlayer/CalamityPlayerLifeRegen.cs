@@ -775,29 +775,6 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            // The Camper counteracts the regen loss while moving horizontally
-            if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
-            {
-                // Vanilla base regen rate which gets boosted when resting
-                // The first 6 boosts increment every 300 frames, up to 6 at 1800
-                // Then, the last 3 boosts increment every 600 frames, up to 9 at 3600 which is the cap
-                int baseRegenRate = (int)(Math.Clamp(Player.lifeRegenTime / 300f, 0f, 6f) + Math.Clamp((Player.lifeRegenTime - 1800f) / 600f, 0f, 3f));
-                // Normally 1.25 while resting and 0.5 while not
-                Player.lifeRegen += (int)(baseRegenRate * 0.75f);
-
-                if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
-                {
-                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
-                    regen.noGravity = true;
-                    regen.fadeIn = 1.3f;
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    regen.velocity = velocity;
-                    velocity.Normalize();
-                    velocity *= 34f;
-                    regen.position = Player.Center - velocity;
-                }
-            }
-
             // Life regen soft cap.
             if (Player.statLife < actualMaxLife)
             {
@@ -870,5 +847,27 @@ namespace CalamityMod.CalPlayer
             }
         }
         #endregion
+
+        public override void NaturalLifeRegen(ref float regen)
+        {
+            // The Camper counteracts the regen loss while moving horizontally
+            if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
+            {
+                // Normally 1.25 while resting and 0.5 while not so we apply this cancelling multiplier
+                regen *= 2.5f;
+
+                if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
+                {
+                    Dust heart = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
+                    heart.noGravity = true;
+                    heart.fadeIn = 1.3f;
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
+                    heart.velocity = velocity;
+                    velocity.Normalize();
+                    velocity *= 34f;
+                    heart.position = Player.Center - velocity;
+                }
+            }
+        }
     }
 }
