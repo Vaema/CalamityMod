@@ -13,17 +13,20 @@ using Terraria.ID;
 using Steamworks;
 using CalamityMod.Projectiles.Turret;
 using Mono.Cecil;
+using Newtonsoft.Json.Serialization;
+using CalamityMod.Dusts;
+using CalamityMod.Projectiles.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class VoidragonHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<Voidragon>();
-        public override float MaxOffsetLengthFromArm => 24f;
+        public override float MaxOffsetLengthFromArm => 40f;
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
-        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 50).RotatedBy(0.13f * Projectile.direction);
+        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 55).RotatedBy(-0.05f * Projectile.direction);
 
         public int Time = 0;
         public int shotCounter = 0;
@@ -39,6 +42,17 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            for (int i = 0; i < 2; i++)
+            {
+                int dustType = ModContent.DustType<VoidDustInverted>();
+                float rotMulti = Main.rand.NextFloat(0.3f, 1f);
+                Dust dust = Dust.NewDustPerfect(GunTipPosition + (-Projectile.velocity.RotatedBy(0.15 * Projectile.direction) * 50), dustType);
+                dust.scale = Main.rand.NextFloat(1.2f, 1.8f) * (Owner.Calamity().sharkGunDamageScaling * 0.02f) - rotMulti * 0.1f;
+                dust.noGravity = true;
+                dust.velocity = new Vector2(-1.2f, -2).RotatedBy(-Owner.direction).RotatedByRandom(rotMulti * 0.8f) * (Main.rand.NextFloat(1f, 3.2f) - rotMulti) * (Owner.Calamity().sharkGunDamageScaling * 0.015f);
+                dust.alpha = Main.rand.Next(90, 150);
+                dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
+            }
             //Pause to give the effect of reloading
             if (Time == 30)
             {
@@ -63,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
-                    SoundEngine.PlaySound(fire with { Volume = 0.4f, PitchVariance = 0.2f }, Projectile.Center);
+                    SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.4f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
                     Particle sparker = new CritSpark(GunTipPosition, Vector2.Zero, Color.Gold, Color.LightGoldenrodYellow, 1.7f, 3, 0.5f, 3f);
                     GeneralParticleHandler.SpawnParticle(sparker);
                     for (int i = 0; i <= 4; i++)
@@ -76,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
                     framesBetweenShots = 3;
-                    OffsetLengthFromArm -= 3f;
+                    OffsetLengthFromArm -= 2.5f;
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
@@ -100,7 +114,11 @@ namespace CalamityMod.Projectiles.Ranged
                     shotCounter++;
                     //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
                     if (shotCounter == 50)
-                        framesBetweenShots = 18;
+                    {
+                        framesBetweenShots = 150;
+                        SoundStyle charge = new("CalamityMod/Sounds/Custom/MoonLordLaserCharge");
+                        SoundEngine.PlaySound(charge with { Volume = 1.5f }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+                    }
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
@@ -150,7 +168,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Owner.Calamity().sharkGunDamageScaling++;
                     }
                     //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<AnomalysNanogunPlasmaBeam>(), (int)(Projectile.damage * 5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
 
                     //After firing the rocket, kill the projectile to allow left click to be held down
                     Projectile.Kill();

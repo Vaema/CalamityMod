@@ -1446,9 +1446,10 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Fires void blasts that explode every other shot
-		Shoots demon flame tentacles alongside every shot
-		75% chance to save ammo
+		Loads a 50 round magazine of bullets and concentrated void blasts
+		After firing, the gun unleashes a powerful homing rocket before reloading
+		Rocket damage is based on how many shots hit
+        'Fade to black'
 		'''
 }
 
