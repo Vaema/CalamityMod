@@ -216,6 +216,17 @@ namespace CalamityMod.CalPlayer
             if (evergreenGin)
                 totalNegativeLifeRegen += EvergreenGin.RegenLoss;
 
+            // Blanket effect for all alcohols
+            if (alcoholPoisonLevel > 0)
+            {
+                // This applies the tipsy eyes effect
+                Player.tipsy = true;
+
+                // This one is checked through a buff so we have to counter that
+                if (!Player.HasBuff(BuffID.Tipsy))
+                    Player.fishingSkill += 5;
+
+            }
             if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.

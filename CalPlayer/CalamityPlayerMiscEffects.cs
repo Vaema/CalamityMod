@@ -3133,14 +3133,6 @@ namespace CalamityMod.CalPlayer
             if (whiteWine)
                 Player.GetDamage<MagicDamageClass>() += WhiteWine.MagicDamageBoost;
 
-            // Adjustment to the Tipsy debuff
-            if (Player.tipsy)
-            {
-                Player.statDefense += 4;
-                Player.GetCritChance<MeleeDamageClass>() -= 2;
-                Player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-            }
-
             if (giantPearl)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -4413,7 +4405,7 @@ namespace CalamityMod.CalPlayer
                     Player.statDefense -= (int)(Player.statDefense * WhiteWine.DefenseLossPercent);
             }
 
-            if (Player.tipsy)
+            if (Player.HasBuff(BuffID.Tipsy))
             {
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * 0.05);
