@@ -1473,6 +1473,11 @@ SarosPossessionBuff: {
 	Description: A radiant aura protects you
 }
 
+SeashineSwordBuff: {
+	DisplayName: Seashine Sword
+	Description: A beautiful dance of crystalline blades...
+}
+
 SeaSnailBuff: {
 	DisplayName: Sea Snail
 	Description: Meow?
@@ -1604,7 +1609,3 @@ PopoNoselessBuff: {
 	Description: Your nose has been stolen!
 }
 
-SeashineSwordBuff: {
-	DisplayName: Seashine Sword Buff
-	Description: Mods.CalamityMod.Buffs.SeashineSwordBuff.Description
-}

@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
         public int returnSpeed = 18;
         public Color mainColor;
 
-        public float bladeChargeSpeed = 0.002f;
+        public float bladeChargeSpeed = 0.0015f;
 
         public override void SetStaticDefaults()
         {
@@ -175,29 +175,17 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 4 / MathHelper.Pi);
                     Vector2 bonusPos = (Vector2.UnitY * 6).RotatedBy((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 7);
-                    if (bladeFade < 1 || !attackMode) // Chilling on your back
-                    {
-                        Projectile.rotation = Utils.AngleLerp(Projectile.rotation, Utils.DirectionTo(Owner.Center + Vector2.UnitY * -60, Projectile.Center).ToRotation(), Utils.Remap(returnSpeed, 18, 460, 0.05f, 0.005f, true));
 
-                        Vector2 destination = Owner.Center + bonusPos - Vector2.UnitY * 40 + (Vector2.UnitX * Owner.direction).RotatedBy(Projectile.ai[2] * Owner.direction / 3) * (-15 - Projectile.ai[1] * 18);
-                        Projectile.velocity = (destination - Projectile.Center) / returnSpeed;
-                        if (bladeFade < 1f)
-                            bladeFade += 0.002f;
+                    Projectile.rotation = Utils.AngleLerp(Projectile.rotation, Utils.DirectionTo(Owner.Center + Vector2.UnitY * -60, Projectile.Center).ToRotation(), Utils.Remap(returnSpeed, 18, 460, 0.05f, 0.005f, true));
 
-                        // The weapon theoretically works with projectile scale, though I ended up not using it
-                        //if (Projectile.scale < 3)
-                        //Projectile.scale += 0.01f;
-                        
-                    }
-                    else if (attackMode) // Ready to attack
-                    {
-                        Vector2 toMouse = Utils.DirectionTo(Projectile.Center, Owner.ClampedMouseWorld());
-                        Projectile.rotation = Utils.AngleLerp(Projectile.rotation, toMouse.ToRotation(), 0.1f);
+                    Vector2 destination = Owner.Center + bonusPos - Vector2.UnitY * 40 + (Vector2.UnitX * Owner.direction).RotatedBy(Projectile.ai[2] * Owner.direction / 3) * (-15 - Projectile.ai[1] * 18);
+                    Projectile.velocity = (destination - Projectile.Center) / returnSpeed;
+                    if (bladeFade < 1f)
+                        bladeFade += 0.002f;
 
-                        Vector2 displace = Projectile.rotation.ToRotationVector2().RotatedBy(Projectile.ai[2] + Main.GlobalTimeWrappedHourly * 2) * 180;
-                        Vector2 destination = Owner.ClampedMouseWorld() + bonusPos + displace - Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld()) * 335;
-                        Projectile.velocity = (destination - Projectile.Center) / (returnSpeed * 3);
-                    }
+                    // The weapon theoretically works with projectile scale, though I ended up not using it
+                    //if (Projectile.scale < 3)
+                    //Projectile.scale += 0.01f;
                 }
                 if (readySound && bladeFade >= 1)
                 {
@@ -213,7 +201,7 @@ namespace CalamityMod.Projectiles.Summon
                     readySound = false;
                 }
             }
-            if ((returnSpeed == 18 && bladeFade < 1 || (isAttacking && attackTimer > Projectile.ai[1] * 8 + 5)) || isSpawning)
+            if ((returnSpeed == 18 && bladeFade >= 1 || (isAttacking && attackTimer > Projectile.ai[1] * 8 + 5)) || isSpawning)
             {
                 Particle orb = new CustomSpark(tipPosition, tipVel.SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/BloomCircle", false, 25, Utils.Remap(tipVel.Length(), 2, 15, 0.15f, 0.3f, true) * Projectile.scale, mainColor * 0.65f, new Vector2(1f, 1), true, true, shrinkSpeed: Utils.Remap(tipVel.Length(), 1, 8, 0f, 0.4f, true), glowOpacity: 0.8f);
                 GeneralParticleHandler.SpawnParticle(orb);
@@ -292,7 +280,7 @@ namespace CalamityMod.Projectiles.Summon
             float minMult = 0.15f;
             int hitsToMinMult = 3;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= isAttacking ? damageMult : 0.1f;
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) // Custom collision since it's a spear
         {
@@ -300,6 +288,6 @@ namespace CalamityMod.Projectiles.Summon
             float _ = float.NaN;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, tipPosition, 30 * Projectile.scale, ref _);
         }
-        public override bool? CanDamage() => (bladeFade >= 1 && attackMode) ? null : false;
+        public override bool? CanDamage() => isAttacking ? null : false;
     }
 }
