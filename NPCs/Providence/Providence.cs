@@ -2929,6 +2929,9 @@ namespace CalamityMod.NPCs.Providence
         // Shortcut function for applying Burden Breaker-like negative healing to GFB Providence
         public static void ApplyGFBDamage(Projectile proj, int BaseDuration, int NegativeHealValue)
         {
+            if (!Main.zenithWorld)
+                return;
+
             int index = Player.FindClosest(proj.position, proj.width, proj.height);
             Player player = Main.player[index];
             if (player is null)

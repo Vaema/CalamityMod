@@ -896,8 +896,6 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By Proj
         public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
-            // TODO -- Evolution dodge isn't actually a dodge and you'll still get hit for 1.
-            // This should probably be changed so that when the evolution reflects it gives you 1 frame of guaranteed free dodging everything.
             if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
@@ -929,7 +927,7 @@ namespace CalamityMod.CalPlayer
                         int evolutionIFrames = Player.ComputeReflectIFrames();
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
-                        modifiers.SetMaxDamage(1);
+                        modifiers.Cancel();
                         evolutionLifeRegenCounter = 300;
                         projTypeJustHitBy = proj.type;
 
@@ -1506,8 +1504,7 @@ namespace CalamityMod.CalPlayer
                     theBeeCooldown = TheBee.CooldownLength;
             }
 
-            // TODO: If possible, find a way to make it so parries don't activate the hit
-            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0 && hurtInfo.Damage > 1)
+            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
             {
                 int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                 rOfResilienceCooldown = cooldownTime;
@@ -1812,7 +1809,7 @@ namespace CalamityMod.CalPlayer
 
                         blazingCoreEmpoweredParry = true;
 
-                        modifiers.SetMaxDamage(1); //ONLY REDUCE DAMAGE IF NOT ON COOLDOWN
+                        modifiers.Cancel();
                         modifiers.DisableSound(); //prevents hurt sound from playing, had no idea this was a thing
                     }
 
