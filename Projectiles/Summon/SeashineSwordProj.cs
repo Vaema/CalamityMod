@@ -21,16 +21,23 @@ namespace CalamityMod.Projectiles.Summon
         public float attackTimer = 0;
         public float time = 0;
         public bool isSpawning => time < 180;
-        public float bladeFade = 0;
+
+        public float bladeCharge = 0; // The charge level of the blade, ranges from 0 to 1
+
         public Vector2 tipPosition;
         public Vector2 savedTipPos = Vector2.Zero;
-        public bool attackMode = false;
+        public bool attackMode => Owner.HeldItem.type == ModContent.ItemType<SeashineSword>(); // If not holding the weapon, the blades won't charge (no whips for you)
+
+        // Values stored to create blade swing arc
         public Vector2 startPos;
         public Vector2 endPos;
         public bool setPos = true;
-        public bool isAttacking = false;
+
+        public bool isAttacking = false; // If the blade is in the swinging animation to attack
         public bool readySound = true;
-        public int returnSpeed = 18;
+        public static int baseReturnSpeed = 18;
+        public int returnSpeed = baseReturnSpeed; // How fast blades retun to you
+        public float bladeValue = 0; // The delay between each sword swing
         public Color mainColor;
 
         public float bladeChargeSpeed = 0.0015f;
@@ -38,12 +45,12 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionSacrificable[Type] = true;
-            //ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            // Minion targeting feature is not active here since this isn't a normal summon weapon
         }
         public override void SetDefaults()
         {
-            Projectile.width = 16;
-            Projectile.height = 16;
+            Projectile.width = 40;
+            Projectile.height = 40;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -53,18 +60,19 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.minion = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 25 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 70 * Projectile.MaxUpdates;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.extraUpdates = 2;
         }
 
         public override void AI()
         {
-            float rate = (Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 9;
+            // Color shifting
+            float rate = (Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 6;
             List<Color> eColors = new List<Color>()
             {
-                Color.Cyan,
-                Color.DodgerBlue
+                Color.RoyalBlue,
+                Color.Turquoise
             };
 
             int colorIndex = (int)(rate / 2 % eColors.Count);
@@ -72,29 +80,34 @@ namespace CalamityMod.Projectiles.Summon
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             mainColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
-            if (Projectile.ai[0] == 5 && bladeFade >= 1)
+            // This is the delay between each sword swing, the time bewteen gets shorter as you get more swords
+            // This is so it doesn't take forever for swords to come out when you have a lot of them
+            bladeValue = (Projectile.ai[1] * (6 / MathHelper.Clamp(Owner.ownedProjectileCounts[Projectile.type] * 0.1f, 1, 1000))) + 10;
+
+            // This checks when the blade is told to attacking to see if it can attack
+            if (Projectile.ai[0] == 5 && bladeCharge >= 1)
                 isAttacking = true;
             else if (attackTimer == 0)
                 Projectile.ai[0] = 0;
+
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.6f);
             ApplyPlayerBuffs();
 
-            tipPosition = Projectile.Center + (Vector2.UnitX * MathHelper.Clamp(bladeFade * 85, 25, 2000)).RotatedBy(Projectile.rotation) * Projectile.scale;
+            tipPosition = Projectile.Center + (Vector2.UnitX * MathHelper.Clamp(bladeCharge * 85, 25, 2000)).RotatedBy(Projectile.rotation) * Projectile.scale;
             Vector2 tipVel = (savedTipPos - tipPosition);
             savedTipPos = tipPosition;
-            attackMode = Owner.HeldItem.type == ModContent.ItemType<SeashineSword>();
 
-            if (isSpawning)
+            if (isSpawning) // The effects when you first throw out a summon
             {
-                if (time >= 110)
+                if (time >= 110) // Shine effect when spawning
                 {
                     if (time == 110)
                     {
                         for (int i = 0; i < 15; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 2.5f));
+                            Dust dust = Dust.NewDustPerfect(tipPosition, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(7f, 14f));
                             dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.65f, 1f);
+                            dust.scale = Main.rand.NextFloat(0.85f, 1.3f);
                             dust.color = mainColor;
                             dust.noLightEmittence = true;
                         }
@@ -108,9 +121,8 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.rotation = Utils.AngleLerp(Projectile.rotation, -Vector2.UnitY.ToRotation(), 0.1f);
                     Projectile.velocity *= 0.95f;
                 }
-                else
+                else // Spinning
                 {
-                    
                     Projectile.velocity *= 0.96f;
                     Dust dust = Dust.NewDustPerfect(tipPosition, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.2f));
                     dust.noGravity = false;
@@ -123,28 +135,28 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.rotation += 0.15f;
                 }
             }
-            else
+            else // The actual active ai for the summon
             {
-                if (isAttacking)
+                if (isAttacking) // When commanded to attack and is fully charged
                 {
                     attackTimer++;
-                    if (attackTimer >= 120 + Projectile.ai[1] * 8)
+                    if (attackTimer >= 120 + bladeValue) // Reset values after a swing
                     {
                         attackTimer = 80;
                         Projectile.ai[0] = 0;
                         setPos = true;
                         isAttacking = false;
                         readySound = true;
-                        bladeFade = 0.9f;
+                        bladeCharge = 0.9f;
                         Projectile.numHits = 0;
                         Projectile.scale = 1;
                         returnSpeed = 460;
                     }
 
-                    if (attackTimer > Projectile.ai[1] * 8 && Projectile.ai[0] != 0)
+                    if (attackTimer > bladeValue && Projectile.ai[0] != 0) // The actual swing
                     {
                         Vector2 toMouse = Utils.DirectionTo(Projectile.Center, Owner.ClampedMouseWorld());
-                        float lerp = Utils.GetLerpValue(30 + Projectile.ai[1] * 8, 100 + Projectile.ai[1] * 8, attackTimer);
+                        float lerp = Utils.GetLerpValue(30 + bladeValue, 100 + bladeValue, attackTimer, true);
                         if (setPos)
                         {
                             startPos = Projectile.Center;
@@ -154,40 +166,39 @@ namespace CalamityMod.Projectiles.Summon
                         }
 
                         Projectile.velocity = (Vector2.Lerp(startPos, endPos, lerp) - Projectile.Center) / returnSpeed;
-                        float angles = 120 * (Projectile.ai[1] % 2 == 0 ? -1 : 1);
-                        float rot = Utils.DirectionTo(startPos, endPos).RotatedBy(MathHelper.Lerp(MathHelper.ToRadians(-angles), MathHelper.ToRadians(angles) / 2, lerp)).ToRotation();
+                        float angles = 180 * (Projectile.ai[1] % 2 == 0 ? -1 : 1);
+                        float rot = Utils.DirectionTo(startPos, endPos).RotatedBy(MathHelper.Lerp(MathHelper.ToRadians(-angles), MathHelper.ToRadians(angles) / 5, (float)Math.Pow(lerp, 1.5f))).ToRotation();
                         Projectile.rotation = Utils.AngleLerp(Projectile.rotation, rot, 0.1f);
 
                     }
-                    else // an altered version of the on back code to get ready to swing
+                    else // An altered version of the on back code to get them into position to swing
                     {
                         float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 4 / MathHelper.Pi);
                         Vector2 bonusPos = (Vector2.UnitY * 6).RotatedBy((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 7);
                         Projectile.rotation = Utils.AngleLerp(Projectile.rotation, Utils.DirectionTo(Owner.Center, Projectile.Center).ToRotation(), 0.05f);
 
-                        Vector2 destination = Owner.Center + bonusPos + (Vector2.UnitX * Owner.direction).RotatedBy(Projectile.ai[2] * Owner.direction / 2) * (-200);
-                        Projectile.velocity = (destination - Projectile.Center) / (returnSpeed * 5);
-                        if (bladeFade < 1f)
-                            bladeFade += bladeChargeSpeed;
+                        float destLerp = Utils.GetLerpValue(0, bladeValue, attackTimer, true);
+                        Vector2 destination = Owner.Center + bonusPos + (Vector2.UnitX * Owner.direction).RotatedBy(Projectile.ai[2] * Owner.direction / 2) * (-20 - 330 * (float)Math.Pow(destLerp, 2));
+                        Projectile.velocity = (destination - Projectile.Center) / (returnSpeed * 0.6f);
                     }
                 }
-                else
+                else // Chill on the players back while charging the blade
                 {
                     float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 4 / MathHelper.Pi);
                     Vector2 bonusPos = (Vector2.UnitY * 6).RotatedBy((Main.GlobalTimeWrappedHourly + Projectile.ai[1]) * 7);
 
-                    Projectile.rotation = Utils.AngleLerp(Projectile.rotation, Utils.DirectionTo(Owner.Center + Vector2.UnitY * -60, Projectile.Center).ToRotation(), Utils.Remap(returnSpeed, 18, 460, 0.05f, 0.005f, true));
+                    Projectile.rotation = Utils.AngleLerp(Projectile.rotation, Utils.DirectionTo(Owner.Center + Vector2.UnitY * -60, Projectile.Center).ToRotation(), Utils.Remap(returnSpeed, baseReturnSpeed, 460, 0.05f, 0.005f, true));
 
                     Vector2 destination = Owner.Center + bonusPos - Vector2.UnitY * 40 + (Vector2.UnitX * Owner.direction).RotatedBy(Projectile.ai[2] * Owner.direction / 3) * (-15 - Projectile.ai[1] * 18);
                     Projectile.velocity = (destination - Projectile.Center) / returnSpeed;
-                    if (bladeFade < 1f)
-                        bladeFade += 0.002f;
+                    if (bladeCharge < 1f)
+                        bladeCharge += bladeChargeSpeed;
 
                     // The weapon theoretically works with projectile scale, though I ended up not using it
                     //if (Projectile.scale < 3)
                     //Projectile.scale += 0.01f;
                 }
-                if (readySound && bladeFade >= 1)
+                if (readySound && bladeCharge >= 1) // Effect when the blade is fully charged
                 {
                     for (int i = 0; i < 8; i++)
                     {
@@ -201,26 +212,31 @@ namespace CalamityMod.Projectiles.Summon
                     readySound = false;
                 }
             }
-            if ((returnSpeed == 18 && bladeFade >= 1 || (isAttacking && attackTimer > Projectile.ai[1] * 8 + 5)) || isSpawning)
+            // This is the tip trail for the blades, it is a very consistently good looking trail, however it creates a LOT of particles
+            // I do not recommend reusing this effect unless you're using it carefully
+            if ((returnSpeed == baseReturnSpeed && bladeCharge >= 1 || (isAttacking && attackTimer > bladeValue + 5)) || isSpawning)
             {
                 Particle orb = new CustomSpark(tipPosition, tipVel.SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/BloomCircle", false, 25, Utils.Remap(tipVel.Length(), 2, 15, 0.15f, 0.3f, true) * Projectile.scale, mainColor * 0.65f, new Vector2(1f, 1), true, true, shrinkSpeed: Utils.Remap(tipVel.Length(), 1, 8, 0f, 0.4f, true), glowOpacity: 0.8f);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
-            time++;
-
+            // The uncharge of the blades when you're not holding the item or after they slash
             if (!isAttacking && (attackTimer > 0 || !attackMode))
             {
-                bladeFade = MathHelper.Lerp(bladeFade, 0, 0.025f);
+                bladeCharge = MathHelper.Lerp(bladeCharge, 0, 0.025f);
                 if (attackTimer > 0)
                     attackTimer--;
                 readySound = true;
             }
-            if (returnSpeed > 18)
+            // How fast the blades try to reach their goal position when not activley slashing
+            // Tries to get back to the base value when possible
+            if (returnSpeed > baseReturnSpeed)
             {
                 returnSpeed = (int)(returnSpeed * 0.99f);
             }
             else
-                returnSpeed = 18;
+                returnSpeed = baseReturnSpeed;
+
+            time++;
         }
         public void ApplyPlayerBuffs()
         {
@@ -240,14 +256,14 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
 
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
-            float extremeLerp = (float)Math.Pow(bladeFade, 10);
+            float extremeLerp = (float)Math.Pow(bladeCharge, 10);
             for (int i = 0; i < 3; i++)
-                Main.EntitySpriteDraw(tex2, drawPos - (Vector2.UnitY.RotatedBy(Projectile.rotation + MathHelper.ToRadians(90)) * 43 * bladeFade * Projectile.scale), null, Color.Lerp(mainColor, Color.White, i * 0.3f) with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(90), tex2.Size() * 0.5f, new Vector2(0.33f - i * 0.05f, (0.75f + i * 0.03f) * bladeFade) * 0.05f * Projectile.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex2, drawPos - (Vector2.UnitY.RotatedBy(Projectile.rotation + MathHelper.ToRadians(90)) * 43 * bladeCharge * Projectile.scale), null, Color.Lerp(mainColor, Color.White, i * 0.3f) with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(90), tex2.Size() * 0.5f, new Vector2(0.33f - i * 0.05f, (0.75f + i * 0.03f) * bladeCharge) * 0.05f * Projectile.scale, SpriteEffects.None);
 
             for (int i = 0; i < 2; i++)
                 Main.EntitySpriteDraw(tex, drawPos, null, Color.Lerp(lightColor, (i == 0 ? Color.White : mainColor) with { A = 0 }, extremeLerp), Projectile.rotation + MathHelper.ToRadians(45), tex.Size() * 0.5f, i == 0 ? 0.8f : 1, SpriteEffects.None);
             
-            if (!isAttacking && bladeFade < 1)
+            if (!isAttacking && bladeCharge < 1)
             {
                 for (int i = 0; i < 2; i++)
                     Main.EntitySpriteDraw(tex3, drawPos, null, mainColor with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(45), tex3.Size() * 0.5f, new Vector2(i == 0 ? 1 : 3, i == 0 ? 3 : 1) * Main.rand.NextFloat(0.8f, 1.1f) * extremeLerp, SpriteEffects.None);
@@ -256,7 +272,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
             if (isAttacking)
             {
                 for (int i = 0; i < 4; i++)
@@ -277,8 +293,10 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.15f;
-            int hitsToMinMult = 3;
+            // Blades should do big damage on the inital hit due to the large delay between attacks
+            // However, it's pierce reduction is quite severe (at least right now)
+            float minMult = 0.1f;
+            int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
@@ -288,6 +306,6 @@ namespace CalamityMod.Projectiles.Summon
             float _ = float.NaN;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, tipPosition, 30 * Projectile.scale, ref _);
         }
-        public override bool? CanDamage() => isAttacking ? null : false;
+        public override bool? CanDamage() => (isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0) ? null : false;
     }
 }

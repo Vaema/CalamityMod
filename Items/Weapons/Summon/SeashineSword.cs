@@ -1,10 +1,8 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -26,8 +24,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 40;
             Item.height = 40;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useTime = 10;
+            Item.useAnimation = 10;
             Item.damage = 55;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -35,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.DamageType = DamageClass.Summon;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.knockBack = 1f;
+            Item.knockBack = 5f;
             Item.shootSpeed = 12f;
             Item.mana = 10;
             Item.rare = ItemRarityID.Green;
@@ -44,8 +42,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool AltFunctionUse(Player player) => true;
         public override float UseSpeedMultiplier(Player player)
         {
+            // There's a long cooldown on commanding blades
+            // This is so you don't just hold down right click, since now it's optimal to only command blades when all are ready
             if (player.altFunctionUse == 2)
-                return 0.2f;
+                return 0.1f;
             else
                 return 1f;
         }
@@ -55,6 +55,8 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            // Call all active blades to attack if they are charged
+            // The check to see if a blade is charged is done in the blade itself
             if (player.altFunctionUse == 2)
             {
                 int blades = 0;
@@ -67,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Summon
                         blades++;
                     }
                 }
-                if (blades > 0)
+                if (blades > 0) // If theres no blades, then don't do anything
                 {
                     for (int i = 0; i < 7; i++)
                     {
@@ -83,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     SoundEngine.PlaySound(SoundID.Item101 with { Volume = 0.9f, Pitch = Main.rand.NextFloat(0.3f, 0.5f) }, player.Center);
                 }
             }
-            else
+            else // Toss out the summon
             {
                 SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
@@ -113,31 +115,7 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             return false;
         }
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
-            if (player.altFunctionUse == 2)
-            {
-                player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
-                float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
-
-                float pullback = 7f;
-
-                float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
-                float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
-                if (animProgress < 0.4f)
-                    pullback -= (2.75f) * (float)Math.Pow((0.6f - animProgress) / 0.6f, 2);
-
-                Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * pullback;
-                Vector2 itemSize = new Vector2(52, 28);
-                Vector2 itemOrigin = new Vector2(-24, 4);
-
-                CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
-
-                base.UseStyle(player, heldItemFrame);
-            }
-        }
-
-        public override void UseItemFrame(Player player)
+        public override void UseItemFrame(Player player) // Player hand animation when you command the blades
         {
             if (player.altFunctionUse == 2)
             {
