@@ -112,6 +112,7 @@ namespace CalamityMod
 
             // This is the hardcoded value to "do nothing", and is thus the default choice.
             int prefix = -1;
+            bool supportsLegendary = PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix());
 
             // ACCESSORIES
             if (item.accessory)
@@ -139,7 +140,8 @@ namespace CalamityMod
             }
 
             // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MeleeRangedHybridDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
+            // Melee-ranged hybrid weapons prioritize Legendary if available, otherwise go for Unreal
+            else if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary))
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
@@ -156,7 +158,7 @@ namespace CalamityMod
                 }
 
                 // Swords, Whips, Tools, other items that support the Legendary modifier
-                else if (PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix()))
+                else if (supportsLegendary)
                 {
                     int[][] meleeReforgeTiers = new int[][]
                     {
