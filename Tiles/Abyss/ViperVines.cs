@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +21,12 @@ namespace CalamityMod.Tiles.Abyss
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
             DustType = 2;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Main.instance.TilesRenderer.CrawlToTopOfVineAndAddSpecialPoint(j, i);
+            return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

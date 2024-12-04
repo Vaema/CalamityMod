@@ -1251,6 +1251,7 @@ namespace CalamityMod
             Main.tileLavaDeath[mt.Type] = !lavaImmune;
             Main.tileWaterDeath[mt.Type] = false;
             TileID.Sets.DisableSmartCursor[mt.Type] = true;
+            TileID.Sets.MultiTileSway[mt.Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
             TileObjectData.newTile.LavaDeath = !lavaImmune;
             TileObjectData.newTile.LavaPlacement = lavaImmune ? LiquidPlacement.Allowed : LiquidPlacement.NotAllowed;
@@ -1268,19 +1269,6 @@ namespace CalamityMod
                 mt.AddMapEntry(new Color(251, 235, 127), Language.GetText("MapObject.Lantern"));
 
             mt.AdjTiles = new int[] { TileID.HangingLanterns };
-        }
-
-        // Allow hanging lanterns to move up when hung on platforms
-        internal static void PlatformHangOffset(int i, int j, ref int offsetY)
-        {
-            Tile tile = Main.tile[i, j];
-            TileObjectData data = TileObjectData.GetTileData(tile);
-            int topLeftX = i - tile.TileFrameX / 18 % data.Width;
-            int topLeftY = j - tile.TileFrameY / 18 % data.Height;
-            if (WorldGen.IsBelowANonHammeredPlatform(topLeftX, topLeftY))
-            {
-                offsetY -= 8;
-            }
         }
 
         /// <summary>
