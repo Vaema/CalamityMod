@@ -157,12 +157,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Main.instance.DrawCacheNPCsBehindNonSolidTiles.Add(index);
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
-            if (projectile.type == ModContent.ProjectileType<CelestusMiniScythe>())
-                modifiers.SourceDamage *= 0.66f;
-        }
-
         public override bool CheckActive() => false;
     }
 }
