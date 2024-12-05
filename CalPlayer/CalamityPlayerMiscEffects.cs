@@ -3142,7 +3142,7 @@ namespace CalamityMod.CalPlayer
                         if (npc.friendly || npc.dontTakeDamage)
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
-                        if (distance < 120f)
+                        if (distance < GiantPearl.AuraRadius)
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
                     }
                 }

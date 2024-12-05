@@ -840,7 +840,7 @@ GiantPearl: {
 		'''
 		You have a light aura around you
 		Enemies within the aura are slowed down
-		You release homing prism shards while an enemy is slowed
+		Enemies that remain within the aura are bombarded by homing prism shards
 		{$Common.AbyssLightLevel1}
 		'''
 }
