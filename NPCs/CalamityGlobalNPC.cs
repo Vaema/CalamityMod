@@ -5488,9 +5488,6 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
-            // Incremement Giant Pearl's pearl shard counter
-            pearlAuraCounter++;
-
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
@@ -5719,13 +5716,29 @@ namespace CalamityMod.NPCs
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
-            if (pearlAura > 0 && pearlAuraCounter % 12 == 0)
+            if (pearlAura > 0)
             {
-                SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
-                Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                int damage = 20;
-                Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                pearlAuraCounter++;
+                if (pearlAuraCounter >= 45)
+                {
+                    pearlAuraCounter = 0;
+                    SoundEngine.PlaySound(SoundID.Item49, npc.Center);
+
+                    // Prevent things from getting too crazy
+                    if (CalamityUtils.CountProjectiles(ProjectileType<PearlAuraShard>()) <= 3)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
+                            Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
+                            int damage = 20;
+                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                        }
+                    }
+                }
             }
+            else
+                pearlAuraCounter = 0;
 
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)

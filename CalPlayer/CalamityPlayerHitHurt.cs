@@ -896,8 +896,6 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By Proj
         public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
-            // TODO -- Evolution dodge isn't actually a dodge and you'll still get hit for 1.
-            // This should probably be changed so that when the evolution reflects it gives you 1 frame of guaranteed free dodging everything.
             if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
@@ -929,7 +927,7 @@ namespace CalamityMod.CalPlayer
                         int evolutionIFrames = Player.ComputeReflectIFrames();
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
-                        modifiers.SetMaxDamage(1);
+                        modifiers.Cancel();
                         evolutionLifeRegenCounter = 300;
                         projTypeJustHitBy = proj.type;
 
@@ -1506,8 +1504,7 @@ namespace CalamityMod.CalPlayer
                     theBeeCooldown = TheBee.CooldownLength;
             }
 
-            // TODO: If possible, find a way to make it so parries don't activate the hit
-            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0 && hurtInfo.Damage > 1)
+            if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
             {
                 int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                 rOfResilienceCooldown = cooldownTime;
@@ -1812,7 +1809,7 @@ namespace CalamityMod.CalPlayer
 
                         blazingCoreEmpoweredParry = true;
 
-                        modifiers.SetMaxDamage(1); //ONLY REDUCE DAMAGE IF NOT ON COOLDOWN
+                        modifiers.Cancel();
                         modifiers.DisableSound(); //prevents hurt sound from playing, had no idea this was a thing
                     }
 
@@ -2683,17 +2680,12 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 8; i++)
+                            for (int i = 0; i < 16; i++)
                             {
-                                float randomSpeed = Main.rand.Next(1, 7);
-                                float randomSpeed2 = Main.rand.Next(1, 7);
-                                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                                int shard = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f) + randomSpeed, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI, 0f, 0f);
-                                int shard2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f) + randomSpeed2, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI, 0f, 0f);
+                                Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                                int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);
                                 if (shard.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[shard].DamageType = DamageClass.Generic;
-                                if (shard2.WithinBounds(Main.maxProjectiles))
-                                    Main.projectile[shard2].DamageType = DamageClass.Generic;
                             }
                         }
                     }

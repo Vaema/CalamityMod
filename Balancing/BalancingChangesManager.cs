@@ -506,6 +506,9 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Supreme Calamitas: Brimstone Hearts
+            // 34% resist to Celestus' mini scythes.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.66f, ProjectileType<CelestusMiniScythe>())));
+
             // 30% resist to Supernova.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.7f, ProjectileType<SupernovaBoom>(), ProjectileType<SupernovaStealthBoom>())));
 

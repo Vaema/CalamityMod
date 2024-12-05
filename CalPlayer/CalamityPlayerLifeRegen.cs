@@ -181,111 +181,52 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
-            // NOTE: This massive if chain is also referenced in CalamityPlayer.PostNurseHeal
-            // TODO -- Change this into any kind of organized data list in order to eliminate these two if chains
+            for (int l = 0; l < Player.MaxBuffs; l++)
+            {
+                int buff = Player.buffType[l];
+                if (AlcoholsDict.TryGet(buff, out var level))
+                    alcoholPoisonLevel += level;
+            }
             if (vodka)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Vodka.RegenLoss;
-            }
             if (redWine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
-            }
-            if (grapeBeer)
-            {
-                alcoholPoisonLevel++;
-            }
             if (moonshine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Moonshine.RegenLoss;
-            }
-            if (rum)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (fabsolVodka)
-            {
-                alcoholPoisonLevel++;
-            }
             if (fireball)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Fireball.RegenLoss;
-            }
-            if (whiskey)
-            {
-                alcoholPoisonLevel++;
-            }
             if (everclear)
-            {
-                alcoholPoisonLevel += 2;
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-            }
             if (bloodyMary)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += BloodyMary.RegenLoss;
-            }
             if (tequila)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Tequila.RegenLoss;
-            }
             if (tequilaSunrise)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
-            }
             if (screwdriver)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Screwdriver.RegenLoss;
-            }
-            if (caribbeanRum)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (cinnamonRoll)
-            {
-                alcoholPoisonLevel++;
-            }
-            if (oldFashioned)
-            {
-                alcoholPoisonLevel++;
-            }
             if (margarita)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += Margarita.RegenLoss;
-            }
             if (starBeamRye)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += StarBeamRye.RegenLoss;
-            }
             if (moscowMule)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += MoscowMule.RegenLoss;
-            }
             if (whiteWine)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += WhiteWine.RegenLoss;
-            }
             if (evergreenGin)
-            {
-                alcoholPoisonLevel++;
                 totalNegativeLifeRegen += EvergreenGin.RegenLoss;
-            }
-            if (Player.tipsy)
-            {
-                alcoholPoisonLevel++;
-            }
 
+            // Blanket effect for all alcohols
+            if (alcoholPoisonLevel > 0)
+            {
+                // This applies the tipsy eyes effect
+                Player.tipsy = true;
+
+                // This one is checked through a buff so we have to counter that
+                if (!Player.HasBuff(BuffID.Tipsy))
+                    Player.fishingSkill += 5;
+
+            }
             if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
@@ -701,7 +642,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int hasBuff = Player.buffType[l];
-                    lesserEffect = AlcoholsList.List.Contains(hasBuff);
+                    lesserEffect = AlcoholsDict.TryGet(hasBuff, out var a);
                 }
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
@@ -834,29 +775,6 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            // The Camper counteracts the regen loss while moving horizontally
-            if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
-            {
-                // Vanilla base regen rate which gets boosted when resting
-                // The first 6 boosts increment every 300 frames, up to 6 at 1800
-                // Then, the last 3 boosts increment every 600 frames, up to 9 at 3600 which is the cap
-                int baseRegenRate = (int)(Math.Clamp(Player.lifeRegenTime / 300f, 0f, 6f) + Math.Clamp((Player.lifeRegenTime - 1800f) / 600f, 0f, 3f));
-                // Normally 1.25 while resting and 0.5 while not
-                Player.lifeRegen += (int)(baseRegenRate * 0.75f);
-
-                if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
-                {
-                    Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
-                    regen.noGravity = true;
-                    regen.fadeIn = 1.3f;
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
-                    regen.velocity = velocity;
-                    velocity.Normalize();
-                    velocity *= 34f;
-                    regen.position = Player.Center - velocity;
-                }
-            }
-
             // Life regen soft cap.
             if (Player.statLife < actualMaxLife)
             {
@@ -929,5 +847,27 @@ namespace CalamityMod.CalPlayer
             }
         }
         #endregion
+
+        public override void NaturalLifeRegen(ref float regen)
+        {
+            // The Camper counteracts the regen loss while moving horizontally
+            if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
+            {
+                // Normally 1.25 while resting and 0.5 while not so we apply this cancelling multiplier
+                regen *= 2.5f;
+
+                if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
+                {
+                    Dust heart = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
+                    heart.noGravity = true;
+                    heart.fadeIn = 1.3f;
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
+                    heart.velocity = velocity;
+                    velocity.Normalize();
+                    velocity *= 34f;
+                    heart.position = Player.Center - velocity;
+                }
+            }
+        }
     }
 }

@@ -29,17 +29,17 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
         public static float MaxThrowReach = 760;
-        public static float snapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
+        public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
         public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
         public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
         public static float SnapBoltsDamageMultiplier = 0.1f;
 
-        public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
+        public static float BlastDamageMultiplier = 2f; //Damage multiplier for the blast attack
         public static float BlastBoltsDamageMultiplier = 0.2f;
 
-        public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during hte swirl attack
+        public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during the swirl attack
         public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -138,7 +138,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 {
                     // Fire the super blast, then set charge back to zero.
                     float angle = velocity.ToRotation();
-                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI, Charge);
+                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
 
                     // If the parry holdout has existed for very few frames and hasn't parried something, just delete it.

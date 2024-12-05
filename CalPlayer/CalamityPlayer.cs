@@ -3079,18 +3079,13 @@ namespace CalamityMod.CalPlayer
                     if (Player.whoAmI == Main.myPlayer)
                     {
                         var source = Player.GetSource_Misc("1");
-                        for (int i = 0; i < 8; i++)
+                        for (int i = 0; i < 16; i++)
                         {
                             float ai1 = Main.rand.NextFloat() + 0.5f;
-                            float randomSpeed = (float)Main.rand.Next(1, 7);
-                            float randomSpeed2 = (float)Main.rand.Next(1, 7);
-                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                            int soul = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f) + randomSpeed, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
+                            Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                            int soul = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
                             if (soul.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[soul].DamageType = DamageClass.Generic;
-                            int soul2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f) + randomSpeed2, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
-                            if (soul2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[soul2].DamageType = DamageClass.Generic;
                         }
                     }
                 }
@@ -4755,32 +4750,8 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < Player.MaxBuffs; i++)
                 {
                     int buff = Player.buffType[i];
-
-                    // TODO -- Alcohol poisoning level is applied through a gigantic if chain
-                    // As such, there is currently no way to externally reference alcohol level through buff type so this is the method instead
-                    if (buff == BuffType<EverclearBuff>())
-                        Alcohol.Insert(0, new int[] { i, 2 });
-                    else if (buff == BuffType<BloodyMaryBuff>()
-                        || buff == BuffType<CaribbeanRumBuff>()
-                        || buff == BuffType<CinnamonRollBuff>()
-                        || buff == BuffType<EvergreenGinBuff>()
-                        || buff == BuffType<FabsolVodkaBuff>()
-                        || buff == BuffType<FireballBuff>()
-                        || buff == BuffType<GrapeBeerBuff>()
-                        || buff == BuffType<MargaritaBuff>()
-                        || buff == BuffType<MoonshineBuff>()
-                        || buff == BuffType<MoscowMuleBuff>()
-                        || buff == BuffType<OldFashionedBuff>()
-                        || buff == BuffType<RedWineBuff>()
-                        || buff == BuffType<RumBuff>()
-                        || buff == BuffType<ScrewdriverBuff>()
-                        || buff == BuffType<TequilaBuff>()
-                        || buff == BuffType<TequilaSunriseBuff>()
-                        || buff == BuffType<VodkaBuff>()
-                        || buff == BuffType<WhiskeyBuff>()
-                        || buff == BuffType<WhiteWineBuff>()
-                        || buff == BuffID.Tipsy)
-                        Alcohol.Insert(0, new int[] { i, 1 });
+                    if (AlcoholsDict.TryGet(buff, out int level))
+                        Alcohol.Insert(0, new int[] { i, level });
                 }
 
                 int poison = alcoholPoisonLevel;
