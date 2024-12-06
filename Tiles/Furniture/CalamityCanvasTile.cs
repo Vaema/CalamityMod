@@ -2,6 +2,7 @@
 using CalamityMod.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -15,6 +16,10 @@ namespace CalamityMod.Tiles.Furniture
 {
     public class CalamityCanvasTile : ModTile
     {
+        public static Asset<Texture2D> border;
+
+        public override void Load() => border = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasBorder");
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -69,9 +74,9 @@ namespace CalamityMod.Tiles.Furniture
             int left = i - t.TileFrameX % (5 * 18) / 18;
             int top = j - t.TileFrameY % (5 * 18) / 18;
 
-            TECanvasPainting factory = CalamityUtils.FindTileEntity<TECanvasPainting>(i, j, 5, 5, 18);
+            TECanvasPainting canvas = CalamityUtils.FindTileEntity<TECanvasPainting>(i, j, 5, 5, 18);
 
-            factory?.Kill(left, top);
+            canvas?.Kill(left, top);
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
@@ -80,9 +85,9 @@ namespace CalamityMod.Tiles.Furniture
             Texture2D texture = TextureAssets.Tile[Type].Value;
             TECanvasPainting cube = CalamityUtils.FindTileEntity<TECanvasPainting>(i, j, 1, 1);
             float baseDimension = 80; // 5 * 16
+            Vector2 pos = new Vector2(i * 16, j * 16) + CalamityUtils.TileDrawOffset;
             if (cube != null && t.TileFrameX == 0)
             {
-                Vector2 pos = new Vector2(i * 16, j * 16) + CalamityUtils.TileDrawOffset;
                 int fPX = (int)cube.framePosition.X;
                 int fPY = (int)cube.framePosition.Y;
                 int scale = (int)(baseDimension * cube.scale);
@@ -92,7 +97,56 @@ namespace CalamityMod.Tiles.Furniture
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null);
             }
+            // Calculate and draw the borders
+            if (t.TileFrameX == 0 && t.TileFrameY == 0)
+                DrawBorders(spriteBatch, pos - Main.screenPosition, new Point(i, j));
             return false;
+        }
+        public static void DrawBorders(SpriteBatch spriteBatch, Vector2 pos, Point cords)
+        {
+            Texture2D texture = border.Value;
+            ushort canvasID = (ushort)ModContent.TileType<CalamityCanvasTile>();
+            int commonDim = 8;
+            Color light = Lighting.GetColor(cords.X, cords.Y);
+
+            bool drawTop = true;
+            bool drawLeft = true;
+            bool drawRight = true;
+            bool drawBottom = true;
+
+            Point bottomRight = new Point(cords.X + 4, cords.Y + 4);
+            
+            Tile left = CalamityUtils.ParanoidTileRetrieval(cords.X - 1, cords.Y);
+            Tile top = CalamityUtils.ParanoidTileRetrieval(cords.X, cords.Y - 1);
+            if (top.HasTile && top.TileType == canvasID)
+            {
+                drawTop = false;
+            }
+            if (left.HasTile && left.TileType == canvasID)
+            {
+                drawLeft = false;
+            }
+            Tile right = CalamityUtils.ParanoidTileRetrieval(bottomRight.X + 1, bottomRight.Y);
+            Tile bottom = CalamityUtils.ParanoidTileRetrieval(bottomRight.X, bottomRight.Y + 1);
+            if (bottom.HasTile && bottom.TileType == canvasID)
+            {
+                drawBottom = false;
+            }
+            if (right.HasTile && right.TileType == canvasID)
+            {
+                drawRight = false;
+            }
+
+            if (drawBottom)
+                spriteBatch.Draw(texture, pos + Vector2.UnitY * 72, new Rectangle(0, texture.Height - commonDim, texture.Width, commonDim), light, 0, new Vector2(0, 0), 1, 0, 0);
+            if (drawTop)
+                spriteBatch.Draw(texture, pos, new Rectangle(0, 0, texture.Width, commonDim), light, 0, new Vector2(0, 0), 1, 0, 0);
+
+            if (drawRight)
+                spriteBatch.Draw(texture, pos + Vector2.UnitX * 72, new Rectangle(texture.Width - commonDim, 0, commonDim, texture.Height), light, 0, new Vector2(0, 0), 1, 0, 0);
+            if (drawLeft)
+                spriteBatch.Draw(texture, pos, new Rectangle(0, 0, commonDim, texture.Height), light, 0, new Vector2(0, 0), 1, 0, 0);
+
         }
     }
 }

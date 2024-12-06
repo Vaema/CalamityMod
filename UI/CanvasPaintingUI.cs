@@ -46,12 +46,13 @@ namespace CalamityMod.UI
             }
 
             // If the player is too far away from their viewed canvas, immediately destroy this UI and play the menu close sound.
-            Vector2 paintingPosition = painting.Position.ToWorldCoordinates() + new Vector2(20, 20);
+            // Currently commented out as moving away lets player's see adjacent paintings
+            /*Vector2 paintingPosition = painting.Position.ToWorldCoordinates() + new Vector2(20, 20);
             if (Main.LocalPlayer.DistanceSQ(paintingPosition) > 160f * 160f)
             {
                 ClosePainting(ref p, painting);
                 return;
-            }
+            }*/
 
             int paintingTileSize = 80;
 
