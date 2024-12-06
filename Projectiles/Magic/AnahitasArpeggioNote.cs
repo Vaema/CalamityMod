@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Magic
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
-        private bool _hasSpawned;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -44,13 +43,7 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         public override void AI()
-        {
-            if (!_hasSpawned)
-            {
-                NoteSequence = Owner.ownedProjectileCounts[Type] - 1;
-                _hasSpawned = true;
-            }
-            
+        {            
             Timer++;
 
             // Slight size oscillation
@@ -88,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the player stops using the weapon, switch to fade away mode
                 if (Owner.releaseUseItem)
                 {
-                    Owner.Calamity().arpeggioCooldown = 40;
+                    Owner.Calamity().arpeggioCooldown = 45;
                     AIState = 1f;
                 }
             }

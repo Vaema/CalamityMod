@@ -47,7 +47,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             // Max music note check is in Shoot instead of CanUseItem so that the weapon can still be visually played while at the cap
             int musicNoteCap = Main.zenithWorld ? 7 : 6;
-            if (player.ownedProjectileCounts[type] >= musicNoteCap)
+            int nonReleasedMusicNotes = Main.projectile.Count(proj => proj.type == Item.shoot && Main.myPlayer == proj.owner && proj.active && proj.ai[1] != 2f);
+            if (nonReleasedMusicNotes >= musicNoteCap)
             {
                 Main.musicPitch = -0.5f;
                 SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
@@ -55,10 +56,11 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             else
             {
-                if (player.ownedProjectileCounts[type] <= 0)
+                if (nonReleasedMusicNotes <= 0)
                     RotationOffset = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
-                Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
+                Projectile note = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
+                note.localAI[1] = nonReleasedMusicNotes;
                 return false;
             }
         }
@@ -74,7 +76,8 @@ namespace CalamityMod.Items.Weapons.Magic
         // Consume much less mana while the maximum number of notes are present
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
-            if (player.ownedProjectileCounts[Item.shoot] >= 6)
+            int nonReleasedMusicNotes = Main.projectile.Count(proj => proj.type == Item.shoot && Main.myPlayer == proj.owner && proj.active && proj.ai[1] != 2f);
+            if (nonReleasedMusicNotes >= 6)
                 mult *= 0.25f;
         }
 
