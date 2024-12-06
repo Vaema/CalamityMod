@@ -16,10 +16,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public ref float Timer => ref Projectile.ai[0];
         public ref float AIState => ref Projectile.ai[1];
-        public ref float NoteSequence => ref Projectile.localAI[1];
+        public ref float NoteSequence => ref Projectile.ai[2];
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
+        public float _randomReleaseRotationOffset;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -83,6 +84,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Owner.Calamity().arpeggioCooldown = 45;
                     AIState = 1f;
+                    Projectile.netUpdate = true;
                 }
             }
             else if (AIState == 1f) // Brief fade away
@@ -106,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.alpha = 255;
 
                     float degreesAmt = Main.zenithWorld ? 51.428f : 60f;
-                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + Projectile.ai[2]);
+                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + _randomReleaseRotationOffset);
 
                     Vector2 mouse = Owner.ClampedMouseWorld();
                     Projectile.Center = mouse + musicNoteRotationOffset * 220f;
@@ -197,8 +199,8 @@ namespace CalamityMod.Projectiles.Magic
                 SingularSoundInstanceSystem.PlaySingleInstance(AnahitasArpeggio.HitSound, 60, 60, Owner);
         }
 
-        public override void SendExtraAI(BinaryWriter writer) => writer.Write(Projectile.localAI[1]);
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(_randomReleaseRotationOffset);
 
-        public override void ReceiveExtraAI(BinaryReader reader) => Projectile.localAI[1] = reader.ReadSingle();
+        public override void ReceiveExtraAI(BinaryReader reader) => _randomReleaseRotationOffset = reader.ReadSingle();
     }
 }

@@ -47,7 +47,15 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             // Max music note check is in Shoot instead of CanUseItem so that the weapon can still be visually played while at the cap
             int musicNoteCap = Main.zenithWorld ? 7 : 6;
-            int nonReleasedMusicNotes = Main.projectile.Count(proj => proj.type == Item.shoot && Main.myPlayer == proj.owner && proj.active && proj.ai[1] != 2f);
+
+            int nonReleasedMusicNotes = 0;
+            foreach (var proj in Main.ActiveProjectiles)
+            {
+                if (proj.type != Item.shoot || proj.owner != player.whoAmI || proj.ai[1] == 2f)
+                    continue;
+                nonReleasedMusicNotes++;
+            }
+
             if (nonReleasedMusicNotes >= musicNoteCap)
             {
                 Main.musicPitch = -0.5f;
@@ -59,8 +67,8 @@ namespace CalamityMod.Items.Weapons.Magic
                 if (nonReleasedMusicNotes <= 0)
                     RotationOffset = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
-                Projectile note = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
-                note.localAI[1] = nonReleasedMusicNotes;
+                Projectile note = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, ai2: nonReleasedMusicNotes);
+                note.ModProjectile<AnahitasArpeggioNote>()._randomReleaseRotationOffset = RotationOffset;
                 return false;
             }
         }
