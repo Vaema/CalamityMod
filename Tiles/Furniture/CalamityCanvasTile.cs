@@ -17,8 +17,13 @@ namespace CalamityMod.Tiles.Furniture
     public class CalamityCanvasTile : ModTile
     {
         public static Asset<Texture2D> border;
+        public static Asset<Texture2D> corner;
 
-        public override void Load() => border = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasBorder");
+        public override void Load()
+        {
+            border = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasBorder");
+            corner = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasCorner");
+        }
 
         public override void SetStaticDefaults()
         {
@@ -105,48 +110,115 @@ namespace CalamityMod.Tiles.Furniture
         public static void DrawBorders(SpriteBatch spriteBatch, Vector2 pos, Point cords)
         {
             Texture2D texture = border.Value;
+            Texture2D cornerTex = corner.Value;
             ushort canvasID = (ushort)ModContent.TileType<CalamityCanvasTile>();
             int commonDim = 8;
+            int finalCord = 72;
+            int size = 80;
             Color light = Lighting.GetColor(cords.X, cords.Y);
 
+            // Check for nearby Canvas paintings
+            // If they are cleanly lined up with this Canvas painting, don't draw borders between them
             bool drawTop = true;
             bool drawLeft = true;
             bool drawRight = true;
             bool drawBottom = true;
+            // Corners
+            bool drawTopLeft = false;
+            bool drawTopRight = false;
+            bool drawBottomLeft = false;
+            bool drawBottomRight = false;
 
+            // The bottom right tile of the canvas painting
             Point bottomRight = new Point(cords.X + 4, cords.Y + 4);
             
+            // Adjacent tiles that may or may not have other canvas paintings
             Tile left = CalamityUtils.ParanoidTileRetrieval(cords.X - 1, cords.Y);
             Tile top = CalamityUtils.ParanoidTileRetrieval(cords.X, cords.Y - 1);
-            if (top.HasTile && top.TileType == canvasID)
+            Tile right = CalamityUtils.ParanoidTileRetrieval(bottomRight.X + 1, bottomRight.Y);
+            Tile bottom = CalamityUtils.ParanoidTileRetrieval(bottomRight.X, bottomRight.Y + 1);
+
+            // Check if adjacent tiles are canvas paintings that are lined up with this one
+            bool validTop = ValidCanvasFrame(top, 0, size, canvasID);
+            bool validRight = ValidCanvasFrame(right, 0, size, canvasID);
+            bool validLeft = ValidCanvasFrame(left, finalCord, 0, canvasID);
+            bool validBottom = ValidCanvasFrame(bottom, finalCord, 0, canvasID);
+
+            if (validTop)
             {
                 drawTop = false;
             }
-            if (left.HasTile && left.TileType == canvasID)
-            {
-                drawLeft = false;
-            }
-            Tile right = CalamityUtils.ParanoidTileRetrieval(bottomRight.X + 1, bottomRight.Y);
-            Tile bottom = CalamityUtils.ParanoidTileRetrieval(bottomRight.X, bottomRight.Y + 1);
-            if (bottom.HasTile && bottom.TileType == canvasID)
+            if (validBottom)
             {
                 drawBottom = false;
             }
-            if (right.HasTile && right.TileType == canvasID)
+            if (validRight)
             {
                 drawRight = false;
+                // Check for junction corners
+                Tile topright = CalamityUtils.ParanoidTileRetrieval(bottomRight.X + 1, cords.Y - 1);
+                Tile bottomright = CalamityUtils.ParanoidTileRetrieval(bottomRight.X + 1, bottomRight.Y + 1);
+                if (!drawTop && !ValidCanvasFrame(topright, 0, size, canvasID))
+                {
+                    drawTopRight = true;
+                }
+                if (!drawBottom && !ValidCanvasFrame(bottomright, 0, 0, canvasID))
+                {
+                    drawBottomRight = true;
+                }
+            }
+            if (validLeft)
+            {
+                drawLeft = false;
+                // Check for junction corners
+                Tile topleft = CalamityUtils.ParanoidTileRetrieval(cords.X - 1, cords.Y - 1);
+                Tile bottomleft = CalamityUtils.ParanoidTileRetrieval(cords.X - 1, bottomRight.Y + 1);
+                if (!drawTop && !ValidCanvasFrame(topleft, finalCord, size, canvasID))
+                {
+                    drawTopLeft = true;
+                }
+                if (!drawBottom && !ValidCanvasFrame(bottomleft, finalCord, 0, canvasID))
+                {
+                    drawBottomLeft = true;
+                }
             }
 
+            // Draw the sides
             if (drawBottom)
-                spriteBatch.Draw(texture, pos + Vector2.UnitY * 72, new Rectangle(0, texture.Height - commonDim, texture.Width, commonDim), light, 0, new Vector2(0, 0), 1, 0, 0);
+                spriteBatch.Draw(texture, pos + Vector2.UnitY * finalCord, new Rectangle(0, texture.Height - commonDim, texture.Width, commonDim), light, 0, new Vector2(0, 0), 1, 0, 0);
             if (drawTop)
                 spriteBatch.Draw(texture, pos, new Rectangle(0, 0, texture.Width, commonDim), light, 0, new Vector2(0, 0), 1, 0, 0);
-
             if (drawRight)
-                spriteBatch.Draw(texture, pos + Vector2.UnitX * 72, new Rectangle(texture.Width - commonDim, 0, commonDim, texture.Height), light, 0, new Vector2(0, 0), 1, 0, 0);
+                spriteBatch.Draw(texture, pos + Vector2.UnitX * finalCord, new Rectangle(texture.Width - commonDim, commonDim, commonDim, texture.Height - (2 * commonDim)), light, 0, new Vector2(0, 0), 1, 0, 0);
             if (drawLeft)
-                spriteBatch.Draw(texture, pos, new Rectangle(0, 0, commonDim, texture.Height), light, 0, new Vector2(0, 0), 1, 0, 0);
+                spriteBatch.Draw(texture, pos, new Rectangle(0, commonDim, commonDim, texture.Height - (2 * commonDim)), light, 0, new Vector2(0, 0), 1, 0, 0);
 
+            // Draw the corners 
+            // All corner drawing is done with a single corner sprite that is rotated and flipped about depending on the situation
+            if (drawTop && drawLeft)
+                spriteBatch.Draw(cornerTex, pos, null, light, 0, new Vector2(0, 0), 1, 0, 0);
+            if (drawTop && drawRight)
+                spriteBatch.Draw(cornerTex, pos + Vector2.UnitX * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipHorizontally, 0);
+            if (drawBottom && drawLeft)
+                spriteBatch.Draw(cornerTex, pos + Vector2.UnitY * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipVertically, 0);
+            if (drawBottom && drawRight)
+                spriteBatch.Draw(cornerTex, pos + Vector2.One * size, null, light, MathHelper.Pi, new Vector2(0, 0), 1, 0, 0);
+
+            // Draw junction corners
+            if (drawTopLeft)
+                spriteBatch.Draw(cornerTex, pos + corner.Size(), null, light, MathHelper.Pi, new Vector2(0, 0), 1, 0, 0);
+            if (drawTopRight)
+                spriteBatch.Draw(cornerTex, pos + Vector2.UnitX * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipVertically, 0);
+            if (drawBottomLeft)
+                spriteBatch.Draw(cornerTex, pos + Vector2.UnitY * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipHorizontally, 0);
+            if (drawBottomRight)
+                spriteBatch.Draw(cornerTex, pos - corner.Size() + Vector2.One * size, null, light, 0, new Vector2(0, 0), 1, 0, 0);
+        }
+
+        // Check if the tile is a canvas tile that has the correct tile frames
+        public static bool ValidCanvasFrame(Tile t, int frameX, int frameY, ushort canvasID)
+        {
+            return t.HasTile && t.TileType == canvasID && t.TileFrameX == frameX && t.TileFrameY == frameY;
         }
     }
 }
