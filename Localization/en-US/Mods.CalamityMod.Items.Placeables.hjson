@@ -379,6 +379,7 @@ CalamityCanvas: {
 		<left> to make the frame follow your cursor and <left> again to set it
 		The scroll wheel can be used to zoom in and out
 		Arrow keys can be used to manually adjust the frame position
+		Hold SHIFT to hide the main painting UI
 		'Embrace chaos'
 		'''
 }

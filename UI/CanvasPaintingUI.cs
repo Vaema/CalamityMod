@@ -60,6 +60,8 @@ namespace CalamityMod.UI
             float paintingFrameScale = painting.scale;
             Vector2 paintingFramePosition = painting.framePosition;
 
+            bool hideUI = Main.keyState.IsKeyDown(Keys.LeftShift);
+
             Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvasTile>()].Value;
 
             // This is the length and width of the UI box, which is a square
@@ -75,8 +77,11 @@ namespace CalamityMod.UI
             // Draw a background square panel, then draw the actual painting
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
-            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, baseDrawPos, new Rectangle(0, 0, (int)dimension, (int)dimension), Color.Gray, 0, new Vector2(0, 0), 1f, 0, 0);
-            spriteBatch.Draw(tex, posterDrawPos, null, Color.White, 0, new Vector2(0, 0), sizeRatio, 0, 0);
+            if (!hideUI)
+            {
+                //spriteBatch.Draw(TextureAssets.MagicPixel.Value, baseDrawPos, new Rectangle(0, 0, (int)dimension, (int)dimension), Color.Gray, 0, new Vector2(0, 0), 1f, 0, 0);
+                spriteBatch.Draw(tex, posterDrawPos, null, Color.White, 0, new Vector2(0, 0), sizeRatio, 0, 0);
+            }
 
             // How large one pixel is on the painting
             float pixelRatio = paintingTileSize * sizeRatio;
@@ -162,14 +167,17 @@ namespace CalamityMod.UI
             }
 
             // Draw the cursor
-            // Top row
-            DrawRectangle(spriteBatch, cursorPosition - new Vector2(borderSize), new Vector2(cursorDimension.X + borderSize * 2, borderSize));
-            // Bottom row
-            DrawRectangle(spriteBatch, cursorPosition + new Vector2(-borderSize, cursorDimension.Y), new Vector2(cursorDimension.X + borderSize * 2, borderSize));
-            // Left column
-            DrawRectangle(spriteBatch, cursorPosition - new Vector2(borderSize, 0), new Vector2(borderSize, cursorDimension.Y + borderSize));
-            // Right column
-            DrawRectangle(spriteBatch, cursorPosition + new Vector2(cursorDimension.X, 0), new Vector2(borderSize, cursorDimension.Y + borderSize));
+            if (!(!moving && hideUI))
+            {
+                // Top row
+                DrawRectangle(spriteBatch, cursorPosition - new Vector2(borderSize), new Vector2(cursorDimension.X + borderSize * 2, borderSize));
+                // Bottom row
+                DrawRectangle(spriteBatch, cursorPosition + new Vector2(-borderSize, cursorDimension.Y), new Vector2(cursorDimension.X + borderSize * 2, borderSize));
+                // Left column
+                DrawRectangle(spriteBatch, cursorPosition - new Vector2(borderSize, 0), new Vector2(borderSize, cursorDimension.Y + borderSize));
+                // Right column
+                DrawRectangle(spriteBatch, cursorPosition + new Vector2(cursorDimension.X, 0), new Vector2(borderSize, cursorDimension.Y + borderSize));
+            }
 
             // Draw a preview of the painting on the side
             float extraScale = 7f;
