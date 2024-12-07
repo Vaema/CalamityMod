@@ -133,6 +133,30 @@ namespace CalamityMod.UI
                     moving = true;
                     SoundEngine.PlaySound(SoundID.MenuTick);
                 }
+                // Allow precise pixel increments with arrow keys
+                else
+                {
+                    if (Main.keyState.IsKeyDown(Keys.Left) && Main.oldKeyState.IsKeyUp(Keys.Left))
+                    {
+                        painting.framePosition.X = MathHelper.Clamp(painting.framePosition.X - 1, 0, tex.Width);
+                        painting.SendSyncPacket();
+                    }
+                    if (Main.keyState.IsKeyDown(Keys.Right) && Main.oldKeyState.IsKeyUp(Keys.Right))
+                    {
+                        painting.framePosition.X = MathHelper.Clamp(painting.framePosition.X + 1, 0, tex.Width);
+                        painting.SendSyncPacket();
+                    }
+                    if (Main.keyState.IsKeyDown(Keys.Up) && Main.oldKeyState.IsKeyUp(Keys.Up))
+                    {
+                        painting.framePosition.Y = MathHelper.Clamp(painting.framePosition.Y - 1, 0, tex.Height);
+                        painting.SendSyncPacket();
+                    }
+                    if (Main.keyState.IsKeyDown(Keys.Down) && Main.oldKeyState.IsKeyUp(Keys.Down))
+                    {
+                        painting.framePosition.Y = MathHelper.Clamp(painting.framePosition.Y + 1, 0, tex.Height);
+                        painting.SendSyncPacket();
+                    }
+                }
             }
 
             // Draw the cursor
