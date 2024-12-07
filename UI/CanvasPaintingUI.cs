@@ -82,19 +82,21 @@ namespace CalamityMod.UI
             float pixelRatio = paintingTileSize * sizeRatio;
 
             MouseState state = Microsoft.Xna.Framework.Input.Mouse.GetState();
-            // Handle size scrolling
-            float scrollAmount = 0.5f;
+            // Handle size scrolling. Scrolling is more precise at smaller values
+            float scrollAmount = painting.scale >= 1 ? 1f : 0.25f;
             // If the player scrolls down, the box grows
             if (scrollOld > scrollNew)
             {
-                float increasedScale = MathHelper.Clamp(painting.scale + scrollAmount, 0.5f, 10);
+                float increasedScale = MathHelper.Clamp(painting.scale + scrollAmount, 0.25f, 10);
                 painting.scale = increasedScale;
                 painting.SendSyncPacket();
             }
             // If the player scrolls up, the box shrinks
             else if (scrollNew > scrollOld)
             {
-                float decreasedScale = MathHelper.Clamp(painting.scale - scrollAmount, 0.5f, 10);
+                // Needs to be gate at 2 when going down
+                scrollAmount = painting.scale >= 2 ? 1f : 0.25f;
+                float decreasedScale = MathHelper.Clamp(painting.scale - scrollAmount, 0.25f, 10);
                 painting.scale = decreasedScale;
                 painting.SendSyncPacket();
             }
