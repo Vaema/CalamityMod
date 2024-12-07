@@ -77,8 +77,7 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
-            target.Calamity().IncreasedHeatEffects_FlameWakerBoots = flameWakerBoots;
-            target.Calamity().IncreasedHeatEffects_HellfireTreads = hellfireTreads;
+            target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
             target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
@@ -193,7 +192,7 @@ namespace CalamityMod.CalPlayer
 
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
-            cgn.IncreasedHeatEffects_HellfireTreads = hellfireTreads;
+            cgn.IncreasedHeatEffects_FireBoots = bootLevel;
             cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;

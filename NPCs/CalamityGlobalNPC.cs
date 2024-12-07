@@ -154,8 +154,7 @@ namespace CalamityMod.NPCs
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
-        public bool IncreasedHeatEffects_FlameWakerBoots = false;
-        public bool IncreasedHeatEffects_HellfireTreads = false;
+        public int IncreasedHeatEffects_FireBoots = 0;
         public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
@@ -463,8 +462,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
-            myClone.IncreasedHeatEffects_FlameWakerBoots = IncreasedHeatEffects_FlameWakerBoots;
-            myClone.IncreasedHeatEffects_HellfireTreads = IncreasedHeatEffects_HellfireTreads;
+            myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
@@ -880,12 +878,10 @@ namespace CalamityMod.NPCs
 
             if (IncreasedHeatEffects_Fireball)
                 heatDamageMult += Fireball.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FlameWakerBoots)
-                heatDamageMult += 0.25;
+            if (IncreasedHeatEffects_FireBoots > 0)
+                heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
                 heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-            if (IncreasedHeatEffects_HellfireTreads)
-                heatDamageMult += 0.5;
             if (IncreasedHeatEffects_FlameWings)
                 heatDamageMult += 0.25;
 
