@@ -98,28 +98,20 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary>
-        /// Boss Kill Time data structure
-        /// </summary>
+        /// <summary> Boss Kill Time data structure </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary>
-        /// Damage Reduction Lookup Table
-        /// </summary>
+        /// <summary> Damage Reduction Lookup Table </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
-        /// <summary>
-        /// Damage Reduction Value
-        /// </summary>
+        /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary>
-        /// If this is set to true, the NPC's DR cannot be reduced via any means. This applies regardless of whether customDR is true or false.
-        /// </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
         public bool unbreakableDR = false;
 
         /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br></br>
+        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
         /// Used primarily by post-Moon Lord bosses.
         /// </summary>
         public bool customDR = false;
@@ -127,8 +119,6 @@ namespace CalamityMod.NPCs
         public Dictionary<int, float> multDRReductions = new Dictionary<int, float>();
 
         public int KillTime { get; set; } = 0;
-
-        public const int DoGPhase1KillTime = 5400;
 
         // Debuff Vulnerabilities
         // null = neutral, true = vulnerable, false = resistant
@@ -175,7 +165,7 @@ namespace CalamityMod.NPCs
 
         public bool ShouldFallThroughPlatforms;
 
-        /// <summary> Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses. </summary>
+        /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
         /// <summary> Set this value to reduce target defense by a flat amount. </summary>
@@ -343,7 +333,9 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        /// <summary> If greater than 0, this enemy has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
+        /// <summary> If greater than 0, this enemy has been "shocked" by The Transformer's on hurt effect. </summary>
         public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
@@ -352,6 +344,7 @@ namespace CalamityMod.NPCs
         public int ladHearts = 0;
         public int kamiFlu = 0;
         public int relicOfResilienceWeakness = 0;
+        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
@@ -359,6 +352,10 @@ namespace CalamityMod.NPCs
         public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
+        /// <summary>
+        /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
+        /// Used by Rancor's laser beam.
+        /// </summary>
         public int ashesOnDeath = 0;
 
         // whoAmI Variables

@@ -46,15 +46,25 @@ namespace CalamityMod.Items
         public override bool InstancePerEntity => true;
 
         // TODO -- split out a separate GlobalItem for rogue behavior?
+        /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
         internal float StealthStrikePrefixBonus;
 
         #region Chargeable Item Variables
+        /// <summary>
+        /// If set to true, this item will consume <see cref="Charge"/> on use.<br/>
+        /// Be sure to also set <see cref="MaxCharge"/> and <see cref="ChargePerUse"/>.
+        /// </summary>
         public bool UsesCharge = false;
+        /// <summary> The current charge value of this item. </summary>
         public float Charge = 0f;
+        /// <summary> The maximum charge value of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
         public float MaxCharge = 1f;
+        /// <summary> The charge consumed on each use of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
         public float ChargePerUse = 0f;
-        // If left at the default value of -1, ChargePerUse is automatically used for alt fire.
-        // If you want a different amount of charge used for alt fire, then set a different value here.
+        /// <summary>
+        /// By default, the right-click use of an item will use <see cref="ChargePerUse"/> to determine how much charge to consume.<br/>
+        /// Set to a value other than -1 to make the right-click use a different amount of charge.
+        /// </summary>
         public float ChargePerAltUse = -1f;
         public float ChargeRatio
         {
@@ -67,8 +77,14 @@ namespace CalamityMod.Items
         #endregion
 
         #region Enchantment Variables
+        /// <summary> If set to true, this item cannot receive enchantments from the Brimstone Witch. </summary>
         public bool CannotBeEnchanted = false;
+        /// <summary> Stores the current enchantment placed on this item. If set to null, this item has no enchantment. </summary>
         public Enchantment? AppliedEnchantment = null;
+        /// <summary>
+        /// Stores the "exhaustion" value of this item for the Ephemeral enchantment.<br/>
+        /// The ratio of this value to the maximum value is used as a lerp value for the damage multiplier.
+        /// </summary>
         public float DischargeEnchantExhaustion = 0;
         public float DischargeExhaustionRatio
         {
@@ -78,16 +94,39 @@ namespace CalamityMod.Items
                 return float.IsNaN(ratio) || float.IsInfinity(ratio) ? 0f : MathHelper.Clamp(ratio, 0f, 1f);
             }
         }
+        /// <summary> Constant value storing the maximum value for the Ephemeral enchantment's "exhaustion" value. </summary>
         public const float DischargeEnchantExhaustionCap = 1600f;
+        /// <summary> The minimum damage multiplier for weapons with the Ephemeral enchantment. </summary>
         public const float DischargeEnchantMinDamageFactor = 0.77f;
+        /// <summary> The maximum damage multiplier for weapons with the Ephemeral enchantment. </summary>
         public const float DischargeEnchantMaxDamageFactor = 1.26f;
         #endregion
 
         // Miscellaneous stuff
+        /// <summary>
+        /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
+        /// Adds "Revengeance" to the bottom of the item's tooltip.
+        /// </summary>
         public bool revengeanceItem = false;
+        /// <summary>
+        /// Set to true if this item is dedicated to a Patreon donator.<br/>
+        /// Adds "- Donor Item -" to the bottom of the item's tooltip.
+        /// </summary>
         public bool donorItem = false;
+        /// <summary>
+        /// Set to true if this item is dedicated to a Calamity developer.<br/>
+        /// Adds "- Dev Item -" to the bottom of the item's tooltip.
+        /// </summary>
         public bool devItem = false;
+        /// <summary>
+        /// If true, this item can fire projectiles with point-blank damage.<br/>
+        /// Also adds a tooltip line to the bottom of the item's tooltip.
+        /// </summary>
         public bool canFirePointBlankShots = false;
+        /// <summary>
+        /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
+        /// Used by coin items spawned from hitting ricoshot coins.
+        /// </summary>
         public float grabRangeMultiplier = 1f;
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
