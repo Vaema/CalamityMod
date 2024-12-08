@@ -99,8 +99,12 @@ namespace CalamityMod.Projectiles
         /// <summary> If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime. </summary>
         public bool appliesSomaShred = false;
 
-        // Arc Flash bolt spawning management
+        /// <summary>
+        /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
+        /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
+        /// </summary>
         public bool spawnArcFlash = true;
+        /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
 
         /// <summary>
