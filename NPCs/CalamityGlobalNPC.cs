@@ -163,78 +163,98 @@ namespace CalamityMod.NPCs
         // Evergreen Gin effect
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
 
-        // Biome enrage timer max
+        /// <summary> Constant representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
-        // Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target
-        // Currently only used by DoG
+        /// <summary>
+        /// Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Currently only used by DoG.
+        /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
         public bool ShouldFallThroughPlatforms;
 
-        /// <summary>
-        /// Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
-        // Total defense loss from some true melee hits and other things that reduce defense
+        /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
 
-        // Distance values for when bosses increase velocity to catch up to their target
+        /// <summary>
+        /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance200Tiles = 3200f;
+        /// <summary>
+        /// Constant representing a distance of 350 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance350Tiles = 5600f;
+        /// <summary>
+        /// Constant representing a distance of 400 tiles in pixel measurement.<br/>
+        /// Used as a cap on the distance away from a boss a player can be inflicted with Boss Effects.
+        /// </summary>
+        private const float BossZenDistance = 6400f;
 
         /// <summary>
-        /// Destroyer laser colors, used for telegraphs
+        /// Destroyer laser colors, used for telegraphs.<br/>
         /// None = -1, Red = 0, Green = 1, Cyan = 2
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        // Boss Zen distance
-        private const float BossZenDistance = 6400f;
-
-        // Buff most vanilla enemy HP by 25%
+        /// <summary>
+        /// Constant multiplier used to increase vanilla enemy health.
+        /// </summary>
         private const double EnemyHPMultiplier = 1.25;
-
-        // Used to nerf desert prehardmode enemies pre-Desert Scourge
+        /// <summary>
+        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
+        /// </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-
-        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        /// <summary>
+        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
+        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
+        /// </summary>
         public const double MasterModeBossHPMultiplier = 0.85;
 
-        // Used to nerf Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
         public const double MasterModeEnemyHPMultiplier = 0.75;
+        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
         public const double MasterModeEnemyDamageMultiplier = 0.9;
-
-        // Used to nerf Expert and Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
         public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
+        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
         public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
-        // HP and damage multipliers for the Early Hardmode Progression Rework
+        /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert = 0.95;
 
-        // Used to increase coin drops in Normal Mode
-        private const double NPCValueMultiplier_NormalCalamity = 1.5;
-
-        // Used to decrease coin drops in Expert Mode
+        /// <summary> Constant multiplier used to increase coin drops in Classic Mode. </summary>
+        private const double NPCValueMultiplier_ClassicCalamity = 1.5;
+        /// <summary> Constant multiplier used to decrease coin drops in Expert Mode. </summary>
         private const double NPCValueMultiplier_ExpertVanilla = 2.5;
-
-        // Used to change the Expert Mode coin drop multiplier
+        /// <summary> <inheritdoc cref="NPCValueMultiplier_ExpertVanilla"/> </summary>
         private const double NPCValueMultiplier_ExpertCalamity = 1.5;
 
         // Dash damage immunity timer
         public const int maxPlayerImmunities = Main.maxPlayers + 1;
         public int[] dashImmunityTime = new int[maxPlayerImmunities];
 
-        // Town NPC shop alert animation variables
+        /// <summary> Used to control the animation of the Town NPC Shop Alert icon, if the respective config is enabled. </summary>
         public int shopAlertAnimTimer = 0;
+        /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
 
-        // Set to false for this NPC to be unable to generate proximity Rage, regardless of other factors
+        /// <summary>
+        /// If set to false, prevents this NPC from allowing Rage to be generated by nearby players, regardless of other factors.<br/>
+        /// Defaults to true.
+        /// </summary>
         public bool ProvidesProximityRage = true;
 
         // NewAI
@@ -242,23 +262,20 @@ namespace CalamityMod.NPCs
         public float[] newAI = new float[maxAIMod];
         public int AITimer = 0;
 
-        // Town NPC Patreon
+        /// <summary> Used for allowing Patreon names for Town NPCs. </summary>
         public bool setNewName = true;
 
-        // Stuff used by the Boss Health UI
+        /// <summary> If set to true, the Boss Health Bar for this NPC will count the total health of all individual segments using worm segment logic. </summary>
         public bool SplittingWorm = false;
+        /// <summary> If set to true, allows this NPC to draw a Boss Health Bar, regardless of other factors. </summary>
         public bool CanHaveBossHealthBar = false;
+        /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        // Timer for how long an NPC is immune to certain debuffs
+        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
         public const int slowingDebuffResistanceMin = 1800;
+        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
         public int debuffResistanceTimer = 0;
-
-        // If a boss is affected by knockback and a timer for how long that boss is immune to knockback after being knocked back
-        public bool bossCanBeKnockedBack = false;
-        public const int knockbackResistanceMin = 180;
-        public int knockbackResistanceTimer = 0;
-
 
         // Debuffs
         public int vaporfied = 0;
@@ -300,14 +317,19 @@ namespace CalamityMod.NPCs
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
-        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        /// <summary>
+        /// If set to true, prevents this NPC from dealing contact damage.<br/>
+        /// Used by Septic Skewer's execution attack.
+        /// </summary>
         public bool pacified = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
+        /// <summary> Tracks how many stacks of the Shred debuff this NPC is inflicted with. </summary>
         public int somaShredStacks = 0;
+        /// <summary> Tracks the index of the player that inflicted this NPC with Shred, for the purpose of scaling damage. </summary>
         public int somaShredApplicator = -1;
-        // Reduced by the number of active stacks every frame. If it hits zero, one stack disappears.
+        /// <summary> Counter used for removing stacks of Shred. The number of stacks is subtracted every frame, and when it hits zero, it is reset and one stack is removed. </summary>
         public int somaShredFalloff = Shred.StackFalloffFrames;
 
         public int cDepth = 0;
@@ -398,30 +420,34 @@ namespace CalamityMod.NPCs
         // Drawing variables.
         public FireParticleSet VulnerabilityHexFireDrawer = null;
 
-        // Boss Enrage variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.
-        // 2 - Otherwise, check if the demonshade enrage is active. If it is, register this as true. If not, go to step 3.
-        // 3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.
-        // 4 - Check if Boss Rush isn't active. If so, set this to true.
+        /// <summary>
+        /// Boss Enrage variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.</para>
+        /// <para>2 - Check if the Demonshade enrage is active. If it is, register this as true. If not, go to step 3.</para>
+        /// <para>3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.</para>
+        /// <para>4 - Check if Boss Rush isn't active. If so, set this to true.</para>
+        /// </summary>
         public bool CurrentlyEnraged;
 
-        // Increased defense or DR variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - When bosses are transitioning phases they gain a massive DR increase.
-        // 2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.
+        /// <summary>
+        /// Increased defense or DR variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - When bosses are transitioning phases they gain a massive DR increase.</para>
+        /// <para>2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.</para>
+        /// While either of these are occuring, this variable should be set to true.
+        /// </summary>
         public bool CurrentlyIncreasingDefenseOrDR;
 
-        // Other Boss Rush stuff
+        /// <summary> If set to true, this NPC will be ignored by Boss Rush's whitelist and will always be allowed to exist. </summary>
         public bool DoesNotDisappearInBossRush;
 
-        // On-Kill variables
+        /// <summary> Variable used for Gladiator's Locket's on-kill effect to ensure it only triggers once per kill. </summary>
         public bool gladiatorOnKill = true;
-
-        // Variable for if enemy has been recently hit by an ArcZap
+        /// <summary> Cooldown variable for Unstable Granite Core's arc zap effect. </summary>
         public int arcZapCooldown = 0;
 
-        // Animates worms in the bestiary but only when their entry is being looked at
+        /// <summary> Timer for animating worm enemies in the bestiary. </summary>
         public float bestiaryWormTimer = 0;
         #endregion
 
@@ -498,9 +524,6 @@ namespace CalamityMod.NPCs
             myClone.ShouldCloseHPBar = ShouldCloseHPBar;
 
             myClone.debuffResistanceTimer = debuffResistanceTimer;
-
-            myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
-            myClone.knockbackResistanceTimer = knockbackResistanceTimer;
 
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
@@ -3444,7 +3467,7 @@ namespace CalamityMod.NPCs
             // Rebalance coin drops so that Normal Mode enemies and bosses drop an adequate amount of coins.
 
             // Increase Normal Mode coin drops by 1.5x.
-            npc.value = (int)(npc.value * NPCValueMultiplier_NormalCalamity);
+            npc.value = (int)(npc.value * NPCValueMultiplier_ClassicCalamity);
 
             // Change the Expert Mode coin drop multiplier.
             if (Main.expertMode)
@@ -5487,8 +5510,6 @@ namespace CalamityMod.NPCs
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
-            if (knockbackResistanceTimer > 0)
-                knockbackResistanceTimer--;
 
             if (timeSlow > 0)
                 timeSlow--;
