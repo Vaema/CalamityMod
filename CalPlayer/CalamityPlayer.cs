@@ -461,6 +461,7 @@ namespace CalamityMod.CalPlayer
         public bool plaguebringerBab = false;
         public bool rotomPet = false;
         public bool ladShark = false;
+        /// <summary> If greater than 0, causes this player to constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public bool sparks = false;
         public bool sirenPet = false;
@@ -916,6 +917,7 @@ namespace CalamityMod.CalPlayer
         public bool sandCloak = false;
         public bool spectralVeil = false;
         public int spectralVeilImmunity = 0;
+        /// <summary> Check for if the player has Plagued Fuel Pack OR Blunder Booster equipped. </summary>
         public bool hasJetpack = false;
         public bool plaguedFuelPack = false;
         public bool blunderBooster = false;
@@ -1086,13 +1088,17 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueChestplate = false;
         public bool omegaBlueSet = false;
         public bool omegaBlueHentai = false;
+        /// <summary> Aerospec armor's summoner set bonus minion. </summary>
         public bool valkyrie = false;
+        /// <summary> Statigel armor's summoner set bonus minion. </summary>
         public bool slimeGod = false;
         public bool molluskSet = false;
         public bool fearmongerSet = false;
         public int fearmongerRegenFrames = 0;
         public bool daedalusCrystal = false;
+        /// <summary> Hydrothermic armor's summoner set bonus minion. </summary>
         public bool chaosSpirit = false;
+        /// <summary> Demonshade armor's summoner set bonus minion. </summary>
         public bool redDevil = false;
         public bool GemTechSet = false;
         /// <summary> Calamity's Cobalt armor set bonus; increases damage and crit chance based on how fast the player is moving. </summary>
@@ -1214,6 +1220,7 @@ namespace CalamityMod.CalPlayer
         public bool GreenJellyRegen = false;
         public bool AbsorberRegen = false;
         public bool cFreeze = false;
+        /// <summary> Used for increasing light level in the Abyss. </summary>
         public bool shine = false;
         public bool anechoicCoating = false;
         public bool enraged = false;
@@ -1268,7 +1275,12 @@ namespace CalamityMod.CalPlayer
         public bool avertorBonus = false;
         public bool divineBless = false;
         public bool infiniteFlight = false;
+        /// <summary>
+        /// Counter variable for natural decay of Haste buffs from Chronomancer's Scythe.<br/>
+        /// If the player does not collect a clock powerup for 5 seconds, they will lose a stack of Haste.
+        /// </summary>
         public int hasteCounter = 0;
+        /// <summary> How many stacks of the Haste buff the player has, from Chronomancer's Scythe. </summary>
         public int hasteLevel = 0;
         #endregion
 

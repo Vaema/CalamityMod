@@ -333,14 +333,15 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
-        /// <summary> If greater than 0, this enemy has been "shocked" by Amidias' Spark's on hurt effect. </summary>
+        /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        /// <summary> If greater than 0, this enemy has been "shocked" by The Transformer's on hurt effect. </summary>
+        /// <summary> If greater than 0, this NPC has been "shocked" by The Transformer's on hurt effect. </summary>
         public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
+        /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public int kamiFlu = 0;
         public int relicOfResilienceWeakness = 0;
