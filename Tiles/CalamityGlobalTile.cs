@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -382,10 +373,6 @@ namespace CalamityMod.Tiles
                 return false;
 
             return base.CanKillTile(i, j, type, ref blockDamaged);
-        }
-
-        public override void RightClick(int i, int j, int type)
-        {
         }
 
         // "Private" my ass, fuck off
