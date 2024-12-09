@@ -167,7 +167,7 @@ namespace CalamityMod.UI
             }
 
             // Draw the cursor
-            if (!(!moving && hideUI))
+            if (!hideUI)
             {
                 // Top row
                 DrawRectangle(spriteBatch, cursorPosition - new Vector2(borderSize), new Vector2(cursorDimension.X + borderSize * 2, borderSize));
@@ -186,7 +186,8 @@ namespace CalamityMod.UI
             float previewScale = sizeRatio / paintingFrameScale * extraScale;
             int previewDimension = (int)(previewSliceSize * previewScale);
             Vector2 demoPosition = posterDrawPos + new Vector2(dimension + halfDim, dimension / 2 - halfDim);
-            spriteBatch.Draw(tex, demoPosition, new Rectangle((int)paintingFramePosition.X, (int)paintingFramePosition.Y, previewSliceSize, previewSliceSize), Color.White, 0, new Vector2(0, 0), previewScale, 0, 0);
+            if (!hideUI)
+                spriteBatch.Draw(tex, demoPosition, new Rectangle((int)paintingFramePosition.X, (int)paintingFramePosition.Y, previewSliceSize, previewSliceSize), Color.White, 0, new Vector2(0, 0), previewScale, 0, 0);
 
             // Block the mouse if intersecting with the painting area
             bool intersectingMain = Mouse().Intersects(new Rectangle((int)baseDrawPos.X, (int)baseDrawPos.Y, (int)dimension, (int)dimension));
