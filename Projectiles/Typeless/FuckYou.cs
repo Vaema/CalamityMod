@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ai[1] += 0.01f;
             Projectile.scale = Projectile.ai[1] * 0.5f;
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= (float)(3 * Main.projFrames[Projectile.type]))
+            if (Projectile.ai[0] >= (float)(3 * Main.projFrames[Type]))
             {
                 Projectile.Kill();
                 return;
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frameCounter = 0;
                 incrementer = Projectile.frame + 1;
                 Projectile.frame = incrementer;
-                if (incrementer >= Main.projFrames[Projectile.type])
+                if (incrementer >= Main.projFrames[Type])
                 {
                     Projectile.hide = true;
                 }

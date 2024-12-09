@@ -11,6 +11,8 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -27,13 +29,13 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 25;
-            NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
-            NPCID.Sets.AttackFrameCount[NPC.type] = 4;
-            NPCID.Sets.DangerDetectRange[NPC.type] = 700;
-            NPCID.Sets.AttackType[NPC.type] = 0;
-            NPCID.Sets.AttackTime[NPC.type] = 90;
-            NPCID.Sets.AttackAverageChance[NPC.type] = 30;
+            Main.npcFrameCount[Type] = 25;
+            NPCID.Sets.ExtraFramesCount[Type] = 9;
+            NPCID.Sets.AttackFrameCount[Type] = 4;
+            NPCID.Sets.DangerDetectRange[Type] = 700;
+            NPCID.Sets.AttackType[Type] = 0;
+            NPCID.Sets.AttackTime[Type] = 90;
+            NPCID.Sets.AttackAverageChance[Type] = 30;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<SnowBiome>(AffectionLevel.Like)
@@ -125,6 +127,8 @@ namespace CalamityMod.NPCs.TownNPCs
             return dialogue;
         }
 
+        public override void PartyHatPosition(ref Vector2 position, ref SpriteEffects spriteEffects) => position.X -= 5f * NPC.direction;
+
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
@@ -160,7 +164,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
                 .Add(ModContent.ItemType<FrigidMonolith>())
                 .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
-                .Add(ItemID.IceCream, Condition.HappyEnough, Condition.InSnow)
+                .Add(ItemID.IceCream, Condition.HappyEnoughToSellPylons, Condition.InSnow)
                 .Register();
         }
 

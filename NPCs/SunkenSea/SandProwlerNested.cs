@@ -56,9 +56,9 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 0;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 60;
-            NPCID.Sets.UsesNewTargetting[NPC.type] = true;
+            NPCID.Sets.TrailingMode[Type] = 0;
+            NPCID.Sets.TrailCacheLength[Type] = 60;
+            NPCID.Sets.UsesNewTargetting[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             Main.npcFrameCount[Type] = 11;
         }
@@ -447,7 +447,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaPolyp && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
+            if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
                 return SpawnCondition.CaveJellyfish.Chance * 0.3f;
 
             return 0f;

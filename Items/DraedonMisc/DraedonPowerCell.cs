@@ -16,7 +16,7 @@ namespace CalamityMod.Items.DraedonMisc
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
         }
 
         public override void SetDefaults()

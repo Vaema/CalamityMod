@@ -149,7 +149,6 @@ namespace CalamityMod.DataStructures
                 return;
 
             int damage = (int)Owner.GetTotalDamage<MeleeDamageClass>().ApplyTo(GemTechHeadgear.MeleeShardBaseDamage);
-            damage = Owner.ApplyArmorAccDamageBonusesTo(damage);
 
             for (int i = 0; i < 14; i++)
             {
@@ -167,7 +166,6 @@ namespace CalamityMod.DataStructures
                 return;
 
             int damage = CalamityUtils.DamageSoftCap((int)(hitDamage * 0.32f), 400);
-            damage = Owner.ApplyArmorAccDamageBonusesTo(damage);
 
             Vector2 spawnPosition = Owner.Center + Main.rand.NextVector2Circular(Owner.width, Owner.height) * 1.35f;
             Vector2 shootVelocity = (target.Center - spawnPosition) * 0.04f;
@@ -277,7 +275,6 @@ namespace CalamityMod.DataStructures
 
                 // Softcap the damage. This is done primarily to dampen stealth interactions.
                 gemDamage = CalamityUtils.DamageSoftCap(gemDamage, GemTechHeadgear.GemDamageSoftcapThreshold);
-                gemDamage = Owner.ApplyArmorAccDamageBonusesTo(gemDamage);
 
                 if (Main.myPlayer == OwnerIndex)
                     Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.ActiveItem()), gemPosition, Vector2.Zero, ModContent.ProjectileType<GemTechArmorGem>(), gemDamage, 0f, OwnerIndex, 0f, (int)GemThatShouldBeLost);

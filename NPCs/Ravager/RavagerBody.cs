@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.Ravager
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.width = 332;
             NPC.height = 214;
             NPC.defense = 55;
-            NPC.value = Item.buyPrice(0, 75, 0, 0);
+            NPC.value = Item.buyPrice(0, 30, 0, 0);
             NPC.DR_NERD(0.35f);
             NPC.LifeMaxNERB(45000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.damage = (int)(NPC.damage * 1.5);
                 NPC.defense *= 2;
                 NPC.lifeMax *= 4;
-                NPC.value *= 1.5f;
+                NPC.value *= 3f;
             }
             NPC.knockBackResist = 0f;
             AIType = -1;
@@ -140,7 +140,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -878,9 +878,9 @@ namespace CalamityMod.NPCs.Ravager
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 glowmaskPosition = center - screenPos;
-            glowmaskPosition -= new Vector2(GlowTexture.Value.Width, GlowTexture.Value.Height / Main.npcFrameCount[NPC.type]) * 1f / 2f;
+            glowmaskPosition -= new Vector2(GlowTexture.Value.Width, GlowTexture.Value.Height / Main.npcFrameCount[Type]) * 1f / 2f;
             glowmaskPosition += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color glowmaskColor = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.Blue);
             spriteBatch.Draw(GlowTexture.Value, glowmaskPosition,

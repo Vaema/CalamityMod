@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Armor.Mollusk
     public class MolluskShellmet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+        public static int ShellfishDamage = 140;
+
         public override void SetDefaults()
         {
             Item.width = 22;
@@ -52,12 +54,8 @@ namespace CalamityMod.Items.Armor.Mollusk
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Shellfish>()] < 2)
                 {
-                    // 08DEC2023: Ozzatron: Clams spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(140);
-                    // wait why does this not scale with summon damage
-
-                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), baseDamage, 0f, player.whoAmI);
-                    clam.originalDamage = baseDamage;
+                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), ShellfishDamage, 0f, player.whoAmI);
+                    clam.originalDamage = ShellfishDamage;
                 }
             }
             player.Calamity().wearingRogueArmor = true;
@@ -69,6 +67,7 @@ namespace CalamityMod.Items.Armor.Mollusk
                 AddIngredient<MolluskHusk>(6).
                 AddIngredient<SeaPrism>(15).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<MolluskShelleggings>()).
                 Register();
         }
     }

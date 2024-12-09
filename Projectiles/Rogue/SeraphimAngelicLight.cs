@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = CalamityUtils.Convert01To010(Projectile.timeLeft / 10f);
             Projectile.Opacity = (float)Math.Sqrt(Projectile.scale);
             Projectile.velocity *= 0.8f;
-            Projectile.frame = Main.projFrames[Projectile.type] - Projectile.timeLeft;
+            Projectile.frame = Main.projFrames[Type] - Projectile.timeLeft;
         }
 
         public override void OnKill(int timeLeft)

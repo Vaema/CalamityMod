@@ -1,24 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.AstralSnow
 {
-    public class AstralIce : ModTile
+    public class AstralIce : GlowMaskTile
     {
-
-        public override void SetStaticDefaults()
+        public override string GlowMaskAsset => "CalamityMod/Tiles/AstralSnow/AstralIceLightmask";
+        public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+            Main.tileBlockLight[Type] = false;
             Main.tileBrick[Type] = true;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Ice"]);
-
+            Main.tileLighted[Type] = true;
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
@@ -29,6 +32,7 @@ namespace CalamityMod.Tiles.AstralSnow
 
             AddMapEntry(new Color(153, 143, 168));
 
+            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.Ices[Type] = true;
             TileID.Sets.IcesSlush[Type] = true;
             TileID.Sets.IcesSnow[Type] = true;
@@ -55,6 +59,39 @@ namespace CalamityMod.Tiles.AstralSnow
         {
             sightColor = Color.Cyan;
             return true;
+        }
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
+        {
+            int time = (int)(Main.timeForVisualEffects * 0.11);
+            float brightness = 0.2f;
+            brightness += (float)MathF.Sin(-j / 1f + Main.GameUpdateCount * 0.002f + -i / 30f);
+            brightness -= (float)MathF.Sin(j / 8f + Main.GameUpdateCount * 0.002f - i / 11f);
+            brightness -= (float)MathF.Sin(j / 1f + Main.GameUpdateCount * 0.001f - i / 2f);
+            brightness -= (float)MathF.Sin(-j / 2f + Main.GameUpdateCount * 0.003f - i / 4f);
+            brightness += (float)MathF.Sin(-j / 4f + Main.GameUpdateCount * 0.003f - i / 8f);
+            return new Color(brightness, brightness, brightness);
+        }
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            float brightness = 0.2f;
+            brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.005f + i / 8f);
+            r = 131f / 1500f;
+            g = 111f / 1500f;
+            b = 171f / 1500f;
+            brightness += (float)MathF.Sin(-j / 1f + Main.GameUpdateCount * 0.002f + -i / 30f);
+            brightness -= (float)MathF.Sin(j / 8f + Main.GameUpdateCount * 0.002f - i / 11f);
+            brightness -= (float)MathF.Sin(j / 1f + Main.GameUpdateCount * 0.001f - i / 2f);
+            brightness -= (float)MathF.Sin(-j / 2f + Main.GameUpdateCount * 0.003f - i / 4f);
+            brightness += (float)MathF.Sin(-j / 4f + Main.GameUpdateCount * 0.003f - i / 8f);
+
+            brightness -= 0.05f;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
         }
     }
 }

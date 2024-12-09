@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.Crabulon
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
             {
@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.Crabulon
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.Crabulon
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D glow = GlowTexture.Value;
             Color colorToShift = Main.zenithWorld ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Color.Cyan;
             Color glowColor = Color.Lerp(Color.White, colorToShift, 0.5f);
@@ -143,9 +143,9 @@ namespace CalamityMod.NPCs.Crabulon
             int ClonesAroundShroom = Main.zenithWorld ? 4 : 0;
             for (int c = 0; c < 1 + ClonesAroundShroom; c++)
             {
-                Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);
+                Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[Type] / 2);
                 Vector2 drawPos = NPC.Center - screenPos + (Vector2.UnitX * texture.Width * c).RotatedByRandom(c);
-                drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                 drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
                 spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);

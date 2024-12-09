@@ -59,6 +59,9 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of this content. As such, it is ignored here.
             ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
 

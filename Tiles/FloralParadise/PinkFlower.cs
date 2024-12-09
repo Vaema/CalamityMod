@@ -50,6 +50,9 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of this content. As such, it is ignored here.
             ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
 
@@ -78,7 +81,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<ScintillatingBloom>());
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<Items.Placeables.FloralParadise.ScintillatingBloom>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

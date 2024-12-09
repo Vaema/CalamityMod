@@ -22,8 +22,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             bool aimedSpear = Projectile.ai[0] > 0f;
 
             Color baseColor = new Color(255, aimedSpear ? 255 : 125, aimedSpear ? 25 : 125); // Default to day

@@ -24,8 +24,8 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
-            ItemID.Sets.PreHardmodeLikeBossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
+            ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
         }
 
         public override void SetDefaults()

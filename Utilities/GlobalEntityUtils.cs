@@ -19,22 +19,30 @@ namespace CalamityMod
         /// <returns>true If we successfully get GlobalNPC. otherwise false</returns>
         public static bool TryGetGlobalNPCSafer<T>(this NPC npc, out T globalNPC) where T : GlobalNPC
         {
-            if (npc is null)
+            try
+            {
+                if (npc is null)
+                {
+                    globalNPC = null;
+                    return false;
+                }
+
+                int slot = ModContent.GetInstance<T>()?.PerEntityIndex ?? -1;
+                int length = npc.EntityGlobals.Length;
+                if (slot < 0 || slot >= length)
+                {
+                    globalNPC = null;
+                    return false;
+                }
+
+                npc.TryGetGlobalNPC(out globalNPC);
+                return globalNPC != null;
+            }
+            catch
             {
                 globalNPC = null;
                 return false;
             }
-
-            int slot = ModContent.GetInstance<T>()?.PerEntityIndex ?? -1;
-            int length = npc.EntityGlobals.Length;
-            if (slot < 0 || slot >= length)
-            {
-                globalNPC = null;
-                return false;
-            }
-
-            npc.TryGetGlobalNPC(out globalNPC);
-            return globalNPC != null;
         }
     }
 }

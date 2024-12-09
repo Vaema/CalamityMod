@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             int cap = 3;
             float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
             modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 

@@ -31,8 +31,8 @@ namespace CalamityMod.Projectiles.Melee
         public bool hasHitTarget = false;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 11;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -107,18 +107,8 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                targetedNPC = Projectile.Center.ClosestNPCAt(600);
-                if (targetedNPC != null && !hasHitTarget)
-                {
-                    Vector2 position = targetedNPC.Center;
-                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 23)
-                        Projectile.velocity += moveToMouse * 0.45f;
-                    else
-                        Projectile.velocity *= 0.9f;
-                }
-                else if (Projectile.velocity.Length() < 23)
-                    Projectile.velocity *= 1.1f;
+                targetedNPC = hasHitTarget ? null : Projectile.Center.ClosestNPCAt(600);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, 0.6f, 23, 0.97f, accelerate: true);
             }
             else if (Main.rand.NextBool(3))
             {
@@ -188,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (!isPowered)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return true;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);

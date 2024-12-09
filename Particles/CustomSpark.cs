@@ -13,6 +13,8 @@ namespace CalamityMod.Particles
         public bool FadeIn = false;
         public float FadeInScale = 0f;
         public bool GlowCenter = false;
+        public float GlowCenterScale = 1;
+        public float GlowOpacity = 1;
         public string NewTexture;
         public float ExtraRotation;
         public Vector2 Stretch = new Vector2(0.5f, 1.6f);
@@ -23,7 +25,7 @@ namespace CalamityMod.Particles
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0)
+        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0, float glowCenterScale = 1, float glowOpacity = 1)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -40,6 +42,8 @@ namespace CalamityMod.Particles
 
             AltVisual = useAddativeBlend;
             GlowCenter = glowCenter;
+            GlowCenterScale = glowCenterScale;
+            GlowOpacity = glowOpacity;
 
             FadeIn = fadeIn;
 
@@ -91,7 +95,7 @@ namespace CalamityMod.Particles
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
             if (GlowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.White, 0.8f), Rotation, texture.Size() * 0.5f, scale * 0.8f, 0, 0f);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.White, 0.8f) * GlowOpacity, Rotation, texture.Size() * 0.5f, scale * 0.8f * GlowCenterScale, 0, 0f);
         }
     }
 }

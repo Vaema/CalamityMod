@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             CreateRecipe().
                 AddIngredient(ItemID.WaterCandle).
                 AddIngredient<ZergPotion>().
-                AddIngredient<CoreofHavoc>(2).
+                AddIngredient<EssenceofHavoc>(2).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

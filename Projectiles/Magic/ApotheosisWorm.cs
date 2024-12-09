@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -135,6 +135,7 @@ namespace CalamityMod.Projectiles.Magic
 
         internal void InitializeSegments()
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 directionToMouse = (Main.MouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
             Projectile.rotation = directionToMouse.ToRotation() + MathHelper.PiOver2;
             for (int i = 0; i < Segments.Length; i++)
@@ -261,9 +262,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Size() * 0.5f;
+            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Size() * 0.5f;
             drawPosition -= headTexture.Size() * Projectile.scale * 0.5f;
             drawPosition += headTextureOrigin * Projectile.scale + new Vector2(0f, 4f + Projectile.gfxOffY);
 

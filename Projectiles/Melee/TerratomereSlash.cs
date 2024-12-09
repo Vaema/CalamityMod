@@ -42,10 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            return Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
-        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override bool ShouldUpdatePosition() => true;
 

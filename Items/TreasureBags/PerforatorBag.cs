@@ -24,8 +24,8 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
-            ItemID.Sets.PreHardmodeLikeBossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
+            ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
         }
 
         public override void SetDefaults()
@@ -75,7 +75,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Eviscerator>(),
                 ModContent.ItemType<BloodBath>(),
                 ModContent.ItemType<FleshOfInfidelity>(),
-                new WeightedItemStack(ModContent.ItemType<ToothBall>(), 1f, 50, 75),
+                ModContent.ItemType<ToothBall>(),
             }));
 
             // Equipment

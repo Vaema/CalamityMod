@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Decide frames.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 7 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 7 % Main.projFrames[Type];
 
             // Fade in and handle visuals.
             if (Projectile.ai[2] < 4 && Projectile.ai[2] < 50)
@@ -196,13 +196,13 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects direction = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[1] == 0f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/SupremeCatastropheSlashAlt").Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             drawPosition -= Projectile.velocity.SafeNormalize(Vector2.UnitX) * 38f;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             for (int i = 0; i < 3; i++)
             {

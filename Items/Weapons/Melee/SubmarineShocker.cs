@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Rapier;
             Item.damage = 90;
             Item.DamageType = TrueMeleeDamageClass.Instance;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 16;
             Item.shoot = ModContent.ProjectileType<SubmarineShockerProj>();
             Item.shootSpeed = 2f;
             Item.knockBack = 7f;

@@ -1,9 +1,11 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -11,17 +13,19 @@ namespace CalamityMod.Items.PermanentBoosters
     public class Ectoheart : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.AdrenalineBoosterTooltip").WithFormatArgs(BalancingConstants.AdrenalineDamagePerBooster.ToPercent(), BalancingConstants.AdrenalineDRPerBooster.ToPercent());
+
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 44;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item122;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item122;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.SetRevExclusive();
         }

@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
                     texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GastricBelcherVomit3").Value;
                     break;
                 default:
-                    texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                     break;
             }
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);

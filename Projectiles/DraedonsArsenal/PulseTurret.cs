@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D standTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurretStand").Value;
-            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value,
                              Projectile.Center - ((standTexture.Height / 2 + 6f) * Vector2.UnitY) - Main.screenPosition,
                              null,
                              lightColor,

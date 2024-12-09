@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
@@ -13,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.AstralDesert
 {
-    public class AstralPalmTree : ModPalmTree
+    public class AstralPalmTree : GlowMaskPalmTree
     {
         public override void SetStaticDefaults()
         {
@@ -32,14 +33,29 @@ namespace CalamityMod.Tiles.AstralDesert
         };
 
         public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree");
+        public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTreeGlow");
 
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_Tops");
+        public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_TopsGlow");
 
 
         //I don't know what this means. Why do palm trees have branches?? Since when. Will ask spriters for an oasis alt later
         public override Asset<Texture2D> GetOasisTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_OasisTops");
+        public override Asset<Texture2D> GetOasisTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_OasisTopsGlow");
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
+        public override Color GetGlowColor(int i, int j)
+        {
+            float brightness = 1f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.012f;
+            brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness = MathHelper.Clamp(brightness, 0.0f, 1.0f);
+            return Color.White * MathHelper.Lerp(0.05f, 0.75f, brightness);
+        }
+
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
 
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 

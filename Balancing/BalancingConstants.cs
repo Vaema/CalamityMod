@@ -3,11 +3,11 @@
     public static class BalancingConstants
     {
         #region Movement
-        // When the relevant config is enabled: Gives the player a substantial +50% move speed boost at all times
-        internal static readonly float DefaultMoveSpeedBoost = 0.5f;
+        // When the relevant config is enabled: Multiplies the player's movement speed by 1.5x at all times
+        internal static readonly float DefaultMoveSpeedBoost = 1.5f;
 
-        // When the relevant config is enabled: Increases the player's base jump height by 10%
-        internal static readonly float ConfigBoostedBaseJumpHeight = 5.51f; // vanilla = 5.01f
+        // When the relevant config is enabled: Increases the player's base jump speed by 13.97% (allows you to jump 7 blocks)
+        internal static readonly float ConfigBoostedBaseJumpSpeed = 5.71f; // vanilla = 5.01f
 
         // When the relevant config is enabled: Allows the player to hold the Down button (S by default) to fast fall.
         // This is the multiplier for the player's gravity (downwards acceleration) while holding Down.
@@ -32,7 +32,7 @@
 
         // Altered run acceleration multiplier provided by Soaring Insignia via IL edit
         // This is a const because it replaces a hardcoded value in vanilla
-        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.1f; // Vanilla = 1.75f
+        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.25f; // Vanilla = 1.75f
         #endregion
 
         #region Immunity Frames

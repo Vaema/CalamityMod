@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.Abyss
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/GulperEel_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 20
             };
@@ -57,7 +56,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(0, 1, 0, 0);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -157,9 +156,9 @@ namespace CalamityMod.NPCs.Abyss
             }
 
             if (NPC.velocity.X < 0f)
-                NPC.spriteDirection = 1;
-            else if (NPC.velocity.X > 0f)
                 NPC.spriteDirection = -1;
+            else if (NPC.velocity.X > 0f)
+                NPC.spriteDirection = 1;
 
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
@@ -339,17 +338,29 @@ namespace CalamityMod.NPCs.Abyss
             return null;
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                Texture2D mainBody = TextureAssets.Npc[ModContent.NPCType<GulperEelBodyAlt>()].Value;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, [TextureAssets.Npc[ModContent.NPCType<GulperEelBody>()].Value, mainBody, mainBody], 3, 26, 0.3f, new Vector2(0, 20), 3, 10, 0, 0.1f);
+            }
+            return true;
+        }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightYellow);
             Main.spriteBatch.Draw(GlowTexture.Value, vector,
@@ -370,7 +381,6 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
-            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 2, 2, 3, 3, 4));
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 6, 8, 8, 11));
         }
 

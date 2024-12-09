@@ -41,6 +41,11 @@ SetBonus: {
 		Cold enemies will deal reduced contact damage to the player
 		Provides immunity to the Chilled, Frozen, Frostburn and Glacial State debuffs
 		'''
+	Forbidden:
+		'''
+		{$LegacyTooltip.48} {$ArmorSetBonus.Forbidden}
+		Minions no longer deal less damage while wielding magic weapons
+		'''
 	Frost:
 		'''
 		Melee and ranged attacks inflict Frostbite
@@ -101,8 +106,7 @@ SetBonus: {
 		'''
 	Obsidian:
 		'''
-		Increases whip range by 50% and speed by 35%
-		Increases minion damage by 15%
+		{$ArmorSetBonus.ObsidianOutlaw}
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
 	Palladium:
@@ -137,6 +141,7 @@ SetBonus: {
 		'''
 		Allows the ability to dash
 		10% increased damage and critical strike chance
+		+90 maximum stealth
 		'''
 	SquireTier2:
 		'''

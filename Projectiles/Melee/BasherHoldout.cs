@@ -48,6 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
             base.OnSpawn(source);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;
@@ -60,6 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
+            AnimationProgress = Animation % useAnim;
             DrawUnconditionally = false;
 
             if (CanHit || postSwing)
@@ -81,6 +83,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.localNPCImmunity[i] = 0;
 
                 Projectile.numHits = 0;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 mousePos = Owner.Calamity().mouseWorld;
                 aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                 CanHit = false;
@@ -105,10 +108,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                     
                 
-                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(65f), 0.1f);
+                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
                 if (AnimationProgress < (useAnim / 3))
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
                     postSwing = false;
@@ -185,6 +189,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (target.CanBeMoved(true))
             {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Launch
                 Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -12;
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
@@ -199,6 +204,7 @@ namespace CalamityMod.Projectiles.Melee
                     dust2.scale = Main.rand.NextFloat(0.65f, 1.35f);
                     dust2.noGravity = true;
                 }
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 playerLaunchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * 10;
                 Owner.velocity = playerLaunchVel;
             }

@@ -21,14 +21,6 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            if (player.Calamity().gladiatorSword)
-                return false;
-
-            return true;
-        }
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             float damageIncrease = 0.2f;

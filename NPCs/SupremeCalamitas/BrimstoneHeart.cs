@@ -19,8 +19,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -100,9 +100,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.IsABestiaryIconDummy)
                 NPC.Opacity = 1f;
 
-            int frame = (int)Math.Round((float)Math.Pow(Math.Sin(Main.GlobalTimeWrappedHourly * 2.6f + NPC.whoAmI * 1.3f), 6D) * Main.npcFrameCount[NPC.type]);
-            if (frame >= Main.npcFrameCount[NPC.type])
-                frame = Main.npcFrameCount[NPC.type] - 1;
+            int frame = (int)Math.Round((float)Math.Pow(Math.Sin(Main.GlobalTimeWrappedHourly * 2.6f + NPC.whoAmI * 1.3f), 6D) * Main.npcFrameCount[Type]);
+            if (frame >= Main.npcFrameCount[Type])
+                frame = Main.npcFrameCount[Type] - 1;
             NPC.frame.Y = frame * frameHeight;
         }
 
@@ -155,12 +155,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void DrawBehind(int index)
         {
             Main.instance.DrawCacheNPCsBehindNonSolidTiles.Add(index);
-        }
-
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
-            if (projectile.type == ModContent.ProjectileType<CelestusMiniScythe>())
-                modifiers.SourceDamage *= 0.66f;
         }
 
         public override bool CheckActive() => false;

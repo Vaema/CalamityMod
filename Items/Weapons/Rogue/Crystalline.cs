@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumKnife>(50).
+                AddIngredient<WulfrumKnife>().
                 AddIngredient(ItemID.Diamond, 3).
                 AddIngredient(ItemID.FallenStar, 3).
                 AddTile(TileID.Anvils).

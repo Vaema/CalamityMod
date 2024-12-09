@@ -37,12 +37,11 @@ namespace CalamityMod.Items.Accessories
 
             if (player.whoAmI == Main.myPlayer)
             {
-                int baseDamage = player.ApplyArmorAccDamageBonusesTo(5);
                 var source = player.GetSource_Accessory(Item);
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<MarniteRepulsionHitbox>()] < 1)
                 {
-                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), baseDamage, 12f, Main.myPlayer);
-                    hitbox.originalDamage = baseDamage;
+                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), 5, 12f, Main.myPlayer);
+                    hitbox.originalDamage = 5;
                 }
             }
         }

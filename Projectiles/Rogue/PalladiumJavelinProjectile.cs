@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 2;
             Projectile.aiStyle = ProjAIStyleID.StickProjectile;
             Projectile.timeLeft = 600;
             Projectile.MaxUpdates = 2;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

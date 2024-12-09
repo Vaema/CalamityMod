@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.Other
                 // Notify the owner that the orb has indeed spawned.
                 Owner.Calamity().awaitingLecherousOrbSpawn = false;
 
-                Vector2 destination = Vector2.Lerp(Owner.Center, Main.MouseWorld, 0.625f);
+                Vector2 destination = Vector2.Lerp(Owner.Center, Owner.ClampedMouseWorld(), 0.625f);
                 NPC.Center = Vector2.Lerp(NPC.Center, destination, 0.035f).MoveTowards(destination, 8f);
                 if (NPC.WithinRange(destination, 5f))
                     NPC.Center = destination;
@@ -159,7 +159,7 @@ namespace CalamityMod.NPCs.Other
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

@@ -89,7 +89,6 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SkyFracture).
                 AddIngredient(ItemID.LunarFlareBook).
-                AddIngredient<WrathoftheAncients>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

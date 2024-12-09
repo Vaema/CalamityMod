@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         // Allows item to be extractinated and specifies custom behavior instead of copying an existing item
-        public override void SetStaticDefaults() => ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+        public override void SetStaticDefaults() => ItemID.Sets.ExtractinatorMode[Type] = Item.type;
 
         public override void SetDefaults()
         {
@@ -161,8 +161,7 @@ namespace CalamityMod.Items.Accessories
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            var matrix = Main.GameViewMatrix.TransformationMatrix;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
             {
                 // Fetch shield noise overlay texture (this is the techy overlay fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/TechyNoise");

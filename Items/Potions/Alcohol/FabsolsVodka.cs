@@ -1,8 +1,10 @@
 ﻿using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -11,28 +13,27 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
+        public static float DamageBoost = 0.08f;
+        public static float DefenseLossPercent = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseLossPercent.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CrystalHeartVodka>();
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(239, 123, 202),
+                new Color(187, 56, 158),
+                new Color(165, 47, 255)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<FabsolVodkaBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(900f);
+            Item.DefaultToFood(30, 42, ModContent.BuffType<FabsolVodkaBuff>(), CalamityUtils.MinutesToFrames(15), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 30);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()

@@ -23,9 +23,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             double deg = Projectile.ai[2];
@@ -138,7 +138,6 @@ namespace CalamityMod.Projectiles.Ranged
                             {
                                 ModContent.ProjectileType<PlasmaBlast>(),
                                 ModContent.ProjectileType<AstralStar>(),
-                                ModContent.ProjectileType<GalacticaComet>(),
                                 ProjectileID.StarCannonStar,
                                 ProjectileID.Starfury
                             });
@@ -146,7 +145,7 @@ namespace CalamityMod.Projectiles.Ranged
                             int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, speed, type, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
                             if (star.WithinBounds(Main.maxProjectiles))
                             {
-                                if (type == ModContent.ProjectileType<PlasmaBlast>() || type == ModContent.ProjectileType<AstralStar>() || type == ModContent.ProjectileType<GalacticaComet>())
+                                if (type == ModContent.ProjectileType<PlasmaBlast>() || type == ModContent.ProjectileType<AstralStar>())
                                     Main.projectile[star].ai[0] = 1f;
 
                                 Main.projectile[star].extraUpdates += 4;
@@ -164,8 +163,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);

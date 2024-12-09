@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
 
             // Visually a sword, but with no true melee capability. The Burning Sky is held out like a staff.
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = 0; i < ProjectilesPerBarrage; ++i)
             {
                 float randomSpeed = speed * Main.rand.NextFloat(0.7f, 1.4f);
-                CalamityUtils.ProjectileRain(source, Main.MouseWorld, 290f, 130f, 850f, 1100f, randomSpeed, type, damage, knockback, player.whoAmI);
+                CalamityUtils.ProjectileRain(source, player.ClampedMouseWorld(), 290f, 130f, 850f, 1100f, randomSpeed, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

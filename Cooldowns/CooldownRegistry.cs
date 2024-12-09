@@ -7,7 +7,7 @@ using Terraria.ModLoader.Core;
 namespace CalamityMod.Cooldowns
 {
     // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class CooldownRegistry
+    public sealed class CooldownRegistry : ModSystem
     {
         // Indexed by ushort netID. Contains every registered cooldown.
         // Cooldowns are given netIDs when they are registered.
@@ -18,7 +18,7 @@ namespace CalamityMod.Cooldowns
 
         private static Dictionary<string, ushort> nameToNetID = null;
 
-        public static void Load()
+        public override void Load()
         {
             registry = new Cooldown[defaultSize];
             nameToNetID = new Dictionary<string, ushort>(defaultSize);
@@ -60,7 +60,7 @@ namespace CalamityMod.Cooldowns
             #endregion
         }
 
-        public static void RegisterModCooldowns()
+        public override void OnModLoad()
         {
             Type baseHandlerType = typeof(CooldownHandler);
             foreach (Mod mod in ModLoader.Mods)
@@ -87,7 +87,7 @@ namespace CalamityMod.Cooldowns
             }
         }
 
-        public static void Unload()
+        public override void Unload()
         {
             registry = null;
             nameToNetID?.Clear();

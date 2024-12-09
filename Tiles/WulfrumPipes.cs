@@ -59,6 +59,8 @@ namespace CalamityMod.Tiles
         {
             Point pos = new Point(i, j);
             Tile tile = Main.tile[pos];
+            if (tile.IsTileActuallyInvisible())
+                return;
 
             float timeToGo = pos.GetTileRNG(2) * 22;
             float animProgress = (float)Math.Pow(MathHelper.Clamp((TempTilesManagerSystem.GetTemporaryTileTime(pos) - (WulfrumScaffoldKit.TileTime - timeToGo)) / timeToGo, 0, 1), 2);

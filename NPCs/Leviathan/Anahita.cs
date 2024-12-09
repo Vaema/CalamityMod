@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -71,7 +71,7 @@ namespace CalamityMod.NPCs.Leviathan
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<LeviathanAnahitaBossBar>();
-            NPC.value = Item.buyPrice(0, 60, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 50, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = HitSound;
@@ -889,11 +889,11 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (frameUsed)
             {
                 case 0:
-                    texture = TextureAssets.Npc[NPC.type].Value;
+                    texture = TextureAssets.Npc[Type].Value;
                     break;
                 case 1:
                     texture = ChargeTexture.Value;
@@ -901,7 +901,7 @@ namespace CalamityMod.NPCs.Leviathan
             }
 
             bool charging = NPC.ai[0] > 2f || forceChargeFrames;
-            int height = texture.Height / Main.npcFrameCount[NPC.type];
+            int height = texture.Height / Main.npcFrameCount[Type];
             int width = texture.Width;
             SpriteEffects spriteEffects = charging ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (NPC.spriteDirection == -1)
@@ -919,11 +919,11 @@ namespace CalamityMod.NPCs.Leviathan
 
             int timeBetweenFrames = 8;
             NPC.frameCounter++;
-            if (NPC.frameCounter > timeBetweenFrames * Main.npcFrameCount[NPC.type])
+            if (NPC.frameCounter > timeBetweenFrames * Main.npcFrameCount[Type])
                 NPC.frameCounter = 0;
 
             NPC.frame.Y = frameHeight * (int)(NPC.frameCounter / timeBetweenFrames);
-            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
 
             //100x1140

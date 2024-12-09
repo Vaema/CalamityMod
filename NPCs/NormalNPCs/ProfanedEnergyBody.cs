@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 //Preferably would have two animated lanterns, but this static one-headded wiki image will do for now
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || (!spawnInfo.Player.ZoneUnderworldHeight && !spawnInfo.Player.ZoneHallow))
+            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || (!spawnInfo.Player.ZoneUnderworldHeight && !spawnInfo.Player.ZoneHallow) || Main.pumpkinMoon || Main.snowMoon || Main.eclipse)
                 return 0f;
 
             // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.

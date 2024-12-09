@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -27,15 +27,15 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0.5f;
+            Projectile.minionSlots = 1f;
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 8;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
@@ -55,6 +55,19 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 dust--;
             }
+            bool isMinion = Projectile.type == ModContent.ProjectileType<PurpleButterfly>();
+            player.AddBuff(ModContent.BuffType<ResurrectionButterflyBuff>(), 3600);
+            if (isMinion)
+            {
+                if (player.dead)
+                {
+                    modPlayer.resButterfly = false;
+                }
+                if (modPlayer.resButterfly)
+                {
+                    Projectile.timeLeft = 2;
+                }
+            }
             if (Math.Abs(Projectile.velocity.X) > 0.2f)
             {
                 Projectile.spriteDirection = -Projectile.direction;
@@ -72,26 +85,13 @@ namespace CalamityMod.Projectiles.Summon
             }
             Lighting.AddLight(Projectile.Center, 0.3f, 0f, 0.5f);
             Projectile.ChargingMinionAI(1200f, 1500f, 2400f, 150f, 0, 25f, 20f, 9f, new Vector2(0f, -60f), 30f, 15f, true, true);
-            bool isMinion = Projectile.type == ModContent.ProjectileType<PurpleButterfly>();
-            player.AddBuff(ModContent.BuffType<ResurrectionButterflyBuff>(), 3600);
-            if (isMinion)
-            {
-                if (player.dead)
-                {
-                    modPlayer.resButterfly = false;
-                }
-                if (modPlayer.resButterfly)
-                {
-                    Projectile.timeLeft = 2;
-                }
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, spriteEffects, 0);
             return false;

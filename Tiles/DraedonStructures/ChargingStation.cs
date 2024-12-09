@@ -111,6 +111,9 @@ namespace CalamityMod.Tiles.DraedonStructures
         // Draws the charger's glowing light on top of it.
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Tile t = Main.tile[i, j];
             int xFrame = t.TileFrameX;
             int yFrame = t.TileFrameY;

@@ -107,6 +107,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 AddIngredient(ItemID.ChlorophyteBar, 6).
                 AddIngredient(ItemID.Glass, 20).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<LunicCorpsBoots>()).
                 Register();
         }
 
@@ -168,8 +169,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            var matrix = Main.GameViewMatrix.TransformationMatrix;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
             {
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");

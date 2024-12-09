@@ -182,8 +182,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -229,7 +229,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(15, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
@@ -1237,7 +1237,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 DrawArm(spriteBatch, NPC.Center + NPC.scale * new Vector2(400f, 300f), screenPos, armGlowmaskColor, 1, false);
             }
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
             int numAfterimages = 5;
@@ -1577,6 +1577,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             // Relic
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).AddIf(CanDropLoot, ModContent.ItemType<DraedonRelic>());
+            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).AddIf(CanDropLoot, ModContent.ItemType<ExoArmamentsKit>(), 4);
 
             // GFB Broken Water Filter
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);

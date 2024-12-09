@@ -11,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureExo
     {
         public override void SetStaticDefaults() => this.SetUpChandelier(ModContent.ItemType<ExoChandelier>(), true);
 
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
+
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)

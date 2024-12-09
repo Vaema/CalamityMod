@@ -53,6 +53,9 @@ namespace CalamityMod.Tiles.FurnitureAshen
         {
             //This is used to draw the eye, where the frame is changed depending on the player's position relative to the eye's centre.
             Tile currentTile = Main.tile[i, j];
+            if (currentTile.IsTileActuallyInvisible())
+                return;
+
             Vector2 eyeCentre = new Vector2(i * 16, j * 16);
             if (currentTile.TileFrameX == 0)
             { eyeCentre += new Vector2(16f, 0f); }

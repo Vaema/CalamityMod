@@ -34,7 +34,7 @@ AngelicShotgun: {
 	Tooltip:
 		'''
 		Each shot casts a radiant beam of holy light from the sky
-		Converts musket balls into hallow-point rounds
+		Musket balls convert into hallow-point rounds which also empower the beam
 		'Fighting 'til the war's won'
 		'''
 }
@@ -187,8 +187,8 @@ BlissfulBombardier: {
 	DisplayName: Blissful Bombardier
 	Tooltip:
 		'''
-		Fires flare rockets
-		Rockets will destroy tiles with tile-destroying ammo
+		Launches a crystalline missile high into the sky, raining holy fire on the cursor
+		The missile relentlessly seeks out a target before bursting into a massive explosion
 		'''
 }
 
@@ -682,7 +682,13 @@ Kingsbane: {
 
 Leviatitan: {
 	DisplayName: Leviatitan
-	Tooltip: Converts musket balls into toxic and normal water blasts
+	Tooltip:
+		'''
+		Fires high velocity aqua blasts
+		Releases homing aberrations that shred enemy defense every six shots
+		<right> to vomit a meteor that explodes on hit
+		'The L in LMG stands for Leviathan'
+		'''
 }
 
 LunarianBow: {
@@ -979,9 +985,19 @@ PristineFury: {
 	DisplayName: Pristine Fury
 	Tooltip:
 		'''
-		Fires an intense helix of flames that explode into a column of smoke
-		Press <right> to disperse intense clouds of profaned heat
+		Fires an intense helix of flames that burst into a column of smoke
+		<right> to disperse flammable crystalline powder
+		Powder can be ignited, causuing it to explode for extra damage
+		Both helix flames and other nearby explosions can ignite the powder
 		Uses gel for ammo
+		'''
+	LegendaryText:
+		'''
+		'Me and many others lost everything in this world's darkest hour.
+		I saw a beast descend from the heavens. It had seven eyes in its body, and heralded countless angels of death.
+		My family was torn from me by them, and my people forsake me. Even our supposed protectors did nothing to aid us.
+		And thus I swore to those I lost that I would never take such pain laying down again, that my name would dwarf even that of Zeratros;
+		That one day, this cruel world would know nothing less than My perfect fury.'
 		'''
 }
 
@@ -1219,15 +1235,6 @@ StellarCannon: {
 	Tooltip: Launches an explosive astral crystal
 }
 
-StormDragoon: {
-	DisplayName: Storm Dragoon
-	Tooltip:
-		'''
-		Fires a spray of bullets
-		90% chance to save ammo
-		'''
-}
-
 StormSurge: {
 	DisplayName: Storm Surge
 	Tooltip:
@@ -1240,7 +1247,11 @@ StormSurge: {
 
 SulphuricAcidCannon: {
 	DisplayName: Sulphuric Acid Cannon
-	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
+	Tooltip:
+		'''
+		Fires homing Acid Rockets
+		Acid Rockets stick to enemies and explode into toxic mist after a short delay
+		'''
 }
 
 SuperradiantSlaughterer: {
@@ -1287,9 +1298,27 @@ Svantechnical: {
 		'''
 }
 
+TauCannon: {
+	DisplayName: Tau Cannon
+	Tooltip:
+		'''
+		A bulky assault rifle with three charge levels that fires astral energy
+		Charge level one fires a burst of bolts
+		Charge level two fires a beam of energy that quickly fizzles out
+		Charge level three fires a massive laser and creates astral portals around you
+		'This weapon is very ethically questionable'
+		'''
+}
+
 TelluricGlare: {
 	DisplayName: Telluric Glare
-	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
+	Tooltip:
+		'''
+		Rapidly fires volleys of arrows
+		Every other arrow is converted into radiant greatarrows which pierce but quicky dissapear after striking
+		Wooden arrows are converted into more powerful greatarrows that deal increased damage
+		75% chance to save ammo
+		'''
 }
 
 TheBallista: {
@@ -1349,8 +1378,9 @@ TheStorm: {
 	DisplayName: The Storm
 	Tooltip:
 		'''
-		Fires a spread of arrows from the sky
-		Converts wooden arrows into lightning bolts
+		Fires a spread of homing lightning bolts and arrows from the sky
+		Converts wooden arrows into powerful electric beams
+		95% chance to save ammo
 		'''
 }
 
@@ -1442,7 +1472,7 @@ WulfrumBlunderbuss: {
 		'''
 		Consumes wulfrum scrap or silver coins to fire
 		The shot's spread can be diminished by aiming further away, at the cost of less damage
-		Ignores 3 points of enemy Defense
+		{$Common.ArmorPenetration}
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''

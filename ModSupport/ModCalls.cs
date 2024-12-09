@@ -7,6 +7,7 @@ using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;
@@ -719,9 +720,9 @@ namespace CalamityMod
         // Sets the damage reduction for an NPC type
         public static float SetDamageReduction(int npcID, float dr)
         {
-            CalamityMod.DRValues.TryGetValue(npcID, out float oldDR);
-            CalamityMod.DRValues.Remove(npcID);
-            CalamityMod.DRValues.Add(npcID, dr);
+            CalamityGlobalNPC.DRValues.TryGetValue(npcID, out float oldDR);
+            CalamityGlobalNPC.DRValues.Remove(npcID);
+            CalamityGlobalNPC.DRValues.Add(npcID, dr);
             return oldDR;
         }
         // Sets a specific NPC's damage reduction
@@ -914,43 +915,43 @@ namespace CalamityMod
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
-            if (shouldBeListed && !CalamityLists.amalgamBuffList.Contains(type))
+            if (shouldBeListed && !AmalgamBuffList.Includes(type))
             {
-                CalamityLists.amalgamBuffList.Add(type);
+                AmalgamBuffList.List.Add(type);
                 return true;
             }
             else if (!shouldBeListed)
             {
-                return CalamityLists.amalgamBuffList.Remove(type);
+                return AmalgamBuffList.List.Remove(type);
             }
 
             return false;
         }
         public static bool SetPersistentBuffList(int type, bool isPersistent)
         {
-            if (isPersistent && !CalamityLists.persistentBuffList.Contains(type))
+            if (isPersistent && !PersistentBuffList.Includes(type))
             {
-                CalamityLists.persistentBuffList.Add(type);
+                PersistentBuffList.List.Add(type);
                 return true;
             }
             else if (!isPersistent)
             {
-                return CalamityLists.persistentBuffList.Remove(type);
+                return PersistentBuffList.List.Remove(type);
             }
 
             return false;
         }
 
-        public static bool IsOnAmalgamBuffList(int type) => CalamityLists.amalgamBuffList.Contains(type);
-        public static bool IsOnPersistentBuffList(int type) => CalamityLists.persistentBuffList.Contains(type);
+        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.Includes(type);
+        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.Includes(type);
         #endregion
 
         #region Venerated Locket Bans
         public static bool AddToVeneratedLocketBanlist(int type)
         {
-            if (!CalamityLists.VeneratedLocketBanlist.Contains(type))
+            if (!VeneratedLocketBanList.Includes(type))
             {
-                CalamityLists.VeneratedLocketBanlist.Add(type);
+                VeneratedLocketBanList.List.Add(type);
                 return true;
             }
             return false;
@@ -960,35 +961,35 @@ namespace CalamityMod
         #region Summoner Cross Class Nerf Disabling
         public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfMinions.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfMinionList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfMinions.Add(type);
+                DisabledSummonerNerfMinionList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfMinions.Remove(type);
+                return DisabledSummonerNerfMinionList.List.Remove(type);
             }
 
             return false;
         }
         public static bool SetSummonerNerfDisabledByItem(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfItems.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfItemList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfItems.Add(type);
+                DisabledSummonerNerfItemList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfItems.Remove(type);
+                return DisabledSummonerNerfItemList.List.Remove(type);
             }
 
             return false;
         }
 
-        public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityLists.DisabledSummonerNerfMinions.Contains(type);
-        public static bool GetSummonerNerfDisabledByItem(int type) => CalamityLists.DisabledSummonerNerfItems.Contains(type);
+        public static bool GetSummonerNerfDisabledByMinion(int type) => DisabledSummonerNerfMinionList.Includes(type);
+        public static bool GetSummonerNerfDisabledByItem(int type) => DisabledSummonerNerfItemList.Includes(type);
         #endregion
 
         #region Debuff Display support
@@ -1076,9 +1077,9 @@ namespace CalamityMod
         //This is to add minions to the hp scaling config
         public static bool AddToHPScaling(int type)
         {
-            if (!CalamityLists.bossHPScaleList.Contains(type))
+            if (!BossHPScalingList.List.Contains(type))
             {
-                CalamityLists.bossHPScaleList.Add(type);
+                BossHPScalingList.List.Add(type);
                 return true;
             }
             return false;

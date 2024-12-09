@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
         }
@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.frame.Y += frameHeight;
                 NPC.frameCounter = 0.0;
             }
-            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 
@@ -101,6 +101,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             // If vomited out during Master Mode, maintain velocity until a certain time has passed
             if (NPC.ai[0] > 0f)
             {
+                NPC.knockBackResist = 0f;
+
                 NPC.ai[0] -= 1f;
 
                 if (NPC.velocity.Length() < NPC.ai[1])
@@ -127,63 +129,19 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return;
             }
 
+            NPC.knockBackResist = 0.4f;
+
             // Velocity and acceleration
-            Vector2 idealVelocity = new Vector2(death ? 8f : 6f, death ? 6f : 4.5f);
-            float accelerationX = death ? 0.16f : 0.12f;
-            float accelerationY = death ? 0.12f : 0.09f;
+            Vector2 idealVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (death ? 7f : 5.5f);
+            float acceleration = death ? 0.14f : 0.105f;
 
             if (Main.getGoodWorld)
             {
                 idealVelocity *= 1.2f;
-                accelerationX *= 1.4f;
-                accelerationY *= 1.4f;
+                acceleration *= 1.4f;
             }
 
-            if (NPC.direction == -1 && NPC.velocity.X > -idealVelocity.X)
-            {
-                NPC.velocity.X -= accelerationX;
-                if (NPC.velocity.X > idealVelocity.X)
-                    NPC.velocity.X -= accelerationX;
-                else if (NPC.velocity.X > 0f)
-                    NPC.velocity.X -= accelerationX * 2f;
-
-                if (NPC.velocity.X < -idealVelocity.X)
-                    NPC.velocity.X = -idealVelocity.X;
-            }
-            else if (NPC.direction == 1 && NPC.velocity.X < idealVelocity.X)
-            {
-                NPC.velocity.X += accelerationX;
-                if (NPC.velocity.X < -idealVelocity.X)
-                    NPC.velocity.X += accelerationX;
-                else if (NPC.velocity.X < 0f)
-                    NPC.velocity.X += accelerationX * 2f;
-
-                if (NPC.velocity.X > idealVelocity.X)
-                    NPC.velocity.X = idealVelocity.X;
-            }
-
-            if (NPC.directionY == -1 && (double)NPC.velocity.Y > -idealVelocity.Y)
-            {
-                NPC.velocity.Y -= accelerationY - 0.02f;
-                if ((double)NPC.velocity.Y > idealVelocity.Y)
-                    NPC.velocity.Y -= accelerationY;
-                else if (NPC.velocity.Y > 0f)
-                    NPC.velocity.Y -= accelerationY * 2.5f;
-
-                if ((double)NPC.velocity.Y < -idealVelocity.Y)
-                    NPC.velocity.Y = -idealVelocity.Y;
-            }
-            else if (NPC.directionY == 1 && (double)NPC.velocity.Y < idealVelocity.Y * 0.6f)
-            {
-                NPC.velocity.Y += accelerationY - 0.02f;
-                if ((double)NPC.velocity.Y < -idealVelocity.Y)
-                    NPC.velocity.Y += accelerationY;
-                else if (NPC.velocity.Y < 0f)
-                    NPC.velocity.Y += accelerationY * 2.5f;
-
-                if ((double)NPC.velocity.Y > idealVelocity.Y)
-                    NPC.velocity.Y = idealVelocity.Y;
-            }
+            NPC.SimpleFlyMovement(idealVelocity, acceleration);
 
             if (NPC.wet)
             {

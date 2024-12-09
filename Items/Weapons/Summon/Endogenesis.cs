@@ -16,10 +16,8 @@ namespace CalamityMod.Items.Weapons.Summon
         //Cooper be like cool
 
         public static int AttackMode = 0;
-        public override void SetStaticDefaults()
-        {
-            //Icy no problems with that
-        }
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 10f;
 
         public override void SetDefaults()
         {
@@ -56,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     ModContent.ProjectileType<EndoBeam>()
                 });
 
-                SummonEndoCooper(source, AttackMode, Main.MouseWorld, damage, Item.damage, knockback, player, out _, out _);
+                SummonEndoCooper(source, AttackMode, player.ClampedMouseWorld(), damage, Item.damage, knockback, player, out _, out _);
 
                 AttackMode++;
                 if (AttackMode > 3)
@@ -94,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.BlizzardStaff).
                 AddIngredient<ShadowspecBar>(5).
                 AddIngredient<EndothermicEnergy>(100).
-                AddIngredient<CoreofEleum>(15).
+                AddIngredient<EssenceofEleum>(15).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -21,16 +21,17 @@ namespace CalamityMod.Projectiles.Ranged
         public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
         public int sineDir = 1;
 
-        public Color color1 = Color.DarkMagenta;
-        public Color color2 = Color.DarkOrchid;
-        public Color color3 = Color.Purple;
-        public Color color4 = Color.BlueViolet;
+        public Player Owner => Main.player[Projectile.owner];
+        public Color color1;
+        public Color color2;
+        public Color color3;
+        public Color color4;
         public bool Positive => Projectile.ai[2] < 5;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 25;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -48,6 +49,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            color1 = Owner.shirtColor;
+            color2 = Color.Lerp(Owner.shirtColor, Color.Black, 0.2f);
+            color3 = Color.Lerp(Owner.shirtColor, Color.White, 0.1f);
+            color4 = Color.Lerp(Owner.shirtColor, Color.White, 0.2f);
+
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             Projectile.frameCounter++;
@@ -69,18 +75,23 @@ namespace CalamityMod.Projectiles.Ranged
                 if (!Positive)
                     Projectile.penetrate = 1;
             }
-            float rate = (Main.GlobalTimeWrappedHourly * 15);
-            List<Color> eColors = new List<Color>()
+            if (Owner.shirtColor != Color.White)
+            {
+                float rate = (Main.GlobalTimeWrappedHourly * 15);
+                List<Color> eColors = new List<Color>()
                 {
                     color1,
                     color2,
                     color3,
                     color4
                 };
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            }
+            else
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (!Positive)
             {
@@ -94,18 +105,15 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (!Positive)
                 {
-                    // Spawn in a helix-style pattern
+
                     float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
 
-                    Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 8f;
-                    float scale = Main.rand.NextFloat(0.3f, 0.4f);
-                    if (true)
-                    {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
-                        dust2.noGravity = true;
-                        dust2.scale = scale;
-                        dust2.color = baseColor;
-                    }
+                    Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 13f;
+                    float scale = Main.rand.NextFloat(0.45f, 0.55f);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, (time % 2 == 0 ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                    dust2.noGravity = true;
+                    dust2.scale = scale;
+                    dust2.color = baseColor;
                 }
                 else
                 {
@@ -130,12 +138,8 @@ namespace CalamityMod.Projectiles.Ranged
                 NPC targetedNPC = Projectile.Center.ClosestNPCAt(700);
                 if (targetedNPC != null && time > 30 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 700)
                 {
-                    Vector2 position = targetedNPC.Center;
-                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true) * 2))
-                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(650, 450, Projectile.timeLeft, true));
-                    else
-                        Projectile.velocity *= 0.9f;
+                    float moveSpeed = (0.42f + Utils.GetLerpValue(650, 450, Projectile.timeLeft, true));
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, moveSpeed, 8, 0.95f, accelerate: true);
                 }
             }
             else
@@ -165,7 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, !Positive ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, !Positive ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust.color = baseColor;
@@ -205,8 +209,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom2");
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine2");
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], baseColor with { A = 0 } * 0.8f, 1, tex.Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Positive ? Color.Lerp(Color.White, baseColor, MathHelper.Clamp(Utils.GetLerpValue(50, 175, time, true), 0, 0.5f)) with { A = 0 } : Color.Black, 1, tex2.Value, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], baseColor with { A = 0 } * 0.8f, 1, tex.Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Positive ? Color.Lerp(Color.White, baseColor, MathHelper.Clamp(Utils.GetLerpValue(50, 175, time, true), 0, 0.5f)) with { A = 0 } : Color.Black, 1, tex2.Value, true, true);
 
             Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot");
             Asset<Texture2D> tex4 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot2");
@@ -216,10 +220,19 @@ namespace CalamityMod.Projectiles.Ranged
             Rectangle frame = tex3.Frame(1, 6, 0, Projectile.frame);
             Vector2 rotationPoint = frame.Size() * 0.5f;
 
-            for (int i = 0; i < (Positive ? 3 : 1); i++)
-                Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, Positive ? baseColor with { A = 0 } : baseColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
             if (Positive)
-                Main.EntitySpriteDraw(tex4.Value, drawPosition, frame, Color.Lerp(baseColor, Color.White, 0.7f) with { A = 0 }, drawRotation, rotationPoint, Projectile.scale * 0.9f, SpriteEffects.None);
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, Positive ? baseColor with { A = 0 } : baseColor, drawRotation, rotationPoint, new Vector2(1 + i * 0.45f, 1 - i * 0.25f) * Projectile.scale * 0.9f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(tex4.Value, drawPosition, frame, Color.Lerp(baseColor, Color.White, 0.7f) with { A = 0 }, drawRotation, rotationPoint, new Vector2(1 + i * 0.45f, 1 - i * 0.25f) * Projectile.scale * 0.8f, SpriteEffects.None);
+                }
+            }
+            else
+            {
+                Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, Positive ? baseColor with { A = 0 } : baseColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            }
+
             return false;
         }
     }

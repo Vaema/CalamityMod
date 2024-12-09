@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Summon
         public ref float Time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.FinalExtraUpdate())
                 Projectile.frameCounter++;
             if (Projectile.frameCounter % 6 == 5)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         internal void FlyNearOwner()

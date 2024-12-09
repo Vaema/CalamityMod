@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 80;
+            player.fishingSkill += 50;
             player.accFishingLine = true;
             player.accTackleBox = true;
             player.accLavaFishing = true;

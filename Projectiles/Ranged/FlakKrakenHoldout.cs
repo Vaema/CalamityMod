@@ -33,6 +33,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            // 15NOV2024: Ozzatron: applying clamped mouse position here is difficult.
+            // Rockets need to explode "at the cursor", but they do so by storing range to explode.
+            // Allowing rockets to explode at an unclamped cursor enables higher-resolution screens to have a precision DPS advantage.
+            // However, clamping the cursor causes the projectiles to explode at incorrect times and places.
+            // The solution is to use an unclamped cursor, but separately and manually clamp the explosion distance.
+            // Technically speaking this allows for applying precision DPS at a further vertical distance than intended,
+            // but the alternative is way too hard to program and will just piss people off.
+            //
             // The vector between the player and the mouse.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - Owner.MountedCenter;
 
@@ -72,8 +80,11 @@ namespace CalamityMod.Projectiles.Ranged
                             break;
                     }
 
+                    // 15NOV2024: Ozzatron: manually clamp flak explosion distance
+                    float flakDist = MathHelper.Clamp(ownerToMouse.Length(), 0f, 960f);
+
                     // Spawns the projectile.
-                    Projectile.NewProjectileDirect(
+                    Projectile.NewProjectile(
                         Projectile.GetSource_FromThis(),
                         GunTipPosition,
                         direction * itemShootSpeed,
@@ -82,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                         itemKnockback,
                         Projectile.owner,
                         rocketTypeShot,
-                        ownerToMouse.Length());
+                        flakDist);
 
                     // Applies the knockback to the player.
                     Owner.velocity += ownerToMouse.SafeNormalize(Vector2.UnitY) * -OwnerKnockbackStrength;

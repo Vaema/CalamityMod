@@ -39,7 +39,6 @@ namespace CalamityMod
             return -1;
         }
 
-
         public static bool ChangeIngredientStack(this Recipe r, int itemID, int stack)
         {
             int idx = r.IngredientIndex(itemID);
@@ -198,109 +197,6 @@ namespace CalamityMod
             sfx.Volume = MathHelper.Clamp(sfx.Volume * volumeMultiplier, 0f, 1f);
         }
 
-        public static void StartRain(bool torrentialTear = false, bool maxSeverity = false, bool worldSync = true)
-        {
-            int framesInDay = 86400;
-            int framesInHour = framesInDay / 24;
-            Main.rainTime = Main.rand.Next(framesInHour * 8, framesInDay);
-            if (Main.rand.NextBool(3))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour);
-            }
-            if (Main.rand.NextBool(4))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 2);
-            }
-            if (Main.rand.NextBool(5))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 2);
-            }
-            if (Main.rand.NextBool(6))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 3);
-            }
-            if (Main.rand.NextBool(7))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 4);
-            }
-            if (Main.rand.NextBool(8))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 5);
-            }
-            float randRainExtender = 1f;
-            if (Main.rand.NextBool())
-            {
-                randRainExtender += 0.05f;
-            }
-            if (Main.rand.NextBool(3))
-            {
-                randRainExtender += 0.1f;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                randRainExtender += 0.15f;
-            }
-            if (Main.rand.NextBool(5))
-            {
-                randRainExtender += 0.2f;
-            }
-            Main.rainTime = (int)(Main.rainTime * randRainExtender);
-            Main.raining = true;
-            if (torrentialTear)
-                TorrentialTear.AdjustRainSeverity(maxSeverity);
-
-            if (worldSync)
-                CalamityNetcode.SyncWorld();
-        }
-
-        public static void StopRain(bool clearWeather = false, bool worldSync = true)
-        {
-            if (clearWeather)
-                Main.StopRain();
-            else
-                Main.raining = false;
-            
-            if (worldSync)
-                CalamityNetcode.SyncWorld();
-        }
-
-        public static void StartSandstorm()
-        {
-            if (Main.netMode != NetmodeID.MultiplayerClient && !Sandstorm.Happening)
-            {
-                // If it's not windy enough, make it windy enough for a sandstorm
-                // 0.6f is the minimum for vanilla but Calamity changes it to 0.2f
-                // Windy days occur when wind speed is at least 0.5f (0.4f in vanilla) so this should never cause a windy day
-                float windSpeed = 0f;
-                if (Main.windSpeedCurrent == 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(0.3f, 0.4f) * (Main.rand.Next(0, 2) * 2 - 1);
-                }
-                else if (Main.windSpeedCurrent < 0.3f && Main.windSpeedCurrent > 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(0.3f, 0.4f);
-                }
-                else if (Main.windSpeedCurrent > -0.3f && Main.windSpeedCurrent < 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(-0.4f, -0.3f);
-                }
-                if (windSpeed != 0f)
-                {
-                    Main.windSpeedCurrent = windSpeed < 0f ? -0.3f : 0.3f;
-                    Main.windSpeedTarget = windSpeed;
-                }
-                Sandstorm.StartSandstorm();
-            }
-        }
-
-        public static void StopSandstorm()
-        {
-            if (Main.netMode != NetmodeID.MultiplayerClient && Sandstorm.Happening)
-            {
-                Sandstorm.StopSandstorm();
-            }
-        }
-
         public static void AddWithCondition<T>(this List<T> list, T type, bool condition)
         {
             if (condition)
@@ -309,6 +205,7 @@ namespace CalamityMod
 
         public static int SecondsToFrames(int seconds) => seconds * 60;
         public static int SecondsToFrames(float seconds) => (int)(seconds * 60);
+        public static int MinutesToFrames(int minutes) => minutes * 3600;
 
         public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;
 

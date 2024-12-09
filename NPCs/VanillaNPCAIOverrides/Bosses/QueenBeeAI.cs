@@ -272,7 +272,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Initiate charge
                     float chargeDistanceY = phase6 ? 100f : phase4 ? 50f : 20f;
-                    chargeDistanceY += 100f * enrageScale;
+                    chargeDistanceY += 50f * enrageScale;
                     if (death)
                         chargeDistanceY += MathHelper.Lerp(0f, 100f, 1f - lifeRatio);
                     if (masterMode)

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,6 +11,7 @@ namespace CalamityMod.Items.Placeables.FurnitureEutrophic
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AncientSmoothNavystone>();
         }
 
         public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureEutrophic.SmoothNavystone>());

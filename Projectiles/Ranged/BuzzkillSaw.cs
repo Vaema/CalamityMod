@@ -25,9 +25,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return true;
 
             // Special afterimage drawing to include the slashes
-            Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D buzzsawTexture = TextureAssets.Projectile[Type].Value;
             Rectangle frame = buzzsawTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             for (int i = 1; i < Projectile.oldPos.Length; i++)
             {

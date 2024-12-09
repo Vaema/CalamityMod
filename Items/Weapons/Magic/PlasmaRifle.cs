@@ -19,14 +19,14 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 72;
             Item.height = 20;
-            Item.damage = 360;
+            Item.damage = 160;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 40;
             Item.useAnimation = Item.useTime = 40;
@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
@@ -78,7 +78,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.ToxicFlask).
                 AddIngredient(ItemID.LaserRifle).
-                AddIngredient<UelibloomBar>(7).
+                AddIngredient(ItemID.FragmentVortex, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

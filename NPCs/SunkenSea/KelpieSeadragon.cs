@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float SquishY => ref NPC.localAI[1];
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 13;
+            Main.npcFrameCount[Type] = 13;
         }
 
         public override void SetDefaults()

@@ -46,52 +46,6 @@ namespace CalamityMod.Tiles
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
         }
 
-        public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
-        {
-            // Guaranteed not null at this point
-            Tile tile = Main.tile[i, j];
-
-            // This function is only for Astral Cactus. If the tile isn't even cactus, forget about it.
-            if (type != TileID.Cactus)
-                return;
-
-            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
-            int frameX = tile.TileFrameX;
-            int frameY = tile.TileFrameY;
-
-            // Search down the cactus to find out whether the block it is planted in is Astral Sand.
-            int xTile = i;
-            if (frameX == 36) // Cactus segment which splits left
-                xTile--;
-            if (frameX == 54) // Cactus segment which splits right
-                xTile++;
-            if (frameX == 108) // Cactus segment which splits both directions
-                xTile += (frameY == 18) ? -1 : 1;
-
-            int yTile = j;
-            bool slidingDownCactus = Main.tile[xTile, yTile] != null && Main.tile[xTile, yTile].TileType == TileID.Cactus && Main.tile[xTile, yTile].HasTile;
-            while (!Main.tile[xTile, yTile].HasTile || !Main.tileSolid[Main.tile[xTile, yTile].TileType] || !slidingDownCactus)
-            {
-                if (Main.tile[xTile, yTile].TileType == TileID.Cactus && Main.tile[xTile, yTile].HasTile)
-                {
-                    slidingDownCactus = true;
-                }
-                yTile++;
-                // Cacti are assumed to be no more than 20 blocks tall.
-                if (yTile > i + 20)
-                    break;
-            }
-            bool astralCactus = Main.tile[xTile, yTile].TileType == (ushort)ModContent.TileType<AstralSand>();
-
-            // If it is actually astral cactus, then draw its glowmask.
-            if (astralCactus)
-            {
-                spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralCactusGlow").Value, new Vector2((float)(i * 16 - (int)Main.screenPosition.X), (float)(j * 16 - (int)Main.screenPosition.Y)) + zero, new Rectangle((int)frameX, (int)frameY, 16, 18), Color.White * 0.75f, 0f, default, 1f, SpriteEffects.None, 0f);
-            }
-        }
-
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = Main.tile[i, j];

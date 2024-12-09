@@ -7,6 +7,7 @@ using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
@@ -63,26 +64,22 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow").Value;
-            Color drawColour = GetDrawColour(i, j, new Color(100, 100, 100, 100));
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-        }
+            Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
 
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            int xPos = tile.TileFrameX;
+            int yPos = tile.TileFrameY;
+            int chestIndex = Chest.FindChest(i - (xPos / 18), j - (yPos / 18));
+            if (chestIndex == -1)
+                return;
+
+            int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
+            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow").Value;
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
+            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange));
+            Rectangle frame = new Rectangle(xPos, yPos + Main.chest[chestIndex].frame * 38, 18, 18);
+            Main.spriteBatch.Draw(glowmask, drawOffset, frame, drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
     }
 }

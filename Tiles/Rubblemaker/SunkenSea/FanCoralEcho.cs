@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;

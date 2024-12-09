@@ -14,14 +14,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 246;
+            Projectile.width = 308;
             Projectile.height = 184;
-            Projectile.scale = 1.15f;
 
             Projectile.friendly = true;
             Projectile.penetrate = -1;
@@ -36,7 +35,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.frameCounter++;
             Projectile.frame = Projectile.frameCounter / 3;
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.Kill();
 
             Vector2 playerRotatedPoint = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
@@ -49,16 +48,17 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Rotation and directioning.
+            Projectile.rotation = Owner.gravDir == -1f ? MathHelper.Pi : 0f;
             Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
 
             // Sprite and player directioning.
-            Projectile.spriteDirection = -Projectile.direction;
+            Projectile.spriteDirection = Projectile.direction * (int)(Owner.gravDir);
             if (Projectile.direction == 1)
                 Projectile.Left = Owner.MountedCenter;
             else
                 Projectile.Right = Owner.MountedCenter;
-            Projectile.position.X += Projectile.spriteDirection == -1 ? -116f : 88f;
-            Projectile.position.Y -= Projectile.scale * 66f;
+            Projectile.position.X += (Projectile.spriteDirection == 1 ? -92f : 96f) * Owner.gravDir;
+            Projectile.position.Y -= 80f * Owner.gravDir;
             Owner.ChangeDir(Projectile.direction);
 
             // Prevents the projectile from dying

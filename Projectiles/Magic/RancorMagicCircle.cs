@@ -101,10 +101,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public void UpdateAim()
         {
-            // Only execute the aiming code for the owner since Main.MouseWorld is a client-side variable.
+            // Only execute the aiming code for the owner since mouse position is a client-side variable.
             if (Main.myPlayer != Projectile.owner)
                 return;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealDirection = Owner.SafeDirectionTo(Main.MouseWorld, Vector2.UnitX * Owner.direction);
             Vector2 newAimDirection = Projectile.velocity.MoveTowards(idealDirection, 0.05f);
 
@@ -191,7 +192,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D outerCircleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D outerCircleTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D outerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "Glowmask").Value;
             Texture2D innerCircleTexture = ModContent.Request<Texture2D>(Texture + "Inner").Value;
             Texture2D innerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "InnerGlowmask").Value;

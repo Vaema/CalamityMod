@@ -52,6 +52,19 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.Bone, 10).
                 AddIngredient<PearlShard>(10).
                 AddTile(TileID.Anvils).
+                AddCondition(Condition.NotRemixWorld).
+                Register();
+
+            // CIT 16NOV2024: Due to Snowball Cannon being swapped with Ice Bow in Remix, Flurrystorm Cannon uses Ice Bow in its recipe there.
+            // Yes, this makes no sense. I don't care; I prefer obtainability over making sense.
+            CreateRecipe().
+                AddIngredient(ItemID.IceBow).
+                AddIngredient(ItemID.IllegalGunParts).
+                AddIngredient<AerialiteBar>(10).
+                AddIngredient(ItemID.Bone, 10).
+                AddIngredient<PearlShard>(10).
+                AddTile(TileID.Anvils).
+                AddCondition(Condition.RemixWorld).
                 Register();
         }
     }

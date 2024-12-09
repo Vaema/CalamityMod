@@ -7,11 +7,12 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.EntitySources;
+using CalamityMod.Enums;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
@@ -22,6 +23,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -55,81 +57,139 @@ namespace CalamityMod.Projectiles
             }
         }
 
-        // Source variables.
+        /// <summary>
+        /// If true, this projectile was spawned from a dash hit.<br/>
+        /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
+        /// </summary>
         public bool CreatedByPlayerDash = false;
 
-        // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
+        /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
 
-        // Damage Adjusters
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
         public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
         public const float PierceResistCap = 0.8f;
 
-        // defDamage was being used for frame1 hacks. this stands in as the replacement for that logic.
+        /// <summary>
+        /// Used for executing frame one hacks. Things set during this include:
+        /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.
+        /// <br/>* Adding armor penetration to rogue projectiles spawned while wearing Filthy Glove or its upgrades.
+        /// <br/>* Increasing the damage of projectiles from the post-Moon Lord Dungeon, and from the post-DoG Pumpkin Moon, Frost Moon, and Solar Eclipse.
+        /// </summary>
         private bool frameOneHacksExecuted = false;
 
-        // Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".
-        // For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.
-        // They then take the remainder (e.g. the remaining 16%) and roll against that for a final +100% (like normal crits).
-        // For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.
-        // An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.
-        // Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times
+        /// <summary>
+        /// Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".<br/>
+        /// For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.<br/>
+        /// They then take the remainder and roll against that for a final +100% (like normal crits).<br/>
+        /// For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.<br/>
+        /// An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.<br/>
+        /// Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times.
+        /// </summary>
         public int supercritHits = 0;
 
-        // Without adjusting underlying crit calculations, set this to true to force a projectile as a crit.
         // TODO -- In the TML 1.4.4 port, there is a much better way to set NPC strike events to be forced crits.
+        /// <summary> Set to true to force a projectile to critically strike. </summary>
         public bool forcedCrit = false;
 
-        // The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo.
+        /// <summary> The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo. </summary>
         public float totalRicoshotDamageBonus = 0f;
 
-        // If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime.
+        /// <summary> If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime. </summary>
         public bool appliesSomaShred = false;
 
-        // Adds Brimstone flames to bullets, currently only used by Animosity
+        /// <summary>
+        /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
+        /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
+        /// </summary>
+        public bool spawnArcFlash = true;
+        /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
+        public int arcFlashCooldown = 0;
+
+        /// <summary>
+        /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
+        /// Used by Animosity.
+        /// </summary>
         public bool brimstoneBullets = false;
-
-        // Adds fire to bullets, currently used by Thermocline Blaster
+        /// <summary>
+        /// If true, adds a fire trail to the projectile, and makes it inflict Hellfire.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
         public bool fireBullet = false;
-
-        // Adds ice to bullets, currently used by Thermocline Blaster
+        /// <summary>
+        /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
         public bool iceBullet = false;
-
-        // Adds shock to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds an electric trail to the projectile, and makes it inflict Electrified and create an explosion on hit.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool shockBullet = false;
-
-        // Adds... pearl? to bullets (visual 1, blue), currently used by Pearl God
-        public bool pearlBullet1 = false;
-        // Adds... pearl? to bullets (visual 2, pink), currently used by Pearl God
-        public bool pearlBullet2 = false;
-        // Adds... pearl? to bullets (visual 3, yellow), currently used by Pearl God
-        public bool pearlBullet3 = false;
-
-        // Adds lifesteal to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds a white trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool lifeBullet = false;
-
-        // Adds lifesteal to bullets (visual 1), currently used by Pearl God
-        public bool betterLifeBullet1 = false;
-        // Adds lifesteal to bullets (visual 2), currently used by Pearl God
-        public bool betterLifeBullet2 = false;
-
-        // If true, this projectile creates impact sparks upon hitting enemies
+        /// <summary>
+        /// If true, this projectile creates visual impact sparks upon hitting enemies.<br/>
+        /// Used by Deepcore GK2.
+        /// </summary>
         public bool deepcoreBullet = false;
-
-        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
-        // Currently used for Arterial Assault.
+        /// <summary>
+        /// If true, adds a blue and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet1 = false;
+        /// <summary>
+        /// If true, adds a pink and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet2 = false;
+        /// <summary>
+        /// If true, adds a khaki and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet3 = false;
+        /// <summary>
+        /// If true, adds a blue, pink, and khaki helix trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool betterLifeBullet1 = false;
+        /// <summary> <inheritdoc cref="betterLifeBullet1"/> </summary>
+        public bool betterLifeBullet2 = false;
+        /// <summary>
+        /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
+        /// Used by Arterial Assault.
+        /// </summary>
         public float conditionalHomingRange = 0f;
 
-        // Amount of extra updates that are set in SetDefaults.
+        /// <summary>
+        /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
+        /// This is NOT set automatically, and must be set whenever it is needed.
+        /// </summary>
         public int defExtraUpdates = -1;
 
-        // How many times this projectile has pierced.
+        /// <summary>
+        /// How many times this projectile has pierced an enemy which applies pierce resist.<br/>
+        /// Used for calculating pierce resist damage reduction.
+        /// </summary>
         public int timesPierced = 0;
 
-        // Point-blank shot timer and distance check.
+        /// <summary>
+        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
+        /// If it reaches 0, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public int pointBlankShotDuration = 0;
+        /// <summary>
+        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
+        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public float pointBlankShotDistanceTravelled = 0f;
+        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
         public const int DefaultPointBlankDuration = 18; // 18 frames
+        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
         public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
         // Empress of Light variables
@@ -142,59 +202,93 @@ namespace CalamityMod.Projectiles
         private const int FishronCthulhunadoTotalDuration = 840;
         private const int FishronTornadoTimeBeforeDealingDamage = 60;
 
-        // Temporary flat damage reduction effects. This is typically used for parry effects such as Ark of the Ancients
+        /// <summary> Timer for how long a projectile's damage is reduced by the value in <see cref="flatDR"/>. </summary>
         public int flatDRTimer = 0;
-        /// <summary>
-        /// The amount of final damage substracted from the projectile's own damage count when hitting the player. Resets to 0 if the flatDRTimer variable drops to 0
-        /// </summary>
+        /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
-        /// <summary>
-        /// Allows hostile Projectiles to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
-        // Nihility Quiver
+        /// <summary>
+        /// Determines how this projectile's damage is affected by the Old Fashioned buff. This does not have an effect unless the player has the buff consumed.<br/>
+        /// If true, its damage is buffed. If false, its damage is nerfed. If null, its damage is unchanged. Defaults to null.
+        /// </summary>
+        public bool? buffedByOldFashioned;
+        /// <summary> If true, this projectile has been buffed by Quiver of Nihility's void fields. Used to ensure the buff is only applied once. </summary>
         public bool nihilicArrow = false;
 
         // Rogue Stuff
+        /// <summary> If true, this projectile is from a rogue stealth strike. The primary variable responsible for triggering stealth strike effects. </summary>
         public bool stealthStrike = false;
+        /// <summary>
+        /// Number of times this stealth strike projectile has pierced an enemy.<br/>
+        /// Used to limit the number of times a projectile can proc certain effects from rogue accessories.
+        /// </summary>
         public int stealthStrikeHitCount = 0;
+        /// <summary> Variable to ensure that Ethereal Extorter's soul projectiles only spawn on projectiles spawning directly from item use. </summary>
         public bool extorterBoost = false;
+        /// <summary>
+        /// If true, this projectile is a Venerated Locket clone projectile.<br/>
+        /// Used to prevent certain rogue weapon and accessory effects.
+        /// </summary>
         public bool LocketClone = false;
+        /// <summary>
+        /// If true, this projectile cannot proc projectile effects from rogue accessories.<br/>
+        /// Set this variable for projectiles that are prone to spawning an excessive amount of projectiles.
+        /// </summary>
         public bool CannotProc = false;
+        /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
         public int lineColor = 0;
 
-        // This flag is set to true on summon-classed attacks that are NOT minions, and thus should ALWAYS be able to hit enemies ALL the time.
-        // There are several enemies/NPCs in Calamity which do not take damage from minions in certain circumstances.
+        /// <summary>
+        /// There are several NPCs in Calamity which do not take damage from minions in certain circumstances.<br/>
+        /// If true, this variable allows a projectile that deals summon damage to bypass this mechanic.
+        /// </summary>
         public bool overridesMinionDamagePrevention = false;
 
         // Enchantment variables.
+        /// <summary>
+        /// Variable used as a timer for minions with the Hellbound enchantment.<br/>
+        /// When spawned, this value is set to <see cref="ExplosiveEnchantTime"/> and gets decremented every frame. When it reaches 0, the minion explodes and despawns.<br/>
+        /// Also used for spawning smaller explosions and for scaling damage as the timer decreases.
+        /// </summary>
         public int ExplosiveEnchantCountdown = 0;
+        /// <summary> Constant variable which stores the duration of minions with the Hellbound enchantment, in frames. </summary>
         public const int ExplosiveEnchantTime = 2400;
 
-        // Custom update priority.
-        // Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.
-        // Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// <summary>
+        /// Custom update priority.<br/>
+        /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
+        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// </summary>
         public float UpdatePriority = 0f;
 
         #region On Spawn
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
+            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
+            // which is way too early, the projectile's own initialization isn't even done yet
+
             CreatedByPlayerDash = source is ProjectileSource_PlayerDashHit;
 
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
             if (sourceItem != null)
                 extorterBoost = true;
 
-            // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
-            // which is way too early, the projectile's own initialization isn't even done yet
+            // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
+            if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
+            {
+                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
+                projectile.Calamity().supercritHits = -1;
+            }
         }
+
         #endregion On Spawn
 
         #region Set Defaults
@@ -292,7 +386,6 @@ namespace CalamityMod.Projectiles
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
-                projectile.damage = (int)(projectile.originalDamage * MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime));
 
                 // Make fizzle sounds and fire dust to indicate the impending explosion.
                 if (ExplosiveEnchantCountdown <= 300)
@@ -516,10 +609,15 @@ namespace CalamityMod.Projectiles
 
                 projectile.spriteDirection = projectile.direction;
 
-                if (projectile.direction < 0)
-                    projectile.rotation = (float)Math.Atan2(0f - projectile.velocity.Y, 0f - projectile.velocity.X);
+                if (revSkeletronAcceleratingSkull)
+                    projectile.rotation += MathHelper.Pi / 90f * projectile.velocity.Length() * projectile.direction;
                 else
-                    projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X);
+                {
+                    if (projectile.direction < 0)
+                        projectile.rotation = (float)Math.Atan2(0f - projectile.velocity.Y, 0f - projectile.velocity.X);
+                    else
+                        projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X);
+                }
 
                 return false;
             }
@@ -2655,8 +2753,9 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.ThornBall && !projectile.tileCollide)
+                else if (projectile.type == ProjectileID.ThornBall && projectile.ai[2] != 0)
                 {
+                    projectile.tileCollide = false;
                     if (projectile.alpha > 0)
                     {
                         projectile.alpha -= 30;
@@ -3399,18 +3498,14 @@ namespace CalamityMod.Projectiles
                 }
                 else
                 {
-                    if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
-                    {
-                        if (projectile.type != ProjectileType<RicoshotCoin>())
-                            projectile.extraUpdates += 1;
-                        if (projectile.type == ProjectileID.MechanicalPiranha)
-                        {
-                            projectile.localNPCHitCooldown *= 2;
-                            projectile.timeLeft *= 2;
-                        }
-                    }
+                    // 13NOV2024: Ozzatron: Removed Deadshot Brooch extra updates.
+                    // This mechanic was fundamentally unacceptable and was an invisible controlling hand that affected the development of dozens of ranged weapons.
+                    // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
+                    // I don't care. This effect had to be removed.
+                    //
+                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
 
-                    if (modPlayer.camper && !player.StandingStill())
+                    if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                         projectile.damage = (int)(projectile.damage * 0.1);
 
                     if (projectile.CountsAsClass<RogueDamageClass>() && stealthStrike)
@@ -3423,7 +3518,7 @@ namespace CalamityMod.Projectiles
 
                 if (NPC.downedMoonlord)
                 {
-                    if (CalamityLists.dungeonProjectileBuffList.Contains(projectile.type))
+                    if (BuffedDungeonProjectilesList.Includes(projectile.type))
                     {
                         // ai[1] being set to 1 is done only by the Calamity usages of these projectiles in Skeletron and Skeletron Prime boss fights
                         bool isSkeletronBossProjectile = (projectile.type == ProjectileID.RocketSkeleton || projectile.type == ProjectileID.Shadowflames) && projectile.ai[1] > 0f;
@@ -3438,7 +3533,7 @@ namespace CalamityMod.Projectiles
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (CalamityLists.eventProjectileBuffList.Contains(projectile.type))
+                    if (EventProjectileBuffList.Includes(projectile.type))
                         projectile.damage += 15;
                 }
 
@@ -3703,7 +3798,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<NanotechProjectile>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(60);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
                                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<NanotechProjectile>(), damage, 0f, projectile.owner);
                                 }
                             }
@@ -3715,7 +3809,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<MoonSigil>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(42);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                     int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<MoonSigil>(), damage, 0f, projectile.owner);
                                     if (proj.WithinBounds(Main.maxProjectiles))
@@ -3731,7 +3824,6 @@ namespace CalamityMod.Projectiles
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<DragonShit>()] < 5)
                                 {
                                     int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(DragonScales.ShitBaseDamage);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                     int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 1.2f, ProjectileType<DragonShit>(), damage, 0f, projectile.owner);
                                     if (proj.WithinBounds(Main.maxProjectiles))
@@ -3751,7 +3843,6 @@ namespace CalamityMod.Projectiles
                                 {
                                     // Daedalus Rogue Crystals: 2 x 25%, soft cap starts at 120 base damage
                                     int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
-                                    crystalDamage = player.ApplyArmorAccDamageBonusesTo(crystalDamage);
 
                                     for (int i = 0; i < 2; i++)
                                     {
@@ -3875,7 +3966,7 @@ namespace CalamityMod.Projectiles
                 }
 
                 // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
-                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>())
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -3909,7 +4000,14 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-
+                // Support to help things like holdout swords work with Arc Flash Ring
+                if (!spawnArcFlash && projectile.numHits == 0)
+                    spawnArcFlash = true;
+                // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
+                if (arcFlashCooldown >= 0)
+                    arcFlashCooldown--;
+                if (arcFlashCooldown == 0)
+                    spawnArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
@@ -4123,7 +4221,7 @@ namespace CalamityMod.Projectiles
                                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                                 bool success = WorldGen.GrowPalmTree(i, j);
                                 if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                                    WorldGen.TreeGrowFXCheck(i, j);
                             }
                             else if (tile.TileType == ModContent.TileType<SpineSapling>())
                             {
@@ -4176,102 +4274,9 @@ namespace CalamityMod.Projectiles
             Player player = Main.player[projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            // Old Fashioned damage boost
-            if (modPlayer.oldFashioned)
-            {
-                // Yoyo bullshit
-                if (player.counterWeight > 0)
-                {
-                    if (projectile.type >= ProjectileID.BlackCounterweight && projectile.type <= ProjectileID.YellowCounterweight)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Honey Balloon, Bee Cloak, Honey Comb, Stinger Necklace, Sweetheart Necklace
-                if (player.honeyCombItem != null && !player.honeyCombItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.Bee)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Star Cloak, Mana Cloak, Star Veil, Bee Cloak
-                if (player.starCloakItem != null && !player.starCloakItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.BeeCloakStar || projectile.type == ProjectileID.ManaCloakStar || projectile.type == ProjectileID.StarCloakStar)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Hive Pack
-                if (player.strongBees)
-                {
-                    if (projectile.type == ProjectileID.GiantBee)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Bone Glove
-                if (player.boneGloveItem != null && !player.boneGloveItem.IsAir)
-                {
-                    if (projectile.type == ProjectileID.BoneGloveProj)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Bone Helm
-                if (player.HasItem(ItemID.BoneHelm))
-                {
-                    if (projectile.type == ProjectileID.InsanityShadowFriendly)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Volatile Gelatin
-                if (player.volatileGelatin)
-                {
-                    if (projectile.type == ProjectileID.VolatileGelatinBall)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Spore Sac
-                if (player.sporeSac)
-                {
-                    if (projectile.type == ProjectileID.SporeTrap || projectile.type == ProjectileID.SporeTrap2 ||
-                        projectile.type == ProjectileID.SporeGas || projectile.type == ProjectileID.SporeGas2 ||
-                        projectile.type == ProjectileID.SporeGas3)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Spectre Mask bonus
-                if (player.ghostHurt)
-                {
-                    if (projectile.type == ProjectileID.SpectreWrath)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Orichalcum Armor bonus
-                if (player.onHitPetal)
-                {
-                    if (projectile.type == ProjectileID.FlowerPetal)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Titanium Armor bonus
-                if (player.onHitTitaniumStorm)
-                {
-                    if (projectile.type == ProjectileID.TitaniumStormShard)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Forbidden Armor bonus
-                if (player.setForbidden)
-                {
-                    if (projectile.type == ProjectileID.SandnadoFriendly)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-
-                // Stardust Armor bonus
-                if (player.setStardust)
-                {
-                    if (projectile.type == ProjectileID.StardustGuardianExplosion || projectile.type == ProjectileID.StardustPunch)
-                        modifiers.SourceDamage *= OldFashioned.AccessoryAndSetBonusDamageMultiplier;
-                }
-            }
+            // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
+            if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
@@ -4281,6 +4286,10 @@ namespace CalamityMod.Projectiles
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
+
+            // Stardust Wings buff the Stardust Guardian's damage.
+            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
+                modifiers.SourceDamage *= 2f;
 
             // If applicable, use ricoshot bonus damage.
             if (totalRicoshotDamageBonus > 0f)
@@ -4295,6 +4304,10 @@ namespace CalamityMod.Projectiles
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
+
+            // This can apply to minions or minion shots
+            if (ExplosiveEnchantCountdown > 0)
+                modifiers.SourceDamage *= MathHelper.SmoothStep(1f, 1.6f, 1f - ExplosiveEnchantCountdown / (float)ExplosiveEnchantTime);
 
             if (modPlayer.farProximityRewardEnchant)
             {
@@ -4339,7 +4352,6 @@ namespace CalamityMod.Projectiles
             if (projectile.owner == Main.myPlayer && !projectile.npcProj && !projectile.trap && projectile.CountsAsClass<RogueDamageClass>() && modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
             {
                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
-                damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                 int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
                 Main.projectile[spike].frame = 4;
@@ -4565,12 +4577,23 @@ namespace CalamityMod.Projectiles
                 return false;
             }
 
+            if (projectile.type == ProjectileID.Skull)
+            {
+                if (projectile.ai[0] != -2f)
+                    return true;
+
+                Main.instance.LoadProjectile(ProjectileID.BoneGloveProj);
+                Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
+                Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                return false;
+            }
+
             if (projectile.type == ProjectileID.DemonSickle)
             {
                 if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
                     return true;
 
-                Texture2D texture = CalamityMod.WallOfFleshDemonSickleTexture.Value;
+                Texture2D texture = ExtraTextureRefs.WallOfFleshDemonSickleTexture.Value;
                 int frameHeight = texture.Height / Main.projFrames[projectile.type];
                 int frameY = frameHeight * projectile.frame;
                 Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
@@ -4582,6 +4605,18 @@ namespace CalamityMod.Projectiles
 
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
 
+                return false;
+            }
+
+            // Manual drawing to adjust for scale change
+            if (projectile.type == ProjectileID.Terragrim || projectile.type == ProjectileID.Arkhalis)
+            {
+                Texture2D tex = TextureAssets.Projectile[projectile.type].Value;
+                Rectangle frame = tex.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+                Vector2 origin = frame.Size() / 2f;
+                SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
                 return false;
             }
 
@@ -4939,7 +4974,6 @@ namespace CalamityMod.Projectiles
                                 Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
 
                                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
-                                damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                                 int soul = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileType<LostSoulFriendly>(), damage, 0f, projectile.owner);
                                 Main.projectile[soul].tileCollide = false;
@@ -4952,7 +4986,6 @@ namespace CalamityMod.Projectiles
                         if (modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
                         {
                             int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
-                            damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                             int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
                             Main.projectile[spike].frame = 4;

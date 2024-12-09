@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Projectiles/Rogue/SeraphimAngelicLight";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = CalamityUtils.Convert01To010(Projectile.timeLeft / (float)Lifetime);
             Projectile.Opacity = (float)Math.Sqrt(Projectile.scale);
             Projectile.velocity *= 0.8f;
-            Projectile.frame = (int)(Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft, true) * Main.projFrames[Projectile.type]);
+            Projectile.frame = (int)(Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft, true) * Main.projFrames[Type]);
         }
 
         public override void OnKill(int timeLeft)

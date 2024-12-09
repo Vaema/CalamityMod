@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.AcidRain
         public const int TotalHitsNeededToDoDamage = 10;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
 
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 55);
+            NPC.value = Item.buyPrice(0, 0, 4, 0);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.AcidRain
                 {
                     NPC.frame.Y += frameHeight;
                 }
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.frame.Y = frameHeight * 3; // Frames 1 and 2 are for transitioning. Frame 0 is sitting still, and the rest are walking frames
                 }

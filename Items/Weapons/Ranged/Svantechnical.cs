@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public int SineCounter = 0;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -54,6 +54,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int shotType = (player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>());
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             position = position + (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.UnitX) * 65;
             float sine = (float)Math.Sin(SineCounter * 0.175f / MathHelper.Pi) * 4f;
             float sine2 = (float)Math.Sin(SineCounter * 0.275f / MathHelper.Pi) * 2f;

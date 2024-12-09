@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
 
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -100,7 +100,7 @@ namespace CalamityMod.NPCs.DesertScourge
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(0, 5, 0, 0);
+            NPC.value = Item.buyPrice(0, 2, 0, 0);
             NPC.alpha = 255;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -867,7 +867,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     NPC.frame.Y += frameHeight;
                     NPC.frameCounter = 0D;
                 }
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
                     NPC.netUpdate = true;
@@ -892,7 +892,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 if (NPC.frame.Y > 0)
                 {
-                    if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                    if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
@@ -943,7 +943,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 CalamityUtils.DisplayLocalizedText(key2, messageColor2);
 
                 if (!Terraria.GameContent.Events.Sandstorm.Happening)
-                    CalamityUtils.StartSandstorm();
+                    CalamityWorld.StartSandstorm();
             }
 
             // Mark Desert Scourge as dead.

@@ -4,8 +4,10 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -27,7 +29,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Remove shoe drawing effects if special legs are meant to be drawn.
-            if (CalamityLists.legOverrideList.Contains(Player.legs))
+            if (LegOverrideList.Includes(Player.legs))
             {
                 PlayerDrawLayers.Shoes.Hide();
             }
@@ -131,10 +133,10 @@ namespace CalamityMod.CalPlayer
                 {
                     if (Main.rand.NextBool())
                     {
-                        int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Vortex, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust);
+                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Vortex, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.5f;
+                        drawInfo.DustCache.Add(dust.dustIndex);
                     }
                 }
             }
@@ -146,10 +148,10 @@ namespace CalamityMod.CalPlayer
                 {
                     if (Main.rand.NextBool())
                     {
-                        int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust);
+                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.5f;
+                        drawInfo.DustCache.Add(dust.dustIndex);
                     }
                 }
             }
@@ -166,10 +168,10 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Main.rand.NextBool())
                         {
-                            int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
-                            Main.dust[dust].noGravity = true;
-                            Main.dust[dust].velocity *= 0.5f;
-                            drawInfo.DustCache.Add(dust);
+                            Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
+                            dust.noGravity = true;
+                            dust.velocity *= 0.5f;
+                            drawInfo.DustCache.Add(dust.dustIndex);
                         }
                     }
                 }
@@ -332,11 +334,11 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.rand.NextBool(3))
                 {
-                    int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(8) ? 296 : 5, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.25f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.3f;
-                    Main.dust[dust].velocity.Y -= 0.5f;
-                    drawInfo.DustCache.Add(dust);
+                    Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(8) ? 296 : 5, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.25f);
+                    dust.noGravity = true;
+                    dust.velocity *= 1.3f;
+                    dust.velocity.Y -= 0.5f;
+                    drawInfo.DustCache.Add(dust.dustIndex);
                 }
                 if (Main.rand.NextBool(16))
                 {
@@ -461,7 +463,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.ItemType<Shadethrower>(),
                     ModContent.ItemType<BloodBoiler>(),
                     ModContent.ItemType<PristineFury>(),
-                    ModContent.ItemType<AuroraBlazer>()
+                    ModContent.ItemType<AuroraBlazer>(),
+                    ModContent.ItemType<PurgeGuzzler>()
                 };
                 List<Texture2D> tankTextures = new List<Texture2D>()
                 {
@@ -480,7 +483,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_Shadethrower").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_BloodBoiler").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PristineFury").Value,
-                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value,
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PurgeGuzzler").Value
                 };
                 if (tankItems.Contains(item.type) || drawPlayer.Calamity().plaguebringerCarapace)
                 {

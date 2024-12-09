@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 30;
             NPC.height = 30;
             NPC.defense = 12;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 180;
             NPC.knockBackResist = 0.75f;
             AnimationType = NPCID.DemonEye;
             NPC.value = Item.buyPrice(0, 0, 5, 0);

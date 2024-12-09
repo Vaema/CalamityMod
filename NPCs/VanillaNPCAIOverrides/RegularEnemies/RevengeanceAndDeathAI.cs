@@ -6162,16 +6162,17 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                    npc.ai[0] = 0f;
-
                 if (npc.type == NPCID.Harpy)
                 {
+                    float featherShootCutOffValue = CalamityWorld.revenge ? 90f : 60f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = featherShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= HarpyFeatherGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 30f == 0f && npc.ai[0] <= (CalamityWorld.revenge ? 90f : 60f))
+                    else if (npc.ai[0] % 30f == 0f && npc.ai[0] <= featherShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
@@ -6195,11 +6196,15 @@ PrepareToShoot:
 
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon)
                 {
+                    float scytheShootCutOffValue = CalamityWorld.revenge ? 80f : 60f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = scytheShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= DemonScytheGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= (CalamityWorld.revenge ? 80f : 60f))
+                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= scytheShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
@@ -6223,11 +6228,15 @@ PrepareToShoot:
 
                 if (npc.type == NPCID.RedDevil)
                 {
+                    float tridentShootCutOffValue = 80f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = tridentShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= RedDevilTridentGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= 80f)
+                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= tridentShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))

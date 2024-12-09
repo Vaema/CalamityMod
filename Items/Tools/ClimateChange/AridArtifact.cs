@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.World;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,9 +40,9 @@ namespace CalamityMod.Items.Tools.ClimateChange
                 return true;
 
             if (SandstormEvent.Happening)
-                CalamityUtils.StopSandstorm();
+                CalamityWorld.StopSandstorm();
             else
-                CalamityUtils.StartSandstorm();
+                CalamityWorld.StartSandstorm();
 
             return true;
         }

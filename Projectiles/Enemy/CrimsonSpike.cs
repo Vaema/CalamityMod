@@ -9,6 +9,7 @@ namespace CalamityMod.Projectiles.Enemy
     public class CrimsonSpike : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Enemy";
+
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -62,9 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
             Color dustColor = Color.Crimson;
             dustColor.A = 150;
             for (int k = 0; k < 5; k++)
-            {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.SparksMech, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, dustColor, 1f);
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Enemy
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

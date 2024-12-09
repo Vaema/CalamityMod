@@ -28,11 +28,11 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 42;
             Item.height = 44;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.Red;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 18);
+            Item.rare = ItemRarityID.Red;
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedManaCrystals == Player.ManaCrystalMax;
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AstralBar>(25).
+                AddIngredient<AstralBar>(10).
                 AddIngredient(ItemID.FragmentNebula, 20).
                 AddIngredient(ItemID.FallenStar, 20).
                 AddTile(TileID.LunarCraftingStation).

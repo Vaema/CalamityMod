@@ -25,8 +25,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle SmallImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1");
         public static readonly SoundStyle LargeImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2");
 
-
-
         public bool shotType = true; // true = positive shot, false = negative shot
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -39,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 88;
             Item.height = 34;
-            Item.damage = 397;
+            Item.damage = 457;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 8;
             Item.noMelee = true;
@@ -71,6 +69,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
                 return false;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+
             if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
             {
                 Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
@@ -88,22 +88,27 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
+            Player Owner = Main.player[Main.myPlayer];
+            if (Owner is null)
+                return;
             float rate = (Main.GlobalTimeWrappedHourly * 3);
             List<Color> eColors = new List<Color>()
                 {
-                    Color.DarkMagenta,
-                    Color.DarkOrchid,
-                    Color.Purple,
-                    Color.BlueViolet
-                };
+                    Owner.shirtColor,
+                    Color.Lerp(Owner.shirtColor, Color.Black, 0.3f),
+                    Color.Lerp(Owner.shirtColor, Color.White, 0.2f),
+                    Color.Lerp(Owner.shirtColor, Color.White, 0.4f)
+            };
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            if (Owner.shirtColor == Color.White)
+                eTooltipColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip7");
             if (line != null)
-                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.3f);
+                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.2f);
         }
 
         public override void AddRecipes()

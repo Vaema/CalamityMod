@@ -205,7 +205,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.Lerp(Color.Orange, Color.OrangeRed, sine) * 0.7f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10, 10), Main.rand.NextFloat(0.2f, 1.2f), 2.5f * Main.rand.NextFloat(0.9f, 1.2f), 15, true);
                 GeneralParticleHandler.SpawnParticle(blastRing);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DragonsBreathBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DragonsBreathBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
                 target.AddBuff(ModContent.BuffType<Dragonfire>(), 420);
             }

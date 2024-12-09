@@ -44,16 +44,13 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
         public static Asset<Texture2D> GlowTexture;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/ExoMechs/Artemis/ArtemisHead";
             string phase2IconPath = "CalamityMod/NPCs/ExoMechs/Artemis/ArtemisPhase2Head";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+           
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         public enum Phase
@@ -159,8 +156,8 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 15;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = 15;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -1414,7 +1411,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
             int numAfterimages = ChargeFlash > 0f ? 0 : 5;
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 origin = NPC.Size * 0.5f;
             Vector2 center = NPC.Center - screenPos;

@@ -10,12 +10,17 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
+using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
@@ -36,6 +41,7 @@ using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
@@ -45,18 +51,21 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
@@ -66,6 +75,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Utils;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -81,23 +91,27 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.Packets;
 
 namespace CalamityMod.NPCs
 {
     public partial class CalamityGlobalNPC : GlobalNPC
     {
         #region Variables
+
+        /// <summary> Boss Kill Time data structure </summary>
+        public static SortedDictionary<int, int> BossKillTimes;
+
+        /// <summary> Damage Reduction Lookup Table </summary>
+        public static SortedDictionary<int, float> DRValues { get; set; }
+
+        /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary>
-        /// If this is set to true, the NPC's DR cannot be reduced via any means. This applies regardless of whether customDR is true or false.
-        /// </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
         public bool unbreakableDR = false;
 
         /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br></br>
+        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
         /// Used primarily by post-Moon Lord bosses.
         /// </summary>
         public bool customDR = false;
@@ -105,8 +119,6 @@ namespace CalamityMod.NPCs
         public Dictionary<int, float> multDRReductions = new Dictionary<int, float>();
 
         public int KillTime { get; set; } = 0;
-
-        public const int DoGPhase1KillTime = 5400;
 
         // Debuff Vulnerabilities
         // null = neutral, true = vulnerable, false = resistant
@@ -132,8 +144,8 @@ namespace CalamityMod.NPCs
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
-        public bool IncreasedHeatEffects_FlameWakerBoots = false;
-        public bool IncreasedHeatEffects_HellfireTreads = false;
+        public int IncreasedHeatEffects_FireBoots = 0;
+        public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
@@ -141,75 +153,98 @@ namespace CalamityMod.NPCs
         // Evergreen Gin effect
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
 
-        // Biome enrage timer max
+        /// <summary> Constant representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
-        // Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target
-        // Currently only used by DoG
+        /// <summary>
+        /// Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Currently only used by DoG.
+        /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
         public bool ShouldFallThroughPlatforms;
 
-        /// <summary>
-        /// Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
-        // Total defense loss from some true melee hits and other things that reduce defense
+        /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
 
-        // Distance values for when bosses increase velocity to catch up to their target
+        /// <summary>
+        /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance200Tiles = 3200f;
+        /// <summary>
+        /// Constant representing a distance of 350 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance350Tiles = 5600f;
+        /// <summary>
+        /// Constant representing a distance of 400 tiles in pixel measurement.<br/>
+        /// Used as a cap on the distance away from a boss a player can be inflicted with Boss Effects.
+        /// </summary>
+        private const float BossZenDistance = 6400f;
 
         /// <summary>
-        /// Destroyer laser colors, used for telegraphs
+        /// Destroyer laser colors, used for telegraphs.<br/>
         /// None = -1, Red = 0, Green = 1, Cyan = 2
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        // Boss Zen distance
-        private const float BossZenDistance = 6400f;
-
-        // Used to nerf desert prehardmode enemies pre-Desert Scourge
+        /// <summary>
+        /// Constant multiplier used to increase vanilla enemy health.
+        /// </summary>
+        private const double EnemyHPMultiplier = 1.25;
+        /// <summary>
+        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
+        /// </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-
-        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        /// <summary>
+        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
+        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
+        /// </summary>
         public const double MasterModeBossHPMultiplier = 0.85;
 
-        // Used to nerf Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
         public const double MasterModeEnemyHPMultiplier = 0.75;
+        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
         public const double MasterModeEnemyDamageMultiplier = 0.9;
-
-        // Used to nerf Expert and Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
         public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
+        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
         public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
-        // HP and damage multipliers for the Early Hardmode Progression Rework
+        /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert = 0.95;
 
-        // Used to increase coin drops in Normal Mode
-        private const double NPCValueMultiplier_NormalCalamity = 1.5;
-
-        // Used to decrease coin drops in Expert Mode
+        /// <summary> Constant multiplier used to increase coin drops in Classic Mode. </summary>
+        private const double NPCValueMultiplier_ClassicCalamity = 1.5;
+        /// <summary> Constant multiplier used to decrease coin drops in Expert Mode. </summary>
         private const double NPCValueMultiplier_ExpertVanilla = 2.5;
-
-        // Used to change the Expert Mode coin drop multiplier
+        /// <summary> <inheritdoc cref="NPCValueMultiplier_ExpertVanilla"/> </summary>
         private const double NPCValueMultiplier_ExpertCalamity = 1.5;
 
         // Dash damage immunity timer
         public const int maxPlayerImmunities = Main.maxPlayers + 1;
         public int[] dashImmunityTime = new int[maxPlayerImmunities];
 
-        // Town NPC shop alert animation variables
+        /// <summary> Used to control the animation of the Town NPC Shop Alert icon, if the respective config is enabled. </summary>
         public int shopAlertAnimTimer = 0;
+        /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
 
-        // Set to false for this NPC to be unable to generate proximity Rage, regardless of other factors
+        /// <summary>
+        /// If set to false, prevents this NPC from allowing Rage to be generated by nearby players, regardless of other factors.<br/>
+        /// Defaults to true.
+        /// </summary>
         public bool ProvidesProximityRage = true;
 
         // NewAI
@@ -217,27 +252,20 @@ namespace CalamityMod.NPCs
         public float[] newAI = new float[maxAIMod];
         public int AITimer = 0;
 
-        // Town NPC Patreon
+        /// <summary> Used for allowing Patreon names for Town NPCs. </summary>
         public bool setNewName = true;
 
-        // Stuff used by the Boss Health UI
+        /// <summary> If set to true, the Boss Health Bar for this NPC will count the total health of all individual segments using worm segment logic. </summary>
         public bool SplittingWorm = false;
+        /// <summary> If set to true, allows this NPC to draw a Boss Health Bar, regardless of other factors. </summary>
         public bool CanHaveBossHealthBar = false;
+        /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        // Timer for how long an NPC is immune to certain debuffs
+        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
         public const int slowingDebuffResistanceMin = 1800;
+        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
         public int debuffResistanceTimer = 0;
-
-        // If a boss is affected by knockback and a timer for how long that boss is immune to knockback after being knocked back
-        public bool bossCanBeKnockedBack = false;
-        public const int knockbackResistanceMin = 180;
-        public int knockbackResistanceTimer = 0;
-
-        // Used for NPCs affected by vanilla Cobalt/Mythril weapons
-        public const int cobaltAndMythrilNerfTime = 600;
-        public int cobaltNerfTimer = 0;
-        public int mythrilNerfTimer = 0;
 
         // Debuffs
         public int vaporfied = 0;
@@ -264,6 +292,14 @@ namespace CalamityMod.NPCs
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
+        public int warbannerBurnTimer = 0; // The duration of the debuff
+        public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
+        public int warbannerBurnDamage = 0; // Damage of the hits based on player's damage
+        public Vector2 warbannerBurnDirection;
+        public float warbannerBurnIntensity = 0;
+        public bool warbannerBurnMarked = false;
+        public bool warbannerBurnHideEffects = false;
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
@@ -271,14 +307,19 @@ namespace CalamityMod.NPCs
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
-        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        /// <summary>
+        /// If set to true, prevents this NPC from dealing contact damage.<br/>
+        /// Used by Septic Skewer's execution attack.
+        /// </summary>
         public bool pacified = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
+        /// <summary> Tracks how many stacks of the Shred debuff this NPC is inflicted with. </summary>
         public int somaShredStacks = 0;
+        /// <summary> Tracks the index of the player that inflicted this NPC with Shred, for the purpose of scaling damage. </summary>
         public int somaShredApplicator = -1;
-        // Reduced by the number of active stacks every frame. If it hits zero, one stack disappears.
+        /// <summary> Counter used for removing stacks of Shred. The number of stacks is subtracted every frame, and when it hits zero, it is reset and one stack is removed. </summary>
         public int somaShredFalloff = Shred.StackFalloffFrames;
 
         public int cDepth = 0;
@@ -292,7 +333,9 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        /// <summary> If greater than 0, this enemy has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
+        /// <summary> If greater than 0, this enemy has been "shocked" by The Transformer's on hurt effect. </summary>
         public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
@@ -300,8 +343,8 @@ namespace CalamityMod.NPCs
         public int sulphurPoison = 0;
         public int ladHearts = 0;
         public int kamiFlu = 0;
-        public int relicOfResilienceCooldown = 0;
         public int relicOfResilienceWeakness = 0;
+        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
@@ -309,6 +352,10 @@ namespace CalamityMod.NPCs
         public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
+        /// <summary>
+        /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
+        /// Used by Rancor's laser beam.
+        /// </summary>
         public int ashesOnDeath = 0;
 
         // whoAmI Variables
@@ -370,28 +417,35 @@ namespace CalamityMod.NPCs
         // Drawing variables.
         public FireParticleSet VulnerabilityHexFireDrawer = null;
 
-        // Boss Enrage variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.
-        // 2 - Otherwise, check if the demonshade enrage is active. If it is, register this as true. If not, go to step 3.
-        // 3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.
-        // 4 - Check if Boss Rush isn't active. If so, set this to true.
+        /// <summary>
+        /// Boss Enrage variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.</para>
+        /// <para>2 - Check if the Demonshade enrage is active. If it is, register this as true. If not, go to step 3.</para>
+        /// <para>3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.</para>
+        /// <para>4 - Check if Boss Rush isn't active. If so, set this to true.</para>
+        /// </summary>
         public bool CurrentlyEnraged;
 
-        // Increased defense or DR variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - When bosses are transitioning phases they gain a massive DR increase.
-        // 2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.
+        /// <summary>
+        /// Increased defense or DR variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - When bosses are transitioning phases they gain a massive DR increase.</para>
+        /// <para>2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.</para>
+        /// While either of these are occuring, this variable should be set to true.
+        /// </summary>
         public bool CurrentlyIncreasingDefenseOrDR;
 
-        // Other Boss Rush stuff
+        /// <summary> If set to true, this NPC will be ignored by Boss Rush's whitelist and will always be allowed to exist. </summary>
         public bool DoesNotDisappearInBossRush;
 
-        // On-Kill variables
+        /// <summary> Variable used for Gladiator's Locket's on-kill effect to ensure it only triggers once per kill. </summary>
         public bool gladiatorOnKill = true;
-
-        // Variable for if enemy has been recently hit by an ArcZap
+        /// <summary> Cooldown variable for Unstable Granite Core's arc zap effect. </summary>
         public int arcZapCooldown = 0;
+
+        /// <summary> Timer for animating worm enemies in the bestiary. </summary>
+        public float bestiaryWormTimer = 0;
         #endregion
 
         #region Instance Per Entity and TML 1.4 Cloning
@@ -431,8 +485,8 @@ namespace CalamityMod.NPCs
             myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
-            myClone.IncreasedHeatEffects_FlameWakerBoots = IncreasedHeatEffects_FlameWakerBoots;
-            myClone.IncreasedHeatEffects_HellfireTreads = IncreasedHeatEffects_HellfireTreads;
+            myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
+            myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
@@ -468,12 +522,6 @@ namespace CalamityMod.NPCs
 
             myClone.debuffResistanceTimer = debuffResistanceTimer;
 
-            myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
-            myClone.knockbackResistanceTimer = knockbackResistanceTimer;
-
-            myClone.cobaltNerfTimer = cobaltNerfTimer;
-            myClone.mythrilNerfTimer = mythrilNerfTimer;
-
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
             myClone.gState = gState;
@@ -498,6 +546,14 @@ namespace CalamityMod.NPCs
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.warbannerBurnTime = warbannerBurnTime;
+            myClone.warbannerBurnTimer = warbannerBurnTimer;
+            myClone.warbannerBurnStacks = warbannerBurnStacks;
+            myClone.warbannerBurnDamage = warbannerBurnDamage;
+            myClone.warbannerBurnDirection = warbannerBurnDirection;
+            myClone.warbannerBurnIntensity = warbannerBurnIntensity;
+            myClone.warbannerBurnMarked = warbannerBurnMarked;
+            myClone.warbannerBurnHideEffects = warbannerBurnHideEffects;
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
@@ -528,7 +584,6 @@ namespace CalamityMod.NPCs
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.kamiFlu = kamiFlu;
-            myClone.relicOfResilienceCooldown = relicOfResilienceCooldown;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.GaussFluxTimer = GaussFluxTimer;
             myClone.sagePoisonTime = sagePoisonTime;
@@ -657,7 +712,8 @@ namespace CalamityMod.NPCs
                     npc.AddBuff(BuffType<Irradiated>(), 2);
             }
 
-            // Special venom debuff case for the Lionfish and certain other projectiles.
+            #region Stacking Debuff Effects
+            // Lionfish, Leviathan Teeth, and Jaws of Oblivion debuff stacking
             if (npc.venom)
             {
                 if (npc.lifeRegen > 0)
@@ -682,6 +738,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Bonebreaker debuff stacking
             if (npc.javelined)
             {
                 if (npc.lifeRegen > 0)
@@ -706,6 +763,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Shellfish Staff (and Mollusk armor) debuff stacking
             if (shellfishVore > 0)
             {
                 int projectileCount = 0;
@@ -735,6 +793,7 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(projectileCount * totalDamage, projectileCount * totalDisplayedDamage, ref npc.lifeRegen, ref damage);
             }
 
+            // Snap Clam debuff stacking
             if (clamDebuff > 0)
             {
                 int projectileCount = 0;
@@ -752,6 +811,7 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(projectileCount * 15, projectileCount * 3, ref npc.lifeRegen, ref damage);
             }
 
+            // Parasitic Scepter debuff stacking
             if (irradiated > 0)
             {
                 int projectileCount = 0;
@@ -769,13 +829,15 @@ namespace CalamityMod.NPCs
                 else
                     ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
             }
+            #endregion
 
             // Debuff vulnerabilities and resistances.
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
-            bool wormBoss = CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type) ||
-                CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.AstrumDeusIDs.Contains(npc.type) || CalamityLists.StormWeaverIDs.Contains(npc.type);
-            bool slimeGod = CalamityLists.SlimeGodIDs.Contains(npc.type);
+            #region Debuff System Multiplier Calculations
+            bool wormBoss = DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type) ||
+                AquaticScourgeIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type);
+            bool slimeGod = SlimeGodIDList.Includes(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
@@ -835,28 +897,114 @@ namespace CalamityMod.NPCs
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
-                heatDamageMult += 0.25;
-            if (IncreasedHeatEffects_FlameWakerBoots)
-                heatDamageMult += 0.25;
+                heatDamageMult += Fireball.HeatDebuffBoost;
+            if (IncreasedHeatEffects_FireBoots > 0)
+                heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
-                heatDamageMult += 0.5;
-            if (IncreasedHeatEffects_HellfireTreads)
-                heatDamageMult += 0.5;
+                heatDamageMult += CinnamonRoll.HeatDebuffBoost;
+            if (IncreasedHeatEffects_FlameWings)
+                heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
-                sicknessDamageMult += 0.25;
-                waterDamageMult += 0.25;
+                sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+                waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
             double vanillaHeatDamageMult = heatDamageMult - BaseDoTDamageMult;
             double vanillaColdDamageMult = coldDamageMult - BaseDoTDamageMult;
             double vanillaSicknessDamageMult = sicknessDamageMult - BaseDoTDamageMult;
+            #endregion
 
+            // Oiled
+            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
+            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
+            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
+            {
+                double multiplier = 1D;
+                if (hasColdOil)
+                    multiplier *= vanillaColdDamageMult;
+                if (hasHotOil || (hasModHotOil && hasColdOil))
+                    multiplier *= vanillaHeatDamageMult;
+                if (hasModHotOil && !hasColdOil && !hasHotOil)
+                    multiplier *= heatDamageMult;
+
+                int baseOiledDoTValue = (int)(50 * multiplier);
+                npc.lifeRegen -= baseOiledDoTValue;
+                if (damage < baseOiledDoTValue / 4)
+                    damage = baseOiledDoTValue / 4;
+            }
+
+            #region Cold Debuffs
+            // Frostburn
+            if (npc.onFrostBurn)
+            {
+                int baseFrostBurnDoTValue = (int)(16 * vanillaColdDamageMult);
+                npc.lifeRegen -= baseFrostBurnDoTValue;
+                if (damage < baseFrostBurnDoTValue / 4)
+                    damage = baseFrostBurnDoTValue / 4;
+            }
+
+            // Frostbite
+            if (npc.onFrostBurn2)
+            {
+                int baseFrostBiteDoTValue = (int)(50 * vanillaColdDamageMult);
+                npc.lifeRegen -= baseFrostBiteDoTValue;
+                if (damage < baseFrostBiteDoTValue / 4)
+                    damage = baseFrostBiteDoTValue / 4;
+            }
+
+            // Nightwither
+            if (nightwither > 0)
+            {
+                int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
+                ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Voidfrost
+            if (voidfrost > 0)
+            {
+                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
+                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Electricity Debuffs
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
+            // Electrified
+            if (electrified > 0)
+            {
+                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
+                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
+            }
+
+            // Vermillion Flux
+            if (vermillionFlux > 0)
+            {
+                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Heat Debuffs
             // On Fire
             if (npc.onFire)
             {
@@ -864,6 +1012,15 @@ namespace CalamityMod.NPCs
                 npc.lifeRegen -= baseOnFireDoTValue;
                 if (damage < baseOnFireDoTValue / 4)
                     damage = baseOnFireDoTValue / 4;
+            }
+
+            // Hellfire
+            if (npc.onFire3)
+            {
+                int baseHellfireDoTValue = (int)(30 * vanillaHeatDamageMult);
+                npc.lifeRegen -= baseHellfireDoTValue;
+                if (damage < baseHellfireDoTValue / 4)
+                    damage = baseHellfireDoTValue / 4;
             }
 
             // Cursed Inferno
@@ -875,13 +1032,13 @@ namespace CalamityMod.NPCs
                     damage = baseCursedInfernoDoTValue / 4;
             }
 
-            // Hellfire
-            if (npc.onFire3)
+            // Shadowflame
+            if (npc.shadowFlame)
             {
-                int baseHellfireDoTValue = (int)(30 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseHellfireDoTValue;
-                if (damage < baseHellfireDoTValue / 4)
-                    damage = baseHellfireDoTValue / 4;
+                int baseShadowFlameDoTValue = (int)(60 * vanillaHeatDamageMult);
+                npc.lifeRegen -= baseShadowFlameDoTValue;
+                if (damage < baseShadowFlameDoTValue / 4)
+                    damage = baseShadowFlameDoTValue / 4;
             }
 
             // Daybroken
@@ -907,15 +1064,6 @@ namespace CalamityMod.NPCs
                 npc.lifeRegen -= baseDaybreakDoTValue;
                 if (damage < baseDaybreakDoTValue / 4)
                     damage = baseDaybreakDoTValue / 4;
-            }
-
-            // Shadowflame
-            if (npc.shadowFlame)
-            {
-                int baseShadowFlameDoTValue = (int)(60 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseShadowFlameDoTValue;
-                if (damage < baseShadowFlameDoTValue / 4)
-                    damage = baseShadowFlameDoTValue / 4;
             }
 
             // Brimstone Flames
@@ -946,13 +1094,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Banishing Fire
-            if (banishingFire > 0)
-            {
-                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * heatDamageMult);
-                ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
             // Vulnerability Hex
             if (vulnerabilityHex > 0)
             {
@@ -967,102 +1108,15 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
-            // Frostburn
-            if (npc.onFrostBurn)
+            // Banishing Fire
+            if (banishingFire > 0)
             {
-                int baseFrostBurnDoTValue = (int)(16 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBurnDoTValue;
-                if (damage < baseFrostBurnDoTValue / 4)
-                    damage = baseFrostBurnDoTValue / 4;
+                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * heatDamageMult);
+                ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
+            #endregion
 
-            // Frostbite
-            if (npc.onFrostBurn2)
-            {
-                int baseFrostBiteDoTValue = (int)(50 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBiteDoTValue;
-                if (damage < baseFrostBiteDoTValue / 4)
-                    damage = baseFrostBiteDoTValue / 4;
-            }
-
-            // Oiled
-            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
-            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
-            if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
-            {
-                double multiplier = 1D;
-                if (hasColdOil)
-                    multiplier *= vanillaColdDamageMult;
-                if (hasHotOil || (hasModHotOil && hasColdOil))
-                    multiplier *= vanillaHeatDamageMult;
-                if (hasModHotOil && !hasColdOil && !hasHotOil)
-                    multiplier *= heatDamageMult;
-
-                int baseOiledDoTValue = (int)(50 * multiplier);
-                npc.lifeRegen -= baseOiledDoTValue;
-                if (damage < baseOiledDoTValue / 4)
-                    damage = baseOiledDoTValue / 4;
-            }
-
-            // Nightwither
-            if (nightwither > 0)
-            {
-                int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
-                ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Voidfrost
-            if (voidfrost > 0)
-            {
-                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
-                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Plague
-            if (pFlames > 0)
-            {
-                int basePlagueDoTValue = (int)(100 * sicknessDamageMult);
-                ApplyDPSDebuff(basePlagueDoTValue, basePlagueDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Astral Infection
-            if (astralInfection > 0)
-            {
-                int baseAstralInfectionDoTValue = (int)(75 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAstralInfectionDoTValue, baseAstralInfectionDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Sulphuric Poisoning
-            if (sulphurPoison > 0)
-            {
-                int baseSulphurPoisonDoTValue = (int)(240 * sicknessDamageMult);
-                ApplyDPSDebuff(baseSulphurPoisonDoTValue, baseSulphurPoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Sage Poison
-            if (sagePoisonTime > 0)
-            {
-                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
-                // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
-                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Kami Debuff from Yanmei's Knife
-            if (kamiFlu > 0)
-            {
-                int baseKamiFluDoTValue = (int)(250 * sicknessDamageMult);
-                ApplyDPSDebuff(baseKamiFluDoTValue, baseKamiFluDoTValue / 10, ref npc.lifeRegen, ref damage);
-            }
-
-            //Absorber Affliction
-            if (absorberAffliction > 0)
-            {
-                int baseAbsorberDoTValue = (int)(400 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAbsorberDoTValue, baseAbsorberDoTValue / 65, ref npc.lifeRegen, ref damage);
-            }
-
+            #region Sickness Debuffs
             // Poisoned
             if (npc.poisoned)
             {
@@ -1081,32 +1135,71 @@ namespace CalamityMod.NPCs
                     damage = baseVenomDoTValue / 4;
             }
 
-            // Electrified
-            if (electrified > 0)
+            // Burning Blood
+            if (bBlood > 0)
             {
-                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
-                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
+                int baseBurningBloodDoTValue = (int)(40 * sicknessDamageMult);
+                ApplyDPSDebuff(baseBurningBloodDoTValue, baseBurningBloodDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Vermillion Flux
-            if (vermillionFlux > 0)
+            // Brain Rot
+            if (brainRot > 0)
             {
-                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
-                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+                int baseBrainRotDoTValue = (int)(40 * sicknessDamageMult);
+                ApplyDPSDebuff(baseBrainRotDoTValue, baseBrainRotDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Auric Rebuke
-            if (auricRebuke > 0)
+            // Sage Poison
+            if (sagePoisonTime > 0)
             {
-                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
-                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
+                // See SageNeedle.cs for details
+                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
+                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Static Discharge
-            if (staticDischarge > 0)
+            // Astral Infection
+            if (astralInfection > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
-                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+                int baseAstralInfectionDoTValue = (int)(75 * sicknessDamageMult);
+                ApplyDPSDebuff(baseAstralInfectionDoTValue, baseAstralInfectionDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Plague
+            if (pFlames > 0)
+            {
+                int basePlagueDoTValue = (int)(100 * sicknessDamageMult);
+                ApplyDPSDebuff(basePlagueDoTValue, basePlagueDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Sulphuric Poisoning
+            if (sulphurPoison > 0)
+            {
+                int baseSulphurPoisonDoTValue = (int)(240 * sicknessDamageMult);
+                ApplyDPSDebuff(baseSulphurPoisonDoTValue, baseSulphurPoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Kami Debuff from Yanmei's Knife
+            if (kamiFlu > 0)
+            {
+                int baseKamiFluDoTValue = (int)(YanmeisKnife.DebuffDoT * sicknessDamageMult);
+                ApplyDPSDebuff(baseKamiFluDoTValue, baseKamiFluDoTValue / 10, ref npc.lifeRegen, ref damage);
+            }
+
+            //Absorber Affliction
+            if (absorberAffliction > 0)
+            {
+                int baseAbsorberDoTValue = (int)(400 * sicknessDamageMult);
+                ApplyDPSDebuff(baseAbsorberDoTValue, baseAbsorberDoTValue / 65, ref npc.lifeRegen, ref damage);
+            }
+            #endregion
+
+            #region Water Debuffs
+            // Riptide
+            if (rTide > 0)
+            {
+                int baseRiptideDoTValue = (int)(30 * waterDamageMult);
+                ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
             }
 
             // Crush Depth
@@ -1115,13 +1208,7 @@ namespace CalamityMod.NPCs
                 int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
                 ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
             }
-
-            //Riptide
-            if (rTide > 0)
-            {
-                int baseRiptideDoTValue = (int)(30 * waterDamageMult);
-                ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
-            }
+            #endregion
 
             if (npc.dryadBane)
             {
@@ -1165,10 +1252,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (bBlood > 0)
-                ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
-            if (brainRot > 0)
-                ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
             if (laceration > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
@@ -1201,9 +1284,237 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
+        #region Load/Unload
+        public override void Load()
+        {
+            #region Setup Vanilla DR Values
+            DRValues = new SortedDictionary<int, float> {
+                { NPCID.AngryBonesBig, 0.2f },
+                { NPCID.AngryBonesBigHelmet, 0.2f },
+                { NPCID.AngryBonesBigMuscle, 0.2f },
+                { NPCID.AnomuraFungus, 0.1f },
+                { NPCID.Antlion, 0.1f },
+                { NPCID.Arapaima, 0.1f },
+                { NPCID.ArmoredSkeleton, 0.15f },
+                { NPCID.ArmoredViking, 0.1f },
+                { NPCID.BigMimicCorruption, 0.3f },
+                { NPCID.BigMimicCrimson, 0.3f },
+                { NPCID.BigMimicHallow, 0.3f },
+                { NPCID.BigMimicJungle, 0.3f },
+                { NPCID.BlueArmoredBones, 0.2f },
+                { NPCID.BlueArmoredBonesMace, 0.2f },
+                { NPCID.BlueArmoredBonesNoPants, 0.2f },
+                { NPCID.BlueArmoredBonesSword, 0.2f },
+                { NPCID.BoneLee, 0.2f },
+                { NPCID.Crab, 0.05f },
+                { NPCID.Crawdad, 0.2f },
+                { NPCID.Crawdad2, 0.2f },
+                { NPCID.CultistBoss, 0.15f },
+                { NPCID.Deerclops, 0.05f },
+                { NPCID.DD2Betsy, 0.1f },
+                { NPCID.DD2OgreT2, 0.1f },
+                { NPCID.DD2OgreT3, 0.15f },
+                { NPCID.DeadlySphere, 0.4f },
+                { NPCID.DiabolistRed, 0.2f },
+                { NPCID.DiabolistWhite, 0.2f },
+                { NPCID.DukeFishron, 0.15f },
+                { NPCID.DungeonGuardian, 0.9f },
+                { NPCID.DungeonSpirit, 0.2f },
+                { NPCID.ElfCopter, 0.15f },
+                { NPCID.Everscream, 0.1f },
+                { NPCID.FlyingAntlion, 0.05f },
+                { NPCID.GiantCursedSkull, 0.2f },
+                { NPCID.GiantShelly, 0.2f },
+                { NPCID.GiantShelly2, 0.2f },
+                { NPCID.GiantTortoise, 0.35f },
+                { NPCID.Golem, 0.25f },
+                { NPCID.GolemFistLeft, 0.25f },
+                { NPCID.GolemFistRight, 0.25f },
+                { NPCID.GolemHead, 0.25f },
+                { NPCID.GolemHeadFree, 0.25f },
+                { NPCID.GraniteFlyer, 0.1f },
+                { NPCID.GraniteGolem, 0.15f },
+                { NPCID.GreekSkeleton, 0.1f },
+                { NPCID.HellArmoredBones, 0.2f },
+                { NPCID.HellArmoredBonesMace, 0.2f },
+                { NPCID.HellArmoredBonesSpikeShield, 0.2f },
+                { NPCID.HellArmoredBonesSword, 0.2f },
+                { NPCID.IceGolem, 0.1f },
+                { NPCID.IceQueen, 0.1f },
+                { NPCID.IceTortoise, 0.35f },
+                { NPCID.HeadlessHorseman, 0.05f },
+                { NPCID.MartianDrone, 0.2f },
+                { NPCID.MartianSaucer, 0.2f },
+                { NPCID.MartianSaucerCannon, 0.2f },
+                { NPCID.MartianSaucerCore, 0.2f },
+                { NPCID.MartianSaucerTurret, 0.2f },
+                { NPCID.MartianTurret, 0.2f },
+                { NPCID.MartianWalker, 0.35f },
+                { NPCID.Mimic, 0.3f },
+                { NPCID.MoonLordCore, 0.15f },
+                { NPCID.MoonLordHand, 0.15f },
+                { NPCID.MoonLordHead, 0.15f },
+                { NPCID.Mothron, 0.2f },
+                { NPCID.MothronEgg, 0.5f },
+                { NPCID.MourningWood, 0.1f },
+                { NPCID.Necromancer, 0.2f },
+                { NPCID.NecromancerArmored, 0.2f },
+                { NPCID.Paladin, 0.45f },
+                { NPCID.PirateCaptain, 0.05f },
+                { NPCID.PirateShipCannon, 0.15f },
+                { NPCID.Plantera, 0.15f },
+                { NPCID.PlanterasTentacle, 0.1f },
+                { NPCID.HallowBoss, 0.15f },
+                { NPCID.PossessedArmor, 0.25f },
+                { NPCID.PresentMimic, 0.3f },
+                { NPCID.PrimeCannon, 0.2f },
+                { NPCID.PrimeLaser, 0.2f },
+                { NPCID.PrimeSaw, 0.2f },
+                { NPCID.PrimeVice, 0.2f },
+                { NPCID.Probe, 0.2f },
+                { NPCID.Pumpking, 0.1f },
+                { NPCID.QueenBee, 0.05f },
+                { NPCID.RaggedCaster, 0.2f },
+                { NPCID.RaggedCasterOpenCoat, 0.2f },
+                { NPCID.Retinazer, 0.2f },
+                { NPCID.RustyArmoredBonesAxe, 0.2f },
+                { NPCID.RustyArmoredBonesFlail, 0.2f },
+                { NPCID.RustyArmoredBonesSword, 0.2f },
+                { NPCID.RustyArmoredBonesSwordNoArmor, 0.2f },
+                { NPCID.SandElemental, 0.1f },
+                { NPCID.SantaNK1, 0.35f },
+                { NPCID.SeaSnail, 0.05f },
+                { NPCID.SkeletonArcher, 0.1f },
+                { NPCID.SkeletonCommando, 0.2f },
+                { NPCID.SkeletonSniper, 0.2f },
+                { NPCID.SkeletronHand, 0.05f },
+                { NPCID.SkeletronHead, 0.05f },
+                { NPCID.SkeletronPrime, 0.2f },
+                { NPCID.Spazmatism, 0.2f },
+                { NPCID.TacticalSkeleton, 0.2f },
+                { NPCID.TheDestroyer, 0.1f },
+                { NPCID.TheDestroyerBody, 0.2f },
+                { NPCID.TheDestroyerTail, 0.35f },
+                { NPCID.TheHungry, 0.1f },
+                { NPCID.UndeadViking, 0.1f },
+                { NPCID.WalkingAntlion, 0.1f },
+                { NPCID.WallofFlesh, 0.5f },
+            };
+            #endregion
+
+            // Somehow the SetStatic is called few times before SetStaticDefaults
+            // So We Initialize the Dictionary first. And Push Data later (At SetStaticDefaults)
+            BossKillTimes = [];
+        }
+
+        public override void Unload()
+        {
+            DRValues?.Clear();
+            DRValues = null;
+
+            BossKillTimes?.Clear();
+            BossKillTimes = null;
+        }
+        #endregion
+
         #region Set Defaults
         public override void SetStaticDefaults()
         {
+            #region Add Entries to BossKillTimes
+            BossKillTimes.AddRange<int, int>(new Dictionary<int, int>(){
+
+                //
+                // VANILLA BOSSES
+                //
+                { NPCID.KingSlime, 5400 }, // 1:30 (90 seconds)
+                { NPCID.EyeofCthulhu, 5400 }, // 1:30 (90 seconds)
+                { NPCID.EaterofWorldsHead, 7200 }, // 2:00 (120 seconds)
+                { NPCID.EaterofWorldsBody, 7200 },
+                { NPCID.EaterofWorldsTail, 7200 },
+                { NPCID.BrainofCthulhu, 7200 }, // 2:00 (120 seconds, total length of fight including Creepers phase)
+                { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
+                { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
+                { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
+                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
+                { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
+                { NPCID.WallofFleshEye, 7200 },
+                { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
+                { NPCID.Spazmatism, 10800 }, // 3:00 (180 seconds)
+                { NPCID.Retinazer, 10800 },
+                { NPCID.TheDestroyer, 10800 }, // 3:00 (180 seconds)
+                { NPCID.TheDestroyerBody, 10800 },
+                { NPCID.TheDestroyerTail, 10800 },
+                { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
+                { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
+                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
+                { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
+                { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
+                { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
+                { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
+                { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
+                { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
+                { NPCID.MoonLordHead, 7200 }, // 2:00 (120 seconds)
+
+                //
+                // CALAMITY BOSSES
+                //
+                { NPCType<DesertScourgeHead>(), 5400 }, // 1:30 (90 seconds)
+                { NPCType<DesertScourgeBody>(), 5400 },
+                { NPCType<DesertScourgeTail>(), 5400 },
+                { NPCType<Crabulon.Crabulon>(), 5400 }, // 1:30 (90 seconds)
+                { NPCType<HiveMind.HiveMind>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<PerforatorHive>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<SlimeGodCore>(), 9000 }, // 2:30 (150 seconds) -- total length of Slime God fight
+                { NPCType<EbonianPaladin>(), 4500 }, // 1:15 (75 seconds)
+                { NPCType<CrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
+                { NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
+                { NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
+                { NPCType<Cryogen.Cryogen>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
+                { NPCType<AquaticScourgeBody>(), 9000 },
+                { NPCType<AquaticScourgeBodyAlt>(), 9000 },
+                { NPCType<AquaticScourgeTail>(), 9000 },
+                { NPCType<BrimstoneElemental.BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
+                { NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<Leviathan.Leviathan>(), 10800 },
+                { NPCType<AstrumAureus.AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<AstrumDeusHead>(), 7200 }, // 2:00 (120 seconds) -- first phase is 1:00
+                { NPCType<AstrumDeusBody>(), 7200 },
+                { NPCType<AstrumDeusTail>(), 7200 },
+                { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
+                { NPCType<Bumblefuck>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
+                { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
+                { NPCType<StormWeaverHead>(), 8100 }, // 2:15 (135 seconds)
+                { NPCType<StormWeaverBody>(), 8100 },
+                { NPCType<StormWeaverTail>(), 8100 },
+                { NPCType<Signus.Signus>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<Polterghast.Polterghast>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<OldDuke.OldDuke>(), 10800 }, // 3:00 (180 seconds)
+                { NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
+                { NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
+                { NPCType<DevourerofGodsTail>(), 14400 },
+                { NPCType<Yharon.Yharon>(), 14700 }, // 4:05 (245 seconds) -- he spends 5 seconds invincible where you can't do anything
+                { NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
+                { NPCType<Artemis>(), 21600 },
+                { NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)
+                { NPCType<AresGaussNuke>(), 21600 },
+                { NPCType<AresLaserCannon>(), 21600 },
+                { NPCType<AresPlasmaFlamethrower>(), 21600 },
+                { NPCType<AresTeslaCannon>(), 21600 },
+                { NPCType<ThanatosHead>(), 21600 }, // 6:00 (360 seconds)
+                { NPCType<ThanatosBody1>(), 21600 },
+                { NPCType<ThanatosBody2>(), 21600 },
+                { NPCType<ThanatosTail>(), 21600 },
+                { NPCType<SupremeCalamitas.SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
+                { NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
+            });
+            #endregion
+
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
@@ -1225,16 +1536,15 @@ namespace CalamityMod.NPCs
 
             // Apply DR to vanilla NPCs.
             // This also applies DR to other mods' NPCs who have set up their NPCs to have DR.
-            if (CalamityMod.DRValues.ContainsKey(npc.type))
+            if (DRValues.ContainsKey(npc.type))
             {
-                CalamityMod.DRValues.TryGetValue(npc.type, out float newDR);
+                DRValues.TryGetValue(npc.type, out float newDR);
                 DR = newDR;
             }
 
             // Aquatic Scourge sets kill time in AI, not here.
-            if (CalamityMod.bossKillTimes.ContainsKey(npc.type) && !CalamityLists.AquaticScourgeIDs.Contains(npc.type))
+            if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !AquaticScourgeIDList.Includes(npc.type))
             {
-                CalamityMod.bossKillTimes.TryGetValue(npc.type, out int revKillTime);
                 KillTime = revKillTime;
             }
 
@@ -1380,13 +1690,9 @@ namespace CalamityMod.NPCs
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
-            foreach (KeyValuePair<int, int> BossRushHPChange in CalamityLists.BossRushHPChanges)
+            if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
             {
-                if (npc.type == BossRushHPChange.Key)
-                {
-                    npc.lifeMax = BossRushHPChange.Value;
-                    break;
-                }
+                npc.lifeMax = newHP;
             }
         }
         #endregion
@@ -1394,13 +1700,9 @@ namespace CalamityMod.NPCs
         #region Boss Value Changes
         private void BossValueChanges(NPC npc)
         {
-            foreach (KeyValuePair<int, int> BossValue in CalamityLists.BossValues)
+            if (BossValueDict.TryGet(npc.type, out var value))
             {
-                if (npc.type == BossValue.Key)
-                {
-                    npc.value = BossValue.Value;
-                    break;
-                }
+                npc.value = value;
             }
         }
         #endregion
@@ -1408,7 +1710,7 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (CalamityLists.DeathModeSplittingWormIDs.Contains(npc.type))
+            if (DeathModeSplittingWormList.Includes(npc.type))
             {
                 if (CalamityWorld.death)
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
@@ -1462,7 +1764,7 @@ namespace CalamityMod.NPCs
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                 npc.npcSlots = 32f;
             }
-            else if (CalamityLists.DestroyerIDs.Contains(npc.type))
+            else if (DestroyerIDList.Includes(npc.type))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
                 npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
@@ -1543,7 +1845,7 @@ namespace CalamityMod.NPCs
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
             }
-            else if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
+            else if (EaterOfWorldsIDList.Includes(npc.type))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
@@ -1664,6 +1966,7 @@ namespace CalamityMod.NPCs
                 case NPCID.BlackSlime:
                 case NPCID.BlueSlime:
                 case NPCID.CorruptSlime:
+                case NPCID.GoldenSlime:
                 case NPCID.GreenSlime:
                 case NPCID.IlluminantSlime:
                 case NPCID.JungleSlime:
@@ -1672,6 +1975,7 @@ namespace CalamityMod.NPCs
                 case NPCID.PurpleSlime:
                 case NPCID.RainbowSlime:
                 case NPCID.RedSlime:
+                case NPCID.ShimmerSlime:
                 case NPCID.Slimeling:
                 case NPCID.SlimeMasked:
                 case NPCID.Slimer:
@@ -1853,6 +2157,7 @@ namespace CalamityMod.NPCs
 
                 // Organic enemies.
                 case NPCID.HallowBoss:
+                case NPCID.Dandelion:
                 case NPCID.Gnome:
                 case NPCID.BloodEelHead:
                 case NPCID.BloodEelBody:
@@ -1933,6 +2238,7 @@ namespace CalamityMod.NPCs
                 case NPCID.ArmedZombiePincussion:
                 case NPCID.ArmedZombieSwamp:
                 case NPCID.ArmedZombieTwiggy:
+                case NPCID.ArmedTorchZombie:
                 case NPCID.BaldZombie:
                 case NPCID.BigBaldZombie:
                 case NPCID.BigFemaleZombie:
@@ -1953,6 +2259,7 @@ namespace CalamityMod.NPCs
                 case NPCID.SmallTwiggyZombie:
                 case NPCID.SmallZombie:
                 case NPCID.SwampZombie:
+                case NPCID.TorchZombie:
                 case NPCID.TwiggyZombie:
                 case NPCID.Zombie:
                 case NPCID.ZombieDoctor:
@@ -2198,6 +2505,7 @@ namespace CalamityMod.NPCs
                 case NPCID.IceSlime:
                 case NPCID.SpikedIceSlime:
                 case NPCID.IceGolem:
+                case NPCID.IceMimic:
                 case NPCID.MisterStabby:
                 case NPCID.SnowBalla:
                 case NPCID.SnowmanGangsta:
@@ -2289,7 +2597,7 @@ namespace CalamityMod.NPCs
                 npc.GetNPCDamage();
                 npc.defDamage = npc.damage;
             }
-            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
+            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || BossHPScalingList.Includes(npc.type))
             {
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
@@ -2498,7 +2806,7 @@ namespace CalamityMod.NPCs
             {
                 if (!NPC.downedMechBossAny)
                 {
-                    if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -2508,7 +2816,7 @@ namespace CalamityMod.NPCs
                 }
                 else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
                 {
-                    if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -2535,7 +2843,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (Main.hardMode && CalamityLists.HardmodeNPCNerfList.Contains(npc.type))
+            if (Main.hardMode && HardmodeNPCNerfList.Includes(npc.type))
             {
                 npc.damage = (int)Math.Round(npc.damage * 0.75);
                 npc.defDamage = npc.damage;
@@ -2543,21 +2851,21 @@ namespace CalamityMod.NPCs
 
             if (DownedBossSystem.downedDoG)
             {
-                if (CalamityLists.pumpkinMoonBuffList.Contains(npc.type))
+                if (PumpkinMoonBuffList.Includes(npc.type))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.5);
                     npc.damage += 30;
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (CalamityLists.frostMoonBuffList.Contains(npc.type))
+                else if (FrostMoonBuffList.Includes(npc.type))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (CalamityLists.eclipseBuffList.Contains(npc.type))
+                else if (EclipseBuffList.Includes(npc.type))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 5D);
                     npc.damage += 30;
@@ -2568,7 +2876,7 @@ namespace CalamityMod.NPCs
 
             if (NPC.downedMoonlord)
             {
-                if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
+                if (BuffedDungeonEnemiesList.Includes(npc.type))
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;
@@ -2581,550 +2889,569 @@ namespace CalamityMod.NPCs
             if (Main.expertMode)
                 AdjustExpertModeStatScaling(npc);
 
-            // Nerf a shitload of Master Mode enemies
-            // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
-            // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
-            if (Main.masterMode)
+            // Adjust a ton of enemy stats
+            switch (npc.type)
             {
-                switch (npc.type)
-                {
-                    case NPCID.AngryBones:
-                    case NPCID.AngryBonesBig:
-                    case NPCID.AngryBonesBigHelmet:
-                    case NPCID.AngryBonesBigMuscle:
-                    case NPCID.BigBoned:
-                    case NPCID.ShortBones:
-                    case NPCID.AnomuraFungus:
-                    case NPCID.Antlion:
-                    case NPCID.WalkingAntlion:
-                    case NPCID.GiantWalkingAntlion:
-                    case NPCID.LarvaeAntlion:
-                    case NPCID.FlyingAntlion:
-                    case NPCID.GiantFlyingAntlion:
-                    case NPCID.BabySlime:
-                    case NPCID.BlackSlime:
-                    case NPCID.BlazingWheel:
-                    case NPCID.BloodCrawler:
-                    case NPCID.BloodCrawlerWall:
-                    case NPCID.BlueJellyfish:
-                    case NPCID.GreenJellyfish:
-                    case NPCID.PinkJellyfish:
-                    case NPCID.BloodJelly:
-                    case NPCID.FungoFish:
-                    case NPCID.BlueSlime:
-                    case NPCID.BoneSerpentBody:
-                    case NPCID.BoneSerpentHead:
-                    case NPCID.BoneSerpentTail:
-                    case NPCID.CaveBat:
-                    case NPCID.CochinealBeetle:
-                    case NPCID.Crab:
-                    case NPCID.Crawdad:
-                    case NPCID.Crawdad2:
-                    case NPCID.Crimera:
-                    case NPCID.BigCrimera:
-                    case NPCID.LittleCrimera:
-                    case NPCID.CursedSkull:
-                    case NPCID.CyanBeetle:
-                    case NPCID.Demon:
-                    case NPCID.DemonEye:
-                    case NPCID.CataractEye:
-                    case NPCID.CataractEye2:
-                    case NPCID.DemonEye2:
-                    case NPCID.DemonEyeOwl:
-                    case NPCID.DemonEyeSpaceship:
-                    case NPCID.DialatedEye:
-                    case NPCID.DialatedEye2:
-                    case NPCID.GreenEye:
-                    case NPCID.GreenEye2:
-                    case NPCID.PurpleEye:
-                    case NPCID.PurpleEye2:
-                    case NPCID.SleepyEye:
-                    case NPCID.SleepyEye2:
-                    case NPCID.DevourerBody:
-                    case NPCID.DevourerHead:
-                    case NPCID.DevourerTail:
-                    case NPCID.DoctorBones:
-                    case NPCID.DungeonSlime:
-                    case NPCID.EaterofSouls:
-                    case NPCID.BigEater:
-                    case NPCID.LittleEater:
-                    case NPCID.FaceMonster:
-                    case NPCID.ArmedZombieEskimo:
-                    case NPCID.ZombieEskimo:
-                    case NPCID.FungiBulb:
-                    case NPCID.Ghost:
-                    case NPCID.GiantShelly:
-                    case NPCID.GiantShelly2:
-                    case NPCID.GiantWormBody:
-                    case NPCID.GiantWormHead:
-                    case NPCID.GiantWormTail:
-                    case NPCID.Gnome:
-                    case NPCID.GoblinScout:
-                    case NPCID.GraniteFlyer:
-                    case NPCID.GraniteGolem:
-                    case NPCID.GreenSlime:
-                    case NPCID.Harpy:
-                    case NPCID.Hellbat:
-                    case NPCID.GreekSkeleton:
-                    case NPCID.Hornet:
-                    case NPCID.HornetFatty:
-                    case NPCID.HornetHoney:
-                    case NPCID.HornetLeafy:
-                    case NPCID.HornetSpikey:
-                    case NPCID.HornetStingy:
-                    case NPCID.BigHornetFatty:
-                    case NPCID.BigHornetHoney:
-                    case NPCID.BigHornetLeafy:
-                    case NPCID.BigHornetSpikey:
-                    case NPCID.BigHornetStingy:
-                    case NPCID.BigMossHornet:
-                    case NPCID.GiantMossHornet:
-                    case NPCID.LittleHornetFatty:
-                    case NPCID.LittleHornetHoney:
-                    case NPCID.LittleHornetLeafy:
-                    case NPCID.LittleHornetSpikey:
-                    case NPCID.LittleHornetStingy:
-                    case NPCID.LittleMossHornet:
-                    case NPCID.MossHornet:
-                    case NPCID.TinyMossHornet:
-                    case NPCID.IceBat:
-                    case NPCID.IceSlime:
-                    case NPCID.JungleBat:
-                    case NPCID.JungleSlime:
-                    case NPCID.LacBeetle:
-                    case NPCID.LavaSlime:
-                    case NPCID.MaggotZombie:
-                    case NPCID.ManEater:
-                    case NPCID.MeteorHead:
-                    case NPCID.MotherSlime:
-                    case NPCID.MushiLadybug:
-                    case NPCID.Nymph:
-                    case NPCID.Pinky:
-                    case NPCID.Piranha:
-                    case NPCID.PurpleSlime:
-                    case NPCID.Raven:
-                    case NPCID.RedSlime:
-                    case NPCID.Salamander:
-                    case NPCID.Salamander2:
-                    case NPCID.Salamander3:
-                    case NPCID.Salamander4:
-                    case NPCID.Salamander5:
-                    case NPCID.Salamander6:
-                    case NPCID.Salamander7:
-                    case NPCID.Salamander8:
-                    case NPCID.Salamander9:
-                    case NPCID.SandSlime:
-                    case NPCID.SeaSnail:
-                    case NPCID.Shark:
-                    case NPCID.ShimmerSlime:
-                    case NPCID.Skeleton:
-                    case NPCID.SkeletonAlien:
-                    case NPCID.SkeletonAstonaut:
-                    case NPCID.SkeletonTopHat:
-                    case NPCID.ArmoredSkeleton:
-                    case NPCID.BigHeadacheSkeleton:
-                    case NPCID.BigMisassembledSkeleton:
-                    case NPCID.BigPantlessSkeleton:
-                    case NPCID.BigSkeleton:
-                    case NPCID.BoneThrowingSkeleton:
-                    case NPCID.BoneThrowingSkeleton2:
-                    case NPCID.BoneThrowingSkeleton3:
-                    case NPCID.BoneThrowingSkeleton4:
-                    case NPCID.HeadacheSkeleton:
-                    case NPCID.HeavySkeleton:
-                    case NPCID.MisassembledSkeleton:
-                    case NPCID.PantlessSkeleton:
-                    case NPCID.SmallMisassembledSkeleton:
-                    case NPCID.SmallHeadacheSkeleton:
-                    case NPCID.SmallSkeleton:
-                    case NPCID.SmallPantlessSkeleton:
-                    case NPCID.SporeSkeleton:
-                    case NPCID.TacticalSkeleton:
-                    case NPCID.SkeletonSniper:
-                    case NPCID.SkeletonCommando:
-                    case NPCID.DarkCaster:
-                    case NPCID.FireImp:
-                    case NPCID.Snatcher:
-                    case NPCID.SnowFlinx:
-                    case NPCID.SpikeBall:
-                    case NPCID.SpikedIceSlime:
-                    case NPCID.SpikedJungleSlime:
-                    case NPCID.SporeBat:
-                    case NPCID.ZombieMushroom:
-                    case NPCID.ZombieMushroomHat:
-                    case NPCID.Squid:
-                    case NPCID.Tim:
-                    case NPCID.TombCrawlerBody:
-                    case NPCID.TombCrawlerHead:
-                    case NPCID.TombCrawlerTail:
-                    case NPCID.UndeadMiner:
-                    case NPCID.UndeadViking:
-                    case NPCID.VoodooDemon:
-                    case NPCID.Vulture:
-                    case NPCID.WallCreeper:
-                    case NPCID.WallCreeperWall:
-                    case NPCID.YellowSlime:
-                    case NPCID.Zombie:
-                    case NPCID.ZombieDoctor:
-                    case NPCID.ZombieElf:
-                    case NPCID.ZombieElfBeard:
-                    case NPCID.ZombieElfGirl:
-                    case NPCID.ZombieMerman:
-                    case NPCID.ZombiePixie:
-                    case NPCID.ZombieRaincoat:
-                    case NPCID.ZombieSuperman:
-                    case NPCID.ZombieSweater:
-                    case NPCID.ZombieXmas:
-                    case NPCID.ArmedTorchZombie:
-                    case NPCID.ArmedZombie:
-                    case NPCID.ArmedZombieCenx:
-                    case NPCID.ArmedZombiePincussion:
-                    case NPCID.ArmedZombieSlimed:
-                    case NPCID.ArmedZombieSwamp:
-                    case NPCID.ArmedZombieTwiggy:
-                    case NPCID.BaldZombie:
-                    case NPCID.BigBaldZombie:
-                    case NPCID.BigFemaleZombie:
-                    case NPCID.BigPincushionZombie:
-                    case NPCID.BigRainZombie:
-                    case NPCID.BigSlimedZombie:
-                    case NPCID.BigSwampZombie:
-                    case NPCID.BigTwiggyZombie:
-                    case NPCID.BigZombie:
-                    case NPCID.BloodZombie:
-                    case NPCID.FemaleZombie:
-                    case NPCID.PincushionZombie:
-                    case NPCID.SlimedZombie:
-                    case NPCID.SmallBaldZombie:
-                    case NPCID.SmallFemaleZombie:
-                    case NPCID.SmallPincushionZombie:
-                    case NPCID.SmallRainZombie:
-                    case NPCID.SmallSlimedZombie:
-                    case NPCID.SmallSwampZombie:
-                    case NPCID.SmallTwiggyZombie:
-                    case NPCID.SmallZombie:
-                    case NPCID.SwampZombie:
-                    case NPCID.TorchZombie:
-                    case NPCID.TwiggyZombie:
-                    case NPCID.AnglerFish:
-                    case NPCID.AngryTrapper:
-                    case NPCID.Arapaima:
-                    case NPCID.ArmoredViking:
-                    case NPCID.DesertBeast:
-                    case NPCID.BlackRecluse:
-                    case NPCID.BlackRecluseWall:
-                    case NPCID.BloodFeeder:
-                    case NPCID.Mummy:
-                    case NPCID.BloodMummy:
-                    case NPCID.DarkMummy:
-                    case NPCID.LightMummy:
-                    case NPCID.BlueArmoredBones:
-                    case NPCID.BlueArmoredBonesMace:
-                    case NPCID.BlueArmoredBonesNoPants:
-                    case NPCID.BlueArmoredBonesSword:
-                    case NPCID.BoneLee:
-                    case NPCID.ChaosElemental:
-                    case NPCID.Clinger:
-                    case NPCID.BigMimicCorruption:
-                    case NPCID.BigMimicCrimson:
-                    case NPCID.BigMimicHallow:
-                    case NPCID.BigMimicJungle:
-                    case NPCID.CorruptSlime:
-                    case NPCID.Corruptor:
-                    case NPCID.Crimslime:
-                    case NPCID.BigCrimslime:
-                    case NPCID.LittleCrimslime:
-                    case NPCID.CrimsonAxe:
-                    case NPCID.CultistArcherBlue:
-                    case NPCID.CultistArcherWhite:
-                    case NPCID.CultistDevote:
-                    case NPCID.CursedHammer:
-                    case NPCID.Derpling:
-                    case NPCID.Herpling:
-                    case NPCID.DesertDjinn:
-                    case NPCID.DiabolistRed:
-                    case NPCID.DiabolistWhite:
-                    case NPCID.DiggerBody:
-                    case NPCID.DiggerHead:
-                    case NPCID.DiggerTail:
-                    case NPCID.DesertGhoul:
-                    case NPCID.DesertGhoulCorruption:
-                    case NPCID.DesertGhoulCrimson:
-                    case NPCID.DesertGhoulHallow:
-                    case NPCID.DuneSplicerBody:
-                    case NPCID.DuneSplicerHead:
-                    case NPCID.DuneSplicerTail:
-                    case NPCID.DungeonSpirit:
-                    case NPCID.EnchantedSword:
-                    case NPCID.FloatyGross:
-                    case NPCID.FlyingSnake:
-                    case NPCID.Gastropod:
-                    case NPCID.GiantBat:
-                    case NPCID.GiantCursedSkull:
-                    case NPCID.GiantFlyingFox:
-                    case NPCID.GiantFungiBulb:
-                    case NPCID.GiantTortoise:
-                    case NPCID.IceTortoise:
-                    case NPCID.HellArmoredBones:
-                    case NPCID.HellArmoredBonesMace:
-                    case NPCID.HellArmoredBonesSpikeShield:
-                    case NPCID.HellArmoredBonesSword:
-                    case NPCID.HoppinJack:
-                    case NPCID.IceElemental:
-                    case NPCID.Mimic:
-                    case NPCID.IceMimic:
-                    case NPCID.PresentMimic:
-                    case NPCID.IchorSticker:
-                    case NPCID.IcyMerman:
-                    case NPCID.IlluminantBat:
-                    case NPCID.IlluminantSlime:
-                    case NPCID.JungleCreeper:
-                    case NPCID.JungleCreeperWall:
-                    case NPCID.DesertLamiaDark:
-                    case NPCID.DesertLamiaLight:
-                    case NPCID.Lavabat:
-                    case NPCID.Lihzahrd:
-                    case NPCID.LihzahrdCrawler:
-                    case NPCID.Medusa:
-                    case NPCID.Moth:
-                    case NPCID.Necromancer:
-                    case NPCID.NecromancerArmored:
-                    case NPCID.Paladin:
-                    case NPCID.PigronCorruption:
-                    case NPCID.PigronCrimson:
-                    case NPCID.PigronHallow:
-                    case NPCID.Pixie:
-                    case NPCID.PossessedArmor:
-                    case NPCID.RaggedCaster:
-                    case NPCID.RaggedCasterOpenCoat:
-                    case NPCID.RedDevil:
-                    case NPCID.RockGolem:
-                    case NPCID.RuneWizard:
-                    case NPCID.RustyArmoredBonesAxe:
-                    case NPCID.RustyArmoredBonesFlail:
-                    case NPCID.RustyArmoredBonesSword:
-                    case NPCID.RustyArmoredBonesSwordNoArmor:
-                    case NPCID.DesertScorpionWalk:
-                    case NPCID.DesertScorpionWall:
-                    case NPCID.SkeletonArcher:
-                    case NPCID.Slimeling:
-                    case NPCID.Slimer:
-                    case NPCID.Slimer2:
-                    case NPCID.ToxicSludge:
-                    case NPCID.Unicorn:
-                    case NPCID.WanderingEye:
-                    case NPCID.Werewolf:
-                    case NPCID.Wolf:
-                    case NPCID.SeekerBody:
-                    case NPCID.SeekerHead:
-                    case NPCID.SeekerTail:
-                    case NPCID.Wraith:
-                    case NPCID.WyvernBody:
-                    case NPCID.WyvernBody2:
-                    case NPCID.WyvernBody3:
-                    case NPCID.WyvernHead:
-                    case NPCID.WyvernLegs:
-                    case NPCID.WyvernTail:
-                    case NPCID.BloodEelBody:
-                    case NPCID.BloodEelHead:
-                    case NPCID.BloodEelTail:
-                    case NPCID.BloodSquid:
-                    case NPCID.ChatteringTeethBomb:
-                    case NPCID.Clown:
-                    case NPCID.CorruptBunny:
-                    case NPCID.CorruptGoldfish:
-                    case NPCID.CorruptPenguin:
-                    case NPCID.Drippler:
-                    case NPCID.GoblinShark:
-                    case NPCID.TheGroom:
-                    case NPCID.TheBride:
-                    case NPCID.CrimsonBunny:
-                    case NPCID.CrimsonGoldfish:
-                    case NPCID.CrimsonPenguin:
-                    case NPCID.EyeballFlyingFish:
-                    case NPCID.Dandelion:
-                    case NPCID.AngryNimbus:
-                    case NPCID.FlyingFish:
-                    case NPCID.IceGolem:
-                    case NPCID.RainbowSlime:
-                    case NPCID.UmbrellaSlime:
-                    case NPCID.Tumbleweed:
-                    case NPCID.SandShark:
-                    case NPCID.SandsharkCorrupt:
-                    case NPCID.SandsharkCrimson:
-                    case NPCID.SandsharkHallow:
-                    case NPCID.SandElemental:
-                    case NPCID.BloodNautilus:
-                    case NPCID.GoblinArcher:
-                    case NPCID.GoblinPeon:
-                    case NPCID.GoblinSorcerer:
-                    case NPCID.GoblinSummoner:
-                    case NPCID.GoblinThief:
-                    case NPCID.GoblinWarrior:
-                    case NPCID.MisterStabby:
-                    case NPCID.SnowBalla:
-                    case NPCID.SnowmanGangsta:
-                    case NPCID.Parrot:
-                    case NPCID.PirateCaptain:
-                    case NPCID.PirateCorsair:
-                    case NPCID.PirateCrossbower:
-                    case NPCID.PirateDeadeye:
-                    case NPCID.PirateDeckhand:
-                    case NPCID.PirateGhost:
-                    case NPCID.PirateShipCannon:
-                    case NPCID.MothronSpawn:
-                    case NPCID.Mothron:
-                    case NPCID.Butcher:
-                    case NPCID.CreatureFromTheDeep:
-                    case NPCID.DeadlySphere:
-                    case NPCID.DrManFly:
-                    case NPCID.Eyezor:
-                    case NPCID.Frankenstein:
-                    case NPCID.Fritz:
-                    case NPCID.Nailhead:
-                    case NPCID.Psycho:
-                    case NPCID.Reaper:
-                    case NPCID.ThePossessed:
-                    case NPCID.SwampThing:
-                    case NPCID.Vampire:
-                    case NPCID.VampireBat:
-                    case NPCID.BrainScrambler:
-                    case NPCID.GigaZapper:
-                    case NPCID.MartianWalker:
-                    case NPCID.GrayGrunt:
-                    case NPCID.MartianDrone:
-                    case NPCID.MartianEngineer:
-                    case NPCID.MartianOfficer:
-                    case NPCID.RayGunner:
-                    case NPCID.Scutlix:
-                    case NPCID.ScutlixRider:
-                    case NPCID.MartianTurret:
-                    case NPCID.HeadlessHorseman:
-                    case NPCID.Hellhound:
-                    case NPCID.Splinterling:
-                    case NPCID.Poltergeist:
-                    case NPCID.Scarecrow1:
-                    case NPCID.Scarecrow2:
-                    case NPCID.Scarecrow3:
-                    case NPCID.Scarecrow4:
-                    case NPCID.Scarecrow5:
-                    case NPCID.Scarecrow6:
-                    case NPCID.Scarecrow7:
-                    case NPCID.Scarecrow8:
-                    case NPCID.Scarecrow9:
-                    case NPCID.Scarecrow10:
-                    case NPCID.ElfArcher:
-                    case NPCID.ElfCopter:
-                    case NPCID.Flocko:
-                    case NPCID.GingerbreadMan:
-                    case NPCID.Krampus:
-                    case NPCID.Nutcracker:
-                    case NPCID.NutcrackerSpinning:
-                    case NPCID.Yeti:
-                    case NPCID.NebulaBeast:
-                    case NPCID.NebulaBrain:
-                    case NPCID.NebulaHeadcrab:
-                    case NPCID.NebulaSoldier:
-                    case NPCID.SolarCorite:
-                    case NPCID.SolarCrawltipedeBody:
-                    case NPCID.SolarCrawltipedeHead:
-                    case NPCID.SolarCrawltipedeTail:
-                    case NPCID.SolarDrakomire:
-                    case NPCID.SolarDrakomireRider:
-                    case NPCID.SolarSolenian:
-                    case NPCID.SolarSpearman:
-                    case NPCID.SolarSroller:
-                    case NPCID.StardustCellBig:
-                    case NPCID.StardustCellSmall:
-                    case NPCID.StardustJellyfishBig:
-                    case NPCID.StardustWormBody:
-                    case NPCID.StardustWormHead:
-                    case NPCID.StardustWormTail:
-                    case NPCID.StardustSoldier:
-                    case NPCID.StardustSpiderBig:
-                    case NPCID.StardustSpiderSmall:
-                    case NPCID.VortexHornet:
-                    case NPCID.VortexHornetQueen:
-                    case NPCID.VortexLarva:
-                    case NPCID.VortexRifleman:
-                    case NPCID.VortexSoldier:
-                    case NPCID.DD2DarkMageT1:
-                    case NPCID.DD2DarkMageT3:
-                    case NPCID.DD2OgreT2:
-                    case NPCID.DD2OgreT3:
-                    case NPCID.MartianSaucerCore:
-                    case NPCID.MartianSaucerCannon:
-                    case NPCID.MartianSaucerTurret:
-                    case NPCID.DD2SkeletonT1:
-                    case NPCID.DD2SkeletonT3:
-                    case NPCID.DD2DrakinT2:
-                    case NPCID.DD2DrakinT3:
-                    case NPCID.DD2GoblinBomberT1:
-                    case NPCID.DD2GoblinBomberT2:
-                    case NPCID.DD2GoblinBomberT3:
-                    case NPCID.DD2GoblinT1:
-                    case NPCID.DD2GoblinT2:
-                    case NPCID.DD2GoblinT3:
-                    case NPCID.DD2JavelinstT1:
-                    case NPCID.DD2JavelinstT2:
-                    case NPCID.DD2JavelinstT3:
-                    case NPCID.DD2KoboldFlyerT2:
-                    case NPCID.DD2KoboldFlyerT3:
-                    case NPCID.DD2KoboldWalkerT2:
-                    case NPCID.DD2KoboldWalkerT3:
-                    case NPCID.DD2LightningBugT3:
-                    case NPCID.DD2WitherBeastT2:
-                    case NPCID.DD2WitherBeastT3:
-                    case NPCID.DD2WyvernT1:
-                    case NPCID.DD2WyvernT2:
-                    case NPCID.DD2WyvernT3:
-                    case NPCID.AncientCultistSquidhead:
-                    case NPCID.SlimeSpiked:
+                case NPCID.AngryBones:
+                case NPCID.AngryBonesBig:
+                case NPCID.AngryBonesBigHelmet:
+                case NPCID.AngryBonesBigMuscle:
+                case NPCID.BigBoned:
+                case NPCID.ShortBones:
+                case NPCID.AnomuraFungus:
+                case NPCID.Antlion:
+                case NPCID.WalkingAntlion:
+                case NPCID.GiantWalkingAntlion:
+                case NPCID.LarvaeAntlion:
+                case NPCID.FlyingAntlion:
+                case NPCID.GiantFlyingAntlion:
+                case NPCID.BabySlime:
+                case NPCID.BlackSlime:
+                case NPCID.BlazingWheel:
+                case NPCID.BloodCrawler:
+                case NPCID.BloodCrawlerWall:
+                case NPCID.BlueJellyfish:
+                case NPCID.GreenJellyfish:
+                case NPCID.PinkJellyfish:
+                case NPCID.BloodJelly:
+                case NPCID.FungoFish:
+                case NPCID.BlueSlime:
+                case NPCID.BoneSerpentBody:
+                case NPCID.BoneSerpentHead:
+                case NPCID.BoneSerpentTail:
+                case NPCID.CaveBat:
+                case NPCID.CochinealBeetle:
+                case NPCID.Crab:
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                case NPCID.Crimera:
+                case NPCID.BigCrimera:
+                case NPCID.LittleCrimera:
+                case NPCID.CursedSkull:
+                case NPCID.CyanBeetle:
+                case NPCID.Demon:
+                case NPCID.DemonEye:
+                case NPCID.CataractEye:
+                case NPCID.CataractEye2:
+                case NPCID.DemonEye2:
+                case NPCID.DemonEyeOwl:
+                case NPCID.DemonEyeSpaceship:
+                case NPCID.DialatedEye:
+                case NPCID.DialatedEye2:
+                case NPCID.GreenEye:
+                case NPCID.GreenEye2:
+                case NPCID.PurpleEye:
+                case NPCID.PurpleEye2:
+                case NPCID.SleepyEye:
+                case NPCID.SleepyEye2:
+                case NPCID.DevourerBody:
+                case NPCID.DevourerHead:
+                case NPCID.DevourerTail:
+                case NPCID.DoctorBones:
+                case NPCID.DungeonSlime:
+                case NPCID.EaterofSouls:
+                case NPCID.BigEater:
+                case NPCID.LittleEater:
+                case NPCID.FaceMonster:
+                case NPCID.ArmedZombieEskimo:
+                case NPCID.ZombieEskimo:
+                case NPCID.FungiBulb:
+                case NPCID.Ghost:
+                case NPCID.GiantShelly:
+                case NPCID.GiantShelly2:
+                case NPCID.GiantWormBody:
+                case NPCID.GiantWormHead:
+                case NPCID.GiantWormTail:
+                case NPCID.Gnome:
+                case NPCID.GoblinScout:
+                case NPCID.GraniteFlyer:
+                case NPCID.GraniteGolem:
+                case NPCID.GreenSlime:
+                case NPCID.Harpy:
+                case NPCID.Hellbat:
+                case NPCID.GreekSkeleton:
+                case NPCID.Hornet:
+                case NPCID.HornetFatty:
+                case NPCID.HornetHoney:
+                case NPCID.HornetLeafy:
+                case NPCID.HornetSpikey:
+                case NPCID.HornetStingy:
+                case NPCID.BigHornetFatty:
+                case NPCID.BigHornetHoney:
+                case NPCID.BigHornetLeafy:
+                case NPCID.BigHornetSpikey:
+                case NPCID.BigHornetStingy:
+                case NPCID.BigMossHornet:
+                case NPCID.GiantMossHornet:
+                case NPCID.LittleHornetFatty:
+                case NPCID.LittleHornetHoney:
+                case NPCID.LittleHornetLeafy:
+                case NPCID.LittleHornetSpikey:
+                case NPCID.LittleHornetStingy:
+                case NPCID.LittleMossHornet:
+                case NPCID.MossHornet:
+                case NPCID.TinyMossHornet:
+                case NPCID.IceBat:
+                case NPCID.IceSlime:
+                case NPCID.JungleBat:
+                case NPCID.JungleSlime:
+                case NPCID.LacBeetle:
+                case NPCID.LavaSlime:
+                case NPCID.MaggotZombie:
+                case NPCID.ManEater:
+                case NPCID.MeteorHead:
+                case NPCID.MotherSlime:
+                case NPCID.MushiLadybug:
+                case NPCID.Nymph:
+                case NPCID.Pinky:
+                case NPCID.Piranha:
+                case NPCID.PurpleSlime:
+                case NPCID.Raven:
+                case NPCID.RedSlime:
+                case NPCID.Salamander:
+                case NPCID.Salamander2:
+                case NPCID.Salamander3:
+                case NPCID.Salamander4:
+                case NPCID.Salamander5:
+                case NPCID.Salamander6:
+                case NPCID.Salamander7:
+                case NPCID.Salamander8:
+                case NPCID.Salamander9:
+                case NPCID.SandSlime:
+                case NPCID.SeaSnail:
+                case NPCID.Shark:
+                case NPCID.ShimmerSlime:
+                case NPCID.Skeleton:
+                case NPCID.SkeletonAlien:
+                case NPCID.SkeletonAstonaut:
+                case NPCID.SkeletonTopHat:
+                case NPCID.ArmoredSkeleton:
+                case NPCID.BigHeadacheSkeleton:
+                case NPCID.BigMisassembledSkeleton:
+                case NPCID.BigPantlessSkeleton:
+                case NPCID.BigSkeleton:
+                case NPCID.BoneThrowingSkeleton:
+                case NPCID.BoneThrowingSkeleton2:
+                case NPCID.BoneThrowingSkeleton3:
+                case NPCID.BoneThrowingSkeleton4:
+                case NPCID.HeadacheSkeleton:
+                case NPCID.HeavySkeleton:
+                case NPCID.MisassembledSkeleton:
+                case NPCID.PantlessSkeleton:
+                case NPCID.SmallMisassembledSkeleton:
+                case NPCID.SmallHeadacheSkeleton:
+                case NPCID.SmallSkeleton:
+                case NPCID.SmallPantlessSkeleton:
+                case NPCID.SporeSkeleton:
+                case NPCID.TacticalSkeleton:
+                case NPCID.SkeletonSniper:
+                case NPCID.SkeletonCommando:
+                case NPCID.DarkCaster:
+                case NPCID.FireImp:
+                case NPCID.Snatcher:
+                case NPCID.SnowFlinx:
+                case NPCID.SpikeBall:
+                case NPCID.SpikedIceSlime:
+                case NPCID.SpikedJungleSlime:
+                case NPCID.SporeBat:
+                case NPCID.ZombieMushroom:
+                case NPCID.ZombieMushroomHat:
+                case NPCID.Squid:
+                case NPCID.Tim:
+                case NPCID.TombCrawlerBody:
+                case NPCID.TombCrawlerHead:
+                case NPCID.TombCrawlerTail:
+                case NPCID.UndeadMiner:
+                case NPCID.UndeadViking:
+                case NPCID.VoodooDemon:
+                case NPCID.Vulture:
+                case NPCID.WallCreeper:
+                case NPCID.WallCreeperWall:
+                case NPCID.YellowSlime:
+                case NPCID.Zombie:
+                case NPCID.ZombieDoctor:
+                case NPCID.ZombieElf:
+                case NPCID.ZombieElfBeard:
+                case NPCID.ZombieElfGirl:
+                case NPCID.ZombieMerman:
+                case NPCID.ZombiePixie:
+                case NPCID.ZombieRaincoat:
+                case NPCID.ZombieSuperman:
+                case NPCID.ZombieSweater:
+                case NPCID.ZombieXmas:
+                case NPCID.ArmedTorchZombie:
+                case NPCID.ArmedZombie:
+                case NPCID.ArmedZombieCenx:
+                case NPCID.ArmedZombiePincussion:
+                case NPCID.ArmedZombieSlimed:
+                case NPCID.ArmedZombieSwamp:
+                case NPCID.ArmedZombieTwiggy:
+                case NPCID.BaldZombie:
+                case NPCID.BigBaldZombie:
+                case NPCID.BigFemaleZombie:
+                case NPCID.BigPincushionZombie:
+                case NPCID.BigRainZombie:
+                case NPCID.BigSlimedZombie:
+                case NPCID.BigSwampZombie:
+                case NPCID.BigTwiggyZombie:
+                case NPCID.BigZombie:
+                case NPCID.BloodZombie:
+                case NPCID.FemaleZombie:
+                case NPCID.PincushionZombie:
+                case NPCID.SlimedZombie:
+                case NPCID.SmallBaldZombie:
+                case NPCID.SmallFemaleZombie:
+                case NPCID.SmallPincushionZombie:
+                case NPCID.SmallRainZombie:
+                case NPCID.SmallSlimedZombie:
+                case NPCID.SmallSwampZombie:
+                case NPCID.SmallTwiggyZombie:
+                case NPCID.SmallZombie:
+                case NPCID.SwampZombie:
+                case NPCID.TorchZombie:
+                case NPCID.TwiggyZombie:
+                case NPCID.AnglerFish:
+                case NPCID.AngryTrapper:
+                case NPCID.Arapaima:
+                case NPCID.ArmoredViking:
+                case NPCID.DesertBeast:
+                case NPCID.BlackRecluse:
+                case NPCID.BlackRecluseWall:
+                case NPCID.BloodFeeder:
+                case NPCID.Mummy:
+                case NPCID.BloodMummy:
+                case NPCID.DarkMummy:
+                case NPCID.LightMummy:
+                case NPCID.BlueArmoredBones:
+                case NPCID.BlueArmoredBonesMace:
+                case NPCID.BlueArmoredBonesNoPants:
+                case NPCID.BlueArmoredBonesSword:
+                case NPCID.BoneLee:
+                case NPCID.ChaosElemental:
+                case NPCID.Clinger:
+                case NPCID.BigMimicCorruption:
+                case NPCID.BigMimicCrimson:
+                case NPCID.BigMimicHallow:
+                case NPCID.BigMimicJungle:
+                case NPCID.CorruptSlime:
+                case NPCID.Corruptor:
+                case NPCID.Crimslime:
+                case NPCID.BigCrimslime:
+                case NPCID.LittleCrimslime:
+                case NPCID.CrimsonAxe:
+                case NPCID.CultistArcherBlue:
+                case NPCID.CultistArcherWhite:
+                case NPCID.CultistDevote:
+                case NPCID.CursedHammer:
+                case NPCID.Derpling:
+                case NPCID.Herpling:
+                case NPCID.DesertDjinn:
+                case NPCID.DiabolistRed:
+                case NPCID.DiabolistWhite:
+                case NPCID.DiggerBody:
+                case NPCID.DiggerHead:
+                case NPCID.DiggerTail:
+                case NPCID.DesertGhoul:
+                case NPCID.DesertGhoulCorruption:
+                case NPCID.DesertGhoulCrimson:
+                case NPCID.DesertGhoulHallow:
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerHead:
+                case NPCID.DuneSplicerTail:
+                case NPCID.DungeonSpirit:
+                case NPCID.EnchantedSword:
+                case NPCID.FloatyGross:
+                case NPCID.FlyingSnake:
+                case NPCID.Gastropod:
+                case NPCID.GiantBat:
+                case NPCID.GiantCursedSkull:
+                case NPCID.GiantFlyingFox:
+                case NPCID.GiantFungiBulb:
+                case NPCID.GiantTortoise:
+                case NPCID.IceTortoise:
+                case NPCID.HellArmoredBones:
+                case NPCID.HellArmoredBonesMace:
+                case NPCID.HellArmoredBonesSpikeShield:
+                case NPCID.HellArmoredBonesSword:
+                case NPCID.HoppinJack:
+                case NPCID.IceElemental:
+                case NPCID.Mimic:
+                case NPCID.IceMimic:
+                case NPCID.PresentMimic:
+                case NPCID.IchorSticker:
+                case NPCID.IcyMerman:
+                case NPCID.IlluminantBat:
+                case NPCID.IlluminantSlime:
+                case NPCID.JungleCreeper:
+                case NPCID.JungleCreeperWall:
+                case NPCID.DesertLamiaDark:
+                case NPCID.DesertLamiaLight:
+                case NPCID.Lavabat:
+                case NPCID.Lihzahrd:
+                case NPCID.LihzahrdCrawler:
+                case NPCID.Medusa:
+                case NPCID.Moth:
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                case NPCID.Paladin:
+                case NPCID.PigronCorruption:
+                case NPCID.PigronCrimson:
+                case NPCID.PigronHallow:
+                case NPCID.Pixie:
+                case NPCID.PossessedArmor:
+                case NPCID.RaggedCaster:
+                case NPCID.RaggedCasterOpenCoat:
+                case NPCID.RedDevil:
+                case NPCID.RockGolem:
+                case NPCID.RuneWizard:
+                case NPCID.RustyArmoredBonesAxe:
+                case NPCID.RustyArmoredBonesFlail:
+                case NPCID.RustyArmoredBonesSword:
+                case NPCID.RustyArmoredBonesSwordNoArmor:
+                case NPCID.DesertScorpionWalk:
+                case NPCID.DesertScorpionWall:
+                case NPCID.SkeletonArcher:
+                case NPCID.Slimeling:
+                case NPCID.Slimer:
+                case NPCID.Slimer2:
+                case NPCID.ToxicSludge:
+                case NPCID.Unicorn:
+                case NPCID.WanderingEye:
+                case NPCID.Werewolf:
+                case NPCID.Wolf:
+                case NPCID.SeekerBody:
+                case NPCID.SeekerHead:
+                case NPCID.SeekerTail:
+                case NPCID.Wraith:
+                case NPCID.WyvernBody:
+                case NPCID.WyvernBody2:
+                case NPCID.WyvernBody3:
+                case NPCID.WyvernHead:
+                case NPCID.WyvernLegs:
+                case NPCID.WyvernTail:
+                case NPCID.BloodEelBody:
+                case NPCID.BloodEelHead:
+                case NPCID.BloodEelTail:
+                case NPCID.BloodSquid:
+                case NPCID.ChatteringTeethBomb:
+                case NPCID.Clown:
+                case NPCID.CorruptBunny:
+                case NPCID.CorruptGoldfish:
+                case NPCID.CorruptPenguin:
+                case NPCID.Drippler:
+                case NPCID.GoblinShark:
+                case NPCID.TheGroom:
+                case NPCID.TheBride:
+                case NPCID.CrimsonBunny:
+                case NPCID.CrimsonGoldfish:
+                case NPCID.CrimsonPenguin:
+                case NPCID.EyeballFlyingFish:
+                case NPCID.Dandelion:
+                case NPCID.AngryNimbus:
+                case NPCID.FlyingFish:
+                case NPCID.IceGolem:
+                case NPCID.RainbowSlime:
+                case NPCID.UmbrellaSlime:
+                case NPCID.Tumbleweed:
+                case NPCID.SandShark:
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                case NPCID.SandsharkHallow:
+                case NPCID.SandElemental:
+                case NPCID.BloodNautilus:
+                case NPCID.GoblinArcher:
+                case NPCID.GoblinPeon:
+                case NPCID.GoblinSorcerer:
+                case NPCID.GoblinSummoner:
+                case NPCID.GoblinThief:
+                case NPCID.GoblinWarrior:
+                case NPCID.MisterStabby:
+                case NPCID.SnowBalla:
+                case NPCID.SnowmanGangsta:
+                case NPCID.Parrot:
+                case NPCID.PirateCaptain:
+                case NPCID.PirateCorsair:
+                case NPCID.PirateCrossbower:
+                case NPCID.PirateDeadeye:
+                case NPCID.PirateDeckhand:
+                case NPCID.PirateGhost:
+                case NPCID.PirateShipCannon:
+                case NPCID.MothronSpawn:
+                case NPCID.Mothron:
+                case NPCID.Butcher:
+                case NPCID.CreatureFromTheDeep:
+                case NPCID.DeadlySphere:
+                case NPCID.DrManFly:
+                case NPCID.Eyezor:
+                case NPCID.Frankenstein:
+                case NPCID.Fritz:
+                case NPCID.Nailhead:
+                case NPCID.Psycho:
+                case NPCID.Reaper:
+                case NPCID.ThePossessed:
+                case NPCID.SwampThing:
+                case NPCID.Vampire:
+                case NPCID.VampireBat:
+                case NPCID.BrainScrambler:
+                case NPCID.GigaZapper:
+                case NPCID.MartianWalker:
+                case NPCID.GrayGrunt:
+                case NPCID.MartianDrone:
+                case NPCID.MartianEngineer:
+                case NPCID.MartianOfficer:
+                case NPCID.RayGunner:
+                case NPCID.Scutlix:
+                case NPCID.ScutlixRider:
+                case NPCID.MartianTurret:
+                case NPCID.HeadlessHorseman:
+                case NPCID.Hellhound:
+                case NPCID.Splinterling:
+                case NPCID.Poltergeist:
+                case NPCID.Scarecrow1:
+                case NPCID.Scarecrow2:
+                case NPCID.Scarecrow3:
+                case NPCID.Scarecrow4:
+                case NPCID.Scarecrow5:
+                case NPCID.Scarecrow6:
+                case NPCID.Scarecrow7:
+                case NPCID.Scarecrow8:
+                case NPCID.Scarecrow9:
+                case NPCID.Scarecrow10:
+                case NPCID.ElfArcher:
+                case NPCID.ElfCopter:
+                case NPCID.Flocko:
+                case NPCID.GingerbreadMan:
+                case NPCID.Krampus:
+                case NPCID.Nutcracker:
+                case NPCID.NutcrackerSpinning:
+                case NPCID.Yeti:
+                case NPCID.NebulaBeast:
+                case NPCID.NebulaBrain:
+                case NPCID.NebulaHeadcrab:
+                case NPCID.NebulaSoldier:
+                case NPCID.SolarCorite:
+                case NPCID.SolarCrawltipedeBody:
+                case NPCID.SolarCrawltipedeHead:
+                case NPCID.SolarCrawltipedeTail:
+                case NPCID.SolarDrakomire:
+                case NPCID.SolarDrakomireRider:
+                case NPCID.SolarSolenian:
+                case NPCID.SolarSpearman:
+                case NPCID.SolarSroller:
+                case NPCID.StardustCellBig:
+                case NPCID.StardustCellSmall:
+                case NPCID.StardustJellyfishBig:
+                case NPCID.StardustWormBody:
+                case NPCID.StardustWormHead:
+                case NPCID.StardustWormTail:
+                case NPCID.StardustSoldier:
+                case NPCID.StardustSpiderBig:
+                case NPCID.StardustSpiderSmall:
+                case NPCID.VortexHornet:
+                case NPCID.VortexHornetQueen:
+                case NPCID.VortexLarva:
+                case NPCID.VortexRifleman:
+                case NPCID.VortexSoldier:
+                case NPCID.DD2DarkMageT1:
+                case NPCID.DD2DarkMageT3:
+                case NPCID.DD2OgreT2:
+                case NPCID.DD2OgreT3:
+                case NPCID.MartianSaucerCore:
+                case NPCID.MartianSaucerCannon:
+                case NPCID.MartianSaucerTurret:
+                case NPCID.DD2SkeletonT1:
+                case NPCID.DD2SkeletonT3:
+                case NPCID.DD2DrakinT2:
+                case NPCID.DD2DrakinT3:
+                case NPCID.DD2GoblinBomberT1:
+                case NPCID.DD2GoblinBomberT2:
+                case NPCID.DD2GoblinBomberT3:
+                case NPCID.DD2GoblinT1:
+                case NPCID.DD2GoblinT2:
+                case NPCID.DD2GoblinT3:
+                case NPCID.DD2JavelinstT1:
+                case NPCID.DD2JavelinstT2:
+                case NPCID.DD2JavelinstT3:
+                case NPCID.DD2KoboldFlyerT2:
+                case NPCID.DD2KoboldFlyerT3:
+                case NPCID.DD2KoboldWalkerT2:
+                case NPCID.DD2KoboldWalkerT3:
+                case NPCID.DD2LightningBugT3:
+                case NPCID.DD2WitherBeastT2:
+                case NPCID.DD2WitherBeastT3:
+                case NPCID.DD2WyvernT1:
+                case NPCID.DD2WyvernT2:
+                case NPCID.DD2WyvernT3:
+                case NPCID.SlimeSpiked:
+
+                    // Buff enemy HP by 25%
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * EnemyHPMultiplier);
+
+                    // Nerf a shitload of Master Mode enemies
+                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
+                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
+                    if (Main.masterMode)
+                    {
                         AdjustMasterModeStatScaling(npc);
                         npc.defDamage = npc.damage;
-                        break;
+                    }
 
-                    case NPCID.KingSlime:
-                    case NPCID.EyeofCthulhu:
-                    case NPCID.EaterofWorldsHead:
-                    case NPCID.EaterofWorldsBody:
-                    case NPCID.EaterofWorldsTail:
-                    case NPCID.BrainofCthulhu:
-                    case NPCID.Creeper:
-                    case NPCID.QueenBee:
-                    case NPCID.SkeletronHead:
-                    case NPCID.SkeletronHand:
-                    case NPCID.Deerclops:
-                    case NPCID.WallofFlesh:
-                    case NPCID.WallofFleshEye:
-                    case NPCID.QueenSlimeBoss:
-                    case NPCID.Retinazer:
-                    case NPCID.Spazmatism:
-                    case NPCID.TheDestroyer:
-                    case NPCID.TheDestroyerBody:
-                    case NPCID.TheDestroyerTail:
-                    case NPCID.SkeletronPrime:
-                    case NPCID.PrimeCannon:
-                    case NPCID.PrimeLaser:
-                    case NPCID.PrimeSaw:
-                    case NPCID.PrimeVice:
-                    case NPCID.Plantera:
-                    case NPCID.PlanterasTentacle:
-                    case NPCID.Golem:
-                    case NPCID.GolemHead:
-                    case NPCID.GolemHeadFree:
-                    case NPCID.GolemFistLeft:
-                    case NPCID.GolemFistRight:
-                    case NPCID.HallowBoss:
-                    case NPCID.DukeFishron:
-                    case NPCID.CultistBoss:
-                    case NPCID.MoonLordCore:
-                    case NPCID.MoonLordFreeEye:
-                    case NPCID.MoonLordHand:
-                    case NPCID.MoonLordHead:
+                    break;
+
+                case NPCID.AncientCultistSquidhead:
+                    // This guy only gets Master Mode nerfs
+                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
+                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
+                    if (Main.masterMode)
+                    {
+                        AdjustMasterModeStatScaling(npc);
+                        npc.defDamage = npc.damage;
+                    }
+                    break;
+
+                case NPCID.KingSlime:
+                case NPCID.EyeofCthulhu:
+                case NPCID.EaterofWorldsHead:
+                case NPCID.EaterofWorldsBody:
+                case NPCID.EaterofWorldsTail:
+                case NPCID.BrainofCthulhu:
+                case NPCID.Creeper:
+                case NPCID.QueenBee:
+                case NPCID.SkeletronHead:
+                case NPCID.SkeletronHand:
+                case NPCID.Deerclops:
+                case NPCID.WallofFlesh:
+                case NPCID.WallofFleshEye:
+                case NPCID.QueenSlimeBoss:
+                case NPCID.Retinazer:
+                case NPCID.Spazmatism:
+                case NPCID.TheDestroyer:
+                case NPCID.TheDestroyerBody:
+                case NPCID.TheDestroyerTail:
+                case NPCID.SkeletronPrime:
+                case NPCID.PrimeCannon:
+                case NPCID.PrimeLaser:
+                case NPCID.PrimeSaw:
+                case NPCID.PrimeVice:
+                case NPCID.Plantera:
+                case NPCID.PlanterasTentacle:
+                case NPCID.Golem:
+                case NPCID.GolemHead:
+                case NPCID.GolemHeadFree:
+                case NPCID.GolemFistLeft:
+                case NPCID.GolemFistRight:
+                case NPCID.HallowBoss:
+                case NPCID.DukeFishron:
+                case NPCID.CultistBoss:
+                case NPCID.MoonLordCore:
+                case NPCID.MoonLordFreeEye:
+                case NPCID.MoonLordHand:
+                case NPCID.MoonLordHead:
+
+                    if (Main.masterMode)
                         AdjustMasterModeStatScaling(npc, true);
-                        break;
-                }
+
+                    break;
             }
         }
         #endregion
@@ -3137,7 +3464,7 @@ namespace CalamityMod.NPCs
             // Rebalance coin drops so that Normal Mode enemies and bosses drop an adequate amount of coins.
 
             // Increase Normal Mode coin drops by 1.5x.
-            npc.value = (int)(npc.value * NPCValueMultiplier_NormalCalamity);
+            npc.value = (int)(npc.value * NPCValueMultiplier_ClassicCalamity);
 
             // Change the Expert Mode coin drop multiplier.
             if (Main.expertMode)
@@ -3220,7 +3547,7 @@ namespace CalamityMod.NPCs
                 return;
 
             bool countsAsBoss = npc.boss || NPCID.Sets.ShouldBeCountedAsBoss[npc.type];
-            bool scalesLikeBoss = countsAsBoss || CalamityLists.bossHPScaleList.Contains(npc.type);
+            bool scalesLikeBoss = countsAsBoss || BossHPScalingList.List.Contains(npc.type);
             bool isCalamityNPC = npc.ModNPC != null && npc.ModNPC.Mod == CalamityMod.Instance;
 
             // All bosses, NPCs that are supposed to scale like bosses, and Calamity NPCs follow these rules.
@@ -3289,18 +3616,18 @@ namespace CalamityMod.NPCs
 
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
-            int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? WitherDebuff.DefenseReduction : 0) + miscDefenseLoss;
+            int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
             modifiers.ArmorPenetration += defenseReduction;
 
             // DR applies after vanilla defense.
             ApplyDR(npc, ref modifiers);
 
             // Damage reduction on spawn for certain worm bosses.
-            if (CalamityLists.EaterofWorldsIDs.Contains(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
+            if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
-            if (CalamityLists.DestroyerIDs.Contains(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
+            if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
                 modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
-            if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
+            if (AstrumDeusIDList.Includes(npc.type))
             {
                 float drTime = newAI[0] != 0f ? 300f : 600f;
                 if (newAI[1] < drTime)
@@ -3328,10 +3655,10 @@ namespace CalamityMod.NPCs
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             // Cirrus being active makes the extra DR cease to function
             bool cirrusBossActive = false;
-            if (CalamityGlobalNPC.SCal != -1)
+            if (SCal != -1)
             {
-                if (Main.npc[CalamityGlobalNPC.SCal].active)
-                    cirrusBossActive = Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
+                if (Main.npc[SCal].active)
+                    cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
             bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
@@ -3372,14 +3699,14 @@ namespace CalamityMod.NPCs
                 calcDR *= 0.5f;
             if (absorberAffliction > 0)
                 calcDR *= 0.8f;
-            if (npc.betsysCurse)
-                calcDR *= 0.66f;
             if (npc.Calamity().kamiFlu > 0)
-                calcDR *= KamiFlu.MultiplicativeDamageReduction;
+                calcDR *= YanmeisKnife.DebuffDamageReductionMult;
             if (npc.Calamity().aCrunch > 0)
                 calcDR *= ArmorCrunch.MultiplicativeDamageReductionEnemy;
             if (npc.Calamity().crumble > 0)
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
+            if (relicOfResilienceWeakness > 0)
+                calcDR *= 0.5f;
 
 
             return calcDR;
@@ -3408,7 +3735,6 @@ namespace CalamityMod.NPCs
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             FlatEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            FlatEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             FlatEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -3427,7 +3753,6 @@ namespace CalamityMod.NPCs
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
             MultEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            MultEditDR(ref calcDR, npc.betsysCurse, BuffID.BetsysCurse);
             MultEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
 
             // Modded debuffs are handled modularly and use HasBuff.
@@ -3448,7 +3773,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
-                    index = CalamityMod.chadPrimeIcon;
+                    index = ExtraTextureRefs.BossHeadIndex_ChadPrime;
 
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
@@ -3516,7 +3841,7 @@ namespace CalamityMod.NPCs
             }
 
             // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            if (CalamityLists.ZeroContactDamageNPCList.Contains(npc.type) && (npc.type != NPCID.RuneWizard || !Main.zenithWorld))
+            if (ZeroContactDamageNPCList.Includes(npc.type) && (npc.type != NPCID.RuneWizard || !Main.zenithWorld))
                 npc.damage = 0;
 
             // Don't do damage for 42 frames after spawning in
@@ -3677,7 +4002,7 @@ namespace CalamityMod.NPCs
                             SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
                             for (int i = 0; i < 20; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, 18, 0f, 0f, 100, default, 1.8f);
+                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, DustID.CorruptGibs, 0f, 0f, 100, default, 1.8f);
                                 Main.dust[dust].velocity *= 1.3f;
                                 Main.dust[dust].velocity += npc.velocity;
                                 Main.dust[dust].noGravity = true;
@@ -3695,7 +4020,7 @@ namespace CalamityMod.NPCs
                         npc.position += npc.netOffset;
                         for (int i = 0; i < 2; i++)
                         {
-                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
+                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.CorruptGibs, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
                             Main.dust[dust].velocity *= 0.3f;
                             Main.dust[dust].noGravity = true;
                         }
@@ -5179,14 +5504,9 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
-            // Incremement Giant Pearl's pearl shard counter
-            pearlAuraCounter++;
-
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
-            if (knockbackResistanceTimer > 0)
-                knockbackResistanceTimer--;
 
             if (timeSlow > 0)
                 timeSlow--;
@@ -5281,10 +5601,6 @@ namespace CalamityMod.NPCs
                 sulphurPoison--;
             if (sagePoisonTime > 0)
                 sagePoisonTime--;
-            if (relicOfResilienceCooldown > 0)
-                relicOfResilienceCooldown--;
-            if (relicOfResilienceWeakness > 0)
-                relicOfResilienceWeakness--;
             if (GaussFluxTimer > 0)
                 GaussFluxTimer--;
             if (ladHearts > 0)
@@ -5296,12 +5612,80 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
-            if (cobaltNerfTimer > 0)
-                cobaltNerfTimer--;
-            if (mythrilNerfTimer > 0)
-                mythrilNerfTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
+
+            if (relicOfResilienceWeakness > 0)
+                relicOfResilienceWeakness--;
+
+            if (warbannerBurnTimer > 0)
+                warbannerBurnTimer--;
+            if (warbannerBurnTimer == 0 && warbannerBurnMarked)
+            {
+                warbannerBurnTime = 0;
+                warbannerBurnDamage = 0;
+                warbannerBurnMarked = false;
+                warbannerBurnStacks = 0;
+            }
+            if (warbannerBurnMarked)
+            {
+                int maxStacks = 300; // Time in frames needed to reach max power
+                int fastestBurnRate = 2;
+                int slowestBurnRate = 15;
+                float burnPower = Utils.Remap(warbannerBurnStacks, 0, maxStacks, slowestBurnRate, fastestBurnRate, true);
+
+                float sizeBonus = (1 + Utils.GetLerpValue(0, 170, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f)));
+
+                if (!warbannerBurnHideEffects)
+                {
+                    Lighting.AddLight(npc.Center, Color.Gold.ToVector3() * 0.3f * warbannerBurnIntensity);
+                }
+                if (warbannerBurnStacks == maxStacks && !warbannerBurnHideEffects)
+                {
+                    // Sound and visual for hitting max stacks
+                    for (int i = 0; i < 15; i++)
+                    {
+                        Particle spark = new SparkParticle(npc.Center, new Vector2(13, 13).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 1f), true, 45, 0.85f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    SoundStyle fullPower = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
+                    SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
+                    warbannerBurnStacks++;
+                }
+                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved(true))
+                {
+                    npc.velocity *= 1f - 0.25f * Utils.GetLerpValue(2.5f, 3, warbannerBurnIntensity);
+                    if (npc.velocity.Length() > 5 && warbannerBurnIntensity > 2.85f) // Repel leaping enemies
+                        npc.velocity = -npc.velocity * 0.7f;
+                }
+                if (warbannerBurnTime == 0)
+                {
+                    if (!warbannerBurnHideEffects)
+                    {
+                        int particleLevel = (int)(MathHelper.Clamp((slowestBurnRate - burnPower) * 0.15f, 1, 2) * warbannerBurnIntensity);
+                        for (int d = 0; d < particleLevel; d++)
+                        {
+                            Color color = Main.rand.NextBool() ? Color.Goldenrod : Color.Lerp(Color.OrangeRed, Color.Orange, Main.rand.NextFloat(0, 1)); ;
+                            Vector2 sparkPos = npc.Center - warbannerBurnDirection * 220 * Utils.GetLerpValue(0, 200, Math.Max(npc.Hitbox.Width / 2f, npc.Hitbox.Height / 2f));
+                            float velAdjust = Main.rand.NextFloat(2, 7) * warbannerBurnIntensity * sizeBonus;
+                            Vector2 endVel = warbannerBurnDirection * velAdjust;
+                            Vector2 startVel = (warbannerBurnDirection * velAdjust).RotatedByRandom(0.6f * warbannerBurnIntensity);
+                            Particle sparks = new VelChangingSpark(sparkPos, startVel, endVel, "CalamityMod/Particles/SmallBloom", Main.rand.Next(18, 22 + 1), Main.rand.NextFloat(0.1f, 0.25f) * sizeBonus, color * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.1f);
+                            GeneralParticleHandler.SpawnParticle(sparks);
+                            Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.7f, 1.1f) * sizeBonus);
+                            lust2.noGravity = true;
+                            lust2.color = color;
+                            lust2.noLightEmittence = true;
+                        }
+                    }
+                    var player = Main.LocalPlayer;
+                    Projectile burnHit = Projectile.NewProjectileDirect(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<WarbannerDamage>(), (int)(warbannerBurnDamage * warbannerBurnIntensity), 0, Main.myPlayer, npc.whoAmI);
+                    burnHit.ArmorPenetration = 50;
+                    warbannerBurnTime = (int)(burnPower + (3 - warbannerBurnIntensity) * 4);
+                }
+                warbannerBurnTime--;
+            }
+
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -5313,7 +5697,7 @@ namespace CalamityMod.NPCs
                 }
 
                 SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
-                Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, 200f);
+                Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, npc.whoAmI);
 
                 veriumDoomMarked = false;
                 veriumDoomStacks = 0;
@@ -5331,7 +5715,6 @@ namespace CalamityMod.NPCs
                 if (player.miscCounter % frequency == 0)
                 {
                     int sDamage = strongerShock ? 50 : 10;
-                    sDamage = player.ApplyArmorAccDamageBonusesTo(sDamage);
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
@@ -5347,13 +5730,29 @@ namespace CalamityMod.NPCs
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
-            if (pearlAura > 0 && pearlAuraCounter % 12 == 0)
+            if (pearlAura > 0)
             {
-                SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
-                Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
-                Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                pearlAuraCounter++;
+                if (pearlAuraCounter >= 45)
+                {
+                    pearlAuraCounter = 0;
+                    SoundEngine.PlaySound(SoundID.Item49, npc.Center);
+
+                    // Prevent things from getting too crazy
+                    if (CalamityUtils.CountProjectiles(ProjectileType<PearlAuraShard>()) <= 3)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
+                            Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
+                            int damage = 20;
+                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                        }
+                    }
+                }
             }
+            else
+                pearlAuraCounter = 0;
 
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
@@ -5365,8 +5764,8 @@ namespace CalamityMod.NPCs
                 // Slowing debuffs which set a velocity hard cap take priority first.
                 if (vulnerabilityHex > 0)
                     npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
-                else if (kamiFlu > 300)
-                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
+                else if (kamiFlu > 360)
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-YanmeisKnife.DebuffNPCSpeedCap), new Vector2(YanmeisKnife.DebuffNPCSpeedCap));
 
                 // Then debuffs which apply a multiplier to velocity.
                 // These multipliers can stack with each other, even if you'll rarely see this on a boss.
@@ -5721,8 +6120,27 @@ namespace CalamityMod.NPCs
         #region Modify Hit
         public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
+            List<int> SharkIDs =
+            [
+                NPCID.Shark,
+                NPCID.DukeFishron,
+                NPCID.Sharkron,
+                NPCID.Sharkron2,
+                NPCID.SandShark,
+                NPCID.SandsharkCorrupt,
+                NPCID.SandsharkCrimson,
+                NPCID.SandsharkHallow,
+                NPCID.GoblinShark,
+                NPCType<FusionFeeder>(),
+                NPCType<GreatSandShark.GreatSandShark>(),
+                NPCType<Mauler>(),
+                NPCType<OldDuke.OldDuke>(),
+                NPCType<SulphurousSharkron>(),
+                NPCType<ReaperShark>()
+            ];
+
             // Kaguya hair boom GIF
-            if (npc.type == NPCID.Shark && target.name == "Rebecca" && Main.zenithWorld)
+            if (SharkIDs.Contains(npc.type) && target.name == "Rebecca" && Main.zenithWorld)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
@@ -5747,21 +6165,21 @@ namespace CalamityMod.NPCs
                 modifiers.SourceDamage *= 0.1f;
 
             // True melee resists
-            if (CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper ||
-                CalamityLists.PerforatorIDs.Contains(npc.type) || CalamityLists.AquaticScourgeIDs.Contains(npc.type) || CalamityLists.DestroyerIDs.Contains(npc.type) ||
-                CalamityLists.AstrumDeusIDs.Contains(npc.type) || CalamityLists.StormWeaverIDs.Contains(npc.type) || CalamityLists.ThanatosIDs.Contains(npc.type) ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || CalamityLists.AresIDs.Contains(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
+            if (DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper ||
+                PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
+                AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) ||
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
                 npc.type == NPCType<ProfanedRocks>())
             {
-                float damageMult = CalamityLists.ThanatosIDs.Contains(npc.type) ? 0.35f : 0.5f;
-                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<UltimusCleaver>() && item.type != ItemType<InfernaCutter>())
+                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : (DesertScourgeIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
+                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
         }
         #endregion
 
         #region Modify Hit By Projectile
-        public static bool DisableMultWhipTag = false; 
+        public static bool DisableMultWhipTag = false;
         //this bool does nothing on this branch, its just here so that CalTestHelpers doesn't crash searching for it
         //if you want to mess with this, please do so in the summoner branch - Shade
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
@@ -5820,7 +6238,6 @@ namespace CalamityMod.NPCs
 
                 // Don't allow large hitbox projectiles or explosions to "snipe" enemies.
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
-                bool hitBullseye = false;
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
                 if (bullseye != null && acceptableVelocity && acceptableHitbox)
@@ -5851,19 +6268,39 @@ namespace CalamityMod.NPCs
                     bool willStrikeBullseye = dotCenter > dotOne && dotCenter > dotTwo;
 
                     // If a bullseye is triggered, set it as hit.
-                    if (willStrikeBullseye && bullseye.ai[1] == 0f)
+                    if (willStrikeBullseye)
                     {
-                        modifiers.SetCrit();
-                        hitBullseye = true;
-                        bullseye.ai[1] = 1f; // Make the bullseye disappear immediately.
+                        // 08OCT2024: Ozzatron: this can be abused by firing a ton of shots then hotswapping to AMR while they are in flight
+                        // we will need IEntitySource item use time provenance to fix this, and even that is unreliable with holdouts
+                        modPlayer.spiritOriginCritBoost += player.ActiveItem().useTime;
+
+                        if (bullseye.ai[2] == 0f)
+                        {
+                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime;
+                            bullseye.ai[2] = 1f;
+                        }
+
+                        if (Main.rand.NextBool(5))
+                        {
+                            int randomStarAmount = Main.rand.Next(3, 6);
+                            float randomCircleRotation = Main.rand.NextFloat(MathHelper.TwoPi);
+                            for (int i = 0; i < randomStarAmount; i++)
+                            {
+                                Particle fancyStars = new FancyStars(
+                                bullseye.Center,
+                                Main.rand.NextFloat(MathHelper.TwoPi) * Main.rand.NextBool().ToDirectionInt(),
+                                Main.rand.NextFloat(0.42f, 0.63f),
+                                (MathHelper.TwoPi / randomStarAmount * i).ToRotationVector2().RotatedBy(randomCircleRotation).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(7f, 12f),
+                                Main.rand.NextFloat(0.1f, 0.5f),
+                                55,
+                                new Color(Main.rand.Next(256), Main.rand.Next(256), Main.rand.Next(256)) * 1.2f);
+                                GeneralParticleHandler.SpawnParticle(fancyStars);
+                            }
+                        }
+
                         bullseye.netUpdate = true;
                     }
                 }
-
-                // The bonus provided by Daawnlight Spirit Origin can be computed as a complete replacement to regular crits.
-                // As such, it is subtracted by the base critical strike damage boost of 200%
-                float bonus = DaawnlightSpiritOrigin.GetDamageMultiplier(player, modPlayer, hitBullseye, cgp.forcedCrit) - 2f;
-                modifiers.CritDamage += bonus;
             }
 
             if (!projectile.npcProj && !projectile.trap)
@@ -5894,21 +6331,25 @@ namespace CalamityMod.NPCs
             // Apply balancing resists/vulnerabilities.
             BalancingChangesManager.ApplyFromProjectile(npc, ref modifiers, projectile);
 
-            if (CalamityLists.GrenadeResistIDs.Contains(projectile.type))
+            if (GrenadeResistIDList.Includes(projectile.type))
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
-                bool hasResist = CalamityLists.EaterofWorldsIDs.Contains(npc.type) && !Main.expertMode;
+                // Note that Calamity reduces the vanilla resist from 80% to 60%
+                bool hasResist = EaterOfWorldsIDList.Includes(npc.type) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
-                if (npc.type == NPCID.Creeper || CalamityLists.DesertScourgeIDs.Contains(npc.type) || CalamityLists.PerforatorIDs.Contains(npc.type))
+                if (npc.type == NPCID.Creeper || DesertScourgeIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type))
                     hasResist = true;
                 if (hasResist)
-                    modifiers.SourceDamage *= 0.2f;
+                    modifiers.SourceDamage *= 0.4f;
             }
 
-            if (CalamityLists.pierceResistList.Contains(npc.type))
+            if (PierceResistList.Includes(npc.type))
                 PierceResistGlobal(projectile, npc, ref modifiers);
 
             if (modPlayer.camper && !player.StandingStill())
+                modifiers.SourceDamage *= 0.1f;
+
+            if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;
 
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
@@ -5920,11 +6361,11 @@ namespace CalamityMod.NPCs
         private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
         {
             // Thanatos segments do not trigger pierce resistance if they are closed
-            if (CalamityLists.ThanatosIDs.Contains(npc.type) && unbreakableDR)
+            if (ThanatosIDList.Includes(npc.type) && unbreakableDR)
                 return;
 
             // Isolates projectiles which ignore pierce resist only on Leviathan and Astrum Aureus
-            if ((npc.type == NPCType<Leviathan.Leviathan>() || npc.type == NPCType<AstrumAureus.AstrumAureus>()) && CalamityLists.pierceResistExceptionLeviAureusList.Contains(projectile.type))
+            if ((npc.type == NPCType<Leviathan.Leviathan>() || npc.type == NPCType<AstrumAureus.AstrumAureus>()) && PierceResistExceptionLeviAureusList.Includes(projectile.type))
                 return;
 
             float damageReduction = projectile.Calamity().timesPierced * CalamityGlobalProjectile.PierceResistHarshness;
@@ -5933,7 +6374,7 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !CalamityLists.pierceResistExceptionList.Contains(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
                 projectile.Calamity().timesPierced++;
         }
 
@@ -6040,9 +6481,10 @@ namespace CalamityMod.NPCs
                 NPC.downedMoonlord &&
                 Main.player[npc.target].ZoneDungeon)
             {
-                int maxValue = Main.expertMode ? 4 : 6;
+                // This value can change by (on average) 0.75x or 1.25x depending on your having positive or negative luck
+                int baseValue = Main.expertMode ? 4 : 6;
 
-                if (Main.rand.NextBool(maxValue) && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
+                if (Main.player[npc.target].RollLuck(baseValue) == 0 && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
                 {
                     int randomType = Utils.SelectRandom(Main.rand, new int[]
                     {
@@ -6064,7 +6506,7 @@ namespace CalamityMod.NPCs
         public override void HitEffect(NPC npc, NPC.HitInfo hit)
         {
             if (npc.life <= 0 && npc.Organic() && ashesOnDeath > 0)
-                DeathAshParticle.CreateAshesFromNPC(npc);
+                DeathAshParticle.CreateAshesFromNPC(npc, Vector2.Zero);
 
             // Cultist shield flicker
             if (npc.type == NPCID.CultistBoss)
@@ -6300,11 +6742,6 @@ namespace CalamityMod.NPCs
             {
                 spawnRate = (int)(spawnRate * 1.1);
                 maxSpawns = (int)(maxSpawns * 0.9f);
-            }
-            if (player.calmed)
-            {
-                spawnRate = (int)(spawnRate * 1.2);
-                maxSpawns = (int)(maxSpawns * 0.8f);
             }
             if (player.Calamity().tranquilityCandle)
             {
@@ -6629,6 +7066,16 @@ namespace CalamityMod.NPCs
                 if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                     npc.frameCounter = 0D;
             }
+            // Increment the bestiary worm timer when hovering over the NPC or having their entry open. Pauses otherwise
+            if (npc.IsABestiaryIconDummy)
+            {
+                bestiaryWormTimer += 0.02f;
+                // Resets after an hour. No sane human being is looking at a bestiary entry for an hour straight
+                if (bestiaryWormTimer > 4320)
+                {
+                    bestiaryWormTimer = 0;
+                }
+            }
         }
 
         // Debuff visuals. Alphabetical order as per usual, please
@@ -6710,6 +7157,9 @@ namespace CalamityMod.NPCs
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
+            if (relicOfResilienceWeakness > 0)
+                ProfanedWeakness.DrawEffects(npc, ref drawColor);
+
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
@@ -6776,42 +7226,6 @@ namespace CalamityMod.NPCs
                         Main.dust[dust].noGravity = false;
                         Main.dust[dust].scale *= 0.5f;
                     }
-                }
-            }
-
-            // Cobalt weapons reduce NPC defense
-            if (cobaltNerfTimer > 0)
-            {
-                miscDefenseLoss = (int)(npc.defense * 0.25);
-
-                // Particle effects
-                if (Main.rand.NextBool(5))
-                {
-                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
-                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
-
-                    Particle cobaltArrow = new StatDownArrow(spawnLocation, velocity, new Color(27, 141, 235), new Color(0, 94, 181), 0.75f, 15);
-                    GeneralParticleHandler.SpawnParticle(cobaltArrow);
-                }
-            }
-
-            // Mythril weapons reduce NPC contact damage
-            if (mythrilNerfTimer > 0)
-            {
-                // Ensure that it isn't trying to set a non-zero damage value if the NPC's damage is currently 0
-                if (npc.damage == 0)
-                    npc.damage = 0;
-                else
-                    npc.damage = (int)(npc.defDamage * 0.9);
-
-                // Particle effects
-                if (Main.rand.NextBool(5))
-                {
-                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
-                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
-
-                    Particle mythrilArrow = new StatDownArrow(spawnLocation, velocity, new Color(35, 217, 144), new Color(23, 145, 97), 0.75f, 15);
-                    GeneralParticleHandler.SpawnParticle(mythrilArrow);
                 }
             }
 
@@ -6888,7 +7302,7 @@ namespace CalamityMod.NPCs
             if (npc.HasBuff<Enraged>())
                 return new Color(200, 50, 50, 255 - npc.alpha);
 
-            if (npc.Calamity().kamiFlu > 0 && !CalamityLists.kamiDebuffColorImmuneList.Contains(npc.type))
+            if (npc.Calamity().kamiFlu > 0 && !KamiDebuffColorImmuneList.Includes(npc.type))
                 return new Color(51, 197, 108, 255 - npc.alpha);
 
             if (npc.type == NPCID.VileSpit || npc.type == NPCID.VileSpitEaterOfWorlds)
@@ -6951,9 +7365,31 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (npc.IsABestiaryIconDummy)
+            {
+                switch (npc.netID)
+                {
+                    case NPCID.DiggerHead:
+                    case NPCID.GiantWormHead:
+                    case NPCID.EaterofWorldsHead:
+                    case NPCID.WyvernHead:
+                    case NPCID.StardustWormHead:
+                    case NPCID.SolarCrawltipedeHead:
+                    case NPCID.CultistDragonHead:
+                    case NPCID.TheDestroyer:
+                    case NPCID.LeechHead:
+                    case NPCID.DevourerHead:
+                    case NPCID.TombCrawlerHead:
+                    case NPCID.DuneSplicerHead:
+                    case NPCID.BloodEelHead:
+                    case NPCID.BoneSerpentHead:
+                    case NPCID.SeekerHead:
+                        return DrawVanillaBestiaryWorms(spriteBatch, npc, drawColor);
+                }
+            }
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
-                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
+                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || NeedsDebuffIconDisplayList.Includes(npc.type)))
                 {
                     List<Texture2D> currentDebuffs = new List<Texture2D>() { };
 
@@ -7066,7 +7502,7 @@ namespace CalamityMod.NPCs
                         spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
 
                         // Shred stack display
-                        if (currentDebuffs[i] == TextureAssets.Buff[ModContent.BuffType<Shred>()].Value)
+                        if (currentDebuffs[i] == TextureAssets.Buff[BuffType<Shred>()].Value)
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
                 }
@@ -7076,7 +7512,7 @@ namespace CalamityMod.NPCs
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || CalamityLists.DestroyerIDs.Contains(npc.type))
+                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc.type))
                     return false;
             }
 
@@ -7343,7 +7779,7 @@ namespace CalamityMod.NPCs
             }
 
             // Destroyer drawing and laser telegraphs
-            else if (CalamityLists.DestroyerIDs.Contains(npc.type))
+            else if (DestroyerIDList.Includes(npc.type) && !npc.IsABestiaryIconDummy)
             {
                 Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
                 int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
@@ -7469,7 +7905,7 @@ namespace CalamityMod.NPCs
                         }
                     }
 
-                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
+                    Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerHeadGlowmask.Value : TextureAssets.Dest[0].Value;
                     switch (npc.type)
                     {
                         default:
@@ -7477,11 +7913,11 @@ namespace CalamityMod.NPCs
                             break;
 
                         case NPCID.TheDestroyerBody:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
+                            glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
                             break;
 
                         case NPCID.TheDestroyerTail:
-                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
+                            glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
                             break;
                     }
 
@@ -7491,10 +7927,10 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.NewVanillaTextures)
+            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.EnableVanillaTextureEdits)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
-                Texture2D glowTexture = CalamityMod.ProbeGlowmask.Value;
+                Texture2D glowTexture = ExtraTextureRefs.ProbeGlowmask.Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (npc.spriteDirection == -1)
@@ -7805,7 +8241,7 @@ namespace CalamityMod.NPCs
                     float eyeTelegraphGateValue = WallOfFleshAI.LaserShootGateValue - WallOfFleshAI.LaserShootTelegraphTime;
                     if (npc.localAI[1] > eyeTelegraphGateValue || npc.localAI[2] > 0f || enraged)
                     {
-                        Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                        Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
                         Vector2 halfSize = npc.frame.Size() / 2;
                         SpriteEffects spriteEffects = SpriteEffects.None;
                         if (npc.spriteDirection == 1)
@@ -7827,7 +8263,7 @@ namespace CalamityMod.NPCs
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                 {
-                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? CalamityMod.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
+                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
                     npc.frame.Y = (int)newAI[3];
@@ -7894,7 +8330,7 @@ namespace CalamityMod.NPCs
                     {
                         int alpha = 192;
                         eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
-                        Texture2D glowTexture = npc.type == NPCID.SkeletronPrime ? CalamityMod.ChadPrimeEyeGlowmask.Value : SkeletronPrime2.EyeTexture.Value;
+                        Texture2D glowTexture = npc.type == NPCID.SkeletronPrime ? ExtraTextureRefs.ChadPrimeEyeGlowmask.Value : SkeletronPrime2.EyeTexture.Value;
                         spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
                     }
                     else
@@ -8023,6 +8459,92 @@ namespace CalamityMod.NPCs
             newColor.B = (byte)((float)newColor.B * B);
             newColor.A = (byte)((float)newColor.A * A);
             return newColor;
+        }
+
+        public static bool DrawVanillaBestiaryWorms(SpriteBatch spriteBatch, NPC npc, Color drawColor)
+        {
+            npc.Opacity = 1;
+            int segments = 6;
+            int spacing = 20;
+            int bashLength = 0;
+            float bashSpeed = 0f;
+            int speed = 3;
+            float rotation = 0.6f;
+            Texture2D wyvernArm = TextureAssets.Npc[NPCID.WyvernLegs].Value;
+            Texture2D wyvernBody = TextureAssets.Npc[NPCID.WyvernBody].Value;
+            switch (npc.netID)
+            {
+                case NPCID.DiggerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 24, 0.4f, Vector2.Zero, speed, 10, 10, 0.2f);
+                case NPCID.GiantWormHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
+                case NPCID.EaterofWorldsHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 34, 0.2f, new Vector2(30, 0), speed, 10, 16, 0.24f);
+                case NPCID.WyvernHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, [wyvernArm, wyvernBody, wyvernBody, wyvernBody], 4, 28, 0.1f, new Vector2(36, 0), speed, 6, 50, 0.3f, true);
+                case NPCID.StardustWormHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, rotation, new Vector2(0, 10), 4, 10, 6, 0.18f);
+                case NPCID.SolarCrawltipedeHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, 6, 10, 16, 0.22f);
+                case NPCID.CultistDragonHead:
+                    return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
+                case NPCID.TheDestroyer:
+                    return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
+                case NPCID.LeechHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
+                case NPCID.DevourerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
+                case NPCID.TombCrawlerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 14, rotation, Vector2.Zero, speed, 20, 6, 0.14f);
+                case NPCID.DuneSplicerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 28, 0.4f, Vector2.Zero, speed, 10, bashLength, bashSpeed);
+                case NPCID.BloodEelHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 6, 22, 0.1f, Vector2.Zero, speed, 6, 20, 0.2f, true);
+                case NPCID.BoneSerpentHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 16, rotation, Vector2.Zero, speed, 10, 30, 0.4f);
+                case NPCID.SeekerHead:
+                    return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
+            }
+            return true;
+        }
+
+        public static bool DrawSpecialBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor)
+        {
+            // This is solely for The Destroyer and the Phantasm Dragon due to having more than 1 frame each but only for specific segments
+            bool dragon = npc.type == NPCID.CultistDragonHead;
+            Texture2D headTexture = TextureAssets.Npc[npc.type].Value;
+            float wormTimer = npc.Calamity().bestiaryWormTimer;
+            // Dragon head has 3 frames, Destroyer has 1
+            int frameAmt = dragon ? 3 : 1;
+            npc.frame = TextureAssets.Npc[npc.type].Frame(1, frameAmt, 0, 0);
+            Vector2 baseOffset = new Vector2(dragon ? 0 : 20, dragon ? 0 : 20);
+            // Buffers the segment position and rotations
+            float offset = -0.2f;
+            float startX = baseOffset.X;
+            float startY = baseOffset.Y;
+            int segmentSpacing = dragon ? 32 : 38;
+            int animationSpeed = 3;
+            int range = 10;
+            int headOffset = dragon ? 40 : 20;
+            float headSpeedOffset = dragon ? 0.2f : 0.16f;
+            float rotationStrength = 0.2f;
+            // Draw the body segments
+            for (int i = 4; i > 0; i--)
+            {
+                // The first segment is slightly closer to keep up with the head
+                float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                // Second dragon segment uses the arm, rest use the normal body
+                Texture2D toUse = i == 2 ? TextureAssets.Npc[NPCID.CultistDragonBody1].Value : TextureAssets.Npc[NPCID.CultistDragonBody2].Value;
+                // If it's The Destroyer instead use his texture and increase the frame count to two
+                if (!dragon)
+                    toUse = TextureAssets.Npc[NPCID.TheDestroyerBody].Value;
+                int bodyFrameAmt = dragon ? 1 : 2;
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, bodyFrameAmt, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(toUse.Width * 0.5f, toUse.Height * 0.5f / bodyFrameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+            }
+            // Draw the head
+            spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height / (float)frameAmt), npc.scale, SpriteEffects.FlipHorizontally, 0f);
+            return false;
         }
         #endregion
 
@@ -8231,7 +8753,7 @@ namespace CalamityMod.NPCs
         {
             if (!GetDownedBossVariable(npc.type))
             {
-                CalamityLists.bossTypes.TryGetValue(npc.type, out int newBossTypeJustDowned);
+                BossTypeDict.TryGet(npc.type, out int newBossTypeJustDowned);
 
                 for (int i = 0; i < Main.maxPlayers; i++)
                 {
@@ -8241,7 +8763,7 @@ namespace CalamityMod.NPCs
 
                     CalamityPlayer mp = player.Calamity();
                     mp.lastSplitType = newBossTypeJustDowned;
-                    mp.lastSplit = mp.previousSessionTotal.Add(CalamityMod.SpeedrunTimer.Elapsed);
+                    mp.lastSplit = mp.previousSessionTotal.Add(SpeedrunTimerSystem.Elapsed);
                 }
             }
         }
@@ -8274,13 +8796,13 @@ namespace CalamityMod.NPCs
         #region Should Affect NPC
         public static bool ShouldAffectNPC(NPC target)
         {
-            if (CalamityLists.EaterofWorldsIDs.Contains(target.type) || CalamityLists.DestroyerIDs.Contains(target.type))
+            if (EaterOfWorldsIDList.Includes(target.type) || DestroyerIDList.Includes(target.type))
                 return false;
 
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&
                 target.type != NPCID.MourningWood && target.type != NPCID.Everscream && target.type != NPCID.SantaNK1 && target.type != NPCType<RavagerClawRight>() &&
                 target.type != NPCType<ReaperShark>() && target.type != NPCType<Mauler>() && target.type != NPCType<EidolonWyrmHead>() && target.type != NPCID.GolemFistLeft && target.type != NPCID.GolemFistRight &&
-                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityLists.enemyImmunityList.Contains(target.type) && !AcidRainEvent.AllMinibosses.Contains(target.type))
+                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !EnemyImmunitiesList.Includes(target.type) && !AcidRainEvent.AllMinibosses.Contains(target.type))
             {
                 return true;
             }
@@ -8943,17 +9465,123 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Bestiary
-        public override void SetBestiary(NPC npc, Terraria.GameContent.Bestiary.BestiaryDatabase database, Terraria.GameContent.Bestiary.BestiaryEntry bestiaryEntry)
+        public override void SetBestiary(NPC npc, BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            // Create a string array containing all an NPC's debuff resistances
-            string[] elements = new string[5]
+            // Replace vanilla bestiary flavor text for certain NPCs
+            // These are ordered by their order in the bestiary, if you're wondering why it seems so arbitrary lmao
+            switch (npc.netID)
             {
-                NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
-                NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
+                case NPCID.Guide:
+                case NPCID.Dryad:
+                case NPCID.Mechanic:
+                case NPCID.EmpressButterfly:
+                case NPCID.DemonEye:
+                case NPCID.CataractEye:
+                case NPCID.DialatedEye:
+                case NPCID.SleepyEye:
+                case NPCID.GreenEye:
+                case NPCID.PurpleEye:
+                case NPCID.Wraith:
+                case NPCID.BloodNautilus:
+                case NPCID.DiggerHead:
+                case NPCID.UndeadMiner:
+                case NPCID.GraniteGolem:
+                case NPCID.GraniteFlyer:
+                case NPCID.GreekSkeleton:
+                case NPCID.UndeadViking:
+                case NPCID.IcyMerman:
+                case NPCID.IceElemental:
+                case NPCID.DesertBeast:
+                case NPCID.DuneSplicerHead:
+                case NPCID.SandElemental:
+                case NPCID.SandShark:
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                case NPCID.SandsharkHallow:
+                case NPCID.MeteorHead:
+                case NPCID.AngryBones:
+                case NPCID.AngryBonesBig:
+                case NPCID.AngryBonesBigMuscle:
+                case NPCID.AngryBonesBigHelmet:
+                case NPCID.BlueArmoredBones:
+                case NPCID.BlueArmoredBonesMace:
+                case NPCID.BlueArmoredBonesNoPants:
+                case NPCID.BlueArmoredBonesSword:
+                case NPCID.HellArmoredBones:
+                case NPCID.HellArmoredBonesSpikeShield:
+                case NPCID.HellArmoredBonesMace:
+                case NPCID.HellArmoredBonesSword:
+                case NPCID.RustyArmoredBonesAxe:
+                case NPCID.RustyArmoredBonesFlail:
+                case NPCID.RustyArmoredBonesSword:
+                case NPCID.RustyArmoredBonesSwordNoArmor:
+                case NPCID.SkeletonSniper:
+                case NPCID.TacticalSkeleton:
+                case NPCID.SkeletonCommando:
+                case NPCID.BoneLee:
+                case NPCID.Paladin:
+                case NPCID.DiabolistRed:
+                case NPCID.DiabolistWhite:
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                case NPCID.RaggedCaster:
+                case NPCID.RaggedCasterOpenCoat:
+                case NPCID.DungeonGuardian:
+                case NPCID.BoneSerpentHead:
+                case NPCID.Demon:
+                case NPCID.VoodooDemon:
+                case NPCID.RedDevil:
+                case NPCID.WyvernHead:
+                case NPCID.Harpy:
+                case NPCID.MartianProbe:
+                case NPCID.SeekerHead:
+                case NPCID.DesertDjinn:
+                case NPCID.ChaosElemental:
+                case NPCID.GoblinThief:
+                case NPCID.GoblinSummoner:
+                case NPCID.GoblinSorcerer:
+                case NPCID.PirateCaptain:
+                case NPCID.Scutlix:
+                case NPCID.MartianSaucerCore:
+                case NPCID.TorchGod:
+                case NPCID.EyeofCthulhu:
+                case NPCID.BrainofCthulhu:
+                case NPCID.SkeletronHead:
+                case NPCID.WallofFlesh:
+                case NPCID.QueenSlimeBoss:
+                case NPCID.Retinazer:
+                case NPCID.Spazmatism:
+                case NPCID.TheDestroyer:
+                case NPCID.SkeletronPrime:
+                case NPCID.Plantera:
+                case NPCID.HallowBoss:
+                case NPCID.Golem:
+                case NPCID.DukeFishron:
+                case NPCID.CultistBoss:
+                case NPCID.CultistDevote:
+                case NPCID.LunarTowerNebula:
+                case NPCID.LunarTowerSolar:
+                case NPCID.LunarTowerVortex:
+                case NPCID.LunarTowerStardust:
+                case NPCID.MoonLordCore:
+                    FlavorTextBestiaryInfoElement f = new("Hi CS0120");
+                    bestiaryEntry.Info.RemoveAll(i => i.GetType() == f.GetType());
+                    bestiaryEntry.Info.Add(new FlavorTextBestiaryInfoElement(CalamityUtils.GetTextValue($"Bestiary.Vanilla.{Lang.GetNPCName(npc.netID).Key}")));
+                    break;
+                default:
+                    break;
+
+            }
+
+            // Create a string array containing all an NPC's debuff resistances
+            string[] elements =
+            [
                 NPCDebuffResistText(npc.Calamity().VulnerableToCold, CalamityUtils.GetTextValue("UI.DebuffSystem.Cold")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToElectricity, CalamityUtils.GetTextValue("UI.DebuffSystem.Electricity")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
                 NPCDebuffResistText(npc.Calamity().VulnerableToWater, CalamityUtils.GetTextValue("UI.DebuffSystem.Water"))
-            };
+            ];
 
             // Insert the debuff info into the NPC's bestiary entry
             bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
@@ -8968,6 +9596,28 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.TruffleWorm)
             {
                 bestiaryEntry.AddTags(BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom);
+            }
+
+            // Remove the static portraits from vanilla worms so that Calamity's worm movement can be added in PreDraw
+            switch (npc.netID)
+            {
+                case NPCID.DiggerHead:
+                case NPCID.GiantWormHead:
+                case NPCID.EaterofWorldsHead:
+                case NPCID.WyvernHead:
+                case NPCID.StardustWormHead:
+                case NPCID.SolarCrawltipedeHead:
+                case NPCID.CultistDragonHead:
+                case NPCID.TheDestroyer:
+                case NPCID.LeechHead:
+                case NPCID.DevourerHead:
+                case NPCID.TombCrawlerHead:
+                case NPCID.DuneSplicerHead:
+                case NPCID.BloodEelHead:
+                case NPCID.BoneSerpentHead:
+                case NPCID.SeekerHead:
+                    NPCID.Sets.NPCBestiaryDrawOffset[npc.type] = NPCID.Sets.NPCBestiaryDrawOffset[npc.type] with { CustomTexturePath = null };
+                    break;
             }
         }
 

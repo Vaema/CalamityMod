@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<IronFrancisca>(100).
+                AddIngredient<IronFrancisca>().
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient<PearlShard>(10).
                 AddIngredient(ItemID.Bone, 30).
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 Register();
 
             CreateRecipe().
-                AddIngredient<LeadTomahawk>(100).
+                AddIngredient<LeadTomahawk>().
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient<PearlShard>(10).
                 AddIngredient(ItemID.Bone, 30).
