@@ -797,7 +797,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 NPC.DrawBackglow(Main.zenithWorld ? Main.DiscoColor : new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, new Color(255, 125, 55, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects
