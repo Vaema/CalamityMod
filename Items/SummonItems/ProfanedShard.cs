@@ -44,7 +44,6 @@ namespace CalamityMod.Items.SummonItems
             CalamityUtils.SpawnBossUsingItem<ProfanedGuardianCommander>(player, UseSound);
             return true;
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[SPAWN]", this.GetLocalizedValue(Main.remixWorld ? "SpawnRemix" : "SpawnNormal"));
 
         public override void AddRecipes()
         {

@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
+            int pscState = (int)(Main.dayTime ? Providence.BossMode.Normal : Providence.BossMode.Enraged);
             int dustID = ProvUtils.GetDustID(!Main.dayTime);
             int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, dustID, 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;

@@ -177,14 +177,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             if (NPC.ai[0] >= 300f)
                 NPC.ai[1] = 1f;
 
-            // Enrage at nighttime
-            bool enraged = false;
-            if (!Main.dayTime && !Main.remixWorld)
-            {
-                enraged = true;
-                NPC.Calamity().CurrentlyEnraged = true;
-            }
-
             // Direction
             if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
             {
@@ -224,7 +216,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             bool useCrystalShards = AIState == (float)Phase.CrystalShards;
-            float velocity = useCrystalShards ? ((bossRush || enraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
+            float velocity = useCrystalShards ? (bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
             if (Main.getGoodWorld)
                 velocity *= 1.25f;
 
@@ -312,7 +304,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     {
                         int type = ModContent.ProjectileType<ProvidenceCrystalShard>();
                         int damage = NPC.GetProjectileDamage(type);
-                        int totalProjectiles = (bossRush || enraged) ? 18 : death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
+                        int totalProjectiles = bossRush ? 18 : death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
                         float speedX = -12f;
                         float speedAdjustment = Math.Abs(speedX * 2f / (totalProjectiles - 1));
                         float speedY = -4f;
@@ -351,7 +343,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 {
                     SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, shootFrom);
 
-                    int totalFlameProjectiles = (bossRush || enraged) ? 20 : 16;
+                    int totalFlameProjectiles = bossRush ? 20 : 16;
                     int totalRings = revenge ? 3 : 2;
                     int healingStarChance = revenge ? 8 : expertMode ? 6 : 4;
                     double radians = MathHelper.TwoPi / totalFlameProjectiles;
@@ -369,7 +361,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             int type = ModContent.ProjectileType<HolyBurnOrb>();
                             int dmgAmt = NPC.GetProjectileDamage(type);
-                            if (Main.rand.NextBool(healingStarChance) && !enraged && !death)
+                            if (Main.rand.NextBool(healingStarChance) && !death)
                             {
                                 type = ModContent.ProjectileType<HolyLight>();
                                 dmgAmt = NPC.GetProjectileDamageNoScaling(type);
@@ -412,7 +404,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Move towards a location above the player
             if (distanceFromDestination.Length() > idealDistanceFromDestination)
             {
-                float inertia = (bossRush || enraged) ? 28f : death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
+                float inertia = bossRush ? 28f : death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
                 if (lifeRatio < 0.5f)
                     inertia *= 0.8f;
                 if (Main.getGoodWorld)
@@ -467,11 +459,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 texture2D15 = Texture_Glow.Value;
                 Color timeBasedDrawColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-                if (NPC.Calamity().CurrentlyEnraged)
-                {
-                    texture2D15 = TextureNight_Glow.Value;
-                    timeBasedDrawColor = Color.Lerp(Color.White, Color.Cyan, 0.75f);
-                }
                 if (Main.zenithWorld)
                 {
                     texture2D15 = TextureNight_Glow.Value;
@@ -511,10 +498,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                Providence.Providence.BossMode mode = Providence.Providence.BossMode.Day;
-                if (!Main.dayTime) mode = Providence.Providence.BossMode.Night;
-
-                NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+                NPC.DrawBackglow(Main.zenithWorld ? Main.DiscoColor : new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 

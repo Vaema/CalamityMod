@@ -76,8 +76,8 @@ namespace CalamityMod.NPCs.Providence
 
         public enum BossMode
         {
-            Night = -1,
-            Day = 0,
+            Enraged = -1,
+            Normal = 0,
             Rainbow = 1,
         }
 
@@ -369,12 +369,12 @@ namespace CalamityMod.NPCs.Providence
             if (getFuckedAI)
                 NPC.localAI[1] = (float)BossMode.Rainbow;
             else if (!ProvUtils.DayAI()) // Normal Night time activity
-                NPC.localAI[1] = (float)BossMode.Night;
+                NPC.localAI[1] = (float)BossMode.Enraged;
             else
-                NPC.localAI[1] = (float)BossMode.Day;
+                NPC.localAI[1] = (float)BossMode.Normal;
 
             // Has Night AI if it's any color except day
-            bool nightAI = NPC.localAI[1] != (float)BossMode.Day;
+            bool nightAI = NPC.localAI[1] != (float)BossMode.Normal;
 
             // Difficulty bools
             bool death = CalamityWorld.death || nightAI;
@@ -782,7 +782,7 @@ namespace CalamityMod.NPCs.Providence
                 NPC.timeLeft = 1800;
 
             // Guardian spawn unless it's night time specifically (can still spawn on Zenith)
-            if (NPC.localAI[1] != (float)BossMode.Night)
+            if (NPC.localAI[1] != (float)BossMode.Enraged)
             {
                 if (bossLife == 0f && NPC.life > 0)
                     bossLife = NPC.lifeMax;
@@ -1903,7 +1903,7 @@ namespace CalamityMod.NPCs.Providence
             float aiTimer = NPC.ai[3];
 
             // This bool is only relevant for non-Zenith night AI
-            bool nightTime = NPC.localAI[1] == (float)BossMode.Night;
+            bool nightTime = NPC.localAI[1] == (float)BossMode.Enraged;
 
             float baseDistance = 2800f;
             float shorterFlameCocoonDistance = (CalamityWorld.death || nightTime) ? 600f : CalamityWorld.revenge ? 400f : Main.expertMode ? 200f : 0f;
@@ -2129,7 +2129,7 @@ namespace CalamityMod.NPCs.Providence
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool offColor = NPC.localAI[1] != (float)BossMode.Day;
+            bool offColor = NPC.localAI[1] != (float)BossMode.Normal;
 
             Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
             Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
@@ -2274,7 +2274,7 @@ namespace CalamityMod.NPCs.Providence
                             CrystalColor = Color.BlueViolet;
                         }
                     }
-                    else if (NPC.localAI[1] == (float)BossMode.Night)
+                    else if (NPC.localAI[1] == (float)BossMode.Enraged)
                     {
                         WingColor = Color.Cyan;
                         CrystalColor = Color.BlueViolet;
@@ -2574,7 +2574,7 @@ namespace CalamityMod.NPCs.Providence
         {
             if (!hasTakenDaytimeDamage)
             {
-                if (NPC.localAI[1] == (float)BossMode.Day)
+                if (NPC.localAI[1] == (float)BossMode.Normal)
                 {
                     hasTakenDaytimeDamage = true;
 
@@ -2626,7 +2626,7 @@ namespace CalamityMod.NPCs.Providence
         {
             if (!hasTakenDaytimeDamage)
             {
-                if (NPC.localAI[1] == (float)BossMode.Day)
+                if (NPC.localAI[1] == (float)BossMode.Normal)
                 {
                     hasTakenDaytimeDamage = true;
 

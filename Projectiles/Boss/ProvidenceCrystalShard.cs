@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.velocity.Y *= 1.06f;
-                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Day)) ? 3.5f : 3f;
+                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Normal)) ? 3.5f : 3f;
                 if (Projectile.velocity.Y > fallSpeed)
                     Projectile.velocity.Y = fallSpeed;
             }
