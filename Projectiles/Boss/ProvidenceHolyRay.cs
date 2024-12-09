@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             ExtraWidth = Projectile.ai[2];
 
-            bool scissorLasers = CalamityWorld.revenge || !ProvUtils.DayAI();
+            bool scissorLasers = CalamityWorld.revenge || !ProvUtils.StandardAI();
             Vector2? vector78 = null;
 
             if (Projectile.velocity.HasNaNs() || Projectile.velocity == Vector2.Zero)
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Vector2 scale = new Vector2(Projectile.scale * ExtraWidth, Projectile.scale);
 
-            bool dayTime = ProvUtils.DayAI();
+            bool dayTime = ProvUtils.StandardAI();
             Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProvidenceHolyRayNight", AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture2D20 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMid", AssetRequestMode.ImmediateLoad).Value :

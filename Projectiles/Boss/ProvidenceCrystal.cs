@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Boss
             // At day, fires every 300 frames but lasts 1500-3600 frames.
             // At night, fires every 30 framges but lasts 210 frames.
             // In GFB, fires at night rate for the first 210 frames, then at day rate for the next 1500.
-            bool dayAI = ProvUtils.DayAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
+            bool dayAI = ProvUtils.StandardAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
 
             if (Projectile.localAI[0] >= (dayAI ? 300f : 30f))
             {

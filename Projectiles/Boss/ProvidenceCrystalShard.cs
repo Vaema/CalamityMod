@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
             Lighting.AddLight(Projectile.Center, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity);
 
             // Night AI or Guardian Healer
-            if (!ProvUtils.DayAI() || healerGuardianAlive)
+            if (!ProvUtils.StandardAI() || healerGuardianAlive)
                 Projectile.extraUpdates = 1;
 
             if (Projectile.timeLeft < 300)

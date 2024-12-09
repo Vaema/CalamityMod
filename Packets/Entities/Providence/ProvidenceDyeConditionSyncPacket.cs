@@ -21,7 +21,7 @@ namespace CalamityMod.Packets
 
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(providence);
-            packet.Write(providence.hasTakenDaytimeDamage);
+            packet.Write(providence.hasBeenGivenFullPower);
             packet.Send(toClient, ignoreClient);
         }
 
@@ -33,7 +33,7 @@ namespace CalamityMod.Packets
             if (providence is null)
                 return;
 
-            providence.hasTakenDaytimeDamage = hasTakenDaytimeDmg;
+            providence.hasBeenGivenFullPower = hasTakenDaytimeDmg;
         }
     }
 }

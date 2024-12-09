@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.Providence
         private int frameUsed = 0;
         private int healTimer = 0;
         internal bool challenge = Main.expertMode; // Used to determine if Profaned Soul Crystal should drop, couldn't figure out mp mems always dropping it so challenge is singleplayer only.
-        internal bool hasTakenDaytimeDamage = false;
+        public bool hasBeenGivenFullPower = false;
         public static bool shouldDrawInfernoBorder = true; // This is only here for other mods to disable it if they don't want it drawing.
         public bool Dying = false;
         public int DeathAnimationTimer;
@@ -121,7 +121,7 @@ namespace CalamityMod.NPCs.Providence
         private const float TimeForStarDespawn = 120f;
         private const float TimeForShieldDespawn = 120f;
 
-        // Every single one of Providence's sprites, both night and day, and their glowmasks
+        // Every single one of Providence's sprites, both normal and enraged, and their glowmasks
         #region Textures
         public static Asset<Texture2D> TextureAlt;
         public static Asset<Texture2D> TextureAltNight;
@@ -362,24 +362,24 @@ namespace CalamityMod.NPCs.Providence
             // Target variable and boss center
             Player player = Main.player[NPC.target];
 
-            // Night bool and Color shifting
+            // Enraged bool and Color shifting
             bool bossRush = BossRushEvent.BossRushActive;
 
             bool getFuckedAI = Main.zenithWorld;
             if (getFuckedAI)
                 NPC.localAI[1] = (float)BossMode.Rainbow;
-            else if (!ProvUtils.DayAI()) // Normal Night time activity
+            else if (hasBeenGivenFullPower) // Enraged behavior
                 NPC.localAI[1] = (float)BossMode.Enraged;
             else
                 NPC.localAI[1] = (float)BossMode.Normal;
 
-            // Has Night AI if it's any color except day
-            bool nightAI = NPC.localAI[1] != (float)BossMode.Normal;
+            // Fully powered up AI if it's any color except normal
+            bool fullPowerAI = NPC.localAI[1] != (float)BossMode.Normal;
 
             // Difficulty bools
-            bool death = CalamityWorld.death || nightAI;
-            bool revenge = CalamityWorld.revenge || nightAI;
-            bool expertMode = Main.expertMode || nightAI;
+            bool death = CalamityWorld.death || fullPowerAI;
+            bool revenge = CalamityWorld.revenge || fullPowerAI;
+            bool expertMode = Main.expertMode || fullPowerAI;
 
             // Target's current biome
             bool isHoly = player.ZoneHallow;
@@ -400,8 +400,8 @@ namespace CalamityMod.NPCs.Providence
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            // Play enrage animation if night starts
-            if (!getFuckedAI && nightAI && calamityGlobalNPC.newAI[3] == spawnAnimationTime)
+            // Play enrage animation if she gets angy
+            if (!getFuckedAI && fullPowerAI && calamityGlobalNPC.newAI[3] == spawnAnimationTime)
             {
                 AIState = (int)Phase.HolyBlast;
                 NPC.ai[1] = 0f;
@@ -417,14 +417,14 @@ namespace CalamityMod.NPCs.Providence
                     NPC.netSpam = 9;
             }
 
-            // Increase all projectile damage at night, but reduce to 0 for Zenith
+            // Increase all projectile damage while enraged, but reduce to 0 for Zenith
             int projectileDamageMult = 1;
             if (getFuckedAI)
                 projectileDamageMult = 0;
-            else if (nightAI)
+            else if (fullPowerAI)
                 projectileDamageMult = 2;
 
-            NPC.Calamity().CurrentlyEnraged = !bossRush && nightAI;
+            NPC.Calamity().CurrentlyEnraged = !bossRush && fullPowerAI;
 
             // Projectile damage values
             int holyLaserDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<ProvidenceHolyRay>()) * projectileDamageMult;
@@ -436,19 +436,19 @@ namespace CalamityMod.NPCs.Providence
             int holyBlastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<HolyBlast>()) * projectileDamageMult;
             int holyStarDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<HolyBurnOrb>()) * projectileDamageMult;
 
-            // Change dust type at night
+            // Change dust type while enraged
             int dustType = ProvUtils.GetDustID();
 
             // Phase times
-            float phaseTime = nightAI ? (240f - 60f * (1f - lifeRatio)) : 300f;
-            float crystalPhaseTime = nightAI ? (float)Math.Round(60f * lifeRatio) : death ? 60f : 120f;
+            float phaseTime = fullPowerAI ? (240f - 60f * (1f - lifeRatio)) : 300f;
+            float crystalPhaseTime = fullPowerAI ? (float)Math.Round(60f * lifeRatio) : death ? 60f : 120f;
             int nightCrystalTime = 210;
             int gfbCrystalTime = 1500 + nightCrystalTime;
             float attackDelayAfterCocoon = phaseTime * 0.3f;
 
             // Phases
             bool ignoreGuardianAmt = lifeRatio < (death ? 0.2f : 0.15f);
-            bool phase2 = lifeRatio < 0.75f && !nightAI;
+            bool phase2 = lifeRatio < 0.75f && !fullPowerAI;
             bool delayAttacks = NPC.localAI[2] > 0f;
 
             // Spear phase
@@ -781,7 +781,7 @@ namespace CalamityMod.NPCs.Providence
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            // Guardian spawn unless it's night time specifically (can still spawn on Zenith)
+            // Guardian spawn unless she's enraged specifically (can still spawn on Zenith)
             if (NPC.localAI[1] != (float)BossMode.Enraged)
             {
                 if (bossLife == 0f && NPC.life > 0)
@@ -871,13 +871,13 @@ namespace CalamityMod.NPCs.Providence
                         predictiveShots = true;
 
                     // Velocity and acceleration
-                    float speedIncreaseTimer = nightAI ? 75f : death ? 120f : 150f;
+                    float speedIncreaseTimer = fullPowerAI ? 75f : death ? 120f : 150f;
                     bool increaseSpeed = calamityGlobalNPC.newAI[0] > speedIncreaseTimer || bossRush;
                     float accelerationBoost = death ? 0.3f * (1f - lifeRatio) : 0.2f * (1f - lifeRatio);
                     float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
                     float acceleration = (expertMode ? 1.1f : 1.05f) + accelerationBoost;
                     float velocity = (expertMode ? 16f : 15f) + velocityBoost;
-                    if (nightAI)
+                    if (fullPowerAI)
                     {
                         acceleration = 1.5f;
                         velocity = 25f;
@@ -958,7 +958,7 @@ namespace CalamityMod.NPCs.Providence
                                 phase = (int)Phase.HolyBlast;
                                 break;
                             case 3:
-                                phase = (useCrystal || nightAI) ? (int)Phase.Crystal : (int)Phase.MoltenBlobs;
+                                phase = (useCrystal || fullPowerAI) ? (int)Phase.Crystal : (int)Phase.MoltenBlobs;
                                 break;
                             case 4:
                                 phase = useCrystal ? (int)Phase.MoltenBlobs : (int)Phase.FlameCocoon;
@@ -967,31 +967,31 @@ namespace CalamityMod.NPCs.Providence
                                 phase = useCrystal ? (int)Phase.FlameCocoon : (int)Phase.HolyFire;
                                 break;
                             case 6:
-                                phase = (useLaser || nightAI) ? (int)Phase.Laser : (int)Phase.HolyBomb;
+                                phase = (useLaser || fullPowerAI) ? (int)Phase.Laser : (int)Phase.HolyBomb;
                                 break;
                             case 7:
-                                phase = (useLaser || nightAI) ? (int)Phase.HolyBomb : (int)Phase.MoltenBlobs;
+                                phase = (useLaser || fullPowerAI) ? (int)Phase.HolyBomb : (int)Phase.MoltenBlobs;
                                 break;
                             case 8:
-                                phase = (useLaser || nightAI) ? (int)Phase.MoltenBlobs : (int)Phase.SpearCocoon;
+                                phase = (useLaser || fullPowerAI) ? (int)Phase.MoltenBlobs : (int)Phase.SpearCocoon;
                                 break;
                             case 9:
                                 phase = (int)Phase.HolyBlast;
                                 break;
                             case 10:
-                                phase = (useCrystal || nightAI) ? (int)Phase.Crystal : (int)Phase.FlameCocoon;
+                                phase = (useCrystal || fullPowerAI) ? (int)Phase.Crystal : (int)Phase.FlameCocoon;
                                 break;
                             case 11:
-                                phase = nightAI ? (int)Phase.FlameCocoon : (int)Phase.MoltenBlobs;
+                                phase = fullPowerAI ? (int)Phase.FlameCocoon : (int)Phase.MoltenBlobs;
                                 break;
                             case 12:
-                                phase = (useLaser || nightAI) ? (int)Phase.Laser : (int)Phase.HolyBomb;
+                                phase = (useLaser || fullPowerAI) ? (int)Phase.Laser : (int)Phase.HolyBomb;
                                 break;
                             case 13:
                                 phase = (int)Phase.SpearCocoon;
                                 break;
                             case 14:
-                                phase = (useLaser || nightAI) ? (int)Phase.HolyBomb : (int)Phase.HolyBlast;
+                                phase = (useLaser || fullPowerAI) ? (int)Phase.HolyBomb : (int)Phase.HolyBlast;
                                 break;
                             default:
                                 break;
@@ -1142,7 +1142,7 @@ namespace CalamityMod.NPCs.Providence
 
                         calamityGlobalNPC.newAI[3] += 1f;
 
-                        if (nightAI && calamityGlobalNPC.newAI[3] >= spawnAnimationTime)
+                        if (fullPowerAI && calamityGlobalNPC.newAI[3] >= spawnAnimationTime)
                             calamityGlobalNPC.newAI[3] += 1f;
 
                         return;
@@ -1222,7 +1222,7 @@ namespace CalamityMod.NPCs.Providence
 
                             projectileVelocityY += expertMode ? 4f : 3f;
 
-                            if (nightAI)
+                            if (fullPowerAI)
                                 projectileVelocityY *= 2f;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom.X, shootFrom.Y, NPC.velocity.X * 0.25f, projectileVelocityY, ModContent.ProjectileType<HolyFire>(), holyFireDamage, 0f, Main.myPlayer);
@@ -1350,7 +1350,7 @@ namespace CalamityMod.NPCs.Providence
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), fireSparklesFrom, velocity2, type, holyStarDamage, 0f, Main.myPlayer);
 
-                            Color dustColor = Main.hslToRgb(Main.rgbToHsl(nightAI ? new Color(100, 200, 250) : Color.Orange).X, 1f, 0.5f);
+                            Color dustColor = Main.hslToRgb(Main.rgbToHsl(fullPowerAI ? new Color(100, 200, 250) : Color.Orange).X, 1f, 0.5f);
                             dustColor.A = 255;
                             int maxDust = 3;
                             for (int j = 0; j < maxDust; j++)
@@ -1646,7 +1646,7 @@ namespace CalamityMod.NPCs.Providence
                                     if (j % dustDivisor == 0)
                                     {
                                         currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, j / (float)maxHealDustIterations);
-                                        Color dustColor = Main.hslToRgb(Main.rgbToHsl(nightAI ? new Color(100, 200, 250) : new Color(255, 200, Math.Abs(Math.Abs(blue) - (int)(dustSpawned * 2.55f)))).X, 1f, 0.5f);
+                                        Color dustColor = Main.hslToRgb(Main.rgbToHsl(fullPowerAI ? new Color(100, 200, 250) : new Color(255, 200, Math.Abs(Math.Abs(blue) - (int)(dustSpawned * 2.55f)))).X, 1f, 0.5f);
                                         dustColor.A = 255;
                                         int dust = Dust.NewDust(currentDustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
                                         Main.dust[dust].position = currentDustPos + new Vector2(32f, 32f).RotatedByRandom(MathHelper.TwoPi) * i;
@@ -1664,7 +1664,7 @@ namespace CalamityMod.NPCs.Providence
                                     }
                                 }
 
-                                if (!nightAI)
+                                if (!fullPowerAI)
                                     blue -= 255 / (maxDustLines - 1);
                             }
 
@@ -1675,7 +1675,7 @@ namespace CalamityMod.NPCs.Providence
                                 Vector2 dustSpawnPos = Vector2.Normalize(NPC.velocity) * new Vector2(80f, 160f);
                                 dustSpawnPos = dustSpawnPos.RotatedBy((double)((k - (totalDust / 2 - 1)) * MathHelper.TwoPi / totalDust), default) + dustLineEnd;
                                 Vector2 dustVelocity = dustSpawnPos - dustLineEnd;
-                                Color dustColor = Main.hslToRgb(Main.rgbToHsl(nightAI ? new Color(100, 200, 250) : new Color(255, 200, Math.Abs(Math.Abs(blue) - (int)(circleDustSpawned * 7.08f)))).X, 1f, 0.5f);
+                                Color dustColor = Main.hslToRgb(Main.rgbToHsl(fullPowerAI ? new Color(100, 200, 250) : new Color(255, 200, Math.Abs(Math.Abs(blue) - (int)(circleDustSpawned * 7.08f)))).X, 1f, 0.5f);
                                 dustColor.A = 255;
                                 int dust = Dust.NewDust(dustSpawnPos + dustVelocity, 0, 0, DustID.RainbowMk2, dustVelocity.X, dustVelocity.Y, 0, dustColor, 1.4f);
                                 Main.dust[dust].noGravity = true;
@@ -1686,12 +1686,12 @@ namespace CalamityMod.NPCs.Providence
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float timeLeft = nightAI ? (float)(getFuckedAI ? gfbCrystalTime : nightCrystalTime) : 0f;
+                                float timeLeft = fullPowerAI ? (float)(getFuckedAI ? gfbCrystalTime : nightCrystalTime) : 0f;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), crystalSpawnPos, Vector2.Zero, ModContent.ProjectileType<ProvidenceCrystal>(), crystalDamage, 0f, Main.myPlayer, lifeRatio, 0f, timeLeft);
                             }
                         }
 
-                        if (NPC.ai[1] >= crystalPhaseTime + nightCrystalTime || !nightAI)
+                        if (NPC.ai[1] >= crystalPhaseTime + nightCrystalTime || !fullPowerAI)
                         {
                             AIState = (int)Phase.PhaseChange;
                             NPC.TargetClosest();
@@ -1704,7 +1704,7 @@ namespace CalamityMod.NPCs.Providence
 
                     Vector2 dustPosOffset = new Vector2(27f, 59f);
 
-                    float rotation = (nightAI ? 445f : 460f) + (guardianAmt * 5);
+                    float rotation = (fullPowerAI ? 445f : 460f) + (guardianAmt * 5);
 
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] < 120f)
@@ -1755,7 +1755,7 @@ namespace CalamityMod.NPCs.Providence
                                 if (revenge)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
 
-                                if (nightAI && lifeRatio < 0.5f)
+                                if (fullPowerAI && lifeRatio < 0.5f)
                                 {
                                     rotation *= 0.33f;
                                     velocity = velocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 2f);
@@ -1902,12 +1902,12 @@ namespace CalamityMod.NPCs.Providence
             float distanceToTarget = Vector2.Distance(Main.player[NPC.target].Center, NPC.Center);
             float aiTimer = NPC.ai[3];
 
-            // This bool is only relevant for non-Zenith night AI
-            bool nightTime = NPC.localAI[1] == (float)BossMode.Enraged;
+            // This bool is only relevant for non-Zenith enraged AI
+            bool fullPower = NPC.localAI[1] == (float)BossMode.Enraged;
 
             float baseDistance = 2800f;
-            float shorterFlameCocoonDistance = (CalamityWorld.death || nightTime) ? 600f : CalamityWorld.revenge ? 400f : Main.expertMode ? 200f : 0f;
-            float shorterSpearCocoonDistance = (CalamityWorld.death || nightTime) ? 1000f : CalamityWorld.revenge ? 650f : Main.expertMode ? 300f : 0f;
+            float shorterFlameCocoonDistance = (CalamityWorld.death || fullPower) ? 600f : CalamityWorld.revenge ? 400f : Main.expertMode ? 200f : 0f;
+            float shorterSpearCocoonDistance = (CalamityWorld.death || fullPower) ? 1000f : CalamityWorld.revenge ? 650f : Main.expertMode ? 300f : 0f;
             float shorterDistance = AIState == (int)Phase.FlameCocoon ? shorterFlameCocoonDistance : shorterSpearCocoonDistance;
 
             bool guardianAlive = false;
@@ -2068,13 +2068,13 @@ namespace CalamityMod.NPCs.Providence
             npcLoot.AddIf(info =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
-                return !prov.hasTakenDaytimeDamage;
+                return prov.hasBeenGivenFullPower;
             }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceNightText);
 
             npcLoot.AddIf(info =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
-                return !prov.hasTakenDaytimeDamage;
+                return prov.hasBeenGivenFullPower;
             }, ModContent.ItemType<DivineGeode>(), 1, 30, 40);
 
             // Normal drops: Everything that would otherwise be in the bag
@@ -2241,7 +2241,7 @@ namespace CalamityMod.NPCs.Providence
 
                     // Draw the glowmask textures + their afterimages
                     // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
-                    Color WingColor = ProvUtils.GetProjectileColor(0); // Default to day
+                    Color WingColor = ProvUtils.GetProjectileColor(0); // Default to normal
                     Color CrystalColor = Color.Violet;
 
                     if (NPC.localAI[1] == (float)BossMode.Rainbow)
@@ -2572,19 +2572,6 @@ namespace CalamityMod.NPCs.Providence
 
         public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
-            if (!hasTakenDaytimeDamage)
-            {
-                if (NPC.localAI[1] == (float)BossMode.Normal)
-                {
-                    hasTakenDaytimeDamage = true;
-
-                    if (Main.netMode != NetmodeID.SinglePlayer)
-                    {
-                        ProvidenceDyeConditionSyncPacket.Send(this);
-                    }
-                }
-            }
-
             if (challenge)
             {
                 List<int> exceptionList = new List<int>()
@@ -2624,19 +2611,6 @@ namespace CalamityMod.NPCs.Providence
 
         public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
-            if (!hasTakenDaytimeDamage)
-            {
-                if (NPC.localAI[1] == (float)BossMode.Normal)
-                {
-                    hasTakenDaytimeDamage = true;
-
-                    if (Main.netMode != NetmodeID.SinglePlayer)
-                    {
-                        ProvidenceDyeConditionSyncPacket.Send(this);
-                    }
-                }
-            }
-
             if (challenge)
             {
                 challenge = false;
@@ -2812,11 +2786,11 @@ namespace CalamityMod.NPCs.Providence
     // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
-        public static bool DayAI() => (Main.IsItDay() || Main.remixWorld) && !Main.zenithWorld && !BossRushEvent.BossRushActive;
+        public static bool StandardAI() => (CalamityGlobalNPC.holyBoss == -1 || !Main.npc[CalamityGlobalNPC.holyBoss].Calamity().CurrentlyEnraged) && !Main.zenithWorld && !BossRushEvent.BossRushActive;
 
-        // Simplified to day/night only. For PSC and Profaned Guardians
-        public static Color GetDayNightColor(int Alpha, bool Outline = false) => GetDayNightColor(!Main.IsItDay() && !Main.remixWorld, Alpha, Outline);
-        public static Color GetDayNightColor(bool Night, int Alpha, bool Outline = false)
+        // Simplified to day/night only. For PSC
+        public static Color GetColorBasedOnEnrage(int Alpha, bool Outline = false) => GetColorBasedOnEnrage(!Main.IsItDay() && !Main.remixWorld, Alpha, Outline);
+        public static Color GetColorBasedOnEnrage(bool Night, int Alpha, bool Outline = false)
         {
             Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to day
 
@@ -2841,7 +2815,10 @@ namespace CalamityMod.NPCs.Providence
                 alpha = 100;
             }
 
-            Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); // Default to day
+            Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); // Default to normal
+            // Color changing should only occur with Providence's projectiles
+            if (CalamityGlobalNPC.holyBoss == -1)
+                return FinalColor;
 
             if (Main.zenithWorld)
             {
@@ -2858,7 +2835,7 @@ namespace CalamityMod.NPCs.Providence
                 else // Red
                     FinalColor = new Color(250, 100, Outline ? 200 : 100, alpha);
             }
-            else if (!DayAI())
+            else if (!StandardAI())
                 FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
 
             if (Outline)
@@ -2869,7 +2846,10 @@ namespace CalamityMod.NPCs.Providence
        
         public static Color GetProjectileColor(int Alpha, bool Outline = false)
         {
-            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to day
+            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to normal
+            // Color changing should only occur with Providence's projectiles
+            if (CalamityGlobalNPC.holyBoss == -1)
+                return FinalColor;
 
             if (Main.zenithWorld)
             {
@@ -2886,7 +2866,7 @@ namespace CalamityMod.NPCs.Providence
                 else // Red
                     FinalColor = new Color(250, 100, Outline ? 200 : 100, Alpha);
             }
-            else if (!DayAI())
+            else if (!StandardAI())
                 FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
 
             if (Outline)
@@ -2895,10 +2875,10 @@ namespace CalamityMod.NPCs.Providence
             return FinalColor;
         }
 
-        // Assign the night bool to turn it into a binary day/night state without accounting for GFB
+        // Assign the night bool to turn it into a binary day/night state without accounting for GFB, used for PSC
         public static int GetDustID(bool? Night = null)
         {
-            int DustType = (int)CalamityDusts.ProfanedFire; // Default to day
+            int DustType = (int)CalamityDusts.ProfanedFire; // Default to normal
 
             if (Night.HasValue)
             {
@@ -2920,7 +2900,7 @@ namespace CalamityMod.NPCs.Providence
                 else // Red
                     DustType = DustID.RedTorch;
             }
-            else if (!DayAI())
+            else if (!StandardAI())
                 DustType = (int)CalamityDusts.Nightwither;
 
             return DustType;

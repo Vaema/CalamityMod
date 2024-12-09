@@ -69,14 +69,14 @@ namespace CalamityMod.Projectiles.Boss
 
             bool commanderSpear = Projectile.ai[0] == -1f;
             bool enragedCommanderSpear = Projectile.ai[0] == -2f;
-            float timeGateValue = !ProvUtils.DayAI() ? 420f : ((commanderSpear || enragedCommanderSpear) ? 360f : 540f);
+            float timeGateValue = !ProvUtils.StandardAI() ? 420f : ((commanderSpear || enragedCommanderSpear) ? 360f : 540f);
             if (Projectile.ai[0] <= 0f)
             {
                 Projectile.ai[1] += 1f;
 
-                float slowGateValue = !ProvUtils.DayAI() ? 60f : ((commanderSpear || enragedCommanderSpear) ? 30f : 90f);
+                float slowGateValue = !ProvUtils.StandardAI() ? 60f : ((commanderSpear || enragedCommanderSpear) ? 30f : 90f);
                 float fastGateValue = 30f;
-                float minVelocity = !ProvUtils.DayAI() ? 4f : (enragedCommanderSpear ? 6f : commanderSpear ? 4.5f : 3f);
+                float minVelocity = !ProvUtils.StandardAI() ? 4f : (enragedCommanderSpear ? 6f : commanderSpear ? 4.5f : 3f);
                 float maxVelocity = minVelocity * 4f;
                 float extremeVelocity = maxVelocity * 2f;
                 float deceleration = 0.95f;
@@ -105,8 +105,8 @@ namespace CalamityMod.Projectiles.Boss
             }
             else
             {
-                float frequency = !ProvUtils.DayAI() ? 0.2f : 0.1f;
-                float amplitude = !ProvUtils.DayAI() ? 4f : 2f;
+                float frequency = !ProvUtils.StandardAI() ? 0.2f : 0.1f;
+                float amplitude = !ProvUtils.StandardAI() ? 4f : 2f;
 
                 Projectile.ai[1] += frequency;
 
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Boss
                 else // Red
                     baseColor = new Color(255, aimedSpear ? 0 : 125, aimedSpear ? 0 : 255);
             }
-            else if (!ProvUtils.DayAI())
+            else if (!ProvUtils.StandardAI())
                 baseColor = new Color(aimedSpear ? 100 : 175, aimedSpear ? 255 : 175, 255);
 
             GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity, false, 15, Main.rand.NextFloat(0.5f, 1.5f) * MathHelper.Clamp(Projectile.velocity.Length() / 15, 0f, 2f), aimedSpear ? baseColor : ProvUtils.GetProjectileColor(255, false)));
@@ -174,7 +174,7 @@ namespace CalamityMod.Projectiles.Boss
                 else // Red
                     baseColor = new Color(255, aimedSpear ? 0 : 125, aimedSpear ? 0 : 255);
             }
-            else if (!ProvUtils.DayAI())
+            else if (!ProvUtils.StandardAI())
                 baseColor = new Color(aimedSpear ? 100 : 175, aimedSpear ? 255 : 175, 255);
 
             if (!aimedSpear)
