@@ -1140,6 +1140,29 @@ namespace CalamityMod.NPCs.Providence
                             GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(NPC.Center) * (startPos.Distance(NPC.Center) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
                         }
 
+                        // Used to heal her back to full HP during enrage animation
+                        if (fullPowerAI && calamityGlobalNPC.newAI[3] % 9f == 0f)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int healAmt = NPC.lifeMax / 400;
+                                if (healAmt > NPC.lifeMax - NPC.life)
+                                    healAmt = NPC.lifeMax - NPC.life;
+
+                                if (healAmt > 0)
+                                {
+                                    NPC.life += healAmt;
+                                    NPC.HealEffect(healAmt, true);
+
+                                    // Prevent netUpdate from being blocked by the spam counter.
+                                    if (NPC.netSpam >= 10)
+                                        NPC.netSpam = 9;
+
+                                    NPC.netUpdate = true;
+                                }
+                            }
+                        }
+
                         calamityGlobalNPC.newAI[3] += 1f;
 
                         if (fullPowerAI && calamityGlobalNPC.newAI[3] >= spawnAnimationTime)
@@ -2700,6 +2723,8 @@ namespace CalamityMod.NPCs.Providence
             if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
             {
                 Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
+                if ((npc.ModNPC as Providence).hasBeenGivenFullPower)
+                    Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().ProviWasEnraged = true;
             }
             else
             {
@@ -2711,6 +2736,7 @@ namespace CalamityMod.NPCs.Providence
 
         public float HolyFlame = 0f;
         public float FlameTimer = 0f;
+        public bool ProviWasEnraged = false;
 
         public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
         {
@@ -2749,7 +2775,7 @@ namespace CalamityMod.NPCs.Providence
                 Color alph = new Color(255f * (HolyFlame / 2f), 255f * (HolyFlame / 2f), 0f, 0f);
                 Color alph2 = new Color(155f * (HolyFlame / 2f), 0f, 0f, 0f);
 
-                if (!Main.dayTime)
+                if (ProviWasEnraged)
                 {
                     lColor.B = 255;
 

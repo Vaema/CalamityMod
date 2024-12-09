@@ -35,15 +35,15 @@ namespace CalamityMod.Items.SummonItems
         public override bool CanUseItem(Player player)
         {
             var Prov = CalamityGlobalNPC.holyBoss;
-            bool provAtFullHPNotEnraged = Prov != -1 && Main.npc[Prov].life >= Main.npc[Prov].lifeMax && !Main.npc[Prov].Calamity().CurrentlyEnraged;
-            return (!NPC.AnyNPCs(ModContent.NPCType<Providence>()) || provAtFullHPNotEnraged) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
+            bool provAtHighHPNotEnraged = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            return (!NPC.AnyNPCs(ModContent.NPCType<Providence>()) || provAtHighHPNotEnraged) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
             var Prov = CalamityGlobalNPC.holyBoss;
-            bool provAtFullHPNotEnraged = Prov != -1 && Main.npc[Prov].life >= Main.npc[Prov].lifeMax && !Main.npc[Prov].Calamity().CurrentlyEnraged;
-            if (provAtFullHPNotEnraged)
+            bool usingToMakeProviPissedOff = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            if (usingToMakeProviPissedOff)
             {
                 (Main.npc[Prov].ModNPC as Providence).hasBeenGivenFullPower = true;
             }
