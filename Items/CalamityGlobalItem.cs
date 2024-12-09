@@ -558,9 +558,9 @@ namespace CalamityMod.Items
             }
             if (modPlayer.harpyWingBoost && (modPlayer.harpyRing || modPlayer.angelTreads))
             {
-                if (Main.rand.NextBool(5) && modPlayer.harpyWingFeatherCooldown == 0 && !item.channel)
+                if (Main.rand.NextBool(5) && modPlayer.wingProjectileCooldown == 0 && !item.channel)
                 {
-                    modPlayer.harpyWingFeatherCooldown = 20;
+                    modPlayer.wingProjectileCooldown = 20;
                     if (player.whoAmI == Main.myPlayer)
                     {
                         float spreadX = velocity.X + Main.rand.NextFloat(-0.75f, 0.75f);

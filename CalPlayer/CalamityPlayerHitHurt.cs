@@ -2245,8 +2245,6 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            modStealth = 1f;
-
             // Give Rage combat frames because being hurt counts as combat.
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;

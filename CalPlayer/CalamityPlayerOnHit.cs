@@ -308,7 +308,7 @@ namespace CalamityMod.CalPlayer
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
-                if ((plaguebringerCarapace || uberBees) && FriendlyBeesList.Includes(proj.type))
+                if (plaguebringerCarapace && FriendlyBeesList.Includes(proj.type))
                     target.AddBuff(BuffType<Plague>(), 300);
 
                 // All projectiles fired from Soma Prime are marked using CalamityGlobalProjectile

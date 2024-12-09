@@ -1725,8 +1725,6 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
-            if (harpyWingFeatherCooldown > 0)
-                harpyWingFeatherCooldown--;
             if (burningSeaBurnOut > 0)
             {
                 burningSeaBurnOut--;
@@ -2755,7 +2753,7 @@ namespace CalamityMod.CalPlayer
                 Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
             }
             else
-                aquaticBoost = aquaticBoostMax; modStealth = 1f;
+                aquaticBoost = aquaticBoostMax;
 
             if (Player.ActiveItem().type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
             {
@@ -3532,7 +3530,7 @@ namespace CalamityMod.CalPlayer
                 const int FramesPerHit = 30;
 
                 // Constantly increment the timer every frame.
-                brimLoreInfernoTimer = (brimLoreInfernoTimer + 1) % FramesPerHit;
+                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % FramesPerHit;
 
                 // Only run this code for the client which is wearing the armor.
                 // Brimstone flames is applied every single frame, but direct damage is only dealt twice per second.
@@ -3552,7 +3550,7 @@ namespace CalamityMod.CalPlayer
                         if (Vector2.Distance(Player.Center, npc.Center) <= range)
                         {
                             npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
-                            if (brimLoreInfernoTimer == 0)
+                            if (hydrothermicInfernoTimer == 0)
                                 Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
                         }
                     }

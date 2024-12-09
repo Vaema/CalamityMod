@@ -204,7 +204,7 @@ namespace CalamityMod.Projectiles
 
         /// <summary> Timer for how long a projectile's damage is reduced by the value in <see cref="flatDR"/>. </summary>
         public int flatDRTimer = 0;
-        /// <summary> A temporary flat amount substracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
+        /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
         /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
