@@ -3,6 +3,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.BrimstoneElemental;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +12,7 @@ namespace CalamityMod.Items.SummonItems
     public class CharredIdol : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/BrimstoneSpawn");
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 10; // Mechanical Skull
@@ -40,7 +42,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            CalamityUtils.SpawnBossUsingItem<BrimstoneElemental>(player, SoundID.Roar);
+            CalamityUtils.SpawnBossUsingItem<BrimstoneElemental>(player, UseSound);
             return true;
         }
 
