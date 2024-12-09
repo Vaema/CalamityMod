@@ -17,13 +17,13 @@ namespace CalamityMod.Packets
 
         public override byte MessageType => (byte)CalamityModMessageType.UpdateCanvasPainting;
 
-        public static void Send(TECanvasPainting cellFactory, float posX, float posY, float scale, int toClient = -1, int ignoreClient = -1)
+        public static void Send(TECanvasPainting painting, float posX, float posY, float scale, int toClient = -1, int ignoreClient = -1)
         {
-            if (cellFactory is null)
+            if (painting is null)
                 return;
 
             var packet = Instance.CreateBasePacket();
-            packet.WriteTileEntityID(cellFactory);
+            packet.WriteTileEntityID(painting);
             packet.Write(posX);
             packet.Write(posY);
             packet.Write(scale);
