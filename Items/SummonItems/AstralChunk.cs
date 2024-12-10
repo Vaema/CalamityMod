@@ -1,10 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using CalamityMod.CustomRecipes;
+using System;
+using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.AstrumAureus;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -33,6 +36,8 @@ namespace CalamityMod.Items.SummonItems
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 2);
+
         public override bool CanUseItem(Player player)
         {
             return player.Calamity().ZoneAstral && !NPC.AnyNPCs(ModContent.NPCType<AstrumAureus>()) && !BossRushEvent.BossRushActive;
@@ -52,7 +57,9 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient<StarblightSoot>(30).
                 AddIngredient(ItemID.FallenStar, 20).
-                AddTile(TileID.Anvils).
+                AddIngredient<DubiousPlating>(8).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
