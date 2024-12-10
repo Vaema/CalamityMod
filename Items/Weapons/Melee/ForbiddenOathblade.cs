@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 target.AddBuff(BuffID.ShadowFlame, 360);
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 720);
-                int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(2 * Item.damage);
+                int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(1.25f * Item.damage);
                 Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
                 blast.DamageType = Item.DamageType;
                 float firstDustScale = 1.7f;
