@@ -275,10 +275,13 @@ namespace CalamityMod.Projectiles.Summon
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
             if (isAttacking)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 45, Main.rand.NextFloat(0.85f, 1.1f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    //Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 45, Main.rand.NextFloat(0.85f, 1.1f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
+                    //GeneralParticleHandler.SpawnParticle(spark);
+
+                    Particle e = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(3f, 8f), "CalamityMod/Particles/WaterFoam", false, 35, Main.rand.NextFloat(0.15f, 0.25f) * 3, Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(1f, 1f), true, false);
+                    GeneralParticleHandler.SpawnParticle(e);
                 }
                 for (int i = 0; i < 3; i++)
                 {
