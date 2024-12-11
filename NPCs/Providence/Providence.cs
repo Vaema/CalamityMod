@@ -1093,7 +1093,7 @@ namespace CalamityMod.NPCs.Providence
 
                             SoundEngine.PlaySound(HolyRaySound, NPC.Center);
 
-                            for (int i = 0; i < 30; i++)
+                            for (int i = 0; i < 20; i++)
                             {
                                 Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(1f, 1.6f), Main.rand.NextFloat(2f, 5f), hiColor, loColor);
                                 p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
@@ -1105,7 +1105,7 @@ namespace CalamityMod.NPCs.Providence
                             Color hColor = ProvUtils.GetProjectileColor(255, false);
                             Color lColor = ProvUtils.GetProjectileColor(0, true);
 
-                            for (int i = 0; i < 30; i++)
+                            for (int i = 0; i < 20; i++)
                             {
                                 Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(0.5f, 0.75f), Main.rand.NextFloat(1f, 2.5f), hColor, lColor);
                                 p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
@@ -1115,7 +1115,7 @@ namespace CalamityMod.NPCs.Providence
 
                             GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.1f, 15));
 
-                            for (float i = 0; i < 3; i += 0.25f)
+                            for (float i = 0; i < 2.8f; i += 0.35f)
                             {
                                 GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.35f, 35));
                                 GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.475f, 25));
@@ -1126,20 +1126,20 @@ namespace CalamityMod.NPCs.Providence
 
                         if (calamityGlobalNPC.newAI[3] > 10f && calamityGlobalNPC.newAI[3] < spawnAnimationTime)
                         {
+                            // Move effects slightly lower during enrage animation to appear as if they're converging on her core
+                            Vector2 destination = NPC.Center + (NPC.localAI[1] != (float)BossMode.Normal ? new Vector2(0f, 40f) : Vector2.Zero);
+
                             if (calamityGlobalNPC.newAI[3] % 10f == 0)
                             {
-                                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, Color.Lerp(new Color(25, 25, 25, 0), medColor, sc), "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1.5f, 1f), Main.rand.NextBool(2) ? 0f : MathHelper.Pi, sc * 0.5f, sc * 0.1f, 20));
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(destination, Vector2.Zero, Color.Lerp(new Color(25, 25, 25, 0), medColor, sc), "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1.5f, 1f), Main.rand.NextBool() ? 0f : MathHelper.Pi, sc * 0.5f, sc * 0.1f, 20));
 
                                 SoundStyle SpawnFlareSound = SoundID.Item74;
-
                                 SpawnFlareSound.MaxInstances = 10;
-
                                 SoundEngine.PlaySound(SpawnFlareSound.WithVolumeScale(calamityGlobalNPC.newAI[3] / spawnAnimationTime).WithPitchOffset(-1 + (calamityGlobalNPC.newAI[3] / spawnAnimationTime)), NPC.Center);
                             }
 
-                            Vector2 startPos = NPC.Center + (new Vector2(Main.rand.NextFloat(80, 300) * (sc * 1.6f), 0).RotatedByRandom(Main.rand.NextFloat(MathHelper.TwoPi)) * new Vector2(1.5f, 1f));
-
-                            GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(NPC.Center) * (startPos.Distance(NPC.Center) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
+                            Vector2 startPos = destination + (new Vector2(Main.rand.NextFloat(80, 300) * (sc * 1.6f), 0).RotatedByRandom(Main.rand.NextFloat(MathHelper.TwoPi)) * new Vector2(1.5f, 1f));
+                            GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(destination) * (startPos.Distance(destination) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
                         }
 
                         // Used to heal her back to full HP during enrage animation
@@ -2171,7 +2171,8 @@ namespace CalamityMod.NPCs.Providence
                 float spawnAnimationTime = 180f;
                 bool spawnAnimation = NPC.Calamity().newAI[3] < spawnAnimationTime;
 
-                if (spawnAnimation)
+                // Bloom circle effect should only appear on spawn animation and not enrage animation, since you can't see it
+                if (spawnAnimation && NPC.localAI[1] == (float)BossMode.Normal)
                 {
                     Asset<Texture2D> orbTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
                     float sc = CalamityUtils.CircInEasing((float)NPC.Calamity().newAI[3] / (float)spawnAnimationTime, 1);

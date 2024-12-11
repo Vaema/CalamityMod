@@ -3662,9 +3662,9 @@ namespace CalamityMod.NPCs
                     cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
-            bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
+            bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
             bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (nightProvi || dayEmpress))
+            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (enragedProvi || dayEmpress))
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
