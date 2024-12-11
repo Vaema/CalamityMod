@@ -277,19 +277,25 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    //Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 45, Main.rand.NextFloat(0.85f, 1.1f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
-                    //GeneralParticleHandler.SpawnParticle(spark);
+                    if (i % 2 == 0)
+                    {
+                        //Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 45, Main.rand.NextFloat(0.85f, 1.1f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
+                        //GeneralParticleHandler.SpawnParticle(spark);
 
-                    Particle e = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(3f, 8f), "CalamityMod/Particles/WaterFoam", false, 35, Main.rand.NextFloat(0.15f, 0.25f) * 3, Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(1f, 1f), true, false);
+                        BloodParticle water = new BloodParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(7f, 20f) - Vector2.UnitY, 23, Main.rand.NextFloat(0.9f, 1.3f), Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue);
+                        GeneralParticleHandler.SpawnParticle(water);
+                    }
+
+                    Particle e = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(7f, 20f), "CalamityMod/Particles/WaterFoam", false, 14, Main.rand.NextFloat(0.1f, 0.2f) * 2.5f, Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(1f, 1f), true, false, shrinkSpeed: 0.4f);
                     GeneralParticleHandler.SpawnParticle(e);
                 }
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(5f, 15f));
-                    dust.noGravity = false;
-                    dust.scale = Main.rand.NextFloat(0.95f, 1.4f);
-                    dust.color = mainColor;
-                    dust.noLightEmittence = true;
+                    //Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(5f, 15f));
+                    //dust.noGravity = false;
+                    //dust.scale = Main.rand.NextFloat(0.95f, 1.4f);
+                    //dust.color = mainColor;
+                    //dust.noLightEmittence = true;
                 }
                 SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.7f, PitchVariance = 0.3f }, Projectile.Center);
             }

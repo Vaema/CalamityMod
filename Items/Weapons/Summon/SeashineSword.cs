@@ -82,6 +82,8 @@ namespace CalamityMod.Items.Weapons.Summon
                         Particle fx = new CustomSpark(player.Center, (velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 20f), "CalamityMod/Particles/Sparkle", false, (int)(Main.rand.Next(16, 26 + 1)), Main.rand.NextFloat(1.1f, 1.7f), Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(0.5f, 1.1f), extraRotation: 0, shrinkSpeed: 0.2f);
                         GeneralParticleHandler.SpawnParticle(fx);
                     }
+                    Particle e = new CustomSpark(player.Center, (velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(7f, 20f), "CalamityMod/Particles/WaterFoam", false, 14, Main.rand.NextFloat(0.15f, 0.25f) * 3, Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(1f, 1f), true, false, shrinkSpeed: 0.4f);
+                    GeneralParticleHandler.SpawnParticle(e);
                     SoundEngine.PlaySound(SoundID.Item101 with { Volume = 0.9f, Pitch = Main.rand.NextFloat(0.3f, 0.5f) }, player.Center);
                 }
             }
