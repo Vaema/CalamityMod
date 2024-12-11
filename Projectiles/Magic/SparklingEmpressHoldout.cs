@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -31,13 +29,14 @@ namespace CalamityMod.Projectiles.Magic
         public bool hasLetGo = false;
         public int time = 0;
         public int postFireTimer = 0;
-        public bool deservesKiss = false;
-        public Vector2 storedPos;
-        public int cooldownTime => 20 * (deservesKiss ? 2 : 1);
+        public bool deservesMana = false;
+
+        public float GfbMult = 1;
+        public int cooldownTime => 20 * (deservesMana ? 2 : 1);
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead)
                 Projectile.Kill();
             if (Owner.CantUseHoldout() && !hasLetGo)
                 postFireTimer = cooldownTime;
@@ -45,11 +44,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void HoldoutAI()
         {
+            if (Main.zenithWorld)
+                GfbMult = MathHelper.Clamp((int)(time / 60), 1, 7);
             if (!hasLetGo)
             {
-                if (shootingTimer >= (deservesKiss ? 5 : 3))
+                if (shootingTimer >= (deservesMana && !Main.zenithWorld ? 6 : 3))
                 {
-                    if (Owner.CheckMana(HeldItem, -1, true, false))
+                    if (Owner.CheckMana(HeldItem, (int)(HeldItem.mana * GfbMult), true, false))
                     {
                         Shoot();
                         shootingTimer = 0f;
@@ -64,16 +65,16 @@ namespace CalamityMod.Projectiles.Magic
                 shootingTimer++;
 
                 if (time >= 120)
-                    deservesKiss = true;
+                    deservesMana = true;
                 if (time == 120)
                 {
                     SoundStyle f = new("CalamityMod/Sounds/Item/MeldShoot");
                     SoundEngine.PlaySound(f with { Volume = 0.5f, Pitch = 0.95f }, Projectile.Center);
                     for (int k = 0; k < 14; k++)
                     {
-                        Vector2 shootVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.1f, 8.8f);
+                        Vector2 vel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.1f, 8.8f);
 
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(4) ? 267 : 66, shootVel);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), vel);
                         dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
                         dust2.noGravity = true;
                         dust2.color = Main.rand.NextBool() ? Color.Lerp(EffectsColor, Color.White, 0.5f) : EffectsColor;
@@ -81,19 +82,66 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
             time++;
-            
+
+            if (Main.zenithWorld)
+            {
+                if (!hasLetGo)
+                {
+                    if (time % 60 == 0 && time > 120 && time <= 420)
+                    {
+                        SoundStyle f = new("CalamityMod/Sounds/Item/MeldShoot");
+                        SoundEngine.PlaySound(f with { Volume = 0.5f, Pitch = 0.95f }, Projectile.Center);
+                    }
+                    if (time == 420)
+                    {
+                        SoundStyle warnSound = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGNukeWarning");
+                        SoundEngine.PlaySound(warnSound with { Volume = 0.7f, Pitch = 0.8f }, Projectile.Center);
+                    }
+                    // gfb texts
+                    if (time == 1)
+                        CombatText.NewText(Projectile.Hitbox, Color.SkyBlue, CalamityUtils.GetTextValue("Misc.Empress1"));
+                    if (time == 300)
+                        CombatText.NewText(Projectile.Hitbox, Color.DeepSkyBlue, CalamityUtils.GetTextValue("Misc.Empress2"));
+                    if (time == 510)
+                        CombatText.NewText(Projectile.Hitbox, Color.DodgerBlue, CalamityUtils.GetTextValue("Misc.Empress3"));
+                    Owner.velocity += -Projectile.velocity * MathHelper.Lerp(GfbMult, 1, 0.6f) * 0.1f;
+                }
+                
+                if (time >= 540)
+                {
+                    if (time < 600)
+                    {
+                        if (time % 10 == 0)
+                        {
+                            Particle boom = new CustomPulse(Projectile.Center, -Projectile.velocity * 0.3f, Color.DodgerBlue, "CalamityMod/Particles/BloomRing", new Vector2(1, 1f), 0, 0, 4, 10);
+                            GeneralParticleHandler.SpawnParticle(boom);
+                            SoundStyle f = new("CalamityMod/Sounds/Item/MeldExplosion");
+                            SoundEngine.PlaySound(f with { Volume = 0.5f, Pitch = 0.95f }, Projectile.Center);
+                            for (int k = 0; k < 18; k++)
+                            {
+                                Projectile explode = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Vector2.One * 5).RotatedByRandom(100), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage * 5, Projectile.knockBack, Projectile.owner, 0, 0);
+                                explode.hostile = true;
+                                explode.extraUpdates = 3;
+                                explode.tileCollide = false;
+                            }
+                        }
+                        if (time % 3 == 0)
+                            CombatText.NewText(Projectile.Hitbox, Color.Cyan, CalamityUtils.GetTextValue("Misc.Empress4"));
+                    }
+                    if (postFireTimer == 0)
+                        postFireTimer = (cooldownTime * 5);
+                    deservesMana = false;
+                }
+            }
+
             if (postFireTimer > 0)
                 PostFireEffect();
         }
         public void PostFireEffect()
         {
-            if (!hasLetGo)
-            {
-                storedPos = Projectile.Center;
-            }
             hasLetGo = true;
 
-            if (deservesKiss && postFireTimer % 8 == 0)
+            if (deservesMana && postFireTimer % 8 == 0)
             {
                 int manaGained = 24;
                 Owner.statMana += manaGained;
@@ -113,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle s = new("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst");
                 SoundEngine.PlaySound(s with { Volume = 0.35f, Pitch = -postFireTimer * 0.01f, MaxInstances = -1 }, Projectile.Center);
             }
-            if (deservesKiss && (postFireTimer + 2) % 8 == 0)
+            if (deservesMana && (postFireTimer + 2) % 8 == 0)
             {
                 Owner.HealPlayer(4);
             }
@@ -125,20 +173,15 @@ namespace CalamityMod.Projectiles.Magic
         {
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
             Vector2 firingVelocity = (shootDirection * 4);
-
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity, ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
-
-            // Inside here go all the things that dedicated servers shouldn't spend resources on.
-            // Like visuals and sounds.
-            if (Main.dedServ)
-                return;
+            for (int k = 0; k < (int)(GfbMult); k++)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity.RotatedByRandom(Main.zenithWorld ? GfbMult * 0.08f : 0), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
 
             for (int k = 0; k < 4; k++)
             {
                 Vector2 shootVel = (shootDirection * 15).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 1.8f);
 
-                Dust dust2 = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(4) ? 267 : 66, shootVel);
-                dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
+                Dust dust2 = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), shootVel);
+                dust2.scale = Main.rand.NextFloat(0.75f, 0.9f);
                 dust2.noGravity = true;
                 dust2.color = Main.rand.NextBool() ? Color.Lerp(EffectsColor, Color.White, 0.5f) : EffectsColor;
             }
@@ -147,7 +190,6 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (time < 2)
                 return false;
-            Vector2 toHead = Utils.DirectionTo(storedPos, Owner.Center - Vector2.UnitY * 4);
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -156,11 +198,13 @@ namespace CalamityMod.Projectiles.Magic
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Texture2D shineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
 
-            Main.EntitySpriteDraw(texture, drawPosition + (hasLetGo ? Vector2.Zero : Main.rand.NextVector2Circular(2, 2)), null, Projectile.GetAlpha(lightColor), drawRotation + (MathHelper.ToRadians(45f * (Projectile.spriteDirection))), rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-            if (deservesKiss && !hasLetGo)
+            Vector2 vibration = (hasLetGo ? Vector2.Zero : (Main.rand.NextVector2Circular(2, 2) * (time >= 840 && Main.zenithWorld ? 4 : 1)));
+
+            Main.EntitySpriteDraw(texture, drawPosition + vibration, null, Projectile.GetAlpha(lightColor), drawRotation + (MathHelper.ToRadians(45f * (Projectile.spriteDirection))), rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            if (deservesMana && !hasLetGo)
             {
                 for (int i = 0; i < 2; i++)
-                    Main.EntitySpriteDraw(shineTex, GunTipPosition - Main.screenPosition, null, Color.DodgerBlue with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(45 * (i == 0 ? -1 : 1)), shineTex.Size() * 0.5f, new Vector2(0.9f, 2.5f) * Main.rand.NextFloat(0.7f, 1.1f), SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(shineTex, GunTipPosition - Main.screenPosition, null, Color.DodgerBlue with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(45 * (i == 0 ? -1 : 1)), shineTex.Size() * 0.5f, new Vector2(0.9f, 2.5f) * Main.rand.NextFloat(0.7f, 1.1f) * MathHelper.Lerp(GfbMult, 1, 0.6f), SpriteEffects.None, 0);
             }
             return false;
         }

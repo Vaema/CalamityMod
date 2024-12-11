@@ -1,16 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.Enums;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -75,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 shootVel = (shootDirection).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.8f);
 
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(4) ? 267 : 66, shootVel);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), shootVel);
                     dust2.scale = Main.rand.NextFloat(0.9f, 1.15f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Cyan;

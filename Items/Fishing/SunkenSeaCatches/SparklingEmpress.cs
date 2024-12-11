@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -31,6 +32,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
