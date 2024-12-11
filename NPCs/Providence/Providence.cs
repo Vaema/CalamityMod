@@ -34,7 +34,6 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
@@ -47,7 +46,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 using Filters = Terraria.Graphics.Effects.Filters;
 
 namespace CalamityMod.NPCs.Providence
@@ -410,6 +408,10 @@ namespace CalamityMod.NPCs.Providence
                 calamityGlobalNPC.newAI[1] = 0f;
                 calamityGlobalNPC.newAI[2] = 0f;
                 calamityGlobalNPC.newAI[3] = 0f;
+
+                // Despawn existing projectiles and summon the aura again
+                DespawnSpecificProjectiles(true);
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
                 NPC.netUpdate = true;
 
                 // Prevent netUpdate from being blocked by the spam counter.
@@ -1970,7 +1972,7 @@ namespace CalamityMod.NPCs.Providence
             return Utils.GetLerpValue(drawFireDistanceStart, clampedDistance, distanceToTarget, true);
         }
 
-        private void DespawnSpecificProjectiles(bool dying = false)
+        private void DespawnSpecificProjectiles(bool everything = false)
         {
             for (int x = 0; x < Main.maxProjectiles; x++)
             {
@@ -1982,7 +1984,7 @@ namespace CalamityMod.NPCs.Providence
                     else if (projectile.type == ModContent.ProjectileType<HolyBlast>() || projectile.type == ModContent.ProjectileType<HolyFire>())
                         projectile.active = false;
 
-                    if (dying)
+                    if (everything)
                     {
                         if (projectile.type == ModContent.ProjectileType<ProvidenceHolyRay>() || projectile.type == ModContent.ProjectileType<ProvidenceCrystal>() ||
                             projectile.type == ModContent.ProjectileType<ProvidenceCrystalShard>() || projectile.type == ModContent.ProjectileType<HolySpear>() ||
@@ -2152,7 +2154,7 @@ namespace CalamityMod.NPCs.Providence
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool offColor = NPC.localAI[1] != (float)BossMode.Normal;
+            bool offColor = NPC.localAI[1] != (float)BossMode.Normal && (NPC.Calamity().newAI[3] >= 180f || Main.zenithWorld);
 
             Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
             Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
@@ -2172,9 +2174,6 @@ namespace CalamityMod.NPCs.Providence
                 if (spawnAnimation)
                 {
                     Asset<Texture2D> orbTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-
-                    Asset<Texture2D> flareTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlast");
-
                     float sc = CalamityUtils.CircInEasing((float)NPC.Calamity().newAI[3] / (float)spawnAnimationTime, 1);
 
                     for (int i = 0; i < 3; i++)
@@ -2297,7 +2296,7 @@ namespace CalamityMod.NPCs.Providence
                             CrystalColor = Color.BlueViolet;
                         }
                     }
-                    else if (NPC.localAI[1] == (float)BossMode.Enraged)
+                    else if (NPC.localAI[1] == (float)BossMode.Enraged && !spawnAnimation)
                     {
                         WingColor = Color.Cyan;
                         CrystalColor = Color.BlueViolet;

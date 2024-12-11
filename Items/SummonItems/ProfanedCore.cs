@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,17 +37,18 @@ namespace CalamityMod.Items.SummonItems
         public override bool CanUseItem(Player player)
         {
             var Prov = CalamityGlobalNPC.holyBoss;
-            bool provAtHighHPNotEnraged = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && !Main.npc[Prov].Calamity().CurrentlyEnraged;
-            return (!NPC.AnyNPCs(ModContent.NPCType<Providence>()) || provAtHighHPNotEnraged) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
+            bool canPissOffProvi = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            return (!NPC.AnyNPCs(ModContent.NPCType<Providence>()) || canPissOffProvi) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
             var Prov = CalamityGlobalNPC.holyBoss;
-            bool usingToMakeProviPissedOff = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            bool usingToMakeProviPissedOff = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
             if (usingToMakeProviPissedOff)
             {
                 (Main.npc[Prov].ModNPC as Providence).hasBeenGivenFullPower = true;
+                Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<HolyProfanedCore>(), 0, 0);
             }
             else
             {

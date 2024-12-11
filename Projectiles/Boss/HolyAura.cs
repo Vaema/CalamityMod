@@ -1,6 +1,6 @@
 ﻿using System;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -30,6 +30,8 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 210;
         }
+
+        public override void AI() => Projectile.Center = Main.npc[CalamityGlobalNPC.holyBoss].Center;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -84,18 +86,18 @@ namespace CalamityMod.Projectiles.Boss
                     }
                     else
                     {
-                        color.B = 255;
+                        byte blueValue = (byte)(MathHelper.Clamp(MathHelper.Lerp(0, 255, Main.npc[CalamityGlobalNPC.holyBoss].Calamity().newAI[3] / 120f), 0, 255));
+                        if (blueValue > 255) blueValue = 255;
+                        color.B = blueValue;
                         if (underworld)
-                            color.G = 0;
+                            color.G = (byte)(255 - blueValue);
                         else
-                            color.R = 0;
+                            color.R = (byte)(255 - blueValue);
                     }
                 }
 
                 color.A = 0;
-
                 {
-
                     if (color.R > 0)
                         color.R = (byte)MathHelper.Lerp(0, color.R, amount2);
                     if (color.G > 0)

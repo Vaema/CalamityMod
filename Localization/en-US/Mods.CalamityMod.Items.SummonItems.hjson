@@ -228,7 +228,7 @@ ProfanedCore: {
 	Tooltip:
 		'''
 		Summons Providence when used in the Hallow or Underworld
-		Use again while Providence is at full health to unleash Her perfect fury
+		Use again while Providence is at high health to unleash Her perfect fury
 		{$Common.NotConsumable}
 		'The heart of Her Guardians, Her wicked wrath shall burn upon whoever now wields it.'
 		'''
