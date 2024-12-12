@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
                     float starScale = MathHelper.Lerp(0f, 6f, (Timer - ShakeThreshold) / (Lifetime - ShakeThreshold));
                     CustomSpark attacka = new(proviCoreLocation, Vector2.Zero, "CalamityMod/Particles/FullStar", false, 2, starScale, flameColor, Vector2.One, extraRotation: MathHelper.PiOver4);
                     GeneralParticleHandler.SpawnParticle(attacka);
-                    CustomSpark attacka2 = new(proviCoreLocation, Vector2.Zero, "CalamityMod/Particles/FullStar", false, 2, starScale * 0.66f, flameColor, Vector2.One);
+                    CustomSpark attacka2 = new(proviCoreLocation, Vector2.Zero, "CalamityMod/Particles/FullStar", false, 2, starScale * 0.4f, flameColor, Vector2.One);
                     GeneralParticleHandler.SpawnParticle(attacka2);
 
                     if (Timer % 2 == 0)
@@ -81,7 +81,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = TextureAssets.Projectile[Type].Value;
             float shakeAmt = MathHelper.Clamp(MathHelper.Lerp(0f, 8f, (Timer - ShakeThreshold) / (Lifetime - ShakeThreshold)), 0f, 8f);
             Vector2 drawPos = Projectile.Center + Main.rand.NextVector2CircularEdge(shakeAmt, shakeAmt);
 

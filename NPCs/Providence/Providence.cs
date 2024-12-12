@@ -444,8 +444,8 @@ namespace CalamityMod.NPCs.Providence
             // Phase times
             float phaseTime = fullPowerAI ? (240f - 60f * (1f - lifeRatio)) : 300f;
             float crystalPhaseTime = fullPowerAI ? (float)Math.Round(60f * lifeRatio) : death ? 60f : 120f;
-            int nightCrystalTime = 210;
-            int gfbCrystalTime = 1500 + nightCrystalTime;
+            int enragedCrystalTime = 210;
+            int gfbCrystalTime = 1500 + enragedCrystalTime;
             float attackDelayAfterCocoon = phaseTime * 0.3f;
 
             // Phases
@@ -1711,12 +1711,12 @@ namespace CalamityMod.NPCs.Providence
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float timeLeft = fullPowerAI ? (float)(getFuckedAI ? gfbCrystalTime : nightCrystalTime) : 0f;
+                                float timeLeft = fullPowerAI ? (float)(getFuckedAI ? gfbCrystalTime : enragedCrystalTime) : 0f;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), crystalSpawnPos, Vector2.Zero, ModContent.ProjectileType<ProvidenceCrystal>(), crystalDamage, 0f, Main.myPlayer, lifeRatio, 0f, timeLeft);
                             }
                         }
 
-                        if (NPC.ai[1] >= crystalPhaseTime + nightCrystalTime || !fullPowerAI)
+                        if (NPC.ai[1] >= crystalPhaseTime + enragedCrystalTime || !fullPowerAI)
                         {
                             AIState = (int)Phase.PhaseChange;
                             NPC.TargetClosest();
@@ -2094,7 +2094,7 @@ namespace CalamityMod.NPCs.Providence
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.hasBeenGivenFullPower;
-            }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceNightText);
+            }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceEnragedText);
 
             npcLoot.AddIf(info =>
             {
