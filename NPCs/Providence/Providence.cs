@@ -412,6 +412,8 @@ namespace CalamityMod.NPCs.Providence
                 // Despawn existing projectiles and summon the aura again
                 DespawnSpecificProjectiles(true);
                 Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ProvidenceDyeConditionSyncPacket.Send(this);
                 NPC.netUpdate = true;
 
                 // Prevent netUpdate from being blocked by the spam counter.

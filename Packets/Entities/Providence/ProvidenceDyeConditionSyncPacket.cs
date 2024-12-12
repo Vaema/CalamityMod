@@ -28,12 +28,12 @@ namespace CalamityMod.Packets
         public override void HandlePacket(in BinaryReader packet, int sender)
         {
             var providence = packet.ReadModNPC<Providence>();
-            var hasTakenDaytimeDmg = packet.ReadBoolean();
+            var hasBeenEnraged = packet.ReadBoolean();
 
             if (providence is null)
                 return;
 
-            providence.hasBeenGivenFullPower = hasTakenDaytimeDmg;
+            providence.hasBeenGivenFullPower = hasBeenEnraged;
         }
     }
 }
