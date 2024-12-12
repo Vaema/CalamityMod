@@ -1,64 +1,118 @@
-﻿using System;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
     public class WaywasherProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public ref float time => ref Projectile.ai[0];
+        public int dir = 0;
+        public bool returning = false;
         public override void SetDefaults()
         {
-            Projectile.width = 16;
-            Projectile.height = 16;
+            Projectile.width = 22;
+            Projectile.height = 22;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.alpha = 0;
-            Projectile.penetrate = 2;
-            Projectile.timeLeft = 300;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 225;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.extraUpdates = 2;
         }
-
         public override void AI()
         {
-            Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.02f * (float)Projectile.direction;
-            Lighting.AddLight(Projectile.Center, 0f, 0.1f, 0.7f);
-            for (int i = 0; i < 2; i++)
+            if (time == 0)
+                dir = (int)Projectile.ai[1];
+
+            Lighting.AddLight(Projectile.Center, Color.RoyalBlue.ToVector3() * 0.7f);
+            if (Collision.SolidCollision(Projectile.Center, 20, 20))
             {
-                float shortXVel = Projectile.velocity.X / 3f * (float)i;
-                float shortYVel = Projectile.velocity.Y / 3f * (float)i;
-                int fourConst = 4;
-                int waterDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, DustID.Water, 0f, 0f, 0, new Color(64, 224, 208), 1.2f);
-                Dust dust = Main.dust[waterDust];
-                dust.noGravity = true;
-                dust.velocity *= 0.1f;
-                dust.velocity += Projectile.velocity * 0.1f;
-                dust.position.X -= shortXVel;
-                dust.position.Y -= shortYVel;
+                Projectile.velocity *= 0.95f;
+                Projectile.timeLeft = (int)(Projectile.timeLeft * 0.9f);
+            }
+
+            int timeValue = (int)(time / 12);
+            float turnMult = timeValue switch
+            {
+                0 => 0.05f,
+                1 => 0.1f,
+                2 => 0.2f,
+                3 => -0.2f,
+                4 => -0.3f,
+                5 => -0.4f,
+                6 => -0.6f,
+                7 => -0.9f,
+                8 => -1.13f,
+                _ => -1.7f,
+            };
+            if (timeValue == 9)
+            {
+                returning = true;
+                for (int i = 0; i < Main.maxNPCs; i++)
+                    Projectile.localNPCImmunity[i] = 0;
+                Projectile.numHits = 0;
+            }
+            Projectile.velocity = Projectile.velocity.RotatedBy(0.2f * turnMult * dir);
+
+            if (Main.rand.NextBool())
+            {
+                Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.5f);
+                GeneralParticleHandler.SpawnParticle(trail);
+            }
+
+            Particle trail2 = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 25, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 6, 0.3f, Color.RoyalBlue, new Vector2(1, 1f), true, false, shrinkSpeed: 0.5f);
+            GeneralParticleHandler.SpawnParticle(trail2);
+
+            Vector2 tip = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 35;
+            Particle trail3 = new CustomSpark(tip, Projectile.velocity * Main.rand.NextFloat(0.7f, 0.9f), "CalamityMod/Particles/BloomCircle", false, 2, Main.rand.NextFloat(0.35f, 0.45f), Color.White, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-0.4f, 0.4f));
+            GeneralParticleHandler.SpawnParticle(trail3);
+            if (Main.rand.NextBool(10))
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle trail4 = new CustomSpark(tip, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f), "CalamityMod/Particles/BloomCircle", true, 15, Main.rand.NextFloat(0.12f, 0.18f), Color.White * 0.7f, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1));
+                    GeneralParticleHandler.SpawnParticle(trail4);
+
+                    Dust dust = Dust.NewDustPerfect(tip + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f));
+                    dust.noGravity = false;
+                    dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
+                    dust.color = Color.White;
+                    dust.noLightEmittence = true;
+                }
             }
             if (Main.rand.NextBool(5))
             {
-                int otherFourConst = 4;
-                int otherWaterDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, DustID.Water, 0f, 0f, 0, new Color(64, 224, 208), 0.6f);
-                Main.dust[otherWaterDust].velocity *= 0.25f;
-                Main.dust[otherWaterDust].velocity += Projectile.velocity * 0.5f;
+                Gore bubble = Gore.NewGorePerfect(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.2f + Main.rand.NextVector2Circular(1f, 1f), 411);
+                bubble.timeLeft = 12 + Main.rand.Next(8);
+                bubble.scale = Main.rand.NextFloat(0.5f, 0.9f);
+                bubble.type = Main.rand.NextBool(3) ? 412 : 411;
             }
-            if (Projectile.velocity.Y > 16f)
-            {
-                Projectile.velocity.Y = 16f;
-            }
+            time += returning ? -1 : 1;
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
 
+            float minMult = 0.1f;
+            int hitsToMinMult = 5;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-            for (int k = 0; k < 10; k++)
+            Particle trail2 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 13, 0.75f, Color.White, new Vector2(1, 1f), true, false, shrinkSpeed: 0.3f);
+            GeneralParticleHandler.SpawnParticle(trail2);
+            for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Water, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, new Color(0, 142, 255), 1f);
+                Particle trail = new CustomSpark(Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f), "CalamityMod/Particles/WaterFoam", true, 13, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.1f);
+                GeneralParticleHandler.SpawnParticle(trail);
             }
         }
     }
