@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.localAI[0] >= (standardAI ? 300f : 30f))
             {
-                // Spawn shards every 30 frames at night or at 300 frames during day
+                // Spawn shards every 30 frames while enraged or at 300 frames normally
                 if (Projectile.localAI[0] % 30f == 0f || standardAI)
                 {
                     SoundEngine.PlaySound(SoundID.Item109, Projectile.Center);

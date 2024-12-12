@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             bool aimedSpear = Projectile.ai[0] > 0f;
 
-            Color baseColor = new Color(255, aimedSpear ? 255 : 125, aimedSpear ? 25 : 125); // Default to day
+            Color baseColor = new Color(255, aimedSpear ? 255 : 125, aimedSpear ? 25 : 125); // Default to standard yellow
 
             if (Main.zenithWorld)
             {
@@ -156,7 +156,7 @@ namespace CalamityMod.Projectiles.Boss
             Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             bool aimedSpear = Projectile.ai[0] > 0f;
 
-            Color baseColor = new Color(255, aimedSpear ? 255 : 125, aimedSpear ? 25 : 125); // Default to day
+            Color baseColor = new Color(255, aimedSpear ? 255 : 125, aimedSpear ? 25 : 125); // Default to standard yellow
             Color baseColor2 = new Color(15, 35, 50, 0);
 
             if (Main.zenithWorld)
