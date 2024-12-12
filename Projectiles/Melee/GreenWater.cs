@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.ai[0] == 0) // "Jaw" teeth
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             }
             for (int i = 0; i <= 4; i++)
             {

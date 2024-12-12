@@ -176,6 +176,11 @@ GodSlayerInferno: {
 	Description: Your flesh is burning off
 }
 
+HeavyBleeding: {
+	DisplayName: Heavy Bleeding
+	Description: You might need a bit more than a bandage for this
+}
+
 HolyFlames: {
 	DisplayName: Holy Flames
 	Description: Dissolving from holy light
@@ -1587,9 +1592,4 @@ PopoBuff: {
 PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
-}
-
-HeavyBleeding: {
-	DisplayName: Heavy Bleeding
-	Description: Mods.CalamityMod.Buffs.HeavyBleeding.Description
 }
