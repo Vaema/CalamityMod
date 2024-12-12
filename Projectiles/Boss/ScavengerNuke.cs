@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -77,6 +78,21 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Projectile.ai[0] = -1f;
                     Projectile.netUpdate = true;
+                }
+            }
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+            {
+                if (DownedBossSystem.downedProvidence)
+                {
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 180, true);
+                }
+                else
+                {
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -72,6 +73,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             int heal = (int)Math.Round(hit.Damage * 0.05);
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
@@ -84,6 +86,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             int heal = (int)Math.Round(info.Damage * 0.05);
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;

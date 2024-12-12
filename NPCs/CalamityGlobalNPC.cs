@@ -281,6 +281,7 @@ namespace CalamityMod.NPCs
         public int pearlAuraCounter = 0;
         public int bBlood = 0;
         public int brainRot = 0;
+        public int heavybleeding = 0;
         public int laceration = 0;
         public int elementalMix = 0;
         public int marked = 0;
@@ -536,6 +537,7 @@ namespace CalamityMod.NPCs
             myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
+            myClone.heavybleeding = heavybleeding;
             myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
             myClone.marked = marked;
@@ -1253,10 +1255,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (laceration > 0)
+            if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
+            if (laceration > 0)
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
-                ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
                 ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
@@ -5536,6 +5540,8 @@ namespace CalamityMod.NPCs
                 bBlood--;
             if (brainRot > 0)
                 brainRot--;
+            if (heavybleeding > 0)
+                heavybleeding--;
             if (laceration > 0)
                 laceration--;
             if (elementalMix > 0)
@@ -5988,16 +5994,16 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffID.Bleeding, 180);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.Plantera:
@@ -6018,6 +6024,10 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    break;
+
+                case NPCID.DukeFishron:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.AncientLight:
@@ -7142,6 +7152,9 @@ namespace CalamityMod.NPCs
             if (hFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
 
+            if (heavybleeding > 0)
+                HeavyBleeding.DrawEffects(npc, ref drawColor);
+
             if (laceration > 0)
                 Laceration.DrawEffects(npc, ref drawColor);
 
@@ -7330,6 +7343,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),

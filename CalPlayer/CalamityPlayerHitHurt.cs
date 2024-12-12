@@ -430,6 +430,10 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
+                if (heavybleeding)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
                 if (laceration)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).Format(Player.name));

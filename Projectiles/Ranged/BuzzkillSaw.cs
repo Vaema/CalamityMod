@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), 150);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 150);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center);
 
             int bloodCount = 6 + 10 * (int)SawLevel;

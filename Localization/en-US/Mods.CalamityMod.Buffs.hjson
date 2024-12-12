@@ -1588,3 +1588,8 @@ PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
 }
+
+HeavyBleeding: {
+	DisplayName: Heavy Bleeding
+	Description: Mods.CalamityMod.Buffs.HeavyBleeding.Description
+}
