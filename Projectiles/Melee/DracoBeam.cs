@@ -57,18 +57,12 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.numHits < 1)
             {
-                float spread = 30f * 0.0174f;
-                double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                double deltaAngle = spread / 8f;
-                double offsetAngle;
-                int i;
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    for (i = 0; i < 4; i++)
+                    for (int i = 0; i < 8; i++)
                     {
-                        offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 2f), (float)(Math.Cos(offsetAngle) * 2f), ModContent.ProjectileType<DracoBeam2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 2f), (float)(-Math.Cos(offsetAngle) * 2f), ModContent.ProjectileType<DracoBeam2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                        Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.Pi / 8f)).ToRotationVector2() * 4f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<DracoBeam2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
             }
