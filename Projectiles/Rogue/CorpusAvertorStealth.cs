@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -56,12 +57,14 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             if (target.lifeMax > 5)
                 OnHitEffects(hit.Damage);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             OnHitEffects(info.Damage);
         }
 

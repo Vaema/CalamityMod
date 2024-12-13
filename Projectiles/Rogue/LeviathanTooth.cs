@@ -237,7 +237,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target == chosenTarget || Projectile.Calamity().stealthStrike)
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             if (!stuckInTarget && canStick && !Projectile.Calamity().stealthStrike)
             {
                 if (Projectile.timeLeft < 400)

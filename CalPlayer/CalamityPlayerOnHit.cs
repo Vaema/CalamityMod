@@ -225,6 +225,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
+                case ProjectileID.ButchersChainsaw:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
+                    break;
+
                 case ProjectileID.LunarFlare:
                     target.AddBuff(BuffType<Nightwither>(), 180);
                     break;

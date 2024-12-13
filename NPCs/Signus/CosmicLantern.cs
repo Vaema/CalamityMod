@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
@@ -177,6 +178,14 @@ namespace CalamityMod.NPCs.Signus
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
             return NPC.alpha == 0;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            if (info.Damage <= 0)
+                return;
+
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

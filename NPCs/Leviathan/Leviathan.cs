@@ -916,7 +916,7 @@ namespace CalamityMod.NPCs.Leviathan
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 600, true);
         }
 
         public override bool CheckActive()
