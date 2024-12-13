@@ -432,7 +432,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (heavybleeding)
                 {
-                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HeavyBleeding" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
                 if (laceration)
                 {
