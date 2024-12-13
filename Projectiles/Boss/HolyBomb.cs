@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             float squish = CalamityUtils.SineBumpEasing(SquishAnimation, 1) * 0.25f;
 
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBombNight").Value;
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBombNight").Value;
             int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, new Vector2(Projectile.scale + squish, Projectile.scale - squish), texture, offset: new Vector2(0, (-22 * (1 - squish))));

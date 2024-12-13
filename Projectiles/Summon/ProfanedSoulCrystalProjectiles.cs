@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
+            int pscState = (int)(Main.dayTime ? Providence.BossMode.Normal : Providence.BossMode.Enraged);
             int dustID = ProvUtils.GetDustID(!Main.dayTime);
             int num469 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, dustID, 0f, 0f, 100, default, 1f);
             Main.dust[num469].noGravity = true;
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -333,7 +333,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -499,8 +499,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha), 1);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha), 1);
             return false;
         }
 
@@ -735,7 +735,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -743,7 +743,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/ProfanedCrystalRangedHugesNight").Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -939,14 +939,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -1790,8 +1790,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             var psc = Projectile.ai[0] > 0f;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime && psc, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetDayNightColor(!Main.dayTime && psc, Projectile.alpha), 1);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime && psc, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetColorBasedOnEnrage(!Main.dayTime && psc, Projectile.alpha), 1);
             return false;
         }
 
@@ -1908,7 +1908,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -1916,7 +1916,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -2047,7 +2047,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha);
+            return ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -2055,7 +2055,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
             int num214 = texture.Height / Main.projFrames[Type];
             int y6 = num214 * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(!Main.dayTime, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

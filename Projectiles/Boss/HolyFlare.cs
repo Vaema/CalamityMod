@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity.Y > velocityYCap)
                 Projectile.velocity.Y = velocityYCap;
 
-            float velocityX = !ProvUtils.DayAI() ? 0.025f : 0.02f;
+            float velocityX = !ProvUtils.StandardAI() ? 0.025f : 0.02f;
             if (Projectile.position.X + Projectile.width < player.position.X)
             {
                 if (Projectile.velocity.X < 0f)
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.velocity.X -= velocityX;
             }
 
-            float velocityXCap = !ProvUtils.DayAI() ? 10f : 8f;
+            float velocityXCap = !ProvUtils.StandardAI() ? 10f : 8f;
             if (Projectile.velocity.X > velocityXCap || Projectile.velocity.X < -velocityXCap)
                 Projectile.velocity.X *= 0.97f;
 
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFlareNight").Value;
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFlareNight").Value;
             int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, texture);
