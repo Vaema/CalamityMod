@@ -703,28 +703,13 @@ namespace CalamityMod.NPCs.Polterghast
                             }
 
                             int damage = NPC.GetProjectileDamage(type);
-
-                            Vector2 firingPosition = vector;
-                            float playerXDist = player.Center.X - firingPosition.X;
-                            float playerYDist = player.Center.Y - firingPosition.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                            playerDistance = baseProjectileVelocity / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-                            firingPosition.X += playerXDist * 3f;
-                            firingPosition.Y += playerYDist * 3f;
-
-                            float rotation = MathHelper.ToRadians(65);
-                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
-                            double deltaAngle = rotation / 6;
-                            double offsetAngle;
+                            Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * baseProjectileVelocity;
+                            Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 6; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast>() ? 450 : 1800;
+                                float offset = MathHelper.ToRadians(MathHelper.Lerp(-32.5f, 32.5f, i / 5f));
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                shot.timeLeft = (type == ModContent.ProjectileType<PhantomBlast>() ? 450 : 1800);
                             }
                         }
                         else
@@ -732,27 +717,13 @@ namespace CalamityMod.NPCs.Polterghast
                             int type = ModContent.ProjectileType<PhantomBlast>();
                             int damage = NPC.GetProjectileDamage(type);
 
-                            Vector2 firingPosition = vector;
-                            float playerXDist = player.Center.X - firingPosition.X;
-                            float playerYDist = player.Center.Y - firingPosition.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                            playerDistance = (baseProjectileVelocity + 5f) / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-                            firingPosition.X += playerXDist * 3f;
-                            firingPosition.Y += playerYDist * 3f;
-
-                            float rotation = MathHelper.ToRadians(80);
-                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
-                            double deltaAngle = rotation / 6;
-                            double offsetAngle;
+                            Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 5f);
+                            Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 6; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = 450;
+                                float offset = MathHelper.ToRadians(MathHelper.Lerp(-40f, 40f, i / 5f));
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                shot.timeLeft = 450;
                             }
                         }
                     }
@@ -837,58 +808,26 @@ namespace CalamityMod.NPCs.Polterghast
                             }
 
                             int damage = NPC.GetProjectileDamage(type);
-
-                            Vector2 firingPosition = vector;
-                            float playerXDist = player.Center.X - firingPosition.X;
-                            float playerYDist = player.Center.Y - firingPosition.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                            playerDistance = (baseProjectileVelocity + 1f) / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-                            firingPosition.X += playerXDist * 3f;
-                            firingPosition.Y += playerYDist * 3f;
-
-                            int numProj = 7;
-                            float rotation = MathHelper.ToRadians(80);
-                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
-                            double deltaAngle = rotation / numProj;
-                            double offsetAngle;
-                            for (int i = 0; i < numProj; i++)
+                            Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 1f);
+                            Vector2 firingPos = NPC.Center + spreadVel * 3f;
+                            for (int i = 0; i < 7; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast2>() ? 450 : 1800;
+                                float offset = MathHelper.ToRadians(MathHelper.Lerp(-40f, 40f, i / 6f));
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                shot.timeLeft = (type == ModContent.ProjectileType<PhantomBlast2>() ? 450 : 1800);
                             }
                         }
                         else
                         {
                             int type = ModContent.ProjectileType<PhantomBlast2>();
                             int damage = NPC.GetProjectileDamage(type);
-
-                            Vector2 firingPosition = vector;
-                            float playerXDist = player.Center.X - firingPosition.X;
-                            float playerYDist = player.Center.Y - firingPosition.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                            playerDistance = (baseProjectileVelocity + 5f) / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-                            firingPosition.X += playerXDist * 3f;
-                            firingPosition.Y += playerYDist * 3f;
-
-                            int numProj = 7;
-                            float rotation = MathHelper.ToRadians(100);
-                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
-                            double deltaAngle = rotation / numProj;
-                            double offsetAngle;
-                            for (int i = 0; i < numProj; i++)
+                            Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 5f);
+                            Vector2 firingPos = NPC.Center + spreadVel * 3f;
+                            for (int i = 0; i < 7; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = 450;
+                                float offset = MathHelper.ToRadians(MathHelper.Lerp(-50f, 50f, i / 6f));
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                shot.timeLeft = 450;
                             }
                         }
                     }
@@ -969,31 +908,16 @@ namespace CalamityMod.NPCs.Polterghast
                     NPC.localAI[1] = 0f;
                     if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                     {
-                        Vector2 firingPosition = vector;
-                        float playerXDist = player.Center.X - firingPosition.X;
-                        float playerYDist = player.Center.Y - firingPosition.Y;
-                        float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                        playerDistance = baseProjectileVelocity / playerDistance;
-                        playerXDist *= playerDistance;
-                        playerYDist *= playerDistance;
-                        firingPosition.X += playerXDist * 3f;
-                        firingPosition.Y += playerYDist * 3f;
-
-                        int numProj = 6 + (getPissed ? 4 : 2);
-                        float rotation = MathHelper.ToRadians(110 + (getPissed ? 15 : 0));
-                        float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                        double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
-                        double deltaAngle = rotation / numProj;
-                        double offsetAngle;
-
+                        int numProj = (getPissed ? 10 : 8);
+                        float maxSpread = getPissed ? 125 : 110;
                         int type = Main.rand.NextBool() ? ModContent.ProjectileType<PhantomShot2>() : ModContent.ProjectileType<PhantomShot>();
                         int damage = NPC.GetProjectileDamage(type);
-
+                        Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * baseProjectileVelocity;
+                        Vector2 firingPos = NPC.Center + spreadVel * 3f;
                         for (int i = 0; i < numProj; i++)
                         {
-                            offsetAngle = startAngle + deltaAngle * i;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            float offset = MathHelper.ToRadians(MathHelper.Lerp(-maxSpread * 0.5f, maxSpread * 0.5f, i / (numProj - 1f)));
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
                         }
                     }
                 }
