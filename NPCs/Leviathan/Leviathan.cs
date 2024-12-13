@@ -916,13 +916,10 @@ namespace CalamityMod.NPCs.Leviathan
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
