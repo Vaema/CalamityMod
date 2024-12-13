@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (deservesMana && (postFireTimer + 2) % 8 == 0)
             {
-                Owner.HealPlayer(4);
+                Owner.HealPlayer(1);
             }
             if (postFireTimer == 1)
                 Projectile.Kill();
