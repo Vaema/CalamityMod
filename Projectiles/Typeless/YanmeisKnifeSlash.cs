@@ -79,6 +79,8 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 speed = player.ActiveItem().shootSpeed * Projectile.scale;
             }
+
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;
 
             // Sync if a velocity component changes.
@@ -90,7 +92,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<KamiFlu>(), 600);
+            target.AddBuff(ModContent.BuffType<KamiFlu>(), YanmeisKnife.DebuffDuration);
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 60; i++)
@@ -108,7 +110,7 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(YanmeisKnife.HitSound, Projectile.position);
                 Projectile.ai[0] = 1f;
             }
-            Main.player[Projectile.owner].AddBuff(ModContent.BuffType<KamiBuff>(), 600);
+            Main.player[Projectile.owner].AddBuff(ModContent.BuffType<KamiBuff>(), YanmeisKnife.BoostDuration);
         }
         public override Color? GetAlpha(Color lightColor) => new Color(0, 215, 0, 0);
     }

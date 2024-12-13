@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 
@@ -13,6 +14,11 @@ namespace CalamityMod.Items.Weapons.Magic
     public class PrimordialAncient : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public static float BuffDamageReductionBoost = 0.08f;
+        public static float BuffDamageBoost = 0.18f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDamageReductionBoost.ToPercent(), BuffDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 40;

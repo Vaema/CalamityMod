@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Owner.CantUseHoldout() || Owner.HeldItem.type != ItemType<FourSeasonsGalaxia>())
             {
-                //Kill the projectile if too far away from the player or close enough to get "re-absorbed)
+                // Kill the projectile if too far away from the player or close enough to get "re-absorbed")
                 if ((Owner.Center - Projectile.Center).Length() < 30f || (Owner.Center - Projectile.Center).Length() > 2000f || Projectile.velocity.Length() > 100f)
                     Projectile.Kill();
 
@@ -154,8 +154,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 1f + ScaleEquation();
             Projectile.timeLeft = 2;
 
-            Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Calamity().mouseWorld, 0.05f * ThrowDisplace());
-            Projectile.Center = Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 40f * ThrowDisplace());
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            Projectile.Center = Vector2.Lerp(Projectile.Center, mouse, 0.05f * ThrowDisplace());
+            Projectile.Center = Projectile.Center.MoveTowards(mouse, 40f * ThrowDisplace());
 
             if ((Projectile.Center - Owner.Center).Length() > FourSeasonsGalaxia.AriesAttunement_Reach)
                 Projectile.Center = Owner.Center + Owner.SafeDirectionTo(Projectile.Center, Vector2.Zero) * FourSeasonsGalaxia.AriesAttunement_Reach;

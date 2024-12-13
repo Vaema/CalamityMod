@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
@@ -9,8 +10,19 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
     public class Bloodfin : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
+
+        public static int RegenBoost = 5;
+        public static int RegenTimeBoost = 10;
+
+        public static int DebuffedRegenBoost = 10; // Does not stack with above
+        public static int DebuffedRegenTimeFloor = 1800;
+
+        public static double ExtraRegenHealthThreshold = 0.75D;
+        public static int FramesForExtraRegen = 30;
+
         public static int BuffType = ModContent.BuffType<BloodfinBoost>();
-        public static int BuffDuration = 600;
+        public static int BuffDuration = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), DebuffedRegenBoost.ToRegenPerSecond(), FramesForExtraRegen.FramesToSeconds(), ExtraRegenHealthThreshold.ToPercent(), BuffDuration);
 
         public override void SetStaticDefaults()
         {
@@ -20,24 +32,15 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
 
         public override void SetDefaults()
         {
-            Item.width = 44;
-            Item.height = 36;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
+            Item.DefaultToHealingPotion(38, 36, 240);
+            Item.useStyle = ItemUseStyleID.EatFood;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.EatFood;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.healLife = 240;
-            Item.potion = true;
         }
 
         public override void OnConsumeItem(Player player)
         {
-            player.AddBuff(BuffType, BuffDuration);
+            player.AddBuff(BuffType, CalamityUtils.SecondsToFrames(BuffDuration));
         }
     }
 }

@@ -23,12 +23,22 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.rare = ItemRarityID.Red;
         }
 
-        public override bool CanUseItem(Player player) => !Main.masterMode && !player.Calamity().extraAccessoryML;
+        public override bool CanUseItem(Player player) => !(Main.masterMode && player.extraAccessory) && !player.Calamity().extraAccessoryML;
 
         public override bool? UseItem(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
+            // In Master Mode, will enable Demon Heart's accessory slot if for whatever reason you don't have that yet
+            if (Main.masterMode)
+            {
+                if (player.itemAnimation > 0 && !player.extraAccessory && player.itemTime == 0)
+                {
+                    player.itemTime = Item.useTime;
+                    player.extraAccessory = true;
+                }
+            }
+
+            else if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
                 modPlayer.extraAccessoryML = true;

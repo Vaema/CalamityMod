@@ -10,6 +10,9 @@ namespace CalamityMod.Projectiles.Magic
     public class PartySparkle : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public override string Texture => "CalamityMod/Projectiles/StarProj";
+
         public float Time
         {
             get => Projectile.ai[0];

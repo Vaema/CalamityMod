@@ -127,6 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 //Take the direction the sword is swung. FUCK not controlling the swing direction more than just left/right :|
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
@@ -158,18 +159,28 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.rand.NextBool())
                 {
-                    Particle mist = new MediumMistParticle(Owner.Center + direction * 40 + Main.rand.NextVector2Circular(30f, 30f), Vector2.Zero, new Color(172, 238, 255), new Color(145, 170, 188), Main.rand.NextFloat(0.5f, 1.5f), 245 - Main.rand.Next(50), 0.02f);
+                    Color initialColor = Color.Lerp(new Color(172, 238, 255), new Color(230, 172, 255), Main.rand.NextFloat(1f));;
+                    Particle mist = new MediumMistParticle(Owner.Center + direction * 40 + Main.rand.NextVector2Circular(30f, 30f), Vector2.Zero, initialColor, new Color(145, 170, 188), Main.rand.NextFloat(0.5f, 1.5f), 245 - Main.rand.Next(50), 0.02f);
                     mist.Velocity = (mist.Position - Owner.Center) * 0.2f + Owner.velocity;
                     GeneralParticleHandler.SpawnParticle(mist);
                 }
 
             }
 
-            else if (Main.rand.NextFloat(0f, 1f) > 0.75f)
+            else if (Main.rand.NextFloat(0f, 1f) > 0.6f)
             {
                 Vector2 particlePosition = Owner.Center + (rotation.ToRotationVector2() * 100f * Projectile.scale);
-                Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
-                GeneralParticleHandler.SpawnParticle(snowflake);
+                if (Main.rand.NextBool())
+                {
+                    Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
+                    GeneralParticleHandler.SpawnParticle(snowflake);
+                }
+                else
+                {
+                    float scale = Main.rand.NextFloat(0.5f, 1.8f);
+                    Particle star = new CritSpark(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, Color.Indigo, scale, 30, 0.5f, scale * 2f);
+                    GeneralParticleHandler.SpawnParticle(star);
+                }
             }
 
             //Make the owner look like theyre holding the sword bla bla

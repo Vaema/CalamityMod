@@ -837,7 +837,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     // If close enough to the target, prepare to fire deathray
                     float slowDownDistance = GetSlowdownAreaEdgeRadius(lastMechAlive);
                     bool readyToFireDeathray = distanceFromTarget < slowDownDistance;
-                    if (readyToFireDeathray)
+                    if (readyToFireDeathray && NPC.localAI[2] == 0f)
                         NPC.localAI[2] = 1f;
 
                     // Use a lerp to smoothly scale up velocity and turn speed
@@ -866,7 +866,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     turnDistance = chargeLocationDistance;
 
                     // Gradually turn and move slower if within 50 tiles of the target
-                    if (NPC.localAI[2] == 1f)
+                    if (NPC.localAI[2] >= 1f)
                     {
                         // Exponentially scale down velocity if close to the target
                         float velocityScale = distanceFromTarget / slowDownDistance;
@@ -875,6 +875,10 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
                         baseVelocity *= velocityScale;
                         turnSpeed *= velocityScale;
+
+                        // Increment localAI[2], this is used as a timer to control the pulsing of the telegraph
+                        float pulseIncrement = 1f / 60f * (distanceFromTarget < slowDownDistance * 0.5f ? 0.75f : 1.5f);
+                        NPC.localAI[2] += pulseIncrement;
 
                         calamityGlobalNPC.newAI[2] += 1f;
                         if (calamityGlobalNPC.newAI[2] < deathrayTelegraphDuration)
@@ -1159,8 +1163,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 // A large, faded circle. Is rescaled to fit the radius of the slowdown area.
                 Texture2D auraTexture = AuraTexture.Value;
 
-                float lifeRatio = NPC.life / (float)NPC.lifeMax;
-
                 // Yes, this is bizarre as fuck.
                 int completelyUseless = 0;
                 int otherExoMechsAlive = CheckForOtherMechs(ref completelyUseless, out _, out _);
@@ -1171,14 +1173,17 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 auraGeneralPower *= Utils.GetLerpValue(deathrayTelegraphDuration + deathrayDuration, deathrayTelegraphDuration + deathrayDuration, NPC.Calamity().newAI[2], true);
 
                 // Determine the characteristics of the aura. This requires intermediate computations to determine if Thanatos is in its final phase as well as for pulsing.
+                float lifeRatio = NPC.life / (float)NPC.lifeMax;
                 bool berserk = lifeRatio < 0.4f || (otherExoMechsAlive == 0 && lifeRatio < 0.7f);
                 bool lastMechAlive = berserk && otherExoMechsAlive == 0;
-                float pulse = Main.GlobalTimeWrappedHourly * 0.72f % 1f;
+                bool isCloseEnough = Vector2.Distance(NPC.Center, Main.player[NPC.target].Center) < GetSlowdownAreaEdgeRadius(lastMechAlive) * 0.5f;
+
+                float pulse = NPC.localAI[2] % 1f;
                 float auraRadius = GetSlowdownAreaEdgeRadius(lastMechAlive) * auraGeneralPower * 1.25f;
                 Vector2 outerAuraScale = Vector2.One * auraRadius / auraTexture.Size();
-                Vector2 innerAuraScale = outerAuraScale * pulse * 1.2f;
-                Color outerAuraColor = Color.White * auraGeneralPower * 0.6f;
-                Color innerAuraColor = outerAuraColor * (float)Math.Sqrt(1f - pulse);
+                Vector2 innerAuraScale = outerAuraScale * (1 - pulse) * 1.2f;
+                Color outerAuraColor = Color.White * auraGeneralPower * 0.65f;
+                Color innerAuraColor = (isCloseEnough ? outerAuraColor : Color.Red * auraGeneralPower * 0.65f) * (float)Math.Sqrt(pulse);
 
                 // Draw the aura.
                 spriteBatch.Draw(auraTexture, center, null, outerAuraColor, 0f, auraTexture.Size() * 0.5f, outerAuraScale, SpriteEffects.None, 0f);

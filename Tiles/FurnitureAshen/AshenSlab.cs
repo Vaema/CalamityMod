@@ -272,6 +272,9 @@ namespace CalamityMod.Tiles.FurnitureAshen
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             int uniqueAnimationFrameX = 0;
             int uniqueAnimationFrameY = 0;
             int xPos = i % 2;

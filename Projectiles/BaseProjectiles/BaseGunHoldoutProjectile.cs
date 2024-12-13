@@ -150,6 +150,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.width = Projectile.height = ItemTexture is null ? 1 : ItemTexture.Width();
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void OnSpawn(IEntitySource source) => OffsetLengthFromArm = MaxOffsetLengthFromArm;
@@ -191,6 +192,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             // The center of the player, taking into account if they have a mount or not.
             Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The vector between the player and the mouse, used for pointing the holdout.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - armPosition;
 

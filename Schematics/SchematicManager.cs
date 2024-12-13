@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Schematics
 {
@@ -171,10 +172,10 @@ namespace CalamityMod.Schematics
         #endregion Get Schematic Area
 
         #region Place Schematic
-        public static void PlaceSchematic<T>(string name, Point pos, SchematicAnchor anchorType, ref bool specialCondition, T chestDelegate = null) where T : Delegate
+        public static void PlaceSchematic<T>(string name, Point pos, SchematicAnchor anchorType, ref bool specialCondition, T chestDelegate = null, bool flipHorizontal = false) where T : Delegate
         {
             // If no schematic exists with this name, cancel with a helpful log message.
-            if (!TileMaps.ContainsKey(name))
+            if (!TileMaps.TryGetValue(name, out SchematicMetaTile[,] schematic))
             {
                 CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{name}\". No matching schematic file found.");
                 return;
@@ -190,7 +191,6 @@ namespace CalamityMod.Schematics
             PilePlacementMaps.TryGetValue(name, out PilePlacementFunction pilePlacementFunction);
 
             // Grab the schematic itself from the dictionary of loaded schematics.
-            SchematicMetaTile[,] schematic = TileMaps[name];
             int width = schematic.GetLength(0);
             int height = schematic.GetLength(1);
 
@@ -273,9 +273,213 @@ namespace CalamityMod.Schematics
             for (int x = 0; x < width; ++x)
                 for (int y = 0; y < height; ++y)
                 {
-                    SchematicMetaTile smt = schematic[x, y];
+                    //Uses the tile opposite where its placing when the schematic is flipped horizontally
+                    SchematicMetaTile smt = schematic[flipHorizontal ? width - 1 - x : x, y];
                     smt.ApplyTo(x + cornerX, y + cornerY, originalTiles[x, y]);
                     Tile worldTile = Main.tile[x + cornerX, y + cornerY];
+
+                    //Handle any additional fixes that need to be made as a result of this structure being flipped horizontally
+                    if (flipHorizontal && !smt.keepTile)
+                    {
+                        //Turns Left Slopes into Right Slopes and vice versa.
+                        if (worldTile.Slope != SlopeType.Solid)
+                            worldTile.Slope += (int)worldTile.Slope % 2 == 0 ? -1 : 1;
+
+                        //Correct Multi-Tile TileFrames
+                        int style = 0, alt = 0;
+                        TileObjectData.GetTileInfo(worldTile, ref style, ref alt);
+                        TileObjectData data = TileObjectData.GetTileData(worldTile.TileType, style, alt);
+                        if (data != null && !TileID.Sets.Platforms[worldTile.TileType])
+                        {
+                            int sheetSquare = 16 + data.CoordinatePadding;
+
+                            if (data.Width > 1)
+                            {
+                                int frameNum = worldTile.TileFrameX / sheetSquare % data.Width;
+                                //This equation gets us the amount we need to move TileFrameX to correct any issues MultiTiles that occurred during the flip process
+                                worldTile.TileFrameX += (short)((-frameNum + (data.Width - (frameNum + 1))) * (16 + data.CoordinatePadding));
+                            }
+
+                            //Flips Tiles that place directionally (Chairs, Beds, ect.)                        
+                            if (data.Direction != Terraria.Enums.TileObjectDirection.None)// && !ValidTileEntityTypes.Contains(worldTile.TileType))
+                            {
+                                int range = 1;
+                                if (data.RandomStyleRange > range)
+                                    range = data.RandomStyleRange;
+                                if (worldTile.TileFrameX / sheetSquare % (data.Width * data.StyleMultiplier * range) < data.Width)
+                                    worldTile.TileFrameX += (short)(sheetSquare * data.Width);
+                                else
+                                    worldTile.TileFrameX -= (short)(sheetSquare * data.Width);
+                            }
+                        }
+                        //Fix Platform TileFrames
+                        else if (TileID.Sets.Platforms[worldTile.TileType])
+                            switch (worldTile.TileFrameX / 18)
+                            {
+                                case 1:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 2:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 3:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 4:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 8:
+                                    worldTile.TileFrameX += 36;
+                                    break;
+                                case 10:
+                                    worldTile.TileFrameX -= 36;
+                                    break;
+                                case 12:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 13:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 15:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 16:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 19:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 20:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 25:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 26:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                            }
+                        //A handful of tiles do not have any TileObjectData and/or are unqiuely sheeted. Because of this we need to correct their frames manually
+                        //Note that this is not a comprehensive list. So far only tiles which appear in existing Calamity Structures are here. There may be other tiles which need to be added in the future.
+                        else
+                        {
+                            switch (worldTile.TileType)
+                            {
+                                case TileID.Pots: //Vanilla pots do not have any TileObjectData, however Modded pots which do will be caught by the above conditions.
+                                    if (worldTile.TileFrameX / 18 == 0)
+                                        worldTile.TileFrameX += 18;
+                                    else
+                                        worldTile.TileFrameX -= 18;
+                                    break;
+                                case TileID.HolidayLights: //Christmas Lights must be fixed when facing Left or Right
+                                    if (worldTile.TileFrameY / 18 == 3)
+                                        worldTile.TileFrameY -= 18;
+                                    else if (worldTile.TileFrameY / 18 == 2)
+                                        worldTile.TileFrameY += 18;
+                                    break;
+                                case TileID.MinecartTrack: //Minecart Tracks are very similar to Platforms, and must be dealt with accordingly. Strangely, their TileFrameX and Y are handled very differently when compared to most other tiles.
+                                    switch (worldTile.TileFrameX)
+                                    {
+                                        case 2:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 3:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 4:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 5:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 6:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 7:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 8:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 9:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 14:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 15:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 18:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 19:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 24:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 25:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                    }
+                                    if (worldTile.TileFrameY == 8)
+                                        worldTile.TileFrameY++;
+                                    else if (worldTile.TileFrameY == 9)
+                                        worldTile.TileFrameY--;
+                                    break;
+                                case TileID.ExposedGems: //Similarly to Holiday Lights, we need to determine if Exposed Gems are facing to the left or right and then flip them. However unlike holiday lights, Exposed Gems have 3 variants we must also account for. We do this by multiplying the standard size of 18 by three when dividing the TileFrameY
+                                    if (worldTile.TileFrameY / 54 == 3)
+                                        worldTile.TileFrameY -= 54;
+                                    else if (worldTile.TileFrameY / 54 == 2)
+                                        worldTile.TileFrameY += 54;
+                                    break;
+                                case TileID.Trees: //Trees need to be corrected manually as their sheets are pretty much wholely unique.
+                                    if (worldTile.TileFrameY / 22 >= 9)
+                                    {
+                                        if (worldTile.TileFrameX / 22 == 1)
+                                            break;
+                                        else if (worldTile.TileFrameX / 22 == 2)
+                                            worldTile.TileFrameX += 22;
+                                        else if (worldTile.TileFrameX / 22 == 3)
+                                            worldTile.TileFrameX -= 22;
+                                    }
+                                    else
+                                    {
+                                        switch (worldTile.TileFrameX / 22)
+                                        {
+                                            case 0:
+                                                if (worldTile.TileFrameY / 22 > 5)
+                                                    worldTile.TileFrameX += 66;
+                                                break;
+                                            case 1:
+                                                worldTile.TileFrameX += 22;
+                                                break;
+                                            case 2:
+                                                worldTile.TileFrameX -= 22;
+                                                break;
+                                            case 3:
+                                                worldTile.TileFrameX += 22;
+                                                if (worldTile.TileFrameY / 22 < 3)
+                                                    worldTile.TileFrameY += 66;
+                                                else if (worldTile.TileFrameY / 18 < 6)
+                                                    worldTile.TileFrameY -= 66;
+                                                break;
+                                            case 4:
+                                                worldTile.TileFrameX -= 22;
+                                                if (worldTile.TileFrameY / 22 < 3)
+                                                    worldTile.TileFrameY += 66;
+                                                else if (worldTile.TileFrameY / 22 < 6)
+                                                    worldTile.TileFrameY -= 66;
+                                                else if (worldTile.TileFrameY / 22 >= 6)
+                                                    worldTile.TileFrameX -= 66;
+                                                break;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
 
                     // If the determined tile type is a chest and this is its top left corner, define it appropriately.
                     // Skip this step if this schematic position preserves tiles.
@@ -312,37 +516,80 @@ namespace CalamityMod.Schematics
         #endregion
 
         #region Place Schematic Helper Methods
+        //This list allows us to check if a tile is valid before we get its data and try to place a Tile Entity
+        private static readonly List<int> ValidTileEntityTypes =
+        [
+            ModContent.TileType<ChargingStation>(),
+            ModContent.TileType<DraedonLabTurret>(),
+            ModContent.TileType<LabHologramProjector>(),
+            ModContent.TileType<HostileFireTurret>(),
+            ModContent.TileType<HostileIceTurret>(),
+            ModContent.TileType<HostileLaserTurret>(),
+            ModContent.TileType<HostileOnyxTurret>(),
+            ModContent.TileType<HostilePlagueTurret>(),
+            ModContent.TileType<HostileWaterTurret>()
+        ];
         private static void TryToPlaceTileEntities(int x, int y, Tile t)
         {
-            // A tile entity in an empty spot would make no sense.
-            if (!t.HasTile)
-                return;
-            // Ignore tiles that aren't at the top left of the tile.
-            // All of Calamity's worldgen-placed tile entities refuse to exist except at the top left corner of their host tile.
-            if (t.TileFrameX != 0 || t.TileFrameY != 0)
+            int tileType = t.TileType;
+
+            if (!ValidTileEntityTypes.Contains(tileType))
                 return;
 
-            // This cannot be a switch because switch cases must be compile time constants, which ModContent calls are not.
-            // Therefore the only option is an if-else ladder.
-            int tileType = t.TileType;
-            if (tileType == ModContent.TileType<ChargingStation>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEChargingStation>());
-            else if (tileType == ModContent.TileType<DraedonLabTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLabTurret>());
-            else if (tileType == ModContent.TileType<LabHologramProjector>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TELabHologramProjector>());
-            else if (tileType == ModContent.TileType<HostileFireTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileFireTurret>());
-            else if (tileType == ModContent.TileType<HostileIceTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileIceTurret>());
-            else if (tileType == ModContent.TileType<HostileLaserTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLaserTurret>());
-            else if (tileType == ModContent.TileType<HostileOnyxTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileOnyxTurret>());
-            else if (tileType == ModContent.TileType<HostilePlagueTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostilePlagueTurret>());
-            else if (tileType == ModContent.TileType<HostileWaterTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileWaterTurret>());
+            int index = ValidTileEntityTypes.IndexOf(tileType);
+
+            int FrameX, FrameY;
+            int style = 0, alt = 0;
+            TileObjectData.GetTileInfo(t, ref style, ref alt);
+            TileObjectData data = TileObjectData.GetTileData(t.TileType, style, alt);
+            //Using TileObjectData, we're able to check if the given tile is the top left of any style.
+            //This resolves issues in generating the Lab Hologram Projector when facing to the left, and should also apply to similar Tile Entities
+            if (data != null)
+            {
+                int sheetSquare = 16 + data.CoordinatePadding;
+                FrameX = t.TileFrameX / sheetSquare % data.Width;
+                FrameY = t.TileFrameY / sheetSquare % data.Height;
+            }
+            else
+            {
+                FrameX = t.TileFrameX;
+                FrameY = t.TileFrameY;
+            }
+            //Instead of just checking if t.TileFrameX == 0, we want to check if its the top left corner of any available style.
+            //For example, the old function would not work if the Lab Hologram Projector was facing to the left, due to the top left of that style not being at TileFrameX == 0. Now it will work!
+            if (t.HasTile && FrameX == 0 && FrameY == 0)
+            {
+                switch (index)
+                {
+                    case 0:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEChargingStation>());
+                        break;
+                    case 1:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLabTurret>());
+                        break;
+                    case 2:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TELabHologramProjector>());
+                        break;
+                    case 3:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileFireTurret>());
+                        break;
+                    case 4:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileIceTurret>());
+                        break;
+                    case 5:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLaserTurret>());
+                        break;
+                    case 6:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileOnyxTurret>());
+                        break;
+                    case 7:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostilePlagueTurret>());
+                        break;
+                    case 8:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileWaterTurret>());
+                        break;
+                }
+            }
         }
         #endregion
     }

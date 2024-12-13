@@ -76,6 +76,9 @@ namespace CalamityMod.Tiles.Ores
                 return;
 
             var tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             int xPos = tile.TileFrameX;
             int yPos = tile.TileFrameY;
             int xOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);

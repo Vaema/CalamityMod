@@ -46,9 +46,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.SolarEruption).
-                AddIngredient<CoreofHavoc>(6).
-                AddIngredient<CoreofSunlight>(6).
                 AddIngredient<DivineGeode>(6).
+                AddIngredient<EssenceofSunlight>(6).
+                AddIngredient<EssenceofHavoc>(6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

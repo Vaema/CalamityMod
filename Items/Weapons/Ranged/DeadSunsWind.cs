@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Red;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CosmicFire>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 8f;
             Item.useAmmo = AmmoID.Gel;
         }
 

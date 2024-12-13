@@ -128,24 +128,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
-        #region Remove Feral Bite Random Debuffs
-        private static void RemoveFeralBiteRandomDebuffs(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
-            {
-                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
-                return;
-            }
-
-            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0f);
-        }
-        #endregion
-
         #region Remove Expert Brain of Cthulhu Random Debuffs
         private static void RemoveExpertBrainRandomDebuffs(ILContext il)
         {
@@ -629,7 +611,7 @@ namespace CalamityMod.ILEditing
 
                 case 17:
                     item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    item.SetDefaults(ItemID.LavaFishingHook);
                     rewardItems.Add(item);
                     break;
 
@@ -653,7 +635,7 @@ namespace CalamityMod.ILEditing
 
                 case 21:
                     item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
                     rewardItems.Add(item);
                     break;
 
@@ -837,7 +819,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Honey Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 17)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 21)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
@@ -893,7 +875,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Lavaproof Fishing Hook
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 21)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 17)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.LavaFishingHook);

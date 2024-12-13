@@ -36,12 +36,21 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
+            int xPos = tile.TileFrameX;
+            int yPos = tile.TileFrameY;
+            int chestIndex = Chest.FindChest(i - (xPos / 18), j - (yPos / 18));
+            if (chestIndex == -1)
+                return;
+
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoChestGlow").Value;
-            Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + drawOffset;
             Color drawColour = Color.White;
-            Main.spriteBatch.Draw(glowmask, drawPosition, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), drawColour, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange));
+            Rectangle frame = new Rectangle(xPos, yPos + Main.chest[chestIndex].frame * 38, 18, 18);
+            Main.spriteBatch.Draw(glowmask, drawPosition, frame, drawColour, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
     }
 }

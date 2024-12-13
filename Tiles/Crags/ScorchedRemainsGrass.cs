@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.Crags
 
             HitSound = SoundID.Dig;
             MinPick = 100;
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedRemains>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedRemains>());
             AddMapEntry(new Color(212, 82, 227));
 
             this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
@@ -147,6 +147,9 @@ namespace CalamityMod.Tiles.Crags
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j));

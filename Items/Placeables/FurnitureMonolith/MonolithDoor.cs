@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureMonolith;
 using Terraria;
 using Terraria.ID;

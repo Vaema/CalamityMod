@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
@@ -49,24 +50,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void AI()
         {
-            // Sound is done manually, so that it can loop correctly.
-            ActiveSound MMMMMMMMMMMMMMM;
-
-            bool mmmIsThere = SoundEngine.TryGetActiveSound(mmmmmm, out MMMMMMMMMMMMMMM);
-
-            if (!mmmIsThere)
-            {
-                mmmmmm = SoundEngine.PlaySound(TheMicrowave.MMMSound, Projectile.Center);
-            }
-
-            else if (mmmIsThere)
-            {
-                if (MMMMMMMMMMMMMMM.IsPlaying)
-                    MMMMMMMMMMMMMMM.Position = Projectile.Center;
-
-                else
-                    MMMMMMMMMMMMMMM.Resume();
-            }
+            SingularSoundInstanceSystem.PlaySingleInstance(TheMicrowave.MMMSound, 6, 6, Projectile);
 
             // Spawn invisible but damaging aura projectile
             if (Projectile.owner == Main.myPlayer && !spawnedAura)
@@ -102,16 +86,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             // Delete the projectile if it is farther than 200 blocks away from the player
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f)
                 Projectile.Kill();
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            ActiveSound MMMMMMMMMMMMMMM;
-            if (SoundEngine.TryGetActiveSound(mmmmmm, out MMMMMMMMMMMMMMM))
-            {
-                MMMMMMMMMMMMMMM.Stop();
-                //No more dispose function?
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)

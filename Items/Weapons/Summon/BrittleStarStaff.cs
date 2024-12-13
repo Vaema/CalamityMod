@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2)
             {
                 Item.noUseGraphic = false;
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity = Vector2.Zero;
                 int SummonNumber = player.ownedProjectileCounts[type];
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, 0, SummonNumber);
@@ -64,11 +64,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
             }
             return false;
-        }
-        public override void HoldItem(Player player)
-        {
-            //player.Calamity().rightClickListener = true;
-            //player.Calamity().mouseWorldListener = true;
         }
     }
 }

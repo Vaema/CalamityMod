@@ -8,6 +8,8 @@ namespace CalamityMod.Projectiles.Ranged
     public class Shroom : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "Terraria/Images/Item_183";
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;

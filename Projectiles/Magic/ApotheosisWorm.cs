@@ -135,6 +135,7 @@ namespace CalamityMod.Projectiles.Magic
 
         internal void InitializeSegments()
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 directionToMouse = (Main.MouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
             Projectile.rotation = directionToMouse.ToRotation() + MathHelper.PiOver2;
             for (int i = 0; i < Segments.Length; i++)

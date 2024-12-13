@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CalamityUtils.KillShootProjectiles(true, type, player);
             float damageMult = ((float)Math.Log(slimeSlots, 8f)) + 1f;
-            position = Main.MouseWorld;
+            position = player.ClampedMouseWorld();
             velocity.X = 0;
             velocity.Y = 0;
             int slime = Projectile.NewProjectile(source, position, velocity, type, (int)(damage * damageMult), knockback, player.whoAmI);

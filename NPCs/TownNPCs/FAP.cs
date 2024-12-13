@@ -7,6 +7,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -662,6 +663,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>()) || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>());
                 if (hasVodka)
                     return Main.hardMode;
+                else
+                    return DownedBossSystem.downedCalamitasClone || NPC.downedPlantBoss;
             }
             return false;
         }
@@ -839,16 +842,7 @@ namespace CalamityMod.NPCs.TownNPCs
             else if (deaths > 100)
                 text += " " + this.GetLocalizedValue("Death100");
 
-            IList<string> donorList = new List<string>(CalamityLists.donatorList);
-            int maxDonorsListed = 25;
-            string[] donors = new string[maxDonorsListed];
-            for (int i = 0; i < maxDonorsListed; i++)
-            {
-                donors[i] = donorList[Main.rand.Next(donorList.Count)];
-                donorList.Remove(donors[i]);
-            }
-
-            text += ("\n\n" + this.GetLocalization("DonorShoutout").Format(donors));
+            text += "\n\n" + this.GetLocalization("DonorShoutout").Format(DonatorsNameList.GetRandomDonors());
 
             return text;
         }
@@ -919,6 +913,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
                 .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
                 .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
                 .Register();
         }
 

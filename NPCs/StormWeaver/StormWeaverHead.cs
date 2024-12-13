@@ -13,6 +13,7 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Boss;
@@ -986,11 +987,14 @@ namespace CalamityMod.NPCs.StormWeaver
                 // Weapons
                 int[] weapons = new int[]
                 {
-                    ModContent.ItemType<StormDragoon>(),
+                    ModContent.ItemType<SkytideDragoon>(),
                     ModContent.ItemType<TheStorm>(),
                     ModContent.ItemType<Thunderbolt>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
+
+                // Equipment
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArcFlashRing>()));
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));

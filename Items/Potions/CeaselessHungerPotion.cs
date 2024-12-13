@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(22, 32, ModContent.BuffType<CeaselessHunger>(), CalamityUtils.SecondsToFrames(10f), true);
+            Item.DefaultToFood(22, 32, ModContent.BuffType<CeaselessHunger>(), CalamityUtils.SecondsToFrames(20), true);
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Potions
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
-            CreateRecipe(4).
-                AddIngredient(ItemID.BottledWater, 4).
+            CreateRecipe(8).
+                AddIngredient(ItemID.BottledWater, 8).
                 AddIngredient<BloodOrb>(10).
                 AddIngredient<DarkPlasma>().
                 AddTile(TileID.AlchemyTable).

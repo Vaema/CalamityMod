@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
+using CalamityMod.Enums;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -91,14 +92,14 @@ namespace CalamityMod.ILEditing
             cursor.Next.Operand = 0;
         }
 
-        private const float VanillaBaseJumpHeight = 5.01f;
-        private static void BaseJumpHeightAdjustment(ILContext il)
+        private const float VanillaBaseJumpSpeed = 5.01f;
+        private static void BaseJumpSpeedAdjustment(ILContext il)
         {
             // Increase the base jump height of the player to make early game less of a slog.
             var cursor = new ILCursor(il);
 
             // The jumpSpeed variable is set to this specific value before anything else occurs.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpHeight)))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpSpeed)))
             {
                 LogFailure("Base Jump Height Buff", "Could not locate the jump height variable.");
                 return;
@@ -106,7 +107,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
         }
         #endregion
 
@@ -297,10 +298,26 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Life Regen Changes
-        private static void PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen(ILContext il)
+        private static void UpdateLifeRegenBalancingChanges(ILContext il)
         {
-            // Prevent the greatly reduced life regen while without the well fed buff in expert mode.
+            // This IL edit accomplishes two things related to life regen:
+            // 1. Prevents Nebula armor's Life Boosters from cancelling out negative life regen.
+            // 2. Prevents the greatly reduced life regen while without a Well Fed buff in Expert Mode.
             var cursor = new ILCursor(il);
+
+            // First, move to where the game checks if the Life Booster level is greater than 0.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("nebulaLevelLife")))
+            {
+                LogFailure("Nebula Armor DoT Ignoring Nerf", "Could not locate the Nebula Armor Life Booster variable.");
+                return;
+            }
+
+            // Pop this value off the stack and replace it with 0.
+            // 0 will never be greater than 0, so negative life regen will never be canceled out.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldc_I4_0);
+
+            // Now move to where the game checks if it is Expert Mode and the player does not have a Well Fed buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("wellFed")))
             {
                 LogFailure("Expert Mode Well Fed Reduced Life Regen Prevention", "Could not locate the Well Fed bool.");
@@ -336,11 +353,28 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, 0.2f); // Decrease to 0.2f.
         }
 
-        private static void ManaRegenAdjustment(ILContext il)
+        private static void UpdateManaRegenBalancingChanges(ILContext il)
         {
-            // Increase the base mana regen so that mage is less annoying to play without mana regen buffs.
+            // This IL edit accomplishes two things:
+            // 1. Nerfs Nebula armor's Mana Boosters.
+            // 2. Increases the base mana regen so that mage is less annoying to play without mana regen buffs.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.8f))) // The multiplier for the mana regen formula: (float)statMana / (float)statManaMax2 * 0.8f + 0.2f.
+
+            // Reduce Nebula armor mana regen.
+            // See BalancingConstants for a more in-depth explanation as to how the Mana Booster works.
+            // Just know that we need to raise this value in order to nerf it.
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(6)))
+            {
+                LogFailure("Nebula Armor Mana Regen Nerf", "Could not locate the Nebula Armor mana regeneration frame counter threshold.");
+                return;
+            }
+
+            // Swap the threshold with Calamity's value.
+            cursor.Next.Operand = BalancingConstants.NebulaManaRegenFrameCounterThreshold;
+
+            // Next, move to the mana regen formula.
+            // The multiplier for the mana regen formula: (float)statMana / (float)statManaMax2 * 0.8f + 0.2f.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.8f)))
             {
                 LogFailure("Mana Regen Buff", "Could not locate the mana regen multiplier variable.");
                 return;
@@ -437,7 +471,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Damage Variance Dampening and Luck Removal
-        private static int AdjustDamageVariance(Terraria.On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
+        private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
             // Change the default damage variance from +-15% to +-5%.
             // If other mods decide to change the scale, they can override this. We're solely killing the default value.
@@ -463,13 +497,15 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Reduce Eater of Worlds Grenade Resist
-        private static void ReduceEoWGrenadeResist(ILContext il)
+        #region Vanilla Boss Resist Changes
+        private static void VanillaBossResistChanges(ILContext il)
         {
-            // Reduce Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            // This IL edit accomplishes two things:
+            // 1. Reduces Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            // 2. Effectively removes Lunatic Cultist's resistance to homing projectiles.
             var cursor = new ILCursor(il);
 
-            // Of course, this is 800 lines into Projectile.Damage, so we must do funky things.
+            // First, the EoW grenade resist. Naturally, this is 800 lines into Projectile.Damage, so we must do funky things.
             for (int f = 0; f < 2; f++)
             {
                 if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(1002)))
@@ -489,6 +525,21 @@ namespace CalamityMod.ILEditing
             cursor.EmitPop();
             cursor.EmitLdcR4(0.4f);
             cursor.EmitMul();
+
+            // Now, move to the Cultist resist which is right below it.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(typeof(ProjectileID.Sets), "CultistIsResistantTo")))
+            {
+                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the Cultist resist set.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.75f))) // The resist ratio.
+            {
+                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the resist percentage.");
+                return;
+            }
+
+            // Replace the value with 1, meaning -0% damage or no resist.
+            cursor.Next.Operand = 1f;
         }
         #endregion
 
@@ -509,11 +560,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Sharpening Station Nerf
-        private static void NerfSharpeningStation(ILContext il)
+        #region UpdateBuffs Balancing Changes
+        private static void UpdateBuffsBalancingChanges(ILContext il)
         {
-            // Reduce armor penetration from the Sharpening Station from 12 (it was originally 16!)
+            // This IL edit accomplishes four things:
+            // 1. Nerf Sharpening Station's armor penetration boost from 12 to 5.
+            // 2. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
+            // 3. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
+            // 4. Remove the ability for Feral Bite to randomly inflict debuffs.
             var cursor = new ILCursor(il);
+
+            // First, find the code which applies Sharpened's armor penetration buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.Sharpened)))
             {
                 LogFailure("Sharpening Station Nerf", "Could not locate the Sharpened buff ID.");
@@ -528,52 +585,28 @@ namespace CalamityMod.ILEditing
             // Replace the value entirely.
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.SharpeningStationArmorPenetration);
-        }
-        #endregion
 
-        #region Beetle Scale Mail (DPS chestplate) Nerf
-        private static void NerfBeetleScaleMail(ILContext il)
-        {
-            // Adjust melee damage from the Beetle Might buff.
-            var cursor = new ILCursor(il);
+            // Next, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.BeetleMight1)))
             {
                 LogFailure("Beetle Scale Mail Nerf", "Could not locate the Beetle Might buff ID.");
                 return;
             }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.1f))) // The amount of melee damage to grant.
+            for (int i = 0; i < 2; i++)
             {
-                LogFailure("Beetle Scale Mail Nerf", "Could not locate the amount of melee damage granted.");
-                return;
-            }
-
-            // Replace the value entirely.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.BeetleScaleMailMeleeDamagePerBeetle);
-
-            cursor.GotoNext();
-
-            // Adjust melee speed from the Beetle Might buff. 
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.1f))) // The amount of melee speed to grant.
-            {
-                LogFailure("Beetle Scale Mail Nerf", "Could not locate the amount of melee speed granted.");
-                return;
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.1f))) // The amount of melee damage to grant.
+                {
+                    LogFailure("Beetle Scale Mail Nerf", "Could not locate the amount of melee speed granted.");
+                    return;
+                }
             }
 
             // Replace the value entirely.
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.BeetleScaleMailMeleeSpeedPerBeetle);
-        }
-        #endregion
 
-        #region Nebula Armor Nerfs
-        private static void NerfNebulaArmorBaseLifeRegenAndDamage(ILContext il)
-        {
-            // Nebula's buffs are processed in the order Mana, Life, Damage
-            // The mana buff is merely tracked and updated in this function, so it is not IL edited here.
-            var cursor = new ILCursor(il);
-
-            // Adjust life regen from the Nebula Life Boosters.
+            // Then, Nebula armor's Life and Damage Boosters.
+            // First is the Life Boosters.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.NebulaUpLife1)))
             {
                 LogFailure("Nebula Armor Nerf", "Could not locate the Nebula Life buff ID.");
@@ -594,7 +627,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.NebulaLifeRegenPerBooster);
 
-            // Adjust damage from Nebula Damage Boosters.
+            // And then the Damage Boosters.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.NebulaUpDmg1)))
             {
                 LogFailure("Nebula Armor Nerf", "Could not locate the Nebula Damage buff ID.");
@@ -608,40 +641,81 @@ namespace CalamityMod.ILEditing
 
             // There are multiple branches pointing to this instruction, so it cannot be removed. Instead, swap its value directly.
             cursor.Next.Operand = BalancingConstants.NebulaDamagePerBooster;
-        }
 
-        private static void RemoveNebulaLifeBoosterDoTImmunity(ILContext il)
-        {
-            // Prevent Nebula Life Boosters from canceling out all DoT debuff damage.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("nebulaLevelLife")))
+            // Finally, removing Feral Bite's debuffs.
+            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
             {
-                LogFailure("Nebula Armor DoT Ignoring Nerf", "Could not locate the Nebula Armor Life Booster variable.");
+                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
                 return;
             }
 
-            // Pop this value off the stack and replace it with a zero.
-            // Zero will never be greater than zero, so negative life regen will never be canceled out.
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldc_I4_0);
+            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
+            cursor.Remove();
+            cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
+        #endregion
 
-        private static void NerfNebulaArmorManaRegen(ILContext il)
+        #region Vortex Booster Keeps Vortex Stealth When Dashing
+        private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
         {
-            // Reduce Nebula armor mana regen.
-            // The regen is controlled by a frame counter threshold right at the top of the function, typically 6.
-            // 1 value is added to the counter for every Mana Booster you have.
-            // If the value reaches the threshold, you gain 1 mana.
-            // All that needs to be done is raising the threshold, so it takes more frames to get each point of mana.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(6)))
+            // Allows for Vortex Booster to keep Vortex armor's stealth when dashing
+            bool vortexStealth = self.vortexStealthActive;
+            orig(self);
+
+            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
             {
-                LogFailure("Nebula Armor Mana Regen Nerf", "Could not locate the Nebula Armor mana regeneration frame counter threshold.");
+                if (vortexStealth && !self.vortexStealthActive)
+                    self.vortexStealthActive = true;
+            }
+        }
+        #endregion
+
+        #region Stardust Guardian Buffs
+        private static void StardustGuardianAttackBuffs(ILContext il)
+        {
+            // Increase the Stardust Guardian's attack range while wearing Stardust Wings.
+            var cursor = new ILCursor(il);
+
+            // Move to the label after the instruction that sets num3 to 500f.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(100f)))
+                {
+                    LogFailure("Stardust Guardian Buffs", "Could not move to after the Stardust Guardian's attack range.");
+                    return;
+                }
+            }
+
+            // Define a label for the branch statement.
+            var label = il.DefineLabel();
+
+            // Load Player.wingsLogic, and check if it's Stardust Wings.
+            // If it is, increase the two attack range variables.
+            cursor.Emit(OpCodes.Ldloc_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
+            cursor.Emit(OpCodes.Bne_Un, label);
+
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 4);
+            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Stloc, 5);
+
+            cursor.MarkLabel(label);
+
+            // Now, increase the Stardust Guardian's move speed when attacking targets.
+            // This is applied regardless of having Stardust Wings.
+            // This jumps to the base speed value when moving towards a target.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(6f)))
+            {
+                LogFailure("Stardust Guardian Buffs", "Could not locate the Stardust Guardian's attack move speed.");
                 return;
             }
 
-            // Swap the threshold with Calamity's value.
-            cursor.Next.Operand = BalancingConstants.NebulaManaRegenFrameCounterThreshold;
+            // Remove and replace with a higher value.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_R4, 12f);
         }
         #endregion
 
@@ -670,27 +744,6 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Beetle Shell set bonus is never considered to be active. This stops the multiplicative DR from applying.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
-        }
-        #endregion
-
-        #region Remove Lunatic Cultist Homing Resist
-        private static void RemoveLunaticCultistHomingResist(ILContext il)
-        {
-            // Change Lunatic Cultist's resist from 25% to 0% (effectively removing it).
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(typeof(ProjectileID.Sets), "CultistIsResistantTo")))
-            {
-                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the Cultist resist set.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.75f))) // The resist ratio.
-            {
-                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the resist percentage.");
-                return;
-            }
-
-            // Replace the value with 1, meaning -0% damage or no resist.
-            cursor.Next.Operand = 1f;
         }
         #endregion
 

@@ -43,10 +43,10 @@ namespace CalamityMod.Items
                 { ItemID.AmethystStaff, Do(ManaExact(2)) },
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) },
                 { ItemID.AntlionClaw, Do(UseExact(10)) }, // Mandible Blade
-                { ItemID.AquaScepter, Do(DamageExact(24)) },
+                { ItemID.AquaScepter, Do(DamageRatio(0.9f)) }, // Uses ratios due to remix seed
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(50)) },
-                { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), ShootSpeedExact(23f), KnockbackExact(8)) },
+                { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), KnockbackExact(8)) },
                 { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) },
                 { ItemID.BeeKeeper, Do(UseTurn, DamageExact(32)) },
                 { ItemID.Beenade, Do(DamageExact(11), UseTimeExact(22), ShootSpeedExact(10f)) },
@@ -216,11 +216,11 @@ namespace CalamityMod.Items
                 { ItemID.RocketLauncher, Do(DamageExact(70)) },
                 { ItemID.Sandgun, Do(PointBlank, DamageExact(22), UseExact(20)) },
                 { ItemID.SapphireStaff, Do(DamageExact(25)) },
-                { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(74), ShootSpeedDelta(+4f)) },
+                { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(75), ShootSpeedDelta(+4f)) },
                 { ItemID.ShadowbeamStaff, Do(DamageExact(100)) },
                 { ItemID.ShadowFlameBow, Do(PointBlank, DamageExact(55)) },
                 { ItemID.ShadowFlameHexDoll, Do(DamageExact(40), ShootSpeedExact(30)) },
-                { ItemID.ShadowFlameKnife, Do(DamageExact(70)) },
+                { ItemID.ShadowFlameKnife, Do(DamageExact(50)) },
                 { ItemID.SharpTears, Do(DamageExact(49)) }, // Blood Thorn
                 { ItemID.Shotgun, Do(PointBlank, DamageExact(36), AutoReuse) },
                 { ItemID.Shroomerang, Do(ShootSpeedExact(11)) },

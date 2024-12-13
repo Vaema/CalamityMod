@@ -13,28 +13,32 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = (int)CalamityDusts.Brimstone;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<BrimroseMount>();
-            MountData.heightBoost = 12;
-            MountData.flightTimeMax = int.MaxValue - 1;
-            MountData.fatigueMax = int.MaxValue - 1;
-            MountData.fallDamage = 0f;
-            MountData.usesHover = true;
+
+            // Horizontal movement
             MountData.runSpeed = 12f;
             MountData.dashSpeed = 12f;
             MountData.acceleration = 0.2f;
-            MountData.jumpHeight = 10;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.fatigueMax = int.MaxValue;
+            MountData.flightTimeMax = int.MaxValue;
             MountData.jumpSpeed = 4f;
             MountData.blockExtraJumps = true;
+            MountData.usesHover = true;
+
+            // Frames and offsets
             MountData.totalFrames = 4;
+            MountData.heightBoost = 0;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
-                array[l] = 12;
-            }
+                array[l] = 0;
+
             MountData.playerYOffsets = array;
-            MountData.xOffset = 1;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = 0;
             MountData.playerHeadOffset = 18;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = 0;
+            MountData.yOffset = 6;
             MountData.standingFrameCount = 4;
             MountData.standingFrameDelay = 4;
             MountData.standingFrameStart = 0;

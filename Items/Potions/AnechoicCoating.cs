@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions
         public override void SetDefaults()
         {
             // How do you even use this?
-            Item.DefaultToFood(22, 26, ModContent.BuffType<AnechoicCoatingBuff>(), CalamityUtils.SecondsToFrames(240f));
+            Item.DefaultToFood(22, 26, ModContent.BuffType<AnechoicCoatingBuff>(), CalamityUtils.MinutesToFrames(4));
             Item.UseSound = SoundID.Item3;
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;

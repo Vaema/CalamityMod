@@ -1,0 +1,39 @@
+AbyssLightLevel1: Provides a small amount of light in the abyss
+AbyssLightLevel2: Provides a moderate amount of light in the abyss
+AbyssLightLevel3: Provides a large amount of light in the abyss
+AbyssBreathLevel1: Slightly reduces breath loss in the abyss
+AbyssBreathLevel2: Moderately reduces breath loss in the abyss
+AbyssBreathLevel3: Greatly reduces breath loss in the abyss
+AlcoholWarning: Drinking more than 3 different alcohols might not end well with your liver
+ArmorPenetration: Ignores {0} points of enemy Defense
+CanMineUelibloom: Can mine Uelibloom Ore
+NotConsumable: Not consumable
+RogueDamage: "{0}% increased rogue damage"
+RogueCrit: "{0}% increased rogue critical strike chance"
+RogueVelocity: "{0}% increased rogue velocity"
+GrappleStats:
+	'''
+	Reach: {0} tiles
+	Launch Velocity: {1}
+	Reelback Velocity: {2}
+	Pull Velocity: {3}
+	'''
+WingStats:
+	'''
+	Flight time: {0} seconds
+	Max horizontal speed: {1} mph
+	Max vertical speed: {2} mph
+	'''
+WingStatsAcceleration:
+	'''
+	Horizontal acceleration: {0} mph/s
+	Vertical acceleration:
+	{1} mph/s
+	{2} mph/s if ascending slower than {3} mph
+	{4} mph/s if ascending while falling
+	'''
+WingStatsHover:
+	'''
+	Max hover speed: {0} mph
+	Hover acceleration: {1} mph/s
+	'''

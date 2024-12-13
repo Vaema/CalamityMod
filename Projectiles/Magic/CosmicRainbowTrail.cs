@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
     public class CosmicRainbowTrail : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/RainbowFront";
+        public override string Texture => "Terraria/Images/Projectile_251";
         public const int Lifetime = 25;
 
         public override void SetDefaults()

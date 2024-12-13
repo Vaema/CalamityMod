@@ -124,6 +124,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
@@ -167,8 +168,17 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + direction * 40, rotation.ToRotationVector2() * 5, ProjectileType<BitingEmbraceMist>(), (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_MistDamageReduction), 0f, Owner.whoAmI);
 
                     Vector2 particlePosition = Owner.Center + (rotation.ToRotationVector2() * 100f * Projectile.scale);
-                    Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
-                    GeneralParticleHandler.SpawnParticle(snowflake);
+                    if (Main.rand.NextBool())
+                    {
+                        Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
+                        GeneralParticleHandler.SpawnParticle(snowflake);
+                    }
+                    else
+                    {
+                        float scale = Main.rand.NextFloat(0.5f, 1.8f);
+                        Particle star = new CritSpark(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, Color.Indigo, scale, 30, 0.5f, scale * 2f);
+                        GeneralParticleHandler.SpawnParticle(star);
+                    }
                 }
             }
 

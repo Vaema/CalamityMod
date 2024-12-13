@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class TyphoonBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Melee/BrinyTyphoonBubble";
+        public override string Texture => "Terraria/Images/Projectile_385";
 
         public override void SetStaticDefaults()
         {

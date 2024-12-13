@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Potions
     public class SoaringPotion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float FlightBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
@@ -23,7 +28,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 30, ModContent.BuffType<Soaring>(), CalamityUtils.SecondsToFrames(360f), true);
+            Item.DefaultToFood(30, 30, ModContent.BuffType<Soaring>(), CalamityUtils.MinutesToFrames(6), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }

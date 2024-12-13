@@ -73,6 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.localAI[0] = 1f;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimDestination = Owner.Calamity().mouseWorld;
             float idealRotation = Projectile.AngleTo(aimDestination);
             if (Time < 0f)

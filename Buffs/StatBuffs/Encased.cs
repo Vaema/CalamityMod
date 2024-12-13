@@ -3,12 +3,15 @@ using CalamityMod.Items.Accessories;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class Encased : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(PermafrostsConcoction.EncasedDefenseBoost, PermafrostsConcoction.EncasedAllDamageReduction.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

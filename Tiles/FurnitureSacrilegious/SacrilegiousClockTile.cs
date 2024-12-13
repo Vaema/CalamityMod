@@ -58,6 +58,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousClockTile_Icon").Value;
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
             int xPos = tile.TileFrameX;
             int yPos = tile.TileFrameY;
 

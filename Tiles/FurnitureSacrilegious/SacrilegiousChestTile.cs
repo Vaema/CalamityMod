@@ -42,6 +42,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
                 itemAmt = CountItems(Main.chest[index]);
 
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow").Value;
 
             int x = i;

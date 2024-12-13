@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -20,6 +21,7 @@ namespace CalamityMod.Items.Tools
         public static int TileTime = 6 * 60;
         public static int TileReach = 40;
         public static int PlacedTileType => ModContent.TileType<WulfrumPipes>();
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(TilesPerScrap);
 
         public override void SetDefaults()
         {

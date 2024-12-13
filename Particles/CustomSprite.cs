@@ -25,7 +25,7 @@ namespace CalamityMod.Particles
 
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
-        public override bool UseAdditiveBlend => false;
+        public override bool UseAdditiveBlend => addBlend;
         public override bool Important => important;
         public override string Texture => "CalamityMod/Particles/CuteStars";
         public override int FrameVariants => frames;

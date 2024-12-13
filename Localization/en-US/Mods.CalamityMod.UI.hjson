@@ -1,4 +1,6 @@
+// Vanilla UI edits
 SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
+WorldMaster: Game over man, game over! (Brutally hard boss changes, for the truly brave)
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -111,7 +113,7 @@ Cooldowns: {
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
 	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
 	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
-	RelicOfResilience: Relic of Resilience Cooldown
+	RelicOfResilienceCooldown: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown
 	SandsmokeBombActive: Sandsmoke Bomb Duration
@@ -125,6 +127,7 @@ Cooldowns: {
 	TarragonCloak: Tarragon Cloak Cooldown
 	TarragonImmunity: Tarragon Immunity Cooldown
 	UniverseSplitter: Universe Splitter Cooldown
+	WarbanneroftheRighteousBuff: Warbanner Strength
 	WulfrumBastionActive: Power Armor Durability
 	WulfrumBastionCooldown: Wulfrum Bastion Cooldown
 	WulfrumRoverDriveDurability: Protective Matrix Durability

@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Accessories
     public class PearlofEnthrallment : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public static int ElementalDamage = 65;
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -45,13 +47,11 @@ namespace CalamityMod.Items.Accessories
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<WaterElementalMinion>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Anahitas spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(65);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
                     int anahita = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<WaterElementalMinion>(), damage, 2f, Main.myPlayer);
                     if (Main.projectile.IndexInRange(anahita))
-                        Main.projectile[anahita].originalDamage = baseDamage;
+                        Main.projectile[anahita].originalDamage = ElementalDamage;
                 }
             }
         }
@@ -70,12 +70,11 @@ namespace CalamityMod.Items.Accessories
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<WaterElementalMinion>()] < 1)
                 {
                     // 08DEC2023: Ozzatron: Anahitas spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(65);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
                     int anahita = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<WaterElementalMinion>(), damage, 2f, Main.myPlayer);
                     if (Main.projectile.IndexInRange(anahita))
-                        Main.projectile[anahita].originalDamage = baseDamage;
+                        Main.projectile[anahita].originalDamage = ElementalDamage;
                 }
             }
         }

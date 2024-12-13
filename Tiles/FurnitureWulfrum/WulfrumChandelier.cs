@@ -17,6 +17,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
+            TileID.Sets.MultiTileSway[Type] = true;
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16 };
@@ -31,6 +32,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             AddMapEntry(new Color(235, 166, 135), Language.GetText("MapObject.Chandelier"));
             AdjTiles = new int[] { TileID.Chandeliers };
         }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public override bool CanExplode(int i, int j) => false;
 

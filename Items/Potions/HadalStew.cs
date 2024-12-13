@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Potions
     {
         public new string LocalizationCategory => "Items.Potions";
         public static int BuffType = BuffID.WellFed2;
-        public static int BuffDuration = 60 * 3600;
-        public static int SicknessDuration = 50 * 60;
+        public static int BuffDuration = CalamityUtils.MinutesToFrames(60);
+        public static int SicknessDuration = CalamityUtils.SecondsToFrames(50);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration / 3600);
 
         public override void SetStaticDefaults()

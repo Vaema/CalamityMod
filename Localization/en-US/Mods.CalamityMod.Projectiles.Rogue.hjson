@@ -22,7 +22,6 @@ BlueFlamePillar.DisplayName: Flame Pillar
 BlunderBoosterLightning.DisplayName: Blunder Bolt
 BouncingEyeballProjectile.DisplayName: Bouncy Eyeball
 BouncingEyeballProjectileStealthStrike.DisplayName: Bouncy Eyeball
-BouncyBol.DisplayName: Bouncy Ball
 Brick.DisplayName: Brick
 BrickFragment.DisplayName: Brick Fragment
 Brimblade2.DisplayName: Brimblade
@@ -99,7 +98,6 @@ ExecutionersBladeStealthProj.DisplayName: Executioner's Blade
 ExorcismProj.DisplayName: Exorcism
 ExorcismShockwave.DisplayName: Exorcism Shockwave
 ExorcismStar.DisplayName: Exorcism Star
-ExplosiveSun.DisplayName: Explosive Sun
 FantasyTalismanProj.DisplayName: Talisman
 FantasyTalismanStealth.DisplayName: Talisman
 FeatherKnifeProjectile.DisplayName: Feather Knife
@@ -132,7 +130,6 @@ GrimreaverBat.DisplayName: Grim Bat
 GrimreaverSkull.DisplayName: Grim Skull
 HeavenfallenEnergy.DisplayName: Heavenfallen Energy
 HeavenfallenStardiskBoomerang.DisplayName: Heavenfallen Stardisk
-HellsSunProj.DisplayName: Hell's Sun
 Honeycomb.DisplayName: Honeycomb
 HoneycombFragment.DisplayName: Honeycomb Fragment
 HypothermiaChunk.DisplayName: Ice Chunk
@@ -177,7 +174,6 @@ MeteorFistProj.DisplayName: Meteor Fist Gud For A Lot Of Shtuff
 MeteorFistStealth.DisplayName: Meteor Fist Gud For A Lot Of Shtuff
 MoltenAmputatorProj.DisplayName: Molten Amputator
 MoltenBlobThrown.DisplayName: Molten Blob
-MonkeyDart.DisplayName: Monkey Dart
 MoonSigil.DisplayName: Moon Sigil
 MycorootProj.DisplayName: Mycoroot
 MythrilKnifeProjectile.DisplayName: Mythril Knife
@@ -204,7 +200,6 @@ PhantasmalSoulBlue.DisplayName: Blue Spirit
 PlaguedFuelPackCloud.DisplayName: Plagued Cloud
 PlaguenadeBee.DisplayName: Plague Bee
 PlaguenadeProj.DisplayName: Plaguenade
-PoisonBol.DisplayName: Poison Ball
 Prismalline2.DisplayName: Prismalline
 Prismalline3.DisplayName: Prismalline
 PrismallineProj.DisplayName: Prismalline
@@ -276,7 +271,6 @@ StealthNimbus.DisplayName: Nimbus
 StealthNimbusCloud.DisplayName: Nimbus
 StealthRain.DisplayName: Rain
 StellarKnifeProj.DisplayName: Stellar Knife
-StickyBol.DisplayName: Sticky Bol
 StormfrontLightning.DisplayName: Stormfront Lightning
 StormfrontRazorProjectile.DisplayName: Stormfront Razor
 Stormfrontspark.DisplayName: Stormfront Spark
@@ -328,3 +322,5 @@ RadiationBurst.DisplayName: Radiation Burst
 RadiationRain.DisplayName: Radiation Rain
 RefractionRotorSlashCreator.DisplayName: Refraction Rotor Slash Creator
 RefractionSlash.DisplayName: Refraction Slash
+SporeKnifeProj.DisplayName: Spore Knife
+SporeKnifeBud.DisplayName: Spore Knife Bud

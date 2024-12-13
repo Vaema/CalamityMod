@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => (State == AIState.Ram) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Ram;
 
         public override bool PreDraw(ref Color lightColor)
         {

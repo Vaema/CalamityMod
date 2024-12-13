@@ -38,6 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = Projectile.height = 34;
             Projectile.timeLeft = 600;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.extraUpdates = 1;
             Projectile.friendly = true;
             Projectile.usesLocalNPCImmunity = true;
         }

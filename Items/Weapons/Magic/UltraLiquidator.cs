@@ -59,6 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 }
                 f = Main.rand.NextFloat() * MathHelper.TwoPi;
             }
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 velocityReal = Main.MouseWorld - source;
             Vector2 upperVelocityLimit = new Vector2(xVec, yVec).SafeNormalize(Vector2.UnitY) * speed;
             velocityReal = velocityReal.SafeNormalize(upperVelocityLimit) * speed;

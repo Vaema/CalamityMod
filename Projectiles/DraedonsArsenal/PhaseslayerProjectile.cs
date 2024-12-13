@@ -132,6 +132,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 bool hasCharge = modItem.Charge > 0f;
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the effect is capped separately
                     // The distance ratio ranges from 0 (your mouse is directly on the player) to 1 (your mouse is at the max range considered, or any further distance).
                     float mouseDistance = Projectile.Distance(Main.MouseWorld);
                     float distRatio = Utils.GetLerpValue(0f, MaximumMouseRange, mouseDistance, true);

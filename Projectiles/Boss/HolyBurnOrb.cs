@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
@@ -77,17 +78,14 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.localAI[1] += (Projectile.velocity.Length() / 20);
 
             Color col = ProvUtils.GetProjectileColor(255);
-
             float vel = MathHelper.Clamp(Projectile.velocity.Length() / 5, 0, 1.5f);
-
             GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity + new Vector2(Main.rand.NextFloat(vel * 2), 0).RotatedByRandom(MathHelper.TwoPi), false, 4, 1f, col);
-
             GeneralParticleHandler.SpawnParticle(p);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs((float)Math.Sin(Projectile.localAI[1] / 10f)));
+            float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
             
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
@@ -124,27 +122,22 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.ExpandHitboxBy(50);
-            int dustType = ProvUtils.GetDustID();
-            for (int d = 0; d < 5; d++)
+            Color particleColor = ProvUtils.GetProjectileColor(0);
+            Color smokeColor = Color.Lerp(particleColor, Color.DarkSlateGray, 0.5f);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, smokeColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.06f, 18);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            for (int i = 0; i < 7; i++)
             {
-                int holy = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holy].velocity *= 3f;
-                Main.dust[holy].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holy].scale = 0.5f;
-                    Main.dust[holy].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(7f), smokeColor, 30, Main.rand.NextFloat(0.6f, 1f), 0.5f, Main.rand.NextFloat(-0.03f, 0.03f), true);
+                GeneralParticleHandler.SpawnParticle(smoke);
             }
-            for (int d = 0; d < 8; d++)
+            for (int i = 0; i < 8; i++)
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[fire].noGravity = true;
-                Main.dust[fire].velocity *= 5f;
-                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[fire].velocity *= 2f;
-                Main.dust[fire].noGravity = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(1.8f, 10f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(1f, 1.8f);
+                dust.color = particleColor;
+                dust.noLightEmittence = true;
             }
         }
 

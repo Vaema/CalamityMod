@@ -381,10 +381,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool HigherJumpHeight { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
         public bool FasterJumpSpeed { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]

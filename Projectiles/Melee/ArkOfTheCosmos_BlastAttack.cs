@@ -17,25 +17,12 @@ namespace CalamityMod.Projectiles.Melee
     public class ArkoftheCosmosBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight"; //Umm actually the rending scissors are for aote mr programmer what the hel.. it gets changed in predraw anywyas
+        public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight"; //Yes this is AotE sprite, but it gets changed in predraw anyways
 
         private bool initialized = false;
         public ref float Charge => ref Projectile.ai[0];
 
-        public bool Dashing
-        {
-            get
-            {
-                return Projectile.ai[1] == 1;
-            }
-
-            set
-            {
-                Projectile.ai[1] = value ? 1f : 0f;
-            }
-        }
-
-        const int maxStitches = 8;
+        const int maxStitches = 10;
         public int CurrentStitches => (int)Math.Ceiling((1 - (float)Math.Sqrt(1f - (float)Math.Pow(MathHelper.Clamp(StitchProgress * 3f, 0f, 1f), 2f))) * maxStitches);
         public float[] StitchRotations = new float[maxStitches];
         public float[] StitchLifetimes = new float[maxStitches];
@@ -74,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
 
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = (int)MaxTime + 2;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override bool? CanDamage()
@@ -118,14 +105,12 @@ namespace CalamityMod.Projectiles.Melee
             //Spawn particles when the line appears
             if (HoldTimer == 1)
             {
-                //Check for the up arrow once more so if the player has good reflexes they can avoid the dash. Gives them more control
-                if (Owner.controlUp && Charge >= 5)
-                {
-                    // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
-                    Owner.GiveUniversalIFrames(ArkoftheCosmos.DashIframes);
-                    Dashing = true;
-                }
+                // Feel the power
+                SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound, Projectile.Center);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7.5f)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7.5f;
 
+                // Feel the particles
                 for (int i = 0; i < 20; i++)
                 {
                     float positionAlongLine = MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, Main.rand.NextFloat(0f, 1f));
@@ -152,31 +137,18 @@ namespace CalamityMod.Projectiles.Melee
                             break;
                     }
                 }
-            }
 
-
-            Owner.Calamity().LungingDown = false;
-
-            if (Dashing)
-            {
-                Owner.Calamity().LungingDown = true;
-                Owner.fallStart = (int)(Owner.position.Y / 16f);
-                Owner.velocity = Owner.SafeDirectionTo(scissorPosition, Vector2.Zero) * 60f;
-
-                if (Owner.Distance(scissorPosition) < 60f)
+                // Feel the extra stars
+                if (Owner.whoAmI == Main.myPlayer)
                 {
-                    Dashing = false;
-                    Owner.velocity *= 0.1f; //Abrupt stop
-                    SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound, Projectile.Center);
-
-                    if (Owner.whoAmI == Main.myPlayer)
+                    int starAmt = 5;
+                    for (int s = 1; s <= starAmt; s++)
                     {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            var source = Projectile.GetSource_FromThis();
-                            Projectile blast = Projectile.NewProjectileDirect(source, Owner.Center, Main.rand.NextVector2CircularEdge(28, 28), ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SlashBoltsDamageMultiplier * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.07f);
-                            blast.timeLeft = 100;
-                        }
+                        float lerpRatio = s / (float)starAmt;
+                        float positionAlongLine = MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, lerpRatio);
+                        Vector2 starPosition = Projectile.Center + Projectile.velocity * positionAlongLine;
+                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), starPosition, Main.rand.NextVector2CircularEdge(28, 28), ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.BlastBoltsDamageMultiplier * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.07f);
+                        blast.timeLeft = 100;
                     }
                 }
             }
@@ -215,6 +187,17 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 StitchLifetimes[i]++;
             }
+
+            if (StitchProgress > 0)
+            {
+                for (int m = 0; m < 2; m++)
+                {
+                    float positionAlongLine = MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, Main.rand.NextFloat());
+                    Vector2 smokePosition = Projectile.Center + Projectile.velocity * positionAlongLine;
+                    HeavySmokeParticle smoke = new(smokePosition, Main.rand.NextVector2CircularEdge(4f, 4f), new Color(117, 36, 32), 12, 0.8f, 0.6f, 0f, true);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -229,22 +212,6 @@ namespace CalamityMod.Projectiles.Melee
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.Red, 60, 1, 1.5f, hueShift: 0.002f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
-        }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            //Add some damage falloff
-            modifiers.SourceDamage *= (float)Math.Pow(1 - ArkoftheCosmos.blastFalloffStrenght, Projectile.numHits * ArkoftheCosmos.blastFalloffSpeed);
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            if (Dashing)
-            {
-                Owner.velocity *= 0.1f; //Abrupt stop if the player was still dashing
-            }
-
-            Owner.Calamity().LungingDown = false;
         }
 
         //Animation keys
@@ -300,7 +267,7 @@ namespace CalamityMod.Projectiles.Melee
                 float raise = (float)Math.Sin(HoldProgress * MathHelper.PiOver2);
 
                 Vector2 origin = new Vector2(lineTex.Width / 2f, lineTex.Height);
-                float ripWidth = StitchProgress < 0.75f ? 0.2f : (1 - (StitchProgress - 0.75f) * 4f) * 0.2f;
+                float ripWidth = StitchProgress < 0.75f ? 0.4f : (1 - (StitchProgress - 0.75f) * 4f) * 0.2f;
                 Vector2 scale = new Vector2(ripWidth, (ThrustDisplaceRatio() * 242f) / lineTex.Height);
                 float lineOpacity = StitchProgress < 0.75f ? 1f : 1 - (StitchProgress - 0.75f) * 4f;
 
@@ -311,6 +278,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     for (int i = 0; i < CurrentStitches; i++)
                     {
+
                         float positionAlongLine = (ThrustDisplaceRatio() * 242f / (float)maxStitches * 0.5f) + MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, i / (float)maxStitches);
                         Vector2 stitchCenter = Projectile.Center + Projectile.velocity * positionAlongLine;
 

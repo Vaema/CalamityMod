@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,6 +10,13 @@ namespace CalamityMod.Items.Accessories
     public class GrandGelatin : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float MoveSpeedBoost = 0.12f;
+        public static float JumpSpeedBoost = 0.6f; // Both 12% so we only need just one in the tooltip
+        public static int AuraLifetime = 1800;
+        public static int AuraRegenBoost = 6;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), AuraLifetime.FramesToSeconds(), AuraRegenBoost.ToRegenPerSecond());
+
         public override void SetDefaults()
         {
             Item.width = 34;
@@ -22,8 +30,8 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.GrandGelatin = true;
-            player.moveSpeed += 0.12f;
-            player.jumpSpeedBoost += 0.6f;
+            player.moveSpeed += MoveSpeedBoost;
+            player.jumpSpeedBoost += JumpSpeedBoost;
         }
 
         public override void AddRecipes()

@@ -2,6 +2,7 @@
 using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,7 +59,7 @@ namespace CalamityMod.Tiles.Astral
             //treeFrame = (i + j * j) % 3;
         }
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 
         public override int SaplingGrowthType(ref int style)
@@ -135,6 +136,11 @@ namespace CalamityMod.Tiles.Astral
                 if (!Main.dayTime && Main.rand.NextBool())
                     type = ItemID.FallenStar;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);
+            }
+            else if (Main.rand.NextBool(3))
+            {
+                int fruitType = Main.rand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>();
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
             }
             return false;
         }

@@ -135,6 +135,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Phase variables
         private const int idleCounterMax = 300;
         private int idleCounter = idleCounterMax;
+        private const float LaserWallCooldown = 1200f;
         private int postTeleportTimer = 0;
         private int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 120;
@@ -693,8 +694,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - alphaGateValue) * 5f, 0f, 255f) / 255f);
                             }
 
-                            // Fire laser walls every 12 seconds after a laser wall phase ends
-                            if (calamityGlobalNPC.newAI[3] >= 720f)
+                            // Fire laser walls every X seconds after a laser wall phase ends
+                            float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
+                            if (calamityGlobalNPC.newAI[3] >= LaserWallCooldown)
                             {
                                 NPC.Opacity = 0f;
 
@@ -707,7 +709,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         }
                         else if (laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                         {
-                            // Remain in laser wall firing phase for 4 seconds
+                            // Remain in laser wall firing phase for X seconds
                             idleCounter--;
                             if (idleCounter <= 0)
                             {
@@ -1030,9 +1032,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (Main.netMode != NetmodeID.Server)
                         {
                             if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            {
                                 Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
-                            }
                         }
                     }
 
@@ -1083,11 +1083,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
                                 SpawnTeleportLocation(player);
-                            else
-                                calamityGlobalNPC.newAI[2] += 10f;
                         }
-                        else
-                            calamityGlobalNPC.newAI[2] += 2f;
 
                         float speedCopy = speed;
                         float turnSpeedCopy = turnSpeed;
@@ -1641,7 +1637,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Laser barrage attack variables
-                float laserBarrageGateValue = bossRush ? 780f : death ? 900f : 960f;
+                float laserBarrageGateValue = bossRush ? 1080f : death ? 1320f : 1440f;
                 float laserBarrageShootGateValue = bossRush ? 160f : 240f;
                 float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue;
 
@@ -1878,12 +1874,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.localAI[1] = 0f;
 
                     calamityGlobalNPC.newAI[2] += 1f;
-
-                    // Go to ground phase sooner
-                    if (increaseSpeedMore)
-                        calamityGlobalNPC.newAI[2] += 10f;
-                    else if (increaseSpeed)
-                        calamityGlobalNPC.newAI[2] += 2f;
 
                     float speedCopy = speed;
                     float turnSpeedCopy = turnSpeed;

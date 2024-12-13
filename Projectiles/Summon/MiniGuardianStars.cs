@@ -33,7 +33,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Player owner = Main.player[Projectile.owner];
             Projectile.damage = (int)owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
 
             if (Projectile.ai[0] < 240f)
             {

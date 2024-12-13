@@ -40,8 +40,9 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 destination = Main.MouseWorld;
-            position = destination - Vector2.UnitY * (Main.MouseWorld.Y - Main.screenPosition.Y + 80f);
+            Vector2 mouse = player.ClampedMouseWorld();
+            Vector2 destination = mouse;
+            position = destination - Vector2.UnitY * (mouse.Y - Main.screenPosition.Y + 80f);
             Vector2 cachedPosition = position;
             float maxRandomOffset = 16f;
             int totalProjectiles = 5;
@@ -49,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 position.X += MathHelper.Lerp(-160f, 160f, i / (float)(totalProjectiles - 1));
                 position += Main.rand.NextVector2Circular(maxRandomOffset, maxRandomOffset);
-                velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * ShootSpeed * Main.rand.NextFloat(0.9f, 1.1f);
+                velocity = (mouse - position).SafeNormalize(Vector2.UnitY) * ShootSpeed * Main.rand.NextFloat(0.9f, 1.1f);
                 Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 position = cachedPosition;
             }

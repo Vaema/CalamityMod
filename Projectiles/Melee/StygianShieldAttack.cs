@@ -110,6 +110,7 @@ namespace CalamityMod.Projectiles.Melee
             // Perform the dash if able to
             if (Charge >= MinChargeTime && !Owner.noItems && !Owner.CCed)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Set the destination in which the dash is supposed to be
                 Vector2 intendedDestination = Projectile.Center + Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
 
@@ -269,6 +270,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Charge sight line
                 if (Charge >= MinChargeTime)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     // Where the dash is supposed to take you, taken from above
                     Vector2 dashLength = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
                     Vector2 intendedDestination = Projectile.Center + dashLength;

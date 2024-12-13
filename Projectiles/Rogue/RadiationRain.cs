@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (targetedNPC != null)
                     Projectile.velocity = (targetedNPC.Center - Projectile.Center + targetedNPC.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 8;
                 else
-                    Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
+                    Projectile.velocity = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
             }
 
             if (targetDist < 1400 && time > 5)

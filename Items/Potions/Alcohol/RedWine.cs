@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,6 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class RedWine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static int HealValue = 200;
+        public static int RegenLoss = 1;
+        public static int SecondDuration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenLoss.ToRegenPerSecond(), SecondDuration);
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -21,7 +28,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(14, 48, 200);
+            Item.DefaultToHealingPotion(14, 48, HealValue);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
@@ -29,12 +36,12 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void GetHealLife(Player player, bool quickHeal, ref int healValue)
         {
-            healValue = player.Calamity().baguette ? 250 : 200;
+            healValue = player.Calamity().baguette ? Baguette.RedWineBuffedHealValue : HealValue;
         }
 
         public override void OnConsumeItem(Player player)
         {
-            player.AddBuff(ModContent.BuffType<RedWineBuff>(), 900);
+            player.AddBuff(ModContent.BuffType<RedWineBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
         }
     }
 }

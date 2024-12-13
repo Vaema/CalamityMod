@@ -401,6 +401,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
 
-        public override bool? CanDamage() => CurrentState == ViriliAIState.ChargeAtEnemies ? null : false;
+        public override bool MinionContactDamage() => CurrentState == ViriliAIState.ChargeAtEnemies;
     }
 }

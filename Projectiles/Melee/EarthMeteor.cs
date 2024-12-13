@@ -91,11 +91,15 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.extraUpdates = 15;
 
-                NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                NPC target = mouse.ClosestNPCAt(1000);
                 if (target != null)
                     Projectile.velocity = (target.Center - Projectile.Center + target.velocity * 8).SafeNormalize(Vector2.UnitX) * 8;
                 else
+                {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
+                }
             }
             if (time >= fallTime)
             {

@@ -26,12 +26,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Lime;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.shoot = ModContent.ProjectileType<DeepWounderProjectile>();
-            Item.shootSpeed = 14f;
+            Item.shootSpeed = 17f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
         public override float StealthVelocityMultiplier => 1.1f;
-        public override float StealthDamageMultiplier => 2.1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

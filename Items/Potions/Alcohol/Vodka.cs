@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,7 +10,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class Vodka : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        internal static readonly int CritBoost = 2;
+
+        public static float DamageBoost = 0.06f;
+        public static int CritBoost = 2;
+        public static int RegenLoss = 1;
+        public static float DefenseLossPercent = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -23,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 36, ModContent.BuffType<VodkaBuff>(), CalamityUtils.SecondsToFrames(480f), true);
+            Item.DefaultToFood(14, 36, ModContent.BuffType<VodkaBuff>(), CalamityUtils.MinutesToFrames(8), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;

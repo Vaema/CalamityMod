@@ -1,5 +1,7 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -29,18 +31,21 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 1.1f;
         public override float ForwardSpeed => 0.4f;
+        public override Action<Projectile> EffectBeforeReelback => (proj) =>
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 featherVel = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 40f) * Main.rand.NextFloat(1.55f, 1.85f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 4f, featherVel, ModContent.ProjectileType<Feather>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner);
+                }
+            }
+        };
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(5))
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= 7f)
-            {
-                Projectile.localAI[0] = 0f;
-                if (Main.myPlayer == Projectile.owner)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 4f, Projectile.velocity * 2f, ModContent.ProjectileType<Feather>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner);
-            }
         }
     }
 }

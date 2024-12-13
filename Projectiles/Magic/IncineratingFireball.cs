@@ -79,8 +79,9 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Vector2 projLocation = Owner.Center;
-                    float mouseDist = Vector2.Distance(Main.MouseWorld, projLocation);
-                    Vector2 mouseDiff = Main.MouseWorld - projLocation;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    float mouseDist = Vector2.Distance(mouse, projLocation);
+                    Vector2 mouseDiff = mouse - projLocation;
                     if (mouseDist > 128f)
                     {
                         mouseDiff.Normalize();
@@ -90,6 +91,8 @@ namespace CalamityMod.Projectiles.Magic
 
                     Vector2 orbAttemptedVelocity = Vector2.Zero.MoveTowards(projLocation - Projectile.Center, 25f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, orbAttemptedVelocity, 0.08f);
+
+                    Projectile.netUpdate = true;
                 }
 
                 // Slowly increase in size as the fireball is charged up.

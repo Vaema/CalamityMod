@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -36,7 +37,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             target.AddBuff(BuffID.OnFire3, 360);
             int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-            player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
+            Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+            blast.DamageType = Item.DamageType;
             float firstDustScale = 1.7f;
             float secondDustScale = 0.8f;
             float thirdDustScale = 2f;

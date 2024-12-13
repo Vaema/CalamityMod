@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
         }
 

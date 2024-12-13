@@ -45,6 +45,7 @@ using CalamityMod.Projectiles.Ranged;
 using Steamworks;
 using CalamityMod.Particles;
 using Terraria.Utilities.Terraria.Utilities;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -1612,7 +1613,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = CalamityLists.debuffList.Contains(buffID);
+                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;
@@ -1717,10 +1718,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (!canDespawn)
                                 NPC.velocity.X *= 0.965f;
 
-                            if (DownedBossSystem.downedCalamitas && !bossRush)
+                            if (DownedBossSystem.downedCalamitas || bossRush)
                             {
                                 if (giveUpCounter == 720)
                                 {
+                                    if (bossRush)
+                                    {
+                                        NPC.chaseable = true;
+                                        NPC.dontTakeDamage = false;
+                                        return;
+                                    }
+
                                     for (int i = 0; i < 24; i++)
                                     {
                                         Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
@@ -1751,13 +1759,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                             if (giveUpCounter <= 0)
                             {
-                                if (bossRush)
-                                {
-                                    NPC.chaseable = true;
-                                    NPC.dontTakeDamage = false;
-                                    return;
-                                }
-
                                 for (int i = 0; i < 24; i++)
                                 {
                                     Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);

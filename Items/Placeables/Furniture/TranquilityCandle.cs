@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             CreateRecipe().
                 AddIngredient(ItemID.PeaceCandle).
                 AddIngredient<ZenPotion>().
-                AddIngredient<CoreofEleum>(2).
+                AddIngredient<EssenceofEleum>(2).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

@@ -205,7 +205,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StardustDrill, standardDrillTweaks },
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
-                { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(1)) }, // Beam Sword projectile
+                { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(2)) }, // Beam Sword projectile
                 { ProjectileID.Terragrim, Do(TrueMeleeNoSpeed, ScaleExact(1.25f)) },
                 { ProjectileID.ThunderStaffShot, Do(PiercingExact(3)) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },

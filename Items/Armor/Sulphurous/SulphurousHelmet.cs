@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

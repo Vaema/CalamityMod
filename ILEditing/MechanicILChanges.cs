@@ -11,10 +11,13 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
@@ -23,10 +26,10 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
@@ -77,8 +80,6 @@ namespace CalamityMod.ILEditing
         private static Action VanillaSpawnTownNPCs;
 
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
-
-        public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
 
         #region Punch Card Spawning Command
         private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
@@ -539,27 +540,61 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Hellbound Enchantment Projectile Creation Effects
-        private static int IncorporateMinionExplodingCountdown(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
+        #region Apply Projectile Variables Upon Creation
+        private static int IncorporateExtraProjectileVariables(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
         {
             // This is unfortunately not something that can be done via SetDefaults since owner is set
             // after that method is called. Doing it directly when the projectile is spawned appears to be the only reasonable way.
             int proj = orig(spawnSource, x, y, xSpeed, ySpeed, type, damage, knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[proj];
-            if (projectile.minion)
+
+            Player player = Main.player[projectile.owner];
+            if (Main.gameMenu || !player.active)
+                return proj;
+
+            if (!projectile.TryGetGlobalProjectile<CalamityGlobalProjectile>(out var calProj))
+                return proj;
+
+            // Old Fashioned
+            if (spawnSource is EntitySource_Parent parentSource)
             {
-                Player player = Main.player[projectile.owner];
-                if (Main.gameMenu || !player.active)
-                    return proj;
+                // Parent-spawned projectiles involve 5 relevant sources: Buff, Item, NPC, Player, Projectile
+                // 1. Buffs: Old Fashioned inherently does not affect them, they have no effect
 
-                // Do not apply Hellbound effects to minions not spawned by weapons
-                // This prevent minions like Luxor's Gift getting it
-                if (spawnSource is EntitySource_ItemUse trueSource && trueSource.Item is Item weapon && weapon.damage <= 0)
-                    return proj;
+                /* 2. Item: If detected to be from weapons, are assumedly debuffed
+                *The criteria includes: A. has damage, B. has use animation, and C. came out of an item
+                *This rules out items such as Bombs or Shield of Cthulhu (hypothetically were it to spawn projectiles)
+                *This source is *not* from item use, but is still used for a multitude of purposes in weapons */
+                if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                    calProj.buffedByOldFashioned = false;
 
+                // 3. NPCs: Not considered at all; no effect
+
+                // 4. Players: Only considered if the source owner matches the projectile's, otherwise no effect
+                else if (parentSource.Entity is Player parentPlayer && parentPlayer.whoAmI == projectile.owner)
+                {
+                    // 4A. The primary player-based source is item use, which follows the same logic as items (see above)
+                    // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
+                    if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item is Item usedItem
+                    && usedItem.damage > 0 && usedItem.useAnimation > 0 && usedItem.type != ModContent.ItemType<WulfrumFusionCannon>())
+                        calProj.buffedByOldFashioned = false;
+                    // 4B. Every non item-use source is assumed safe to buff
+                    else
+                        calProj.buffedByOldFashioned = true;
+                }
+
+                // 5. Projectiles: Directly inherited by its parent projectile
+                else if (parentSource.Entity is Projectile parentProj)
+                    calProj.buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
+            }
+
+            // Hellbound Enchantment
+            // This only applies to minions spawned by weapon uses, preventing other minions such as Luxor's Gift from exploding
+            if (projectile.minion && spawnSource is EntitySource_ItemUse useSource && useSource.Item is Item weapon && weapon.useAnimation > 0)
+            {
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
                 if (player.Calamity().explosiveMinionsEnchant)
-                    projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+                    calProj.ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
             }
             // Minion shots inherit the "explode countdown" from the parent minion
             // This is only to inherit the damage scaling of the minion and does NOT mean the shot will explode too
@@ -567,9 +602,18 @@ namespace CalamityMod.ILEditing
             {
                 // Going down the chain
                 if (spawnSource is EntitySource_Parent trueSource && trueSource.Entity is Projectile parent)
-                    projectile.Calamity().ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
+                    calProj.ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
+        }
+        #endregion
+
+        #region Apply Old Fashioned Damage to Miscellanous Hits
+        private static void ApplyOldFashionedDamageToMiscHits(Terraria.On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
+        {
+            if (self.Calamity().oldFashioned)
+                damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
+            orig(self, npc, damage, knockback, direction, crit, damageType, damageVariation);
         }
         #endregion
 
@@ -794,46 +838,25 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Fog Effect in Floral Paradise
-        private static void DrawFloralParadiseFog(ILContext il)
+        #region Custom DoDraw Changes
+        private static void CustomDoDrawChanges(ILContext il)
         {
+            // This IL edit accomplishes two things:
+            // 1. Calls a helper function for drawing the fog in the Floral Paradise.
+            // 2. Allows for drawing additive blend projectiles using IAdditiveDrawer.
             ILCursor cursor = new ILCursor(il);
 
-            cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings"));
+            // First, Floral Paradise fog.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings")))
+                return;
+
             cursor.EmitDelegate<Action>(() =>
             {
                 if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
                     DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
-        }
 
-        private static void DrawFog(float intensity)
-        {
-            Main.spriteBatch.EnterShaderRegion();
-            WaterfallRenderer.DrawWaterfalls();
-
-            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
-            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
-            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
-            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
-            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
-            GameShaders.Misc["CalamityMod:Fog"].Apply();
-
-            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
-        }
-        #endregion Fog Effect in Floral Paradise
-
-        #region Custom Draw Layers
-        private static void AdditiveDrawing(ILContext il)
-        {
-            ILCursor cursor = new(il);
+            // Then, additive drawing.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
                 return;
 
@@ -857,6 +880,28 @@ namespace CalamityMod.ILEditing
 
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             });
+        }
+
+        private static void DrawFog(float intensity)
+        {
+            Main.spriteBatch.EnterShaderRegion();
+            WaterfallRenderer.DrawWaterfalls();
+
+            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
+            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
+            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
+            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
+            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
+            GameShaders.Misc["CalamityMod:Fog"].Apply();
+
+            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin();
         }
         #endregion
 
@@ -1872,7 +1917,7 @@ namespace CalamityMod.ILEditing
                 return;
 
             var glowMaskTile = GlowMaskTile.InstanceLookup[type];
-            if (glowMaskTile is null)
+            if (glowMaskTile is null || !TileDrawing.IsVisible(drawData.tileCache))
                 return;
 
             var glowMask = glowMaskTile.GlowMask;
@@ -1922,6 +1967,117 @@ namespace CalamityMod.ILEditing
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
             }
+        }
+        #endregion
+
+        #region Allow Cannons to use jellyfish
+        public static void AllowCannonJellyfishUse(Terraria.On_Player.orig_PlaceThing_CannonBall orig, Player self)
+        {
+            // Check if the player is holding a jelly
+            if (self.HeldItem.type == ModContent.ItemType<BabyCannonballJellyfishItem>())
+            {
+                // I have no comments here.
+                bool veryLongRangeCheck = self.position.X / 16f - (float)Player.tileRangeX - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetX
+                    && (self.position.X + (float)self.width) / 16f + (float)Player.tileRangeX + (float)self.HeldItem.tileBoost - 1f + (float)self.blockRange >= (float)Player.tileTargetX
+                    && self.position.Y / 16f - (float)Player.tileRangeY - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetY
+                    && (self.position.Y + (float)self.height) / 16f + (float)Player.tileRangeY + (float)self.HeldItem.tileBoost - 2f + (float)self.blockRange >= (float)Player.tileTargetY;
+
+                int targX = Player.tileTargetX;
+                int targY = Player.tileTargetY;
+
+                Tile t = CalamityUtils.ParanoidTileRetrieval(targX, targY);
+
+                // All vanilla cannon types (such as the Bunny Cannon) are a single tile ID, this lets us determine that this tile is the normal Cannon
+                int cannonType = t.TileFrameX / 72;
+
+                // If the player's target tile is within range, is a normal Cannon, they are using an item, and their item time is zero, shoot the baby
+                if (t.TileType == TileID.Cannon && cannonType == 0 && self.ItemTimeIsZero && self.controlUseItem && veryLongRangeCheck)
+                {
+                    self.cursorItemIconEnabled = true;
+                    self.cursorItemIconID = ModContent.ItemType<BabyCannonballJellyfishItem>();
+                    self.HeldItem.makeNPC = -1; // Prevent it from spawning critters when used
+
+                    // Determines where all the action should happen and what the angle of the cannon is
+                    int tileX = t.TileFrameX / 18;
+                    int angle = 0;
+                    while (tileX >= 4)
+                    {
+                        tileX -= 4;
+                    }
+                    tileX = targX - tileX;
+                    int tileY;
+                    for (tileY = t.TileFrameY / 18; tileY >= 3; tileY -= 3)
+                    {
+                        angle++;
+                    }
+                    tileY = targY - tileY;
+
+                    self.ApplyItemTime(self.HeldItem);
+
+                    float speedX = 0f;
+                    float speedY = 0f;
+
+                    // Vanilla code for determining the velocity of shot cannonballs kept intact for consistency
+                    if (angle == 0)
+                    {
+                        speedX = 10f;
+                        speedY = 0f;
+                    }
+                    if (angle == 1)
+                    {
+                        speedX = 7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 2)
+                    {
+                        speedX = 5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 3)
+                    {
+                        speedX = 2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 4)
+                    {
+                        speedX = 0f;
+                        speedY = -10f;
+                    }
+                    if (angle == 5)
+                    {
+                        speedX = -2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 6)
+                    {
+                        speedX = -5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 7)
+                    {
+                        speedX = -7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 8)
+                    {
+                        speedX = -10f;
+                        speedY = 0f;
+                    }
+                    Vector2 spawnPosition = new Vector2((tileX + 2) * 16, (tileY + 2) * 16);
+                    // Finally shoot the projectile
+                    int jellyfishb = Projectile.NewProjectile(new EntitySource_TileInteraction(self, tileX, tileY), spawnPosition.X, spawnPosition.Y, speedX, speedY, ModContent.ProjectileType<BabyCannonballProjectile>(), self.HeldItem.damage, 8f, self.whoAmI);
+                    Main.projectile[jellyfishb].originatedFromActivableTile = true;
+                    // Shlorb
+                    SoundEngine.PlaySound(SoundID.Item95, spawnPosition);
+                }
+                else
+                {
+                    // Reset the item to be able to spawn critters again if any of the conditions aren't met
+                    self.HeldItem.makeNPC = ModContent.NPCType<BabyCannonballJellyfish>();
+                }
+            }
+            else
+                orig(self);
         }
         #endregion
 

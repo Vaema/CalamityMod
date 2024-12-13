@@ -208,8 +208,9 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 //Rotate the blade towards the cursor
-                Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Calamity().mouseWorld, 0.025f * ThrowRatio());
-                Projectile.Center = Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 20f * ThrowRatio());
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                Projectile.Center = Vector2.Lerp(Projectile.Center, mouse, 0.025f * ThrowRatio());
+                Projectile.Center = Projectile.Center.MoveTowards(mouse, 20f * ThrowRatio());
 
                 if ((Projectile.Center - Owner.Center).Length() > ArkoftheCosmos.MaxThrowReach)
                     Projectile.Center = Owner.Center + Owner.DirectionTo(Projectile.Center) * ArkoftheCosmos.MaxThrowReach;
@@ -413,7 +414,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Combo == 3f)
-                modifiers.SourceDamage *= ArkoftheElements.snapDamageMultiplier;
+                modifiers.SourceDamage *= ArkoftheCosmos.SnapDamageMultiplier;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(24, 34, ModContent.BuffType<Zerg>(), CalamityUtils.SecondsToFrames(900f), true);
+            Item.DefaultToFood(24, 34, ModContent.BuffType<Zerg>(), CalamityUtils.MinutesToFrames(15), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }

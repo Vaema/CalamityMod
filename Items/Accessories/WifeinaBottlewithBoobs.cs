@@ -12,6 +12,10 @@ namespace CalamityMod.Items.Accessories
     public class WifeinaBottlewithBoobs : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        // Hold on... isn't this the HEALER elemental??
+        public static int ElementalDamage = 45;
+
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -44,13 +48,10 @@ namespace CalamityMod.Items.Accessories
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalHealer>()] < 1)
                 {
                     var source = player.GetSource_Accessory(Item);
-
-                    // 08DEC2023: Ozzatron: Rare Sand Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(45);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
                     Projectile sandy = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<SandElementalHealer>(), damage, 2f, Main.myPlayer, 0f, 0f);
-                    sandy.originalDamage = baseDamage;
+                    sandy.originalDamage = ElementalDamage;
                 }
             }
         }
@@ -70,11 +71,10 @@ namespace CalamityMod.Items.Accessories
                     var source = player.GetSource_Accessory(Item);
 
                     // 08DEC2023: Ozzatron: Rare Sand Elementals spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(45);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
                     Projectile sandy = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<SandElementalHealer>(), damage, 2f, Main.myPlayer, 0f, 0f);
-                    sandy.originalDamage = baseDamage;
+                    sandy.originalDamage = ElementalDamage;
                 }
             }
         }

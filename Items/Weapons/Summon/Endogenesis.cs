@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     ModContent.ProjectileType<EndoBeam>()
                 });
 
-                SummonEndoCooper(source, AttackMode, Main.MouseWorld, damage, Item.damage, knockback, player, out _, out _);
+                SummonEndoCooper(source, AttackMode, player.ClampedMouseWorld(), damage, Item.damage, knockback, player, out _, out _);
 
                 AttackMode++;
                 if (AttackMode > 3)
@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.BlizzardStaff).
                 AddIngredient<ShadowspecBar>(5).
                 AddIngredient<EndothermicEnergy>(100).
-                AddIngredient<CoreofEleum>(15).
+                AddIngredient<EssenceofEleum>(15).
                 AddTile<DraedonsForge>().
                 Register();
         }

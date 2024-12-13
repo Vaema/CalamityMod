@@ -7,6 +7,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class RainbowFront : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "Terraria/Images/Projectile_251";
         public override void SetDefaults()
         {
             Projectile.width = 12;

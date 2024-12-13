@@ -107,18 +107,8 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                targetedNPC = Projectile.Center.ClosestNPCAt(600);
-                if (targetedNPC != null && !hasHitTarget)
-                {
-                    Vector2 position = targetedNPC.Center;
-                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 23)
-                        Projectile.velocity += moveToMouse * 0.45f;
-                    else
-                        Projectile.velocity *= 0.9f;
-                }
-                else if (Projectile.velocity.Length() < 23)
-                    Projectile.velocity *= 1.1f;
+                targetedNPC = hasHitTarget ? null : Projectile.Center.ClosestNPCAt(600);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, 0.6f, 23, 0.97f, accelerate: true);
             }
             else if (Main.rand.NextBool(3))
             {
