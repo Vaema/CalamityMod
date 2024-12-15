@@ -83,6 +83,7 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
+            target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
             switch (item.type)
             {
@@ -198,6 +199,7 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
+            cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
             switch (proj.type)
             {
@@ -1031,39 +1033,6 @@ namespace CalamityMod.CalPlayer
                 titanCooldown = 15;
             }
 
-            if (corrosiveSpine && modProj.stealthStrikeHitCount < 3 && (Player.ownedProjectileCounts[ProjectileType<Corrocloud1>()] + Player.ownedProjectileCounts[ProjectileType<Corrocloud2>()] + Player.ownedProjectileCounts[ProjectileType<Corrocloud3>()]) < 3)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    if (Main.rand.NextBool())
-                    {
-                        int type = -1;
-                        switch (Main.rand.Next(15))
-                        {
-                            case 0:
-                                type = ProjectileType<Corrocloud1>();
-                                break;
-                            case 1:
-                                type = ProjectileType<Corrocloud2>();
-                                break;
-                            case 2:
-                                type = ProjectileType<Corrocloud3>();
-                                break;
-                        }
-
-                        if (type != -1)
-                        {
-                            int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
-
-                            float speed = Main.rand.NextFloat(5f, 11f);
-                            int cloud = Projectile.NewProjectile(spawnSource, position, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, type, damage, proj.knockBack, Player.whoAmI);
-                            if (cloud.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[cloud].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-            }
-
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
@@ -1164,10 +1133,6 @@ namespace CalamityMod.CalPlayer
                 {
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), 120);
                 }
-                if (corrosiveSpine)
-                {
-                    target.AddBuff(BuffID.Poisoned, 240);
-                }
             }
             if (summon)
             {
@@ -1221,6 +1186,10 @@ namespace CalamityMod.CalPlayer
             if (lumenousAmulet)
             {
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<CrushDepth>());
+            }
+            if (corrosiveSpine)
+            {
+                target.AddBuff(BuffType<Irradiated>(), 120);
             }
             if (alchFlask)
             {

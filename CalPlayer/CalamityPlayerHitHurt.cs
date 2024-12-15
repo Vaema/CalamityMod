@@ -1546,6 +1546,19 @@ namespace CalamityMod.CalPlayer
                     dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
                 }
             }
+
+            if (corrosiveSpine)
+            {
+                int cloudCount = 3;
+                for (int i = 0; i < cloudCount; i++)
+                {
+                    float speed = 2f;
+                    int damage = 40;
+                    int cloud = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, ModContent.ProjectileType<ScourgeVenomCloud>(), damage, 0f, Player.whoAmI);
+                    if (cloud.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[cloud].DamageType = DamageClass.Generic;
+                }
+            }
         }
         #endregion
 

@@ -150,8 +150,9 @@ namespace CalamityMod.NPCs
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
-        // Evergreen Gin effect
+        // Sickness and Water debuff effects
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
         /// <summary> Constant representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
@@ -490,6 +491,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
@@ -911,6 +913,11 @@ namespace CalamityMod.NPCs
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
+            if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
+            {
+                sicknessDamageMult += 0.25;
+                waterDamageMult += 0.25;
+            }
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
