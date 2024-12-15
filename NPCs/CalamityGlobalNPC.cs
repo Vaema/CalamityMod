@@ -279,6 +279,10 @@ namespace CalamityMod.NPCs
         public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
+        /// <summary>
+        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
+        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
+        /// </summary>
         public int pearlAuraCounter = 0;
         public int bBlood = 0;
         public int brainRot = 0;
@@ -290,6 +294,7 @@ namespace CalamityMod.NPCs
         public int irradiated = 0;
         public int bFlames = 0;
         public int hFlames = 0;
+        /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
         public int aCrunch = 0;
         public int crumble = 0;
