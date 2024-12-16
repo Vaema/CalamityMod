@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Magic
         public bool returning = false;
         public override void SetDefaults()
         {
-            Projectile.width = 22;
-            Projectile.height = 22;
+            Projectile.width = 55;
+            Projectile.height = 55;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -30,14 +30,26 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (time == 0)
                 dir = (int)Projectile.ai[1];
-
+            if (time == 4)
+            {
+                Particle fadeInfx = new CustomSpark(Projectile.Center, Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 13, 0.75f, Color.White, new Vector2(1, 1f), true, false, shrinkSpeed: 0.3f);
+                GeneralParticleHandler.SpawnParticle(fadeInfx);
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle fadeInfx2 = new CustomSpark(Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f), "CalamityMod/Particles/WaterFoam", true, 13, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.1f);
+                    GeneralParticleHandler.SpawnParticle(fadeInfx2);
+                }
+            }
             Lighting.AddLight(Projectile.Center, Color.RoyalBlue.ToVector3() * 0.7f);
+
+            // Slows down and decays if it's inside tiles
             if (Collision.SolidCollision(Projectile.Center, 20, 20))
             {
                 Projectile.velocity *= 0.95f;
                 Projectile.timeLeft = (int)(Projectile.timeLeft * 0.9f);
             }
 
+            // I hate this but it's the only way to make it move in the very specific way it needs to
             int timeValue = (int)(time / 12);
             float turnMult = timeValue switch
             {
@@ -61,24 +73,32 @@ namespace CalamityMod.Projectiles.Magic
             }
             Projectile.velocity = Projectile.velocity.RotatedBy(0.2f * turnMult * dir);
 
+            // Making things look convincingly "watery" takes a lot of visual work...
+            Visuals();
+            
+            time += returning ? -1 : 1;
+        }
+        public void Visuals()
+        {
             if (Main.rand.NextBool())
             {
-                Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.5f);
-                GeneralParticleHandler.SpawnParticle(trail);
+                // If you're looking at this to use the water effects, this is the main one I recommend you take
+                Particle waterfx = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.5f);
+                GeneralParticleHandler.SpawnParticle(waterfx);
             }
 
-            Particle trail2 = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 25, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 6, 0.3f, Color.RoyalBlue, new Vector2(1, 1f), true, false, shrinkSpeed: 0.5f);
-            GeneralParticleHandler.SpawnParticle(trail2);
+            Particle projBody = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 25, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 6, 0.3f, Color.RoyalBlue, new Vector2(1, 1f), true, false, shrinkSpeed: 0.5f);
+            GeneralParticleHandler.SpawnParticle(projBody);
 
             Vector2 tip = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 35;
-            Particle trail3 = new CustomSpark(tip, Projectile.velocity * Main.rand.NextFloat(0.7f, 0.9f), "CalamityMod/Particles/BloomCircle", false, 2, Main.rand.NextFloat(0.35f, 0.45f), Color.White, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-0.4f, 0.4f));
-            GeneralParticleHandler.SpawnParticle(trail3);
+            Particle seafoam = new CustomSpark(tip, Projectile.velocity * Main.rand.NextFloat(0.7f, 0.9f), "CalamityMod/Particles/BloomCircle", false, 2, Main.rand.NextFloat(0.35f, 0.45f), Color.White, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-0.4f, 0.4f));
+            GeneralParticleHandler.SpawnParticle(seafoam);
             if (Main.rand.NextBool(10))
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Particle trail4 = new CustomSpark(tip, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f), "CalamityMod/Particles/BloomCircle", true, 15, Main.rand.NextFloat(0.12f, 0.18f), Color.White * 0.7f, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1));
-                    GeneralParticleHandler.SpawnParticle(trail4);
+                    Particle smallSeafoam = new CustomSpark(tip, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f), "CalamityMod/Particles/BloomCircle", true, 15, Main.rand.NextFloat(0.12f, 0.18f), Color.White * 0.7f, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1));
+                    GeneralParticleHandler.SpawnParticle(smallSeafoam);
 
                     Dust dust = Dust.NewDustPerfect(tip + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f));
                     dust.noGravity = false;
@@ -94,7 +114,6 @@ namespace CalamityMod.Projectiles.Magic
                 bubble.scale = Main.rand.NextFloat(0.5f, 0.9f);
                 bubble.type = Main.rand.NextBool(3) ? 412 : 411;
             }
-            time += returning ? -1 : 1;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -107,12 +126,12 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnKill(int timeLeft)
         {
-            Particle trail2 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 13, 0.75f, Color.White, new Vector2(1, 1f), true, false, shrinkSpeed: 0.3f);
-            GeneralParticleHandler.SpawnParticle(trail2);
+            Particle fadeOutfx = new CustomSpark(Projectile.Center, Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 13, 0.75f, Color.White, new Vector2(1, 1f), true, false, shrinkSpeed: 0.3f);
+            GeneralParticleHandler.SpawnParticle(fadeOutfx);
             for (int i = 0; i < 3; i++)
             {
-                Particle trail = new CustomSpark(Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f), "CalamityMod/Particles/WaterFoam", true, 13, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.1f);
-                GeneralParticleHandler.SpawnParticle(trail);
+                Particle fadeOutfx2 = new CustomSpark(Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f), "CalamityMod/Particles/WaterFoam", true, 13, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.1f);
+                GeneralParticleHandler.SpawnParticle(fadeOutfx2);
             }
         }
     }
