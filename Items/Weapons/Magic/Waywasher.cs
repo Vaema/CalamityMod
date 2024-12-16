@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 12f;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<WaywasherProj>();
             Item.shootSpeed = 13f;
@@ -35,6 +35,10 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position, velocity.RotatedBy(-0.3f * (shotCount % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<WaywasherProj>(), damage, knockback, player.whoAmI, 0, shotCount % 2 == 0 ? -1 : 1);
+
+            SoundStyle WayWashed = new("CalamityMod/Sounds/Item/WaterSplash" + (shotCount % 2 == 0 ? "1" : "2"));
+            SoundEngine.PlaySound(WayWashed with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = 2 }, position);
+
             shotCount++;
             return false;
         }
