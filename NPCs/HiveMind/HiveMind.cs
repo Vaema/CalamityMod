@@ -753,7 +753,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (nextState == 0)
                     {
                         NPC.TargetClosest();
-                        if (revenge && lifeRatio < 0.53f)
+                        if (revenge && lifeRatio < 0.5f)
                         {
                             if (death)
                             {
@@ -762,7 +762,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 while (nextState == previousState);
                                 previousState = nextState;
                             }
-                            else if (lifeRatio < 0.27f)
+                            else if (lifeRatio < 0.25f)
                             {
                                 do
                                     nextState = Main.rand.Next(3, 6);
@@ -1080,13 +1080,8 @@ namespace CalamityMod.NPCs.HiveMind
                                 NPC.ai[0] += 1f;
                                 if (Main.netMode != NetmodeID.MultiplayerClient && Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height))
                                 {
-                                    if (NPC.ai[0] == 2f || (NPC.ai[0] == 4f && death))
-                                    {
-                                        int maxHearts = revenge ? 2 : 1;
-                                        if (expertMode && NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxHearts)
-                                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<DarkHeart>());
-                                    }
-                                    else if (!NPC.AnyNPCs(NPCID.EaterofSouls) && NPC.Distance(Main.player[NPC.target].Center) > 80f)
+                                    int maxEaters = revenge ? 3 : 2;
+                                    if (NPC.CountNPCS(NPCID.EaterofSouls) < maxEaters && NPC.Distance(Main.player[NPC.target].Center) > 80f)
                                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                                 }
 
@@ -1189,6 +1184,55 @@ namespace CalamityMod.NPCs.HiveMind
                     }
 
                     break;
+            }
+
+            // Dark Heart spawns in phase 2
+            if (NPC.life > 0 && expertMode && lifeRatio < 0.5f)
+            {
+                if (NPC.ai[3] > NPC.lifeMax * 0.6f)
+                    NPC.ai[3] = NPC.lifeMax * 0.6f;
+
+                int tenPercentHP = (int)(NPC.lifeMax * 0.1);
+                if ((NPC.life + tenPercentHP) < NPC.ai[3])
+                {
+                    NPC.ai[3] = NPC.life;
+
+                    int maxDarkHearts = ((revenge && lifeRatio < 0.25f) || death) ? 2 : 1;
+                    if (NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxDarkHearts)
+                    {
+                        SoundEngine.PlaySound(SoundID.NPCDeath22, NPC.Center);
+
+                        for (int i = 0; i < 20; i++)
+                        {
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                            Main.dust[dust].velocity *= 3f;
+                            if (Main.rand.NextBool())
+                            {
+                                Main.dust[dust].scale = 0.5f;
+                                Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            }
+                        }
+                        for (int j = 0; j < 35; j++)
+                        {
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 3f);
+                            Main.dust[dust].noGravity = true;
+                            Main.dust[dust].velocity *= 5f;
+                            dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                            Main.dust[dust].velocity *= 2f;
+                        }
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));
+                            int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height - 32));
+                            int type = ModContent.NPCType<DarkHeart>();
+                            int tenPercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
+                            Main.npc[tenPercentMinions].SetDefaults(type);
+                            if (Main.netMode == NetmodeID.Server && tenPercentMinions < Main.maxNPCs)
+                                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, tenPercentMinions);
+                        }
+                    }
+                }
             }
         }
 
