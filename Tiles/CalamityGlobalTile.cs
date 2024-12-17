@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -307,6 +308,7 @@ namespace CalamityMod.Tiles
                 {
                     DropItem(i, j, ItemID.SoulofNight, quantity: 4, asStack: false, spreadMinMax);
                     WorldGen.altarCount++; // altarCount does not update automatically if ProgressionRework is enabled!
+                    AchievementsHelper.NotifyProgressionEvent(6); // Gives the Begone, Evil! achievement
                 }
 
                 // Drop Evil Smasher on every 12 alter smashed
