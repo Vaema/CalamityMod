@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 4;
+            Main.projFrames[Type] = 5;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 5;
             ProjectileID.Sets.TrailingMode[Type] = 2;
@@ -29,8 +29,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 30;
-            Projectile.height = 30;
+            Projectile.width = Projectile.height = 32;
             Projectile.alpha = 100;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -49,14 +48,7 @@ namespace CalamityMod.Projectiles.Melee
                 HomingBuff -= 0.01f;
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type])
-                Projectile.frame = 0;
-
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
             Lighting.AddLight(Projectile.Center, 0.5f, 0.2f, 0.9f);
 
             if (Projectile.timeLeft % 2 == 0 && Projectile.timeLeft < TimeLeft - 10)
