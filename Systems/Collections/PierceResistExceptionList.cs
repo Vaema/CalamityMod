@@ -89,7 +89,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
-                ProjectileType<UrchinMaceProjectile>(),
+                ProjectileType<UrchinMaceProj>(),
                 ProjectileType<UrchinStingerProj>(),
                 ProjectileType<ViolenceThrownProjectile>(),
                 ProjectileType<WaterLeechProj>(),
