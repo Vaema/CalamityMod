@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.SoulofLight, 5).
                 AddIngredient(ItemID.SoulofNight, 5).
                 AddIngredient(ItemID.FoodPlatter, 3).
