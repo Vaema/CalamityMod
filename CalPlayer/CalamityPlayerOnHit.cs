@@ -1178,7 +1178,7 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffID.Poisoned, 60);
             if (aSpark && Player.IsUnderwater())
             {
-                int duration = transformer ? 120 : 60;
+                int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
             }
             if (abyssalAmulet)

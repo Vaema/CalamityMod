@@ -360,8 +360,6 @@ namespace CalamityMod.NPCs
         public int nightwither = 0;
         /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        /// <summary> If greater than 0, this NPC has been "shocked" by The Transformer's on hurt effect. </summary>
-        public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
@@ -605,7 +603,6 @@ namespace CalamityMod.NPCs
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
-            myClone.transformerShocked = transformerShocked;
             myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
@@ -5629,8 +5626,6 @@ namespace CalamityMod.NPCs
                 nightwither--;
             if (shocked > 0)
                 shocked--;
-            if (transformerShocked > 0)
-                transformerShocked--;
             if (voidfrost > 0)
                 voidfrost--;
             if (shellfishVore > 0)
@@ -5744,27 +5739,20 @@ namespace CalamityMod.NPCs
             }
 
             // Amidias' Spark and Transformer spark spawning
-            if (shocked > 0 || transformerShocked > 0)
+            if (shocked > 0)
             {
                 var player = Main.LocalPlayer;
-                bool strongerShock = transformerShocked > 0;
 
-                int frequency = strongerShock ? 10 : 12;
+                int frequency = 12;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
                 {
-                    int sDamage = strongerShock ? 50 : 10;
+                    int sDamage = 10;
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
                     spark.penetrate = 3;
-                    if (strongerShock)
-                    {
-                        spark.timeLeft = 240;
-                        spark.extraUpdates = 1;
-                        spark.penetrate = 10;
-                    }
                 }
             }
 
@@ -5978,10 +5966,7 @@ namespace CalamityMod.NPCs
 
             if (target.Calamity().aSpark)
             {
-                if (target.Calamity().transformer)
-                    transformerShocked = 120;
-                else
-                    shocked = 120;
+                shocked = 120;
             }
 
             if (target.Calamity().snowman)

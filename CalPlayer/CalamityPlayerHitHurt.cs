@@ -2633,11 +2633,6 @@ namespace CalamityMod.CalPlayer
                         Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4.5f, 5.25f);
                         Dust electric = Dust.NewDustPerfect(Player.Center, DustID.Electric, dustVel, Scale: 0.75f);
                         electric.noGravity = true;
-                        if (transformer)
-                        {
-                            NanoParticle nano = new(Player.Center, dustVel, new Color(0, 186, 242), 1f, 20, true, true);
-                            GeneralParticleHandler.SpawnParticle(nano);
-                        }
                     }
                 }
                 if (rBrain)
