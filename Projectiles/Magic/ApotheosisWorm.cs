@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 300;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 9;
+            Projectile.localNPCHitCooldown = 6;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.tileCollide = false;
@@ -352,14 +352,15 @@ namespace CalamityMod.Projectiles.Magic
         // Manual collision detection that incorporates segments.
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            if (Collision.CheckAABBvAABBCollision(Projectile.position, projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+            if (Collision.CheckAABBvAABBCollision(Projectile.position, projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                 return true;
 
             for (int i = 0; i < Segments.Length; i++)
             {
-                if (Collision.CheckAABBvAABBCollision(Segments[i].Center - projHitbox.Size() * 0.5f, projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+                if (Collision.CheckAABBvAABBCollision(Segments[i].Center - projHitbox.Size() * 0.5f, projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                     return true;
             }
+
             return false;
         }
     }

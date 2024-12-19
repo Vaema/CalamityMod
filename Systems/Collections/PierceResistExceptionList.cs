@@ -33,6 +33,8 @@ namespace CalamityMod.Systems.Collections
                 ProjectileID.Terragrim,
                 ProjectileType<AcidicSaxBubble>(),
                 ProjectileType<AcidRocket>(),
+                ProjectileType<ApotheosisEnergy>(),
+                ProjectileType<ApotheosisWorm>(),
                 ProjectileType<ArtifactOfResilienceShards>(),
                 ProjectileType<BasherHoldout>(),
                 ProjectileType<BlushieStaffProj>(),
