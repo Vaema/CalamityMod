@@ -655,6 +655,16 @@ namespace CalamityMod.Items
         #endregion
 
         #region Use Item Changes
+        public override void HoldItem(Item item, Player player)
+        {
+            // Clear Evil Smasher buffs if not holding Evil Smasher
+            if (player.Calamity().evilSmasherBoost > 0)
+            {
+                if (item.type != ModContent.ItemType<EvilSmasher>())
+                    player.Calamity().evilSmasherBoost = 0;
+            }
+        }
+
         public override bool? UseItem(Item item, Player player)
         {
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
@@ -663,20 +673,6 @@ namespace CalamityMod.Items
                 {
                     //one hour of NOU when using rod of harmony while LORDE is alive
                     player.AddBuff(ModContent.BuffType<NOU>(), 3600 * 60);
-                }
-            }
-            if (player.Calamity().evilSmasherBoost > 0)
-            {
-                if (item.type != ModContent.ItemType<EvilSmasher>())
-                    player.Calamity().evilSmasherBoost = 0;
-            }
-
-            if (player.HasBuff(BuffID.ParryDamageBuff))
-            {
-                if (item.type != ItemID.DD2SquireDemonSword && item.type != ItemID.BouncingShield)
-                {
-                    player.parryDamageBuff = false;
-                    player.ClearBuff(BuffID.ParryDamageBuff);
                 }
             }
 
