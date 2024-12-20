@@ -3184,12 +3184,15 @@ namespace CalamityMod.CalPlayer
                         projectile.localAI[0] = 5;
                     }
                 }
-
-                SoundStyle activate = new("CalamityMod/Sounds/Item/NullShot");
-                for (int i = 0; i < 3; i++)
-                    SoundEngine.PlaySound(activate with { Volume = 0.3f, Pitch = 0.2f + i * 0.3f, MaxInstances = -1 }, Player.Center);
-                Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/BloomRingThinLarge", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.2f, 20);
-                GeneralParticleHandler.SpawnParticle(orb2);
+                if (transformerVisual)
+                {
+                    SoundStyle activate = new("CalamityMod/Sounds/Item/NullShot");
+                    for (int i = 0; i < 3; i++)
+                        SoundEngine.PlaySound(activate with { Volume = 0.3f, Pitch = 0.2f + i * 0.3f, MaxInstances = -1 }, Player.Center);
+                    Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.DodgerBlue, "CalamityMod/Particles/BloomRingThinLarge", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.2f, 20);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
+                
             }
 
             //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero

@@ -126,6 +126,8 @@ TarragonAura.DisplayName: Tarragon Aura
 TatteredFairyDust.DisplayName: Tattered Fairy Dust
 TeslaAura.DisplayName: Tesla's Electricity
 TitanHeartBoom.DisplayName: Titan Heart Boom
+TransformerAura.DisplayName: Transformer Aura
+TransformerBlob.DisplayName: Transformer Shard
 UrsaSlash.DisplayName: Ursa Slash
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VoidFieldGenerator.DisplayName: Void Field Generator
@@ -141,5 +143,3 @@ YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
-TransformerBlob.DisplayName: Transformer Blob
-TransformerAura.DisplayName: Transformer Aura

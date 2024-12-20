@@ -156,8 +156,8 @@ namespace CalamityMod.NPCs
         public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
-        // Transformer effect
-        public bool IncreasedElectricityEffects_Transformer = false;
+        // Electric effects
+        public bool IncreasedElectricityEffects_Unused = false;
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
@@ -506,7 +506,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
             myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
-            myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
+            myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
@@ -921,7 +921,7 @@ namespace CalamityMod.NPCs
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
-            if (IncreasedElectricityEffects_Transformer)
+            if (IncreasedElectricityEffects_Unused)
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
@@ -5738,7 +5738,7 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Amidias' Spark and Transformer spark spawning
+            // Amidias' Spark spark spawning
             if (shocked > 0)
             {
                 var player = Main.LocalPlayer;

@@ -1536,24 +1536,31 @@ namespace CalamityMod.CalPlayer
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
+                    if (Main.zenithWorld && Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile)
+                    {
+                        projectile.velocity *= 0.9f;
+                        projectile.timeLeft = (int)(projectile.timeLeft * 0.92f);
+                    }
                     if (Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile && projectile.Calamity().TransformerTimer == 0 && transformerDelay == 0)
                     {
                         transformerDelay = 2; // 2 frame delay between projectile transformation
                         int numOfBlobs = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()];
 
-                        if (numOfBlobs < 30)
+                        if (numOfBlobs < 30 || Main.zenithWorld) // 30 normally, uncapped on GFB
                         {
-                            projectile.Calamity().TransformerTimer = 90;
-                            int blobDamage = (int)Player.GetBestClassDamage().ApplyTo(55);
-                            int layer = ((numOfBlobs + 1) > 20 ? 3 : (numOfBlobs + 1) > 10 ? 2 : 1);
+                            projectile.Calamity().TransformerTimer = Main.zenithWorld ? 10 : 90;
+                            int blobDamage = (int)Player.GetBestClassDamage().ApplyTo(45);
+                            int layer = (int)(Utils.GetLerpValue(0, 10, numOfBlobs + 1) + 0.9f);
                             Projectile.NewProjectileDirect(Player.GetSource_FromThis(), projectile.Center, projectile.velocity.SafeNormalize(Vector2.UnitX) * 16f, ModContent.ProjectileType<TransformerBlob>(), blobDamage, 0f, Player.whoAmI, layer, numOfBlobs + 1);
-                            Particle orb2 = new CustomPulse(projectile.Center, Vector2.Zero, Color.DodgerBlue, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.5f, 11);
-                            GeneralParticleHandler.SpawnParticle(orb2);
+                            
+                            if (Player.Calamity().transformerVisual)
+                            {
+                                Particle orb2 = new CustomPulse(projectile.Center, Vector2.Zero, Color.LightSkyBlue, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.5f, 11);
+                                GeneralParticleHandler.SpawnParticle(orb2);
 
-                            SoundStyle transform = new("CalamityMod/Sounds/Item/NullImpact");
-                            SoundEngine.PlaySound(transform with { Volume = 0.1f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) + numOfBlobs * 0.015f, MaxInstances = -1 }, projectile.Center);
-
-                            float topAngle = Utils.Remap(Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()], 0, 29, 360, 1080, true);
+                                SoundStyle transform = new("CalamityMod/Sounds/Item/NullImpact");
+                                SoundEngine.PlaySound(transform with { Volume = 0.1f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) + numOfBlobs * 0.015f, MaxInstances = -1 }, projectile.Center);
+                            }
 
                             float index = 1f;
                             foreach (Projectile p in Main.ActiveProjectiles)
@@ -1561,13 +1568,7 @@ namespace CalamityMod.CalPlayer
                                 float angleMax = MathHelper.ToRadians(360 * layer);
                                 if (numOfBlobs == 0)
                                     angleMax = 0f;
-                                if (Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] > 30)
-                                {
-                                    angleMax += MathHelper.ToRadians((Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] - 30) * 2.5f);
-                                }
-                                angleMax = angleMax > MathHelper.ToRadians(topAngle) ? MathHelper.ToRadians(topAngle) : angleMax; // More intuative than using a min function
-
-
+  
                                 if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                                 {
                                     float insanityValue = ((p.ai[1] % 10) + 1);

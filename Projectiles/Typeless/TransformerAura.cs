@@ -27,6 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
         public float fullSine = 1;
         public Vector2 squareRandomPos1;
         public Vector2 squareRandomPos2;
+        public float fullChargeMult = 1;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 1;
@@ -42,8 +43,8 @@ namespace CalamityMod.Projectiles.Typeless
             float rate = Main.GlobalTimeWrappedHourly * 5;
             List<Color> eColors = new List<Color>()
             {
-                Color.DodgerBlue,
-                Color.DeepSkyBlue
+                Color.LightSkyBlue,
+                Color.DodgerBlue
             };
 
             int colorIndex = (int)(rate / 2 % eColors.Count);
@@ -52,6 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
             bColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             Projectile.Center = Owner.MountedCenter;
+            fullChargeMult = MathHelper.Lerp(fullChargeMult, (Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] >= 30 ? 0 : 1), 0.033f);
 
             if (moddedOwner.transformerVisual && moddedOwner.transformer)
             {
@@ -87,23 +89,25 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D rTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/QuarterCircle").Value;
             Texture2D vTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRingThinLarge").Value;
             Texture2D bTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D b2Texture = ModContent.Request<Texture2D>("CalamityMod/Particles/Light").Value;
             Color drawColor = bColor;
             float deathLerp = (float)Math.Pow(Utils.GetLerpValue(10, 300, Projectile.timeLeft), 2);
 
-            float bScale2 = 0.75f;
-            Main.EntitySpriteDraw(bTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * deathLerp, 0, bTexture.Size() * 0.5f, bScale2 * rot2 * Projectile.scale * deathLerp, SpriteEffects.None, 0);
+            float bScale2 = 0.95f;
+            Main.EntitySpriteDraw(bTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * deathLerp, 0, bTexture.Size() * 0.5f, (bScale2 * rot2 * Projectile.scale * deathLerp) + 2.5f * (fullChargeMult - 1), SpriteEffects.None, 0);
 
-            for (int i = 0; i < 3; i++)
+            Main.EntitySpriteDraw(b2Texture, Owner.Center - Main.screenPosition, null, new Color(30, 30, 30) * deathLerp, Main.rand.NextFloat(-2, 2), b2Texture.Size() * 0.5f, bScale2 * Projectile.scale * deathLerp * 1.2f * rot2, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(b2Texture, Owner.Center - Main.screenPosition, null, Color.Black * deathLerp, Main.rand.NextFloat(-2, 2), b2Texture.Size() * 0.5f, bScale2 * Projectile.scale * deathLerp * 0.8f * rot2, SpriteEffects.None, 0);
+
+            for (int i = 0; i < 2; i++)
             {
-                float subsine = rot2;//MathHelper.Lerp(Math.Abs(fullSine), 0.3f, 0.5f);
+                float subsine = rot2;
                 float rot = (MathHelper.TwoPi * i / 3f) + Main.GlobalTimeWrappedHourly;
-                Main.EntitySpriteDraw(vTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * 0.05f * deathLerp, rot + MathHelper.ToRadians(-105), vTexture.Size() * 0.5f, new Vector2(1f, 0.97f) * 0.16f * deathLerp, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(vTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * 0.05f * deathLerp, rot * 2 + MathHelper.ToRadians(-105), vTexture.Size() * 0.5f, new Vector2(1f, 0.97f) * 0.157f * deathLerp, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(vTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * 0.08f * deathLerp, rot + MathHelper.ToRadians(-105), vTexture.Size() * 0.5f, new Vector2(1f, 0.96f) * 0.16f * deathLerp * fullChargeMult, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(vTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 } * 0.08f * deathLerp, rot * 2 + MathHelper.ToRadians(-105), vTexture.Size() * 0.5f, new Vector2(1f, 0.96f) * 0.157f * deathLerp * fullChargeMult, SpriteEffects.None, 0);
             }
-            //Main.EntitySpriteDraw(rTexture, Owner.Center - Main.screenPosition, null, drawColor with { A = 0 }, , rTexture.Size() * 0.5f, 0.04f * rot2 * Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanDamage() => false;

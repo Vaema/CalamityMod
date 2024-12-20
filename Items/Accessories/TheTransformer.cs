@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Weapons.Melee;
@@ -17,6 +18,11 @@ namespace CalamityMod.Items.Accessories
     public class TheTransformer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            list.IntegrateHotkey(CalamityKeybinds.TransformerHotKey);
+            list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
+        }
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 16));

@@ -74,7 +74,7 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
-            target.Calamity().IncreasedElectricityEffects_Transformer = transformer;
+            target.Calamity().IncreasedElectricityEffects_Unused = false;
 
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
@@ -190,7 +190,7 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
-            cgn.IncreasedElectricityEffects_Transformer = transformer;
+            cgn.IncreasedElectricityEffects_Unused = false;
 
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
