@@ -1157,6 +1157,7 @@ namespace CalamityMod.CalPlayer
         public bool weakBrimstoneFlames = false;
         public bool gsInferno = false;
         public bool astralInfection = false;
+        /// <summary> Plague debuff. </summary>
         public bool pFlames = false;
         public bool hFlames = false;
         public bool hInferno = false;
@@ -1182,14 +1183,18 @@ namespace CalamityMod.CalPlayer
         public bool nightwither = false;
         public bool voidfrost = false;
         public bool eutrophication = false;
-        public bool iCantBreathe = false; //Frozen Lungs debuff
+        /// <summary> Frozen Lungs debuff. </summary>
+        public bool iCantBreathe = false;
+        /// <summary> Searing Lava debuff. </summary>
         public bool cragsLava = false;
         public bool vaporfied = false;
         public bool banishingFire = false;
         public bool wither = false;
         public bool ManaBurn = false;
 
+        /// <summary> Counter variable used to prevent the player from being inflicted with another immobilizing debuff for a short time after being inflicted with one. </summary>
         public int ImmobilityDebuffImmunityTimer = 0;
+        /// <summary> Constant variable representing the time in which players cannot be inflicted with another immobilizing debuff, in frames. </summary>
         public const int ImmobilityDebuffImmunityTimerMax = 300;
 
         public const int SulphSeaWaterSafetyTime = 720;
@@ -1288,6 +1293,7 @@ namespace CalamityMod.CalPlayer
         #region Minion
         public bool wDroid = false;
         public bool resButterfly = false;
+        /// <summary> Staff of the Mechworm. </summary>
         public bool mWorm = false;
         public bool IceClasperBool = false;
         public bool magicHat = false;
@@ -1295,55 +1301,84 @@ namespace CalamityMod.CalPlayer
         public bool blackhawk = false;
         public bool cosmicViper = false;
         public bool CalamarisLament = false;
+        /// <summary> Entropy's Vigil. </summary>
         public bool cEyes = false;
+        /// <summary> Corroslime Staff. </summary>
         public bool cSlime = false;
+        /// <summary> Crimslime Staff. </summary>
         public bool cSlime2 = false;
+        /// <summary> Abandoned Slime Staff. </summary>
         public bool aSlime = false;
         public bool brittleStar = false;
         public bool aquaticStar = false;
+        /// <summary> Sun Spirit Staff. </summary>
         public bool SP = false;
         public bool dCreeper = false;
         public bool bClot = false;
         public bool eAxe = false;
         public bool endoCooper = false;
+        /// <summary> Vengeful Sun Staff. </summary>
         public bool SPG = false;
         public bool sirius = false;
+        /// <summary> Yharon's Kindle Staff. </summary>
         public bool aChicken = false;
         public bool cLamp = false;
+        /// <summary> Ethereal Subjugator. </summary>
         public bool pGuy = false;
         public bool sandnado = false;
         public bool PlantationSummon = false;
         public bool astralProbe = false;
+        /// <summary> Profaned Soul Artifact/Crystal guardians. </summary>
         public bool pSoulGuardians = false;
-        public bool cEnergy = false;
+        /// <summary> Counter variable used for healing the player by Profaned Soul Artifact's healer guardian. </summary>
         public int healCounter = 300;
+        /// <summary> Cosmic Immaterializer. </summary>
+        public bool cEnergy = false;
         public bool shellfish = false;
+        /// <summary> Enchanted Conch. </summary>
         public bool hCrab = false;
+        /// <summary> Heart of the Elements. </summary>
         public bool allWaifus = false;
+        /// <summary> Hearts of the Elements; however, the minion will not attack. </summary>
         public bool allWaifusVanity = false;
+        /// <summary> Silva armor's Silva Crystal. </summary>
         public bool sCrystal = false;
+        /// <summary> Elemental in a Bottle. </summary>
         public bool sWaifu = false;
+        /// <summary> Rare Elemental in a Bottle. </summary>
         public bool dWaifu = false;
+        /// <summary> Eye of the Storm. </summary>
         public bool cWaifu = false;
+        /// <summary> Rose Stone. </summary>
         public bool bWaifu = false;
+        /// <summary> Pearl of Enthrallment. </summary>
         public bool slWaifu = false;
         public bool fClump = false;
+        /// <summary> Demonshade armor's Red Devil. </summary>
         public bool rDevil = false;
+        /// <summary> Aerospec armor's Valkyrie. </summary>
         public bool aValkyrie = false;
         public bool apexShark = false;
         public bool gastricBelcher = false;
         public bool hauntedDishes = false;
         public bool stormjaw = false;
+        /// <summary> Statigel armor's Baby Paladin. </summary>
         public bool sGod = false;
         public bool victideSnail = false;
+        /// <summary> Hydrothermic armor's Vent. </summary>
         public bool cSpirit = false;
+        /// <summary> Reaver armor's Reaver Orb. </summary>
         public bool rOrb = false;
+        /// <summary> Daedalus armor's Daedalus Crystal. </summary>
         public bool dCrystal = false;
         public bool endoHydra = false;
+        /// <summary> Corvid Harbinger Staff. </summary>
         public bool powerfulRaven = false;
+        /// <summary> Dragonblood Disgorger. </summary>
         public bool dragonFamily = false;
         public bool providenceStabber = false;
         public bool saros = false;
+        /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
         public bool igneousExaltation = false;
         public bool GlacialEmbrace = false;
