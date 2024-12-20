@@ -251,7 +251,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (nCore && !Player.HasCooldown(Cooldowns.NebulousCore.ID))
+            if (nebulousCore && !Player.HasCooldown(Cooldowns.NebulousCore.ID))
             {
                 SoundEngine.PlaySound(SoundID.Item67, Player.Center);
 

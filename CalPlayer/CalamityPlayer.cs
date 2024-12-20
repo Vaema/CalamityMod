@@ -155,7 +155,10 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool blazingCursorVisuals = false;
         public float blazingMouseAuraFade = 0f;
-        /// <summary> General variable used for controlling how much screenshake this player is experiencing. Smoothly scales down over time. </summary>
+        /// <summary>
+        /// General variable used for controlling the strength of screenshake this player is experiencing. Measured in pixels of offset that can be applied to the screen.<br/>
+        /// When setting this, be sure to only set it if its current value is less than the value to set, to prevent overriding an ongoing stronger screenshake with a weaker one.
+        /// </summary>
         public float GeneralScreenShakePower = 0f;
         /// <summary> Set to true when this player receives the Brimstone Locus from speaking to the Brimstone Witch for the first time. </summary>
         public bool GivenBrimstoneLocus = false;
@@ -472,7 +475,6 @@ namespace CalamityMod.CalPlayer
         public bool bearPet = false;
         public bool kendra = false;
         public bool trashMan = false;
-        public int trashManChest = -1;
         public bool astrophage = false;
         public bool flakPet = false;
         public bool babyGhostBell = false;
@@ -639,16 +641,16 @@ namespace CalamityMod.CalPlayer
         public bool spawnedPunchCard = false;
         /// <summary> If true, the player has consumed Celestial Onion. </summary>
         public bool extraAccessoryML = false;
+        /// <summary> If true, the player has consumed Comet Shard. </summary>
+        public bool cShard = false;
         /// <summary> If true, the player has consumed Ethereal Core. </summary>
         public bool eCore = false;
         /// <summary> If true, the player has consumed Phantom Heart. </summary>
         public bool pHeart = false;
-        /// <summary> If true, the player has consumed Comet Shard. </summary>
-        public bool cShard = false;
-        /// <summary> If true, the player has consumed Miracle Fruit. </summary>
-        public bool mFruit = false;
         /// <summary> If true, the player has consumed Sanguine Tangerine. </summary>
         public bool sTangerine = false;
+        /// <summary> If true, the player has consumed Miracle Fruit. </summary>
+        public bool mFruit = false;
         /// <summary> If true, the player has consumed Tainted Cloudberry. </summary>
         public bool tCloudberry = false;
         /// <summary> If true, the player has consumed Sacred Strawberry. </summary>
@@ -731,7 +733,7 @@ namespace CalamityMod.CalPlayer
         public int statisTimer = 0;
         public bool nucleogenesis = false;
         public bool nuclearFuelRod = false;
-        public bool nCore = false;
+        public bool nebulousCore = false;
         public bool deepDiver = false;
         public bool abyssalDivingSuitPlates = false;
         public int abyssalDivingSuitPlateHits = 0;
@@ -938,11 +940,12 @@ namespace CalamityMod.CalPlayer
         /// <summary>
         /// Controls the state of Phantomic Artifact's Phantomic Regen boost.<br/>
         /// When the heart is spawned, this variable is set to 1000. When the heart is touched, it is set to 720 and decrements every frame.<br/>
-        /// Life regeneration is increased while between 600 and 720, with a 10 second cooldown afterwards when below 600.
+        /// Life regeneration is increased while between 600 and 720, with a 10 second cooldown afterwards represented by being below 600.
         /// </summary>
         public int phantomicHeartRegen = 0;
         public bool silvaWings = false;
         public int silvaWingsLifeRegenTimer = 0;
+        /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Harpy Wings, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool MiniSwarmers = false;
@@ -1082,7 +1085,8 @@ namespace CalamityMod.CalPlayer
         public int silvaMageCooldown = 0;
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
-        public static int silvaReviveDuration = 300;
+        /// <summary> Constant variable representing the duration of Silva armor's revive, in frames. </summary>
+        public const int silvaReviveDuration = 300;
         public int silvaCountdown = silvaReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
@@ -1098,7 +1102,7 @@ namespace CalamityMod.CalPlayer
         public bool daedalusCrystal = false;
         /// <summary> Hydrothermic armor's summoner set bonus minion. </summary>
         public bool chaosSpirit = false;
-        /// <summary> Demonshade armor's summoner set bonus minion. </summary>
+        /// <summary> Demonshade armor's set bonus minion. </summary>
         public bool redDevil = false;
         public bool GemTechSet = false;
         /// <summary> Calamity's Cobalt armor set bonus; increases damage and crit chance based on how fast the player is moving. </summary>
@@ -1209,8 +1213,11 @@ namespace CalamityMod.CalPlayer
         public bool corrEffigy = false;
         public bool crimEffigy = false;
         public bool decayEffigy = false;
+        /// <summary> Reaver Rage buff. </summary>
         public bool rRage = false;
+        /// <summary> Tarra Life buff. </summary>
         public bool tRegen = false;
+        /// <summary> Empyrean Wrath buff. </summary>
         public bool xWrath = false;
         public bool graxDefense = false;
         public bool encased = false;
@@ -1270,7 +1277,12 @@ namespace CalamityMod.CalPlayer
         public bool pinkCandle = false;
         public double pinkCandleHealFraction = 0D;
         public bool yellowCandle = false;
+        /// <summary> If true, the player has consumed Odd Mushroom. Controls drawing its rainbow fake clones of NPCs and projectiles. </summary>
         public bool trippy = false;
+        /// <summary>
+        /// Used to control the number and position of Odd Mushroom's fake clones. There are three levels of severity.<br/>
+        /// The first draws 4 clones in diagonals. The second draws 12 clones, 4 on diagonals and the other 8 surrounding them. The third draws 16 clones, arranged entirely around the player.
+        /// </summary>
         public int trippyLevel = 1;
         public bool amidiasBlessing = false;
         public bool bloodfinBoost = false;
@@ -1996,7 +2008,7 @@ namespace CalamityMod.CalPlayer
             dodgeScarf = false;
             evasionScarf = false;
 
-            nCore = false;
+            nebulousCore = false;
 
             godSlayer = false;
             godSlayerDamage = false;

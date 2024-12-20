@@ -120,13 +120,30 @@ namespace CalamityMod.NPCs
 
         public int KillTime { get; set; } = 0;
 
-        // Debuff Vulnerabilities
-        // null = neutral, true = vulnerable, false = resistant
-        // neutral = 100% effective, vulnerable = 400% effective DoT and 200% effective non-DoT effects (within reason, some aren't exactly 200% more effective), resistant = 50% effective
+        /// <summary>
+        /// Controls the effectiveness of heat debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToHeat = null;
+        /// <summary>
+        /// Controls the effectiveness of cold debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToCold = null;
+        /// <summary>
+        /// Controls the effectiveness of sickness debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToSickness = null;
+        /// <summary>
+        /// Controls the effectiveness of electricity debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToElectricity = null;
+        /// <summary>
+        /// Controls the effectiveness of water debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToWater = null;
 
         public const double BaseDoTDamageMult = 1D;
@@ -154,11 +171,11 @@ namespace CalamityMod.NPCs
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
-        /// <summary> Constant representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
+        /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
         /// <summary>
-        /// Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Variable for worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
         /// Currently only used by DoG.
         /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
