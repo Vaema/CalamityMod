@@ -298,6 +298,7 @@ namespace CalamityMod.Items
                 { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
                 { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
                 { ItemID.LavaSkull, Do(DefenseExact(4)) }, // Magma Skull
+                { ItemID.MoltenCharm, Do(DefenseExact(4)) }, //Magma Charm
                 { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
                 { ItemID.ObsidianShield, Do(DefenseDelta(+4)) }, // 6 total
                 { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) }, // 2 total
