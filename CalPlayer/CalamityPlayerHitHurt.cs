@@ -24,6 +24,7 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.Other;
@@ -702,6 +703,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By NPC
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
         {
+            if (npc.Calamity().antlionCloudDebuffTimer > 0)
+                modifiers.SourceDamage *= AntlionSkewer.CloudDamageDebuffMult;
+
             // Enemies deal less contact damage while sick, due to being weakened.
             if (npc.poisoned)
             {
