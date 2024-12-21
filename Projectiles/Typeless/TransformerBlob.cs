@@ -1,15 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -33,7 +29,7 @@ namespace CalamityMod.Projectiles.Typeless
         public float rotSpeed = 1f;
         public int savedFrame = 0;
         public bool powered => Projectile.localAI[0] == 5;
-        public int poweredTimerMax => (int)(140 + (MathHelper.Clamp(Utils.Remap(Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()], 1, 30, 7, 6, false), 3, 7)) * Projectile.ai[1]);
+        public int poweredTimerMax = 140;
         public int poweredTimer = -1;
         public Color cl1 = Color.LightSkyBlue;
         public Color cl2 = Color.DodgerBlue;
@@ -64,7 +60,8 @@ namespace CalamityMod.Projectiles.Typeless
             Lighting.AddLight(Projectile.Center, cl1.ToVector3() * 0.5f);
 
             sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (Projectile.ai[1] % 2 == 0 ? 10 : 6) / MathHelper.Pi) * 0.4f;
-
+            if (!powered)
+                poweredTimerMax = (int)(140 + (MathHelper.Clamp(Utils.Remap(Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()], 1, 30, 7, 6, false), 1, 120)) * Projectile.ai[1]);
             if (time == 0)
             { 
                 rotationAngle = Projectile.ai[2];
@@ -75,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
                 poweredTimer = poweredTimerMax;
                 savedFrame = Projectile.frame;
             }
-
+            
             if (time >= 40)
             {
                 Projectile.frameCounter++;

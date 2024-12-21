@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -1521,18 +1520,7 @@ namespace CalamityMod.CalPlayer
             if (transformer && Player.Calamity().transformerCooldown == 0) // The code for this acursed thing took much... MUCH, too long to make
             {
                 float zoneSize = 150;
-                // This is a visualizer used to easily see the area
-                /*
-                for (int i = 0; i < 13; i++)
-                {
-                    Vector2 vel1 = new Vector2(zoneSize, 0).RotatedByRandom(100);
-                    Vector2 vel2 = new Vector2(zoneSize, 0).RotatedByRandom(100);
-                    Particle spark2 = new CustomSpark(Player.Center + vel1, -vel1 * 0.01f, "CalamityMod/Particles/GlowSquareParticle", false, 8, Main.rand.NextFloat(0.3f, 0.5f), Color.Cyan, new Vector2(2f, 1f), true, false, 0, false, false, -1.5f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    Particle spark = new CustomSpark(Player.Center + vel2, -vel2 * 0.01f, "CalamityMod/Particles/GlowSquareParticle", false, 8, Main.rand.NextFloat(0.3f, 0.5f), Color.Cyan, new Vector2(2f, 1f), true, false, 0, false, false, -1.5f);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                */
+                // GFB changes are that projectiles slow and have lifetime decay when in the aura, also they can add charges way faster than normal, deal more damage the more you collect, and the number of blobs is uncapped
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
