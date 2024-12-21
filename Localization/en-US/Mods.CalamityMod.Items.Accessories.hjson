@@ -1875,8 +1875,7 @@ TheTransformer: {
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle can contain up to 30 globs at once
 		Press [KEY] to transform all globs into needles and launch them at your cursor
-		[c/1FFBFF:'What you hold now is an unstable blueprint of a substance far more potent.] REMOVE DRAEDON
-		[c/1FFBFF:Though, perhaps the material instability of this matter can still be of service.']  REMOVE DRAEDON
+		'It looks cool, but you're lucky it doesn't transform you'
 		'''
 	TooltipGFB:
 		'''
