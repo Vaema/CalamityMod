@@ -1875,7 +1875,7 @@ TheTransformer: {
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle can contain up to 30 globs at once
 		Press [KEY] to transform all globs into needles and launch them at your cursor
-		'It looks cool, but you're lucky it doesn't transform you'
+		'How did this come out of the junk you cobbled together? You're lucky it doesn't transform you'
 		'''
 	TooltipGFB:
 		'''
