@@ -9,6 +9,8 @@ namespace CalamityMod.Projectiles.Magic
     public class WaywasherProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public ref float time => ref Projectile.ai[0];
         public int dir = 0;
         public bool returning = false;
