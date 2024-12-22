@@ -102,6 +102,10 @@ namespace CalamityMod.Buffs
             {
                 player.GetDamage<GenericDamageClass>() -= 0.2f;
             }
+            else if (type == BuffID.Werewolf)
+            {
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
+            }
         }
 
         public override void Update(int type, NPC npc, ref int buffIndex)

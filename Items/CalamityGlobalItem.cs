@@ -1369,30 +1369,9 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
-            if (item.type == ItemID.CelestialStone)
+            if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
                 player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-            }
-
-            if (item.type == ItemID.CelestialShell)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            //Moon Charm and Moon Shell melee speed removal
-
-            if (item.type == ItemID.MoonCharm)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            if (item.type == ItemID.MoonShell)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
             }
 
             if (item.type == ItemID.TerrasparkBoots)

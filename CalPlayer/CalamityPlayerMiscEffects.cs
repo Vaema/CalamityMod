@@ -2182,7 +2182,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Vortex Armor nerf
-            if (Player.vortexStealthActive)
+            if (Player.vortexStealthActive && Player.ActiveItem().type != ItemID.PsychoKnife)
             {
                 Player.GetDamage<RangedDamageClass>() -= (1f - Player.stealth) * 0.4f; // Change 80 to 40
                 Player.GetCritChance<RangedDamageClass>() -= (int)((1f - Player.stealth) * 5f); // Change 20 to 15
