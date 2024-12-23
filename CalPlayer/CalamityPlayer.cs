@@ -967,6 +967,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Armor Set
+        public int ArmorSetBonusKeyHeldTimer;
         /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if you avoid damage for 2 seconds. </summary>
         public bool silverMedkit = false;
         public int silverMedkitTimer = 0;
@@ -3298,182 +3299,16 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item34, Player.Center);
             }
 
-            // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed)
+                PlayerLoader.ArmorSetBonusActivated(Player);
+
+            if (CalamityKeybinds.ArmorSetBonusHotKey.Current)
             {
-                if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
-                {
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        if (brimflameFrenzy)
-                        {
-                            brimflameFrenzy = false;
-                            Player.ClearBuff(BuffType<BrimflameFrenzyBuff>());
-                        }
-                        else
-                        {
-                            brimflameFrenzy = true;
-                            Player.AddBuff(BuffType<BrimflameFrenzyBuff>(), 10 * 60, true);
-                            SoundEngine.PlaySound(BrimflameScowl.ActivationSound, Player.Center);
-                            for (int i = 0; i < 36; i++)
-                            {
-                                Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
-                                brimDust.velocity *= 3f;
-                                brimDust.scale *= 1.15f;
-                            }
-                            int dustAmt = 36;
-                            for (int j = 0; j < dustAmt; j++)
-                            {
-                                Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
-                                dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
-                                Vector2 dustVelocity = dustRotation - Player.Center;
-                                Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
-                                brimDust2.noGravity = true;
-                                brimDust2.noLight = true;
-                                brimDust2.velocity = dustVelocity;
-                            }
-                        }
-                    }
-                }
-                if (tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID) && !tarragonCloak)
-                {
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        Player.AddBuff(BuffType<Buffs.StatBuffs.TarragonCloak>(), 602, false);
-                    }
-                }
-                if (bloodflareRanged && !Player.HasCooldown(BloodflareRangedSet.ID))
-                {
-                    if (Player.whoAmI == Main.myPlayer)
-                        Player.AddCooldown(BloodflareRangedSet.ID, 1800);
-
-                    SoundEngine.PlaySound(BloodflareHeadRanged.ActivationSound, Player.Center);
-                    for (int d = 0; d < 64; d++)
-                    {
-                        Dust dust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Necroplasm, 0f, 0f, 0, default, 1f);
-                        dust.velocity *= 3f;
-                        dust.scale *= 1.15f;
-                    }
-                    int dustAmt = 36;
-                    for (int d = 0; d < dustAmt; d++)
-                    {
-                        Vector2 source = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
-                        source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
-                        Vector2 dustVel = source - Player.Center;
-                        Dust phanto = Dust.NewDustDirect(source + dustVel, 0, 0, (int)CalamityDusts.Necroplasm, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.4f);
-                        phanto.noGravity = true;
-                        phanto.noLight = true;
-                        phanto.velocity = dustVel;
-                    }
-                    float spread = 45f * 0.0174f;
-                    double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
-                    double deltaAngle = spread / 8f;
-                    double offsetAngle;
-
-                    int damage = (int)(Player.GetTotalDamage<RangedDamageClass>().ApplyTo(300f));
-
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        var source = Player.GetSource_Misc("1");
-                        for (int i = 0; i < 16; i++)
-                        {
-                            float ai1 = Main.rand.NextFloat() + 0.5f;
-                            Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
-                            int soul = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
-                            if (soul.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[soul].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-                if (omegaBlueSet && !Player.HasCooldown(OmegaBlue.ID))
-                {
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        Player.AddBuff(BuffType<AbyssalMadness>(), 300, false);
-                    }
-                    Player.AddCooldown(OmegaBlue.ID, 1800);
-                    SoundEngine.PlaySound(OmegaBlueHelmet.ActivationSound, Player.Center);
-                    for (int i = 0; i < 66; i++)
-                    {
-                        Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 2.6f);
-                        dust.noGravity = true;
-                        dust.noLight = true;
-                        dust.fadeIn = 1f;
-                        dust.velocity *= 6.6f;
-                    }
-                }
-                if (dsSetBonus)
-                {
-                    SoundEngine.PlaySound(DemonshadeHelm.ActivationSound, Player.Center);
-                    for (int i = 0; i < 36; i++)
-                    {
-                        Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
-                        brimDust.velocity *= 3f;
-                        brimDust.scale *= 1.15f;
-                    }
-                    int dustAmt = 36;
-                    for (int j = 0; j < dustAmt; j++)
-                    {
-                        Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
-                        dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
-                        Vector2 dustVelocity = dustRotation - Player.Center;
-                        Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
-                        brimDust2.noGravity = true;
-                        brimDust2.noLight = true;
-                        brimDust2.velocity = dustVelocity;
-                    }
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        Player.AddBuff(BuffType<Enraged>(), 600, false);
-                    }
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        foreach (NPC npc in Main.ActiveNPCs)
-                        {
-                            if (!npc.friendly && !npc.dontTakeDamage && Vector2.Distance(Player.Center, npc.Center) <= 3000f)
-                                npc.AddBuff(BuffType<Enraged>(), 600, false);
-                        }
-                    }
-                }
-                if (plagueReaper && !Player.HasCooldown(PlagueBlackout.ID))
-                {
-                    SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
-                    Player.AddCooldown(PlagueBlackout.ID, 1800);
-                }
-                if (forbiddenCirclet && forbiddenCooldown <= 0)
-                {
-                    forbiddenCooldown = 45;
-                    int stormMana = (int)(ForbiddenCirclet.manaCost * Player.manaCost);
-                    if (Player.statMana < stormMana)
-                    {
-                        if (Player.manaFlower)
-                        {
-                            Player.QuickMana();
-                        }
-                    }
-                    if (Player.statMana >= stormMana && !Player.silence)
-                    {
-                        var source = Player.GetSource_Misc("1");
-                        Player.manaRegenDelay = (int)Player.maxRegenDelay;
-                        Player.statMana -= stormMana;
-
-                        // To compute Forbidden Circlet tornado damage, create a fake stat modifier on the spot which combines both classes.
-                        StatModifier forbidden = Player.GetTotalDamage<SummonDamageClass>().CombineWith(Player.GetDamage<RogueDamageClass>());
-                        int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.tornadoBaseDmg);
-
-                        float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.tornadoBaseKB);
-
-                        if (Player.whoAmI == Main.myPlayer)
-                        {
-                            int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
-                            if (mark.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[mark].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-                if (prismaticSet && !Player.HasCooldown(PrismaticLaser.ID) && prismaticLasers <= 0)
-                    prismaticLasers = CalamityUtils.SecondsToFrames(35f);
+                ArmorSetBonusKeyHeldTimer++;
+                PlayerLoader.ArmorSetBonusHeld(Player, ArmorSetBonusKeyHeldTimer);
             }
+            else
+                ArmorSetBonusKeyHeldTimer = 0;
 
             if (CalamityKeybinds.AccessoryParryHotKey.JustPressed)
             {
@@ -3666,6 +3501,178 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+        }
+
+        public override void ArmorSetBonusActivated()
+        {
+            // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
+            if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
+            {
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    if (brimflameFrenzy)
+                    {
+                        brimflameFrenzy = false;
+                        Player.ClearBuff(BuffType<BrimflameFrenzyBuff>());
+                    }
+                    else
+                    {
+                        brimflameFrenzy = true;
+                        Player.AddBuff(BuffType<BrimflameFrenzyBuff>(), 10 * 60, true);
+                        SoundEngine.PlaySound(BrimflameScowl.ActivationSound, Player.Center);
+                        for (int i = 0; i < 36; i++)
+                        {
+                            Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
+                            brimDust.velocity *= 3f;
+                            brimDust.scale *= 1.15f;
+                        }
+                        int dustAmt = 36;
+                        for (int j = 0; j < dustAmt; j++)
+                        {
+                            Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
+                            dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
+                            Vector2 dustVelocity = dustRotation - Player.Center;
+                            Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
+                            brimDust2.noGravity = true;
+                            brimDust2.noLight = true;
+                            brimDust2.velocity = dustVelocity;
+                        }
+                    }
+                }
+            }
+            if (tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID) && !tarragonCloak)
+            {
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    Player.AddBuff(BuffType<Buffs.StatBuffs.TarragonCloak>(), 602, false);
+                }
+            }
+            if (bloodflareRanged && !Player.HasCooldown(BloodflareRangedSet.ID))
+            {
+                if (Player.whoAmI == Main.myPlayer)
+                    Player.AddCooldown(BloodflareRangedSet.ID, 1800);
+
+                SoundEngine.PlaySound(BloodflareHeadRanged.ActivationSound, Player.Center);
+                for (int d = 0; d < 64; d++)
+                {
+                    Dust dust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Necroplasm, 0f, 0f, 0, default, 1f);
+                    dust.velocity *= 3f;
+                    dust.scale *= 1.15f;
+                }
+                int dustAmt = 36;
+                for (int d = 0; d < dustAmt; d++)
+                {
+                    Vector2 source = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
+                    source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
+                    Vector2 dustVel = source - Player.Center;
+                    Dust phanto = Dust.NewDustDirect(source + dustVel, 0, 0, (int)CalamityDusts.Necroplasm, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.4f);
+                    phanto.noGravity = true;
+                    phanto.noLight = true;
+                    phanto.velocity = dustVel;
+                }
+
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    var source = Player.GetSource_Misc("1");
+                    int damage = (int)(Player.GetTotalDamage<RangedDamageClass>().ApplyTo(300f));
+                    for (int i = 0; i < 16; i++)
+                    {
+                        float ai1 = Main.rand.NextFloat() + 0.5f;
+                        Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                        int soul = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileType<BloodflareSoul>(), damage, 0f, Player.whoAmI, 0f, ai1);
+                        if (soul.WithinBounds(Main.maxProjectiles))
+                            Main.projectile[soul].DamageType = DamageClass.Generic;
+                    }
+                }
+            }
+            if (omegaBlueSet && !Player.HasCooldown(OmegaBlue.ID))
+            {
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    Player.AddBuff(BuffType<AbyssalMadness>(), 300, false);
+                }
+                Player.AddCooldown(OmegaBlue.ID, 1800);
+                SoundEngine.PlaySound(OmegaBlueHelmet.ActivationSound, Player.Center);
+                for (int i = 0; i < 66; i++)
+                {
+                    Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 2.6f);
+                    dust.noGravity = true;
+                    dust.noLight = true;
+                    dust.fadeIn = 1f;
+                    dust.velocity *= 6.6f;
+                }
+            }
+            if (dsSetBonus)
+            {
+                SoundEngine.PlaySound(DemonshadeHelm.ActivationSound, Player.Center);
+                for (int i = 0; i < 36; i++)
+                {
+                    Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
+                    brimDust.velocity *= 3f;
+                    brimDust.scale *= 1.15f;
+                }
+                int dustAmt = 36;
+                for (int j = 0; j < dustAmt; j++)
+                {
+                    Vector2 dustRotation = Vector2.Normalize(Player.velocity) * new Vector2((float)Player.width / 2f, (float)Player.height) * 0.75f;
+                    dustRotation = dustRotation.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Player.Center;
+                    Vector2 dustVelocity = dustRotation - Player.Center;
+                    Dust brimDust2 = Dust.NewDustDirect(dustRotation + dustVelocity, 0, 0, (int)CalamityDusts.Brimstone, dustVelocity.X * 1.5f, dustVelocity.Y * 1.5f, 100, default, 1.4f);
+                    brimDust2.noGravity = true;
+                    brimDust2.noLight = true;
+                    brimDust2.velocity = dustVelocity;
+                }
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    Player.AddBuff(BuffType<Enraged>(), 600, false);
+                }
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    foreach (NPC npc in Main.ActiveNPCs)
+                    {
+                        if (!npc.friendly && !npc.dontTakeDamage && Vector2.Distance(Player.Center, npc.Center) <= 3000f)
+                            npc.AddBuff(BuffType<Enraged>(), 600, false);
+                    }
+                }
+            }
+            if (plagueReaper && !Player.HasCooldown(PlagueBlackout.ID))
+            {
+                SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
+                Player.AddCooldown(PlagueBlackout.ID, 1800);
+            }
+            if (forbiddenCirclet && forbiddenCooldown <= 0)
+            {
+                forbiddenCooldown = 45;
+                int stormMana = (int)(ForbiddenCirclet.manaCost * Player.manaCost);
+                if (Player.statMana < stormMana)
+                {
+                    if (Player.manaFlower)
+                    {
+                        Player.QuickMana();
+                    }
+                }
+                if (Player.statMana >= stormMana && !Player.silence)
+                {
+                    var source = Player.GetSource_Misc("1");
+                    Player.manaRegenDelay = (int)Player.maxRegenDelay;
+                    Player.statMana -= stormMana;
+
+                    // To compute Forbidden Circlet tornado damage, create a fake stat modifier on the spot which combines both classes.
+                    StatModifier forbidden = Player.GetTotalDamage<SummonDamageClass>().CombineWith(Player.GetDamage<RogueDamageClass>());
+                    int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.tornadoBaseDmg);
+
+                    float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.tornadoBaseKB);
+
+                    if (Player.whoAmI == Main.myPlayer)
+                    {
+                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
+                        if (mark.WithinBounds(Main.maxProjectiles))
+                            Main.projectile[mark].DamageType = DamageClass.Generic;
+                    }
+                }
+            }
+            if (prismaticSet && !Player.HasCooldown(PrismaticLaser.ID) && prismaticLasers <= 0)
+                prismaticLasers = CalamityUtils.SecondsToFrames(35f);
         }
         #endregion
 
