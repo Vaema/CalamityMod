@@ -3300,7 +3300,21 @@ namespace CalamityMod.CalPlayer
             }
 
             if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed)
+            {
                 PlayerLoader.ArmorSetBonusActivated(Player);
+
+                // Activate vanilla set bonuses
+                if (Player.setVortex && !Player.mount.Active)
+                    Player.vortexStealthActive = !Player.vortexStealthActive;
+
+                if (Player.setForbidden)
+                {
+                    Player.MinionRestTargetAim();
+
+                    if (!Player.setForbiddenCooldownLocked)
+                        Player.CommandForbiddenStorm();
+                }
+            }
 
             if (CalamityKeybinds.ArmorSetBonusHotKey.Current)
             {
