@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
