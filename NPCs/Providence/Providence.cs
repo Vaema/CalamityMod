@@ -366,7 +366,7 @@ namespace CalamityMod.NPCs.Providence
             bool getFuckedAI = Main.zenithWorld;
             if (getFuckedAI)
                 NPC.localAI[1] = (float)BossMode.Rainbow;
-            else if (hasBeenGivenFullPower) // Enraged behavior
+            else if (hasBeenGivenFullPower || bossRush) // Enraged behavior
                 NPC.localAI[1] = (float)BossMode.Enraged;
             else
                 NPC.localAI[1] = (float)BossMode.Normal;
@@ -2174,7 +2174,8 @@ namespace CalamityMod.NPCs.Providence
                 bool spawnAnimation = NPC.Calamity().newAI[3] < spawnAnimationTime;
 
                 // Bloom circle effect should only appear on spawn animation and not enrage animation, since you can't see it
-                if (spawnAnimation && NPC.localAI[1] == (float)BossMode.Normal)
+                // Okay it should also appear in Boss Rush as well
+                if (spawnAnimation && (NPC.localAI[1] == (float)BossMode.Normal || BossRushEvent.BossRushActive))
                 {
                     Asset<Texture2D> orbTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
                     float sc = CalamityUtils.CircInEasing((float)NPC.Calamity().newAI[3] / (float)spawnAnimationTime, 1);
