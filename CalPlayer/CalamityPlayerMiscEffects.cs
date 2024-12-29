@@ -1526,8 +1526,11 @@ namespace CalamityMod.CalPlayer
                     Projectile projectile = Main.projectile[x];
                     if (Main.zenithWorld && Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile)
                     {
-                        projectile.velocity *= 0.9f;
-                        projectile.timeLeft = (int)(projectile.timeLeft * 0.92f);
+                        projectile.velocity = Vector2.Lerp(projectile.velocity, Utils.DirectionTo(Player.Center, projectile.Center) * 4, Utils.GetLerpValue(300, 230, projectile.timeLeft, true));
+                        projectile.timeLeft = (int)MathHelper.Lerp(projectile.timeLeft, 0, 0.25f);
+                        if (projectile.damage > 1)
+                            projectile.damage = (int)(projectile.damage * 0.85f);
+                        projectile.friendly = true;
                     }
                     if (Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile && projectile.Calamity().TransformerTimer == 0 && transformerDelay == 0)
                     {

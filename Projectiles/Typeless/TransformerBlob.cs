@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Typeless
         public CalamityPlayer moddedOwner => Owner.Calamity();
         private float radius = 25f;
         public bool visuals => moddedOwner.transformerVisual;
-        public float visualMult => (!visuals && !powered) ? 0.2f : 1;
+        public float visualMult => (!visuals && !powered) ? 0.2f : visuals ? 1 : 0.4f;
         public ref float layer => ref Projectile.ai[0];
         public bool canDamage = false;
         public float speed = 250;
@@ -111,6 +111,8 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (poweredTimer == 1)
                 {
+                    if (visuals)
+                        Owner.Calamity().GeneralScreenShakePower = 3.5f;
                     Projectile.numHits = 0;
                     Projectile.velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 12;
                     Projectile.extraUpdates = 8;
@@ -250,14 +252,11 @@ namespace CalamityMod.Projectiles.Typeless
             }
             Main.EntitySpriteDraw(orbTexture, Projectile.Center - Main.screenPosition, frame, Color.White * visualMult, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-            if (true)
+            for (int i = 0; i < 10; i++)
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    Color auraColor = cl1 with { A = 0 } * (powered ? (float)Math.Pow(Utils.GetLerpValue(poweredTimerMax, 20, poweredTimer, true), 3) : sine) * 0.6f * visualMult;
-                    Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 4;
-                    Main.EntitySpriteDraw(orbTexture, Projectile.Center - Main.screenPosition + drawOffset, frame, auraColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None);
-                }
+                Color auraColor = cl1 with { A = 0 } * (powered ? (float)Math.Pow(Utils.GetLerpValue(poweredTimerMax, 20, poweredTimer, true), 3) : sine) * 0.6f * visualMult;
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 4;
+                Main.EntitySpriteDraw(orbTexture, Projectile.Center - Main.screenPosition + drawOffset, frame, auraColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None);
             }
             return false;
         }
