@@ -148,9 +148,6 @@ namespace CalamityMod.Balancing
             // 40% resist to Cryophobia.
             NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<CryoBlast>()))));
 
-            // 40% resist to SHPC.
-            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<SHPExplosion>()))));
-
             // 30% resist to Meowthrower.
             NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
 
