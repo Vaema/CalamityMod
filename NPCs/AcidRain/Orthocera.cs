@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.AcidRain
             get => NPC.ai[3] == 1f;
             set
             {
-                if (Main.netMode == NetmodeID.Server && value != PerformingJump)
+                if (Main.dedServ && value != PerformingJump)
                     NPC.netUpdate = true;
                 NPC.ai[3] = value.ToInt();
             }
@@ -255,7 +255,7 @@ namespace CalamityMod.NPCs.AcidRain
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OrthoceraGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OrthoceraGore2").Type, NPC.scale);

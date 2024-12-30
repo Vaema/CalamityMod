@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.

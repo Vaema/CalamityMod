@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust2.velocity *= 2f;
                 dust2.noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int index1 = 0; index1 < 2; ++index1)
                 {

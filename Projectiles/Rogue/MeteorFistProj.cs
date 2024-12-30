@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.dust[boomDust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 source = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
                 for (int g = 1; g <= 3; g++)

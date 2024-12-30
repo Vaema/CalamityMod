@@ -60,7 +60,7 @@ namespace CalamityMod.FluidSimulation
         {
             get
             {
-                if (Main.netMode != NetmodeID.Server && basicShader is null)
+                if (!Main.dedServ && basicShader is null)
                 {
                     basicShader = new BasicEffect(Main.instance.GraphicsDevice)
                     {
@@ -231,7 +231,7 @@ namespace CalamityMod.FluidSimulation
         {
             // Everything here involves heavy manipulation of render targets to work. Doing any of that on the server
             // would certainly result in a crash due to a lack of a graphics device.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             if (!ShouldUpdate)

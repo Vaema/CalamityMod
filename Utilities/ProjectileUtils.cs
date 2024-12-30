@@ -984,7 +984,7 @@ PostWallBlastLoop:;
             }
 
             // Smoke, which counts as a Gore
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = projectile.Center;
                 int goreAmt = 3;

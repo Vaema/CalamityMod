@@ -90,7 +90,7 @@ namespace CalamityMod.World
                     WorldGen.SquareTileFrame(x, y);
 
                     // Inform all clients of the tile change.
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendTileSquare(-1, x, y);
                 }
             }

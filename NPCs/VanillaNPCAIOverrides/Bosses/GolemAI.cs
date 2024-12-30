@@ -108,7 +108,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.tile[j, k].TileType == TileID.Torches)
                         {
                             Main.tile[j, k].Get<TileWallWireStateData>().HasTile = false;
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, j, k);
                         }
                     }
@@ -488,7 +488,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Dust dust = Main.dust[fallDust];
                             dust.velocity *= 0.2f;
                         }
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             int fallGore = Gore.NewGore(npc.GetSource_FromAI(), new Vector2(i - 20, npc.position.Y + npc.height - 8f), default, Main.rand.Next(61, 64), 1f);
                             Gore gore = Main.gore[fallGore];
@@ -863,7 +863,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.tile[j, k].TileType == TileID.Torches)
                             {
                                 Main.tile[j, k].Get<TileWallWireStateData>().HasTile = false;
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendTileSquare(-1, j, k);
                             }
                         }
@@ -1625,7 +1625,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.tile[j, k].TileType == TileID.Torches)
                         {
                             Main.tile[j, k].Get<TileWallWireStateData>().HasTile = false;
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, j, k);
                         }
                     }
@@ -1997,7 +1997,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.tile[j, k].TileType == TileID.Torches)
                             {
                                 Main.tile[j, k].Get<TileWallWireStateData>().HasTile = false;
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendTileSquare(-1, j, k);
                             }
                         }

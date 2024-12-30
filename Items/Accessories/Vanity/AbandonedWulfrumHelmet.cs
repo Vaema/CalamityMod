@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_HeadSet", EquipType.Head, name: "WulfrumOldSetHead");
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_Body", EquipType.Body, this);
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "WulfrumOldSetHead", EquipType.Head);

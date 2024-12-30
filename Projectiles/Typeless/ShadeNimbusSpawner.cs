@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int k = 0; k < 20; k++)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Glass, Projectile.velocity.X > 0f ? 1f : -1f, -1f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreVelocity = new Vector2(Projectile.velocity.X, Projectile.velocity.Y * 0.4f);
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, goreVelocity, Mod.Find<ModGore>("DankCreeperGore").Type);

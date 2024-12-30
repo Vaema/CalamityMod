@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Play a splatter and impact sound.
                 SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);

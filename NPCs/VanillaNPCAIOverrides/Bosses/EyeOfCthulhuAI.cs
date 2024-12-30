@@ -196,7 +196,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScale);
                                     Main.npc[eye].velocity = servantSpawnVelocity;
 
-                                    if (Main.netMode == NetmodeID.Server && eye < Main.maxNPCs)
+                                    if (Main.dedServ && eye < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, eye);
                                 }
                                 else
@@ -361,7 +361,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[servantSpawn].velocity.X = servantSpawnVelocity.X;
                         Main.npc[servantSpawn].velocity.Y = servantSpawnVelocity.Y;
 
-                        if (Main.netMode == NetmodeID.Server && servantSpawn < Main.maxNPCs)
+                        if (Main.dedServ && servantSpawn < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, servantSpawn);
 
                         if (CalamityWorld.LegendaryMode)
@@ -397,7 +397,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
 
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             for (int phase2Gore = 0; phase2Gore < 2; phase2Gore++)
                             {
@@ -818,7 +818,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Main.npc[eye].velocity.X = servantSpawnVelocity.X;
                                 Main.npc[eye].velocity.Y = servantSpawnVelocity.Y;
 
-                                if (Main.netMode == NetmodeID.Server && eye < Main.maxNPCs)
+                                if (Main.dedServ && eye < Main.maxNPCs)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, eye);
                             }
                             else if (!CalamityWorld.LegendaryMode)
@@ -1165,7 +1165,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 int num22 = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector2.X, (int)vector2.Y, NPCID.ServantofCthulhu);
                                 Main.npc[num22].velocity.X = vector3.X;
                                 Main.npc[num22].velocity.Y = vector3.Y;
-                                if (Main.netMode == NetmodeID.Server && num22 < Main.maxNPCs)
+                                if (Main.dedServ && num22 < Main.maxNPCs)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num22);
                             }
 
@@ -1336,7 +1336,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int num34 = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector6.X, (int)vector6.Y, NPCID.ServantofCthulhu);
                         Main.npc[num34].velocity.X = vector7.X;
                         Main.npc[num34].velocity.Y = vector7.Y;
-                        if (Main.netMode == NetmodeID.Server && num34 < Main.maxNPCs)
+                        if (Main.dedServ && num34 < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num34);
                     }
 

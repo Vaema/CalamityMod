@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 4; i++)
                 {

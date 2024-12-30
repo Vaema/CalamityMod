@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 initialized = true;
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = CommonCalamitySounds.LargeWeaponFireSound.Volume * 0.45f }, Projectile.Center);
                 }

@@ -85,7 +85,7 @@ namespace CalamityMod.Particles
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
             // Don't spawn particles if on the server either, or if the particles dictionary is somehow null.
-            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+            if (Main.gamePaused || Main.dedServ || particles == null)
                 return;
 
             if (particles.Count >= CalamityClientConfig.Instance.ParticleLimit && !particle.Important)
@@ -100,7 +100,7 @@ namespace CalamityMod.Particles
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
             // Don't spawn particles if on the server side, or if the particles dictionary is somehow null.
-            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+            if (Main.gamePaused || Main.dedServ || particles == null)
                 return;
 
             particlesToSpawnNextFrame.Enqueue(particle);

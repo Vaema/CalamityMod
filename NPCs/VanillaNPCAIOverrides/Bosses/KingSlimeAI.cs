@@ -313,7 +313,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.ai[0] >= 60f)
                     teleported = true;
 
-                if (npc.ai[0] == 60f && Main.netMode != NetmodeID.Server)
+                if (npc.ai[0] == 60f && !Main.dedServ)
                     Gore.NewGore(npc.GetSource_FromAI(), npc.Center + new Vector2(-40f, -(float)npc.height / 2), npc.velocity, 734, 1f);
 
                 if (npc.ai[0] >= 60f && Main.netMode != NetmodeID.MultiplayerClient)
@@ -639,7 +639,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[slimeSpawns].ai[0] = -1000 * Main.rand.Next(3);
                         Main.npc[slimeSpawns].ai[1] = 0f;
 
-                        if (Main.netMode == NetmodeID.Server && slimeSpawns < Main.maxNPCs)
+                        if (Main.dedServ && slimeSpawns < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeSpawns);
                     }
                 }
@@ -1001,7 +1001,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 Main.npc[num260].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                 Main.npc[num260].ai[0] = -1000 * Main.rand.Next(3);
                 Main.npc[num260].ai[1] = 0f;
-                if (Main.netMode == NetmodeID.Server && num260 < Main.maxNPCs)
+                if (Main.dedServ && num260 < Main.maxNPCs)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num260);
             }
 

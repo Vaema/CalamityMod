@@ -275,7 +275,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
                     Main.dust[confetti].velocity.X += Main.rand.NextFloat(-2.5f, 2.5f);
                     Main.dust[confetti].velocity.Y += Main.rand.NextFloat(-2.5f, 2.5f);
                     Main.dust[confetti].scale *= Main.rand.NextFloat(0.7f, 1.3f);
-                    if (Main.netMode != NetmodeID.Server && Main.rand.NextBool())
+                    if (!Main.dedServ && Main.rand.NextBool())
                     {
                         int confettiGore = Main.rand.Next(276, 283);
                         int idx = Gore.NewGore(Projectile.GetSource_FromThis(), target.Center, target.velocity, confettiGore, 1f);

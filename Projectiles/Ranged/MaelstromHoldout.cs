@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         public void ShootProjectiles(Vector2 shootPosition)
         {
             // Create electric particles.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 16; i++)
                 {

@@ -1450,7 +1450,7 @@ namespace CalamityMod
                     return;
 
                 // If server-side, then the item must be spawned for each client individually.
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NPC npc = info.npc;
                     int idx = Item.NewItem(npc.GetSource_Loot(), npc.Center, itemId, stack, true, -1);

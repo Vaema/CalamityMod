@@ -94,7 +94,7 @@ namespace CalamityMod.World.Planets
             }));
 
             // And sync the entire thing.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendTileSquare(-1, origin.X - radius - 36, origin.Y - radius - 36, radius * 2 + 36, radius * 2 + 36);
         }
     }

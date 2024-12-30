@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Main.dust[exo].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = Projectile.Center;
                     int goreAmt = 9;

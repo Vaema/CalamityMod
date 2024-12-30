@@ -505,7 +505,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
 
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             for (int i = 0; i < 2; i++)
                             {
@@ -927,7 +927,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < 150; i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -953,7 +953,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.dust[dust].velocity *= 3f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default, Main.rand.Next(61, 64));
                 Main.gore[gore].velocity *= 0.4f;

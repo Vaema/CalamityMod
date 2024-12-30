@@ -212,7 +212,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < 150; i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 388, NPC.scale);
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 389, NPC.scale);

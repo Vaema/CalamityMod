@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/TheGrandGarment_Waist", EquipType.Waist, this);
             }

@@ -879,7 +879,7 @@ namespace CalamityMod
             {
                 Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), new Color(175, 75, 255));
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", [Main.npc[npcIndex].GetTypeNetName()]), new Color(175, 75, 255));
             }
@@ -989,7 +989,7 @@ namespace CalamityMod
                 npc.timeLeft *= 20;
                 
                 // Server Exclusive: Sync NPC Data
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
                 }
@@ -1022,7 +1022,7 @@ namespace CalamityMod
         /// <param name="playerIndex">The index of the player who will spawn Old Duke.</param>
         internal static void SpawnOldDuke(int playerIndex)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             Player player = Main.player[playerIndex];

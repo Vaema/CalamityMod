@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                 brightDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 1f);
                 Main.dust[brightDust2].velocity *= 2f;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int k = 0; k < 3; k++)
                 {

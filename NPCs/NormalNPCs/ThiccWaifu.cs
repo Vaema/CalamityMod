@@ -224,7 +224,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Cloud);
 
-                    if (Main.rand.NextBool(15) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(15) && !Main.dedServ)
                     {
                         int smokeType = Utils.SelectRandom(Main.rand, GoreID.ChimneySmoke1, GoreID.ChimneySmoke2, GoreID.ChimneySmoke3);
                         Vector2 smokeVelocity = Main.rand.NextVector2CircularEdge(6f, 6f);

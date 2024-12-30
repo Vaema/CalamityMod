@@ -1177,7 +1177,7 @@ namespace CalamityMod.World
                     {
                         WorldGen.SquareTileFrame(x, y, true);
                     }
-                    else if (Main.netMode == NetmodeID.Server)
+                    else if (Main.dedServ)
                     {
                         NetMessage.SendTileSquare(-1, x, y, 1);
                     }

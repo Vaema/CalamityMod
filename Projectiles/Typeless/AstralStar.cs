@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Main.dust[astralDust].position = Projectile.Center + rotational * 12f;
             }
 
-            if (Main.rand.NextBool(48) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(48) && !Main.dedServ)
             {
                 int starry = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
                 Main.gore[starry].velocity *= 0.66f;
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
                     Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
-                if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
+                if (Main.rand.NextBool(20) && !Main.dedServ)
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
             }
         }
@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Typeless
                 starryDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                 Main.dust[starryDust2].velocity *= 2f;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int k = 0; k < 3; k++)
                     Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, new Vector2(Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f), Main.rand.Next(16, 18), 1f);

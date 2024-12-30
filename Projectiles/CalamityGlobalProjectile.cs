@@ -1502,7 +1502,7 @@ namespace CalamityMod.Projectiles
                     if (Main.rand.NextBool(10))
                         Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Enchanted_Pink, projectile.velocity.X * 0.5f, projectile.velocity.Y * 0.5f, 150, default, 1.2f);
 
-                    if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(20) && !Main.dedServ)
                         Gore.NewGore(projectile.GetSource_FromAI(), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
                 }
 
@@ -3989,7 +3989,7 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.X += Main.rand.Next(-50, 51) * 0.05f;
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
-                    if (Main.rand.NextBool(40) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(40) && !Main.dedServ)
                     {
                         int Type = Main.rand.Next(276, 283);
                         Gore confetti = Gore.NewGoreDirect(projectile.GetSource_FromAI(), projectile.position, velocity, Type, 1f);
@@ -4333,7 +4333,7 @@ namespace CalamityMod.Projectiles
             // Create sparks on hit to hammer in the defense shredding.
             if (deepcoreBullet)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 cen = Vector2.Lerp(projectile.Center, target.Center, 0.65f);
                     int numSparks = Main.rand.Next(2, 5);

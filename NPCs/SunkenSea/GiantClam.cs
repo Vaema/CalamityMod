@@ -136,7 +136,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (hitAmount == 5)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (!Main.player[NPC.target].dead && Main.player[NPC.target].active)
                         player.AddBuff(ModContent.BuffType<Clamity>(), 2); //CLAM INVASION
@@ -276,7 +276,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 NPC.noGravity = false;
                                 attack = -1;
                                 SoundEngine.PlaySound(SlamSound, NPC.Center);
-                                if (Main.netMode != NetmodeID.Server)
+                                if (!Main.dedServ)
                                 {
                                     for (int stompDustArea = (int)NPC.position.X - 30; stompDustArea < (int)NPC.position.X + NPC.width + 60; stompDustArea += 30)
                                     {
@@ -489,7 +489,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam2").Type, 1f);

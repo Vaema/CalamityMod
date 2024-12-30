@@ -48,7 +48,7 @@ namespace CalamityMod.Particles
         public virtual void Update()
         {
             // Don't perform any operations on the server. Doing so would be a waste of space as these sets are entirely based on drawcode.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             //Spawn new particles if time remains
@@ -74,7 +74,7 @@ namespace CalamityMod.Particles
 
         public virtual void DrawSet(Vector2 basePosition)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             IEnumerable<Particle> orderedParticles = Particles;

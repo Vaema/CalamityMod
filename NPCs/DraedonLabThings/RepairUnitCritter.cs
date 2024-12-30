@@ -336,7 +336,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 3; i++)
                         Gore.NewGorePerfect(NPC.GetSource_Death(), NPC.Center, NPC.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.7f, 1f), Mod.Find<ModGore>($"RepairUnit{i}").Type);

@@ -662,7 +662,7 @@ namespace CalamityMod.NPCs.Polterghast
                 if (NPC.netSpam > 10)
                     NPC.netSpam = 10;
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
             }
 
@@ -746,7 +746,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     SoundEngine.PlaySound(P2Sound, NPC.Center);
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt").Type, 1f);
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt2").Type, 1f);
@@ -867,7 +867,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     SoundEngine.PlaySound(P3Sound, NPC.Center);
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt").Type, 1f);
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt2").Type, 1f);

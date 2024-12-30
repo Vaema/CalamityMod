@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Mounts
             MountData.dashingFrameCount = MountData.flyingFrameCount;
             MountData.dashingFrameDelay = 5;
             MountData.dashingFrameStart = MountData.flyingFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.textureWidth = MountData.backTexture.Width();
                 MountData.textureHeight = MountData.backTexture.Height();

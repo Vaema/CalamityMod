@@ -475,7 +475,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     NPC.localAI[1] = 1f;
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         int goreAmount = 7;
                         for (int i = 1; i <= goreAmount; i++)
@@ -605,7 +605,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                                 int fivePercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
                                 Main.npc[fivePercentMinions].SetDefaults(type);
-                                if (Main.netMode == NetmodeID.Server && fivePercentMinions < Main.maxNPCs)
+                                if (Main.dedServ && fivePercentMinions < Main.maxNPCs)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, fivePercentMinions);
                             }
 
@@ -1228,7 +1228,7 @@ namespace CalamityMod.NPCs.HiveMind
                             int type = ModContent.NPCType<DarkHeart>();
                             int tenPercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
                             Main.npc[tenPercentMinions].SetDefaults(type);
-                            if (Main.netMode == NetmodeID.Server && tenPercentMinions < Main.maxNPCs)
+                            if (Main.dedServ && tenPercentMinions < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, tenPercentMinions);
                         }
                     }
@@ -1311,7 +1311,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int goreAmount = 10;
                     for (int i = 1; i <= goreAmount; i++)

@@ -923,7 +923,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
             }
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
 
             npc.netSpam = 5;

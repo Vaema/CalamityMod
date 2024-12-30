@@ -257,7 +257,7 @@ namespace CalamityMod
         private static void WikiThisSupport()
         {
             // Wikithis is a clientside mod
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             CalamityMod calamity = GetInstance<CalamityMod>();

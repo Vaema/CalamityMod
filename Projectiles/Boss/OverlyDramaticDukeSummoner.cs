@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Boss
                                 return;
                             }
 
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
                                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", new object[]
                                 {

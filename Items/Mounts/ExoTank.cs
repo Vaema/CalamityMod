@@ -96,7 +96,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // back (back layer) -> backExtra (gun) -> front (launcher) -> frontExtra (front layer)
                 MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/ExoTank_BackGun");

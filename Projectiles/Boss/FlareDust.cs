@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[idx].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

@@ -564,7 +564,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                 {
                                     int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                    if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
@@ -588,7 +588,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                     {
                                         int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DiabolistWhite);
-                                        if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                        if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                         break;
@@ -665,7 +665,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                 {
                                     int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                    if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
@@ -884,7 +884,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -1400,7 +1400,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(num169, num170))
                                 {
                                     int num171 = NPC.NewNPC(npc.GetSource_FromAI(), num169 * 16 + 8, num170 * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && num171 < Main.maxNPCs)
+                                    if (Main.dedServ && num171 < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num171);
 
                                     break;
@@ -1537,7 +1537,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();

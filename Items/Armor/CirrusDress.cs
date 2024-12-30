@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/CirrusDress_Legs", EquipType.Legs, this);
             }
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
             ArmorIDs.Body.Sets.HidesHands[equipSlot] = true;

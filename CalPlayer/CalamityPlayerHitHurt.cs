@@ -2536,7 +2536,7 @@ namespace CalamityMod.CalPlayer
             if (Player.wingsLogic == (int)VanillaWingID.BoneWings)
             {
                 // Drop some bones for visual effects
-                if (Main.netMode != NetmodeID.Server && Player.wingTime > 0)
+                if (!Main.dedServ && Player.wingTime > 0)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ItemID.BoneWings));
                     for (int i = 0; i < 6; i++)
@@ -2872,7 +2872,7 @@ namespace CalamityMod.CalPlayer
             {
                 NetMessage.SendPlayerDeath(Player.whoAmI, damageSource, (int)1000.0, 0, false, -1, -1);
             }
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(deathText, new Color(225, 25, 25));
             }

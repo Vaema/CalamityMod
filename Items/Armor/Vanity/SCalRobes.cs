@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
                 ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
