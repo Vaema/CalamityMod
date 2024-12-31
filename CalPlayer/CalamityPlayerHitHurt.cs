@@ -1565,9 +1565,8 @@ namespace CalamityMod.CalPlayer
         #region Free and Consumable Dodge Hooks
         public override bool FreeDodge(Player.HurtInfo info)
         {
-            // 22AUG2023: Ozzatron: god slayer damage resistance removed due to it being strong enough to godmode rev yharon
             // If the incoming damage is somehow less than 1 (TML doesn't allow this, but...), the hit is completely ignored.
-            if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
+            if (info.Damage < 1)
                 return true;
 
             // Silva armor revive provides complete immunity.
