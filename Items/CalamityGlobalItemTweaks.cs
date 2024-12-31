@@ -118,6 +118,7 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
+                { ItemID.GoldCoin, Do(DamageExact(75)) }, // For Coin Gun
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
@@ -193,6 +194,7 @@ namespace CalamityMod.Items
                 { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(20)) },
                 { ItemID.PiranhaGun, Do(DamageExact(48)) },
                 { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
+                { ItemID.PlatinumCoin, Do(DamageExact(150)) }, // For Coin Gun
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
                 { ItemID.PoisonStaff, Do(DamageExact(57)) },
                 { ItemID.PossessedHatchet, Do(DamageExact(135)) },
