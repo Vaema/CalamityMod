@@ -15,8 +15,7 @@ namespace CalamityMod.Items.Placeables.Abyss
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Abyss.PlantyMush>());
-            Item.value = Item.sellPrice(silver: 6);
-            Item.rare = ItemRarityID.Orange;
+            Item.value = Item.sellPrice(copper: 20);
         }
 
         public override void CaughtFishStack(ref int stack)
