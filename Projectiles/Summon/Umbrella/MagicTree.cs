@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
                     break;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 20; i++)
                 {

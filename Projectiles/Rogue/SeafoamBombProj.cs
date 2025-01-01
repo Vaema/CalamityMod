@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), posX, posY, 0f, 0f, ModContent.ProjectileType<SeafoamBubble>(), (int)((double)Projectile.damage * 0.4), 0f, Projectile.owner, 0f, 0f);
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = Projectile.Calamity().stealthStrike ? 6 : 3;

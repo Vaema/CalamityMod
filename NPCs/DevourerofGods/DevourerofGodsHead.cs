@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             writer.Write(extrapitch);
 
             // Be sure to inform clients of the fact that The Devourer of Gods is dying if only the server recieved this packet.
-            if (Main.netMode == NetmodeID.Server && !wasDyingBefore && Dying)
+            if (Main.dedServ && !wasDyingBefore && Dying)
             {
                 NPC.netSpam = 0;
                 NPC.netUpdate = true;
@@ -1029,7 +1029,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Set flight time to max during laser walls
                     if (!spawnedGuardians3 && laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                                 Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
@@ -1059,7 +1059,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Flight
                     if (NPC.ai[3] == 0f)
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                                 Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
@@ -1274,7 +1274,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Ground
                     else
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                                 Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
@@ -1864,7 +1864,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Flight
                 if (NPC.ai[3] == 0f)
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                             Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
@@ -2061,7 +2061,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Ground
                 else
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                             Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
@@ -2539,7 +2539,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<DoGDeathBoom>(), 0, 0f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(DeathAnimationSound, NPC.Center);
 
@@ -2855,7 +2855,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS2").Type, NPC.scale);

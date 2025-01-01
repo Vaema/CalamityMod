@@ -237,7 +237,7 @@ namespace CalamityMod.Tiles
                     {
                         tile.Get<TileWallWireStateData>().HasTile = false;
                         WorldGen.KillTile(x, y, fail: false, effectOnly: false, noItem: true);
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.TrySendData(17, -1, -1, null, 20, x, y);
                     }
                 }
@@ -248,7 +248,7 @@ namespace CalamityMod.Tiles
                 {
                     Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                 }
-                else if (Main.netMode == NetmodeID.Server)
+                else if (Main.dedServ)
                 {
                     int proj = Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                     Main.projectile[proj].netUpdate = true;

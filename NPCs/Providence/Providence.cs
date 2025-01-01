@@ -328,7 +328,7 @@ namespace CalamityMod.NPCs.Providence
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
 
             // Be sure to inform clients of the fact that Providence is dying if only the server recieved this packet.
-            if (Main.netMode == NetmodeID.Server && !wasDyingBefore && Dying)
+            if (Main.dedServ && !wasDyingBefore && Dying)
             {
                 NPC.netSpam = 0;
                 NPC.netUpdate = true;
@@ -1415,7 +1415,7 @@ namespace CalamityMod.NPCs.Providence
                     // Inflict Icarus Folly
                     if (NPC.ai[3] >= (phaseTime * 2f))
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             Player player2 = Main.player[Main.myPlayer];
                             bool inLiquid = (player2.wet || player2.honeyWet) && !player2.lavaWet;
@@ -1825,7 +1825,7 @@ namespace CalamityMod.NPCs.Providence
             // Play an animation sound immediately. Also delete various projectiles.
             if (DeathAnimationTimer == 1f)
             {
-                if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.WithinRange(NPC.Center, 4800f))
+                if (!Main.dedServ && Main.LocalPlayer.WithinRange(NPC.Center, 4800f))
                     SoundEngine.PlaySound(DeathAnimationSound with { Volume = 1.65f });
 
                 DespawnSpecificProjectiles();
@@ -1900,7 +1900,7 @@ namespace CalamityMod.NPCs.Providence
             }
 
             // Do periodic syncs.
-            if (Main.netMode == NetmodeID.Server && DeathAnimationTimer % 45f == 44f)
+            if (Main.dedServ && DeathAnimationTimer % 45f == 44f)
             {
                 NPC.netUpdate = true;
 
@@ -2668,7 +2668,7 @@ namespace CalamityMod.NPCs.Providence
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("Providence").Type, NPC.scale);

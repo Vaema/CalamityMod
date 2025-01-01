@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     SummonExoMech();
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(CommonCalamitySounds.FlareSound with { Volume = CommonCalamitySounds.FlareSound.Volume * 1.55f }, PlayerToFollow.Center);
                     if (!exoMechdusa)
@@ -794,7 +794,7 @@ namespace CalamityMod.NPCs.ExoMechs
             if (NPC.life > 0)
                 return;
 
-            if (Main.netMode != NetmodeID.Server && !HasBeenKilled)
+            if (!Main.dedServ && !HasBeenKilled)
             {
                 for (int i = 1; i <= 4; i++)
                 {

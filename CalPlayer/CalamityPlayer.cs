@@ -2695,7 +2695,7 @@ namespace CalamityMod.CalPlayer
                     foreach (string cdID in removedCooldowns)
                         cooldowns.Remove(cdID);
 
-                    SyncCooldownDictionary(Main.netMode == NetmodeID.Server);
+                    SyncCooldownDictionary(Main.dedServ);
                 }
             }
 
@@ -3732,7 +3732,7 @@ namespace CalamityMod.CalPlayer
             player.StopVanityActions(false);
             player.RemoveAllGrapplingHooks();
             player.Teleport(pos, style);
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 RemoteClient.CheckSection(player.whoAmI, player.Center);
             NetMessage.SendData(MessageID.TeleportEntity, -1, -1, null, 0, (float)player.whoAmI, pos.X, pos.Y, style, 0, 0);
             player.velocity = Vector2.Zero;
@@ -4366,7 +4366,7 @@ namespace CalamityMod.CalPlayer
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                         confetti.scale *= (float)(1.0 + Main.rand.Next(-30, 31) * 0.01);
                     }
-                    if (Main.rand.NextBool(40) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(40) && !Main.dedServ)
                     {
                         int confettiGore = Main.rand.Next(276, 283);
                         int confetti = Gore.NewGore(Player.GetSource_ItemUse(item), new Vector2(hitbox.X, hitbox.Y), Player.velocity, confettiGore, 1f);

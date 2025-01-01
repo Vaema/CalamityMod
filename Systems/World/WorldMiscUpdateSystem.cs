@@ -192,7 +192,7 @@ namespace CalamityMod.Systems
                                                 WorldGen.SquareTileFrame(x, y2);
                                                 WorldGen.SquareTileFrame(x + 2, y2);
                                                 WorldGen.SquareTileFrame(x - 1, y2);
-                                                if (Main.tile[x, y2].TileType == TileID.PlanteraBulb && Main.netMode == NetmodeID.Server)
+                                                if (Main.tile[x, y2].TileType == TileID.PlanteraBulb && Main.dedServ)
                                                 {
                                                     NetMessage.SendTileSquare(-1, x, y2, 5);
                                                 }
@@ -225,7 +225,7 @@ namespace CalamityMod.Systems
                                                 WorldGen.PlaceJunglePlant(x, y2, TileID.LifeFruit, WorldGen.genRand.Next(3), 0);
                                                 WorldGen.SquareTileFrame(x, y2);
                                                 WorldGen.SquareTileFrame(x + 1, y2 + 1);
-                                                if (Main.tile[x, y2].TileType == TileID.LifeFruit && Main.netMode == NetmodeID.Server)
+                                                if (Main.tile[x, y2].TileType == TileID.LifeFruit && Main.dedServ)
                                                 {
                                                     NetMessage.SendTileSquare(-1, x, y2, 4);
                                                 }
@@ -307,7 +307,7 @@ namespace CalamityMod.Systems
 
                                             WorldGen.SquareTileFrame(x, y);
 
-                                            if (Main.netMode == NetmodeID.Server)
+                                            if (Main.dedServ)
                                                 NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
                                         }
                                     }

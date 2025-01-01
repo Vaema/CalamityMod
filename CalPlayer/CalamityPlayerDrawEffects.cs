@@ -372,7 +372,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && Main.netMode != NetmodeID.Server && drawInfo.shadow == 0f)
+            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && !Main.dedServ && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(5))
                 {

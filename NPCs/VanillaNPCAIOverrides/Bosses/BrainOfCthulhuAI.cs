@@ -100,7 +100,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.active = false;
                     npc.life = 0;
 
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                 }
             }
@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.localAI[2] = 1f;
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Gore.NewGore(npc.GetSource_FromAI(), npc.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 392, 1f);
                         Gore.NewGore(npc.GetSource_FromAI(), npc.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 393, 1f);
@@ -316,7 +316,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (CalamityWorld.LegendaryMode)
                         {
-                            if (Main.netMode != NetmodeID.Server)
+                            if (!Main.dedServ)
                             {
                                 if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
                                     Main.player[Main.myPlayer].AddBuff(BuffID.Confused, 90);
@@ -1102,7 +1102,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.active = false;
                     npc.life = 0;
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                 }
             }

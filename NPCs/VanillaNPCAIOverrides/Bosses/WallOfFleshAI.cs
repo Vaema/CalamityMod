@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!WorldGen.SolidTile(targetTileX, targetTileY))
                         {
                             int impSpawn = NPC.NewNPC(npc.GetSource_FromAI(), targetTileX * 16 + 8, targetTileY * 16, NPCID.FireImp);
-                            if (Main.netMode == NetmodeID.Server && impSpawn < Main.maxNPCs)
+                            if (Main.dedServ && impSpawn < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, impSpawn);
 
                             break;
@@ -944,7 +944,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!WorldGen.SolidTile(num353, num354))
                         {
                             int num355 = NPC.NewNPC(npc.GetSource_FromAI(), num353 * 16 + 8, num354 * 16, 24);
-                            if (Main.netMode == NetmodeID.Server && num355 < Main.maxNPCs)
+                            if (Main.dedServ && num355 < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num355);
 
                             break;

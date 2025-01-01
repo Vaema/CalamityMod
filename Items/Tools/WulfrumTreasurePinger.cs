@@ -102,7 +102,7 @@ namespace CalamityMod.Items.Tools
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < shrapnelCount; i++)
                     {

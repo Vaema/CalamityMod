@@ -1469,7 +1469,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void HitEffect(NPC.HitInfo hit)
         {
             // Create gore and dust hit effects.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             for (int k = 0; k < 15; k++)

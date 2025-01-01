@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Main.rand.NextBool(5))
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 16 : 127, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             Vector2 goreVec = new Vector2(Projectile.position.X + Projectile.width / 2 + Projectile.velocity.X, Projectile.position.Y + Projectile.height / 2 + Projectile.velocity.Y);
-            if (Main.rand.NextBool(8) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(8) && !Main.dedServ)
             {
                 int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), goreVec, default, Main.rand.Next(375, 378), 0.75f);
                 Main.gore[smoke].behindTiles = true;

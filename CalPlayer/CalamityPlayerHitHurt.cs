@@ -1565,9 +1565,8 @@ namespace CalamityMod.CalPlayer
         #region Free and Consumable Dodge Hooks
         public override bool FreeDodge(Player.HurtInfo info)
         {
-            // 22AUG2023: Ozzatron: god slayer damage resistance removed due to it being strong enough to godmode rev yharon
             // If the incoming damage is somehow less than 1 (TML doesn't allow this, but...), the hit is completely ignored.
-            if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
+            if (info.Damage < 1)
                 return true;
 
             // Silva armor revive provides complete immunity.
@@ -2536,7 +2535,7 @@ namespace CalamityMod.CalPlayer
             if (Player.wingsLogic == (int)VanillaWingID.BoneWings)
             {
                 // Drop some bones for visual effects
-                if (Main.netMode != NetmodeID.Server && Player.wingTime > 0)
+                if (!Main.dedServ && Player.wingTime > 0)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ItemID.BoneWings));
                     for (int i = 0; i < 6; i++)
@@ -2872,7 +2871,7 @@ namespace CalamityMod.CalPlayer
             {
                 NetMessage.SendPlayerDeath(Player.whoAmI, damageSource, (int)1000.0, 0, false, -1, -1);
             }
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(deathText, new Color(225, 25, 25));
             }

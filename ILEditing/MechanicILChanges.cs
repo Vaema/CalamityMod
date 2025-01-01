@@ -657,7 +657,7 @@ namespace CalamityMod.ILEditing
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
                     // Display text indicating that healing was applied to the bleedout buffer.
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         string text = $"(+{amountOfBleedToClear})";
                         Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
@@ -852,7 +852,7 @@ namespace CalamityMod.ILEditing
 
             cursor.EmitDelegate<Action>(() =>
             {
-                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
                     DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
 
@@ -1859,7 +1859,7 @@ namespace CalamityMod.ILEditing
                 Main.npc[retinazerIndex].target = targetPlayerIndex;
                 Main.npc[retinazerIndex].timeLeft *= 20;
 
-                if (Main.netMode == NetmodeID.Server && retinazerIndex < 200)
+                if (Main.dedServ && retinazerIndex < 200)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
                 }

@@ -1182,7 +1182,7 @@ namespace CalamityMod.World
         /// </summary>
         public static void UnlockAllAbyssChests()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 UnlockAbyssChestsPacket.Send();
                 DoUnlockAllAbyssChests();

@@ -3850,7 +3850,7 @@ namespace CalamityMod.NPCs
             if (KillTime > 0 || npc.type == NPCType<Draedon>())
             {
                 // Apply Boss Effects while any boss NPC is active
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < BossZenDistance)
                         Main.player[Main.myPlayer].AddBuff(BuffType<BossEffects>(), 2);
@@ -5023,7 +5023,7 @@ namespace CalamityMod.NPCs
                     }
 
                     Lighting.AddLight(npc.Center, dustLerpColor1.ToVector3() * 0.7f);
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Player localPlayer = Main.LocalPlayer;
                         if (!localPlayer.dead && localPlayer.HitboxForBestiaryNearbyCheck.Intersects(npc.Hitbox))
@@ -6477,7 +6477,7 @@ namespace CalamityMod.NPCs
                 //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
                 //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
@@ -6587,7 +6587,7 @@ namespace CalamityMod.NPCs
                                     npc2.velocity.Y -= Main.rand.Next(0, 10) * (Main.getGoodWorld ? 0.5f : 0.1f) + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
-                                    if (Main.netMode == NetmodeID.Server && slime < Main.maxNPCs)
+                                    if (Main.dedServ && slime < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slime, 0f, 0f, 0f, 0, 0, 0);
                                 }
                             }
@@ -6876,7 +6876,7 @@ namespace CalamityMod.NPCs
                 if (typeToSpawn != NPCID.None)
                 {
                     int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
-                    if (Main.netMode == NetmodeID.Server && spawnedNPC < Main.maxNPCs)
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
                     {
                         Main.npc[spawnedNPC].position.Y -= 8f;
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
@@ -7206,7 +7206,7 @@ namespace CalamityMod.NPCs
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
-            if (somaShredStacks > 0 && Main.netMode != NetmodeID.Server)
+            if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
 
             if (sulphurPoison > 0)
@@ -7273,7 +7273,7 @@ namespace CalamityMod.NPCs
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if (ladHearts > 0 && !npc.loveStruck && Main.netMode != NetmodeID.Server)
+            if (ladHearts > 0 && !npc.loveStruck && !Main.dedServ)
             {
                 if (Main.rand.NextBool(5))
                 {

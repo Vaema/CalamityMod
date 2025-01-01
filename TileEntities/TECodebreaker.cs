@@ -215,7 +215,7 @@ namespace CalamityMod.TileEntities
                     InitialCellCountBeforeDecrypting = 0;
 
                     LearnFromHeldSchematic(out bool anythingChanged);
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                     {
                         SyncDecryptCountdown();
                         SyncContainedStuff();
@@ -255,7 +255,7 @@ namespace CalamityMod.TileEntities
                 anythingChanged = true;
             }
 
-            if (Main.netMode == NetmodeID.Server && anythingChanged)
+            if (Main.dedServ && anythingChanged)
                 CalamityNetcode.SyncWorld();
         }
 

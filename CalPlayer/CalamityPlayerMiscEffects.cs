@@ -883,7 +883,7 @@ namespace CalamityMod.CalPlayer
         private void MiscEffects()
         {
             // Update textures
-            if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            if (!Main.dedServ && Player.whoAmI == Main.myPlayer)
             {
                 Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
                 Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
@@ -1609,7 +1609,7 @@ namespace CalamityMod.CalPlayer
 
             // If any cooldowns were removed, send a cooldown removal packet that lists all cooldowns to remove.
             if (expiredCooldowns.Count > 0)
-                SyncCooldownRemoval(Main.netMode == NetmodeID.Server, expiredCooldowns);
+                SyncCooldownRemoval(Main.dedServ, expiredCooldowns);
 
             // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
             if (Player.stoned || Player.frozen || Player.webbed || gState)
@@ -2391,7 +2391,7 @@ namespace CalamityMod.CalPlayer
         #region Biome Effects
         public void DrawPollenInFloralParadise()
         {
-            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.netMode == NetmodeID.Server)
+            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.dedServ)
                 return;
 
             for (int i = 0; i < 15; i++)
@@ -2761,7 +2761,7 @@ namespace CalamityMod.CalPlayer
                     auralisStealthCounter++;
 
                 bool usingScope = false;
-                if (!Main.gameMenu && Main.netMode != NetmodeID.Server)
+                if (!Main.gameMenu && !Main.dedServ)
                 {
                     if (Player.noThrow <= 0 && !Player.lastMouseInterface || !(Main.CurrentPan == Vector2.Zero))
                     {
@@ -4464,7 +4464,7 @@ namespace CalamityMod.CalPlayer
         #region Text Chat Messages
         private void HandleTextChatMessages()
         {
-            if (Player.whoAmI != Main.myPlayer || Main.netMode == NetmodeID.Server)
+            if (Player.whoAmI != Main.myPlayer || Main.dedServ)
                 return;
 
             if (startMessageDisplayDelay >= 0)
@@ -4631,7 +4631,7 @@ namespace CalamityMod.CalPlayer
                                     SyncAndroombaAIPacket.Send(npc.ModNPC<AndroombaFriendly>(), phase: 1);
                                 }
                             }
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                         }
                     }

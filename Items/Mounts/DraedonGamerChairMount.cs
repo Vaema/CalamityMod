@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = 5;
             MountData.swimFrameDelay = 5;
             MountData.swimFrameStart = 0;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/DraedonGamerChairMount_Glowmask");
                 MountData.textureWidth = MountData.frontTexture.Width();

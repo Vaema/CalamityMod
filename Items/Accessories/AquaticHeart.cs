@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Accessories
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Add equip textures
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/AquaticTrans_Head", EquipType.Head, this);
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
                 int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);

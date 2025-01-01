@@ -577,7 +577,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         {
                             MedusaHeadDustEffect(npc, time);
                         }
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             Player player = Main.player[Main.myPlayer];
                             if (!player.dead && player.active && player.FindBuffIndex(BuffID.Stoned) == -1)
@@ -3420,7 +3420,7 @@ PrepareToShoot:
                             if (npcType == NPCID.GoblinPeon)
                             {
                                 WorldGen.KillTile(x, y - 1, false, false, false);
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
                                     NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, (float)x, (float)(y - 1), 0f, 0, 0, 0);
                                 }
@@ -3435,7 +3435,7 @@ PrepareToShoot:
                                         npc.ai[3] = (float)aiGateValue;
                                         npc.netUpdate = true;
                                     }
-                                    if (Main.netMode == NetmodeID.Server & canOpenDoor)
+                                    if (Main.dedServ & canOpenDoor)
                                     {
                                         NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)x, (float)(y - 1), (float)npc.direction, 0, 0, 0);
                                     }
@@ -3448,7 +3448,7 @@ PrepareToShoot:
                                         npc.ai[3] = (float)aiGateValue;
                                         npc.netUpdate = true;
                                     }
-                                    if (Main.netMode == NetmodeID.Server & canOpenTallGate)
+                                    if (Main.dedServ & canOpenTallGate)
                                     {
                                         NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)x, (float)(y - 1), 0f, 0, 0, 0);
                                     }
@@ -4599,7 +4599,7 @@ PrepareToShoot:
                     }
                 }
 
-                if (!npc.active && Main.netMode == NetmodeID.Server)
+                if (!npc.active && Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                 }
@@ -5072,13 +5072,13 @@ PrepareToShoot:
                                     int differentSegment = (int)Main.npc[q].ai[0];
                                     Main.npc[q].active = false;
                                     npc.life = 0;
-                                    if (Main.netMode == NetmodeID.Server)
+                                    if (Main.dedServ)
                                     {
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, q, 0f, 0f, 0f, 0, 0, 0);
                                     }
                                     q = differentSegment;
                                 }
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                                 }
@@ -8653,7 +8653,7 @@ PrepareToShoot:
                                     dust.noGravity = true;
                                 }
 
-                                if (Main.netMode != NetmodeID.Server)
+                                if (!Main.dedServ)
                                 {
                                     for (int j = 0; j < 4; j++)
                                     {

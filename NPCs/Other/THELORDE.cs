@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.Other
             playerLOL.velocity.Y *= 0.99f;
             if (!DownedBossSystem.downedCalamitas && !DownedBossSystem.downedExoMechs)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (!playerLOL.dead && playerLOL.active)
                     {

@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreVec = new Vector2(Projectile.position.X + (float)(Projectile.width / 2) - 24f, Projectile.position.Y + (float)(Projectile.height / 2) - 24f);
                 float smokeScale = 0.66f;

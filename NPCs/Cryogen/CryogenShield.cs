@@ -187,7 +187,7 @@ namespace CalamityMod.NPCs.Cryogen
                     Main.dust[icyDust2].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+                if (!Main.dedServ && !Main.zenithWorld)
                 {
                     int totalGores = 16;
                     double radians = MathHelper.TwoPi / totalGores;

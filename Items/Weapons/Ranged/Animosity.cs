@@ -177,7 +177,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
             }
             //shell
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
                 Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);

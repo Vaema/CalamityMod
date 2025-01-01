@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Projectile.scale * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
             // Emit sparks and dust.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int sparkLifetime = Main.rand.Next(22, 36);
                 float sparkScale = Main.rand.NextFloat(1f, 1.3f);

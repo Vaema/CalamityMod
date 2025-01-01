@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
             
             CalamityUtils.HomeInOnNPC(Projectile, true, 720f, 16f, Projectile.MaxUpdates * 20f);
             // Trailing effects
-            if (Main.netMode != NetmodeID.Server && Projectile.FinalExtraUpdate() && Projectile.velocity.Length() > 3f)
+            if (!Main.dedServ && Projectile.FinalExtraUpdate() && Projectile.velocity.Length() > 3f)
             {
                 Color color = new Color(136, 211, 113, 127);
                 Color fadeColor = new Color(165, 165, 86);

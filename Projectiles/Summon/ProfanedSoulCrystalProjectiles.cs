@@ -801,7 +801,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.scale != 1.5f)
                 return;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int num625 = 0; num625 < 3; num625++)
                 {

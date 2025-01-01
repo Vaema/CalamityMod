@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

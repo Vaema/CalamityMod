@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
             ProjectileID.Sets.TrailingMode[Type] = 0;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 TextureBlue = Mod.Assets.Request<Texture2D>("Projectiles/Ranged/GodSlayerSlugBlue", AssetRequestMode.ImmediateLoad).Value;
         }
 
