@@ -61,13 +61,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetDayNightColor(Projectile.alpha);
+            return ProvUtils.GetProjectileColor(lightColor);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProfanedSpearNight").Value;
-            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(Projectile.alpha, true), 4f, texture);
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProfanedSpearNight").Value;
+            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
@@ -75,8 +75,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            Color hiColor = ProvUtils.GetDayNightColor(255, false);
-            Color loColor = ProvUtils.GetDayNightColor(0, true);
+            Color hiColor = ProvUtils.GetProjectileColor(255);
+            Color loColor = ProvUtils.GetProjectileColor(0, true);
 
             for (int i = 0; i < 25; i++)
             {

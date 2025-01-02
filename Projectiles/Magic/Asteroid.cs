@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[killDust].velocity *= 2f;
                 Main.dust[killDust].noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int k = 0; k < 2; k++)
                 {

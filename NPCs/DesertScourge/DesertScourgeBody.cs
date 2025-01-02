@@ -339,7 +339,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     switch ((int)NPC.ai[3])
                     {
@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.DesertScourge
             // Sometimes "Deflect" projectiles in gfb into water blasts.
             if (Main.rand.NextBool(20) && Main.zenithWorld)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 velocity = new Vector2(-projectile.velocity.X, -projectile.velocity.Y);
                     velocity.Normalize();

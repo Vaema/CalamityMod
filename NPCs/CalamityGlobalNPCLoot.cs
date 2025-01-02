@@ -435,13 +435,6 @@ namespace CalamityMod.NPCs
                     npcLoot.ChangeDropRate(ItemID.WispinaBottle, 1, 200);
                     break;
 
-                // Necromancer
-                // Wrath of the Ancients @ 4% Normal, 6.67% Expert+
-                case NPCID.Necromancer:
-                case NPCID.NecromancerArmored:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WrathoftheAncients>(), 25, 15));
-                    break;
-
                 // Giant Cursed Skull
                 // Keelhaul @ 6.67% IF Leviathan dead
                 case NPCID.GiantCursedSkull:

@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.AcidRain
         {
             Lighting.AddLight(NPC.Center, 0.3f, 1.5f, 0.3f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int auraSize = 200; //roughly 12 blocks (half the size of Wither Beast aura)
                 Player player = Main.player[Main.myPlayer];

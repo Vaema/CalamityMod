@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -89,14 +90,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.BoneJavelin, 180);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             target.AddBuff(BuffID.Venom, 90);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.BoneJavelin, 180);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             target.AddBuff(BuffID.Venom, 90);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }

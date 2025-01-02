@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -81,6 +82,21 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+            {
+                if (DownedBossSystem.downedProvidence)
+                {
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 180, true);
+                }
+                else
+                {
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
+                }
+            }
+        }
+
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(ExplosionSound, Projectile.Center);
@@ -108,7 +124,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[nukeDust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

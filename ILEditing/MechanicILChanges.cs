@@ -11,11 +11,13 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
@@ -24,10 +26,10 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
@@ -655,7 +657,7 @@ namespace CalamityMod.ILEditing
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
                     // Display text indicating that healing was applied to the bleedout buffer.
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         string text = $"(+{amountOfBleedToClear})";
                         Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
@@ -850,7 +852,7 @@ namespace CalamityMod.ILEditing
 
             cursor.EmitDelegate<Action>(() =>
             {
-                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
                     DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
 
@@ -1857,7 +1859,7 @@ namespace CalamityMod.ILEditing
                 Main.npc[retinazerIndex].target = targetPlayerIndex;
                 Main.npc[retinazerIndex].timeLeft *= 20;
 
-                if (Main.netMode == NetmodeID.Server && retinazerIndex < 200)
+                if (Main.dedServ && retinazerIndex < 200)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
                 }
@@ -1965,6 +1967,117 @@ namespace CalamityMod.ILEditing
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
             }
+        }
+        #endregion
+
+        #region Allow Cannons to use jellyfish
+        public static void AllowCannonJellyfishUse(Terraria.On_Player.orig_PlaceThing_CannonBall orig, Player self)
+        {
+            // Check if the player is holding a jelly
+            if (self.HeldItem.type == ModContent.ItemType<BabyCannonballJellyfishItem>())
+            {
+                // I have no comments here.
+                bool veryLongRangeCheck = self.position.X / 16f - (float)Player.tileRangeX - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetX
+                    && (self.position.X + (float)self.width) / 16f + (float)Player.tileRangeX + (float)self.HeldItem.tileBoost - 1f + (float)self.blockRange >= (float)Player.tileTargetX
+                    && self.position.Y / 16f - (float)Player.tileRangeY - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetY
+                    && (self.position.Y + (float)self.height) / 16f + (float)Player.tileRangeY + (float)self.HeldItem.tileBoost - 2f + (float)self.blockRange >= (float)Player.tileTargetY;
+
+                int targX = Player.tileTargetX;
+                int targY = Player.tileTargetY;
+
+                Tile t = CalamityUtils.ParanoidTileRetrieval(targX, targY);
+
+                // All vanilla cannon types (such as the Bunny Cannon) are a single tile ID, this lets us determine that this tile is the normal Cannon
+                int cannonType = t.TileFrameX / 72;
+
+                // If the player's target tile is within range, is a normal Cannon, they are using an item, and their item time is zero, shoot the baby
+                if (t.TileType == TileID.Cannon && cannonType == 0 && self.ItemTimeIsZero && self.controlUseItem && veryLongRangeCheck)
+                {
+                    self.cursorItemIconEnabled = true;
+                    self.cursorItemIconID = ModContent.ItemType<BabyCannonballJellyfishItem>();
+                    self.HeldItem.makeNPC = -1; // Prevent it from spawning critters when used
+
+                    // Determines where all the action should happen and what the angle of the cannon is
+                    int tileX = t.TileFrameX / 18;
+                    int angle = 0;
+                    while (tileX >= 4)
+                    {
+                        tileX -= 4;
+                    }
+                    tileX = targX - tileX;
+                    int tileY;
+                    for (tileY = t.TileFrameY / 18; tileY >= 3; tileY -= 3)
+                    {
+                        angle++;
+                    }
+                    tileY = targY - tileY;
+
+                    self.ApplyItemTime(self.HeldItem);
+
+                    float speedX = 0f;
+                    float speedY = 0f;
+
+                    // Vanilla code for determining the velocity of shot cannonballs kept intact for consistency
+                    if (angle == 0)
+                    {
+                        speedX = 10f;
+                        speedY = 0f;
+                    }
+                    if (angle == 1)
+                    {
+                        speedX = 7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 2)
+                    {
+                        speedX = 5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 3)
+                    {
+                        speedX = 2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 4)
+                    {
+                        speedX = 0f;
+                        speedY = -10f;
+                    }
+                    if (angle == 5)
+                    {
+                        speedX = -2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 6)
+                    {
+                        speedX = -5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 7)
+                    {
+                        speedX = -7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 8)
+                    {
+                        speedX = -10f;
+                        speedY = 0f;
+                    }
+                    Vector2 spawnPosition = new Vector2((tileX + 2) * 16, (tileY + 2) * 16);
+                    // Finally shoot the projectile
+                    int jellyfishb = Projectile.NewProjectile(new EntitySource_TileInteraction(self, tileX, tileY), spawnPosition.X, spawnPosition.Y, speedX, speedY, ModContent.ProjectileType<BabyCannonballProjectile>(), self.HeldItem.damage, 8f, self.whoAmI);
+                    Main.projectile[jellyfishb].originatedFromActivableTile = true;
+                    // Shlorb
+                    SoundEngine.PlaySound(SoundID.Item95, spawnPosition);
+                }
+                else
+                {
+                    // Reset the item to be able to spawn critters again if any of the conditions aren't met
+                    self.HeldItem.makeNPC = ModContent.NPCType<BabyCannonballJellyfish>();
+                }
+            }
+            else
+                orig(self);
         }
         #endregion
 

@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Armor.Demonshade
                 {
                     int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(DevilDamage);
 
-                    var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 0f, 0f);
+                    var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 2f, 0f);
                     devil.originalDamage = DevilDamage;
                 }
             }

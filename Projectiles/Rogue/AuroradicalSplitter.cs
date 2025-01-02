@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.dust[astral].velocity *= 2f;
                 Main.dust[astral].noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int g = 0; g < 3; g++)
                 {

@@ -149,6 +149,14 @@ namespace CalamityMod.Systems
                         DefenseDamageDisplayUI.Draw(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.None));
+
+                // Canvas painting.
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Canvas Painting", () =>
+                {
+                    if (Main.LocalPlayer.Calamity().CurrentlyViewedCanvasID != -1)
+                        CanvasPaintingUIState.DrawCanvasUI(Main.spriteBatch);
+                    return true;
+                }, InterfaceScaleType.None));
             }
 
             // Invasion UIs.

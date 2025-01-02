@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Summon
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEndNight", AssetRequestMode.ImmediateLoad).Value;
 
             float num223 = Projectile.localAI[1]; //length of laser
-            Color color44 = ProvUtils.GetDayNightColor(!Main.dayTime, 0) * 0.9f;
+            Color color44 = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0) * 0.9f;
             Vector2 vector = Projectile.Center - Main.screenPosition;
             Rectangle? sourceRectangle2 = null;
             Main.spriteBatch.Draw(texture2D19, vector, sourceRectangle2, color44, Projectile.rotation, texture2D19.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);

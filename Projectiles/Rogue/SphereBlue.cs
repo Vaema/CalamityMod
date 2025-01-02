@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.damage /= 2;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.NPCDeath37, Projectile.position);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {

@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.alpha = Alpha;
             Projectile.timeLeft = TimeLeft;
             Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 3;
@@ -44,6 +45,9 @@ namespace CalamityMod.Projectiles.Melee
         {
             float alphaLightScale = Projectile.alpha / (float)Alpha;
             Lighting.AddLight(Projectile.Center, 0.5f * alphaLightScale, 0f, 0.5f * alphaLightScale);
+
+            if (Projectile.timeLeft < TimeLeft - 30)
+                Projectile.tileCollide = true;
 
             if (Projectile.timeLeft > FadeOutTime)
             {

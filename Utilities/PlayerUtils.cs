@@ -697,7 +697,7 @@ namespace CalamityMod
             {
                 CalamityPlayer mp = p.Calamity();
                 mp.cooldowns[id] = instance;
-                mp.SyncCooldownAddition(Main.netMode == NetmodeID.Server, instance);
+                mp.SyncCooldownAddition(Main.dedServ, instance);
             }
 
             return instance;

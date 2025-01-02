@@ -288,7 +288,7 @@ namespace CalamityMod.NPCs.Astral
                     Main.dust[cosmos].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = NPC.Center;
                     int goreAmt = 3;

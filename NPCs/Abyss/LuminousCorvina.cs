@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.Abyss
                         if (screamTimer == screamLimit)
                         {
                             SoundEngine.PlaySound(ScreamSound, NPC.Center);
-                            if (Main.netMode != NetmodeID.Server)
+                            if (!Main.dedServ)
                             {
                                 if (!Main.player[NPC.target].dead && Main.player[NPC.target].active)
                                 {
@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Confetti, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("LuminousCorvina").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("LuminousCorvina2").Type, 1f);

@@ -89,6 +89,11 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.DisableCrit();
+        }
+
         public override Color? GetAlpha(Color lightColor)
         {
             if (Projectile.timeLeft < 85)

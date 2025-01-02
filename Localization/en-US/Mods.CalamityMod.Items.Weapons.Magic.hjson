@@ -1032,7 +1032,7 @@ VoltaicClimax: {
 
 Waywasher: {
 	DisplayName: Waywasher
-	Tooltip: Casts a deluge of inaccurate water bolts
+	Tooltip: Casts two large swirling waves
 }
 
 Wingman: {
@@ -1052,11 +1052,6 @@ WintersFury: {
 		Fires a stream of ice orbs and a barrage of ice shards towards the cursor
 		'The pages are freezing to the touch'
 		'''
-}
-
-WrathoftheAncients: {
-	DisplayName: Wrath of the Ancients
-	Tooltip: Summons an energy pulse at the cursor to periodically summon homing spirits
 }
 
 WulfrumProsthesis: {

@@ -30,7 +30,7 @@ namespace CalamityMod.Packets
         public override void HandlePacket(in BinaryReader packet, int sender)
         {
             // Only fulfill requests as the server host
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             MusicEventSyncResponsePacket.Send(toClient: sender);

@@ -167,7 +167,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                      Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, hit.HitDirection * 0.5f, -0.5f, 0, default, 0.5f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble").Type);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble2").Type);

@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
                 DelegateMethods.v3_1 = color.ToVector3() * 0.3f;
                 Vector2 size = new Vector2(Projectile.velocity.Length() * Projectile.localAI[1], Projectile.width * Projectile.scale);
                 float shaderLength = Projectile.velocity.ToRotation();
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     ((WaterShaderData)Filters.Scene["WaterDistortion"].GetShader()).QueueRipple(Projectile.position + new Vector2(size.X * 0.5f, 0f).RotatedBy(shaderLength), color, size, RippleShape.Square, shaderLength);
 
                 Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.localAI[1], Projectile.width * Projectile.scale, DelegateMethods.CastLight);

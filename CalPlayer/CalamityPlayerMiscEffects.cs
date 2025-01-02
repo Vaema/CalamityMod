@@ -883,7 +883,7 @@ namespace CalamityMod.CalPlayer
         private void MiscEffects()
         {
             // Update textures
-            if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            if (!Main.dedServ && Player.whoAmI == Main.myPlayer)
             {
                 Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
                 Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
@@ -1609,7 +1609,7 @@ namespace CalamityMod.CalPlayer
 
             // If any cooldowns were removed, send a cooldown removal packet that lists all cooldowns to remove.
             if (expiredCooldowns.Count > 0)
-                SyncCooldownRemoval(Main.netMode == NetmodeID.Server, expiredCooldowns);
+                SyncCooldownRemoval(Main.dedServ, expiredCooldowns);
 
             // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
             if (Player.stoned || Player.frozen || Player.webbed || gState)
@@ -1725,8 +1725,6 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
-            if (harpyWingFeatherCooldown > 0)
-                harpyWingFeatherCooldown--;
             if (burningSeaBurnOut > 0)
             {
                 burningSeaBurnOut--;
@@ -2184,7 +2182,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Vortex Armor nerf
-            if (Player.vortexStealthActive)
+            if (Player.vortexStealthActive && Player.ActiveItem().type != ItemID.PsychoKnife)
             {
                 Player.GetDamage<RangedDamageClass>() -= (1f - Player.stealth) * 0.4f; // Change 80 to 40
                 Player.GetCritChance<RangedDamageClass>() -= (int)((1f - Player.stealth) * 5f); // Change 20 to 15
@@ -2393,7 +2391,7 @@ namespace CalamityMod.CalPlayer
         #region Biome Effects
         public void DrawPollenInFloralParadise()
         {
-            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.netMode == NetmodeID.Server)
+            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.dedServ)
                 return;
 
             for (int i = 0; i < 15; i++)
@@ -2755,7 +2753,7 @@ namespace CalamityMod.CalPlayer
                 Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
             }
             else
-                aquaticBoost = aquaticBoostMax; modStealth = 1f;
+                aquaticBoost = aquaticBoostMax;
 
             if (Player.ActiveItem().type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
             {
@@ -2763,7 +2761,7 @@ namespace CalamityMod.CalPlayer
                     auralisStealthCounter++;
 
                 bool usingScope = false;
-                if (!Main.gameMenu && Main.netMode != NetmodeID.Server)
+                if (!Main.gameMenu && !Main.dedServ)
                 {
                     if (Player.noThrow <= 0 && !Player.lastMouseInterface || !(Main.CurrentPan == Vector2.Zero))
                     {
@@ -3532,7 +3530,7 @@ namespace CalamityMod.CalPlayer
                 const int FramesPerHit = 30;
 
                 // Constantly increment the timer every frame.
-                brimLoreInfernoTimer = (brimLoreInfernoTimer + 1) % FramesPerHit;
+                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % FramesPerHit;
 
                 // Only run this code for the client which is wearing the armor.
                 // Brimstone flames is applied every single frame, but direct damage is only dealt twice per second.
@@ -3552,7 +3550,7 @@ namespace CalamityMod.CalPlayer
                         if (Vector2.Distance(Player.Center, npc.Center) <= range)
                         {
                             npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
-                            if (brimLoreInfernoTimer == 0)
+                            if (hydrothermicInfernoTimer == 0)
                                 Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
                         }
                     }
@@ -4466,7 +4464,7 @@ namespace CalamityMod.CalPlayer
         #region Text Chat Messages
         private void HandleTextChatMessages()
         {
-            if (Player.whoAmI != Main.myPlayer || Main.netMode == NetmodeID.Server)
+            if (Player.whoAmI != Main.myPlayer || Main.dedServ)
                 return;
 
             if (startMessageDisplayDelay >= 0)
@@ -4633,7 +4631,7 @@ namespace CalamityMod.CalPlayer
                                     SyncAndroombaAIPacket.Send(npc.ModNPC<AndroombaFriendly>(), phase: 1);
                                 }
                             }
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                         }
                     }

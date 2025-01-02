@@ -189,23 +189,11 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnKill(int timeLeft)
         {
-            Vector2 velocity = Projectile.velocity;
-            velocity.Normalize();
-            velocity *= 4f;
-
-            int spread = 45;
-            int numProj = 4;
-            float rotation = MathHelper.ToRadians(spread);
-            float baseSpeed = (float)Math.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y);
-            double startAngle = Math.Atan2(velocity.X, velocity.Y) - rotation / 2;
-            double deltaAngle = rotation / (float)numProj;
-            double offsetAngle;
-
-            for (int i = 0; i < numProj; i++)
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4f;
+            for (int i = 0; i < 4; i++)
             {
-                offsetAngle = startAngle + deltaAngle * i;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle),
-                    ModContent.ProjectileType<CursorProjSplit>(), Projectile.damage / 3, Projectile.knockBack * 0.33f, Projectile.owner, 0f, 0f);
+                float offset = MathHelper.ToRadians(MathHelper.Lerp(-22.5f, 22.5f, i / 3f));
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(offset), ModContent.ProjectileType<CursorProjSplit>(), Projectile.damage / 3, Projectile.knockBack * 0.33f, Projectile.owner);
             }
 
             SoundEngine.PlaySound(SoundID.Item110, Projectile.Center);

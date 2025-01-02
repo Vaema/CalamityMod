@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -33,6 +34,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.Y = Projectile.velocity.Y + 0.085f;
             Projectile.velocity.X = Projectile.velocity.X * 0.99f;
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        }
 
         public override void OnKill(int timeLeft)
         {
@@ -47,7 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

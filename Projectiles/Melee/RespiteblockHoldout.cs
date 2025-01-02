@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), 500);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 500);
 
             Player player = Main.player[Projectile.owner];
             Vector2 spawnPos = Projectile.Center + (Projectile.velocity.RotatedBy(MathHelper.ToRadians(45f * Projectile.direction)) * 10) + Main.rand.NextVector2Circular(13, 13);

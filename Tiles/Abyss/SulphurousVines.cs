@@ -135,7 +135,7 @@ namespace CalamityMod.Tiles.Abyss
                     WorldGen.SquareTileFrame(i, j, true);
 
                     // Send update packets as needed.
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendTileSquare(-1, x, y, 3, TileChangeType.None);
                 }
             }

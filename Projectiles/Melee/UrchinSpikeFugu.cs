@@ -46,6 +46,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity = (Projectile.velocity * 20f + idealVelocity) / 21f;
                 Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 2f);
             }
+
+            if (Main.rand.NextBool(8))
+            {
+                Dust offTrail = Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2Circular(0.2f, 0.2f));
+                offTrail.noGravity = true;
+                offTrail.scale = Main.rand.NextFloat(0.6f, 1.2f);
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Poisoned, 120);

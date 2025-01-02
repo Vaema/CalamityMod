@@ -148,7 +148,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int variant = (int)(NPC.localAI[3] / 2f % 2f);
                     if (variant == 0)

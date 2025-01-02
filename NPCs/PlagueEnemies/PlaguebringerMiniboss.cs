@@ -370,7 +370,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                 }
             }
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI);
         }
 

@@ -181,7 +181,7 @@ namespace CalamityMod.NPCs.TownNPCs
             npc.ai[0] = phase;
             npc.ai[1] = 0;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 
@@ -194,7 +194,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             npc.ai[3] = solutionType;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 

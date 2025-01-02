@@ -251,7 +251,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (nCore && !Player.HasCooldown(Cooldowns.NebulousCore.ID))
+            if (nebulousCore && !Player.HasCooldown(Cooldowns.NebulousCore.ID))
             {
                 SoundEngine.PlaySound(SoundID.Item67, Player.Center);
 
@@ -429,6 +429,10 @@ namespace CalamityMod.CalPlayer
                 if (brainRot)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (heavybleeding)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HeavyBleeding" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
                 if (laceration)
                 {
@@ -1542,15 +1546,27 @@ namespace CalamityMod.CalPlayer
                     dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
                 }
             }
+
+            if (corrosiveSpine)
+            {
+                int cloudCount = 3;
+                for (int i = 0; i < cloudCount; i++)
+                {
+                    float speed = 2f;
+                    int damage = 40;
+                    int cloud = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, ModContent.ProjectileType<ScourgeVenomCloud>(), damage, 0f, Player.whoAmI);
+                    if (cloud.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[cloud].DamageType = DamageClass.Generic;
+                }
+            }
         }
         #endregion
 
         #region Free and Consumable Dodge Hooks
         public override bool FreeDodge(Player.HurtInfo info)
         {
-            // 22AUG2023: Ozzatron: god slayer damage resistance removed due to it being strong enough to godmode rev yharon
             // If the incoming damage is somehow less than 1 (TML doesn't allow this, but...), the hit is completely ignored.
-            if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
+            if (info.Damage < 1)
                 return true;
 
             // Silva armor revive provides complete immunity.
@@ -1687,16 +1703,16 @@ namespace CalamityMod.CalPlayer
                 return true;
 
             // Mirror evades do not work if the global dodge cooldown is active. This cooldown can be triggered by either mirror.
-            if (!Player.HasCooldown(GlobalDodge.ID) && info.Damage >= dodgeDamageGateValue)
+            if (!Player.HasCooldown(GlobalDodge.ID) && actualDamageTaken >= dodgeDamageGateValue)
             {
                 if (eclipseMirror)
                 {
-                    EclipseMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, info.Damage);
+                    EclipseMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken);
                     return true;
                 }
                 else if (abyssalMirror)
                 {
-                    AbyssMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, info.Damage);
+                    AbyssMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken);
                     return true;
                 }
             }
@@ -2245,8 +2261,6 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            modStealth = 1f;
-
             // Give Rage combat frames because being hurt counts as combat.
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
@@ -2521,7 +2535,7 @@ namespace CalamityMod.CalPlayer
             if (Player.wingsLogic == (int)VanillaWingID.BoneWings)
             {
                 // Drop some bones for visual effects
-                if (Main.netMode != NetmodeID.Server && Player.wingTime > 0)
+                if (!Main.dedServ && Player.wingTime > 0)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ItemID.BoneWings));
                     for (int i = 0; i < 6; i++)
@@ -2857,7 +2871,7 @@ namespace CalamityMod.CalPlayer
             {
                 NetMessage.SendPlayerDeath(Player.whoAmI, damageSource, (int)1000.0, 0, false, -1, -1);
             }
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(deathText, new Color(225, 25, 25));
             }

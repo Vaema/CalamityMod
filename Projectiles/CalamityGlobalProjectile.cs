@@ -57,88 +57,144 @@ namespace CalamityMod.Projectiles
             }
         }
 
-        // Source variables.
+        /// <summary>
+        /// If true, this projectile was spawned from a dash hit.<br/>
+        /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
+        /// </summary>
         public bool CreatedByPlayerDash = false;
 
-        // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
+        /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
 
-        // Damage Adjusters
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
         public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
         public const float PierceResistCap = 0.8f;
 
-        // defDamage was being used for frame1 hacks. this stands in as the replacement for that logic.
+        /// <summary>
+        /// Used for executing frame one hacks. Things set during this include:
+        /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.
+        /// <br/>* Adding armor penetration to rogue projectiles spawned while wearing Filthy Glove or its upgrades.
+        /// <br/>* Increasing the damage of projectiles from the post-Moon Lord Dungeon, and from the post-DoG Pumpkin Moon, Frost Moon, and Solar Eclipse.
+        /// </summary>
         private bool frameOneHacksExecuted = false;
 
-        // Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".
-        // For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.
-        // They then take the remainder (e.g. the remaining 16%) and roll against that for a final +100% (like normal crits).
-        // For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.
-        // An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.
-        // Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times
+        /// <summary>
+        /// Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".<br/>
+        /// For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.<br/>
+        /// They then take the remainder and roll against that for a final +100% (like normal crits).<br/>
+        /// For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.<br/>
+        /// An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.<br/>
+        /// Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times.
+        /// </summary>
         public int supercritHits = 0;
 
-        // Without adjusting underlying crit calculations, set this to true to force a projectile as a crit.
         // TODO -- In the TML 1.4.4 port, there is a much better way to set NPC strike events to be forced crits.
+        /// <summary> Set to true to force a projectile to critically strike. </summary>
         public bool forcedCrit = false;
 
-        // The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo.
+        /// <summary> The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo. </summary>
         public float totalRicoshotDamageBonus = 0f;
 
-        // If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime.
+        /// <summary> If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime. </summary>
         public bool appliesSomaShred = false;
 
-        // Arc Flash bolt spawning management
+        /// <summary>
+        /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
+        /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
+        /// </summary>
         public bool spawnArcFlash = true;
+        /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
 
-        // Adds Brimstone flames to bullets, currently only used by Animosity
+        /// <summary>
+        /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
+        /// Used by Animosity.
+        /// </summary>
         public bool brimstoneBullets = false;
+        /// <summary>
+        /// If true, adds a fire trail to the projectile, and makes it inflict Hellfire.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
 
         // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
         public bool sharkBullets = false;
 
         // Adds fire to bullets, currently used by Thermocline Blaster
         public bool fireBullet = false;
-
-        // Adds ice to bullets, currently used by Thermocline Blaster
+        /// <summary>
+        /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
         public bool iceBullet = false;
-
-        // Adds shock to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds an electric trail to the projectile, and makes it inflict Electrified and create an explosion on hit.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool shockBullet = false;
-
-        // Adds... pearl? to bullets (visual 1, blue), currently used by Pearl God
-        public bool pearlBullet1 = false;
-        // Adds... pearl? to bullets (visual 2, pink), currently used by Pearl God
-        public bool pearlBullet2 = false;
-        // Adds... pearl? to bullets (visual 3, yellow), currently used by Pearl God
-        public bool pearlBullet3 = false;
-
-        // Adds lifesteal to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds a white trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool lifeBullet = false;
-
-        // Adds lifesteal to bullets (visual 1), currently used by Pearl God
-        public bool betterLifeBullet1 = false;
-        // Adds lifesteal to bullets (visual 2), currently used by Pearl God
-        public bool betterLifeBullet2 = false;
-
-        // If true, this projectile creates impact sparks upon hitting enemies
+        /// <summary>
+        /// If true, this projectile creates visual impact sparks upon hitting enemies.<br/>
+        /// Used by Deepcore GK2.
+        /// </summary>
         public bool deepcoreBullet = false;
-
-        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
-        // Currently used for Arterial Assault.
+        /// <summary>
+        /// If true, adds a blue and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet1 = false;
+        /// <summary>
+        /// If true, adds a pink and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet2 = false;
+        /// <summary>
+        /// If true, adds a khaki and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet3 = false;
+        /// <summary>
+        /// If true, adds a blue, pink, and khaki helix trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool betterLifeBullet1 = false;
+        /// <summary> <inheritdoc cref="betterLifeBullet1"/> </summary>
+        public bool betterLifeBullet2 = false;
+        /// <summary>
+        /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
+        /// Used by Arterial Assault.
+        /// </summary>
         public float conditionalHomingRange = 0f;
 
-        // Amount of extra updates that are set in SetDefaults.
+        /// <summary>
+        /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
+        /// This is NOT set automatically, and must be set whenever it is needed.
+        /// </summary>
         public int defExtraUpdates = -1;
 
-        // How many times this projectile has pierced.
+        /// <summary>
+        /// How many times this projectile has pierced an enemy which applies pierce resist.<br/>
+        /// Used for calculating pierce resist damage reduction.
+        /// </summary>
         public int timesPierced = 0;
 
-        // Point-blank shot timer and distance check.
+        /// <summary>
+        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
+        /// If it reaches 0, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public int pointBlankShotDuration = 0;
+        /// <summary>
+        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
+        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public float pointBlankShotDistanceTravelled = 0f;
+        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
         public const int DefaultPointBlankDuration = 18; // 18 frames
+        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
         public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
         // Empress of Light variables
@@ -151,47 +207,70 @@ namespace CalamityMod.Projectiles
         private const int FishronCthulhunadoTotalDuration = 840;
         private const int FishronTornadoTimeBeforeDealingDamage = 60;
 
-        // Temporary flat damage reduction effects. This is typically used for parry effects such as Ark of the Ancients
+        /// <summary> Timer for how long a projectile's damage is reduced by the value in <see cref="flatDR"/>. </summary>
         public int flatDRTimer = 0;
-        /// <summary>
-        /// The amount of final damage substracted from the projectile's own damage count when hitting the player. Resets to 0 if the flatDRTimer variable drops to 0
-        /// </summary>
+        /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
-        /// <summary>
-        /// Allows hostile Projectiles to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
-        // Old Fashioned buff. This does not have effect unless the player has the buff consumed.
+        /// <summary>
+        /// Determines how this projectile's damage is affected by the Old Fashioned buff. This does not have an effect unless the player has the buff consumed.<br/>
+        /// If true, its damage is buffed. If false, its damage is nerfed. If null, its damage is unchanged. Defaults to null.
+        /// </summary>
         public bool? buffedByOldFashioned;
-
-        // Nihility Quiver
+        /// <summary> If true, this projectile has been buffed by Quiver of Nihility's void fields. Used to ensure the buff is only applied once. </summary>
         public bool nihilicArrow = false;
 
         // Rogue Stuff
+        /// <summary> If true, this projectile is from a rogue stealth strike. The primary variable responsible for triggering stealth strike effects. </summary>
         public bool stealthStrike = false;
+        /// <summary>
+        /// Number of times this stealth strike projectile has pierced an enemy.<br/>
+        /// Used to limit the number of times a projectile can proc certain effects from rogue accessories.
+        /// </summary>
         public int stealthStrikeHitCount = 0;
+        /// <summary> Variable to ensure that Ethereal Extorter's soul projectiles only spawn on projectiles spawning directly from item use. </summary>
         public bool extorterBoost = false;
+        /// <summary>
+        /// If true, this projectile is a Venerated Locket clone projectile.<br/>
+        /// Used to prevent certain rogue weapon and accessory effects.
+        /// </summary>
         public bool LocketClone = false;
+        /// <summary>
+        /// If true, this projectile cannot proc projectile effects from rogue accessories.<br/>
+        /// Set this variable for projectiles that are prone to spawning an excessive amount of projectiles.
+        /// </summary>
         public bool CannotProc = false;
+        /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
         public int lineColor = 0;
 
-        // This flag is set to true on summon-classed attacks that are NOT minions, and thus should ALWAYS be able to hit enemies ALL the time.
-        // There are several enemies/NPCs in Calamity which do not take damage from minions in certain circumstances.
+        /// <summary>
+        /// There are several NPCs in Calamity which do not take damage from minions in certain circumstances.<br/>
+        /// If true, this variable allows a projectile that deals summon damage to bypass this mechanic.
+        /// </summary>
         public bool overridesMinionDamagePrevention = false;
 
         // Enchantment variables.
+        /// <summary>
+        /// Variable used as a timer for minions with the Hellbound enchantment.<br/>
+        /// When spawned, this value is set to <see cref="ExplosiveEnchantTime"/> and gets decremented every frame. When it reaches 0, the minion explodes and despawns.<br/>
+        /// Also used for spawning smaller explosions and for scaling damage as the timer decreases.
+        /// </summary>
         public int ExplosiveEnchantCountdown = 0;
+        /// <summary> Constant variable which stores the duration of minions with the Hellbound enchantment, in frames. </summary>
         public const int ExplosiveEnchantTime = 2400;
 
-        // Custom update priority.
-        // Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.
-        // Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// <summary>
+        /// Custom update priority.<br/>
+        /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
+        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// </summary>
         public float UpdatePriority = 0f;
 
         #region On Spawn
@@ -1428,7 +1507,7 @@ namespace CalamityMod.Projectiles
                     if (Main.rand.NextBool(10))
                         Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Enchanted_Pink, projectile.velocity.X * 0.5f, projectile.velocity.Y * 0.5f, 150, default, 1.2f);
 
-                    if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(20) && !Main.dedServ)
                         Gore.NewGore(projectile.GetSource_FromAI(), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
                 }
 
@@ -3915,7 +3994,7 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.X += Main.rand.Next(-50, 51) * 0.05f;
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
-                    if (Main.rand.NextBool(40) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(40) && !Main.dedServ)
                     {
                         int Type = Main.rand.Next(276, 283);
                         Gore confetti = Gore.NewGoreDirect(projectile.GetSource_FromAI(), projectile.position, velocity, Type, 1f);
@@ -4259,7 +4338,7 @@ namespace CalamityMod.Projectiles
             // Create sparks on hit to hammer in the defense shredding.
             if (deepcoreBullet)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 cen = Vector2.Lerp(projectile.Center, target.Center, 0.65f);
                     int numSparks = Main.rand.Next(2, 5);

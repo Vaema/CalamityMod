@@ -328,9 +328,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
 		/// <summary>
 		/// Reserved for extra AI that is always ran regardless of state. Does nothing by default.<br/>
-		/// Example cases include shooting projectiles in a similar manner to Flower Pow.
+		/// Example cases include shooting projectiles in a similar manner to Flower Pow.<br/>
+		/// Return false to entirely override base flail behaviour.
 		/// </summary>
-		public virtual void ExtraBehavior() { }
+		public virtual bool ExtraBehavior() => true;
 
 		/// <summary>
 		/// Handles simple chain drawing. Can be overridden for cases such as chains with multiple frames/variants.
@@ -422,31 +423,32 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 					break;
 			}
 
-			ExtraBehavior();
-
-			Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
-
-			// Non-symmetric rotation (symmetric is just in this if condition here)
-			if (CurrentFlailState == FlailState.Ricochet || CurrentFlailState == FlailState.Dropping)
+			if (ExtraBehavior())
 			{
-				if (Projectile.velocity.Length() > 1f)
-					Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + Projectile.velocity.X * 0.1f;
+				Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
+
+				// Non-symmetric rotation (symmetric is just in this if condition here)
+				if (CurrentFlailState == FlailState.Ricochet || CurrentFlailState == FlailState.Dropping)
+				{
+					if (Projectile.velocity.Length() > 1f)
+						Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + Projectile.velocity.X * 0.1f;
+					else
+						Projectile.rotation += Projectile.velocity.X * 0.1f;
+				}
 				else
-					Projectile.rotation += Projectile.velocity.X * 0.1f;
-			}
-			else
-			{
-				Vector2 vectorTowardsPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
-				Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.ToRadians(270f);
-			}
+				{
+					Vector2 vectorTowardsPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
+					Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.ToRadians(270f);
+				}
 
-			Projectile.timeLeft = 2;
-			Owner.heldProj = Projectile.whoAmI;
-			Owner.SetDummyItemTime(2);
-			Owner.itemRotation = Projectile.DirectionFrom(Owner.MountedCenter).ToRotation();
-			if (Projectile.Center.X < Owner.MountedCenter.X)
-				Owner.itemRotation += MathHelper.Pi;
-			Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+				Projectile.timeLeft = 2;
+				Owner.heldProj = Projectile.whoAmI;
+				Owner.SetDummyItemTime(2);
+				Owner.itemRotation = Projectile.DirectionFrom(Owner.MountedCenter).ToRotation();
+				if (Projectile.Center.X < Owner.MountedCenter.X)
+					Owner.itemRotation += MathHelper.Pi;
+				Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+			}
 		}
 
 		public override bool OnTileCollide(Vector2 oldVelocity)

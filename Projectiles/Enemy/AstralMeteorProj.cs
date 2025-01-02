@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
                 }
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int goreCount = 3;
                 Vector2 goreSource = Projectile.Center;

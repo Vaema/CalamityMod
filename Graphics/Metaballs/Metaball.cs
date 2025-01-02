@@ -125,7 +125,7 @@ namespace CalamityMod.Graphics.Metaballs
                 MetaballManager.metaballs.Add(this);
 
             // Disallow render target creation on servers.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Generate render targets.

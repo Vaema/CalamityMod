@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.Other
                     magic.noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 4; i++)
                         Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2Circular(3f, 3f), Mod.Find<ModGore>($"LecherousGore{i}").Type);

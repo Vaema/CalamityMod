@@ -235,7 +235,8 @@ namespace CalamityMod.Projectiles.Melee
 
             if (spawnBoom)
             {
-                pause = 6;
+                // This was used to give some "Hitstop" on hit, but it looks a bit strange so it's on hold
+                //pause = 6;
                 for (int i = 0; i < 5; i++)
                 {
                     Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (-25), false, 12, 0.12f - i * 0.025f, mainColor, new Vector2(3.75f, 0.9f), true, false, 1.15f);

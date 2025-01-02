@@ -668,7 +668,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 Main.tile[i + xoffset, j + yoffset].TileType = (ushort)ModContent.TileType<Tiles.ArenaTile>();
                                 Main.tile[i + xoffset, j + yoffset].Get<TileWallWireStateData>().HasTile = true;
                             }
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
                                 NetMessage.SendTileSquare(-1, i + xoffset, j + yoffset, 1, TileChangeType.None);
                             }

@@ -657,7 +657,7 @@ namespace CalamityMod.NPCs.Crabulon
                             Main.npc[crabShroom].SetDefaults(npcType);
                             Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (Main.getGoodWorld ? 0.2f : 0.1f);
                             Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (Main.getGoodWorld ? 0.2f : 0.1f);
-                            if (Main.netMode == NetmodeID.Server && crabShroom < Main.maxNPCs)
+                            if (Main.dedServ && crabShroom < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, crabShroom);
                         }
                     }
@@ -954,7 +954,7 @@ namespace CalamityMod.NPCs.Crabulon
                     stompDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueFairy, 0f, 0f, 100, default, 2f);
                     Main.dust[stompDust].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("Crabulon").Type, NPC.scale);

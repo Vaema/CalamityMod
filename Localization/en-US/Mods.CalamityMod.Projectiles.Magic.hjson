@@ -85,8 +85,6 @@ GhastlyExplosionShard.DisplayName: Ghastly Fragment
 GhastlySubBlast.DisplayName: Ghast Blast
 GleamingBolt.DisplayName: Gleaming Bolt
 GleamingBolt2.DisplayName: Gleaming Bolt
-GraniteEnergy.DisplayName: Granite Energy
-GranitePulse.DisplayName: Granite Pulse
 HadalUrnIsopod.DisplayName: Abyssal Isopod
 HadalUrnJellyfish.DisplayName: Mirage Jelly
 HadalUrnLamprey.DisplayName: Sea Lamprey
@@ -98,8 +96,8 @@ HellwingBat.DisplayName: Ashen Hellwing
 HolyFlame.DisplayName: Holy Flame
 HolyLaser.DisplayName: Holy Laser
 IceBarrageMain.DisplayName: Ice Barrage
-IceBlock.DisplayName: Ice Barrage
-IceBlockIcicle.DisplayName: Ice Barrage
+IceBlock.DisplayName: Ice Barrage Block
+IceBlockIcicle.DisplayName: Ice Barrage Icicle
 IceCluster.DisplayName: Ice Cluster
 Icicle.DisplayName: Icicle
 IcicleStaffProj.DisplayName: Furious Icicle
@@ -252,7 +250,7 @@ VoidVortexProj.DisplayName: Void Vortex
 VolatileStarcore.DisplayName: Volatile Starcore
 VortexElementalBeam.DisplayName: Vortex Lightning
 WaterLeechProj.DisplayName: Water Leech
-WaywasherProj.DisplayName: Waywasher Blast
+WaywasherProj.DisplayName: Waywasher Wave
 WingmanGrenade.DisplayName: Mana Grenade
 WingmanShot.DisplayName: Mana Shot
 WulfrumBolt.DisplayName: Wulfrum Bolt

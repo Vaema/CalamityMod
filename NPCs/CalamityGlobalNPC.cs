@@ -98,28 +98,20 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary>
-        /// Boss Kill Time data structure
-        /// </summary>
+        /// <summary> Boss Kill Time data structure </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary>
-        /// Damage Reduction Lookup Table
-        /// </summary>
+        /// <summary> Damage Reduction Lookup Table </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
-        /// <summary>
-        /// Damage Reduction Value
-        /// </summary>
+        /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary>
-        /// If this is set to true, the NPC's DR cannot be reduced via any means. This applies regardless of whether customDR is true or false.
-        /// </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
         public bool unbreakableDR = false;
 
         /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br></br>
+        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
         /// Used primarily by post-Moon Lord bosses.
         /// </summary>
         public bool customDR = false;
@@ -128,15 +120,30 @@ namespace CalamityMod.NPCs
 
         public int KillTime { get; set; } = 0;
 
-        public const int DoGPhase1KillTime = 5400;
-
-        // Debuff Vulnerabilities
-        // null = neutral, true = vulnerable, false = resistant
-        // neutral = 100% effective, vulnerable = 400% effective DoT and 200% effective non-DoT effects (within reason, some aren't exactly 200% more effective), resistant = 50% effective
+        /// <summary>
+        /// Controls the effectiveness of heat debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToHeat = null;
+        /// <summary>
+        /// Controls the effectiveness of cold debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToCold = null;
+        /// <summary>
+        /// Controls the effectiveness of sickness debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToSickness = null;
+        /// <summary>
+        /// Controls the effectiveness of electricity debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToElectricity = null;
+        /// <summary>
+        /// Controls the effectiveness of water debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToWater = null;
 
         public const double BaseDoTDamageMult = 1D;
@@ -154,88 +161,108 @@ namespace CalamityMod.NPCs
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
-        public bool IncreasedHeatEffects_FlameWakerBoots = false;
-        public bool IncreasedHeatEffects_HellfireTreads = false;
+        public int IncreasedHeatEffects_FireBoots = 0;
         public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
-        // Evergreen Gin effect
+        // Sickness and Water debuff effects
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
-        // Biome enrage timer max
+        /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
-        // Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target
-        // Currently only used by DoG
+        /// <summary>
+        /// Variable for worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Currently only used by DoG.
+        /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
         public bool ShouldFallThroughPlatforms;
 
-        /// <summary>
-        /// Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
-        // Total defense loss from some true melee hits and other things that reduce defense
+        /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
 
-        // Distance values for when bosses increase velocity to catch up to their target
+        /// <summary>
+        /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance200Tiles = 3200f;
+        /// <summary>
+        /// Constant representing a distance of 350 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance350Tiles = 5600f;
+        /// <summary>
+        /// Constant representing a distance of 400 tiles in pixel measurement.<br/>
+        /// Used as a cap on the distance away from a boss a player can be inflicted with Boss Effects.
+        /// </summary>
+        private const float BossZenDistance = 6400f;
 
         /// <summary>
-        /// Destroyer laser colors, used for telegraphs
+        /// Destroyer laser colors, used for telegraphs.<br/>
         /// None = -1, Red = 0, Green = 1, Cyan = 2
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        // Boss Zen distance
-        private const float BossZenDistance = 6400f;
-
-        // Buff most vanilla enemy HP by 25%
+        /// <summary>
+        /// Constant multiplier used to increase vanilla enemy health.
+        /// </summary>
         private const double EnemyHPMultiplier = 1.25;
-
-        // Used to nerf desert prehardmode enemies pre-Desert Scourge
+        /// <summary>
+        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
+        /// </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-
-        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        /// <summary>
+        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
+        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
+        /// </summary>
         public const double MasterModeBossHPMultiplier = 0.85;
 
-        // Used to nerf Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
         public const double MasterModeEnemyHPMultiplier = 0.75;
+        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
         public const double MasterModeEnemyDamageMultiplier = 0.9;
-
-        // Used to nerf Expert and Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
         public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
+        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
         public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
-        // HP and damage multipliers for the Early Hardmode Progression Rework
+        /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert = 0.95;
 
-        // Used to increase coin drops in Normal Mode
-        private const double NPCValueMultiplier_NormalCalamity = 1.5;
-
-        // Used to decrease coin drops in Expert Mode
+        /// <summary> Constant multiplier used to increase coin drops in Classic Mode. </summary>
+        private const double NPCValueMultiplier_ClassicCalamity = 1.5;
+        /// <summary> Constant multiplier used to decrease coin drops in Expert Mode. </summary>
         private const double NPCValueMultiplier_ExpertVanilla = 2.5;
-
-        // Used to change the Expert Mode coin drop multiplier
+        /// <summary> <inheritdoc cref="NPCValueMultiplier_ExpertVanilla"/> </summary>
         private const double NPCValueMultiplier_ExpertCalamity = 1.5;
 
         // Dash damage immunity timer
         public const int maxPlayerImmunities = Main.maxPlayers + 1;
         public int[] dashImmunityTime = new int[maxPlayerImmunities];
 
-        // Town NPC shop alert animation variables
+        /// <summary> Used to control the animation of the Town NPC Shop Alert icon, if the respective config is enabled. </summary>
         public int shopAlertAnimTimer = 0;
+        /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
 
-        // Set to false for this NPC to be unable to generate proximity Rage, regardless of other factors
+        /// <summary>
+        /// If set to false, prevents this NPC from allowing Rage to be generated by nearby players, regardless of other factors.<br/>
+        /// Defaults to true.
+        /// </summary>
         public bool ProvidesProximityRage = true;
 
         // NewAI
@@ -243,23 +270,20 @@ namespace CalamityMod.NPCs
         public float[] newAI = new float[maxAIMod];
         public int AITimer = 0;
 
-        // Town NPC Patreon
+        /// <summary> Used for allowing Patreon names for Town NPCs. </summary>
         public bool setNewName = true;
 
-        // Stuff used by the Boss Health UI
+        /// <summary> If set to true, the Boss Health Bar for this NPC will count the total health of all individual segments using worm segment logic. </summary>
         public bool SplittingWorm = false;
+        /// <summary> If set to true, allows this NPC to draw a Boss Health Bar, regardless of other factors. </summary>
         public bool CanHaveBossHealthBar = false;
+        /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        // Timer for how long an NPC is immune to certain debuffs
+        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
         public const int slowingDebuffResistanceMin = 1800;
+        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
         public int debuffResistanceTimer = 0;
-
-        // If a boss is affected by knockback and a timer for how long that boss is immune to knockback after being knocked back
-        public bool bossCanBeKnockedBack = false;
-        public const int knockbackResistanceMin = 180;
-        public int knockbackResistanceTimer = 0;
-
 
         // Debuffs
         public int vaporfied = 0;
@@ -272,9 +296,14 @@ namespace CalamityMod.NPCs
         public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
+        /// <summary>
+        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
+        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
+        /// </summary>
         public int pearlAuraCounter = 0;
         public int bBlood = 0;
         public int brainRot = 0;
+        public int heavybleeding = 0;
         public int laceration = 0;
         public int elementalMix = 0;
         public int marked = 0;
@@ -282,6 +311,7 @@ namespace CalamityMod.NPCs
         public int irradiated = 0;
         public int bFlames = 0;
         public int hFlames = 0;
+        /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
         public int aCrunch = 0;
         public int crumble = 0;
@@ -301,14 +331,19 @@ namespace CalamityMod.NPCs
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
-        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        /// <summary>
+        /// If set to true, prevents this NPC from dealing contact damage.<br/>
+        /// Used by Septic Skewer's execution attack.
+        /// </summary>
         public bool pacified = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
+        /// <summary> Tracks how many stacks of the Shred debuff this NPC is inflicted with. </summary>
         public int somaShredStacks = 0;
+        /// <summary> Tracks the index of the player that inflicted this NPC with Shred, for the purpose of scaling damage. </summary>
         public int somaShredApplicator = -1;
-        // Reduced by the number of active stacks every frame. If it hits zero, one stack disappears.
+        /// <summary> Counter used for removing stacks of Shred. The number of stacks is subtracted every frame, and when it hits zero, it is reset and one stack is removed. </summary>
         public int somaShredFalloff = Shred.StackFalloffFrames;
 
         public int cDepth = 0;
@@ -322,15 +357,19 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
+        /// <summary> If greater than 0, this NPC has been "shocked" by The Transformer's on hurt effect. </summary>
         public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
+        /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public int kamiFlu = 0;
         public int relicOfResilienceWeakness = 0;
+        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
@@ -338,6 +377,10 @@ namespace CalamityMod.NPCs
         public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
+        /// <summary>
+        /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
+        /// Used by Rancor's laser beam.
+        /// </summary>
         public int ashesOnDeath = 0;
 
         // whoAmI Variables
@@ -399,30 +442,34 @@ namespace CalamityMod.NPCs
         // Drawing variables.
         public FireParticleSet VulnerabilityHexFireDrawer = null;
 
-        // Boss Enrage variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.
-        // 2 - Otherwise, check if the demonshade enrage is active. If it is, register this as true. If not, go to step 3.
-        // 3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.
-        // 4 - Check if Boss Rush isn't active. If so, set this to true.
+        /// <summary>
+        /// Boss Enrage variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.</para>
+        /// <para>2 - Check if the Demonshade enrage is active. If it is, register this as true. If not, go to step 3.</para>
+        /// <para>3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.</para>
+        /// <para>4 - Check if Boss Rush isn't active. If so, set this to true.</para>
+        /// </summary>
         public bool CurrentlyEnraged;
 
-        // Increased defense or DR variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - When bosses are transitioning phases they gain a massive DR increase.
-        // 2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.
+        /// <summary>
+        /// Increased defense or DR variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - When bosses are transitioning phases they gain a massive DR increase.</para>
+        /// <para>2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.</para>
+        /// While either of these are occuring, this variable should be set to true.
+        /// </summary>
         public bool CurrentlyIncreasingDefenseOrDR;
 
-        // Other Boss Rush stuff
+        /// <summary> If set to true, this NPC will be ignored by Boss Rush's whitelist and will always be allowed to exist. </summary>
         public bool DoesNotDisappearInBossRush;
 
-        // On-Kill variables
+        /// <summary> Variable used for Gladiator's Locket's on-kill effect to ensure it only triggers once per kill. </summary>
         public bool gladiatorOnKill = true;
-
-        // Variable for if enemy has been recently hit by an ArcZap
+        /// <summary> Cooldown variable for Unstable Granite Core's arc zap effect. </summary>
         public int arcZapCooldown = 0;
 
-        // Animates worms in the bestiary but only when their entry is being looked at
+        /// <summary> Timer for animating worm enemies in the bestiary. </summary>
         public float bestiaryWormTimer = 0;
         #endregion
 
@@ -463,10 +510,10 @@ namespace CalamityMod.NPCs
             myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
-            myClone.IncreasedHeatEffects_FlameWakerBoots = IncreasedHeatEffects_FlameWakerBoots;
-            myClone.IncreasedHeatEffects_HellfireTreads = IncreasedHeatEffects_HellfireTreads;
+            myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
@@ -501,9 +548,6 @@ namespace CalamityMod.NPCs
 
             myClone.debuffResistanceTimer = debuffResistanceTimer;
 
-            myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
-            myClone.knockbackResistanceTimer = knockbackResistanceTimer;
-
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
             myClone.gState = gState;
@@ -517,6 +561,7 @@ namespace CalamityMod.NPCs
             myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
+            myClone.heavybleeding = heavybleeding;
             myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
             myClone.marked = marked;
@@ -880,18 +925,21 @@ namespace CalamityMod.NPCs
 
             if (IncreasedHeatEffects_Fireball)
                 heatDamageMult += Fireball.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FlameWakerBoots)
-                heatDamageMult += 0.25;
+            if (IncreasedHeatEffects_FireBoots > 0)
+                heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
                 heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-            if (IncreasedHeatEffects_HellfireTreads)
-                heatDamageMult += 0.5;
             if (IncreasedHeatEffects_FlameWings)
                 heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
+            if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
+            {
+                sicknessDamageMult += 0.25;
+                waterDamageMult += 0.25;
+            }
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
@@ -1236,10 +1284,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (laceration > 0)
+            if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
+            if (laceration > 0)
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
-                ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
                 ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
@@ -3448,7 +3498,7 @@ namespace CalamityMod.NPCs
             // Rebalance coin drops so that Normal Mode enemies and bosses drop an adequate amount of coins.
 
             // Increase Normal Mode coin drops by 1.5x.
-            npc.value = (int)(npc.value * NPCValueMultiplier_NormalCalamity);
+            npc.value = (int)(npc.value * NPCValueMultiplier_ClassicCalamity);
 
             // Change the Expert Mode coin drop multiplier.
             if (Main.expertMode)
@@ -3645,9 +3695,9 @@ namespace CalamityMod.NPCs
                     cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
-            bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
+            bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
             bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (nightProvi || dayEmpress))
+            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (enragedProvi || dayEmpress))
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
@@ -3800,7 +3850,7 @@ namespace CalamityMod.NPCs
             if (KillTime > 0 || npc.type == NPCType<Draedon>())
             {
                 // Apply Boss Effects while any boss NPC is active
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < BossZenDistance)
                         Main.player[Main.myPlayer].AddBuff(BuffType<BossEffects>(), 2);
@@ -4973,7 +5023,7 @@ namespace CalamityMod.NPCs
                     }
 
                     Lighting.AddLight(npc.Center, dustLerpColor1.ToVector3() * 0.7f);
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Player localPlayer = Main.LocalPlayer;
                         if (!localPlayer.dead && localPlayer.HitboxForBestiaryNearbyCheck.Intersects(npc.Hitbox))
@@ -5491,8 +5541,6 @@ namespace CalamityMod.NPCs
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
-            if (knockbackResistanceTimer > 0)
-                knockbackResistanceTimer--;
 
             if (timeSlow > 0)
                 timeSlow--;
@@ -5521,6 +5569,8 @@ namespace CalamityMod.NPCs
                 bBlood--;
             if (brainRot > 0)
                 brainRot--;
+            if (heavybleeding > 0)
+                heavybleeding--;
             if (laceration > 0)
                 laceration--;
             if (elementalMix > 0)
@@ -5973,16 +6023,16 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffID.Bleeding, 180);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.Plantera:
@@ -6003,6 +6053,10 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    break;
+
+                case NPCID.DukeFishron:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.AncientLight:
@@ -6423,9 +6477,9 @@ namespace CalamityMod.NPCs
                 //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
                 //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    var color = ProvUtils.GetDayNightColor(!Main.dayTime, 0);
+                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
                     var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
                     var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
@@ -6533,7 +6587,7 @@ namespace CalamityMod.NPCs
                                     npc2.velocity.Y -= Main.rand.Next(0, 10) * (Main.getGoodWorld ? 0.5f : 0.1f) + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
-                                    if (Main.netMode == NetmodeID.Server && slime < Main.maxNPCs)
+                                    if (Main.dedServ && slime < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slime, 0f, 0f, 0f, 0, 0, 0);
                                 }
                             }
@@ -6822,7 +6876,7 @@ namespace CalamityMod.NPCs
                 if (typeToSpawn != NPCID.None)
                 {
                     int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
-                    if (Main.netMode == NetmodeID.Server && spawnedNPC < Main.maxNPCs)
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
                     {
                         Main.npc[spawnedNPC].position.Y -= 8f;
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
@@ -7127,6 +7181,9 @@ namespace CalamityMod.NPCs
             if (hFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
 
+            if (heavybleeding > 0)
+                HeavyBleeding.DrawEffects(npc, ref drawColor);
+
             if (laceration > 0)
                 Laceration.DrawEffects(npc, ref drawColor);
 
@@ -7149,7 +7206,7 @@ namespace CalamityMod.NPCs
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
-            if (somaShredStacks > 0 && Main.netMode != NetmodeID.Server)
+            if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
 
             if (sulphurPoison > 0)
@@ -7216,7 +7273,7 @@ namespace CalamityMod.NPCs
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if (ladHearts > 0 && !npc.loveStruck && Main.netMode != NetmodeID.Server)
+            if (ladHearts > 0 && !npc.loveStruck && !Main.dedServ)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -7315,6 +7372,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),

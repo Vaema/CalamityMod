@@ -56,9 +56,7 @@ AbyssalMirror: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
+		{$Common.DodgeInformation}
 		Dodging an attack gives stealth
 		'''
 	FlavorTooltip: "'Light does not reach the depths of the ocean'"
@@ -108,12 +106,7 @@ AmalgamatedBrain: {
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 AmbrosialAmpoule: {
@@ -252,11 +245,11 @@ AsgardianAegis: {
 		'''
 	HoldShiftTooltip:
 		'''
-		  On Fire!, Hellfire, Chilled, Frozen, Frostburn, Frostbite, Weak, Broken Armor,
-		  Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
-		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch,
-		  Blackout, Brain Rot, Burning Blood, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno, Burning
+		  On Fire!, Hellfire, Burning, Chilled, Frozen, Frostburn, Frostbite, Weak,
+		  Broken Armor, Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
+		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch, Blackout,
+		  Brain Rot, Burning Blood, Heavy Bleeding, Laceration, Cursed Inferno, Brimstone Flames,
+		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno
 		'''
 }
 
@@ -331,6 +324,7 @@ BloodPact: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
+		Immunity to Bleeding, Burning Blood and Heavy Bleeding
 		Healing Potions are 25% more effective
 		'''
 }
@@ -396,6 +390,7 @@ ChaliceOfTheBloodGod: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
+		Immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
 		Taking more than 5 damage converts the hit into a damage over time bleed debuff
 		This bleeding does not interfere with life regeneration
@@ -439,8 +434,9 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		All rogue weapons inflict poison and spawn poisoned clouds on enemy hits
-		You release a ton of clouds everywhere on hit
+		Multiplies all sickness and water-related debuff damage by 1.25x
+		All attacks irradiate enemies and reduces the severity of the sulphuric waters
+		You burst into radioactive clouds when struck
 		'''
 }
 
@@ -658,10 +654,8 @@ EclipseMirror: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		{$Common.DodgeInformation}
 		Dodging an attack grants a lot of stealth
-		This cooldown is shared with all other dodges and reflects
 		'''
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
 }
@@ -720,7 +714,7 @@ EnchantedPearl: {
 		'''
 		Increases fishing power by 10
 		Increases chance to catch crates and loot-containing fish by 15%
-		Crates are 25% more likely to be higher quality
+		Crate catches emit pearls and are 25% more likely to be higher quality
 		'''
 }
 
@@ -1655,12 +1649,7 @@ StatisNinjaBelt: {
 		Provides light when worn
 		{$Common.AbyssLightLevel1}
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 StatisVoidSash: {
@@ -1675,12 +1664,7 @@ StatisVoidSash: {
 		Provides light when worn
 		{$Common.AbyssLightLevel1}
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 // Be warned translators, this thing fucking sucks
@@ -1732,7 +1716,6 @@ StatMeter: {
 		Max Stealth: {0} | Standing Regen: {1} / sec | Moving Regen: {2} / sec
 		Rogue Velocity Boost: {3}%
 		'''
-	RogueConsumption: " | Rogue Weapon Consumption Chance: {0}%"
 	// Utility stats
 	ToolRange: Tool Range Bonus: ({0}, {1})
 	MiningSpeed: " | Mining Speed: {0}%"
@@ -1810,12 +1793,7 @@ TheAmalgam: {
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 TheBee: {
@@ -1864,9 +1842,7 @@ TheEvolution: {
 	Tooltip:
 		'''
 		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
-		Projectiles that deal less than 5% of your max life in damage will not be reflected
-		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
-		This cooldown is shared with all other dodges and reflects
+		{$Common.ReflectInformation}
 		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
 		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
