@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public int sineDir = 1;
 
         public Player Owner => Main.player[Projectile.owner];
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                 baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
             }
             else
-                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             if (!Positive)
             {

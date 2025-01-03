@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public ref float CurrentChargingFrames => ref Projectile.ai[0];
         public float ShotsLoaded = 1;
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public Color color1;
         public Color color2;
         public Color color3;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             if ((!Positive && Projectile.ai[2] < 10) || Projectile.ai[2] == 15) // Color is white when Negative
                 baseColor = Color.White;
             else if (Owner.shirtColor == Color.White)
-                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             #region Frame control
             Projectile.frameCounter++;
@@ -411,7 +411,7 @@ namespace CalamityMod.Projectiles.Ranged
                 _ => color4,
             };
             if (Owner.shirtColor == Color.White)
-                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
             return useColor;
         }
         public override bool PreDraw(ref Color lightColor)
