@@ -333,9 +333,6 @@ namespace CalamityMod.Balancing
 
             // 35% resist to Event Horizon.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
-
-            // 25% resist to Molten Amputator's blobs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
             #endregion
 
             #region Old Duke
