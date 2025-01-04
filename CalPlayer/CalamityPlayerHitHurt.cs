@@ -2606,7 +2606,8 @@ namespace CalamityMod.CalPlayer
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));
                     for (int n = 0; n < 3; n++)
                     {
-                        int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(130);
+                        int baseDamage = 130 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
+                        int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
