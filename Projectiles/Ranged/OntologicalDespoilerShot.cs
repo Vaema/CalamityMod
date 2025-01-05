@@ -189,8 +189,8 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-            SoundStyle fire = OntologicalDespoiler.SmallImpact;
-            SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (!Positive ? 3 : 1) }, Projectile.Center);
+            SoundStyle fire = Positive ? new SoundStyle("CalamityMod/Sounds/Item/OntologicalDespoilerSmallImpact") : OntologicalDespoiler.SmallImpact; // Yes these are two different sounds...
+            SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.3f), Pitch = Main.rand.NextFloat(0.05f, 0.15f) * (!Positive ? 3 : 5), MaxInstances = !Positive ? 1 : 6 }, Projectile.Center);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

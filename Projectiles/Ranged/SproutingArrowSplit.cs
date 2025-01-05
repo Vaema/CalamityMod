@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, Color.LimeGreen.ToVector3() * 0.25f);
             if (Projectile.alpha > 0)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 264, Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.05f, 0.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 264, Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(0.05f, 1.5f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                 dust.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;

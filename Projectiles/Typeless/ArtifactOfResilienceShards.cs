@@ -135,7 +135,8 @@ namespace CalamityMod.Projectiles.Typeless
                             int projNum = Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtifactOfResilienceShards>()] - 4;
 
                             Projectile.velocity = ((MathHelper.TwoPi * Projectile.ai[2] / projNum).ToRotationVector2()) * 15 * speedMult;
-                            
+                            Owner.Calamity().GeneralScreenShakePower = 5f;
+
                             if (Projectile.ai[2] == 1)
                             {
                                 SoundStyle boom = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianShieldDeactivate");

@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         internal static readonly int ChargeLoopSoundFrames = 151;
         public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot");
         public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot");
+        public static readonly SoundStyle BigShot2 = new("CalamityMod/Sounds/Item/OntologicalDespoilerLargeShot");
         public static readonly SoundStyle SmallImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1");
         public static readonly SoundStyle LargeImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2");
 
