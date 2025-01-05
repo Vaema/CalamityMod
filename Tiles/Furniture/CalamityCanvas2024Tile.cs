@@ -14,17 +14,9 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Furniture
 {
-    public class CalamityCanvasTile : ModTile
+    // TODO: Probably make a base canvas painting class
+    public class CalamityCanvas2024Tile : ModTile
     {
-        public static Asset<Texture2D> border;
-        public static Asset<Texture2D> corner;
-
-        public override void Load()
-        {
-            border = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasBorder");
-            corner = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CalamityCanvasCorner");
-        }
-
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -58,6 +50,7 @@ namespace CalamityMod.Tiles.Furniture
             {
                 CanvasPaintingUIState.ResetVars();
                 Main.LocalPlayer.Calamity().CurrentlyViewedCanvasID = cube.ID;
+                Main.LocalPlayer.Calamity().CurrentlyViewedCanvasType = 1;
                 SoundEngine.PlaySound(SoundID.MenuOpen);
                 Main.playerInventory = true;
                 Main.recBigList = false;
@@ -68,7 +61,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void MouseOver(int i, int j)
         {
-            Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<Items.Placeables.Furniture.CalamityCanvas>();
+            Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<Items.Placeables.Furniture.CalamityCanvas2024>();
             Main.LocalPlayer.noThrow = 2;
             Main.LocalPlayer.cursorItemIconEnabled = true;
         }
@@ -95,10 +88,11 @@ namespace CalamityMod.Tiles.Furniture
             {
                 int fPX = (int)cube.framePosition.X;
                 int fPY = (int)cube.framePosition.Y;
-                int scale = (int)(baseDimension * cube.scale);
+                int scale = (int)(texture.Width * 0.1f * cube.scale);
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
-                spriteBatch.Draw(texture, pos - Main.screenPosition, new Rectangle(fPX, fPY, scale, scale), Lighting.GetColor(i, j), 0, new Vector2(0, 0), 1 / cube.scale, 0, 0);
+                // TODO: make the 0.8 in scale not a hardcoded number with seemingly no meaning
+                spriteBatch.Draw(texture, pos - Main.screenPosition, new Rectangle(fPX, fPY, scale, scale), Lighting.GetColor(i, j), 0, new Vector2(0, 0), 1 / cube.scale * 0.8f, 0, 0);
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null);
             }
@@ -109,9 +103,9 @@ namespace CalamityMod.Tiles.Furniture
         }
         public static void DrawBorders(SpriteBatch spriteBatch, Vector2 pos, Point cords)
         {
-            Texture2D texture = border.Value;
-            Texture2D cornerTex = corner.Value;
-            ushort canvasID = (ushort)ModContent.TileType<CalamityCanvasTile>();
+            Texture2D texture = CalamityCanvas2023Tile.border.Value;
+            Texture2D cornerTex = CalamityCanvas2023Tile.corner.Value;
+            ushort canvasID = (ushort)ModContent.TileType<CalamityCanvas2024Tile>();
             int commonDim = 8;
             int finalCord = 72;
             int size = 80;
@@ -206,13 +200,13 @@ namespace CalamityMod.Tiles.Furniture
 
             // Draw junction corners
             if (drawTopLeft)
-                spriteBatch.Draw(cornerTex, pos + corner.Size(), null, light, MathHelper.Pi, new Vector2(0, 0), 1, 0, 0);
+                spriteBatch.Draw(cornerTex, pos + CalamityCanvas2023Tile.corner.Size(), null, light, MathHelper.Pi, new Vector2(0, 0), 1, 0, 0);
             if (drawTopRight)
                 spriteBatch.Draw(cornerTex, pos + Vector2.UnitX * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipVertically, 0);
             if (drawBottomLeft)
                 spriteBatch.Draw(cornerTex, pos + Vector2.UnitY * finalCord, null, light, 0, new Vector2(0, 0), 1, SpriteEffects.FlipHorizontally, 0);
             if (drawBottomRight)
-                spriteBatch.Draw(cornerTex, pos - corner.Size() + Vector2.One * size, null, light, 0, new Vector2(0, 0), 1, 0, 0);
+                spriteBatch.Draw(cornerTex, pos - CalamityCanvas2023Tile.corner.Size() + Vector2.One * size, null, light, 0, new Vector2(0, 0), 1, 0, 0);
         }
 
         // Check if the tile is a canvas tile that has the correct tile frames

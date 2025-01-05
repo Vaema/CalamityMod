@@ -913,7 +913,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
                 .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
                 .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
-                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2023>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2024>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
                 .Register();
         }
 

@@ -25,6 +25,8 @@ namespace CalamityMod.UI
             // The UI only draws if the player is viewing a painting.
             if (p.CurrentlyViewedCanvasID == -1)
                 return;
+            if (p.CurrentlyViewedCanvasType == -1)
+                return;
 
             // Check if this tile entity ID is actually a painting. If it's not, immediately destroy this UI.
             TECanvasPainting painting;
@@ -34,6 +36,7 @@ namespace CalamityMod.UI
             else
             {
                 p.CurrentlyViewedCanvasID = -1;
+                p.CurrentlyViewedCanvasType = -1;
                 ResetVars();
                 return;
             }
@@ -62,7 +65,9 @@ namespace CalamityMod.UI
 
             bool hideUI = Main.keyState.IsKeyDown(Keys.LeftShift);
 
-            Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvasTile>()].Value;
+            Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvas2023Tile>()].Value;
+            if (p.CurrentlyViewedCanvasType == 1)
+                tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvas2024Tile>()].Value;
 
             // This is the length and width of the UI box, which is a square
             float dimension = Main.screenHeight * 0.66f;
@@ -109,7 +114,7 @@ namespace CalamityMod.UI
             // Border buffer size
             int borderSize = 4;
             // The size of the cursor box
-            Vector2 cursorDimension = new Vector2(pixelRatio) * paintingFrameScale;
+            Vector2 cursorDimension = tex.Size() * sizeRatio * painting.scale * 0.1f;
 
             // The position of the cursor box. Clamped to be inside of the painting
             // Moving
@@ -180,9 +185,9 @@ namespace CalamityMod.UI
             }
 
             // Draw a preview of the painting on the side
-            float extraScale = 7f;
+            float extraScale = 3f;
             float halfDim = paintingTileSize * sizeRatio * extraScale / 2;
-            int previewSliceSize = (int)(paintingFrameScale * paintingTileSize);
+            int previewSliceSize = (int)(paintingFrameScale * 0.1f * tex.Width);
             float previewScale = sizeRatio / paintingFrameScale * extraScale;
             int previewDimension = (int)(previewSliceSize * previewScale);
             Vector2 demoPosition = posterDrawPos + new Vector2(dimension + halfDim, dimension / 2 - halfDim);
