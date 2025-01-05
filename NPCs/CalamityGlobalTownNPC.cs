@@ -140,6 +140,7 @@ namespace CalamityMod.NPCs
             "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Cooler Kevin", // <@!614126424751603714> (exellent.)
+            "Dinkleberg", // <@!581993958037520404> (hyperionzx)
         };
         private static readonly string[] MechanicNames =
         {
@@ -147,7 +148,7 @@ namespace CalamityMod.NPCs
             "Daawn", // <@!206162323541458944> (daawnily)
             "Robin", // <@!654737510030639112> (altzeus)
             "Curly", // <@!673092101780668416> (curly4830)
-			"Cobalt", // <@!132962828922388481> (cobalt_44)
+            "Cobalt", // <@!132962828922388481> (cobalt_44)
         };
         private static readonly string[] MerchantNames =
         {
