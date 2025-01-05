@@ -116,12 +116,12 @@ namespace CalamityMod.Projectiles
         /// If true, adds a fire trail to the projectile, and makes it inflict Hellfire.<br/>
         /// Used by Thermocline Blaster.
         /// </summary>
-
-        // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
-        public bool sharkBullets = false;
-
-        // Adds fire to bullets, currently used by Thermocline Blaster
         public bool fireBullet = false;
+        /// <summary>
+        /// If true, allows projectiles to track damage scaling.<br/>
+        /// Used by Megalodon and Voidragon.
+        /// </summary>
+        public bool sharkBullets = false;
         /// <summary>
         /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
         /// Used by Thermocline Blaster.

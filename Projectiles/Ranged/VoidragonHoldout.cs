@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Dust dust = Dust.NewDustPerfect(GunTipPosition + (-Projectile.velocity.RotatedBy(0.15 * Projectile.direction) * 50), dustType);
                 dust.scale = Main.rand.NextFloat(1.2f, 1.8f) * (Owner.Calamity().sharkGunDamageScaling * 0.02f) - rotMulti * 0.1f;
                 dust.noGravity = true;
-                dust.velocity = new Vector2(-1.2f, -2).RotatedBy(-Owner.direction).RotatedByRandom(rotMulti * 0.8f) * (Main.rand.NextFloat(1f, 3.2f) - rotMulti) * (Owner.Calamity().sharkGunDamageScaling * 0.015f);
+                dust.velocity = new Vector2(-1.2f, -2).RotatedBy(Projectile.rotation).RotatedByRandom(rotMulti * 0.8f) * (Main.rand.NextFloat(1f, 3.2f) - rotMulti) * (Owner.Calamity().sharkGunDamageScaling * 0.015f);
                 dust.alpha = Main.rand.Next(90, 150);
                 dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
             }
@@ -77,9 +77,11 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
-                    SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.4f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
+                    SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.1f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
                     Particle sparker = new CritSpark(GunTipPosition, Vector2.Zero, Color.Gold, Color.LightGoldenrodYellow, 1.7f, 3, 0.5f, 3f);
                     GeneralParticleHandler.SpawnParticle(sparker);
+                    Particle spark2 = new GlowSparkParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(1.2f, 1.5f), false, 15, 0.017f, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet, new Vector2(1.5f, 0.7f), true, false, 1.3f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
                     for (int i = 0; i <= 4; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
@@ -132,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
                     //Main.NewText(Owner.Calamity().sharkGunDamageScaling);
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotHeavy");
-                    SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = 0.2f }, Projectile.Center);
+                    SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = 0.15f }, Projectile.Center);
                     for (int i = 0; i <= 13; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 1.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
@@ -153,7 +155,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle pulse = new DirectionalPulseRing(GunTipPosition, shootVelocity / 4, Color.Gray, new Vector2(1f, 2.5f), rotation, 0.03f, 0.3f, 20);
                     GeneralParticleHandler.SpawnParticle(pulse);
                     //Extra sound and muzzle flash if the scaling is at max
-                    if (Owner.Calamity().sharkGunDamageScaling == 30)
+                    if (Owner.Calamity().sharkGunDamageScaling == 50)
                     {
                         SoundStyle fireperfect = new("CalamityMod/Sounds/Item/ShadowboltReflect");
                         SoundEngine.PlaySound(fireperfect with { Volume = 0.6f, Pitch = 0f }, GunTipPosition);
@@ -168,7 +170,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Owner.Calamity().sharkGunDamageScaling++;
                     }
                     //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<AnomalysNanogunPlasmaBeam>(), (int)(Projectile.damage * 5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<AnomalysNanogunPlasmaBeam>(), (int)(Projectile.damage * 2.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
 
                     //After firing the rocket, kill the projectile to allow left click to be held down
                     Projectile.Kill();
