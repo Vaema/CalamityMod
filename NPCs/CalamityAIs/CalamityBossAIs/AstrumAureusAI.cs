@@ -916,7 +916,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (npc.life < 1)
                                 npc.life = 1;
 
-                            npc.HealEffect(-damageAmt, true);
+                            npc.DamageEffect(damageAmt);
                         }
                     }
 
