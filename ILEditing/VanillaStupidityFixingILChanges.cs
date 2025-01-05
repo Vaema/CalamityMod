@@ -1060,7 +1060,7 @@ namespace CalamityMod.ILEditing
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
             if (sItem.type == ItemID.SolarTablet)
-                return Main.dayTime && !Main.eclipse;
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }
