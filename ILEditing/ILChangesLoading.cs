@@ -199,7 +199,7 @@ namespace CalamityMod.ILEditing
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
-            On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
+            On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 
