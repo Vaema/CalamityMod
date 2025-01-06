@@ -169,6 +169,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PartyGirlNames =
         {
             "Arin", // <@!268169458302976012> (kiyotu)
+            "Typhäne", // <@!222064016107896832> (typhane.)
         };
         private static readonly string[] PirateNames =
         {
