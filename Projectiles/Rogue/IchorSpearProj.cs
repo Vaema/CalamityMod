@@ -31,10 +31,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 50;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (Collision.SolidCollision(Projectile.Center, 3, 3) && !Projectile.Calamity().stealthStrike)
+                Projectile.Kill();
             framesInAir++;
             if (framesInAir > 90 && !Projectile.Calamity().stealthStrike)
             {
@@ -67,7 +70,6 @@ namespace CalamityMod.Projectiles.Rogue
             bool defaultsonce = true;
             if (Projectile.Calamity().stealthStrike)
             {
-                Projectile.tileCollide = false;
                 Projectile.aiStyle = 0;
                 Projectile.extraUpdates = 2;
                 if (Projectile.ai[0] == 0f)

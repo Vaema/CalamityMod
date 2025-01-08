@@ -267,14 +267,14 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.5f), Projectile.knockBack, Projectile.owner, 0, 0, i);
                             }
                         }
                         else
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2.5f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
                             }
                         }
 

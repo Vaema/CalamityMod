@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 88;
             Item.height = 34;
-            Item.damage = 457;
+            Item.damage = 387;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 8;
             Item.noMelee = true;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<OntologicalDespoilerHoldout>();
             Item.shootSpeed = 12f;
         }
-
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 25;
         public override bool AltFunctionUse(Player player) => true;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
