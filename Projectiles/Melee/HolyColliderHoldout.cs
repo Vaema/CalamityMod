@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
             useAnim = Owner.itemAnimationMax;
             storedUseAnim = useAnim;
 
-            chargeTimerMax = (int)(useAnim * 1.5f); // Max charge time is set here
+            chargeTimerMax = (int)(useAnim * 1.1f); // Max charge time is set here
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.05f);
 
-                    float rotationValue = 65f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
+                    float rotationValue = 45f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
                     Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(rotationValue), 0.3f);
                     Animation = 0;
                     Owner.itemAnimation++;
