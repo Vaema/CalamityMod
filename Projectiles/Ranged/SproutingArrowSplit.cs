@@ -10,6 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Items/Ammo/SproutingArrow";
+        public bool expanded = false;
 
         public override void SetDefaults()
         {
@@ -19,19 +20,25 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 2;
+            Projectile.extraUpdates = 3;
             Projectile.alpha = 255;
             Projectile.timeLeft = 450;
             Projectile.ArmorPenetration = 8;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
             // If you get the direct arrowhead hit, make sure those arrows hit by making them large
             if (Projectile.ai[1] == 1)
             {
-                Projectile.ExpandHitboxBy(60);
-                Projectile.ai[1] = 0;
+                if (!expanded)
+                {
+                    Projectile.ExpandHitboxBy(100);
+                    expanded = true;
+                }
             }
+            else
+                Projectile.tileCollide = true;
             Lighting.AddLight(Projectile.Center, Color.LimeGreen.ToVector3() * 0.25f);
             if (Projectile.alpha > 0)
             {

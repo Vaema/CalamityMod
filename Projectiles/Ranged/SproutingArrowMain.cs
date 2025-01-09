@@ -1,5 +1,8 @@
 ﻿using System;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -44,6 +47,42 @@ namespace CalamityMod.Projectiles.Ranged
             }
             Projectile.ai[0]++;
 
+            if (Projectile.timeLeft == 1)
+            {
+                for (int index = 0; index < Main.npc.Length; index++)
+                {
+                    NPC nPC = Main.npc[index];
+                    float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f);
+
+                    if (Utils.Distance(nPC.Center, Projectile.Center) < 15 + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && nPC.CanBeChasedBy() && !hitDirect)
+                    {
+                        float blastSize = 45;
+                        float minMultiplier = 0.4f;
+                        int hitsToMinMult = 4;
+                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                        blast.DamageType = DamageClass.Ranged;
+                        blast.ArmorPenetration = 8;
+
+                        hitDirect = true;
+
+                        for (int i = 0; i < 2; i++)
+                            SoundEngine.PlaySound((i == 0 ? SoundID.Item53 : SoundID.Item52) with { Pitch = (i == 0 ? 0.9f : 0.5f), Volume = 0.45f, MaxInstances = 2 }, nPC.Center);
+                        int Dusts = 8;
+                        float radians = MathHelper.TwoPi / Dusts;
+                        Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                        float rotRando = Main.rand.NextFloat(0.1f, 2.5f);
+                        for (int i = 0; i < Dusts; i++)
+                        {
+                            Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f * rotRando) * 6f;
+                            Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 264, dustVelocity);
+                            dust2.noGravity = true;
+                            dust2.scale = Main.rand.NextFloat(0.85f, 1.35f);
+                            dust2.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;
+                        }
+                    }
+                }
+            }
+
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
@@ -67,24 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.timeLeft <= 6)
-            {
-                hitDirect = true;
-                SoundEngine.PlaySound(SoundID.Item53 with { Pitch = 0.9f, Volume = 0.4f }, Projectile.Center);
-                int Dusts = 8;
-                float radians = MathHelper.TwoPi / Dusts;
-                Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
-                float rotRando = Main.rand.NextFloat(0.1f, 2.5f);
-                for (int i = 0; i < Dusts; i++)
-                {
-                    Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f * rotRando) * 6f;
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 264, dustVelocity);
-                    dust2.noGravity = true;
-                    dust2.scale = Main.rand.NextFloat(0.85f, 1.35f);
-                    dust2.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;
-                }
-                Projectile.Kill();
-            }
+            
         }
     }
 }
