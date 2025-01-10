@@ -81,7 +81,6 @@ AddedTooltip: {
 	PlatinumGreaves: 10% increased movement speed
 	CrimsonBreastplate: +1 HP/s life regen
 	CrimsonOtherPieces: +0.5 HP/s life regen
-	SolarFlarePieces: Grants +1 HP/s life regeneration
 	Picksaw: Can mine Scoria Ore located in the Abyss
 }
 
@@ -227,6 +226,7 @@ EditedTooltip: {
 	FlaskofParty: All attacks cause confetti to appear
 	FlaskofPoison: Melee, Whip, and Rogue attacks poison enemies
 	FlaskofVenom: Melee, Whip, and Rogue attacks inflict Acid Venom on enemies
+	SolarFlarePieces: Grants +1 HP/s life regeneration
 	/*
 	OOA sets
 	*/
