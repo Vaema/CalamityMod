@@ -337,6 +337,7 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
+        public int demonSwordImpales = 0;
 
         /// <summary>
         /// If set to true, prevents this NPC from dealing contact damage.<br/>
@@ -593,6 +594,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
+            myClone.demonSwordImpales = demonSwordImpales;
 
             myClone.pacified = pacified;
 
