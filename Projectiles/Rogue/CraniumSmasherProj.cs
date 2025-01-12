@@ -27,18 +27,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            // Used for stealth strike balls
-            if (Projectile.ai[1] == 1f)
-            {
-                if (Projectile.Center.Y >= Projectile.ai[2])
-                    Projectile.tileCollide = true;
-            }
-            else
-            {
-                Projectile.ai[0] += 1f;
-                if (Projectile.ai[0] >= 5f)
-                    Projectile.tileCollide = true;
-            }
+            Projectile.ai[0] += 1f;
+            if (Projectile.ai[0] >= 5f)
+                Projectile.tileCollide = true;
 
             Projectile.rotation += Projectile.velocity.X * 0.02f;
             Projectile.velocity.X *= 0.99f;

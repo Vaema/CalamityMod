@@ -29,8 +29,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 20f;
         }
 
-        public override float StealthDamageMultiplier => 1f;
-
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
