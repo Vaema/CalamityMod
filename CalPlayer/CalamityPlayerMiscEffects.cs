@@ -3180,8 +3180,8 @@ namespace CalamityMod.CalPlayer
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
-                (ascendantInsignia ? 0.2 : 0D) + // Added to soaring insignia's flight to get 50%
-                (Player.empressBrooch ? 0.3 : 0D) +
+                (ascendantInsignia ? 0.17 : 0D) + // Added to soaring insignia's flight to get 50%
+                (Player.empressBrooch ? 0.33 : 0D) +
                 externalFlightTimeMultBoost;
 
             if (community)

@@ -1030,7 +1030,7 @@ namespace CalamityMod.CalPlayer
             if (evolution)
             {
                 if (proj.type == projTypeJustHitBy)
-                    projectileDamageReduction += 0.25;
+                    projectileDamageReduction += 0.2;
             }
 
             if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
