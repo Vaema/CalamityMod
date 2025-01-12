@@ -46,14 +46,13 @@ namespace CalamityMod.Projectiles.Melee
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
         public override void SetDefaults()
         {
-            Projectile.width = 25;
-            Projectile.height = 25;
+            Projectile.width = 12;
+            Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.timeLeft = Lifetime + ChargeupTime;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -124,16 +123,19 @@ namespace CalamityMod.Projectiles.Melee
                     }
 
                     Projectile.Center = stabbedTarget.Center + impalePos;
-                    if ((stabbedTarget.life <= 0 && stabbedTarget.realLife == -1) || stabbedTarget == null || Projectile.localAI[0] == 5)
+                    if ((stabbedTarget.life <= 0) || stabbedTarget == null || Projectile.localAI[0] == 5)
                     {
                         Projectile.timeLeft = Lifetime;
                         stabbedTarget.Calamity().demonSwordImpales--;
                         stuckInTarget = false;
                         exitedTarget = true;
                         Projectile.tileCollide = true;
+                        Projectile.rotation += Main.rand.NextFloat(-1.5f, 1.5f);
                         for (int i = 0; i < Main.maxNPCs; i++)
                             Projectile.localNPCImmunity[i] = 0;
                         Projectile.numHits = 0;
+                        SoundStyle unstuck = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
+                        SoundEngine.PlaySound(unstuck with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.3f, 0.4f), MaxInstances = 3 }, Projectile.Center);
                     }
                 }
                 if (exitedTarget && !stuckInGround)
@@ -154,7 +156,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 dustVel = exitedTarget ? Vector2.One.RotatedByRandom(MathHelper.Pi) : safeVel.RotatedBy(MathHelper.ToRadians(105 * (i == 0 ? 1 : -1))).RotatedByRandom(0.1f) * Main.rand.NextFloat(3, 4);
                     if (Main.rand.NextBool(3))
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(exitedTarget ? Projectile.rotation - MathHelper.ToRadians(45) : 0) * (exitedTarget ? 45 : 60), ModContent.DustType<LightDust>(), dustVel, 0, default, (exitedTarget ? 1.5f : 1) * Main.rand.NextFloat(0.8f, 0.9f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(exitedTarget ? Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45) : 0) * (exitedTarget ? 45 : 60), ModContent.DustType<LightDust>(), dustVel, 0, default, (exitedTarget ? 1.5f : 1) * Main.rand.NextFloat(0.8f, 0.9f));
                         dust.noGravity = true;
                         dust.color = Main.rand.NextBool() ? Color.Red : Color.Crimson;
                         dust.noLight = true;
@@ -262,7 +264,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 stuckInTarget = true;
                 impalePos = Projectile.Center - stabbedTarget.Center;
-                stuckTimer = 900;
+                stuckTimer = 1500;
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -270,7 +272,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.25f;
             int hitsToMinMult = 6;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (exitedTarget ? 1.3f : 1);
+            modifiers.SourceDamage *= damageMult * (exitedTarget ? 1.15f : 1f);
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -321,7 +323,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return base.CanDamage();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 1 : 2), targetHitbox); // After exiting a target, the hitbox is larger
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/BladecrestOathsword").Value;

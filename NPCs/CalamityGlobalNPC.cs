@@ -5826,6 +5826,9 @@ namespace CalamityMod.NPCs
                 if (webbed > 0)
                     velocitySlownessFactor += 0.15f;
 
+                if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+                    velocitySlownessFactor += 0.1f * demonSwordImpales;
+
                 if (gState > 0)
                 {
                     float baseSlownessFactor = 0.1f;

@@ -190,7 +190,13 @@ Basher: {
 
 BladecrestOathsword: {
 	DisplayName: Bladecrest Oathsword
-	Tooltip: Fires bursts of demonic blades that exponentially decelerate and explode
+	Tooltip:
+'''
+Throw a sharp blade that impales and slows enemies
+Up to three blades can impale an enemy at a time
+Hitting impaled guys with a sword beyond the max amount launches the oldest one out
+[c/df0049:'Secret Stone? Demon King?]
+'''
 }
 
 BlightedCleaver: {

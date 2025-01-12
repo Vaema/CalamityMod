@@ -16,8 +16,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 56;
             Item.height = 56;
 
-            Item.damage = 28;
-            Item.knockBack = 2f;
+            Item.damage = 44;
+            Item.knockBack = 3f;
             Item.useTime = 53;
             Item.useAnimation = 53;
             Item.shoot = ModContent.ProjectileType<BladecrestOathswordThrownBlade>();
@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
+        public override bool MeleePrefix() => true;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             throwCount++;
