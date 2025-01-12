@@ -218,7 +218,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 					CurrentFlailState = FlailState.LaunchingForward;
 					StateTimer = 0f;
 					Projectile.Center = Owner.MountedCenter;
-					Projectile.velocity = toMouse * launchSpeed + Owner.velocity;
+					Projectile.velocity = toMouse * launchSpeed;
 					Projectile.netUpdate = true;
 					Projectile.ResetLocalNPCHitImmunity();
 					Projectile.localNPCHitCooldown = LaunchIFrames * Projectile.MaxUpdates;

@@ -87,7 +87,7 @@ namespace CalamityMod.Items
                 { ItemID.CursedDart, Do(DamageExact(25)) },
                 { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
                 { ItemID.DaedalusStormbow, Do(DamageExact(30)) },
-                { ItemID.DaoofPow, Do(DamageExact(85), ShootSpeedExact(10)) },
+                { ItemID.DaoofPow, Do(DamageExact(85)) },
                 { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(40)) },
                 { ItemID.DartRifle, Do(PointBlank, DamageExact(58)) },
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(20)) },
@@ -254,6 +254,7 @@ namespace CalamityMod.Items
                 // Terrarian is extremely overpowered and requires a heavy nerf.
                 { ItemID.Terrarian, Do(AutoReuse, DamageExact(90)) },
                 { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(90)) },
+                { ItemID.TheMeatball, Do(DamageExact(24)) },
                 { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, DamageExact(15)) },
                 { ItemID.ThunderSpear, Do(AutoReuse, UseMeleeSpeed) }, // Storm Spear

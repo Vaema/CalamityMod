@@ -3616,14 +3616,28 @@ namespace CalamityMod.Projectiles
                 // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
                 if (projectile.ai[0] == 1f)
                 {
-                    projectile.ai[2]++;
-                    if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
-                        projectile.ai[1]--;
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
+                            projectile.ai[1]--;
+                    }
+                    else
+                        projectile.velocity *= 1.33f;
                 }
-                if (projectile.ai[0] == 1f || projectile.ai[0] == 2f || projectile.ai[0] == 4f)
-                    projectile.extraUpdates = 1;
-                else
-                    projectile.extraUpdates = 0;
+            }
+            // Similar hacky solution for The Meatball
+            if (projectile.type == ProjectileID.TheMeatball)
+            {
+                if (projectile.ai[0] == 1f)
+                {
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 7f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 7 frames to return
+                            projectile.ai[1]--;
+                    }
+                }
             }
 
             // Random velocities for Bouncy Boulders in GFB
