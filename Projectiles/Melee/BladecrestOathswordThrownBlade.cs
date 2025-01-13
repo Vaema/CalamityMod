@@ -1,19 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -23,7 +15,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/BladecrestOathsword";
 
-        public int ChargeupTime = 15;
+        public int ChargeupTime => (int)Projectile.localAI[2];
         public int Lifetime = 100;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
@@ -264,13 +256,13 @@ namespace CalamityMod.Projectiles.Melee
 
                 stuckInTarget = true;
                 impalePos = Projectile.Center - stabbedTarget.Center;
-                stuckTimer = 1500;
+                stuckTimer = 3600;
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.25f;
-            int hitsToMinMult = 6;
+            float minMult = 0.4f;
+            int hitsToMinMult = 8;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult * (exitedTarget ? 1.15f : 1f);
         }

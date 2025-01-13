@@ -191,12 +191,12 @@ Basher: {
 BladecrestOathsword: {
 	DisplayName: Bladecrest Oathsword
 	Tooltip:
-'''
-Throw a sharp blade that impales and slows enemies
-Up to three blades can impale an enemy at a time
-Hitting impaled guys with a sword beyond the max amount launches the oldest one out
-[c/df0049:'Secret Stone? Demon King?]
-'''
+		'''
+		Throw a sharp blade that impales and slows enemies
+		Up to three blades can impale an enemy at a time
+		Hitting impaled guys with a sword beyond the max amount launches the oldest one out
+		[c/df0049:'Secret Stone? Demon King?]
+		'''
 }
 
 BlightedCleaver: {
@@ -898,9 +898,8 @@ OldLordClaymore: {
 	DisplayName: Old Lord Claymore
 	Tooltip:
 		'''
-		Holding <right> rapidly absorbs energy into the blade until it is charged
-		Press <left> while charged to fly in the direction of the cursor
-		Using the lunge resets the blade's charge to zero
+Swings a slow powerful sword that sets enemies ablaze and greatly knocks them back
+[c/df4420:'My ultra for fuuuuu YEAAAAAAAAAAAAAAA And my father sucks rmembamebamema that one whfngmssjjamhrhrh]
 		'''
 }
 

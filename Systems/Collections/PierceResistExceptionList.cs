@@ -68,6 +68,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<MetalShard>(),
                 ProjectileType<MurasamaSlash>(),
                 ProjectileType<NastyChollaBol>(),
+                ProjectileType<OldLordClaymoreHoldout>(),
                 ProjectileType<OmnibladeSwing>(),
                 ProjectileType<PhaseslayerProjectile>(),
                 ProjectileType<PhotonRipperProjectile>(),

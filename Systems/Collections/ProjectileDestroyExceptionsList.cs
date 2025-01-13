@@ -65,6 +65,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<ArkoftheCosmosSwungBlade>(),
                 ProjectileType<ArkoftheCosmosParryHoldout>(),
                 ProjectileType<BasherHoldout>(),
+                ProjectileType<OldLordClaymoreHoldout>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<EarthHoldout>(),
