@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.DamageType = DamageClass.Summon;
             Item.mana = 300;
-            Item.damage = 9600;
+            Item.damage = 9000;
             Item.knockBack = 7f;
             Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<UniverseSplitterField>();
