@@ -210,6 +210,18 @@ namespace CalamityMod.Projectiles.Melee
                 dust2.color = Main.rand.NextBool() ? Color.Orange : Color.OrangeRed;
             }
 
+
+            float bladeValue = -1;
+            for (int x = 0; x < Main.maxProjectiles; x++)
+            {
+                Projectile projectile = Main.projectile[x];
+                if (projectile.owner == Projectile.owner && projectile.type == ModContent.ProjectileType<BladecrestOathswordThrownBlade>() && projectile.ai[2] == target.whoAmI)
+                {
+                    projectile.localAI[0] = 5;
+                    projectile.velocity = (Vector2.Lerp(projectile.velocity, launchVel * 14, 0.7f) * 1.2f).RotatedByRandom(0.1f);
+                }
+            }
+
             if (Projectile.numHits == 0)
             {
                 Owner.Calamity().GeneralScreenShakePower = 5f;
