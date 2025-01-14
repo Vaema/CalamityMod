@@ -1770,6 +1770,8 @@ namespace CalamityMod.CalPlayer
 
             if (arsenalCooldown > 0)
                 arsenalCooldown--;
+            if (killModeCooldown > 0)
+                killModeCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (transformerCooldown > 0)
@@ -2512,6 +2514,13 @@ namespace CalamityMod.CalPlayer
             {
                 Player.ClearBuff(ModContent.BuffType<AbyssalMadness>());
                 omegaBlueCD.timeLeft = 1500;
+            }
+
+            bool hasKillMode = cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
+            if (hasKillMode && killModeCD.timeLeft > KillMode.cooldownMax && !(Player.ActiveItem().type == ModContent.ItemType<ForbiddenOathblade>() || Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>() || Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>()))
+            {
+                killModeCD.timeLeft = KillMode.cooldownMax - 1;
+                Player.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
             }
 
             bool hasPlagueBlackoutCD = cooldowns.TryGetValue(PlagueBlackout.ID, out CooldownInstance plagueBlackoutCD);

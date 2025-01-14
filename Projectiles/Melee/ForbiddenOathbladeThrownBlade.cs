@@ -5,18 +5,19 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BladecrestOathswordThrownBlade : ModProjectile, ILocalizedModType
+    public class ForbiddenOathbladeThrownBlade : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Items/Weapons/Melee/BladecrestOathsword";
+        public override string Texture => "CalamityMod/Items/Weapons/Melee/ForbiddenOathblade";
 
         public int ChargeupTime => (int)Projectile.localAI[2];
-        public int Lifetime = 100;
+        public int Lifetime = 120;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
         public float ChargeProgress => 1 - (Projectile.timeLeft - Lifetime) / (float)(ChargeupTime);
@@ -28,13 +29,14 @@ namespace CalamityMod.Projectiles.Melee
         public ref NPC stabbedTarget => ref Main.npc[(int)Projectile.ai[2]];
 
         public bool thrown = false;
-        public int fadeOutTime = 60;
+        public int fadeOutTime = 80;
         public bool stuckInTarget = false;
         public int stuckTimer = 0;
         public bool exitedTarget = false;
         public bool stuckInGround = false;
         public Vector2 impalePos;
         public int bounces = 0;
+        public Vector2 tipPosition = Vector2.Zero;
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
         public override void SetDefaults()
         {
@@ -64,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
-            Vector3 Light = Color.Firebrick.ToVector3();
+            Vector3 Light = Color.MediumOrchid.ToVector3();
             Lighting.AddLight(Projectile.Center, Light * 0.5f);
 
             if (Projectile.timeLeft == Lifetime)
@@ -132,8 +134,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (exitedTarget && !stuckInGround)
                 {
-                    if (Projectile.velocity.Y < 14)
-                        Projectile.velocity.Y += 0.1f * (bounces > 0 ? 4 : 1);
+                    if (Projectile.velocity.Y < 14 && Projectile.timeLeft < (bounces == 1 ? Lifetime - 20 : Lifetime))
+                        Projectile.velocity.Y += 0.1f * (bounces * 3);
                     Projectile.ai[2] = 0;
                 }
 
@@ -145,20 +147,27 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 safeVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
-                    Vector2 dustVel = exitedTarget ? Vector2.One.RotatedByRandom(MathHelper.Pi) : safeVel.RotatedBy(MathHelper.ToRadians(105 * (i == 0 ? 1 : -1))).RotatedByRandom(0.1f) * Main.rand.NextFloat(3, 4);
-                    if (Main.rand.NextBool(3))
+                    Vector2 dustVel = exitedTarget ? safeVel.RotatedBy(MathHelper.ToRadians(-90 * Projectile.direction) + Projectile.rotation) : safeVel.RotatedBy(MathHelper.ToRadians(90 * (i == 0 ? 1 : -1))).RotatedByRandom(0.1f) * Main.rand.NextFloat(3, 4);
+                    if (!exitedTarget && Main.rand.NextBool(3))
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(exitedTarget ? Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45) : 0) * (exitedTarget ? 45 : 60), ModContent.DustType<LightDust>(), dustVel, 0, default, (exitedTarget ? 1.5f : 1) * Main.rand.NextFloat(0.8f, 0.9f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel * 60, ModContent.DustType<LightDust>(), dustVel, 0, default, Main.rand.NextFloat(0.9f, 1.1f));
                         dust.noGravity = true;
-                        dust.color = Main.rand.NextBool() ? Color.Red : Color.Crimson;
+                        dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
                         dust.noLight = true;
                         dust.noLightEmittence = true;
-                        dust.alpha = 100;
+                        dust.alpha = 50;
+                    }
+                    if (exitedTarget && i == 0)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45)) * 45, 278, dustVel * Main.rand.NextFloat(1, 4), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        dust.noGravity = true;
+                        dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
                     }
                 }
-                if (Main.rand.NextBool(5))
+                
+                if (Main.rand.NextBool(4))
                 {
-                    Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.2f, 0.6f), "CalamityMod/Particles/DemonSigilParticle", false, 17, Main.rand.NextFloat(0.2f, 0.3f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.6f, new Vector2(1, 1), true, false, Main.rand.NextFloat(-1f, 1f), false, false);
+                    Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.2f, 0.6f), "CalamityMod/Particles/DemonSigilParticle", false, 17, Main.rand.NextFloat(0.2f, 0.3f), Color.Lerp(Color.MediumOrchid, Color.BlueViolet, Main.rand.NextFloat(0, 0.7f)) * 0.6f, new Vector2(1, 1), true, false, Main.rand.NextFloat(-1f, 1f), false, false);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }
@@ -190,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), dustVel, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
                 dust.noGravity = true;
-                dust.color = Main.rand.NextBool() ? Color.Red : Color.Crimson;
+                dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
                 dust.noLight = true;
                 dust.noLightEmittence = true;
                 dust.alpha = 100;
@@ -207,7 +216,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.spriteDirection = Owner.direction;
             Projectile.direction = Owner.direction;
 
-            Projectile.Center = Owner.MountedCenter + Vector2.UnitY.RotatedBy(armRotation * Owner.gravDir) * -45f * Owner.gravDir;
+            Projectile.Center = Owner.MountedCenter + Vector2.UnitY.RotatedBy(armRotation * Owner.gravDir) * -55f * Owner.gravDir;
             Projectile.rotation = (-MathHelper.PiOver4 * Projectile.direction + armRotation) * Owner.gravDir;
 
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, MathHelper.Pi + armRotation);
@@ -216,6 +225,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(BuffID.ShadowFlame, 180);
             if (!exitedTarget)
             {
                 SoundStyle stuck = new("CalamityMod/Sounds/Item/DemonSwordImpact", 2);
@@ -239,17 +249,17 @@ namespace CalamityMod.Projectiles.Melee
                         }
                     }
                     ejectedBlade.localAI[0] = 5;
-                    ejectedBlade.velocity = Projectile.velocity.RotatedByRandom(0.2f);
+                    ejectedBlade.velocity = Projectile.velocity.RotatedByRandom(0.12f);
 
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        Particle spark2 = new SparkParticle(target.Center, Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(0.2f, 1f), false, 30, Main.rand.NextFloat(0.3f, 0.7f), Main.rand.NextBool(3) ? Color.Red : Color.Crimson);
+                        Particle spark2 = new SparkParticle(target.Center, Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.2f, 1.5f), false, 45, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet);
                         GeneralParticleHandler.SpawnParticle(spark2);
 
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.3f, 0.8f),  0, default, Main.rand.NextFloat(1.3f, 1.6f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.3f, 1f),  0, default, Main.rand.NextFloat(1.3f, 1.6f));
                         dust.noGravity = true;
                         dust.noLight = true;
-                        dust.color = Main.rand.NextBool(3) ? Color.Red : Color.Crimson;
+                        dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
                     }
                 }
                 target.Calamity().demonSwordImpales++;
@@ -270,7 +280,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (exitedTarget)
             {
-                if (bounces >= 1)
+                if (bounces >= 2)
                 {
                     impaleGround(oldVelocity);
                 }
@@ -318,13 +328,13 @@ namespace CalamityMod.Projectiles.Melee
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/BladecrestOathsword").Value;
+            Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ForbiddenOathblade").Value;
             Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
 
             float fadeScale = (1 - Projectile.Opacity);
             for (int i = 0; i < 16; i++)
             {
-                Color auraColor = Color.Crimson with { A = 0 } * 0.4f * fadeScale * Projectile.Opacity;
+                Color auraColor = Color.MediumOrchid with { A = 0 } * 0.4f * fadeScale * Projectile.Opacity;
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * 9 * fadeScale;
                 Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + drawOffset, null, auraColor, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             }

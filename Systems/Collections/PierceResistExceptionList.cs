@@ -53,6 +53,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<EyeOfNightCell>(),
                 ProjectileType<FantasyTalismanProj>(),
                 ProjectileType<FantasyTalismanStealth>(),
+                ProjectileType<ForbiddenOathbladeHoldout>(),
                 ProjectileType<GodsParanoiaProj>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),

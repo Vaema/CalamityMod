@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             throwCount++;
-            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 3.5f), 1, 100);
+            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 2.8f), 1, 100);
             Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
             blade.localAI[2] = useSpeed;
             blade.timeLeft += useSpeed;
