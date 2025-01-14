@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 360;
+            Projectile.timeLeft = 240;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
