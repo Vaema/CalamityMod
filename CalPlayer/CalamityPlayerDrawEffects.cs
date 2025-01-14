@@ -232,6 +232,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
                 Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
 
+            if (calamityPlayer.deepBrimstoneFlames && drawInfo.shadow == 0f)
+                DeepBrimstoneFlames.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 

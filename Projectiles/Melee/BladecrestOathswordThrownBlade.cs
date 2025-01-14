@@ -47,6 +47,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override bool ShouldUpdatePosition()
@@ -315,7 +316,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return base.CanDamage();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.numHits > 0 && !exitedTarget) ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/BladecrestOathsword").Value;

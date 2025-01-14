@@ -311,6 +311,7 @@ namespace CalamityMod.NPCs
         public int absorberAffliction = 0;
         public int irradiated = 0;
         public int bFlames = 0;
+        public int deepBrimstoneFlames = 0;
         public int hFlames = 0;
         /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
@@ -576,6 +577,7 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
+            myClone.deepBrimstoneFlames = deepBrimstoneFlames;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
@@ -972,7 +974,7 @@ namespace CalamityMod.NPCs
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            bool hasModHotOil = bFlames > 0 || deepBrimstoneFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
             if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
             {
                 double multiplier = 1D;
@@ -1120,6 +1122,13 @@ namespace CalamityMod.NPCs
             {
                 int baseBrimstoneFlamesDoTValue = (int)(60 * heatDamageMult);
                 ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Deep Brimstone Flames
+            if (deepBrimstoneFlames > 0) // This is like Brimstone Flames but purple and it can't be resisted
+            {
+                int baseDeepBrimstoneFlamesDoTValue = (int)(65 * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDeepBrimstoneFlamesDoTValue, baseDeepBrimstoneFlamesDoTValue / 12, ref npc.lifeRegen, ref damage);
             }
 
             // Holy Flames
@@ -5609,6 +5618,8 @@ namespace CalamityMod.NPCs
                 irradiated--;
             if (bFlames > 0)
                 bFlames--;
+            if (deepBrimstoneFlames > 0)
+                deepBrimstoneFlames--;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)
@@ -7159,6 +7170,9 @@ namespace CalamityMod.NPCs
             if (bFlames > 0 || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
 
+            if (deepBrimstoneFlames > 0)
+                DeepBrimstoneFlames.DrawEffects(npc, ref drawColor);
+
             if (bBlood > 0)
                 BurningBlood.DrawEffects(npc, ref drawColor);
 
@@ -7378,6 +7392,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/DeepBrimstoneFlames", NPC => NPC.Calamity().deepBrimstoneFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
             ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),

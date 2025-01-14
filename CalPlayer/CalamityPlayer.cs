@@ -1178,6 +1178,7 @@ namespace CalamityMod.CalPlayer
         public bool irradiated = false;
         public bool bFlames = false;
         public bool weakBrimstoneFlames = false;
+        public bool deepBrimstoneFlames = false;
         public bool gsInferno = false;
         public bool astralInfection = false;
         /// <summary> Plague debuff. </summary>
@@ -2364,6 +2365,7 @@ namespace CalamityMod.CalPlayer
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
+            deepBrimstoneFlames = false;
             gsInferno = false;
             astralInfection = false;
             pFlames = false;
@@ -2817,6 +2819,7 @@ namespace CalamityMod.CalPlayer
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
+            deepBrimstoneFlames = false;
             gsInferno = false;
             astralInfection = false;
             pFlames = false;

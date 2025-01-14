@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if ((Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0)
             {
-                Animation = (useAnim * 0.7f);
+                Animation = (int)(useAnim * 0.7f);
                 holding = false;
                 killModeCD.timeLeft = KillMode.cooldownMax;
                 Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
@@ -226,7 +227,7 @@ namespace CalamityMod.Projectiles.Melee
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            target.AddBuff(BuffID.ShadowFlame, 300);
+            target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 300);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             CalamityUtils.MoveNPC(target, launchVel, 12, true);
@@ -270,7 +271,6 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().GeneralScreenShakePower = 5.5f;
                 for (int i = 0; i < 4; i++)
                     GeneralParticleHandler.SpawnParticle(new CustomSpark(target.Center + launchVel * 15, launchVel.RotatedBy((0.15f - 0.05f * i) * (i % 2 == 0 ? -1 : 1)) * (10 + 10 * i), "CalamityMod/Particles/DemonSigilParticle", false, 11, 0.7f - 0.15f * i, Color.MediumOrchid, new Vector2(1.5f, 1), extraRotation: MathHelper.ToRadians(i % 2 == 0 ? 90 : 0), shrinkSpeed: (i % 2 == 0 ? -0.8f : 0.8f)));
-
 
                 SoundStyle swing = new("CalamityMod/Sounds/Item/DemonSwordStrongImpact");
                 SoundEngine.PlaySound(swing with { Volume = 1f, Pitch = MathHelper.Clamp(swingCount * 0.05f, -0.1f, 0.65f) }, Projectile.Center);

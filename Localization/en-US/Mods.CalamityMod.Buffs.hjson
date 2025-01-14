@@ -151,6 +151,11 @@ BrainRot: {
 	Description: Your neurons are popping like corn kernels
 }
 
+DeepBrimstoneFlames: {
+	DisplayName: Deep Brimstone Flames
+	Description: Immolating flames sear your soul
+}
+
 ElementalMix: {
 	DisplayName: Elemental Mix
 	Description: A beautiful elemental symphony is flaying you alive

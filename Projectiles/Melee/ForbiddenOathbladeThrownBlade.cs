@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override bool ShouldUpdatePosition()
@@ -225,12 +227,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.ShadowFlame, 180);
+            target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 120);
+
             if (!exitedTarget)
             {
                 SoundStyle stuck = new("CalamityMod/Sounds/Item/DemonSwordImpact", 2);
                 SoundEngine.PlaySound(stuck with { Volume = 0.75f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = 3 }, Projectile.Center);
-                
+
                 Projectile.ai[2] = target.whoAmI;
 
                 if (target.Calamity().demonSwordImpales < 0)
@@ -256,7 +259,7 @@ namespace CalamityMod.Projectiles.Melee
                         Particle spark2 = new SparkParticle(target.Center, Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.2f, 1.5f), false, 45, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet);
                         GeneralParticleHandler.SpawnParticle(spark2);
 
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.3f, 1f),  0, default, Main.rand.NextFloat(1.3f, 1.6f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(1.3f, 1.6f));
                         dust.noGravity = true;
                         dust.noLight = true;
                         dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
@@ -325,7 +328,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return base.CanDamage();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.numHits > 0 && !exitedTarget) ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.5f : 1), targetHitbox); // After exiting a target, the hitbox is larger
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ForbiddenOathblade").Value;
