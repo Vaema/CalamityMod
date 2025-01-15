@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.TownCritter.Chance) * 0.05f;
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDay.Chance) * 0.1f;
         }
 
         public override void FindFrame(int frameHeight)
