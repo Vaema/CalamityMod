@@ -12,11 +12,11 @@ using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ThunderboltOrb : ModProjectile, ILocalizedModType
+    public class VolterionOrb : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/ThunderboltOrbShot") { Volume = 0.6f };
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/VolterionOrbShot") { Volume = 0.6f };
         public static readonly SoundStyle ExplosionSound = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeImpact") { Volume = 0.5f };
 
         // Explosion
@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(FireSound, Projectile.Center);
 
                     Vector2 velocity = Projectile.SafeDirectionTo(target.Center) * 16f;
-                    Projectile shot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ThunderboltShot>(), (int)(Projectile.damage * LightningDamageMult), Projectile.knockBack * LightningDamageMult, Projectile.owner, OrbType + 1f);
+                    Projectile shot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<VolterionShot>(), (int)(Projectile.damage * LightningDamageMult), Projectile.knockBack * LightningDamageMult, Projectile.owner, OrbType + 1f);
                     shot.tileCollide = false;
 
                     // Create a lightning bolt-like particle in the direction of the shot and 3 random hue-shifted ones by the side

@@ -12,9 +12,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ThunderboltHoldout : BaseGunHoldoutProjectile
+    public class VolterionHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<Thunderbolt>();
+        public override int AssociatedItemID => ModContent.ItemType<Volterion>();
         public int Time = 0;
         public override float MaxOffsetLengthFromArm => 64f;
         public override float BaseOffsetY => -16f;
@@ -23,14 +23,14 @@ namespace CalamityMod.Projectiles.Magic
         public override float OffsetYUpwards => 6f;
         public override float OffsetYDownwards => 20f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.3f;
-        public override string Texture => "CalamityMod/Projectiles/Magic/ThunderboltHoldout";
+        public override string Texture => "CalamityMod/Projectiles/Magic/VolterionHoldout";
 
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/ThunderboltFire") { Volume = 0.35f };
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/VolterionFire") { Volume = 0.35f };
 
         public ref float FlashTimer => ref Projectile.ai[0];
 
         public static Asset<Texture2D> MuzzleFlash;
-        public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderboltHoldoutFlash");
+        public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/VolterionHoldoutFlash");
 
         public override void SetStaticDefaults() => Main.projFrames[Type] = 15;
 
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Magic
                     // Start from slightly behind the tip
                     Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
                     Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<ThunderboltShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<VolterionShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
                     for (int i = 0; i < 8; i++)
                     {

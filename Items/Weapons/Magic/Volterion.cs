@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("Thunderstorm")]
-    public class Thunderbolt : ModItem, ILocalizedModType
+    public class Volterion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.mana = 50;
             Item.useAnimation = Item.useTime = 80; // 42 frames of firing animation
             Item.knockBack = 2f;
-            Item.shoot = ModContent.ProjectileType<ThunderboltHoldout>();
+            Item.shoot = ModContent.ProjectileType<VolterionHoldout>();
             Item.shootSpeed = 16f;
 
             Item.useStyle = ItemUseStyleID.Shoot;
