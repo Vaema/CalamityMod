@@ -4301,6 +4301,15 @@ namespace CalamityMod.Projectiles
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
+            // Adamantite Throwing Axe's lightning has damage falloff.
+            if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.8f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Stardust Wings buff the Stardust Guardian's damage.
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
