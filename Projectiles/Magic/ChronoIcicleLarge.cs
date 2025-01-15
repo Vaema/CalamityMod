@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     bool isCounter = Projectile.ai[2] < 0;
                     // start further away and then rapidly go inwards
-                    float dist = Projectile.ai[2] == 12 ? 160 : MathHelper.Lerp(210, 160, Utils.GetLerpValue(0, 5, Projectile.ai[1], true));
+                    float dist = Math.Abs(Projectile.ai[2]) == 12 ? 160 : MathHelper.Lerp(210, 160, Utils.GetLerpValue(0, 5, Projectile.ai[1], true));
                     if (Main.player[Projectile.owner].active && !Main.player[Projectile.owner].dead)
                     {
                         float shardNum = Math.Abs(Projectile.ai[2]) - 1;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.ai[1] = 0;
                     }
                     // icicles 11 and 12 have barely any time, so they tick down much faster
-                    if (Projectile.ai[2] >= 11)
+                    if (Math.Abs(Projectile.ai[2]) >= 11)
                         Projectile.alpha -= 150;
                     else
                         Projectile.alpha -= 30;
