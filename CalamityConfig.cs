@@ -322,10 +322,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool PotionSelling { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(false)]
         public bool TownNPCsSpawnAtNight { get; set; }
 
         private const int MinTownNPCSpawnMultiplier = 1;

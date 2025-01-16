@@ -14,12 +14,6 @@ namespace CalamityMod
                 predicate
             );
         }
-        
-        //
-        // Config based conditions
-        //
-
-        public static readonly Condition PotionSellingConfig            = Create("PotionConfig",   () => CalamityServerConfig.Instance.PotionSelling);
 
         //
         // Player conditions

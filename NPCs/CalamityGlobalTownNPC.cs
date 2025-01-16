@@ -1101,7 +1101,6 @@ namespace CalamityMod.NPCs
 
             bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.9;
 
-            Condition potionSells = CalamityConditions.PotionSellingConfig;
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
             Condition roguePlayer = CalamityConditions.PlayerHasRogueArmor;
             Condition wingedPlayer = CalamityConditions.PlayerHasWings;
@@ -1112,8 +1111,8 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Merchant)
             {
-                shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20), potionSells, Condition.HappyEnoughToSellPylons)
-                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), potionSells, Condition.HappyEnoughToSellPylons);
+                shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20))
+                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
                 shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<THIEF>()))
@@ -1183,7 +1182,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Mechanic)
             {
-                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 4), potionSells, Condition.HappyEnoughToSellPylons)
+                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 4), Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ItemID.CombatWrench, Item.buyPrice(gold: 10));
             }
 
@@ -1234,7 +1233,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.PartyGirl)
             {
-                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnoughToSellPylons)
+                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ItemID.Pizza, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .AddWithCustomValue(ItemID.CreamSoda, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
             }
@@ -1253,7 +1252,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.SkeletonMerchant)
             {
-                shop.AddWithCustomValue(ItemType<CalciumPotion>(), Item.buyPrice(silver: 25), potionSells)
+                shop.AddWithCustomValue(ItemType<CalciumPotion>(), Item.buyPrice(silver: 25))
                 .Add(ItemID.MilkCarton)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
                 .AddWithCustomValue(ItemType<GiantShell>(), Item.buyPrice(gold: 12))
