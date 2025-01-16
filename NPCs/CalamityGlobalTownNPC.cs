@@ -1114,9 +1114,7 @@ namespace CalamityMod.NPCs
             {
                 shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20), potionSells, Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), potionSells, Condition.HappyEnoughToSellPylons);
-                shop.Add(ItemID.HealingPotion, potionSells, Condition.HappyEnoughToSellPylons, Condition.DownedEowOrBoc)
-                .Add(ItemID.ManaPotion, potionSells, Condition.HappyEnoughToSellPylons, Condition.DownedEowOrBoc)
-                .Add(ItemID.Flare, hasFlareGunUpgrade)
+                shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<THIEF>()))
                 .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
@@ -1178,8 +1176,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.GoblinTinkerer)
             {
-                shop.AddWithCustomValue(ItemID.StinkPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnoughToSellPylons)
-                .Add(ItemType<StatMeter>())
+                shop.Add(ItemType<StatMeter>())
                 .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
                 .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
             }
