@@ -320,7 +320,6 @@ namespace CalamityMod.Tiles
             // Drop Golden Bombs at a 1.75% chance from Pots
             if (type == TileID.Pots)
             {
-                Main.NewText(i + j);
                 if (Main.rand.NextBool(57))
                 {
                     DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
