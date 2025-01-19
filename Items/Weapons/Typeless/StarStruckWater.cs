@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.rare = ItemRarityID.Orange;
             Item.damage = 20;
             Item.shoot = ModContent.ProjectileType<StarStruckWaterBottle>();
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
