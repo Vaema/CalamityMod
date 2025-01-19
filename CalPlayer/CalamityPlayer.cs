@@ -243,6 +243,8 @@ namespace CalamityMod.CalPlayer
         public int arsenalCooldown = 0;
         public int killModeCooldown = 0;
         public bool demonSwordKillMode = false;
+        public bool exaltedKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>());
+        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>());
         /// <summary>
         /// Tracks Dragoon Drizzlefish's "gel feed" mechanic in Get fixed boi.<br/>
         /// Consuming Gel adds 1 to this counter, up to a maximum of 6, and using the weapon has a random chance to decrement the counter.<br/>
@@ -2776,6 +2778,7 @@ namespace CalamityMod.CalPlayer
             hideOfDeusMeleeBoostTimer = 0;
             rOfResilienceCooldown = 0;
             rOfResilienceEffect = 0;
+            demonSwordKillMode = false;
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
@@ -4254,6 +4257,7 @@ namespace CalamityMod.CalPlayer
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
+                    //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
@@ -4269,6 +4273,7 @@ namespace CalamityMod.CalPlayer
                     (silvaSet ? 0.05f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
+                    //(exaltedKillMode ? 0.4f : devilsDevastationKillMode ? 0.7f : 0) +
                     (hasteLevel * 0.05f);
 
                 if ((Player.slippy || Player.slippy2) && Player.iceSkate)

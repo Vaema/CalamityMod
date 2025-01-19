@@ -138,7 +138,6 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (Projectile.velocity.Y < 14 && Projectile.timeLeft < (bounces == 1 ? Lifetime - 20 : Lifetime))
                         Projectile.velocity.Y += 0.1f * (bounces * 3);
-                    Projectile.ai[2] = 0;
                 }
 
                 if (fadingOut)
@@ -227,7 +226,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 120);
+            int bonusDamage = 0;
+            if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+            {
+                target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 120);
+            }
 
             if (!exitedTarget)
             {
@@ -245,13 +249,14 @@ namespace CalamityMod.Projectiles.Melee
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         Projectile projectile = Main.projectile[x];
-                        if (projectile.owner == Projectile.owner && projectile.type == Projectile.type && projectile.ai[2] == Projectile.ai[2] && projectile.timeLeft > (Lifetime - fadeOutTime) && (bladeValue == -1 || bladeValue > projectile.ai[1]))
+                        if (projectile.owner == Projectile.owner && projectile.type == Projectile.type && Projectile.localAI[0] != 5 && projectile.ai[2] == Projectile.ai[2] && projectile.timeLeft > (Lifetime - fadeOutTime) && (bladeValue == -1 || bladeValue > projectile.ai[1]))
                         {
                             bladeValue = projectile.ai[1];
                             ejectedBlade = projectile;
                         }
                     }
                     ejectedBlade.localAI[0] = 5;
+                    ejectedBlade.ai[1] += 1000;
                     ejectedBlade.velocity = Projectile.velocity.RotatedByRandom(0.12f);
 
                     for (int i = 0; i < 10; i++)
@@ -342,7 +347,7 @@ namespace CalamityMod.Projectiles.Melee
                 Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + drawOffset, null, auraColor, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             }
 
-            Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Red with { A = 0 }, lightColor, Projectile.Opacity) * Projectile.Opacity, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+            Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.BlueViolet with { A = 0 }, lightColor, Projectile.Opacity) * Projectile.Opacity, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
 
             return false;
         }

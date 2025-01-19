@@ -29,7 +29,7 @@ namespace CalamityMod.Cooldowns
         private float AdjustedCompletion => instance.timeLeft > cooldownMax ? Utils.GetLerpValue(cooldownMax, cooldownMax + buffMax, instance.timeLeft) : Utils.GetLerpValue(cooldownMax, 0, instance.timeLeft);
         public override void Tick()
         {
-            //Main.NewText(AdjustedCompletion);
+
         }
         public override void ApplyBarShaders(float opacity)
         {

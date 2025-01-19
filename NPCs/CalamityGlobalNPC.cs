@@ -312,6 +312,7 @@ namespace CalamityMod.NPCs
         public int irradiated = 0;
         public int bFlames = 0;
         public int deepBrimstoneFlames = 0;
+        public int deepBrimstoneFlamesBonusDamage = 0;
         public int hFlames = 0;
         /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
@@ -578,6 +579,7 @@ namespace CalamityMod.NPCs
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
             myClone.deepBrimstoneFlames = deepBrimstoneFlames;
+            myClone.deepBrimstoneFlamesBonusDamage = deepBrimstoneFlamesBonusDamage;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
@@ -1125,10 +1127,12 @@ namespace CalamityMod.NPCs
             }
 
             // Deep Brimstone Flames
-            if (deepBrimstoneFlames > 0) // This is like Brimstone Flames but purple and it can't be resisted
+            // Has simular base power to Brimstone Flames but can't be resisted
+            // Additionally, when you apply the debuff you can give it extra damage. This way it can be viable for multiple tiers
+            if (deepBrimstoneFlames > 0) // This is like Brimstone Flames but purple and it can't be resisted //
             {
-                int baseDeepBrimstoneFlamesDoTValue = (int)(65 * Math.Max(heatDamageMult, 1));
-                ApplyDPSDebuff(baseDeepBrimstoneFlamesDoTValue, baseDeepBrimstoneFlamesDoTValue / 12, ref npc.lifeRegen, ref damage);
+                int baseDeepBrimstoneFlamesDoTValue = (int)((60 + deepBrimstoneFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDeepBrimstoneFlamesDoTValue, baseDeepBrimstoneFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
             // Holy Flames
@@ -5620,6 +5624,8 @@ namespace CalamityMod.NPCs
                 bFlames--;
             if (deepBrimstoneFlames > 0)
                 deepBrimstoneFlames--;
+            else
+                deepBrimstoneFlamesBonusDamage = 0;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)

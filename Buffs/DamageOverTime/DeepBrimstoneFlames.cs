@@ -51,8 +51,8 @@ namespace CalamityMod.Buffs.DamageOverTime
                     Particle sparks = new VelChangingSpark(Player.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), Player.height / 2), sparkVel + Player.velocity, new Vector2(-sparkVel.X * 0.5f, sparkVel.Y * 2) * 3.5f, "CalamityMod/Particles/SmallBloom", Main.rand.Next(13, 20 + 1), Main.rand.NextFloat(0.1f, 0.25f) * 0.5f, (Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet) * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.055f);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
-                Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
             }
+            Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
         }
 
         internal static void DrawEffects(NPC npc, ref Color drawColor)
@@ -71,8 +71,8 @@ namespace CalamityMod.Buffs.DamageOverTime
                     Particle sparks = new VelChangingSpark(npc.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), npc.height / 2) + sparkVel * 0.5f, sparkVel + npc.velocity,  new Vector2(-sparkVel.X * 0.5f, sparkVel.Y * 2) * 3.5f, "CalamityMod/Particles/SmallBloom", Main.rand.Next(13, 20 + 1), Main.rand.NextFloat(0.1f, 0.25f) * MathHelper.Lerp(Math.Max(npc.height, npc.width) / 120, 0.5f, 0.7f), (Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet) * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.3f, 0.055f);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
-                Lighting.AddLight(npc.Center, Color.MediumOrchid.ToVector3());
             }
+            Lighting.AddLight(npc.Center, Color.MediumOrchid.ToVector3());
         }
     }
 }

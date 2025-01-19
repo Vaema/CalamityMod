@@ -217,6 +217,70 @@ namespace CalamityMod.CalPlayer
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
 
+            if (exaltedKillMode && !Player.mount.Active)
+            {
+                
+                if (Main.rand.NextBool(3))
+                {
+                    Particle spark2 = new CustomSpark(Player.Center + Main.rand.NextVector2Circular(20, 20), -Player.velocity * Main.rand.NextFloat(0.3f, 0.8f), "CalamityMod/Particles/DemonSigilParticle", false, 22, Main.rand.NextFloat(0.2f, 0.3f), Color.Lerp(Color.MediumOrchid, Color.BlueViolet, Main.rand.NextFloat(0, 0.7f)) * 0.8f, new Vector2(1, 1), true, false, Main.rand.NextFloat(-1f, 1f), false, false);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+                else
+                {
+                    // Spawn in a helix-style pattern
+                    float sine = (float)Math.Sin(Player.miscCounter * 0.575f / MathHelper.Pi);
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
+                        float scale = Main.rand.NextFloat(0.8f, 1.6f);
+
+                        Dust dust2 = Dust.NewDustPerfect(Player.Center + offset * (i == 0 ? -1 : 1), ModContent.DustType<LightDust>(), Player.velocity * Main.rand.NextFloat(0.2f, 0.5f));
+                        dust2.noGravity = true;
+                        dust2.scale = scale;
+                        dust2.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
+                    }
+                }
+                Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
+
+                if (Player.dashDelay != -1 && Player.velocity.Y != 0)
+                {
+                    float speedValue = 1.3f;
+
+                    if (Player.controlDown && Player.wingTime > 0)
+                    {
+                        if (Player.velocity.Y < 0)
+                            Player.velocity.Y = 0;
+                        Player.velocity.Y += speedValue * 2;
+                        Player.maxFallSpeed = 100f; // I'm gonna be honest, it doesn't seem like this is doing anything at all
+                    }
+                    if (Player.controlJump && Player.wingTime > 0)
+                    {
+                        if (Player.velocity.Y > 0)
+                            Player.velocity.Y = 0;
+                        Player.velocity.Y -= speedValue * 2;
+                    }
+
+                    if (Player.controlLeft && Player.velocity.X > -Player.maxRunSpeed * 2.4f)
+                    {
+                        if (Player.velocity.X > 0)
+                            Player.velocity.X = 0;
+                        Player.velocity.X -= speedValue;
+                    }
+                    if (Player.controlRight && Player.velocity.X < Player.maxRunSpeed * 2.4f)
+                    {
+                        if (Player.velocity.X < 0)
+                            Player.velocity.X = 0;
+                        Player.velocity.X += speedValue;
+                    }
+                }
+
+            }
+            if (devilsDevastationKillMode)
+            {
+
+            }
+
             if (gShell)
             {
                 //reduce player dash velocity as long as you didn't just get hit
@@ -2521,6 +2585,7 @@ namespace CalamityMod.CalPlayer
             {
                 killModeCD.timeLeft = KillMode.cooldownMax - 1;
                 Player.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                Player.Calamity().demonSwordKillMode = false;
             }
 
             bool hasPlagueBlackoutCD = cooldowns.TryGetValue(PlagueBlackout.ID, out CooldownInstance plagueBlackoutCD);
