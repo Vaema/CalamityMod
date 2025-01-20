@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
-            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0)
+            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
                 SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
                 SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 17, Item.knockBack, player.whoAmI, 0, throwCount);
+                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 23, Item.knockBack, player.whoAmI, 0, throwCount);
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
