@@ -1466,12 +1466,6 @@ namespace CalamityMod.Projectiles
                 if (projectile.timeLeft > 75)
                     projectile.timeLeft = 75;
 
-                if (projectile.ai[1] == 0f && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
-                {
-                    projectile.ai[1] = 1f;
-                    projectile.netUpdate = true;
-                }
-
                 if (projectile.soundDelay == 0)
                 {
                     projectile.soundDelay = 20 + Main.rand.Next(40);
@@ -1481,29 +1475,31 @@ namespace CalamityMod.Projectiles
                 if (projectile.localAI[0] == 0f)
                     projectile.localAI[0] = 1f;
 
-                projectile.alpha += (int)(25f * projectile.localAI[0]);
-                if (projectile.alpha > 200)
-                {
-                    projectile.alpha = 200;
-                    projectile.localAI[0] = -1f;
-                }
+                projectile.alpha -= 15;
                 if (projectile.alpha < 0)
-                {
                     projectile.alpha = 0;
-                    projectile.localAI[0] = 1f;
-                }
 
                 projectile.rotation += (Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y)) * 0.01f * projectile.direction;
 
-                if (projectile.ai[1] == 1f)
+                Vector2 screenArea = new Vector2(Main.screenWidth, Main.screenHeight);
+                if (projectile.Hitbox.Intersects(Utils.CenteredRectangle(Main.screenPosition + screenArea / 2f, screenArea + new Vector2(400f))) && Main.rand.NextBool(20))
                 {
-                    projectile.light = 0.9f;
-
-                    if (Main.rand.NextBool(10))
-                        Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Enchanted_Pink, projectile.velocity.X * 0.5f, projectile.velocity.Y * 0.5f, 150, default, 1.2f);
-
-                    if (Main.rand.NextBool(20) && !Main.dedServ)
-                        Gore.NewGore(projectile.GetSource_FromAI(), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
+                    Player user = Main.player[projectile.owner];
+                    Gore.NewGore(user.GetSource_ItemUse(user.HeldItem), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 17+1));
+                }
+                if (Main.rand.NextBool(4))
+                {
+                    Dust ambDust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, DustID.GemAmethyst, 0f, 0f, 127);
+                    Dust dustCopy = ambDust;
+                    dustCopy.velocity *= 0.7f;
+                    ambDust.noGravity = true;
+                    dustCopy = ambDust;
+                    dustCopy.velocity += projectile.velocity * 0.3f;
+                    if (Main.rand.NextBool())
+                    {
+                        dustCopy = ambDust;
+                        dustCopy.position -= projectile.velocity * 4f;
+                    }
                 }
 
                 return false;
