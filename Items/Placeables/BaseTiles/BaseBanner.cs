@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables
         public new string LocalizationCategory => "Items.Placeables";
         // Override these if there are no NPCs attached to the banner.
         public virtual LocalizedText NPCName => NPCLoader.GetNPC(BonusNPCID).DisplayName;
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"{LocalizationCategory}.FormattedBannerName").WithFormatArgs(NPCName.ToString());
+        public override LocalizedText DisplayName => base.DisplayName.WithFormatArgs(NPCName.ToString());
         public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.FormattedBannerTooltip").WithFormatArgs(NPCName.ToString());
 
         public override void SetStaticDefaults() => ItemID.Sets.KillsToBanner[Type] = BannerKillRequirement;

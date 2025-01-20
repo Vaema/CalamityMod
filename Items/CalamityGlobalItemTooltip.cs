@@ -1128,6 +1128,59 @@ namespace CalamityMod.Items
                 EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN")));
             #endregion
 
+            // Provide the full stats of every vanilla yoyo
+            #region Yoyo Stat Tooltips
+            // This function is shorthand for appending a stat sheet to a yoyo.
+            void AddYoyoStats(float d, float r, float s)
+            {
+                EditTooltipByName("Knockback", (line) => line.Text += "\n" + (d == -1f ? CalamityUtils.GetText("Common.YoyoStatsInfinite").Format(r.ToTiles(), s.ToString())
+                : CalamityUtils.GetText("Common.YoyoStats").Format(r.ToTiles(), s.ToString(), d.ToString())));
+            }
+
+            if (item.type == ItemID.Amarok)
+                AddYoyoStats(-1f, 432f, 28f);
+            if (item.type == ItemID.Cascade)
+                AddYoyoStats(30f, 384f, 28f);
+            if (item.type == ItemID.Chik)
+                AddYoyoStats(-1f, 400f, 32f);
+            if (item.type == ItemID.Code1)
+                AddYoyoStats(21f, 320f, 25f);
+            if (item.type == ItemID.Code2)
+                AddYoyoStats(-1f, 432f, 42f);
+            if (item.type == ItemID.CorruptYoyo)
+                AddYoyoStats(18f, 288f, 22f);
+            if (item.type == ItemID.CrimsonYoyo)
+                AddYoyoStats(18f, 288f, 22f);
+            if (item.type == ItemID.FormatC)
+                AddYoyoStats(-1f, 384f, 36f);
+            if (item.type == ItemID.Gradient)
+                AddYoyoStats(-1f, 384f, 36f);
+            if (item.type == ItemID.HelFire)
+                AddYoyoStats(-1f, 368f, 42f);
+            if (item.type == ItemID.HiveFive)
+                AddYoyoStats(24f, 320f, 20f);
+            if (item.type == ItemID.JungleYoyo)
+                AddYoyoStats(20f, 288f, 17f);
+            if (item.type == ItemID.Kraken)
+                AddYoyoStats(-1f, 480f, 54f);
+            if (item.type == ItemID.Rally)
+                AddYoyoStats(16f, 272f, 20f);
+            if (item.type == ItemID.RedsYoyo)
+                AddYoyoStats(-1f, 480f, 42f);
+            if (item.type == ItemID.Terrarian)
+                AddYoyoStats(-1f, 512f, 54f);
+            if (item.type == ItemID.TheEyeOfCthulhu)
+                AddYoyoStats(-1f, 480f, 36f);
+            if (item.type == ItemID.ValkyrieYoyo)
+                AddYoyoStats(-1f, 480f, 42f);
+            if (item.type == ItemID.Valor)
+                AddYoyoStats(30f, 400f, 36f);
+            if (item.type == ItemID.WoodYoyo)
+                AddYoyoStats(15f, 240f, 14f);
+            if (item.type == ItemID.Yelets)
+                AddYoyoStats(-1f, 400f, 36f);
+            #endregion
+
             // Provide the full stats of every vanilla set of wings
             #region Wing Stat Tooltips
 
