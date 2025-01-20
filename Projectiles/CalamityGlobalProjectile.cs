@@ -292,6 +292,16 @@ namespace CalamityMod.Projectiles
         #endregion On Spawn
 
         #region Set Defaults
+        public override void SetStaticDefaults()
+        {
+            // Making Rocket Launcher, Grenade Launcher, Proximity Mine Launcher, and Cluster Rocket fragments not damage the player.
+            for (int type = 0; type < ProjectileID.Count; type++)
+            {
+                if ((type >= 133 && type <= 144) || (type >= 776 && type <= 801))
+                    ProjectileID.Sets.RocketsSkipDamageForPlayers[type] = true;
+            }
+        }
+
         public override void SetDefaults(Projectile projectile)
         {
             // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
@@ -730,86 +740,6 @@ namespace CalamityMod.Projectiles
                 }
 
                 projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.QueenBeeStinger)
-            {
-                if (projectile.ai[1] != 0f)
-                {
-                    if (projectile.position.Y > projectile.ai[1])
-                        projectile.tileCollide = true;
-                }
-
-                if (Main.rand.NextBool())
-                    Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 0.9f).noGravity = true;
-
-                if (projectile.localAI[0] == 0f)
-                {
-                    projectile.localAI[0] = 1f;
-                    for (int num99 = 0; num99 < 20; num99++)
-                    {
-                        Dust dust3 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 1.3f);
-                        dust3.noGravity = true;
-                        dust3.velocity += projectile.velocity * 0.75f;
-                    }
-
-                    for (int num100 = 0; num100 < 10; num100++)
-                    {
-                        Dust dust4 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 1.3f);
-                        dust4.noGravity = true;
-                        dust4.velocity *= 2f;
-                    }
-                }
-
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.EyeLaser && projectile.ai[0] == 1f)
-            {
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                Lighting.AddLight(projectile.Center, (255 - projectile.alpha) * 0.3f / 255f, 0f, (255 - projectile.alpha) * 0.3f / 255f);
-
-                if (projectile.alpha > 0)
-                    projectile.alpha -= 125;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
-
-                if (projectile.localAI[1] == 0f)
-                {
-                    SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                    projectile.localAI[1] = 1f;
-                }
-
-                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                    projectile.velocity *= 1.0025f;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.DeathLaser && projectile.ai[0] == 1f)
-            {
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                Lighting.AddLight(projectile.Center, (255 - projectile.alpha) * 0.75f / 255f, 0f, 0f);
-
-                if (projectile.alpha > 0)
-                    projectile.alpha -= 125;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
-
-                if (projectile.localAI[1] == 0f)
-                {
-                    SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                    projectile.localAI[1] = 1f;
-                }
-
-                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                    projectile.velocity *= 1.0025f;
 
                 return false;
             }
@@ -1461,50 +1391,6 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            else if (projectile.type == ProjectileID.Starfury)
-            {
-                if (projectile.timeLeft > 75)
-                    projectile.timeLeft = 75;
-
-                if (projectile.soundDelay == 0)
-                {
-                    projectile.soundDelay = 20 + Main.rand.Next(40);
-                    SoundEngine.PlaySound(SoundID.Item9, projectile.Center);
-                }
-
-                if (projectile.localAI[0] == 0f)
-                    projectile.localAI[0] = 1f;
-
-                projectile.alpha -= 15;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
-
-                projectile.rotation += (Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y)) * 0.01f * projectile.direction;
-
-                Vector2 screenArea = new Vector2(Main.screenWidth, Main.screenHeight);
-                if (projectile.Hitbox.Intersects(Utils.CenteredRectangle(Main.screenPosition + screenArea / 2f, screenArea + new Vector2(400f))) && Main.rand.NextBool(20))
-                {
-                    Player user = Main.player[projectile.owner];
-                    Gore.NewGore(user.GetSource_ItemUse(user.HeldItem), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 17+1));
-                }
-                if (Main.rand.NextBool(4))
-                {
-                    Dust ambDust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, DustID.GemAmethyst, 0f, 0f, 127);
-                    Dust dustCopy = ambDust;
-                    dustCopy.velocity *= 0.7f;
-                    ambDust.noGravity = true;
-                    dustCopy = ambDust;
-                    dustCopy.velocity += projectile.velocity * 0.3f;
-                    if (Main.rand.NextBool())
-                    {
-                        dustCopy = ambDust;
-                        dustCopy.position -= projectile.velocity * 4f;
-                    }
-                }
-
-                return false;
-            }
-
             // Copy pasted vanilla AI with minor changes to the homing distance and velocity formula
             else if (projectile.type == ProjectileID.SpiritFlame)
             {
@@ -1612,80 +1498,6 @@ namespace CalamityMod.Projectiles
                 {
                     projectile.ai[0] = -1f;
                     projectile.netUpdate = true;
-                }
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.TrueNightsEdge)
-            {
-                float fadeInTime = 50f;
-                float fadeOutTime = 15f;
-                float timeBeforeFadeOut = projectile.ai[1] + fadeInTime;
-                float projectileDuration = timeBeforeFadeOut + fadeOutTime;
-                float stopDealingDamageTime = 80f;
-
-                if (projectile.localAI[0] == 0f)
-                    SoundEngine.PlaySound(SoundID.Item8, projectile.Center);
-
-                projectile.localAI[0] += 1f;
-                if (projectile.damage == 0 && projectile.localAI[0] < MathHelper.Lerp(timeBeforeFadeOut, projectileDuration, 0.5f))
-                    projectile.localAI[0] += 6f;
-
-                projectile.Opacity = Utils.Remap(projectile.localAI[0], 0f, projectile.ai[1], 0f, 1f) * Utils.Remap(projectile.localAI[0], timeBeforeFadeOut, projectileDuration, 1f, 0f);
-                if (projectile.localAI[0] >= projectileDuration)
-                {
-                    projectile.localAI[1] = 1f;
-                    projectile.Kill();
-                    return false;
-                }
-
-                Player player = Main.player[projectile.owner];
-                float fromValue = projectile.localAI[0] / projectile.ai[1];
-                projectile.direction = (projectile.spriteDirection = (int)projectile.ai[0]);
-
-                if (projectile.damage != 0 && projectile.localAI[0] >= stopDealingDamageTime)
-                    projectile.damage = 0;
-
-                if (projectile.damage != 0)
-                {
-                    int size = 80;
-                    bool notInsideTiles = false;
-                    float rotation = projectile.velocity.ToRotation();
-                    for (float i = -1f; i <= 1f; i += 0.5f)
-                    {
-                        Vector2 position = projectile.Center + (rotation + i * MathHelper.PiOver4 * 0.25f).ToRotationVector2() * size * 0.5f * projectile.scale;
-                        Vector2 position2 = projectile.Center + (rotation + i * MathHelper.PiOver4 * 0.25f).ToRotationVector2() * size * projectile.scale;
-                        if (!Collision.SolidTiles(projectile.Center, 0, 0) && Collision.CanHit(position, 0, 0, position2, 0, 0))
-                        {
-                            notInsideTiles = true;
-                            break;
-                        }
-                    }
-
-                    if (!notInsideTiles)
-                        projectile.damage = 0;
-                }
-
-                fromValue = projectile.localAI[0] / projectile.ai[1];
-                projectile.localAI[1] += 1f;
-                projectile.rotation += projectile.ai[0] * MathHelper.TwoPi * (4f + projectile.Opacity * 4f) / 90f;
-                projectile.scale = Utils.Remap(projectile.localAI[0], projectile.ai[1] + 2f, projectileDuration, 1.12f, 1f) * projectile.ai[2];
-                float randomDustSpawnLocation = projectile.rotation + Main.rand.NextFloatDirection() * MathHelper.PiOver2 * 0.7f;
-                Vector2 dustPosition = projectile.Center + randomDustSpawnLocation.ToRotationVector2() * 84f * projectile.scale;
-                if (Main.rand.NextBool(5))
-                {
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 14, null, 150, default, 1.4f);
-                    dust.noLight = (dust.noLightEmittence = true);
-                }
-
-                for (int i = 0; (float)i < 3f * projectile.Opacity; i++)
-                {
-                    Vector2 dustVelocity = projectile.velocity.SafeNormalize(Vector2.UnitX);
-                    int dustType = ((Main.rand.NextFloat() < projectile.Opacity) ? 75 : 27);
-                    Dust dust = Dust.NewDustPerfect(dustPosition, dustType, projectile.velocity * 0.2f + dustVelocity * 3f, 100, default, 1.4f);
-                    dust.noGravity = true;
-                    dust.customData = projectile.Opacity * 0.2f;
                 }
 
                 return false;
@@ -2242,16 +2054,6 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // Making Rocket Launcher, Grenade Launcher, Proximity Mine Launcher, and Cluster Rocket fragments not damage the player.
-            bool isGrenadeLauncherProj = (projectile.type == 133 || projectile.type == 136 || projectile.type == 139 || projectile.type == 142 || projectile.type == 777 || projectile.type == 781 || projectile.type == 785 || projectile.type == 788 || projectile.type == 791 || projectile.type == 794 || projectile.type == 797 || projectile.type == 800);
-            bool isRocketLauncherProj = (projectile.type == 134 || projectile.type == 137 || projectile.type == 140 || projectile.type == 143 || projectile.type == 776 || projectile.type == 780 || projectile.type == 784 || projectile.type == 787 || projectile.type == 790 || projectile.type == 793 || projectile.type == 796 || projectile.type == 799);
-            bool isProximityMineProj = (projectile.type == 135 || projectile.type == 138 || projectile.type == 141 || projectile.type == 144 || projectile.type == 778 || projectile.type == 782 || projectile.type == 786 || projectile.type == 789 || projectile.type == 792 || projectile.type == 795 || projectile.type == 798 || projectile.type == 801);
-
-            if (isGrenadeLauncherProj || isRocketLauncherProj || isProximityMineProj || projectile.type == ProjectileID.ClusterFragmentsI || projectile.type == ProjectileID.ClusterFragmentsII)
-            {
-                ProjectileID.Sets.RocketsSkipDamageForPlayers[projectile.type] = true;
-            }
-
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
@@ -2589,29 +2391,6 @@ namespace CalamityMod.Projectiles
                     }
 
                     projectile.rotation += projectile.velocity.X * 0.1f;
-
-                    return false;
-                }
-
-                else if (projectile.type == ProjectileID.FrostBeam && projectile.ai[0] == 1f)
-                {
-                    projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                    Lighting.AddLight(projectile.Center, 0f, (255 - projectile.alpha) * 0.15f / 255f, (255 - projectile.alpha) * 0.6f / 255f);
-
-                    if (projectile.alpha > 0)
-                        projectile.alpha -= 125;
-                    if (projectile.alpha < 0)
-                        projectile.alpha = 0;
-
-                    if (projectile.localAI[1] == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                        projectile.localAI[1] = 1f;
-                    }
-
-                    if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                        projectile.velocity *= 1.0025f;
 
                     return false;
                 }
@@ -3499,7 +3278,6 @@ namespace CalamityMod.Projectiles
                     // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
                     // I don't care. This effect had to be removed.
                     //
-                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
 
                     if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                         projectile.damage = (int)(projectile.damage * 0.1);
@@ -3636,12 +3414,34 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            // Starfury stars never collide with tiles
+            if (projectile.type == ProjectileID.Starfury)
+                projectile.tileCollide = false;
+
+            // True Night's Edge projectiles instantly start with max velocity
+            if (projectile.type == ProjectileID.TrueNightsEdge)
+            {
+                if (projectile.localAI[1] < 32f)
+                    projectile.localAI[1] = 32f;
+            }
+
             // Random velocities for Bouncy Boulders in GFB
             if (projectile.type == ProjectileID.BouncyBoulder && Main.zenithWorld)
             {
                 // 5% chance every frame to get a random velocity multiplier (this is actually rolled twice per frame, due to the extra update in GFB)
                 if (Main.rand.Next(100) >= 95)
                     projectile.velocity *= Main.rand.NextFloat(0.9f, 1.25f);
+            }
+
+            // Prevents them from being affected by gravity
+            if (projectile.type == ProjectileID.QueenBeeStinger)
+                projectile.ai[0]--;
+
+            // Acceleration for certain lasers
+            if ((projectile.type == ProjectileID.EyeLaser || projectile.type == ProjectileID.DeathLaser || projectile.type == ProjectileID.FrostBeam) && projectile.ai[0] == 1f)
+            {
+                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
+                    projectile.velocity *= 1.0025f;
             }
 
             // Accelerate for 1.5 seconds to full velocity
