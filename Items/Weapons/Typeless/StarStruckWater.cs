@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Projectiles.Typeless;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
