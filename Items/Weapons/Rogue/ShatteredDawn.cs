@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class ShatteredSun : RogueWeapon
+    public class ShatteredDawn : RogueWeapon
     {
         public override void SetDefaults()
         {
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.shoot = ModContent.ProjectileType<ShatteredSunKnife>();
+            Item.shoot = ModContent.ProjectileType<ShatteredDawnKnife>();
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
         }

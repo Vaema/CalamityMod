@@ -8,10 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ShatteredSunKnife : ModProjectile, ILocalizedModType
+    public class ShatteredDawnKnife : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShatteredSun";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShatteredDawn";
 
         public override void SetStaticDefaults()
         {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.owner == Main.myPlayer)
                 {
                     int spread = 6;
-                    int projID = ModContent.ProjectileType<ShatteredSunScorchedBlade>();
+                    int projID = ModContent.ProjectileType<ShatteredDawnScorchedBlade>();
                     int splitDamage = (int)(0.75f * Projectile.damage);
                     float splitKB = 1f;
                     for (int i = 0; i < numProj; i++)

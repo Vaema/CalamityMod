@@ -1022,8 +1022,8 @@ ShardofAntumbra: {
 		'''
 }
 
-ShatteredSun: {
-	DisplayName: Shattered Sun
+ShatteredDawn: {
+	DisplayName: Shattered Dawn
 	Tooltip:
 		'''
 		Throws daggers that split into scorching homing daggers

@@ -244,9 +244,9 @@ SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam
 SeraphimDagger.DisplayName: Seraphim
 SeraphimProjectile.DisplayName: Seraphim
-ShatteredExplosion.DisplayName: Shattered Sun Blast
-ShatteredSunKnife.DisplayName: Shattered Sun
-ShatteredSunScorchedBlade.DisplayName: Scorched Blade
+ShatteredExplosion.DisplayName: Shattered Dawn Blast
+ShatteredDawnKnife.DisplayName: Shattered Dawn
+ShatteredDawnScorchedBlade.DisplayName: Scorched Blade
 ShinobiBladeProjectile.DisplayName: Shinobi Blade
 ShockGrenadeBolt.DisplayName: Shock Grenade Bolt
 ShockGrenadeExplosion.DisplayName: Shock Grenade Explosion
