@@ -501,7 +501,7 @@ namespace CalamityMod.Projectiles
                         homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? (((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -4281,6 +4281,14 @@ namespace CalamityMod.Projectiles
                     Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
                     return mainColor;
                 }
+            }
+
+            if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
+            {
+                float homingTime = ((Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f);
+                if (projectile.ai[0] == -3f)
+                    homingTime += 60f;
+                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : lightColor;
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)

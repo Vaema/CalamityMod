@@ -683,7 +683,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.localAI[0] += 1f;
 
-                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 64f)
+                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 96f)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
