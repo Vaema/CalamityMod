@@ -37,7 +37,6 @@ BlazingPhantomBlade.DisplayName: Blazing Phantom Blade
 Blood.DisplayName: Carnage Blood
 Blood2.DisplayName: Blood
 BloodBall.DisplayName: Blood Ball
-BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
 BotanicSpear.DisplayName: Botanic Spear
@@ -54,7 +53,6 @@ BrinyTyphoonBubble.DisplayName: Bubble
 BrokenBiomeBladeHoldout.DisplayName: Broken Biome Blade
 BurningHolyBlast.DisplayName: Profaned Blast
 BurningMeteor.DisplayName: Meteor
-CatastropheClaymoreSparkle.DisplayName: Catastrophe Sparkle
 CausticEdgeProjectile.DisplayName: Caustic Edge
 ChainedMeatHook.DisplayName: Enchanted Meat Hook
 ClamCrusherFlail.DisplayName: Clam Crusher
@@ -83,7 +81,6 @@ DeathsAscensionProjectile.DisplayName: Ascended Scythe
 DeathsAscensionRift.DisplayName: Rift
 DecaysRetort.DisplayName: Decay's Retort
 DecaysRetortDash.DisplayName: Evisceration Lunge
-DemonBlast.DisplayName: Devil Fork
 DepthCrusherProjectile.DisplayName: Depth Crusher
 DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
@@ -130,9 +127,6 @@ GaelSkull2.DisplayName: No Longer Ark of the Cosmos' Superior Cousin
 GalacticaComet.DisplayName: Galactus Comet
 GalaxiaBolt.DisplayName: Galaxia Bolt
 GalaxiaHoldout.DisplayName: Galactic Formation
-GalaxyBlast.DisplayName: Galaxy Blast
-GalaxyBlastType2.DisplayName: Galaxy Blast
-GalaxyBlastType3.DisplayName: Galaxy Blast
 GalaxySmasherBlast.DisplayName: Galactic Blast
 GalaxySmasherEcho.DisplayName: Galaxy Smasher Echo
 GalaxySmasherHammer.DisplayName: Galaxy Smasher
@@ -183,7 +177,6 @@ NebulaShot.DisplayName: Nebula Shot
 NeptuneOrb.DisplayName: Neptune's Trident
 NeptunesBountyProjectile.DisplayName: Neptune's Bounty
 NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
-Oathblade.DisplayName: Oathblade
 OathswordFlame.DisplayName: Oathsword Flame
 Orbacle.DisplayName: Auric Orb
 OrderbringerBeam.DisplayName: Orderbringer Beam

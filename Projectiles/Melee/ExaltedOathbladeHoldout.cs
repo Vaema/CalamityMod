@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Melee
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
-            useAnim = Owner.itemAnimationMax;
+            useAnim = (int)Owner.itemAnimationMax; // This causes a bug at current moment MUST BE FIXED BEFORE A MERGE
             postSwingCooldown = postSwingCooldownMax / 2;
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;

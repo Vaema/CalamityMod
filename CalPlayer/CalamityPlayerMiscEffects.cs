@@ -78,6 +78,7 @@ using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
 
 namespace CalamityMod.CalPlayer
@@ -217,22 +218,29 @@ namespace CalamityMod.CalPlayer
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
 
-            if (exaltedKillMode && !Player.mount.Active)
+            if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
             {
-                if (Player.wingTime > 0 && Player.miscCounter % 2 == 0)
-                    Player.wingTime++;
-
-                if (Player.miscCounter % 4 == 0)
-                    Player.HealPlayer(1, HealTextType.None);
-
                 float fxScale = 1;
-                if (Player.dashDelay > 0) // Reduced dash cooldown
+                if (exaltedKillMode)
                 {
-                    if (Player.dashDelay > 0) { Player.dashDelay = 0; }
+                    if (Player.wingTime > 0 && Player.miscCounter % 2 == 0)
+                        Player.wingTime++;
+
+                    if (Player.miscCounter % 4 == 0)
+                        Player.HealPlayer(1, HealTextType.None);
+
+                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    {
+                        Player.dashDelay = 0;
+                    }
+                    if (Player.dashDelay == -1)
+                    {
+                        fxScale = 1.5f;
+                    }
                 }
-                if (Player.dashDelay == -1)
+                else
                 {
-                    fxScale = 1.5f;
+
                 }
 
                 if (Player.velocity.Length() > 2)
@@ -246,7 +254,6 @@ namespace CalamityMod.CalPlayer
                     {
                         // Spawn in a helix-style pattern
                         float sine = (float)Math.Sin(Player.miscCounter * 0.575f / MathHelper.Pi);
-
                         for (int i = 0; i < 2; i++)
                         {
                             Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
@@ -259,49 +266,8 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                
+
                 Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
-
-                // Gone
-                /*
-                if (Player.dashDelay != -1 && Player.velocity.Y != 0)
-                {
-                    float speedValue = 1.85f;
-                    float accMult = 0.92f;
-                    float horizontalMultCap = 2.5f;
-                    if (Player.controlDown && Player.wingTime > 0)
-                    {
-                        if (Player.velocity.Y < 0)
-                            Player.velocity.Y *= accMult;
-                        Player.velocity.Y += speedValue;
-                        Player.maxFallSpeed = 100f; // I'm gonna be honest, it doesn't seem like this is doing anything at all
-                    }
-                    if (Player.controlJump && Player.wingTime > 0)
-                    {
-                        if (Player.velocity.Y > 0)
-                            Player.velocity.Y *= accMult;
-                        Player.velocity.Y -= speedValue;
-                    }
-
-                    if (Player.controlLeft && Player.velocity.X > -Player.maxRunSpeed * horizontalMultCap)
-                    {
-                        if (Player.velocity.X > 0)
-                            Player.velocity.X *= accMult;
-                        Player.velocity.X -= speedValue;
-                    }
-                    if (Player.controlRight && Player.velocity.X < Player.maxRunSpeed * horizontalMultCap)
-                    {
-                        if (Player.velocity.X < 0)
-                            Player.velocity.X *= accMult;
-                        Player.velocity.X += speedValue;
-                    }
-                }
-                */
-
-            }
-            if (devilsDevastationKillMode)
-            {
-
             }
 
             if (gShell)

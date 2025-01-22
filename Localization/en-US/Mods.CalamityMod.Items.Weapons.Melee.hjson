@@ -284,11 +284,6 @@ Carnage: {
 	Tooltip: Enemies explode into homing blood on death
 }
 
-CatastropheClaymore: {
-	DisplayName: Catastrophe Claymore
-	Tooltip: Fires sparkles which inflict Frostbite, Hellfire, or Ichor
-}
-
 CelestialClaymore: {
 	DisplayName: Celestial Claymore
 	Tooltip: Spawns cosmic energy stars near the cursor that inflict several debuffs
@@ -370,11 +365,6 @@ DepthCrusher: {
 		Tosses a heavy abyssal crusher that releases water energy upon hitting a tile
 		The crusher will ricochet off of tiles and enemies
 		'''
-}
-
-Devastation: {
-	DisplayName: Devastation
-	Tooltip: Fires galaxy blasts that explode
 }
 
 DevilsDevastation: {
@@ -493,7 +483,16 @@ EvilSmasher: {
 
 ExaltedOathblade: {
 	DisplayName: Exalted Oathblade
-	Tooltip: Fires a spread of demonic scythes and critical hits cause shadowflame explosions
+	Tooltip:
+		'''
+		Throw a twisted blade that impales, burns, and slows enemies
+		Up to four blades can impale an enemy at a time, and hitting them with more launches the oldest one out
+		Press <right> to ready an immensley powerful sword slash that is unleashed when you press <left>
+		While the slash is readied you gain life and flight regeneration along with reduced dash cooldown
+		The slash has a cooldown after use
+		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
+		[c/b63cd1:'I love my fast paced choppy vocal samples, that shit is peak']
+		'''
 }
 
 Excelsus: {
@@ -552,7 +551,15 @@ Floodtide: {
 
 ForbiddenOathblade: {
 	DisplayName: Forbidden Oathblade
-	Tooltip: Fires a demonic scythe and critical hits cause shadowflame explosions
+	Tooltip:
+		'''
+		Throw a sharp blade that impales, burns, and slows enemies
+		Up to three blades can impale an enemy at a time, and hitting them with more launches the oldest one out
+		Press <right> to ready a powerful sword slash that is unleashed when you press <left>
+		The slash has a cooldown after use
+		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
+		[c/b63cd1:'I am the one who kills the scrapper']
+		'''
 }
 
 ForsakenSaber: {
