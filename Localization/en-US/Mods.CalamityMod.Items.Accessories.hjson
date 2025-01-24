@@ -929,8 +929,8 @@ HideofAstrumDeus: {
 		Taking damage or inflicting true melee strikes drops an immense amount of astral stars from the sky
 		Taking damage temporarily increases true melee damage by 30%
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Grants immunity to Astral Infection, Cursed Inferno, On Fire!, and Frostburn
 		Attackers take damage and are inflicted with Astral Infection
+		Nullifies the Astral Infection debuff
 		'''
 }
 

@@ -3261,7 +3261,7 @@ namespace CalamityMod.CalPlayer
             if (wDeath && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
-            if (astralInfection && !(infectedJewel || purity))
+            if (astralInfection && !(infectedJewel || hideOfDeus || purity))
                 Player.GetDamage<GenericDamageClass>() -= 0.1f;
 
             if (pFlames && !purity)
