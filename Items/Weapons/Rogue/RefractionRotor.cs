@@ -14,9 +14,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = Item.height = 120;
-            Item.damage = 332;
+            Item.damage = 240;
             Item.knockBack = 8.5f;
-            Item.useAnimation = Item.useTime = 55;
+            Item.useAnimation = Item.useTime = 40;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.shootSpeed = 18f;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-        public override float StealthDamageMultiplier => 0.25f;
+        public override float StealthDamageMultiplier => 0.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -38,14 +38,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             //If stealth is full, shoot a spread of 3 shurikens
             if (p.StealthStrikeAvailable())
             {
-                int spread = 30;
-                for (int i = 0; i < 3; i++)
+                int spread = 20;
+                for (int i = -1; i <= 1; i++)
                 {
-                    Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread));
+                    Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread * i));
                     int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI, 0f, 1f);
                     if (proj.WithinBounds(Main.maxProjectiles))
                         Main.projectile[proj].Calamity().stealthStrike = true;
-                    spread -= 30;
                 }
                 return false;
             }

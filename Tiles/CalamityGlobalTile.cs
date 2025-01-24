@@ -317,6 +317,14 @@ namespace CalamityMod.Tiles
                     DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
                 }
             }
+            // Drop Golden Bombs at a 1.75% chance from Pots
+            if (type == TileID.Pots)
+            {
+                if (Main.rand.NextBool(57))
+                {
+                    DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
+                }
+            }
         }
 
         private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default)

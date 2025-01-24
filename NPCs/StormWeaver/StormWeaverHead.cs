@@ -989,7 +989,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 {
                     ModContent.ItemType<SkytideDragoon>(),
                     ModContent.ItemType<TheStorm>(),
-                    ModContent.ItemType<Thunderbolt>(),
+                    ModContent.ItemType<Volterion>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 

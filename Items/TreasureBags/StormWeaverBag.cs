@@ -29,7 +29,7 @@ namespace CalamityMod.Items.TreasureBags
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -64,7 +64,7 @@ namespace CalamityMod.Items.TreasureBags
             {
                 ModContent.ItemType<SkytideDragoon>(),
                 ModContent.ItemType<TheStorm>(),
-                ModContent.ItemType<Thunderbolt>()
+                ModContent.ItemType<Volterion>()
             }));
 
             // Equipment

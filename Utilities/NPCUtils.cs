@@ -757,6 +757,19 @@ namespace CalamityMod
             }
         }
 
+        /// <summary>
+        /// Spawns a <see cref="CombatText"/> indicating the amount of damage manually dealt to the NPC, such as from self-damage. Automatically syncs it in multiplayer.
+        /// </summary>
+        public static void DamageEffect(this NPC npc, int damageAmount)
+        {
+            Rectangle r = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
+            Color textColor = new Color(255, 30, 100);
+            if (Main.dedServ)
+                NetMessage.SendData(MessageID.CombatTextInt, -1, -1, null, (int)textColor.PackedValue, r.Center.X, r.Center.Y, damageAmount);
+            else
+                CombatText.NewText(r, textColor, damageAmount);
+        }
+
         public static void ProduceGoldCritterDust(this NPC npc)
         {
             npc.position += npc.netOffset;

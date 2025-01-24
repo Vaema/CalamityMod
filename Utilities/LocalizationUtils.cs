@@ -80,15 +80,21 @@ namespace CalamityMod
         /// </returns>
         public static string GetTextValueFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix).ToString();
 
+        #region Tooltip Format Helper
+        public static string FramesToSeconds(this int frame) => Round(frame / 60f, "N2");
+
+        public static string ToMph(this float velocity) => Round(velocity * 216000f / 42240f, "N0");
+        public static string ToMphps(this float velocity) => Round(velocity * 60f * 216000f / 42240f, "N2");
+        public static string ToTiles(this float pixel) => Round(pixel / 16f);
+
+        public static string ToRegenPerSecond(this int regen) => Round(regen * 0.5f, "N2");
+        public static string ToJumpSpeedPercent(this float boost) => Round(boost * 20f, "N2");
+
+        public static string ToPercent(this float percent) => Round(percent * 100f);
+        public static string ToPercent(this double percent) => Round(percent * 100D);
         // Double-rounded for proper digit cutoffs
-        public static string FramesToSeconds(this int frame) => float.Parse((frame / 60f).ToString("N2")).ToString();
-        public static string Round(this float percent, string precision = "N4") => float.Parse((percent).ToString(precision)).ToString();
-        public static string Round(this double percent, string precision = "N4") => float.Parse((percent).ToString(precision)).ToString();
-        public static string ToMph(this float velocity) => (velocity * 216000f / 42240f).ToString("N0");
-        public static string ToMphps(this float velocity) => (velocity * 60f * 216000f / 42240f).ToString("N2");
-        public static string ToRegenPerSecond(this int regen) => float.Parse((regen * 0.5f).ToString("N2")).ToString();
-        public static string ToJumpSpeedPercent(this float boost) => float.Parse((boost * 20f).ToString("N2")).ToString();
-        public static string ToPercent(this float percent) => float.Parse((percent * 100f).ToString("N4")).ToString();
-        public static string ToPercent(this double percent) => float.Parse((percent * 100D).ToString("N4")).ToString();
+        public static string Round(this float number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
+        public static string Round(this double number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
+        #endregion
     }
 }

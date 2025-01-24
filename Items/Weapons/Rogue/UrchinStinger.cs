@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.value = 200;
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<UrchinStingerProj>();

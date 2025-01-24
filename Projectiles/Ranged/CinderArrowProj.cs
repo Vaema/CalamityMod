@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -51,14 +52,15 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (splitShot)
             {
+                Projectile.scale = 0.01f;
                 Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.15f);
-                if (Main.rand.NextBool(4))
+                if (Main.rand.NextBool(9))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.55f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.55f));
                     dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(0.65f, 0.85f);
-                    dust.noLight = true;
+                    dust.scale = Main.rand.NextFloat(0.35f, 0.85f);
                     dust.noLightEmittence = true;
+                    dust.color = Color.Lerp(Color.Red, Color.Crimson, Main.rand.NextFloat(0.3f, 0.8f));
                 }
             }
             else
@@ -66,17 +68,17 @@ namespace CalamityMod.Projectiles.Ranged
                 Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.3f);
                 if (Time > 4f && Main.rand.NextBool(3))
                 {
-                    float velMulti = Main.rand.NextFloat(0.1f, 0.75f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity.RotatedBy(0.45) * velMulti);
+                    float velMulti = Main.rand.NextFloat(0.05f, 0.35f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedBy(0.45) * velMulti);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.45f, 0.75f);
-                    dust.noLight = true;
+                    dust.color = Color.Crimson;
                     dust.noLightEmittence = true;
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity.RotatedBy(-0.45) * velMulti);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedBy(-0.45) * velMulti);
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(0.45f, 0.75f);
-                    dust2.noLight = true;
                     dust2.noLightEmittence = true;
+                    dust2.color = Color.Crimson;
                 }
             }
         }
@@ -91,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < Dusts; i++)
                 {
                     Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f) * 6.5f;
-                    Particle smoke = new HeavySmokeParticle(Projectile.Center, dustVelocity * Main.rand.NextFloat(1f, 2.6f),Color.Crimson, 18, Main.rand.NextFloat(0.9f, 1.6f), 0.35f, Main.rand.NextFloat(-1, 1), true);
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center, dustVelocity * Main.rand.NextFloat(1f, 2.6f), Color.Crimson, 18, Main.rand.NextFloat(0.9f, 1.6f), 0.35f, Main.rand.NextFloat(-0.3f, 0.3f), true);
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
                 SoundEngine.PlaySound(SoundID.Item69 with { Volume = 0.35f, Pitch = 1f, PitchVariance = 0.15f }, Projectile.Center);
@@ -101,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int b = 0; b < 3; b++)
                 {
-                    Vector2 velocity = Vector2.UnitY.RotatedByRandom(0.8f) * Main.rand.NextFloat(-3.5f, -3f);
+                    Vector2 velocity = Vector2.UnitY.RotatedByRandom(0.8f) * Main.rand.NextFloat(-5.5f, -4.5f);
                     Projectile shrapnel = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<CinderArrowProj>(), (int)(Projectile.damage * 0.06f), 0f, Projectile.owner, ai2: 1f);
                     shrapnel.timeLeft = 300;
                     shrapnel.arrow = false;
@@ -116,24 +118,21 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (splitShot)
-            {
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
-            }
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), splitShot ? 180 : 90);
         }
         public override bool PreDraw(ref Color lightColor)
         {
             if (splitShot)
             {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine").Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Crimson * 0.3f, 1, texture);
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Crimson with { A = 0 } * 0.6f, 1, texture, true, true);
                 return false;
             }
             else
             {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BloodfireBulletProj").Value;
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom").Value;
                 if (Time > 6f)
-                    CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White * 0.3f, 1, texture);
+                    CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Crimson with { A = 0 } * 0.4f, 1, texture, true, true);
                 return true;
             }
         }

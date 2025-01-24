@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.width = 8;
             Item.height = 28;
             Item.useAnimation = Item.useTime = 40;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 5f;
             Item.shoot = ModContent.ProjectileType<AeroExplosive>();

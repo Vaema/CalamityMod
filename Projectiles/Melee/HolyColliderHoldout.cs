@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
             useAnim = Owner.itemAnimationMax;
             storedUseAnim = useAnim;
 
-            chargeTimerMax = (int)(useAnim * 1.5f); // Max charge time is set here
+            chargeTimerMax = (int)(useAnim * 1.1f); // Max charge time is set here
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.05f);
 
-                    float rotationValue = 65f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
+                    float rotationValue = 45f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
                     Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(rotationValue), 0.3f);
                     Animation = 0;
                     Owner.itemAnimation++;
@@ -400,14 +400,14 @@ namespace CalamityMod.Projectiles.Melee
                     for (int i = 0; i < 4; i++)
                     {
                         Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
-                        Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
+                        Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 4f;
 
-                        Particle pulse = new GlowSparkParticle(target.Center, vel, false, 12, 0.1f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, 0.85f);
+                        Particle pulse = new CustomSpark(target.Center, vel, "CalamityMod/Particles/BloomCircle", false, 12, 1.2f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, shrinkSpeed: 0.95f);
                         GeneralParticleHandler.SpawnParticle(pulse);
                     }
                     for (int i = 0; i < 4; i++)
                     {
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -13).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
                     }
                 }
             }

@@ -11,6 +11,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
 using Terraria.Graphics.Renderers;
+using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -89,6 +90,14 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time == fallTime)
             {
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle bloom = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), 0, 0.8f, 0f, 27);
+                    GeneralParticleHandler.SpawnParticle(bloom);
+                }
+                Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), 0, 0.65f, 0f, 27);
+                GeneralParticleHandler.SpawnParticle(bloom3);
+
                 Projectile.extraUpdates = 15;
 
                 Vector2 mouse = Owner.ClampedMouseWorld();
@@ -121,10 +130,10 @@ namespace CalamityMod.Projectiles.Melee
                 float randSize = Main.rand.NextFloat(0.8f, 1.2f);
                 for (int i = 0; i < 2; i++)
                 {
-                    Particle bloom = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * Utils.Remap(time, 0, fallTime, 0, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.8f * randSize, 0f, 3);
+                    Particle bloom = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * (float)Math.Pow(Utils.Remap(time, 0, fallTime, 0f, 1f), 3), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 4), Utils.Remap(time, fallTime * 0.6f, fallTime, 1, 4)), 0, 0.8f * randSize, 0f, 3);
                     GeneralParticleHandler.SpawnParticle(bloom);
                 }
-                Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * Utils.Remap(time, 0, fallTime, 0f, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.65f * randSize, 0f, 3);
+                Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * (float)Math.Pow(Utils.Remap(time, 0, fallTime, 0f, 1f), 3), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 4), Utils.Remap(time, fallTime * 0.6f, fallTime, 1, 4)), 0, 0.65f * randSize, 0f, 3);
                 GeneralParticleHandler.SpawnParticle(bloom3);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;

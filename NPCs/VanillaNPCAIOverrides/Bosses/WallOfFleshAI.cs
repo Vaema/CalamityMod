@@ -893,7 +893,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int damage = npc.GetProjectileDamage(projectileType);
 
                         Vector2 projectileVelocity = (lookAt - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 150f;
+                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 60f;
 
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
                         Main.projectile[proj].timeLeft = 900;
@@ -1510,16 +1510,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.1)
                         num397 += 1f;
 
-                    vector39 = npc.Center;
-                    num392 = Main.player[npc.target].Center.X - vector39.X;
-                    num393 = Main.player[npc.target].Center.Y - vector39.Y;
+                    num392 = Main.player[npc.target].Center.X - npc.Center.X;
+                    num393 = Main.player[npc.target].Center.Y - npc.Center.Y;
                     num394 = (float)Math.Sqrt(num392 * num392 + num393 * num393);
                     num394 = num397 / num394;
                     num392 *= num394;
                     num393 *= num394;
                     Vector2 projectileVelocity = new Vector2(num392, num393);
-                    vector39 += projectileVelocity.SafeNormalize(Vector2.UnitY) * 150f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector39, projectileVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 1f, 0f);
+                    Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 60f;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 1f, 0f);
                 }
             }
 

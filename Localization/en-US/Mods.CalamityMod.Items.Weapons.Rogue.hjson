@@ -55,7 +55,7 @@ BlastBarrel: {
 	Tooltip:
 		'''
 		Throws a rolling barrel that explodes on wall collision
-		Stealth strikes makes the barrel bounce twice before disappearing with varied effects after each bounce
+		Stealth strikes make the barrel bounce twice before disappearing with varied effects after each bounce
 		'Some people used to jump over these'
 		'''
 }
@@ -103,8 +103,8 @@ BurningStrife: {
 	DisplayName: Burning Strife
 	Tooltip:
 		'''
-		Throws a shadowflame spiky ball that bursts into flames
-		Stealth strikes make the ball linger and explode more violently
+		Throws a shadowflame spiky ball that explodes into flames
+		Stealth strikes make the ball erupt into tentacles on hit
 		'Definitely not pocket safe'
 		'''
 }
@@ -183,8 +183,8 @@ CraniumSmasher: {
 	DisplayName: Cranium Smasher
 	Tooltip:
 		'''
-		Throws disks that roll on the ground, occasionally launches an explosive disk
-		Stealth strikes launch an explosive disk that can pierce several enemies
+		Alternates between throwing piercing, rolling disks and explosive disks
+		Stealth strikes embed into the hit foe, exploding multiple times
 		'''
 }
 
@@ -397,7 +397,7 @@ FeatherKnife: {
 	Tooltip:
 		'''
 		Throws a knife which summons homing feathers
-		Stealth strike throws a volley of knives
+		Stealth strikes throw a volley of knives
 		'''
 }
 
@@ -415,8 +415,9 @@ FrostcrushValari: {
 	DisplayName: Frostcrush Valari
 	Tooltip:
 		'''
-		Fires a long ranged boomerang that explodes into icicles on hit
-		Stealth strikes throw three shorter ranged boomerangs that freeze along with a spread of icicles
+		Fires a long ranged frosty boomerang that chips off homing icicles on hit
+		Stealth strikes throw a boomerang which follows the cursor
+		This boomerang creates a freezing blast and chips off homing icicles on every hit
 		'''
 }
 
@@ -443,9 +444,8 @@ GelDart: {
 	DisplayName: Gel Dart
 	Tooltip:
 		'''
-		Throws bouncing gel darts
-		Stealth strikes ignore gravity and bounce more vigorously
-		They additionally leak slime and cover enemies in dark sludge
+		Throws bouncing gel darts that cover struck enemies in slime
+		Stealth strikes ignore gravity, bounce more vigorously, and constantly leak slime
 		'''
 }
 
@@ -666,7 +666,7 @@ LunarKunai: {
 		'''
 		Throws out a set of three kunai that ignore gravity and slightly home in on enemies
 		After traveling enough distance, the kunai supercharge with lunar energy, homing in far more aggressively and exploding on impact
-		Stealth strikes instantly throw nine supercharged Kunai
+		Stealth strikes instantly throw ten supercharged Kunai
 		'''
 }
 
@@ -728,7 +728,7 @@ MoltenAmputator: {
 		Throw a spinning scythe that lingers at your cursor
 		<right> to recall all existing scythes
 		Recalling a scythe while it's on an enemy rends them for massive damage
-		<right> with a full stealth bar to empower yourself, greatly increasing attack speed for a short time
+		<right> with sufficient stealth to empower yourself, greatly increasing attack speed for a short time
 		You cannot recall scythes thrown while empowered
 		'''
 }
@@ -739,7 +739,7 @@ Mycoroot: {
 		'''
 		Fires a stream of short-range fungal roots
 		Stealth strikes spawn an explosion of fungi spores
-		and grant you and all other players the Mushy buff for 15 seconds
+		This grants you and nearby players on your team the Mushy buff for 15 seconds
 		'''
 }
 
@@ -784,18 +784,6 @@ NightsGaze: {
 		Strike your foes with this spear of the night
 		Throws a spear that shatters when it hits an enemy
 		Stealth strikes cause the spear to summon homing stars as it flies
-		'''
-}
-
-Nychthemeron: {
-	DisplayName: Nychthemeron
-	Tooltip:
-		'''
-		Throws a spiky ball that ignores gravity and summons a pair of dark and light orbs that orbit the player
-		Once the spiky ball disappears the orbs will home in on the nearest target
-		Up to 10 spiky balls can exist at a time
-		Stealth strikes cause all spiky balls and orbs to be thrown at once
-		Press <right> to recall all existing spiky balls
 		'''
 }
 
@@ -859,7 +847,7 @@ RadiantStar: {
 	Tooltip:
 		'''
 		Throws daggers that explode and split after a while
-		Stealth strike splits more with a devastating explosion and sucks enemies in
+		Stealth strikes split more with a devastating explosion that sucks enemies in
 		'''
 }
 
@@ -868,7 +856,7 @@ RealityRupture: {
 	Tooltip:
 		'''
 		Cycles between throwing 3 small homing spears and throwing a single piercing lance
-		Stealth Strikes throw a high-velocity reality shattering lance that explodes on hit
+		Stealth strikes throw a high-velocity reality shattering lance that explodes on hit
 		'''
 }
 
@@ -1022,8 +1010,8 @@ ShardofAntumbra: {
 		'''
 }
 
-ShatteredSun: {
-	DisplayName: Shattered Sun
+ShatteredDawn: {
+	DisplayName: Shattered Dawn
 	Tooltip:
 		'''
 		Throws daggers that split into scorching homing daggers
@@ -1099,7 +1087,7 @@ SpearofDestiny: {
 	Tooltip:
 		'''
 		Cycles between throwing 3 small homing spears and throwing a single piercing lance
-		Stealth Strikes throw a high-velocity holy lance that explodes on hit
+		Stealth strikes throw a high-velocity holy lance that explodes on hit
 		'''
 }
 
@@ -1140,7 +1128,7 @@ StarofDestruction: {
 		Throws a fan of cosmic bolts that meld together into a star of destruction
 		The explosive star will slowly follow your cursor until it expires or hits an enemy
 		Upon running out of time, the star will burst into a huge explosion that deals increased damage
-		Stealth strikes throw additional bolts that converge into faster star that can pierce, exploding on every hit
+		Stealth strikes throw additional bolts that converge into a faster star that can pierce, exploding on every hit
 		'''
 }
 
@@ -1188,7 +1176,7 @@ TarragonThrowingDart: {
 	DisplayName: Tarragon Throwing Dart
 	Tooltip:
 		'''
-		Fires a piercing dart with reduced immunity frames
+		Fires a piercing dart
 		Stealth strikes erupt into thorns on enemy hits
 		'''
 }

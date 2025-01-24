@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localAI[0]++;
             if (currentColor == Color.Black)
             {
-                Projectile.scale = 0.025f;
+                Projectile.scale = 0.015f;
                 Projectile.alpha = 255;
                 rotDirection = Main.rand.NextBool() ? 1 : -1;
                 rotIntensity = Main.rand.NextFloat(0.5f, 1.5f);
@@ -87,13 +87,6 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int b = 0; b < 2; b++)
             {
-                /*
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 66, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.5f, 1.1f);
-                dust.color = currentColor;
-                dust.fadeIn = 0;
-                */
                 GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), false, 5, Main.rand.NextFloat(0.35f, 0.45f), currentColor, true, true);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
@@ -101,12 +94,9 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 12, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom").Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(currentColor, Color.White, 0.15f), 1, texture);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White with { A = 0 }, 1, texture2);
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0, texture.Size() * 0.5f, Projectile.scale * 1.5f, 0, 0f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(currentColor, Color.White, 0.15f) with { A = 0 }, 1, texture, true, true);
             return false;
         }
         public override bool? CanDamage() => Projectile.localAI[0] < 20 ? false : null;

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Fishing
             Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item29;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.autoReuse = true;
             Item.consumable = true;
 

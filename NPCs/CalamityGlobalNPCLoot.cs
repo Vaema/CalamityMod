@@ -473,16 +473,18 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Demon, Voodoo Demon
-                // Bladecrest Oathsword @ 4% Normal, 6.67% Expert+
+                // Bladecrest Oathsword @ 2%, 6.67% after defeating EoW/BoC
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BladecrestOathsword>(), 25, 15));
+                    npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 50);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 15);
                     break;
 
                 // Bone Serpent
-                // Old Lord Oathsword @ 8.33% Normal, 14.29% Expert+
+                // Old Lord Oathsword @ 4% Normal, 14.29% after defeating EoW/BoC
                 case NPCID.BoneSerpentHead:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OldLordClaymore>(), 12, 7));
+                    npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 25);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 7);
                     break;
 
                 // Red Devil

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,7 +18,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerGrenade";
         public ref float time => ref Projectile.ai[0];
         public bool explode = true;
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public Player Owner => Main.player[Projectile.owner];
         public Color color1;
         public Color color2;
@@ -82,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
                 baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
             }
             else
-                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             if (time > 20)
             {
@@ -138,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.scale = Main.rand.NextFloat(1.75f, 2.25f) * power;
                     dust.color = useColor;
                     if (Owner.shirtColor == Color.White)
-                        useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                        useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
                     if (i % 2 == 0)
                     {
@@ -197,7 +196,7 @@ namespace CalamityMod.Projectiles.Ranged
                 _ => color4,
             };
             if (Owner.shirtColor == Color.White)
-                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
             return useColor;
         }
         public override bool PreDraw(ref Color lightColor)

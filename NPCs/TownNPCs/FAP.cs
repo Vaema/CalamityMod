@@ -874,8 +874,7 @@ namespace CalamityMod.NPCs.TownNPCs
             musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
             NPCShop shop = new(Type);
-            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnoughToSellPylons)
-                .AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
+            shop.AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
                 .AddWithCustomValue(ModContent.ItemType<RedWine>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Whiskey>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Rum>(), Item.buyPrice(gold: 3))
@@ -913,7 +912,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
                 .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
                 .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
-                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2023>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2024>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
                 .Register();
         }
 

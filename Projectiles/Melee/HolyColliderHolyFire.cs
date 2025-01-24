@@ -125,7 +125,11 @@ namespace CalamityMod.Projectiles.Melee
                     dust.color = Color.Goldenrod;
                     dust.noLightEmittence = true;
                 }
-                Projectile.velocity *= 0.965f;
+                
+                if (Projectile.velocity.Length() > 8)
+                    Projectile.velocity *= 0.88f;
+                else
+                    Projectile.velocity *= 0.965f;
             }
 
             Projectile.frameCounter++;

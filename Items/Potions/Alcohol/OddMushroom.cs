@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
                 new Color(232, 100, 90),
                 new Color(230, 215, 117),

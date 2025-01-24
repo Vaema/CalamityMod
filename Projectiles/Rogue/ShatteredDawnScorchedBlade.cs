@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ShatteredSunScorchedBlade : ModProjectile, ILocalizedModType
+    public class ShatteredDawnScorchedBlade : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         int counter = 0;

@@ -287,13 +287,13 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.dashDelay == -1)// TODO: prevent working with special dashes, this was inconsitent with my old solution so I didn't keep it. not huge deal)
                 {
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(170);
                     Player.endurance += 0.1f;
                     if (!HasReducedDashFirstFrame) // Dash isn't reduced, this is used to determine the first frame of dashing
                     {
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact with { Volume = 0.4f, PitchVariance = 0.4f }, Player.Center);
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(67);
 
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 16f, Player.whoAmI);
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                         HasReducedDashFirstFrame = true;
                     }
                     float numberOfDusts = 10f;
@@ -319,8 +319,7 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.miscCounter % 6 == 0 && Player.velocity != Vector2.Zero)
                     {
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(170);
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 10f, Player.whoAmI);
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                     }
                 }
                 else
@@ -3181,8 +3180,8 @@ namespace CalamityMod.CalPlayer
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
-                (ascendantInsignia ? 0.2 : 0D) + // Added to soaring insignia's flight to get 50%
-                (Player.empressBrooch ? 0.3 : 0D) +
+                (ascendantInsignia ? 0.17 : 0D) + // Added to soaring insignia's flight to get 50%
+                (Player.empressBrooch ? 0.33 : 0D) +
                 externalFlightTimeMultBoost;
 
             if (community)

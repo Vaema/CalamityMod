@@ -185,6 +185,7 @@ namespace CalamityMod.Balancing
             #region Astrum Aureus
             // 30% resist to The Ballista's greatarrows.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<BallistaGreatArrow>()))));
+
             // 30% resist to Whitewater.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<WhitewaterProj>(), ProjectileType<WhitewaterAura>(), ProjectileType<WhitewaterSpear>()))));
             #endregion
@@ -333,9 +334,6 @@ namespace CalamityMod.Balancing
 
             // 35% resist to Event Horizon.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
-
-            // 25% resist to Molten Amputator's blobs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
             #endregion
 
             #region Old Duke
@@ -347,13 +345,13 @@ namespace CalamityMod.Balancing
             // 65% resist to Wave Pounder.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
 
+            // 35% resist to Sulphuric Acid Cannon's explosions.
+            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
+
             // 35% resist to Venusian Trident.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
 
-            // 35% resist to Sulphuric Acid Cannon's Explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
-
-            // 25% resist to Corinth Prime's Grenades.
+            // 25% resist to Corinth Prime's grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
@@ -364,11 +362,11 @@ namespace CalamityMod.Balancing
             #endregion The Devourer of Gods
 
             #region Yharon
-            // 15% resist to Time Bolt.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
-            // 15% resist to Old Reaper Stealth strikes' rain
+            // 15% resist to The Old Reaper's stealth strike rain.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<RadiationRain>()))));
 
+            // 15% resist to Time Bolt.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
             #endregion
 
             #region Exo Mechs: Ares
@@ -489,7 +487,7 @@ namespace CalamityMod.Balancing
             // 15% resist to The Final Dawn's AoE sweep flames.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<FinalDawnFlame>()))));
 
-            // 15% resist to Dragon's Breath Beam.
+            // 15% resist to Dragon's Breath's beam of fire.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<DragonsBreathBurst>()))));
 
             // 15% resist to God Slayer Slugs.

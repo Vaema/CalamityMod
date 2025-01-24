@@ -254,6 +254,15 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove Flail Throw Velocity Being Affected By Player Velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+        #endregion
+
         #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
         // TODO -- Finish this
         #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
@@ -1037,7 +1046,7 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
-        #region Remove Lihzahrd Power Cells Requiring Plantera Defeated
+        #region Vanilla Non-Linearity Fixes
         private static void RemovePowerCellPlanteraLock(ILContext il)
         {
             // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
@@ -1054,13 +1063,13 @@ namespace CalamityMod.ILEditing
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
-        #endregion
 
-        #region Celestial Sigil Non-Linearity Change
-        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        private static bool RemoveUseLocks(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+            if (sItem.type == ItemID.SolarTablet)
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }

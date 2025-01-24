@@ -189,6 +189,7 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
+            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
@@ -199,7 +200,7 @@ namespace CalamityMod.ILEditing
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
-            On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
+            On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 
