@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (Main.rand.NextBool(15)&& Projectile.alpha <= 140) //only try to spawn your particles if you're not close to dying
+            if (Main.rand.NextBool(15) && Projectile.alpha <= 140) //only try to spawn your particles if you're not close to dying
             {
                 Vector2 particlePosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width * Projectile.scale * 0.5f, Projectile.height * Projectile.scale * 0.5f);
                 if (Main.rand.NextBool())

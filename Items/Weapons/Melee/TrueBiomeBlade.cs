@@ -35,10 +35,11 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 115;
 
-        public static int DefaultAttunement_BaseDamage = 105;
+        public static int DefaultAttunement_BaseDamage = 100;
         public static int DefaultAttunement_SigilTime = 900;
         public static int DefaultAttunement_BeamTime = 90;
         public static float DefaultAttunement_LungeDamageMult = 2f;
+        public static int DefaultAttunement_LungeIFrames = 20;
         public static float DefaultAttunement_HomingAngle = MathHelper.Pi / 3f;
 
         public static int EvilAttunement_BaseDamage = 155;
@@ -47,16 +48,14 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float EvilAttunement_SlashDamageBoost = 3f;
         public static int EvilAttunement_SlashIFrames = 60;
 
-        public static int ColdAttunement_BaseDamage = 175;
-        public static float ColdAttunement_ThirdSwingBoost = 1.75f;
-        public static float ColdAttunement_MistDamageReduction = 0.09f;
+        public static int ColdAttunement_BaseDamage = 150;
+        public static float ColdAttunement_ThirdSwingBoost = 1.25f;
+        public static float ColdAttunement_MistDamageReduction = 0.11f;
 
-        public static int HotAttunement_BaseDamage = 122;
-        public static int HotAttunement_FullChargeDamage = 160;
-        public static int HotAttunement_ShredIFrames = 8;
+        public static int HotAttunement_BaseDamage = 135;
+        public static int HotAttunement_PlayerShredIFrames = 8;
         public static float HotAttunement_ShotDamageBoost = 4.5f;
-        public static int HotAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int HotAttunement_LocalIFramesCharged = 16;
+        public static int HotAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 0.65f; //How much charge is lost per frame.
 
         public static int TropicalAttunement_BaseDamage = 150;
@@ -65,9 +64,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.5f; //It also crits, so be mindful of that
         public static int TropicalAttunement_LocalIFrames = 60; //Be warned its got 2 extra updates so all the iframes should be divided in 3
 
-        public static int HolyAttunement_BaseDamage = 60;
-        public static float HolyAttunement_BaseDamageReduction = 0.4f;
-        public static float HolyAttunement_FullChargeDamageBoost = 2f;
+        public static int HolyAttunement_BaseDamage = 66;
+        public static float HolyAttunement_BaseSwingDamageMult = 0.75f;
+        public static float HolyAttunement_FullSwingDamageMult = 1.5f;
         public static float HolyAttunement_ThrowDamageBoost = 3.8f;
         public static int HolyAttunement_LocalIFrames = 16; //Be warned its got 1 extra update yadda yadda
         public static float HolyAttunement_MonolithDamage = 0.5f;

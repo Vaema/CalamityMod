@@ -1676,7 +1676,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 75000;
+                    npc.lifeMax = 80000;
                     break;
 
                 case NPCID.PlanterasTentacle:

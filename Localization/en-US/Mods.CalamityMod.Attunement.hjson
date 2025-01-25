@@ -38,7 +38,7 @@ TrueHotAttunement: {
 	Name: Arid Grandeur
 	Function:
 		'''
-		Conjure searing blades in front of you that get larger and stronger with enemy hits
+		Conjure searing blades in front of you that get larger with enemy hits
 		The blades will bounce you off of tiles while in the air
 		Releasing after the blades are fully charged sends them hurtling forwards to shred your foes
 		'''
