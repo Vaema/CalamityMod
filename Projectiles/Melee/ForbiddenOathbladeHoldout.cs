@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Melee
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
-            useAnim = Owner.HeldItem.useAnimation; // This causes a bug at current moment MUST BE FIXED BEFORE A MERGE
+            useAnim = (int)(Owner.HeldItem.useAnimation / Owner.GetTotalAttackSpeed<MeleeDamageClass>());
             postSwingCooldown = postSwingCooldownMax / 2;
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
@@ -71,7 +71,10 @@ namespace CalamityMod.Projectiles.Melee
 
             FlipAsSword = Owner.direction == -1 ? true : false;
         }
-
+        public override void OnKill(int timeLeft)
+        {
+            Owner.Calamity().demonSwordKillMode = false;
+        }
         public override void UseStyle()
         {
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
