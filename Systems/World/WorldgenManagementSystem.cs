@@ -387,24 +387,6 @@ namespace CalamityMod.Systems
                 tasks.Insert(announceIndex, hardmodeOreT1Pass);
             }
 
-            // Wall of Flesh also spawns Cryonic Ore. It cannot be mined until Cryogen is defeated.
-            tasks.Insert(announceIndex, new PassLegacy("CryonicOre", (progress, config) =>
-            {
-                List<int> tileTypes = [
-                    TileID.SnowBlock,
-                    TileID.IceBlock,
-                    TileID.CorruptIce,
-                    TileID.FleshIce,
-                    TileID.HallowedIce,
-                    ModContent.TileType<AstralSnow>(),
-                    ModContent.TileType<AstralIce>()
-                ];
-                // In Drunk world, it can also generate in Jungle grass due to Jungle/Snow overlap
-                if (Main.drunkWorld)
-                    tileTypes.Add(TileID.JungleGrass);
-                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
-            }));
-
             // Insert the Astral biome generation right before the final hardmode announcement.
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
             {
