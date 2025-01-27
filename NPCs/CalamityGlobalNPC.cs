@@ -149,6 +149,7 @@ namespace CalamityMod.NPCs
         public const double BaseDoTDamageMult = 1D;
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
+        public const double ResistantToDoTDamageMult = 0.5;
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
@@ -867,13 +868,16 @@ namespace CalamityMod.NPCs
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
+            bool wetReducedEffectiveness = npc.wet || npc.honeyWet || npc.dripping;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            if (wetReducedEffectiveness)
+                heatDamageMult *= wormBoss || slimeGod ? 0.66 : ResistantToDoTDamageMult;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
                     heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 1.25 : 1.5) : ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : 0.5) : 0.5;
+                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double coldDamageMult = BaseDoTDamageMult;
@@ -882,7 +886,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToCold.Value)
                     coldDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    coldDamageMult *= 0.5;
+                    coldDamageMult *= ResistantToDoTDamageMult;
             }
 
             double sicknessDamageMult = irradiated > 0 ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
@@ -891,7 +895,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToSickness.Value)
                     sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
@@ -901,7 +905,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToElectricity.Value)
                     electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double waterDamageMult = BaseDoTDamageMult;
@@ -910,7 +914,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToWater.Value)
                     waterDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    waterDamageMult *= 0.5;
+                    waterDamageMult *= ResistantToDoTDamageMult;
             }
 
             if (IncreasedColdEffects_EskimoSet)

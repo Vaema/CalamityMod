@@ -1,14 +1,15 @@
 ﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     public class CryonicOre : ModTile
     {
+        public static readonly SoundStyle PreCryoHitSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -28,10 +29,13 @@ namespace CalamityMod.Tiles.Ores
             Main.tileSpelunker[Type] = true;
         }
 
-        public override bool CanExplode(int i, int j)
+        public override bool KillSound(int i, int j, bool fail)
         {
-            return false;
+            HitSound = DownedBossSystem.downedCryogen ? SoundID.Tink : PreCryoHitSound;
+            return base.KillSound(i, j, fail);
         }
+        public override bool CanKillTile(int i, int j, ref bool blockDamaged) => DownedBossSystem.downedCryogen;
+        public override bool CanExplode(int i, int j) => false;
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
