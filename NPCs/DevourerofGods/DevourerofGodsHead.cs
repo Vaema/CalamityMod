@@ -1031,8 +1031,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
 
@@ -1061,8 +1061,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1276,8 +1276,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1866,8 +1866,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                     }
 
                     // Flying movement
@@ -2063,8 +2063,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                     }
 
                     calamityGlobalNPC.newAI[2] += 1f;

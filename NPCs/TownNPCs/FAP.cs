@@ -673,7 +673,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override string GetChat()
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (Main.zenithWorld)
             {
                 player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false);
@@ -823,7 +823,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public string Death()
         {
-            int deaths = Main.player[Main.myPlayer].numberOfDeathsPVE;
+            int deaths = Main.LocalPlayer.numberOfDeathsPVE;
 
             string text = this.GetLocalization("DeathCount").Format(deaths);
 

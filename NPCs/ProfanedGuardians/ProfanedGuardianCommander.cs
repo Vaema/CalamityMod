@@ -961,7 +961,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     {
                         float rotation = bossRush ? 435f : death ? 445f : revenge ? 450f : expertMode ? 455f : 465f;
 
-                        if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < 2800f)
+                        if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
                             SoundEngine.PlaySound(HolyRaySound, Main.LocalPlayer.Center);
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)

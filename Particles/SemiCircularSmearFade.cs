@@ -13,7 +13,7 @@ namespace CalamityMod.Particles
         public override bool UseAdditiveBlend => true;
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
-        public Player player = Main.player[Main.myPlayer];
+        public Player player = Main.LocalPlayer;
         public Color InitialColor;
         public bool PlayerCentered;
         public bool RotateToVelocity;

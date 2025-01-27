@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);

@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player Owner = Main.player[Main.myPlayer];
+            Player Owner = Main.LocalPlayer;
             if (Owner is null)
                 return;
             float rate = (Main.GlobalTimeWrappedHourly * 3);

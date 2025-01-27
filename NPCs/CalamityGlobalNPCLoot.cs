@@ -1965,8 +1965,8 @@ DukeEditFailed:
                     // If Golem has never been killed, send a message about the Plague.
                     if (!NPC.downedGolemBoss && !BossRushEvent.BossRushActive)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                            SoundEngine.PlaySound(PlagueSound, Main.player[Main.myPlayer].Center);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                            SoundEngine.PlaySound(PlagueSound, Main.LocalPlayer.Center);
 
                         string key3 = "Mods.CalamityMod.Status.Progression.BabyBossText";
                         Color messageColor3 = Color.Lime;

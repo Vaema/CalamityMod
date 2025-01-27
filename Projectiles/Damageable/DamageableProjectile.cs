@@ -311,7 +311,7 @@ namespace CalamityMod.Projectiles.Damageable
             if (!Main.mouseText)
             {
                 Rectangle mouseRectangle = new Rectangle((int)(Main.mouseX + Main.screenPosition.X), (int)(Main.mouseY + Main.screenPosition.Y), 1, 1);
-                if (Main.player[Main.myPlayer].gravDir == -1f)
+                if (Main.LocalPlayer.gravDir == -1f)
                 {
                     mouseRectangle.Y = (int)Main.screenPosition.Y + Main.screenHeight - Main.mouseY;
                 }

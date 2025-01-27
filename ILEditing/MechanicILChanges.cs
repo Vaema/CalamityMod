@@ -92,7 +92,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
             {
                 orig();

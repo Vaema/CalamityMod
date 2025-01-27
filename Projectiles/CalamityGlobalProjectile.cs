@@ -4271,7 +4271,7 @@ namespace CalamityMod.Projectiles
         #region Drawing
         public override Color? GetAlpha(Projectile projectile, Color lightColor)
         {
-            if (Main.player[Main.myPlayer].Calamity().trippy)
+            if (Main.LocalPlayer.Calamity().trippy)
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
@@ -4853,10 +4853,10 @@ namespace CalamityMod.Projectiles
 
         public static void SpawnLifeStealProjectile(Projectile projectile, Player player, float healAmount, int healProjectileType, float distanceRequired, float cooldownMultiplier = 1f)
         {
-            if (Main.player[Main.myPlayer].moonLeech)
+            if (Main.LocalPlayer.moonLeech)
                 return;
 
-            Main.player[Main.myPlayer].lifeSteal -= healAmount * cooldownMultiplier;
+            Main.LocalPlayer.lifeSteal -= healAmount * cooldownMultiplier;
 
             float lowestHealthCheck = 0f;
             int healTarget = projectile.owner;

@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
             CalamityPlayer modPlayer = player.Calamity();

@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            tip = base.Description.Format((AbyssalDivingSuit.PlatesAllDamageReduction - Main.player[Main.myPlayer].Calamity().abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay).ToPercent());
+            tip = base.Description.Format((AbyssalDivingSuit.PlatesAllDamageReduction - Main.LocalPlayer.Calamity().abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay).ToPercent());
         }
 
         public override void Update(Player player, ref int buffIndex)

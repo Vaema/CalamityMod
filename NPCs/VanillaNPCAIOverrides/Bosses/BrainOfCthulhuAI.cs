@@ -318,8 +318,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             if (!Main.dedServ)
                             {
-                                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                    Main.player[Main.myPlayer].AddBuff(BuffID.Confused, 90);
+                                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                    Main.LocalPlayer.AddBuff(BuffID.Confused, 90);
                             }
                         }
                     }
@@ -371,48 +371,48 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             for (int i = startingIndex; i < totalProjectileSpreads; i++)
                             {
                                 Vector2 position = npc.Center;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
 
                                 switch (i)
                                 {
                                     case 0:
 
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
                                         if (diagonalShots)
-                                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         else
-                                            position.Y = Main.player[Main.myPlayer].Center.Y;
+                                            position.Y = Main.LocalPlayer.Center.Y;
 
                                         break;
 
                                     case 1:
 
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         if (diagonalShots)
-                                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
                                         else
-                                            position.X = Main.player[Main.myPlayer].Center.X;
+                                            position.X = Main.LocalPlayer.Center.X;
 
                                         break;
 
                                     case 2:
 
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
                                         if (diagonalShots)
-                                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         else
-                                            position.Y = Main.player[Main.myPlayer].Center.Y;
+                                            position.Y = Main.LocalPlayer.Center.Y;
 
                                         break;
 
                                     case 3:
 
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         if (diagonalShots)
-                                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
                                         else
-                                            position.X = Main.player[Main.myPlayer].Center.X;
+                                            position.X = Main.LocalPlayer.Center.X;
 
                                         break;
 

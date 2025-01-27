@@ -103,7 +103,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -194,7 +194,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             var clone = base.Clone(item);
             if (Main.mouseItem.type == ItemType<OmegaBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
             if (clone is OmegaBiomeBlade a && item.ModItem is OmegaBiomeBlade a2)
             {
                 a.mainAttunement = a2.mainAttunement;

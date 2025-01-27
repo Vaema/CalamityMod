@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (Projectile.Calamity().stealthStrike)
                 player.AddBuff(BuffID.Honey, 600);
             SpawnProjectiles();
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (Projectile.Calamity().stealthStrike)
                 player.AddBuff(BuffID.Honey, 600);
             SpawnProjectiles();
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Rogue
                 return;
 
             Projectile.ai[1] = 1f;
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             int fragAmt = 2;
             for (int i = 0; i < fragAmt; i++)
             {

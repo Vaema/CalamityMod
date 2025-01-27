@@ -77,7 +77,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (!Main.dedServ)
             {
                 int auraSize = 200; //roughly 12 blocks (half the size of Wither Beast aura)
-                Player player = Main.player[Main.myPlayer];
+                Player player = Main.LocalPlayer;
                 if (!player.dead && player.active && (player.Center - NPC.Center).Length() < auraSize && !player.creativeGodMode)
                 {
                     player.AddBuff(ModContent.BuffType<Irradiated>(), 3, false);

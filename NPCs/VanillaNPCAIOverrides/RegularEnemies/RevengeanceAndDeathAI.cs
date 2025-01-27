@@ -579,7 +579,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         }
                         if (!Main.dedServ)
                         {
-                            Player player = Main.player[Main.myPlayer];
+                            Player player = Main.LocalPlayer;
                             if (!player.dead && player.active && player.FindBuffIndex(BuffID.Stoned) == -1)
                             {
                                 if (npc.Distance(player.Center) < medusaEffectDistance)
