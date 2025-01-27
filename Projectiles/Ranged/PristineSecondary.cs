@@ -42,17 +42,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // Deadshot Brooch moment
-            if (Projectile.MaxUpdates > 1)
-                Projectile.MaxUpdates = 1;
-
             if (Projectile.ai[2] == boomTime)
                 Ignited = true;
             if (Ignited)
             {
                 if (Projectile.ai[2] == boomTime)
                 {
-                    Projectile.damage *= 7; // This is probably too much lol
+                    // Xyk: "This is probably too much lol"
+                    // Yeah I'd say 7x base damage is a bit much
+                    Projectile.damage *= 4;
                     FogColor = Color.Lerp(Color.OrangeRed, Color.Goldenrod, Main.rand.NextFloat());
 
                     SoundStyle ignite = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
