@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.ExtraTextures
 {
     [Autoload(Side = ModSide.Client)]
-    public class ExtraTextureRefs : ModSystem
+    internal sealed class ExtraTextureRefs : ModSystem
     {
         // Destroyer glowmasks
         public static Asset<Texture2D> DestroyerHeadGlowmask;
