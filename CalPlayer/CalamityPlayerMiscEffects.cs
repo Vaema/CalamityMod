@@ -240,7 +240,20 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                 {
+                    if (Player.wingTime > 0 && Player.miscCounter % 3 == 0)
+                        Player.wingTime += 2;
 
+                    if (Player.miscCounter % 5 == 0)
+                        Player.HealPlayer(2, HealTextType.None);
+
+                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    {
+                        Player.dashDelay = 0;
+                    }
+                    if (Player.dashDelay == -1)
+                    {
+                        fxScale = 1.5f;
+                    }
                 }
 
                 if (Player.velocity.Length() > 2)

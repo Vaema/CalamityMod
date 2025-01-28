@@ -1,6 +1,9 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -17,24 +20,72 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DevilsDevastation : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-
+        public int throwCount = 0;
         public override void SetDefaults()
         {
             Item.width = 118;
             Item.height = 118;
-            Item.damage = 166;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
+
+            Item.damage = 235;
+            Item.useAnimation = Item.useTime = 43;
+
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ModContent.ProjectileType<DevilsDevastationThrownBlade>();
             Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 6.75f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 7.5f;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.DamageType = DamageClass.Melee;
+            Item.UseSound = null;
             Item.autoReuse = true;
+            Item.channel = true;
+
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.shoot = ModContent.ProjectileType<EssenceScythe>();
-            Item.shootSpeed = 28f;
             Item.rare = ModContent.RarityType<DarkBlue>();
+        }
+        public override bool MeleePrefix() => true;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && !player.Calamity().mouseRight;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
+            {
+                SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
+                SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 vel = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 6.5f;
+                    Particle spark2 = new CustomSpark(player.Center + vel * 14, -vel * 0.1f, "CalamityMod/Particles/DemonSigilParticle", false, 22, 0.6f, (i % 2 == 0 ? Color.MediumOrchid : Color.BlueViolet) * 0.7f, new Vector2(1, 1), true, false, 0, false, false, -0.23f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+
+                    Dust c = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDust>());
+                    c.velocity = vel;
+                    c.scale = 1.7f;
+                    c.noGravity = true;
+                    c.color = (i % 2 != 0 ? Color.MediumOrchid : Color.BlueViolet);
+                    c.noLightEmittence = true;
+                }
+
+                player.Calamity().demonSwordKillMode = true;
+
+                int cooldownTime = KillMode.cooldownMax + KillMode.buffMax;
+                player.Calamity().killModeCooldown = cooldownTime;
+                player.AddCooldown(KillMode.ID, cooldownTime);
+            }
+            if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
+            {
+                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * 30, Item.knockBack, player.whoAmI, 0, throwCount);
+            }
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            throwCount++;
+            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 2.8f), 1, 100);
+            Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
+            blade.localAI[2] = useSpeed;
+            blade.timeLeft += useSpeed;
+            return false;
         }
         public override void AddRecipes()
         {

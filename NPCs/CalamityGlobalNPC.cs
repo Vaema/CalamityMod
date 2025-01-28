@@ -1131,7 +1131,7 @@ namespace CalamityMod.NPCs
             // Additionally, when you apply the debuff you can give it extra damage. This way it can be viable for multiple tiers
             if (deepBrimstoneFlames > 0) // This is like Brimstone Flames but purple and it can't be resisted //
             {
-                int baseDeepBrimstoneFlamesDoTValue = (int)((60 + deepBrimstoneFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                int baseDeepBrimstoneFlamesDoTValue = (int)((deepBrimstoneFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
                 ApplyDPSDebuff(baseDeepBrimstoneFlamesDoTValue, baseDeepBrimstoneFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 

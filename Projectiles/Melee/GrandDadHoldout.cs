@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
-            Projectile.ai[1] = 1;
+            Projectile.ai[1] = -1;
             base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Dad has no projectiles

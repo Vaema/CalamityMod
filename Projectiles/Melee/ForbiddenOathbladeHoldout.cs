@@ -231,7 +231,7 @@ namespace CalamityMod.Projectiles.Melee
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            int bonusDamage = 60;
+            int bonusDamage = 120;
             if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;

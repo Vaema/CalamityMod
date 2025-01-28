@@ -67,6 +67,8 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<BasherHoldout>(),
                 ProjectileType<OldLordClaymoreHoldout>(),
                 ProjectileType<ForbiddenOathbladeHoldout>(),
+                ProjectileType<ExaltedOathbladeHoldout>(),
+                ProjectileType<DevilsDevastationHoldout>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<EarthHoldout>(),
