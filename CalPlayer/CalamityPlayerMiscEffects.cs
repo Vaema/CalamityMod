@@ -217,7 +217,7 @@ namespace CalamityMod.CalPlayer
             //Todo - Move this back to the wulfrum set class whenever statmodifiers are implemented for stats other than damage
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
-
+            
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
             {
                 float fxScale = 1;

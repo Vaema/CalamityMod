@@ -33,6 +33,7 @@ BansheeHookScythe.DisplayName: Banshee Scythe
 BiomeBladeHoldout.DisplayName: Mended Biome Blade
 BitingEmbrace.DisplayName: Biting Embrace
 BitingEmbraceMist.DisplayName: Glacial Mist
+BladecrestOathswordThrownBlade.DisplayName: Bladecrest Oathsword Thrown Blade
 BlazingPhantomBlade.DisplayName: Blazing Phantom Blade
 Blood.DisplayName: Carnage Blood
 Blood2.DisplayName: Blood
@@ -83,6 +84,7 @@ DecaysRetort.DisplayName: Decay's Retort
 DecaysRetortDash.DisplayName: Evisceration Lunge
 DepthCrusherProjectile.DisplayName: Depth Crusher
 DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
+DevilsDevastationThrownBlade.DisplayName: Devils Devastation Thrown Blade
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
 DNA.DisplayName: DNA
 DracoBeam.DisplayName: Draconic Beam
@@ -105,6 +107,7 @@ EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
+ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
 ExcelsusBlue.DisplayName: Excelsus
 ExcelsusMain.DisplayName: Excelsus
 ExcelsusPink.DisplayName: Excelsus
@@ -120,7 +123,7 @@ FallenPaladinsHammerProj.DisplayName: Fallen Paladin's Hammer
 Feather.DisplayName: Feather
 Flarefrost.DisplayName: Flarefrost
 FloodtideShark.DisplayName: SHORK
-ForbiddenOathbladeProjectile.DisplayName: Oathblade
+ForbiddenOathbladeThrownBlade.DisplayName: Forbidden Oathblade Thrown Blade
 GaelExplosion.DisplayName: Gael Explosion
 GaelSkull.DisplayName: No Longer Ark of the Cosmos' Superior Cousin
 GaelSkull2.DisplayName: No Longer Ark of the Cosmos' Superior Cousin
@@ -304,7 +307,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-BladecrestOathswordThrownBlade.DisplayName: Bladecrest Oathsword Thrown Blade
-ForbiddenOathbladeThrownBlade.DisplayName: Forbidden Oathblade Thrown Blade
-ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
-DevilsDevastationThrownBlade.DisplayName: Devils Devastation Thrown Blade

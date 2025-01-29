@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 118;
 
             Item.damage = 235;
-            Item.useAnimation = Item.useTime = 43;
+            Item.useAnimation = Item.useTime = 45;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<DevilsDevastationThrownBlade>();
@@ -44,6 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
         public override bool MeleePrefix() => true;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 41;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && !player.Calamity().mouseRight;
         public override void HoldItem(Player player)
         {

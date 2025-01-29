@@ -46,6 +46,8 @@ namespace CalamityMod.Projectiles.Melee
 
             if (time == 0)
             {
+                if (Projectile.ai[0] == 0)
+                    Projectile.ai[0] = 0.75f;
                 angleTimer += Main.rand.Next(60, 80 + 1);
                 curveDir = Main.rand.NextBool() ? 1 : -1;
             }
@@ -62,10 +64,14 @@ namespace CalamityMod.Projectiles.Melee
                 curveDir *= -1;
             }
             if (time % 6 == 0)
-                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/BloomCircle", false, 20, Main.rand.NextFloat(0.05f, 0.055f) * deathLerp * Projectile.ai[0], (Main.rand.NextBool() ? Color.MediumOrchid : clr) * 0.7f, new Vector2(0.8f, 1), shrinkSpeed: 0.2f));
-            if (angleTimer % 60 == 0 && Projectile.ai[0] == 1)
             {
-                Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 0.8f).RotatedBy(Main.rand.NextBool() ? -0.6f : 0.6f), ModContent.ProjectileType<DevilsStrike>(), Projectile.damage, 0f, Projectile.owner, 0.7f, 0);
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/BloomCircle", false, 20, Main.rand.NextFloat(0.05f, 0.055f) * deathLerp * Projectile.ai[0], (Main.rand.NextBool() ? Color.MediumOrchid : clr) * 0.7f, new Vector2(0.8f, 1), shrinkSpeed: 0.2f));
+            }
+            if (angleTimer % 60 == 0 && Projectile.ai[0] > 0.7f)
+            {
+                if (Projectile.ai[1] > 0)
+                    Projectile.ai[0] -= 0.08f;
+                Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 0.8f).RotatedBy(Main.rand.NextBool() ? -0.6f : 0.6f), ModContent.ProjectileType<DevilsStrike>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[0] * 0.7f, 0);
                 crack.timeLeft = 250;
             }
         }

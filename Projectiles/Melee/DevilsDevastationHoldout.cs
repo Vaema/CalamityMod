@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             Owner.Calamity().demonSwordKillMode = false;
-            if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active)
+            if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active && Owner.HeldItem.type == AssignedItemID)
             {
                 Owner.Calamity().GeneralScreenShakePower = 12.5f;
                 Particle blastRing = new CustomPulse(lastHitTarget.Center, Vector2.Zero, clr, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.6f, 20, true);
@@ -93,9 +93,16 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
                     Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
-                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), Projectile.damage * 2, 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 2.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
+
+                int bonusDamage = 4500;
+                if (lastHitTarget.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+                {
+                    lastHitTarget.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
+                    lastHitTarget.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 210);
+                }
             }
         }
         public override void UseStyle()
@@ -289,7 +296,7 @@ namespace CalamityMod.Projectiles.Melee
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            int bonusDamage = 3000;
+            int bonusDamage = 4500;
             if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
@@ -299,29 +306,33 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             CalamityUtils.MoveNPC(target, launchVel, 40, true);
 
-            int dustNum = (int)MathHelper.Clamp(12 - Projectile.numHits * 3, 3, 12);
-            for (int i = 0; i < dustNum; i++)
+            if (target.Calamity().demonSwordImpales != 0 || Projectile.numHits == 0)
             {
-                float variance = Main.rand.NextFloat(-0.5f, 0.5f);
-                Vector2 vel = (launchVel * 55).RotatedBy(variance) * Main.rand.NextFloat(0.2f, 1f) * (1 - Math.Abs(variance));
-                int dustStyle = 278;
-                Dust dust2 = Dust.NewDustPerfect(target.Center, dustStyle, Projectile.velocity);
-                dust2.scale = Main.rand.NextFloat(1.2f, 1.4f) - Math.Abs(variance);
-                dust2.velocity = vel;
-                dust2.noGravity = true;
-                dust2.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
+                int dustNum = (int)MathHelper.Clamp(12 - Projectile.numHits * 3, 3, 12);
+                for (int i = 0; i < dustNum; i++)
+                {
+                    float variance = Main.rand.NextFloat(-0.5f, 0.5f);
+                    Vector2 vel = (launchVel * 55).RotatedBy(variance) * Main.rand.NextFloat(0.2f, 1f) * (1 - Math.Abs(variance));
+                    int dustStyle = 278;
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, dustStyle, Projectile.velocity);
+                    dust2.scale = Main.rand.NextFloat(1.2f, 1.4f) - Math.Abs(variance);
+                    dust2.velocity = vel;
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
 
-                Particle spark = new SparkParticle(Projectile.Center, vel, true, 55, 1.25f, Main.rand.NextBool() ? clr : Color.MediumOrchid);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
+                    Particle spark = new SparkParticle(Projectile.Center, vel, true, 55, 1.25f, Main.rand.NextBool() ? clr : Color.MediumOrchid);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
 
-            for (int i = 0; i < 2; i++)
-            {
-                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.BlueViolet, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.7f * (i + 1), 1.3f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.35f * (i + 1), 0.8f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.BlueViolet, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.7f * (i + 1), 1.3f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.35f * (i + 1), 0.8f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                }
             }
+            
             if (!hasLaunchedBlades)
             {
                 for (int x = 0; x < Main.maxProjectiles; x++)

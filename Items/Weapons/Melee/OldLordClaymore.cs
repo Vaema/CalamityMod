@@ -32,5 +32,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Orange;
         }
         public override bool MeleePrefix() => true;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 11;
     }
 }

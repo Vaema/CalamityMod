@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Yellow;
         }
         public override bool MeleePrefix() => true;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 31;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && !player.Calamity().mouseRight;
         public override void HoldItem(Player player)
         {
