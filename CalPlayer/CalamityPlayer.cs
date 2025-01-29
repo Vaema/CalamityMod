@@ -1042,6 +1042,7 @@ namespace CalamityMod.CalPlayer
         public bool shadowSpeed = false;
         public bool dsSetBonus = false;
         public bool auricBoost = false;
+        public bool auricSetMelee = false;
         public bool daedalusReflect = false;
         public bool daedalusSplit = false;
         public bool titanHeartSet = false;
@@ -2023,6 +2024,7 @@ namespace CalamityMod.CalPlayer
 
             auricSet = false;
             auricBoost = false;
+            auricSetMelee = false;
 
             GemTechSet = false;
 
@@ -2963,6 +2965,7 @@ namespace CalamityMod.CalPlayer
             godSlayerDashHotKeyPressed = false;
             SpeedBlasterDashStarted = false;
             auricBoost = false;
+            auricSetMelee = false;
             silvaSet = false;
             silvaMage = false;
             silvaSummon = false;
