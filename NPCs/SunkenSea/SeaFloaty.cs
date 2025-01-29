@@ -14,10 +14,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 6;
+            Main.npcFrameCount[Type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                SpriteDirection = 1
+                SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 5;
-            NPC.width = 72;
+            NPC.width = 44;
             NPC.height = 22;
             NPC.defense = 0;
             NPC.lifeMax = 50;
@@ -63,17 +63,18 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            NPC.TargetClosest(false);
             if (NPC.velocity.X > 0.25f)
-            {
-                NPC.spriteDirection = -1;
-            }
-            else if (NPC.velocity.X < 0.25f)
             {
                 NPC.spriteDirection = 1;
             }
+            else if (NPC.velocity.X < 0.25f)
+            {
+                NPC.spriteDirection = -1;
+            }
             if (NPC.ai[0] == 0f)
             {
-                NPC.direction = 1;
+                NPC.direction = -1;
                 NPC.ai[0] = 1f;
             }
             NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
@@ -88,7 +89,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.netUpdate = true;
             }
 
-            if (NPC.justHit && !hasBeenHit)
+            if ((NPC.justHit || Main.player[NPC.target].Distance(NPC.Center) < 320) && !hasBeenHit)
             {
                 hasBeenHit = true;
                 NPC.noTileCollide = true;
