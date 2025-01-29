@@ -1,7 +1,10 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -88,12 +91,27 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.direction *= -1;
                 NPC.netUpdate = true;
             }
-
+            // panic when it gets hit or the player is close enough to it
             if ((NPC.justHit || Main.player[NPC.target].Distance(NPC.Center) < 320) && !hasBeenHit)
             {
                 hasBeenHit = true;
                 NPC.noTileCollide = true;
                 NPC.noGravity = true;
+
+                SoundEngine.PlaySound(SoundID.NPCHit37 with { Pitch = 1 }, NPC.Center);
+
+                if (!Main.dedServ)
+                {
+                    var emoteDirection = -Vector2.UnitY * Main.rand.NextFloat(2f, 3f);
+                    Particle emote = new EmoteExpressionParticle(
+                        NPC.Center + emoteDirection * 2f,
+                        emoteDirection,
+                        2.2f,
+                        Color.Yellow,
+                        Main.rand.Next(30, 46),
+                        EmoteExpressionParticle.EmoteType.Exclamation);
+                    GeneralParticleHandler.SpawnParticle(emote);
+                }
             }
             NPC.chaseable = hasBeenHit;
             if (hasBeenHit)
