@@ -195,8 +195,8 @@ BladecrestOathsword: {
 		Throw a sharp blade that impales and slows enemies
 		Up to three blades can impale an enemy at a time
 		Hitting impaled guys with a sword beyond the max amount launches the oldest one out
-		[c/df0049:'Secret Stone? Demon King?]
 		'''
+	HoldShiftTooltip: "[c/df0049:'Secret Stone? Demon King?]"
 }
 
 BlightedCleaver: {
@@ -379,8 +379,8 @@ DevilsDevastation: {
 		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
 		A death mark is applied to the last enemy you hit with a slash
 		Once you stop swinging, the death mark will detonate, striking its effected target for immense damage
-		[c/b63cd1:'@Xyk fucking furry']
 		'''
+	HoldShiftTooltip: "[c/b63cd1:'@Xyk fucking furry']"
 }
 
 DevilsSunrise: {
@@ -497,8 +497,8 @@ ExaltedOathblade: {
 		While the slash is readied you gain life and flight regeneration along with reduced dash cooldown
 		The slash has a cooldown after use
 		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
-		[c/b63cd1:'I love my fast paced choppy vocal samples, that shit is peak']
 		'''
+	HoldShiftTooltip: "[c/b63cd1:'I love my fast paced choppy vocal samples, that shit is peak']"
 }
 
 Excelsus: {
@@ -564,8 +564,8 @@ ForbiddenOathblade: {
 		Press <right> to ready a powerful sword slash that is unleashed when you press <left>
 		The slash has a cooldown after use
 		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
-		[c/b63cd1:'I am the one who kills the scrapper']
 		'''
+	HoldShiftTooltip: "[c/b63cd1:'I am the one who kills the scrapper']"
 }
 
 ForsakenSaber: {
@@ -912,8 +912,8 @@ OldLordClaymore: {
 	Tooltip:
 		'''
 		Swings a slow powerful sword that sets enemies ablaze and greatly knocks them back
-		[c/df4420:'My ultra for fuuuuu YEAAAAAAAAAAAAAAA And my father sucks rmembamebamema that one whfngmssjjamhrhrh]
 		'''
+	HoldShiftTooltip: "[c/df4420:'My ultra for fuuuuu YEAAAAAAAAAAAAAAA And my father sucks rmembamebamema that one whfngmssjjamhrhrh]"
 }
 
 OmegaBiomeBlade: {

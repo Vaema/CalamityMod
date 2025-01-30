@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("TrueForbiddenOathblade")]
-    public class ExaltedOathblade : ModItem, ILocalizedModType
+    public class ExaltedOathblade : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public int throwCount = 0;

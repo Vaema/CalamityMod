@@ -50,6 +50,7 @@ namespace CalamityMod.Projectiles.Melee
         public int postSwingCooldown = 0;
         public bool willDie = false;
         public bool hasLaunchedBlades = false;
+        public bool swooshFade = false;
 
         public NPC lastHitTarget = null;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
@@ -118,6 +119,7 @@ namespace CalamityMod.Projectiles.Melee
                 holding = false;
                 killModeCD.timeLeft = KillMode.cooldownMax;
                 Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                swingCount++;
             }
             if (postSwingCooldown > 0)
                 postSwingCooldown--;
@@ -151,10 +153,10 @@ namespace CalamityMod.Projectiles.Melee
                 mousePos = Owner.Calamity().mouseWorld;
             }
 
-            if (CanHit)
+            if (CanHit && !swooshFade)
                 fadeIn = MathHelper.Lerp(fadeIn, 1, 0.5f);
             else
-                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.45f);
+                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.2f);
 
             if (!doSwing)
             {
@@ -173,7 +175,6 @@ namespace CalamityMod.Projectiles.Melee
                 else Owner.direction = 1;
                 FlipAsSword = Owner.direction == -1 ? true : false;
                 doSwing = true;
-                swingCount++;
                 finalFlip = false;
                 playSwingSound = true;
                 hasLaunchedBlades = false;
@@ -248,10 +249,14 @@ namespace CalamityMod.Projectiles.Melee
                         playSwingSound = false;
                         Owner.Calamity().demonSwordKillMode = false;
                     }
-                    if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.75f))
+                    if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.9f))
                         CanHit = true;
                     else
                         CanHit = false;
+                    if (time > (int)(timeMax * 0.7f))
+                        swooshFade = true;
+                    else
+                        swooshFade = false;
 
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(150f * Projectile.ai[1] * Owner.direction, 120f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time / timeMax * 0.9f, 1))),
                         0.2f);
@@ -409,8 +414,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             if ((useAnim > 0 || DrawUnconditionally))
             {
-                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.BlueViolet with { A = 0 } * fadeIn * 0.75f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(Projectile.ai[1] == 1 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 0.9f * hitboxMult, SpriteEffects.None);
-                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, clr with { A = 0 } * fadeIn * 0.85f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(Projectile.ai[1] == 1 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 1.2f * hitboxMult, SpriteEffects.None);
+                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.BlueViolet with { A = 0 } * fadeIn * 0.75f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 0.9f * hitboxMult, SpriteEffects.None);
+                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, clr with { A = 0 } * fadeIn * 0.85f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 1.2f * hitboxMult, SpriteEffects.None);
 
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), Color.Lerp(Color.MediumOrchid with { A = 0 }, lightColor, deathFade) * deathFade, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));

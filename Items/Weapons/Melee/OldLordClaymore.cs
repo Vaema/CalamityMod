@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("OldLordOathsword")]
-    public class OldLordClaymore : CustomUseProjItem, ILocalizedModType
+    public class OldLordClaymore : CustomUseProjItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 

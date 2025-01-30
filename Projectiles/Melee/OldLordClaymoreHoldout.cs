@@ -38,6 +38,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool finalFlip = false;
         public bool playSwingSound = true;
+        public bool swooshFade = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -75,10 +76,10 @@ namespace CalamityMod.Projectiles.Melee
                 mousePos = Owner.Calamity().mouseWorld;
             }
 
-            if (CanHit)
+            if (CanHit && !swooshFade)
                 fadeIn = MathHelper.Lerp(fadeIn, 1, 0.5f);
             else
-                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.4f);
+                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.35f);
 
 
             if (!doSwing)
@@ -146,10 +147,14 @@ namespace CalamityMod.Projectiles.Melee
                         SoundEngine.PlaySound(swing2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(0.4f, 0.5f) }, Projectile.Center);
                         playSwingSound = false;
                     }
-                    if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.75f))
+                    if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.8f))
                         CanHit = true;
                     else
                         CanHit = false;
+                    if (time > (int)(timeMax * 0.7f))
+                        swooshFade = true;
+                    else
+                        swooshFade = false;
 
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(150f * Projectile.ai[1] * Owner.direction, 120f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time / timeMax, 1))),
                         0.2f);

@@ -17,7 +17,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class DevilsDevastation : ModItem, ILocalizedModType
+    public class DevilsDevastation : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public int throwCount = 0;
