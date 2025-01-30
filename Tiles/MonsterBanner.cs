@@ -106,9 +106,9 @@ namespace CalamityMod.Tiles
                 case 11:
                     npc = NPCType<WildBumblefuck>(); // There's also the boss variant but I dont think we want banners to affect them?
                     break;
-                case 12:
-                    npc = NPCType<SeaUrchin>();
-                    break;
+                /*case 12:
+                    npc = NPCType<Unused>(); - Formerly Sea Urchin
+                    break*/
                 case 13:
                     npc = NPCType<BoxJellyfish>();
                     break;
@@ -382,9 +382,9 @@ namespace CalamityMod.Tiles
                 case 103:
                     npc = NPCType<SeaFloaty>();
                     break;
-                case 104:
-                    npc = NPCType<BlindedAngler>();
-                    break;
+                /*case 104:
+                    npc = NPCType<Unused>(); - Formerly Blinded Angler
+                    break*/
                 case 105:
                     npc = NPCType<SeaMinnow>();
                     break;
