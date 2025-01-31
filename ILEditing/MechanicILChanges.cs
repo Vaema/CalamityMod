@@ -1842,6 +1842,12 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, newPos, Style, extraInfo);
+                // Potion of Return triggers Jared if used in the Abyss
+                if (Style == 8)
+                {
+                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                        self.AddBuff(BuffID.ChaosState, 2);
+                }
             }
         }
         #endregion
