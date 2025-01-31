@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == -1)
                 bladeFade = MathHelper.Lerp(bladeFade, 1, 0.15f);
             else
-                bladeFade = MathHelper.Lerp(bladeFade, 0, 0.15f);
+                bladeFade = MathHelper.Lerp(bladeFade, 0, 0.045f);
 
             if (!doSwing)
             {
@@ -219,7 +219,7 @@ namespace CalamityMod.Projectiles.Melee
                     float start = swingCount % 2 != 0 ? (150 * Projectile.ai[1] * Owner.direction) : (150f * Projectile.ai[1] * Owner.direction);
                     float end = swingCount % 2 != 0 ? ((270) * -Projectile.ai[1] * Owner.direction) : (120f * -Projectile.ai[1] * Owner.direction);
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(start, end, CalamityUtils.ExpInOutEasing(time / timeMax, 1))), 0.2f);
-                    if (time > timeMax * 0.7f)
+                    if (time > timeMax * 0.8f)
                     {
                         RotationOffset = Utils.AngleLerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(start, end, CalamityUtils.ExpInOutEasing(time / timeMax, 1))), 0.2f);
                     }
@@ -288,8 +288,14 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Projectile.ai[1] == -1)
                 {
-                    Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0, 0, 2);
+                    NPC chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
+                    Vector2 spawnSpot;
+                    if (chosenTarget == null || !chosenTarget.active || chosenTarget.life <= 0)
+                        spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+                    else
+                        spawnSpot = chosenTarget.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0, chosenTarget == null ? 0 : chosenTarget.whoAmI, 2);
                 }
 
                 spawnBoom = false;
@@ -379,7 +385,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     Color auraColor = Color.Lerp(mainColor, Color.Lerp(mainColor, Color.White, 0.7f), Utils.GetLerpValue(0, draws - 1, i)) with { A = 0 } * 0.38f * bladeFade;
                     Vector2 drawOffset = -offsetDir * 9 * i * bladeFade;
-                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 70 - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(2, 2), tex2.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, tex2.Size() * 0.5f, Vector2.One * (1f - i * 0.03f) * 0.7f, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 70 - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(2, 2), tex2.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, tex2.Size() * 0.5f, Vector2.One * (1f - i * 0.03f) * 0.7f * bladeFade, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));

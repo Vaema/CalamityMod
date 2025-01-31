@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
 using Terraria.Graphics.Renderers;
 using CalamityMod.Dusts;
+using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -46,6 +47,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            NPC targeted = Projectile.ai[1] == 0 ? Owner.ClampedMouseWorld().ClosestNPCAt(1000) : Main.npc[(int)Projectile.ai[1]];
+
             Projectile.scale = 1.2f;
             randomColor = Main.rand.Next(3) switch
             {
@@ -85,8 +88,13 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time == (int)(fallTime * 0.2f) && Projectile.ai[2] > 0)
             {
-                Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Vector2 spawnSpot;
+                if (targeted == null || !targeted.active || targeted.life <= 0)
+                    spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+                else
+                    spawnSpot = targeted.Center + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-450, -650));
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<EarthMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1], Projectile.ai[2] - 1);
             }
             if (time == fallTime)
             {
@@ -98,7 +106,7 @@ namespace CalamityMod.Projectiles.Melee
                 Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), 0, 0.65f, 0f, 27);
                 GeneralParticleHandler.SpawnParticle(bloom3);
 
-                Projectile.extraUpdates = 15;
+                Projectile.extraUpdates = 30;
 
                 Vector2 mouse = Owner.ClampedMouseWorld();
                 NPC target = mouse.ClosestNPCAt(1000);
@@ -112,16 +120,17 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time >= fallTime)
             {
+                float fadeIn = Utils.GetLerpValue(fallTime * 1.7f, fallTime, time, true);
                 // Spawn in a helix-style pattern
-                float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
+                float sine = (float)Math.Sin(Projectile.timeLeft * 0.475f / MathHelper.Pi);
 
-                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
+                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * (16f + 34 * fadeIn);
                 if (targetDist < 1400f && time % 2 == 0)
                 {
-                    GlowSparkParticle orb = new(Projectile.Center + offset, -Projectile.velocity * 0.5f, false, 10, 0.03f, mainColor, new Vector2(0.5f, 1f), false, false);
+                    CustomSpark orb = new(Projectile.Center + offset, -Projectile.velocity * 0.5f, "CalamityMod/Particles/BloomCircle", false, 10, 0.3f + (0.4f * fadeIn), mainColor, new Vector2(0.5f, 1f), true, false);
                     GeneralParticleHandler.SpawnParticle(orb);
 
-                    GlowSparkParticle orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.5f, false, 10, 0.03f, mainColor, new Vector2(0.5f, 1f), false, false);
+                    CustomSpark orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.5f, "CalamityMod/Particles/BloomCircle", false, 10, 0.3f + (0.4f * fadeIn), mainColor, new Vector2(0.5f, 1f), true, false);
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
@@ -141,13 +150,14 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearRagged");
             if (time <= fallTime)
                 return false;
 
-            Color auraColor = mainColor;
-
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, auraColor, Color.White * 0.5f, 9);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(Color.White, randomColor, 0.3f), 1);
+            for (int i = 0; i < 10; i++)
+            {
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.UnitX) * (i - 110), null, mainColor with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale * new Vector2(0.4f - i * 0.05f, 1.3f + i * 0.1f) * 0.4f, i % 2 == 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+            }
 
             return false;
         }
