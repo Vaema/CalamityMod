@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Vector2 pos = new Vector2(targetPos.X + width * 0.5f + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                 Vector2 velocity = (targetPos - pos) / 40f;
-                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.25), Projectile.knockBack, Projectile.owner);
+                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<LeonidCometBig>(), (int)(Projectile.damage * 1.25), Projectile.knockBack, Projectile.owner);
                 if (comet.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[comet].DamageType = RogueDamageClass.Instance;
