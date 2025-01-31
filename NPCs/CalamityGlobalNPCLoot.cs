@@ -785,26 +785,33 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 5% chance to drop Shock Grenade
+                // 1.5% chance to drop any of the three Calamity martian drops
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
-                case NPCID.MartianEngineer:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 20);
+                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 66);
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
+                    break;
+
+                // Martian Engineer
+                // 10% chance to drop Wingman
+                case NPCID.MartianEngineer:
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 10);
                     break;
 
                 // Martian Officer
-                // 10% chance to drop Shock Grenade
+                // 8% chance to drop Shock Grenade
                 case NPCID.MartianOfficer:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 10);
+                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 12);
                     break;
 
                 // Martian Walker
-                // Wingman @ 14.29% Normal, 25% Expert+
+                // 12% chance to drop Nullification Pistol
                 case NPCID.MartianWalker:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Wingman>(), 7, 4));
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 8);
                     break;
 
                 // Martian Saucer
@@ -827,7 +834,6 @@ namespace CalamityMod.NPCs
                             ItemID.LaserMachinegun,
                             ItemID.ElectrosphereLauncher,
                             ItemID.InfluxWaver,
-                            ModContent.ItemType<NullificationPistol>()
                         };
 
                         npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, saucerItems));
