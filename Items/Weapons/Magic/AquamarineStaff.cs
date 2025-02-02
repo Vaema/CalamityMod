@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 2.5f;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item43;
+            Item.UseSound = SoundID.DD2_SkyDragonsFuryShot;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AquamarineBolt>();
             Item.shootSpeed = 14f;
@@ -39,12 +39,12 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int index = 0; index < 2; ++index)
-            {
-                float SpeedX = velocity.X + (float)Main.rand.Next(-30, 31) * 0.05f;
-                float SpeedY = velocity.Y + (float)Main.rand.Next(-30, 31) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
-            }
+            int parent = Projectile.NewProjectile(source, position + velocity*2, velocity, type, damage, knockback, player.whoAmI);
+            int child = Projectile.NewProjectile(source, position + velocity*2, velocity, type, damage, knockback, player.whoAmI, 1, 0, parent);
+            Main.projectile[child].penetrate = -1;
+            Main.projectile[child].tileCollide = false;
+            Main.projectile[child].scale = 0.75f;
+
             return false;
         }
 
