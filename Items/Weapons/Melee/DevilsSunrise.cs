@@ -2,9 +2,7 @@
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,14 +16,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 66;
             Item.height = 66;
+            Item.damage = 420;
             Item.DamageType = DamageClass.MeleeNoSpeed;
+            Item.useAnimation = 25;
+            Item.useTime = 5;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.damage = 420;
             Item.knockBack = 4f;
-            Item.useAnimation = 25;
-            Item.useTime = 5;
             Item.autoReuse = false;
             Item.useStyle = ItemUseStyleID.Shoot;
 
@@ -39,12 +37,12 @@ namespace CalamityMod.Items.Weapons.Melee
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        // You can't use the sword if you've thrown it, silly
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<DevilsSunriseCyclone>()] <= 0;
+        public override void HoldItem(Player player)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DevilsSunriseCyclone>(), damage, knockback, player.whoAmI);
-            return false;
+            player.Calamity().mouseWorldListener = true;
+            player.Calamity().rightClickListener = true;
         }
 
         public override void AddRecipes()
