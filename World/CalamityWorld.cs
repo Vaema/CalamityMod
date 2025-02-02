@@ -67,8 +67,6 @@ namespace CalamityMod.World
         // Shrines
         public static int[] SChestX = new int[10];
         public static int[] SChestY = new int[10];
-        /// <summary> Used to determine if the Roxcalibur shrine has been placed in the world. </summary>
-        public static bool roxShrinePlaced = false;
 
         /// <summary> Used to check if the world has generated Luminite planetoids from Moon Lord's defeat. </summary>
         public static bool HasGeneratedLuminitePlanetoids = false;

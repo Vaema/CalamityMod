@@ -61,6 +61,11 @@ namespace CalamityMod.Schematics
         internal const string SurfaceShrineKey = "Surface Shrine";
         internal const string SurfaceShrineFilename = "Schematics/Shrine_Surface.csch";
 
+        internal const string RoxcaliburShrineKey1 = "Roxcalibur Shrine 1";
+        internal const string RoxcaliburShrine1Filename = "Schematics/Shrine_Roxcalibur_ShrineVariant.csch";
+        internal const string RoxcaliburShrineKey2 = "Roxcalibur Shrine 2";
+        internal const string RoxcaliburShrine2Filename = "Schematics/Shrine_Roxcalibur_TorchVariant.csch";
+
         internal const string VernalKey = "Vernal Pass";
         internal const string VernalFilename = "Schematics/VernalPass.csch";
 
@@ -120,6 +125,8 @@ namespace CalamityMod.Schematics
                 [MarbleShrineKey] = CalamitySchematicIO.LoadSchematic(MarbleShrineFilename),
                 [MushroomShrineKey] = CalamitySchematicIO.LoadSchematic(MushroomShrineFilename),
                 [SurfaceShrineKey] = CalamitySchematicIO.LoadSchematic(SurfaceShrineFilename),
+                [RoxcaliburShrineKey1] = CalamitySchematicIO.LoadSchematic(RoxcaliburShrine1Filename),
+                [RoxcaliburShrineKey2] = CalamitySchematicIO.LoadSchematic(RoxcaliburShrine2Filename),
 
                 [VernalKey] = CalamitySchematicIO.LoadSchematic(VernalFilename),
 
