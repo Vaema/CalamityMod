@@ -329,6 +329,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Tactician's Trump Card's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));
 
+            // 40% resist to Devil's Sunrise's slashes.
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<DevilsSunriseProj>()))));
+
             // 35% resist to Event Horizon.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
             #endregion
