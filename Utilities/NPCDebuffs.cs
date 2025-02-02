@@ -332,7 +332,6 @@ namespace CalamityMod
                 { ModContent.NPCType<MicrobialCluster>(), sulphur },
                 { ModContent.NPCType<Trasher>(), sulphur },
 
-                { ModContent.NPCType<BlindedAngler>(), sunkenSea },
                 { ModContent.NPCType<Clam>(), sunkenSea },
                 { ModContent.NPCType<EutrophicRay>(), sunkenSea },
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
@@ -415,7 +414,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
-                { ModContent.NPCType<SeaUrchin>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
 
                 { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },

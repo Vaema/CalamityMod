@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            CalamityPlayer p = Main.player[Main.myPlayer].Calamity();
+            CalamityPlayer p = Main.LocalPlayer.Calamity();
             //If stealth is full, shoot a spread of 3 shurikens
             if (p.StealthStrikeAvailable())
             {

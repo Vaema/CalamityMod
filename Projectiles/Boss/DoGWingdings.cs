@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Boss
                         color = new Color((int)red, (int)green, (int)blue, (int)alpha);
                         break;
                 }
-                if (Main.player[Main.myPlayer].gravDir != 1f)
+                if (Main.LocalPlayer.gravDir != 1f)
                 {
                     float finalYPos = Projectile.position.Y - Main.screenPosition.Y;
                     finalYPos = (float)Main.screenHeight - finalYPos;

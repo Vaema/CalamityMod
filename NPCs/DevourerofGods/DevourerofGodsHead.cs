@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Phase variables
         private const int idleCounterMax = 300;
         private int idleCounter = idleCounterMax;
-        private const float LaserWallCooldown = 1200f;
+        public const float LaserWallCooldown = 1200f;
         private int postTeleportTimer = 0;
         private int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 120;
@@ -143,7 +143,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const int TimeBeforeTeleport_Expert = 160;
         private const int TimeBeforeTeleport_Normal = 180;
         private bool spawnedGuardians3 = false;
-        private const float alphaGateValue = 669f;
+        private const float AlphaGateValue = 1060f;
         public const float SkyColorTransitionTime = 90f;
 
         // Death animation variables
@@ -670,19 +670,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
 
                     // Laser walls
+                    float adjustedAlphaGateValue = AlphaGateValue - (bossRush ? 360f : death ? 180f : 0f);
                     if (phase4 && !spawnedGuardians3 && postTeleportTimer <= 0)
                     {
                         if (laserWallPhase == (int)LaserWallPhase.SetUp)
                         {
                             // Enter laser wall phase very quickly when final phase starts
-                            if (phase6 && calamityGlobalNPC.newAI[3] < alphaGateValue)
-                                calamityGlobalNPC.newAI[3] = alphaGateValue;
+                            if (phase6 && calamityGlobalNPC.newAI[3] < adjustedAlphaGateValue)
+                                calamityGlobalNPC.newAI[3] = adjustedAlphaGateValue;
 
                             // Increment next laser wall phase timer
                             calamityGlobalNPC.newAI[3] += 1f;
 
                             // Set alpha value prior to firing laser walls
-                            if (calamityGlobalNPC.newAI[3] > alphaGateValue)
+                            if (calamityGlobalNPC.newAI[3] > adjustedAlphaGateValue)
                             {
                                 // Disable teleports
                                 if (teleportTimer > 0)
@@ -691,12 +692,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     teleportTimer = 0;
                                 }
 
-                                NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - alphaGateValue) * 5f, 0f, 255f) / 255f);
+                                NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - adjustedAlphaGateValue) * 5f, 0f, 255f) / 255f);
                             }
 
                             // Fire laser walls every X seconds after a laser wall phase ends
                             float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
-                            if (calamityGlobalNPC.newAI[3] >= LaserWallCooldown)
+                            if (calamityGlobalNPC.newAI[3] >= laserWallGateValue)
                             {
                                 NPC.Opacity = 0f;
 
@@ -1031,8 +1032,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
 
@@ -1061,8 +1062,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1081,7 +1082,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Go to ground phase sooner
                         if (increaseSpeedMore)
                         {
-                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
+                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= adjustedAlphaGateValue)
                                 SpawnTeleportLocation(player);
                         }
 
@@ -1276,8 +1277,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1294,7 +1295,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Enrage
                         if (increaseSpeedMore)
                         {
-                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
+                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= adjustedAlphaGateValue)
                                 SpawnTeleportLocation(player);
                             else
                                 groundPhaseTurnSpeed *= 4f;
@@ -1866,8 +1867,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                     }
 
                     // Flying movement
@@ -2063,8 +2064,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                     }
 
                     calamityGlobalNPC.newAI[2] += 1f;

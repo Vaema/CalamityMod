@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                         float blastSize = 45;
                         float minMultiplier = 0.4f;
                         int hitsToMinMult = 4;
-                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.25f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                         blast.DamageType = DamageClass.Ranged;
                         blast.ArmorPenetration = 8;
 

@@ -272,8 +272,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[3] = 1f;
 
                         // Play roar sound on players nearby
-                        if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < 2800f)
-                            SoundEngine.PlaySound(SoundID.NPCDeath10 with { Pitch = SoundID.NPCDeath10.Pitch - 0.25f }, Main.player[Main.myPlayer].Center);
+                        if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < 2800f)
+                            SoundEngine.PlaySound(SoundID.NPCDeath10 with { Pitch = SoundID.NPCDeath10.Pitch - 0.25f }, Main.LocalPlayer.Center);
                     }
                 }
                 else if (distanceFromTarget < distanceBeforeSlowingDown)
@@ -892,8 +892,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int projectileType = ProjectileID.EyeLaser;
                         int damage = npc.GetProjectileDamage(projectileType);
 
+                        bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
+                        float projectileOffset = targetTooClose ? 60f : 150f;
                         Vector2 projectileVelocity = (lookAt - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 60f;
+                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
 
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
                         Main.projectile[proj].timeLeft = 900;
@@ -1516,8 +1518,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num394 = num397 / num394;
                     num392 *= num394;
                     num393 *= num394;
+
+                    bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
+                    float projectileOffset = targetTooClose ? 60f : 150f;
                     Vector2 projectileVelocity = new Vector2(num392, num393);
-                    Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 60f;
+                    Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
                     Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 1f, 0f);
                 }
             }

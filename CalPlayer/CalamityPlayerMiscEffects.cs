@@ -1446,6 +1446,14 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // The fire boots debuff boosts
+            if (hellfireTreads)
+                bootLevel = 2;
+            else if (flameWakerBoots)
+                bootLevel = 1;
+            else
+                bootLevel = 0;
+
             if (rOfResilienceEffect > 0)
                 rOfResilienceEffect--;
             if (Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>()) // All players close to a player holding RoR get the benefits
@@ -3261,7 +3269,7 @@ namespace CalamityMod.CalPlayer
             if (wDeath && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
-            if (astralInfection && !(infectedJewel || purity))
+            if (astralInfection && !(infectedJewel || hideOfDeus || purity))
                 Player.GetDamage<GenericDamageClass>() -= 0.1f;
 
             if (pFlames && !purity)

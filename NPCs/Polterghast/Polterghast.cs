@@ -970,8 +970,8 @@ namespace CalamityMod.NPCs.Polterghast
             // If Polterghast has not been killed, notify players about the Abyss minibosses now dropping items
             if (!DownedBossSystem.downedPolterghast)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(ReaperShark.SearchRoarSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(ReaperShark.SearchRoarSound, Main.LocalPlayer.Center);
 
                 string key = "Mods.CalamityMod.Status.Progression.GhostBossText";
                 Color messageColor = Color.RoyalBlue;

@@ -57,13 +57,13 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
 
-                        if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                        if (Main.LocalPlayer.lifeSteal <= 0f)
                         {
                             Projectile.Kill();
                             return;
                         }
 
-                        Main.player[Main.myPlayer].lifeSteal -= heal;
+                        Main.LocalPlayer.lifeSteal -= heal;
                         Owner.HealPlayer(heal);
                     }
 

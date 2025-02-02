@@ -18,6 +18,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -469,7 +470,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int heal = (int)Math.Round(hit.Damage * 0.035);
-                    if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                    if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                         return;
 
                     CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
@@ -489,7 +490,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int heal = (int)Math.Round(hit.Damage * 0.01);
-                    if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                    if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                         return;
 
                     for (int i = 0; i <= 2; i++)
@@ -1237,7 +1238,7 @@ namespace CalamityMod.CalPlayer
                 Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ProjectileType<GladiatorHealOrb>(), 0, 0f);
             }
 
-            if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
+            if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
             {
                 // Increases the degree to which Spectre Healing set contributes to the lifesteal cap
                 if (Player.ghostHeal && proj.CountsAsClass<MagicDamageClass>())
@@ -1249,7 +1250,7 @@ namespace CalamityMod.CalPlayer
                         cooldownMult = 0f;
 
                     float cooldown = damage * cooldownMult;
-                    Main.player[Main.myPlayer].lifeSteal -= cooldown;
+                    Main.LocalPlayer.lifeSteal -= cooldown;
                 }
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
@@ -1368,12 +1369,12 @@ namespace CalamityMod.CalPlayer
 
             if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && target.lifeMax > 5)
             {
-                if (target.IsAnEnemy(false) && Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech)
+                if (target.IsAnEnemy(false) && Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech)
                 {
                     int heal = 4;
-                    if (!Main.player[Main.myPlayer].moonLeech)
+                    if (!Main.LocalPlayer.moonLeech)
                     {
-                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealSetBonusCooldownMultiplier;
+                        Main.LocalPlayer.lifeSteal -= heal * BalancingConstants.LifeStealSetBonusCooldownMultiplier;
 
                         float lowestHealthCheck = 0f;
                         int healTarget = Player.whoAmI;
@@ -1405,16 +1406,16 @@ namespace CalamityMod.CalPlayer
 
             if (reaverDefense)
             {
-                if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
+                if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
                 {
                     double healMult = 0.1;
                     int heal = (int)Math.Round(damage * healMult);
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
-                    if (heal > 0 && !Main.player[Main.myPlayer].moonLeech)
+                    if (heal > 0 && !Main.LocalPlayer.moonLeech)
                     {
-                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealReaverTankCooldownMultiplier;
+                        Main.LocalPlayer.lifeSteal -= heal * BalancingConstants.LifeStealReaverTankCooldownMultiplier;
 
                         float lowestHealthCheck = 0f;
                         int healTarget = Player.whoAmI;

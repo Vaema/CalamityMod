@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (swingTime == (int)(swingTimeMax * 0.4f))
                     {
                         SoundEngine.PlaySound(SoundID.Item43 with { Volume = 0.65f }, Projectile.Center);
-                        Vector2 projVel = -aimPos.SafeNormalize(Vector2.UnitX) * 12f;
+                        Vector2 projVel = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX) * 14.5f;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, projVel, ModContent.ProjectileType<PurityProjection>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI);
                     }
 

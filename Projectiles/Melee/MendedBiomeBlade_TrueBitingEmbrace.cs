@@ -82,11 +82,10 @@ namespace CalamityMod.Projectiles.Melee
             {
                 case 0:
                 case 1:
-                    bladeLength = 150 * Projectile.scale;
+                    bladeLength = 160f * Projectile.scale;
                     break;
                 case 2:
-                    bladeLength = 225f; //In awe e
-                    bladeLength *= Projectile.scale;
+                    bladeLength = 225f * Projectile.scale;
                     displace = direction * ThrustDisplaceRatio() * 60f;
                     break;
 
@@ -153,7 +152,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Type])
                     Projectile.frame++;
 
-                if (Main.rand.NextBool() && Owner.whoAmI == Main.myPlayer)
+                if (Timer % 2 == 0 && Owner.whoAmI == Main.myPlayer)
                 {
                     Projectile mist = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + direction * 40 + Main.rand.NextVector2Circular(30f, 30f), Vector2.Zero, ProjectileType<BitingEmbraceMist>(), (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_MistDamageReduction), 0f, Owner.whoAmI);
                     mist.velocity = (mist.Center - Owner.Center) * 0.2f + Owner.velocity;
@@ -163,7 +162,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else
             {
-                if (Main.rand.NextFloat(0f, 1f) > 0.75f && Owner.whoAmI == Main.myPlayer)
+                if (Timer % 2 == 0 && Owner.whoAmI == Main.myPlayer)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + direction * 40, rotation.ToRotationVector2() * 5, ProjectileType<BitingEmbraceMist>(), (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_MistDamageReduction), 0f, Owner.whoAmI);
 

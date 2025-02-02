@@ -3,6 +3,8 @@ using System.Threading;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Tiles.AstralSnow;
+using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
@@ -389,7 +391,7 @@ namespace CalamityMod.Systems
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
             {
                 //Delaying it a bit so that weaker pcs dont suffer - Shade
-                ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
+                ThreadPool.QueueUserWorkItem(_ => AstralBiome.PlaceAstralMeteor());
             }));
         }
         #endregion

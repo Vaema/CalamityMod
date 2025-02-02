@@ -229,7 +229,7 @@ namespace CalamityMod.Items.Accessories
             }
             else
             {
-                string manaCost = (100 * Main.player[Main.myPlayer].manaCost).ToString("N0");
+                string manaCost = (100 * Main.LocalPlayer.manaCost).ToString("N0");
                 string full = this.GetLocalization("FullTooltip").Format(maxMinionRequirement, manaCost);
                 tooltips.FindAndReplace("[STATUS]", full);
             }

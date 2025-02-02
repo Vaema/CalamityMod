@@ -1460,8 +1460,6 @@ namespace CalamityMod.NPCs.Cryogen
             if (!DownedBossSystem.downedCryogen)
             {
                 string key = "Mods.CalamityMod.Status.Progression.IceOreText";
-                Color messageColor = Color.LightSkyBlue;
-
                 List<int> tileTypes = [
                     TileID.SnowBlock,
                     TileID.IceBlock,
@@ -1476,7 +1474,7 @@ namespace CalamityMod.NPCs.Cryogen
                     tileTypes.Add(TileID.JungleGrass);
                 CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

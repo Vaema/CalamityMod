@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             return false;
         }
 
-        public static bool DoChlorophyteCrystalDrawing(Projectile projectile)
+        public static void DoChlorophyteCrystalDrawing(Projectile projectile)
         {
             // Why doesn't this work? How does one access the texture path of a vanilla projectile? Left bugged for someone else to figure out :)
             // It's me. I was that someone - Dominic
@@ -80,7 +80,6 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             }
 
             Main.EntitySpriteDraw(texture, drawPosition, null, projectile.GetAlpha(Color.White * 0.75f), projectile.rotation, origin, projectile.scale, 0, 0);
-            return false;
         }
     }
 }

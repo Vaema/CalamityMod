@@ -177,7 +177,7 @@ namespace CalamityMod
                     return true;
                 }
             }
-            return FindFirstProjectile(ProjectileType<DeusRitualDrama>()) != -1;
+            return false;
         }
         #endregion
 

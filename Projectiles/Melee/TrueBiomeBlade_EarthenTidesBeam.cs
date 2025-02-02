@@ -43,24 +43,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             // Sword beams home
-            if (Projectile.timeLeft < 120)
+            if (Projectile.timeLeft < 130)
             {
-                // Find the closest target
-                float npcDistCompare = 240f;
                 int index = -1;
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (!n.CanBeChasedBy(Projectile, false))
-                        continue;
-
-                    float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
-                    if ((currentNPCDist < npcDistCompare) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
-                    {
-                        npcDistCompare = currentNPCDist;
-                        index = n.whoAmI;
-                    }
-                }
-                // Homing will prioritize an enemy that is marked
+                // Prioritize an enemy that is marked
                 foreach (Projectile proj in Main.projectile)
                 {
                     if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)
@@ -72,6 +58,25 @@ namespace CalamityMod.Projectiles.Melee
                         }
                     }
                 }
+
+                // If nothing is marked, just find the closest target
+                if (index == -1)
+                {
+                    float npcDistCompare = 240f;
+                    foreach (NPC n in Main.ActiveNPCs)
+                    {
+                        if (!n.CanBeChasedBy(Projectile, false))
+                            continue;
+
+                        float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                        if ((currentNPCDist < npcDistCompare) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
+                        {
+                            npcDistCompare = currentNPCDist;
+                            index = n.whoAmI;
+                        }
+                    }
+                }
+
                 // If we found an enemy, curve towards them
                 if (index != -1)
                 {

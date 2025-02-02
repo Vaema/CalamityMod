@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Signus
                 float x = 0f;
                 if (this.SignusIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.SignusIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.SignusIndex].Center);
                 }
 
                 float maxIntensity = 0.1f;

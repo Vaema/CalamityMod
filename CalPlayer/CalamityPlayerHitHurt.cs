@@ -533,7 +533,7 @@ namespace CalamityMod.CalPlayer
             if (frostSet)
             {
                 // 0f = point blank, 1f = max range or further
-                float DistanceInterpolant = Utils.GetLerpValue(FrostArmorSetChange.MinDistance, FrostArmorSetChange.MaxDistance, target.Distance(Main.player[Main.myPlayer].Center), true);
+                float DistanceInterpolant = Utils.GetLerpValue(FrostArmorSetChange.MinDistance, FrostArmorSetChange.MaxDistance, target.Distance(Main.LocalPlayer.Center), true);
 
                 if (item.CountsAsClass<MeleeDamageClass>())
                 {
@@ -632,7 +632,7 @@ namespace CalamityMod.CalPlayer
             if (frostSet)
             {
                 // 0f = point blank, 1f = max range or further
-                float DistanceInterpolant = Utils.GetLerpValue(FrostArmorSetChange.MinDistance, FrostArmorSetChange.MaxDistance, target.Distance(Main.player[Main.myPlayer].Center), true);
+                float DistanceInterpolant = Utils.GetLerpValue(FrostArmorSetChange.MinDistance, FrostArmorSetChange.MaxDistance, target.Distance(Main.LocalPlayer.Center), true);
 
                 if (proj.CountsAsClass<MeleeDamageClass>())
                 {

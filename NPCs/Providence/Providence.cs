@@ -1417,7 +1417,7 @@ namespace CalamityMod.NPCs.Providence
                     {
                         if (!Main.dedServ)
                         {
-                            Player player2 = Main.player[Main.myPlayer];
+                            Player player2 = Main.LocalPlayer;
                             bool inLiquid = (player2.wet || player2.honeyWet) && !player2.lavaWet;
 
                             if (!player2.dead && player2.active && Vector2.Distance(player2.Center, NPC.Center) < 2800f && !inLiquid)
@@ -1760,7 +1760,7 @@ namespace CalamityMod.NPCs.Providence
                     {
                         if (NPC.ai[2] == 120f)
                         {
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < 2800f)
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
                             {
                                 SoundEngine.PlaySound(HolyRaySound, Main.LocalPlayer.Center);
                             }

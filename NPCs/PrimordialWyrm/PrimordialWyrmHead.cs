@@ -220,8 +220,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Play spawn sound
             if (!TailSpawned && NPC.ai[0] == 0f)
             {
-                if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                    SoundEngine.PlaySound(SpawnSound, Main.player[Main.myPlayer].Center);
+                if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                    SoundEngine.PlaySound(SpawnSound, Main.LocalPlayer.Center);
             }
 
             // Spawn segments
@@ -537,8 +537,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -597,8 +597,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                     {
                         if (calamityGlobalNPC.newAI[2] % 30f == 0f && calamityGlobalNPC.newAI[2] < lightningRainDuration)
                         {
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.player[Main.myPlayer].Center);
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.LocalPlayer.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -725,8 +725,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -837,8 +837,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -1117,8 +1117,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == lightningChargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -1130,8 +1130,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                 // Lightning barrage
                                 if (NPC.localAI[3] == 0f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.LocalPlayer.Center);
 
                                     NPC.localAI[3] = 1f;
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1186,8 +1186,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                     {
                         if (!NPC.AnyNPCs(ModContent.NPCType<Eidolist>()))
                         {
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                SoundEngine.PlaySound(Eidolist.DeathSound, Main.player[Main.myPlayer].Center);
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                SoundEngine.PlaySound(Eidolist.DeathSound, Main.LocalPlayer.Center);
 
                             // Spawn Eidolists randomly around the target
                             for (int i = 0; i < maxEidolists; i++)

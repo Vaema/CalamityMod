@@ -149,6 +149,7 @@ namespace CalamityMod.NPCs
         public const double BaseDoTDamageMult = 1D;
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
+        public const double ResistantToDoTDamageMult = 0.5;
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
@@ -867,13 +868,16 @@ namespace CalamityMod.NPCs
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
+            bool wetReducedEffectiveness = npc.wet || npc.honeyWet || npc.dripping;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            if (wetReducedEffectiveness)
+                heatDamageMult *= wormBoss || slimeGod ? 0.66 : ResistantToDoTDamageMult;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
                     heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 1.25 : 1.5) : ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : 0.5) : 0.5;
+                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double coldDamageMult = BaseDoTDamageMult;
@@ -882,7 +886,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToCold.Value)
                     coldDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    coldDamageMult *= 0.5;
+                    coldDamageMult *= ResistantToDoTDamageMult;
             }
 
             double sicknessDamageMult = irradiated > 0 ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
@@ -891,7 +895,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToSickness.Value)
                     sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
@@ -901,7 +905,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToElectricity.Value)
                     electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double waterDamageMult = BaseDoTDamageMult;
@@ -910,7 +914,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToWater.Value)
                     waterDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    waterDamageMult *= 0.5;
+                    waterDamageMult *= ResistantToDoTDamageMult;
             }
 
             if (IncreasedColdEffects_EskimoSet)
@@ -1676,7 +1680,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 75000;
+                    npc.lifeMax = 80000;
                     break;
 
                 case NPCID.PlanterasTentacle:
@@ -3852,8 +3856,8 @@ namespace CalamityMod.NPCs
                 // Apply Boss Effects while any boss NPC is active
                 if (!Main.dedServ)
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < BossZenDistance)
-                        Main.player[Main.myPlayer].AddBuff(BuffType<BossEffects>(), 2);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -7409,6 +7413,10 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            // This is used so that NPCs with specific PreDraws can still have Odd Mushroom clone drawing.
+            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
+            bool shouldDrawBool = true;
+
             if (npc.IsABestiaryIconDummy)
             {
                 switch (npc.netID)
@@ -7557,7 +7565,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc.type))
-                    return false;
+                    shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
@@ -7570,7 +7578,7 @@ namespace CalamityMod.NPCs
 
                 Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
-                return false;
+                shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.GolemHeadFree)
@@ -7595,7 +7603,7 @@ namespace CalamityMod.NPCs
                 frame = npc.frame;
                 Rectangle glowFrame2 = frame;
                 spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-                return false;
+                shouldDrawBool = false;
             }
 
             if (Main.LocalPlayer.Calamity().trippy && !npc.IsABestiaryIconDummy)
@@ -7611,97 +7619,97 @@ namespace CalamityMod.NPCs
                 alphaColor.G = (byte)(alphaColor.G * RGBMult);
                 alphaColor.B = (byte)(alphaColor.B * RGBMult);
                 alphaColor.A = (byte)(alphaColor.A * RGBMult);
-                int totalAfterimages = Main.player[Main.myPlayer].Calamity().trippyLevel == 3 ? 16 : (Main.player[Main.myPlayer].Calamity().trippyLevel == 2 ? 12 : 4);
+                int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
                 for (int i = 0; i < totalAfterimages; i++)
                 {
                     Vector2 position = npc.position;
-                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
 
                     float smallDistanceMult = 0.48f;
                     float largeDistanceMult = 1.33f;
-                    bool whatTheFuck = Main.player[Main.myPlayer].Calamity().trippyLevel == 3;
+                    bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
 
                     switch (i)
                     {
                         case 0:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 1:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 2:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 3:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 4: // 1 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 5: // 4 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 6: // 7 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 7: // 10 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 8: // 11 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 9: // 2 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 10: // 5 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 11: // 8 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 12:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 13:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 14:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
                         case 15:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
 
@@ -7754,7 +7762,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            return true;
+            return shouldDrawBool;
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -8011,8 +8019,8 @@ namespace CalamityMod.NPCs
                             currentColor.A = (byte)((float)(int)currentColor.A * opacity);
 
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i > 3)
                             {
                                 currentColor *= 0.5f;
@@ -8026,46 +8034,46 @@ namespace CalamityMod.NPCs
                             {
                                 case 0:
                                 case 4:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 1:
                                 case 5:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 2:
                                 case 6:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 3:
                                 case 7:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 8:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 9:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 10:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 case 11:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 default:
@@ -8117,18 +8125,18 @@ namespace CalamityMod.NPCs
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i == 0 || i == 2)
-                                position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
                             else
-                                position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
 
                             position.X -= npc.width / 2;
                             if (i == 0 || i == 1)
-                                position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             else
-                                position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
 
                             position.Y -= npc.height / 2;
 
@@ -8153,8 +8161,8 @@ namespace CalamityMod.NPCs
                             for (int i = 0; i < totalAfterimages; i++)
                             {
                                 Vector2 position = npc.position;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                                 if (i > 3)
                                 {
                                     currentColor *= 0.5f;
@@ -8166,46 +8174,46 @@ namespace CalamityMod.NPCs
                                 {
                                     case 0:
                                     case 4:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 1:
                                     case 5:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 2:
                                     case 6:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 3:
                                     case 7:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 8:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 9:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 10:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     case 11:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     default:

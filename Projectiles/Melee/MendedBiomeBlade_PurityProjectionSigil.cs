@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             Main.dust[dustParticle].noGravity = true;
             Main.dust[dustParticle].velocity *= 0.5f;
 
-            if (target.active)
+            if (target.CanBeChasedBy(Projectile))
             {
                 Projectile.Center = target.Center;
 

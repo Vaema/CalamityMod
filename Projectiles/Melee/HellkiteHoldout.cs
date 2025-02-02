@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
         public float fadeIn = 0; // Used to make particle effects and outer glow on the sword fade in and out
         public int useAnim; // Used as your use time stat since checking the held item use time gets jank if your attack speed changes mid swing
         public int storedUseAnim; // Used to check your use time when you began using the item and to reset use time when needed
-        public int swingCount = -1; // Runs counting code first, so it has to be one below
+        public int swingCount = 0;
         public float GFBMulti = 1; // GFB infinite charge particle and damage multiplier
         public int GFBCharge = 0; // GFB charge counter
         public bool GFBFlashWarning = false;
@@ -42,6 +42,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool chargedSwing = false; // True if you have a charged swing fully charged
         public int chargeTimer = 0; // Timer for charging the blade with right click
         public int chargeTimerMax = 240; // This is set to be base don use time on spawn
+        public bool playSwingSound = true;
 
         public SlotId AudSlot;
         public override void SetDefaults()
@@ -53,6 +54,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnSpawn(IEntitySource source)
         {
+            CanHit = false;
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
@@ -89,9 +91,9 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (CanHit)
-                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.1f);
+                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.23f);
             else
-                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.15f);
+                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.3f);
             if (chargeTimer > 0)
                 fadeIn = Utils.Remap(chargeTimer, 0, chargeTimerMax, 0, 1f);
 
@@ -109,6 +111,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!doSwing)
             {
+                playSwingSound = true;
                 mousePos = Owner.Calamity().mouseWorld;
                 aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                 CanHit = false;
@@ -218,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
                 
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
-                if (AnimationProgress < (useAnim / 3))
+                if (AnimationProgress < (useAnim / 1.5f))
                 {
                     if (Projectile.ai[2] == 5 && !chargedSwing)
                         doSwing = false;
@@ -235,11 +238,11 @@ namespace CalamityMod.Projectiles.Melee
                         doSwing = false;
                         chargeTimer = 0;
                         chargedSwing = false;
-                        swingCount++;
                         useAnim = storedUseAnim;
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
-                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.2f);
+
+                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.35f, useAnim * 0.6f, Animation, true)) * 0.45f)), 0.2f);
                     FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 }
                 else
@@ -247,7 +250,7 @@ namespace CalamityMod.Projectiles.Melee
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
-                    if (time == (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)))
+                    if (time >= (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)) && playSwingSound)
                     {
                         if (!chargedSwing)
                         {
@@ -258,8 +261,10 @@ namespace CalamityMod.Projectiles.Melee
                             SoundEngine.PlaySound(Hellkite.SwingSound with { Volume = 0.9f, Pitch = 0.2f }, Projectile.Center);
                             SoundEngine.PlaySound(Hellkite.SwingSoundBig with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                         }
+                        swingCount++;
+                        playSwingSound = false;
                     }
-                    if ( time > (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)) && time < (int)(timeMax * (chargedSwing ? 0.9f : 0.7f)))
+                    if (time > (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)) && time < (int)(timeMax * (chargedSwing ? 0.9f : 0.7f)))
                     {
                         CanHit = true;
 
@@ -424,6 +429,7 @@ namespace CalamityMod.Projectiles.Melee
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
                 Asset<Texture2D> glowTex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/HellkiteGlow");
                 Asset<Texture2D> shineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/Sparkle");
+                Asset<Texture2D> swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearRagged");
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
                 Vector2 generalDrawPos = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
@@ -433,9 +439,12 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/HellkiteGhost").Value;
                     Color auraColor = Color.OrangeRed with { A = 0 } * 0.15f * fadeIn;
-                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 7 * fadeIn;
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * (chargeTimer > 0 ? 4 : 7) * fadeIn;
                     Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
+
+                if (swingCount > 0 && Projectile.ai[2] != 5 && !playSwingSound)
+                    Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.Lerp(Color.DarkRed, Color.OrangeRed, 0.25f) with { A = 0 } * fadeIn * 0.9f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -80 : 80) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 2.35f / 4, swingCount % 2 == 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
 
                 Main.EntitySpriteDraw(tex.Value, generalDrawPos, tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, sEffects);
 

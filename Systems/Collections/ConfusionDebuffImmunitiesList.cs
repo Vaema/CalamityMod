@@ -39,7 +39,6 @@ namespace CalamityMod.Systems.Collections
                 NPCType<Rotdog>(),
                 NPCType<Scryllar>(),
                 NPCType<ScryllarRage>(),
-                NPCType<SeaUrchin>(),
                 NPCType<StellarCulex>(),
                 NPCType<Stormlion>(),
                 NPCType<SuperDummyNPC>(),

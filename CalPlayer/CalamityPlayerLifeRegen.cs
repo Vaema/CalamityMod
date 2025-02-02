@@ -118,7 +118,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
-            ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
+            ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);

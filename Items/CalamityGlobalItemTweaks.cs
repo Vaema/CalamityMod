@@ -1399,7 +1399,8 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<ExodiumCluster>()] = ItemID.LunarOre;
             shimmerTransmute[ModContent.ItemType<AstralOre>()] = ModContent.ItemType<ScoriaOre>();
             shimmerTransmute[ModContent.ItemType<ScoriaOre>()] = ModContent.ItemType<PerennialOre>();
-            shimmerTransmute[ModContent.ItemType<PerennialOre>()] = shimmerTransmute[ItemID.LunarOre];
+            shimmerTransmute[ModContent.ItemType<PerennialOre>()] = ModContent.ItemType<CryonicOre>();
+            shimmerTransmute[ModContent.ItemType<CryonicOre>()] = shimmerTransmute[ItemID.LunarOre];
             shimmerTransmute[ModContent.ItemType<HallowedOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
             shimmerTransmute[ModContent.ItemType<AerialiteOre>()] = shimmerTransmute[ItemID.CobaltOre];
 

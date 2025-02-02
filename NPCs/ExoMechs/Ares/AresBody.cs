@@ -855,9 +855,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     // Set flight time to max during Deathray Spiral
                     if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < DeathrayEnrageDistance)
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < DeathrayEnrageDistance)
                         {
-                            Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
+                            Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
 
@@ -872,9 +872,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode && revenge)) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
                             {
-                                SoundEngine.PlaySound(EnragedSound, Main.player[Main.myPlayer].Center);
+                                SoundEngine.PlaySound(EnragedSound, Main.LocalPlayer.Center);
                             }
 
                             // Draedon comments on how foolish it is to run

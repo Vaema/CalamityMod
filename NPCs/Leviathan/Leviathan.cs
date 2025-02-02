@@ -831,8 +831,8 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (!DownedBossSystem.downedLeviathan)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.LocalPlayer.Center);
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }

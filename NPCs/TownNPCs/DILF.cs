@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.TownNPCs
             dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
             dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
 
-            if (Main.dayTime && !Main.player[Main.myPlayer].ZoneSnow)
+            if (Main.dayTime && !Main.LocalPlayer.ZoneSnow)
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.Day2"));

@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!initialized) //Initialization. Here its litterally just playing a sound tho lmfao
+            if (!initialized) //Initialization.
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
@@ -184,7 +184,7 @@ namespace CalamityMod.Projectiles.Melee
                 //Manage position and rotation
                 Projectile.scale = 1 + Empowerment / maxEmpowerment * 1.5f;
 
-                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment / maxEmpowerment, 0.4f, 1f) * MathHelper.PiOver4 * 0.20f);
+                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment * 1.1f / maxEmpowerment, 0.45f, 1f) * MathHelper.PiOver4 * 0.20f);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
                 Projectile.Center = Owner.Center + (direction * Projectile.scale * 10);
@@ -238,7 +238,7 @@ namespace CalamityMod.Projectiles.Melee
             if (CurrentState == 1f)
                 modifiers.SourceDamage *= MathHelper.Lerp(1f, OmegaBiomeBlade.WhirlwindAttunement_ThrowDamageBoost, Empowerment / maxEmpowerment);
             else
-                modifiers.SourceDamage *= OmegaBiomeBlade.WhirlwindAttunement_BaseDamageReduction + (OmegaBiomeBlade.WhirlwindAttunement_FullChargeDamageBoost * Empowerment / maxEmpowerment);
+                modifiers.SourceDamage *= MathHelper.Lerp(OmegaBiomeBlade.WhirlwindAttunement_BaseSwingDamageMult, OmegaBiomeBlade.WhirlwindAttunement_FullSwingDamageMult, Empowerment / maxEmpowerment);
 
             if (CurrentState != 1)
             {

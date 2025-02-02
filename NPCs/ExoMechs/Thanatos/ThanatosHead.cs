@@ -887,7 +887,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                             if (calamityGlobalNPC.newAI[2] == 1f)
                             {
                                 //Commented out in case we decide its better for it to simply play from anywhere in range
-                                //if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
+                                //if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
                                 LaserSoundSlot = SoundEngine.PlaySound(LaserSound, NPC.Center);
 
                                 // Create a bunch of lightning bolts in the sky

@@ -92,7 +92,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
             {
                 orig();
@@ -1842,6 +1842,12 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, newPos, Style, extraInfo);
+                // Potion of Return triggers Jared if used in the Abyss
+                if (Style == 8)
+                {
+                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                        self.AddBuff(BuffID.ChaosState, 2);
+                }
             }
         }
         #endregion
