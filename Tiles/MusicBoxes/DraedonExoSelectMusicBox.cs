@@ -40,7 +40,6 @@ namespace CalamityMod.Tiles.MusicBoxes
             player.cursorItemIconID = ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonExoSelectMusicBox>();
         }
 
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
         public override bool CreateDust(int i, int j, ref int type) => false;
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
