@@ -196,7 +196,11 @@ BladecrestOathsword: {
 		Up to three blades can impale an enemy at a time
 		Hitting impaled guys with a sword beyond the max amount launches the oldest one out
 		'''
-	HoldShiftTooltip: "[c/df0049:'Secret Stone? Demon King?]"
+	HoldShiftTooltip:
+		'''
+		[c/df0049:A ritual blade used by Demons for sacrifices.]
+		[c/df0049:The more blood taints the edge, the sharper it becomes.]
+		'''
 }
 
 BlightedCleaver: {
@@ -380,7 +384,12 @@ DevilsDevastation: {
 		A death mark is applied to the last enemy you hit with a slash
 		Once you stop swinging, the death mark will detonate, striking its effected target for immense damage
 		'''
-	HoldShiftTooltip: "[c/b63cd1:'@Xyk fucking furry']"
+	HoldShiftTooltip:
+		'''
+		[c/d13ca2:The perfect blade of the Underworld, wielding the power of Brimstone directly.]
+		[c/d13ca2:Humans understand this force as Havoc, the inevitable sundering of all order in fire.]
+		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]	
+		'''
 }
 
 DevilsSunrise: {
@@ -498,7 +507,13 @@ ExaltedOathblade: {
 		The slash has a cooldown after use
 		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
 		'''
-	HoldShiftTooltip: "[c/b63cd1:'I love my fast paced choppy vocal samples, that shit is peak']"
+	HoldShiftTooltip:
+		'''
+		[c/b63cd1:A sword fashioned from the legend of the Last Demon Lord.]
+		[c/b63cd1:Crowned through his overwhelming might, his sword bathed in the blood of Demons and the fires of hell.]
+		[c/b63cd1:Even long after his passing, none have dared to take the seat.]
+		[c/b63cd1:Demonkind has not known unity since.]
+		'''
 }
 
 Excelsus: {
@@ -565,7 +580,12 @@ ForbiddenOathblade: {
 		The slash has a cooldown after use
 		If hitting an impaled enemy these slashes eject all blades and the cooldown is reset, allowing for another immediate slash
 		'''
-	HoldShiftTooltip: "[c/b63cd1:'I am the one who kills the scrapper']"
+	HoldShiftTooltip:
+		'''
+		[c/b63cd1:A blade forged in the likeness of that granted to the Demon Lord.]
+		[c/b63cd1:The title was coveted by all demonkind. Only one may exist at a time.]
+		[c/b63cd1:Any claimant who seeks the throne has a simple goal: the head of the former Lord.]
+		'''
 }
 
 ForsakenSaber: {
@@ -909,11 +929,12 @@ Oblivion: {
 
 OldLordClaymore: {
 	DisplayName: Old Lord Claymore
-	Tooltip:
+	Tooltip: Swings a slow powerful sword that sets enemies ablaze and greatly knocks them back
+	HoldShiftTooltip:
 		'''
-		Swings a slow powerful sword that sets enemies ablaze and greatly knocks them back
+		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
+		[c/df4420:The prosperity he brought to their kind is unmatched even now that they alone rule the Undeworld.]
 		'''
-	HoldShiftTooltip: "[c/df4420:'My ultra for fuuuuu YEAAAAAAAAAAAAAAA And my father sucks rmembamebamema that one whfngmssjjamhrhrh]"
 }
 
 OmegaBiomeBlade: {
