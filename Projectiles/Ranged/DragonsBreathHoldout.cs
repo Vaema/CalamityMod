@@ -85,12 +85,6 @@ namespace CalamityMod.Projectiles.Ranged
                     hasLaunchedMag = false;
                     fade = 1;
 
-                    // Doesn't sync this to the server, it's just effects.
-                    if (!Main.dedServ)
-                    {
-
-                    }
-
                     OffsetLengthFromArm = 52f;
                     fireSpeed++;
                     fireTimer = 0;

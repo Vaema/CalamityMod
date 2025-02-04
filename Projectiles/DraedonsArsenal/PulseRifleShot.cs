@@ -1,12 +1,7 @@
-﻿using System;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using Humanizer;
+﻿using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -213,16 +208,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.localAI[0] == createDustVar && notSplit)
                 PulseBurst(4f, 5f);
         }
-
-        public override bool? CanHitNPC(NPC target) => doDamage ? null : false;
+        public override bool? CanDamage() => (doDamage ? null : false);
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             bool onKill = (target.life <= 0 && target.realLife == -1);
             if (notSplit)
             {
-                Projectile.Kill();
-
                 for (int i = 0; i <= 9; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, 66);
@@ -248,13 +240,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 int projectileDamage = (int)(Projectile.damage * 0.5f);
                 for (int i = 0; i < numProj; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), ModContent.ProjectileType<PulseRifleShot>(), projectileDamage, Projectile.knockBack, Projectile.owner, 0f, 1f + i);
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), Projectile.type, projectileDamage, Projectile.knockBack, Projectile.owner, 0f, 1f + i);
                 }
+                Projectile.Kill();
             }
             // Split projectile on hit effects
             else
             {
-                // Set some values to get ready foir it to home again for its next hit
+                // Set some values to get ready for it to home again for its next hit
                 lastTarget = target;
                 distance = 3000;
                 Projectile.localAI[0] = 60;
