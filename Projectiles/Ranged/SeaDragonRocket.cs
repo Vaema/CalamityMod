@@ -98,19 +98,6 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle hitSound2 = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
                 SoundEngine.PlaySound(hitSound2 with { Volume = 1.1f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.8f) with { Volume = 1.1f }, Projectile.position);
-                // Create Blast (If you want to know how to use this blast, check the projectile, it tells you exactly how to use it!)
-                float blastSize = 80;
-                float minMultiplier = 0.25f;
-                int hitsToMinMult = 5;
-                int debuff = ModContent.BuffType<CrushDepth>();
-                int debuffTime = 120;
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
-                blast.localAI[0] = debuff;
-                blast.localAI[1] = debuffTime;
-                blast.timeLeft = 2;
-                blast.DamageType = Projectile.DamageType;
-
-                // Add visuals here
                 for (int i = 0; i < 3; i++)
                 {
                     Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.HotPink : Color.SeaGreen, Main.rand.NextFloat(0.6f, 0.9f), 30, 0.4f, 3f);

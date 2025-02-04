@@ -127,7 +127,6 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 rotationPoint = texture.Size() * 0.5f;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Color.Indigo with { A = 0 }, drawRotation, rotationPoint, new Vector2(0.5f, 1.4f) * 0.025f * Projectile.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(texture, drawPosition, null, Color.DeepSkyBlue with { A = 0 }, drawRotation, rotationPoint, new Vector2(0.5f, 1.4f) * 0.02f * Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

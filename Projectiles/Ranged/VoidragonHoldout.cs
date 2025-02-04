@@ -29,9 +29,11 @@ namespace CalamityMod.Projectiles.Ranged
         public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 55).RotatedBy(-0.05f * Projectile.direction);
 
         public int Time = 0;
+        public int beamTimer = 500;
         public int shotCounter = 0;
         public int framesBetweenShots = 0;
         public bool swapType = false;
+        public bool firingBeam = false;
 
         public override void KillHoldoutLogic()
         {
@@ -68,9 +70,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Time >= 90)
             {
-                if (framesBetweenShots == 0 && shotCounter <= 51)
+                if (framesBetweenShots == 0 && shotCounter <= 50)
                 {
-                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 28;
                     #region Debug Text Display
                     //Main.NewText(shotCounter);
                     //Main.NewText(Owner.Calamity().sharkGunDamageScaling);
@@ -118,6 +120,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (shotCounter == 50)
                     {
                         framesBetweenShots = 150;
+                        shotCounter++;
                         SoundStyle charge = new("CalamityMod/Sounds/Custom/MoonLordLaserCharge");
                         SoundEngine.PlaySound(charge with { Volume = 1.5f }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
                     }
@@ -125,59 +128,27 @@ namespace CalamityMod.Projectiles.Ranged
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
-            if (shotCounter == 50 && framesBetweenShots == 0)
+            if (shotCounter == 51 && framesBetweenShots == 0)
             {
-                if (framesBetweenShots == 0)
+                Main.NewText(beamTimer);
+                firingBeam = true;
+                if (firingBeam && beamTimer > 0)
                 {
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
                     //Debug Text
-                    //Main.NewText(Owner.Calamity().sharkGunDamageScaling);
-                    #region Visuals and Sounds
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotHeavy");
-                    SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = 0.15f }, Projectile.Center);
-                    for (int i = 0; i <= 13; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 1.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
-                        dust.noGravity = false;
-                        dust.color = Color.White;
-
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 0.8f));
-                        dust2.noGravity = true;
-                        dust2.scale = Main.rand.NextFloat(0.52f, 0.72f);
-                        dust2.color = Color.Lerp(Color.Orange, Color.Gold, Main.rand.NextFloat(0f, 1f));
-                    }
-                    for (int i = 0; i < 14; i++)
-                    {
-                        Particle smoke = new HeavySmokeParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.2f, 1.5f), Color.RoyalBlue, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
-                        GeneralParticleHandler.SpawnParticle(smoke);
-                    }
-                    float rotation = Projectile.velocity.ToRotation();
-                    Particle pulse = new DirectionalPulseRing(GunTipPosition, shootVelocity / 4, Color.Gray, new Vector2(1f, 2.5f), rotation, 0.03f, 0.3f, 20);
-                    GeneralParticleHandler.SpawnParticle(pulse);
-                    //Extra sound and muzzle flash if the scaling is at max
-                    if (Owner.Calamity().sharkGunDamageScaling == 50)
-                    {
-                        SoundStyle fireperfect = new("CalamityMod/Sounds/Item/ShadowboltReflect");
-                        SoundEngine.PlaySound(fireperfect with { Volume = 0.6f, Pitch = 0f }, GunTipPosition);
-                        GenericSparkle sparker = new GenericSparkle(GunTipPosition, Vector2.Zero, Color.DarkGoldenrod, Color.Gold, Main.rand.NextFloat(1.1f, 1.8f), 10, 2f, 2.68f);
-                        GeneralParticleHandler.SpawnParticle(sparker);
-                    }
-                    #endregion
-
                     //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
                     if (Owner.Calamity().sharkGunDamageScaling == 0)
                     {
                         Owner.Calamity().sharkGunDamageScaling++;
                     }
-                    //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<AnomalysNanogunPlasmaBeam>(), (int)(Projectile.damage * 2.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
-
-                    //After firing the rocket, kill the projectile to allow left click to be held down
-                    Projectile.Kill();
+                    if (beamTimer % 2 == 0)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<ExoFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, 1, beamTimer, (Time % 15 < 10 ? 18 : 0));
+                    beamTimer--;
                 }
                 else
                 {
-                    framesBetweenShots--;
+                    firingBeam = false;
+                    Projectile.Kill();
                 }
             }
             Time++;
