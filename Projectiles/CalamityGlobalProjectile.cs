@@ -246,6 +246,9 @@ namespace CalamityMod.Projectiles
         /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
+        /// <summary> A timer for preventing projectiles from being "transformed" by transformer every frame. </summary>
+        public int TransformerTimer = 0;
+
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
         public int lineColor = 0;
@@ -3986,6 +3989,10 @@ namespace CalamityMod.Projectiles
                 flatDRTimer--;
                 if (flatDRTimer <= 0)
                     flatDR = 0;
+            }
+            if (projectile.FinalExtraUpdate() && TransformerTimer > 0)
+            {
+                TransformerTimer--;
             }
 
             // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.

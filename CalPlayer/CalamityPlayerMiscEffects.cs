@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -1518,6 +1517,66 @@ namespace CalamityMod.CalPlayer
             if (rOfResilienceCooldown > 0)
                 rOfResilienceCooldown--;
 
+            if (transformer && Player.Calamity().transformerCooldown == 0) // The code for this acursed thing took much... MUCH, too long to make
+            {
+                float zoneSize = 150;
+                // GFB changes are that projectiles slow and have lifetime decay when in the aura, also they can add charges way faster than normal, deal more damage the more you collect, and the number of blobs is uncapped
+                for (int x = 0; x < Main.maxProjectiles; x++)
+                {
+                    Projectile projectile = Main.projectile[x];
+                    if (Main.zenithWorld && Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile)
+                    {
+                        projectile.velocity = Vector2.Lerp(projectile.velocity, Utils.DirectionTo(Player.Center, projectile.Center) * 4, Utils.GetLerpValue(300, 230, projectile.timeLeft, true));
+                        projectile.timeLeft = (int)MathHelper.Lerp(projectile.timeLeft, 0, 0.25f);
+                        if (projectile.damage > 1)
+                            projectile.damage = (int)(projectile.damage * 0.85f);
+                        projectile.friendly = true;
+                    }
+                    if (Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile && projectile.Calamity().TransformerTimer == 0 && transformerDelay == 0)
+                    {
+                        transformerDelay = 2; // 2 frame delay between projectile transformation
+                        int numOfBlobs = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()];
+
+                        if (numOfBlobs < 30 || Main.zenithWorld) // 30 normally, uncapped on GFB
+                        {
+                            projectile.Calamity().TransformerTimer = Main.zenithWorld ? 10 : 90;
+                            int blobDamage = (int)Player.GetBestClassDamage().ApplyTo(45);
+                            int layer = (int)(Utils.GetLerpValue(0, 10, numOfBlobs + 1) + 0.9f);
+                            Projectile.NewProjectileDirect(Player.GetSource_FromThis(), projectile.Center, projectile.velocity.SafeNormalize(Vector2.UnitX) * 16f, ModContent.ProjectileType<TransformerBlob>(), blobDamage, 0f, Player.whoAmI, layer, numOfBlobs + 1);
+                            
+                            if (Player.Calamity().transformerVisual)
+                            {
+                                Particle orb2 = new CustomPulse(projectile.Center, Vector2.Zero, Color.LightSkyBlue, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.5f, 11);
+                                GeneralParticleHandler.SpawnParticle(orb2);
+
+                                SoundStyle transform = new("CalamityMod/Sounds/Item/NullImpact");
+                                SoundEngine.PlaySound(transform with { Volume = 0.1f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) + numOfBlobs * 0.015f, MaxInstances = -1 }, projectile.Center);
+                            }
+
+                            float index = 1f;
+                            foreach (Projectile p in Main.ActiveProjectiles)
+                            {
+                                float angleMax = MathHelper.ToRadians(360 * layer);
+                                if (numOfBlobs == 0)
+                                    angleMax = 0f;
+  
+                                if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
+                                {
+                                    float insanityValue = ((p.ai[1] % 10) + 1);
+                                    if (p.ai[0] == layer)
+                                        p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+
+                                    p.netUpdate = true;
+                                    index++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (transformerDelay > 0)
+                transformerDelay--;
+
             if (unstableGraniteCore)
             {
                 zapActivity += 1;
@@ -1636,6 +1695,8 @@ namespace CalamityMod.CalPlayer
                 arsenalCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
+            if (transformerCooldown > 0)
+                transformerCooldown--;
             if (DragonsBreathAudioCooldown > 0)
                 DragonsBreathAudioCooldown--;
             if (DragonsBreathAudioCooldown2 > 0)

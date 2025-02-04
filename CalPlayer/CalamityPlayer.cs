@@ -4,8 +4,6 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -743,6 +741,9 @@ namespace CalamityMod.CalPlayer
         public bool aquaticHeartIce = false;
         public bool aSpark = false;
         public bool transformer = false;
+        public bool transformerVisual = false;
+        public int transformerCooldown = 0;
+        public int transformerDelay = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -2081,6 +2082,7 @@ namespace CalamityMod.CalPlayer
             warbannerGlow = false;
             aSpark = false;
             transformer = false;
+            transformerVisual = false;
             hideOfDeus = false;
             dAmulet = false;
             rampartOfDeities = false;
@@ -2749,6 +2751,8 @@ namespace CalamityMod.CalPlayer
             ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
+            transformerCooldown = 0;
+            transformerDelay = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
@@ -3161,6 +3165,33 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = 2400;
                 ascendantInsigniaBuffTime = 240; //4 seconds
+            }
+
+            int numOfBlobs = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()];
+            if (transformer && numOfBlobs > 0 && Main.myPlayer == Player.whoAmI && CalamityKeybinds.TransformerHotKey.JustPressed && transformerCooldown <= 0 && true) // Add check if projectiles are active
+            {
+                // Go fire all the blobs
+                int cooldownTime = 300;
+                transformerCooldown = cooldownTime;
+                Player.AddCooldown(TransformerCooldown.ID, cooldownTime);
+
+                for (int x = 0; x < Main.maxProjectiles; x++)
+                {
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<TransformerBlob>())
+                    {
+                        projectile.localAI[0] = 5;
+                    }
+                }
+                if (transformerVisual)
+                {
+                    SoundStyle activate = new("CalamityMod/Sounds/Item/NullShot");
+                    for (int i = 0; i < 3; i++)
+                        SoundEngine.PlaySound(activate with { Volume = 0.3f, Pitch = 0.2f + i * 0.3f, MaxInstances = -1 }, Player.Center);
+                    Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.DodgerBlue, "CalamityMod/Particles/BloomRingThinLarge", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.2f, 20);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
+                
             }
 
             //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero

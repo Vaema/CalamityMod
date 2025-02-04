@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 30;
             Item.height = 44;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 12;
+            Item.damage = 14;
             Item.knockBack = 1f;
             Item.useTime = 25;
             Item.useAnimation = 25;

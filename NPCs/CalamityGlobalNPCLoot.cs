@@ -206,6 +206,12 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Desert
+                // Antlion
+                // Antlion Skewer @ 5%
+                case NPCID.Antlion:
+                    npcLoot.Add(ModContent.ItemType<AntlionSkewer>(), 20);
+                    break;
+
                 // Tomb Crawler
                 // Burnt Sienna @ 4% Normal, 6.67% Expert+
                 case NPCID.TombCrawlerHead:

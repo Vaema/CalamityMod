@@ -24,6 +24,7 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.Other;
@@ -702,6 +703,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By NPC
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
         {
+            if (npc.Calamity().antlionCloudDebuffTimer > 0)
+                modifiers.SourceDamage *= AntlionSkewer.CloudDamageDebuffMult;
+
             // Enemies deal less contact damage while sick, due to being weakened.
             if (npc.poisoned)
             {
@@ -2633,11 +2637,6 @@ namespace CalamityMod.CalPlayer
                         Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4.5f, 5.25f);
                         Dust electric = Dust.NewDustPerfect(Player.Center, DustID.Electric, dustVel, Scale: 0.75f);
                         electric.noGravity = true;
-                        if (transformer)
-                        {
-                            NanoParticle nano = new(Player.Center, dustVel, new Color(0, 186, 242), 1f, 20, true, true);
-                            GeneralParticleHandler.SpawnParticle(nano);
-                        }
                     }
                 }
                 if (rBrain)

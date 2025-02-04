@@ -25,7 +25,7 @@ namespace CalamityMod.Systems
         public override void PreWorldGen()
         {
             Abyss.TotalPlacedIslandsSoFar = 0;
-            roxShrinePlaced = false;
+            //roxShrinePlaced = false;
 
             // This will only be applied at world-gen time to new worlds.
             // Old worlds will never receive this marker naturally.
@@ -263,6 +263,9 @@ namespace CalamityMod.Systems
 
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SurfaceShrine").Value;
                     UndergroundShrines.PlaceSurfaceShrine(GenVars.structures);
+
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
+                    UndergroundShrines.PlaceRoxShrine(GenVars.structures);
                 }));
 
                 // Aerialite
@@ -334,13 +337,6 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SulphurSea2").Value;
                     SulphurousSea.SulphurSeaGenerationAfterAbyss();
-                }));
-
-                // Roxcalibur
-                tasks.Insert(++currentFinalIndex, new PassLegacy("Roxcalibur", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
-                    MiscWorldgenRoutines.PlaceRoxShrine();
                 }));
 
                 // No Traps/GFB Auric Land Mines

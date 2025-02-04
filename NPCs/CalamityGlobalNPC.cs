@@ -156,8 +156,8 @@ namespace CalamityMod.NPCs
         public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
-        // Transformer effect
-        public bool IncreasedElectricityEffects_Transformer = false;
+        // Electric effects
+        public bool IncreasedElectricityEffects_Unused = false;
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
@@ -317,6 +317,7 @@ namespace CalamityMod.NPCs
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int antlionCloudDebuffTimer = 0;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -360,8 +361,6 @@ namespace CalamityMod.NPCs
         public int nightwither = 0;
         /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        /// <summary> If greater than 0, this NPC has been "shocked" by The Transformer's on hurt effect. </summary>
-        public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
@@ -508,7 +507,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
             myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
-            myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
+            myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
@@ -574,6 +573,7 @@ namespace CalamityMod.NPCs
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -605,7 +605,6 @@ namespace CalamityMod.NPCs
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
-            myClone.transformerShocked = transformerShocked;
             myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
@@ -924,7 +923,7 @@ namespace CalamityMod.NPCs
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
-            if (IncreasedElectricityEffects_Transformer)
+            if (IncreasedElectricityEffects_Unused)
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
@@ -5629,8 +5628,6 @@ namespace CalamityMod.NPCs
                 nightwither--;
             if (shocked > 0)
                 shocked--;
-            if (transformerShocked > 0)
-                transformerShocked--;
             if (voidfrost > 0)
                 voidfrost--;
             if (shellfishVore > 0)
@@ -5652,6 +5649,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            if (antlionCloudDebuffTimer > 0)
+                antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
 
@@ -5743,28 +5742,21 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Amidias' Spark and Transformer spark spawning
-            if (shocked > 0 || transformerShocked > 0)
+            // Amidias' Spark spark spawning
+            if (shocked > 0)
             {
                 var player = Main.LocalPlayer;
-                bool strongerShock = transformerShocked > 0;
 
-                int frequency = strongerShock ? 10 : 12;
+                int frequency = 12;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
                 {
-                    int sDamage = strongerShock ? 50 : 10;
+                    int sDamage = 10;
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
                     spark.penetrate = 3;
-                    if (strongerShock)
-                    {
-                        spark.timeLeft = 240;
-                        spark.extraUpdates = 1;
-                        spark.penetrate = 10;
-                    }
                 }
             }
 
@@ -5978,10 +5970,7 @@ namespace CalamityMod.NPCs
 
             if (target.Calamity().aSpark)
             {
-                if (target.Calamity().transformer)
-                    transformerShocked = 120;
-                else
-                    shocked = 120;
+                shocked = 120;
             }
 
             if (target.Calamity().snowman)

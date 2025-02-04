@@ -362,12 +362,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected bool HasPath => PathfindingPoints is not null;
 
-        protected bool IsPointAbleToNavigate(Point point) =>
-            Main.tile[point].LiquidAmount > 125 && Main.tile[point].LiquidType == LiquidID.Water && NPC.DoesEntityFitInPath(point, fluffX: 16, fluffY: 16);
-
-        protected void SunkenSeaPathfinding(Vector2 goal) => PathfindingPoints = NPC.Center.DoPathfinding(goal, IsPointAbleToNavigate);
-
-        protected void SunkenSeaPathfinding() => PathfindingPoints = NPC.Center.DoPathfinding(tileValidation: IsPointAbleToNavigate);
+        protected bool SunkenSeaTileValidity(Point point) =>
+            Main.tile[point].LiquidAmount > 125 && Main.tile[point].LiquidType == LiquidID.Water && NPC.DoesEntityFitInPath(point, 6, 6);
 
         /// <summary>
         /// A quickhand method to follow a path found.

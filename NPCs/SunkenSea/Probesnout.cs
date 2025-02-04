@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -16,6 +17,7 @@ namespace CalamityMod.NPCs.SunkenSea
     public class Probesnout : SunkenSeaNPC
     {
         public static float PathDetectionSize = 300f;
+        private static Task<List<Vector2>> _pathfindingTask;
 
         #region Members
 
@@ -172,12 +174,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private void IdleBehavior()
         {
-            if (!HasPath)
+            if (_pathfindingTask.Result == null)
             {
                 NPC.velocity *= 0.95f;
 
                 if (Main.rand.NextBool(125))
-                    SunkenSeaPathfinding(NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f));
+                    _pathfindingTask = CalamityUtils.FindPathAsync(new(
+                        NPC.Center,
+                        NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f),
+                        SunkenSeaTileValidity));
             }
             else
                 GenericPathFollowing(acceleration: 0.03f);
@@ -217,7 +222,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid())
                     randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f);
 
-                SunkenSeaPathfinding(randomEscapePoint);
+                
             }
             else
                 GenericPathFollowing(acceleration: 0.14f);
@@ -237,7 +242,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (HasPath)
                     GenericPathFollowing(acceleration: 0.14f);
                 else
-                    SunkenSeaPathfinding(CurrentPrey.Center);
+                    _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
             }
             else
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * 0.14f;

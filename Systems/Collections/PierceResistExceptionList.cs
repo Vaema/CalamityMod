@@ -90,6 +90,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<StellarStrikerHoldout>(),
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
+                ProjectileType<TransformerBlob>(),
                 ProjectileType<TyphonsGreedStaff>(),
                 ProjectileType<UrchinMaceProj>(),
                 ProjectileType<UrchinStingerProj>(),

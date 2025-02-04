@@ -1030,7 +1030,7 @@ Riptide: {
 	Tooltip:
 		'''
 		{$Common.YoyoStats}
-		Sprays a spiral of aqua streams
+		Occasionally pulses a riptide wave with heavy knockback
 		'''
 }
 
