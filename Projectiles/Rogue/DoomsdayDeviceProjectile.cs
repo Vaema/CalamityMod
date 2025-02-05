@@ -321,10 +321,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Do the damage calculation now. It's not at the bottom of this section because of some variables that are changed below.
-            float minMult = 0.3f;
-            int hitsToMinMult = 5;
+            float minMult = 0.2f;
+            int hitsToMinMult = maxStealthHits + 2;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true) * (doneHitting ? 0.3f : 1);
-            float finalDamageMult = (charge / 4) * (hasReachedFullCharge ? 1.5f : 1) * damageMult * Utils.Remap(finalHitMult, 1, 2, 1, 4);
+            float finalDamageMult = (charge / 4) * (hasReachedFullCharge ? 1.5f : 1) * damageMult * Utils.Remap(finalHitMult, 1, 2, 1, 5);
             modifiers.SourceDamage *= finalDamageMult;
 
             if ((!doneHitting && !Projectile.Calamity().stealthStrike) || (!doneHitting && finalHitMult > 1)) // Regular hits and the final hit from stealth strikes.
@@ -377,13 +377,14 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            bool onKill = (target.life <= 0 && target.realLife == -1);
+            bool onKill = ((target.life <= 0 && target.realLife == -1) || target.lifeMax == 1);
+
             if (onKill && Projectile.numHits < maxStealthHits && hasReachedFullCharge) // If an enemy is killed by the grenade impact, don't increase the hit counter and allow it to pierce them.
             {
                 Projectile.numHits--;
                 doneHitting = false;
             }
-            else if (doneHitting) // The fall to ground after hit effect.
+            else if (doneHitting && Projectile.extraUpdates != 4) // The fall to ground after hit effect.
             {
                 Projectile.velocity = Vector2.Lerp(Utils.DirectionFrom(Projectile.Center, target.Center) * 4, Vector2.UnitY * -2, 0.75f).RotatedByRandom(0.1f);
                 Projectile.extraUpdates = 4;
