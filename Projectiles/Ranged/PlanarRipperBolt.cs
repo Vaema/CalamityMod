@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class PlanarRipperBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Rogue/ShockGrenadeBolt";
+        public override string Texture => "CalamityMod/Projectiles/Rogue/ShockBolt";
 
         public static int frameWidth = 12;
         public static int frameHeight = 26;

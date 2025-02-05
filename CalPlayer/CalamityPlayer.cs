@@ -5194,6 +5194,10 @@ namespace CalamityMod.CalPlayer
             if (it.type == ModContent.ItemType<MoltenAmputator>())
                 playerUsingWeapon = false;
 
+            // Shock Grenade consumes stealth in a special way
+            if (it.type == ModContent.ItemType<DoomsdayDevice>())
+                playerUsingWeapon = false;
+
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.
             // "Clockwork" weapons can chain-fire multiple stealth strikes (really only 2 max) until you run out of stealth.
             bool animationCheck = it.useAnimation == it.useTime

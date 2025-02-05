@@ -43,6 +43,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<DarkSparkBeam>(),
                 ProjectileType<DevilsSunriseCyclone>(),
                 ProjectileType<DevilsSunriseProj>(),
+                ProjectileType<DoomsdayDeviceProjectile>(),
                 ProjectileType<DragonRageStaff>(),
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<EclipsesStealth>(),

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ShockGrenadeBolt : ModProjectile, ILocalizedModType
+    public class ShockBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public static int frameWidth = 12;
@@ -93,9 +93,9 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Texture2D sprite;
             if (Projectile.ai[0] == 0f)
-                sprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ShockGrenadeBolt").Value;
+                sprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ShockBolt").Value;
             else
-                sprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ShockGrenadeBolt2").Value;
+                sprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ShockBolt2").Value;
             Color drawColour = Color.White;
 
             Vector2 origin = new Vector2(frameWidth / 2, frameHeight / 2);

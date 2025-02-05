@@ -797,7 +797,7 @@ namespace CalamityMod.NPCs
                 case NPCID.GigaZapper:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 66);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 66);
                     npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
                     npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
                     break;
@@ -811,7 +811,7 @@ namespace CalamityMod.NPCs
                 // Martian Officer
                 // 8% chance to drop Shock Grenade
                 case NPCID.MartianOfficer:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 12);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 12);
                     break;
 
                 // Martian Walker
