@@ -1,13 +1,128 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod
 {
+    /// <summary>
+    /// Represents an entity that is capable of finding and following a complex path.<br/>
+    /// To use this interface, supply all of the required properties, and then simply call <c>this.DoPathfinding()</c> in your entity's movement logic.
+    /// </summary>
+    public interface IPathFinder
+    {
+        /// <summary>
+        /// The parameters to be used in <see cref="FindPathAsync(PathfindingParams)"/> that determines how pathfinding should be calculated.<br/>
+        /// This can return <see langword="null"/> if you do not want the entity to find a path.
+        /// </summary>
+        public PathfindingParams Pathfinding { get; }
+
+        /// <summary>
+        /// The result of the pathfinding task that contains a set of points this entity should follow.
+        /// </summary>
+        public Task<List<Vector2>> Paths { get; set; }
+
+        /// <summary>
+        /// The current position of this entity. Only used to calculate movement for this entity, not pathfinding.<br/>
+        /// In most cases, this should look like the following, where <c>ENTITY</c> is replace by your entity instance.
+        /// <code>public Vector2 Position { get => ENTITY.center; }</code>
+        /// </summary>
+        public Vector2 Position { get; }
+
+        /// <summary>
+        /// The current velocity of this entity. Only used to calculate movement for this entity, not pathfinding.<br/>
+        /// In most cases, this should look like the following, where <c>ENTITY</c> is replace by your entity instance.
+        /// <code>public Vector2 Velocity { get => ENTITY.velocity; }</code>
+        /// </summary>
+        public Vector2 Velocity { get; set; }
+
+        /// <summary>
+        /// The acceleration this entity should use when moving. Only used to calculate movement for this entity, not pathfinding.
+        /// </summary>
+        public float Acceleration { get; }
+
+        /// <summary>
+        /// The maximum speed this entity should be able to reach while moving. Only used to calculate movement for this entity, not pathfinding.
+        /// </summary>
+        public float MaxSpeed { get; }
+
+        /// <summary>
+        /// Defines how this entity should move to the next point. Contains a default implementation with basic acceleration towards the next point.<br/>
+        /// This method should return <see langword="true"/> when the entity has reached its target point, and <see langword="false"/> otherwise.<br/>
+        /// <br/>
+        /// The target point is specified by <paramref name="nextPoint"/> - usually index 0 in the <see cref="Paths"/> task result.
+        /// </summary>
+        /// <param name="nextPoint"></param>
+        /// <returns></returns>
+        public bool FollowPath(Vector2 nextPoint)
+        {
+            // Accelerate to the target point.
+            Velocity += Vector2.Normalize(nextPoint - Position) * Acceleration;
+
+            // Cap the speed if MaxSpeed has been surpassed.
+            if (Velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                Velocity = Vector2.Normalize(Velocity) * MaxSpeed;
+
+            // If the entity is within 48 pixels of its target point, consider the point reached.
+            if (Vector2.DistanceSquared(Position, nextPoint) < 48f * 48f)
+                return true;
+
+            // Otherwise, continue following.
+            return false;
+        }
+
+        /// <summary>
+        /// Defines how this entity should behave while there is no current path to follow.<br/>
+        /// By default, decelerates and stops based on <see cref="Acceleration"/>.
+        /// </summary>
+        public void IdleBehavior() => Velocity -= Velocity.SafeNormalize(Vector2.Zero) * Math.Min(Velocity.Length(), Acceleration);
+
+        /// <summary>
+        /// Assigns the value of <see cref="Paths"/> to <see cref="FindPathAsync(PathfindingParams)"/> based on <see cref="Pathfinding"/>.<br/>
+        /// You can override this and do <c
+        /// </summary>
+        public void FindPath() => Paths = FindPathAsync(Pathfinding);
+    }
+
     public static partial class CalamityUtils
     {
+        /// <summary>
+        /// Causes this <see cref="IPathFinder"/> to perform path finding and follow the path result, idling when a path is not available.<br/>
+        /// This method should be called every frame that you want your entity to follow it's pathfinding logic.
+        /// </summary>
+        /// <param name="pathfinder">The entity that should be moving.</param>
+        public static void DoPathfinding(this IPathFinder pathfinder)
+        {
+            // Checks to make sure that:
+            //    A. The pathfinding task has completed
+            //    B. There is a valid result
+            //    C. There are points left in the previously found path
+            if (pathfinder.Paths.Result != null &&
+                pathfinder.Paths.Result.Count > 0)
+            {
+                // Follows the point at index 0 of the path result.
+                Vector2 nextPoint = pathfinder.Paths.Result[0];
+
+                // Once that point is reached, it is removed from the list of points to follow.
+                if (pathfinder.FollowPath(nextPoint))
+                    pathfinder.Paths.Result.RemoveAt(0);
+            }
+
+            // Idle if the task is currently finding a path or there is no path to be followed.
+            else
+            {
+                pathfinder.IdleBehavior();
+
+                // Only attempt to find a path again if the task is not currently running.
+                if (pathfinder.Paths.Status != TaskStatus.Running)
+                    pathfinder.FindPath();
+            }   
+        }
+
         /// <summary>
         /// Represents a node in a pathfinding algorithm, containing position, cost, and parent information.
         /// </summary>
@@ -113,6 +228,11 @@ namespace CalamityMod
         {
             return await Task.Run(() =>
             {
+                // If the entity isn't actually supposed to follow a path right now, null
+                // can be passed as the parameters to make implementation more concise.
+                if (parameters is null)
+                    return null;
+
                 var openSet = new List<Node>();
                 var closedSet = new HashSet<Node>();
                 openSet.Add(parameters.Start);

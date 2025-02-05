@@ -18,15 +18,13 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Sharkoon : SunkenSeaNPC
+    public class Sharkoon : SunkenSeaNPC, IPathFinder
     {
         public static float DistanceToKaboom = 80f;
         public static float IdleMovementMaxRange = 300f;
         public static int ExplosionRadius = 80;
         public static float TimeToRecover = 600f;
         public static float TimeRecovering = 120f;
-
-        private Task<List<Vector2>> _pathfindingTask = null;
 
         #region Fields & Properties
 
@@ -130,16 +128,6 @@ namespace CalamityMod.NPCs.SunkenSea
         private ref float RecoverTimer => ref NPC.ai[2];
 
         /// <summary>
-        /// The maximum speed this NPC can have, it cannot be faster than this number.
-        /// </summary>
-        private float MaximumSpeed = 4f;
-
-        /// <summary>
-        /// The acceleration of the Sharkoon.
-        /// </summary>
-        private const float Acceleration = 0.25f;
-
-        /// <summary>
         /// How unlikely is the Sharkoon going to move normally.<br/>
         /// Defaults to 250.
         /// </summary>
@@ -158,6 +146,18 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
         protected override float SpawningChance => SpawnCondition.CaveJellyfish.Chance * 0.9f;
+
+        public CalamityUtils.PathfindingParams Pathfinding { get; set; }
+
+        public Task<List<Vector2>> Paths { get; set; }
+
+        public Vector2 Position => NPC.Center;
+
+        public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
+
+        public float Acceleration { get; set; } = 0.25f;
+
+        public float MaxSpeed { get; set; } = 4f;
 
         /// <summary>
         /// The squish of this NPC while drawing.
@@ -268,7 +268,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             if (Personality == PersonalityType.Paranoid)
-                MaximumSpeed *= 1.5f;
+                MaxSpeed *= 1.5f;
 
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
@@ -311,10 +311,6 @@ namespace CalamityMod.NPCs.SunkenSea
             // When it gets outside of water, it'll try to gravitate downards towards the water.
             if (!NPC.wet && !IsExploding)
                 CurrentBehavior = OutsideWaterBehavior;
-
-            // Clamps the velocity at all times.
-            if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
-                NPC.velocity = NPC.velocity.SafeNormalize(Vector2.UnitY) * MaximumSpeed;
 
             if (ScaleSquish.Y > 1f)
             {
@@ -384,17 +380,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private void IdlingBehavior()
         {
-            if (_pathfindingTask.Result != null)
-            {
-                // While it hasn't decided yet which path to follow, it'll deaccelerate and stand still.
-                NPC.velocity *= 0.95f;
+            // Randomly, it'll decide a path whose destination is somewhere around him.
+            if (Main.rand.NextBool(RandomIdleMovementUnlikeliness))
+                Pathfinding = new(NPC.Center, Main.rand.NextVector2Circular(400f, 400f), SunkenSeaTileValidity);
 
-                // Randomly, it'll decide a path whose destination is somewhere around him.
-                if (Main.rand.NextBool(RandomIdleMovementUnlikeliness) && !_pathfindingTask.IsCompleted)
-                    _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, Main.rand.NextVector2Circular(400f, 400f), SunkenSeaTileValidity));
-            }
+            // While it hasn't decided yet which path to follow, it'll deaccelerate and stand still.
             else
-                GenericPathFollowing(Acceleration);
+                Pathfinding = null;
+
+            this.DoPathfinding();
         }
 
         private void HuntBehavior()
@@ -408,14 +402,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (!HasLineOfSight(CurrentPrey.Center))
             {
-                if (_pathfindingTask.Result != null)
-                    PathfindingPoints = _pathfindingTask.Result;
-
-                if (_pathfindingTask.Result != null)
-                    GenericPathFollowing(Acceleration);
-                else
-                    _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+                Pathfinding = new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity);
+                this.DoPathfinding();
             }
+
             else
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
         }
@@ -448,6 +438,7 @@ namespace CalamityMod.NPCs.SunkenSea
             const int MaxAttemptsToFindPath = 20;
             const int MinimumEscapeDistance = 160;
             const int MaximumEscapeDistance = 320;
+
             if (Main.tile[(NPC.Center + NPC.DirectionFrom(entityToAvoid.Center) * TileAnticipationDistance).ToTileCoordinates()].IsTileSolid() && !HasPath)
             {
                 Vector2 randomEscapePoint;
@@ -459,15 +450,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid() || attempts < MaxAttemptsToFindPath);
 
-                _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, randomEscapePoint, SunkenSeaTileValidity));
+                Pathfinding = new(NPC.Center, randomEscapePoint, SunkenSeaTileValidity);
             }
 
-            if (_pathfindingTask.Result != null)
-                PathfindingPoints = _pathfindingTask.Result;
+            // Attempt to path find through an escape route.
+            this.DoPathfinding();
 
-            if (HasPath)
-                GenericPathFollowing(Acceleration);
-            else
+            // If one couldn't be found, just try to swim away.
+            if (Paths.IsCompleted && Paths.Result == null)
                 NPC.velocity += NPC.DirectionFrom(entityToAvoid.Center) * Acceleration;
 
             // If it's capable of exploding and the predator's within distance, kaboom.
@@ -631,7 +621,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write7BitEncodedInt(AnimationFrames);
             writer.Write7BitEncodedInt(TimePerAnimationFrame);
             writer.Write(AnimationLoop);
-            writer.Write(MaximumSpeed);
+            writer.Write(MaxSpeed);
             writer.Write7BitEncodedInt(RandomIdleMovementUnlikeliness);
         }
 
@@ -641,7 +631,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AnimationFrames = reader.Read7BitEncodedInt();
             TimePerAnimationFrame = reader.Read7BitEncodedInt();
             AnimationLoop = reader.ReadBoolean();
-            MaximumSpeed = reader.ReadSingle();
+            MaxSpeed = reader.ReadSingle();
             RandomIdleMovementUnlikeliness = reader.Read7BitEncodedInt();
         }
 
