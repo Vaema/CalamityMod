@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.Abyss
             HitSound = MineSound;
             MineResist = 10f;
             MinPick = 180;
-            AddMapEntry(new Color(19, 20, 32));
+            AddMapEntry(new Color(43, 40, 40));
 
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
