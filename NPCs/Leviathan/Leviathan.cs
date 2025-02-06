@@ -595,9 +595,13 @@ namespace CalamityMod.NPCs.Leviathan
                             return;
                         }
 
+                        // Used to scale lineup speed and acceleration
+                        if (NPC.ai[2] < 300f)
+                            NPC.ai[2]++;
+
                         // Velocity calculations
-                        float chargeSpeed = revenge ? 7.5f : 6.5f;
-                        float chargeAcceleration = revenge ? 0.12f : 0.11f;
+                        float chargeSpeed = (revenge ? 7.5f : 6.5f) + (NPC.ai[2] * 0.0083f);
+                        float chargeAcceleration = (revenge ? 0.12f : 0.11f) + (NPC.ai[2] * 0.001f);
                         chargeSpeed += 2f * enrageScale;
                         chargeAcceleration += 0.04f * enrageScale;
 
