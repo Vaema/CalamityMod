@@ -3,8 +3,10 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
@@ -143,22 +145,29 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             int timeToStartWarning = 180;
 
             Color initialColor = lightColor;
-            Color finalColor = Color.Lerp(new Color(125, 75, 75), Color.Red, (float)Math.Abs(Math.Sin((timeToStartWarning - Projectile.timeLeft) * (MathHelper.Pi / 45f))));
+            Color finalColor = Color.Lerp(Color.White, Color.Red, (float)Math.Abs(Math.Sin((timeToStartWarning - Projectile.timeLeft) * (MathHelper.Pi * 7f / 180f))));
+            Color warningColor;
             finalColor.A = (byte)(255 - Projectile.alpha);
 
             if (Projectile.timeLeft <= timeToStartWarning)
             {
                 float colorTransitionRatio = (timeToStartWarning - Projectile.timeLeft) / (float)timeToStartWarning;
-                Color warningColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
-                return warningColor;
+                warningColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
             }
             else
-                return initialColor;
+                warningColor = initialColor;
+
+            float strength = Utils.GetLerpValue(0, timeToStartWarning / 1.5f, timeToStartWarning - Projectile.timeLeft, true);
+            Rectangle frame = TextureAssets.Projectile[Type].Value.Frame(1, 5, 0, Projectile.frame);
+            SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            Projectile.DrawProjectileWithBackglow(new Color(64, 255, 255) * strength, Projectile.GetAlpha(warningColor), 4.5f, null, frame, sp);
+            return false;
         }
     }
 }
