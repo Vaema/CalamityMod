@@ -67,6 +67,7 @@ namespace CalamityMod.ILEditing
             On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
+            On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
             On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
