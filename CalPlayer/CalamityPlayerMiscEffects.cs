@@ -1771,6 +1771,12 @@ namespace CalamityMod.CalPlayer
                 hurtSoundTimer--;
             if (wingProjectileCooldown > 0)
                 wingProjectileCooldown--;
+            if (vortexBoosterStealthDelay > 0)
+            {
+                vortexBoosterStealthDelay--;
+                if (vortexBoosterStealthDelay == 1)
+                    Player.vortexStealthActive = true;
+            }
             if (statisTimer > 0 && Player.dashDelay >= 0)
                 statisTimer = 0;
             if (hallowedRuneCooldown > 0)

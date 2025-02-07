@@ -659,14 +659,14 @@ namespace CalamityMod.ILEditing
         #region Vortex Booster Keeps Vortex Stealth When Dashing
         private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
         {
-            // Allows for Vortex Booster to keep Vortex armor's stealth when dashing
+            // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
             bool vortexStealth = self.vortexStealthActive;
             orig(self);
 
             if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
             {
                 if (vortexStealth && !self.vortexStealthActive)
-                    self.vortexStealthActive = true;
+                    self.Calamity().vortexBoosterStealthDelay = 60;
             }
         }
         #endregion

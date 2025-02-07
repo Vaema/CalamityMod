@@ -828,6 +828,8 @@ namespace CalamityMod.CalPlayer
         public bool angelTreads = false;
         /// <summary> Synergy effect while wearing Harpy Wings with Harpy Ring or Angel Treads, allowing attacks to be accompanied by feathers. </summary>
         public bool harpyWingBoost = false;
+        /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
+        public int vortexBoosterStealthDelay = 0;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health by 45. </summary>
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
@@ -3101,6 +3103,7 @@ namespace CalamityMod.CalPlayer
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
+            vortexBoosterStealthDelay = 0;
             silvaWingsLifeRegenTimer = 0;
             LungingDown = false;
 
