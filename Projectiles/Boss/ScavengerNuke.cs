@@ -126,47 +126,39 @@ namespace CalamityMod.Projectiles.Boss
 
             if (!Main.dedServ)
             {
-                Vector2 goreSource = Projectile.Center;
-                int goreAmt = 3;
-                Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
+                Vector2 source = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
+                for (int g = 1; g <= 3; g++)
                 {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
+                    float velocityMult = g * 0.33f;
+                    for (int spawn = 0; spawn < 4; spawn++)
                     {
-                        velocityMult = 0.66f;
+                        int type = Main.rand.Next(61, 64);
+                        int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
+                        Gore gore = Main.gore[smoke];
+                        gore.velocity *= velocityMult;
+                        gore.velocity.X += 1f;
+                        gore.velocity.Y += 1f;
                     }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
-                    int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    Gore gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
                 }
             }
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            int timeToStartWarning = 180;
+
+            Color initialColor = lightColor;
+            Color finalColor = Color.Lerp(new Color(125, 75, 75), Color.Red, (float)Math.Abs(Math.Sin((timeToStartWarning - Projectile.timeLeft) * (MathHelper.Pi / 45f))));
+            finalColor.A = (byte)(255 - Projectile.alpha);
+
+            if (Projectile.timeLeft <= timeToStartWarning)
+            {
+                float colorTransitionRatio = (timeToStartWarning - Projectile.timeLeft) / (float)timeToStartWarning;
+                Color warningColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
+                return warningColor;
+            }
+            else
+                return initialColor;
         }
     }
 }
