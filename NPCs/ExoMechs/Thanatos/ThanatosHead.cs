@@ -1109,10 +1109,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             if (NPC.IsABestiaryIconDummy)
                 NPC.Opacity = 1f;
 
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
@@ -1145,12 +1141,12 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             Vector2 center = NPC.Center - screenPos;
             center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, SpriteEffects.None, 0f);
 
             texture = GlowTexture.Value;
             Color glowmaskColor = vulnerable ? ((AIState == (int)Phase.Deathray && SecondaryAIState != (int)SecondaryPhase.PassiveAndImmune) ? Color.Lerp(new Color(255, 64, 64), Color.CornflowerBlue, NPC.Calamity().newAI[2] / deathrayTelegraphDuration) : new Color(255, 64, 64)) : Color.White;
 
-            spriteBatch.Draw(texture, center, NPC.frame, glowmaskColor * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, glowmaskColor * NPC.Opacity, NPC.rotation, vector, NPC.scale, SpriteEffects.None, 0f);
 
             SmokeDrawer.DrawSet(NPC.Center);
 
