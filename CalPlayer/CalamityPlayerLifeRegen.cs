@@ -818,6 +818,11 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
                     Player.HealPlayer(1, HealTextType.None);
+
+                // Boost life regen time quite a bit.
+                // This is so that in events and such where small hits are common, your damage boost isn't completley negated
+                if (Player.lifeRegenTime < 3600)
+                    Player.lifeRegenTime += 10;
             }
             else
                 regenatorDamage = 0;
@@ -872,6 +877,37 @@ namespace CalamityMod.CalPlayer
                     velocity.Normalize();
                     velocity *= 34f;
                     heart.position = Player.Center - velocity;
+                }
+            }
+
+            // Regenator trades all positive regen for damage, and caps your health gain at 50%
+            if (regenator)
+            {
+                int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
+                finalRegen = (int)Math.Max(finalRegen, 0);
+
+                // Rapid Healing increments RegenCount directly so it needs to be manually added
+                // It also works while debuffs are active so the same logic applies here
+                if (Player.palladiumRegen)
+                    finalRegen += 4;
+
+                regenatorDamage = (finalRegen * 1.75f) * 0.01f;
+                Player.GetDamage<GenericDamageClass>() += regenatorDamage;
+
+                if (Player.lifeRegen > 0)
+                    Player.lifeRegen = 0;
+                if (regen > 0f)
+                    regen = 0f;
+                if (Player.lifeRegenCount > 0)
+                    Player.lifeRegenCount = 0;
+
+                //Hard-lock the player's health to 50%.
+                //No lifesteal, no regen, no healing pots
+                if (Player.statLife >= (int)(Player.statLifeMax2 * 0.5f))
+                {
+                    Player.statLife = (int)(Player.statLifeMax2 * 0.5f);
+                    Player.moonLeech = true;
+                    healingPotionMultiplier = 0;
                 }
             }
         }
