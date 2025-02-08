@@ -2269,6 +2269,21 @@ namespace CalamityMod.CalPlayer
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
 
+            // Regenator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
+            if (regenator && false)
+            {
+                // Projectile damage and count is based on source damage of the hit
+                float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
+                int projCount = (int)MathHelper.Clamp((15 * hitPower), 2, 15) * 2; // they come out in pairs of 2
+                int projBonusDamage = (int)(hurtInfo.SourceDamage * 0.5f);
+                int projDamage = (int)Player.GetBestClassDamage().ApplyTo(20 + projBonusDamage);
+                for (int i = 0; i < projCount; i++)
+                {
+                    Vector2 vel = (MathHelper.TwoPi * i / projCount).ToRotationVector2() * (i % 2 == 0 ? 0.75f : 1f) * 10;
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, vel.RotatedBy(-0.2f * (i % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<RetaliationProjectile>(), projDamage, 0f, Player.whoAmI, 0, (i % 2 == 0 ? -1 : 1), -5);
+                }
+            }
+
             // Hide of Astrum Deus' melee boost
             if (hideOfDeus)
             {

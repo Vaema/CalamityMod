@@ -681,6 +681,7 @@ namespace CalamityMod.CalPlayer
         public bool gladiatorSword = false;
         public bool unstableGraniteCore = false;
         public bool regenator = false;
+        public float regenatorDamage = 0;
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;

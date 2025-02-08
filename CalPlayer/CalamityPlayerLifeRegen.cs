@@ -651,11 +651,6 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
             }
 
-            if (regenator)
-            {
-                Player.lifeRegenTime += 3;
-                Player.lifeRegen += 12;
-            }
             if (handWarmer && eskimoSet)
             {
                 Player.lifeRegen += 2;
@@ -782,9 +777,9 @@ namespace CalamityMod.CalPlayer
             if (Player.statLife < actualMaxLife)
             {
                 // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, or The Camper.
+                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Regenator, or The Camper.
                 int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper) &&
+                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper || regenator) &&
                     Player.StandingStill() && Player.itemAnimation == 0;
 
                 if (!noLifeRegenCap)
@@ -818,6 +813,14 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (regenator) // Gives special regen of it's own, but disables all regular life regen
+            {
+                if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
+                    Player.HealPlayer(1, HealTextType.None);
+            }
+            else
+                regenatorDamage = 0;
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
