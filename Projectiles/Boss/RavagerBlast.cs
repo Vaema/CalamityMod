@@ -24,17 +24,17 @@ namespace CalamityMod.Projectiles.Boss
             set => Projectile.ai[1] = value;
         }
 
-        public bool orange => Projectile.ai[1] < 0f;
+        public bool blue => Projectile.ai[1] < 0f;
 
         public override float MaxScale => Projectile.ai[0];
-        public override float MaxLaserLength => orange ? 4800f : 2400f;
-        public override float Lifetime => orange ? 200 : 50;
+        public override float MaxLaserLength => blue ? 4800f : 2400f;
+        public override float Lifetime => blue ? 200 : 50;
         public override Color LaserOverlayColor
         {
             get
             {
-                Color c1 = orange ? Color.OrangeRed : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.Gray);
-                Color c2 = orange ? Color.Orange : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.White);
+                Color c1 = blue ? Color.MediumTurquoise : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.Gray);
+                Color c2 = blue ? Color.Cyan : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.White);
                 Color color = Color.Lerp(c1, c2, Projectile.identity % 5f / 5f) * 1.1f;
                 color.A = 0;
                 return color;
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
-            if (orange)
+            if (blue)
             {
                 float speed = 8f + 8f * Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft);
                 switch (OwnerIndex)
@@ -116,8 +116,8 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
-        // Can hit if white (regardless of condition) or orange only if the player is (close to) still
-        public override bool CanHitPlayer(Player target) => (!orange || target.velocity.Length() <= 0.25f) && Projectile.scale >= 0.5f;
+        // Can hit if white (regardless of condition) or blue only if the player is (close to) still
+        public override bool CanHitPlayer(Player target) => (!blue || target.velocity.Length() >= 0.25f) && Projectile.scale >= 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {
