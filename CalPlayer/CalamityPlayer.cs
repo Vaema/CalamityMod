@@ -2665,7 +2665,8 @@ namespace CalamityMod.CalPlayer
         #region Screen Position Movements
         public override void ModifyScreenPosition()
         {
-            if (CalamityClientConfig.Instance.ScreenshakePower == 0)
+            // CIT 08FEB2025: Photosensitivity config also disables screenshake
+            if (CalamityClientConfig.Instance.ScreenshakePower == 0 || CalamityClientConfig.Instance.Photosensitivity)
                 return;
 
             if (GeneralScreenShakePower > 0f)

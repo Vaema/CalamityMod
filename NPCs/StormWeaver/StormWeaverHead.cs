@@ -446,7 +446,7 @@ namespace CalamityMod.NPCs.StormWeaver
                         if (phase4)
                         {
                             // Lightning strike
-                            if (!Main.DisableIntenseVisualEffects)
+                            if (!Main.DisableIntenseVisualEffects && !CalamityClientConfig.Instance.Photosensitivity)
                             {
                                 if (!Main.dedServ)
                                 {

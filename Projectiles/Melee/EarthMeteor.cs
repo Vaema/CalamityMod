@@ -204,11 +204,13 @@ namespace CalamityMod.Projectiles.Melee
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/EarthMeteor");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.9f }, target.Center);
 
-                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 4f, 3f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 2f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
-
+                if (!CalamityClientConfig.Instance.Photosensitivity)
+                {
+                    Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 4f, 3f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 2f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                }
             }
         }
         public override bool? CanDamage() => time < fallTime ? false : null;

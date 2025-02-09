@@ -41,19 +41,22 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
+            bool photosens = CalamityClientConfig.Instance.Photosensitivity;
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             List<Color> eColors = new List<Color>()
             {
                 Color.OrangeRed,
-                Color.MediumTurquoise,
+                photosens ? Color.DodgerBlue : Color.MediumTurquoise,
                 Color.Orange,
                 Color.LawnGreen
             };
-            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            float rate = Main.GlobalTimeWrappedHourly * (photosens ? 2 : 8);
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            if (photosens)
+                sparkColor.A = 64;
 
             Time++;
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.2f);
@@ -66,12 +69,15 @@ namespace CalamityMod.Projectiles.Ranged
                 //PhotoMetaball3.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)); ;
 
                 //PhotoMetaball4.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0));
-                
+
                 // I hate metaballs >:(
                 Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.005f, sparkColor, new Vector2(1f, 1 + Time * 0.1f), true, false);
                 GeneralParticleHandler.SpawnParticle(beam3);
-                Particle beam32 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.003f, Color.Lerp(Color.White, sparkColor, 0.5f), new Vector2(1f, 1 + Time * 0.1f), true, false);
-                GeneralParticleHandler.SpawnParticle(beam32);
+                if (!photosens)
+                {
+                    Particle beam32 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.003f, Color.Lerp(Color.Blue, sparkColor, 0.5f), new Vector2(1f, 1 + Time * 0.1f), true, false);
+                    GeneralParticleHandler.SpawnParticle(beam32);
+                }
             }
             if (Main.rand.NextBool(35) && targetDist < 1400f && Time > 5)
             {

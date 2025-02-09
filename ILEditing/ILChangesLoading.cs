@@ -44,6 +44,7 @@ namespace CalamityMod.ILEditing
             On_Main.DrawInfernoRings += DrawForegroundParticles;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
+            On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;
 
             // Graphics (dyeable shader stuff)
             On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;
