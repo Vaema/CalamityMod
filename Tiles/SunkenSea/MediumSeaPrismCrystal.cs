@@ -1,5 +1,5 @@
 ﻿using System;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
+using CalamityMod.Items.Weapons.Melee;
 
 namespace CalamityMod.Tiles.SunkenSea
 {

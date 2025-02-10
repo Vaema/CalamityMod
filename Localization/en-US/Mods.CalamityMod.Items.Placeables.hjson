@@ -4043,3 +4043,8 @@ WaterTurret: {
 		Cannot attack while a boss is alive
 		'''
 }
+
+MediumSeaPrismCrystal: {
+	DisplayName: Medium Sea Prism Crystal
+	Tooltip: ""
+}

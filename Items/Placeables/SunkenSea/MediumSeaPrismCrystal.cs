@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables
+namespace CalamityMod.Items.Placeables.SunkenSea
 {
     public class MediumSeaPrismCrystal : ModItem, ILocalizedModType
     {
