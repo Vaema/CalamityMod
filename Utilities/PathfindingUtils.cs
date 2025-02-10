@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,9 +15,13 @@ namespace CalamityMod
     public interface IPathFinder
     {
         /// <summary>
-        /// The result of the pathfinding task that contains a set of points this entity should follow.
+        /// Represents the working task for calculating this entity's complex path.<br/>
+        /// <br/>
+        /// If you want to manually access the result of this task, make sure to check <see cref="PathfindingTask.Ready"/> before accessing the value of <see cref="PathfindingTask.Result"/>.<br/>
+        /// <br/>
+        /// Accessing <see cref="PathfindingTask.Result"/> before execution has completed will result in the calling thread being blocked until execution is complete.
         /// </summary>
-        public Task<List<Vector2>> Paths { get; set; }
+        public PathfindingTask Path { get; set; }
 
         /// <summary>
         /// The current position of this entity. Only used to calculate movement for this entity, not pathfinding.<br/>
@@ -53,11 +58,11 @@ namespace CalamityMod
         public bool FollowPath(Vector2 nextPoint)
         {
             // Accelerate to the target point.
-            Velocity += Vector2.Normalize(nextPoint - Position) * Acceleration;
+            Velocity += (nextPoint - Position).SafeNormalize(Vector2.Zero) * Acceleration;
 
             // Cap the speed if MaxSpeed has been surpassed.
             if (Velocity.LengthSquared() > MaxSpeed * MaxSpeed)
-                Velocity = Vector2.Normalize(Velocity) * MaxSpeed;
+                Velocity = Velocity.SafeNormalize(Vector2.UnitY) * MaxSpeed;
 
             // If the entity is within 48 pixels of its target point, consider the point reached.
             if (Vector2.DistanceSquared(Position, nextPoint) < 48f * 48f)
@@ -74,10 +79,78 @@ namespace CalamityMod
         public void IdleBehavior() => Velocity -= Velocity.SafeNormalize(Vector2.Zero) * Math.Min(Velocity.Length(), Acceleration);
 
         /// <summary>
-        /// Assigns the value of <see cref="Paths"/> to <see cref="FindPathAsync(PathfindingParams)"/> based on <see cref="Pathfinding"/>.<br/>
-        /// You can override this and do <c
+        /// Assigns the value of <see cref="Paths"/> to <paramref name="pathfindingTask"/> and executes the pathfinding calculations on a background thread.<br/>
+        /// You can override this to do your own modifications to the pathfinding task before assigning and starting the calculations.
         /// </summary>
-        public void FindPath(PathfindingParams parameters) => Paths = FindPathAsync(parameters);
+        public void FindPath(PathfindingTask pathfindingTask)
+        {
+            Path = pathfindingTask;
+            Path.Run();
+        }
+    }
+
+    /// <summary>
+    /// Represents a task for calculating a complex path.<br/>
+    /// Allows for synchronous access to an asynchronous execution state, while still providing blocking access where needed.
+    /// </summary>
+    public class PathfindingTask(
+        Vector2 start,
+        Vector2 end,
+        Func<Point, bool> tileValidity = null,
+        Func<Point, Point, float> distanceFunction = null,
+        Func<Point, Point, float> heuristic = null)
+    {
+        public PathfindingTask(Vector2 start, Vector2 end) : this(start, end, null, null, null)
+        { }
+
+        /// <summary>
+        /// The result of this pathfinding task.
+        /// </summary>
+        public List<Vector2> Result { get => _task.Task.Result; }
+
+        /// <summary>
+        /// Whether this pathfinding task has completed running.
+        /// </summary>
+        public bool Ready { get; private set; } = false;
+
+        /// <summary>
+        /// Whether this pathfinding task is still currently running.
+        /// </summary>
+        public bool Running { get; private set; } = false;
+
+        /// <summary>
+        /// The starting position of this pathfinding task.
+        /// </summary>
+        public Vector2 StartPosition { get; init; } = start;
+
+        /// <summary>
+        /// The ending position of this pathfinding task.
+        /// </summary>
+        public Vector2 EndPosition { get; init; } = end;
+
+        // Interal task representation of the work.
+        private readonly TaskCompletionSource<List<Vector2>> _task = new();
+
+        // Internal containing object for the actual work.
+        private readonly PathfindingWork _work = new(start, end, tileValidity, distanceFunction, heuristic);
+
+        /// <summary>
+        /// Begins execution of this pathfinding task on a background thread.
+        /// </summary>
+        public void Run()
+        {
+            Running = true;
+
+            ThreadPool.QueueUserWorkItem((pathfindingTask) =>
+            {
+                var task = pathfindingTask as PathfindingTask;
+                task._task.TrySetResult(task._work.CalculatePath());
+
+                task.Ready = true;
+                task.Running = false;
+            },
+            this);
+        }
     }
 
     public static partial class CalamityUtils
@@ -86,39 +159,150 @@ namespace CalamityMod
         /// Causes this <see cref="IPathFinder"/> to perform path finding and follow the path result, idling when a path is not available.<br/>
         /// This method should be called every frame that you want your entity to follow it's pathfinding logic.
         /// </summary>
-        /// <param name="pathfinder">The entity that should be moving.</param>
-        public static void DoPathfinding(this IPathFinder pathfinder, PathfindingParams parameters)
+        public static void DoPathfinding(this IPathFinder pathfinder, Vector2 target) => pathfinder.DoPathfinding(new PathfindingTask(pathfinder.Position, target));
+
+        /// <summary>
+        /// Causes this <see cref="IPathFinder"/> to perform path finding and follow the path result, idling when a path is not available.<br/>
+        /// This method should be called every frame that you want your entity to follow it's pathfinding logic.
+        /// </summary>
+        public static void DoPathfinding(this IPathFinder pathfinder, PathfindingTask task)
         {
-            // If the task is NOT in-progress...
-            if (pathfinder.Paths == null || pathfinder.Paths.IsCompleted)
+            // If the task has not been started, or was previously unable to find
+            // a path, OR is now being told to follow a new path, start the task (potentially again).
+
+            if (pathfinder.Path == null || // Not started
+                pathfinder.Path.EndPosition != task.EndPosition || // New destination
+                (pathfinder.Path.Ready && pathfinder.Path.Result == null)) // Unable to find previous path
             {
-                // If the task result has entries...
-                if ((pathfinder.Paths?.Result?.Count ?? 0) > 0)
-                {
-                    // Follows the point at index 0 of the path result.
-                    Vector2 nextPoint = pathfinder.Paths.Result[0];
-
-                    // Once that point is reached, it is removed from the list of points to follow.
-                    if (pathfinder.FollowPath(nextPoint))
-                        pathfinder.Paths.Result.RemoveAt(0);
-                }
-
-                // If it does not have entries, that means the pathfinding task is
-                // complete OR the last pathfinding attempt was invalid.
-                // We need to attempt pathfinding again. Idle in the meantime.
-                else
-                {
-                    pathfinder.FindPath(parameters);
-                    pathfinder.IdleBehavior();
-                }
+                pathfinder.FindPath(task);
+                pathfinder.IdleBehavior();
             }
 
-            // If the task IS in-progress, just idle while waiting for it to complete.
-            else
+            // If the task has been started but is not finished yet, just idle.
+            else if (pathfinder.Path.Running)
                 pathfinder.IdleBehavior();
+
+            // Otherwise, the task has been started, completed, and found a valid path.
+            // Follow the found path.
+            else
+            {
+                // Follows the point at index 0 of the path result.
+                Vector2 nextPoint = pathfinder.Path.Result[0];
+
+                // Once that point is reached, it is removed from the list of points to follow.
+                if (pathfinder.FollowPath(nextPoint))
+                    pathfinder.Path.Result.RemoveAt(0);
+            }
         }
 
-        public static void DoPathfinding(this IPathFinder pathfinder, Vector2 target) => pathfinder.DoPathfinding(new PathfindingParams(pathfinder.Position, target));
+        /// <summary>
+        /// Represents the working computation for a <see cref="PathfindingTask"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Has 2 overloads, one for inputting the start and end nodes as <see cref="Vector2"/>, and the other one as <see cref="Point"/>.
+        /// </para>
+        /// <para>
+        /// This record contains the start and end nodes, along with functions for tile validity, distance calculation, and heuristic estimation.
+        /// </para>
+        /// <para>
+        /// - <see cref="TileValidity"/>: A function that checks if a tile at a given point is valid for traversal. If not provided, all non-solid tiles are considered valid.<br/>
+        /// - <see cref="DistanceFunction"/>: A function that calculates the distance between two points. Defaults to <see cref="OctileDistance"/>.<br/>
+        /// - <see cref="Heuristic"/>: A function that estimates the cost from a given point to the end point. Defaults to <see cref="OctileDistance"/>.<br/>
+        /// </para>
+        /// </remarks>
+        public record PathfindingWork(Node Start, Node End, Func<Point, bool> TileValidity, Func<Point, Point, float> DistanceFunction, Func<Point, Point, float> Heuristic)
+        {
+            private static readonly Func<Point, bool> DefaultTileValidity = point => true;
+            private static readonly Func<Point, Point, float> DefaultDistanceFunction = OctileDistance;
+            private static readonly Func<Point, Point, float> DefaultHeuristic = OctileDistance;
+
+            public PathfindingWork(
+                Point start,
+                Point end,
+                Func<Point, bool> tileValidity = null,
+                Func<Point, Point, float> distanceFunction = null,
+                Func<Point, Point, float> heuristic = null) : this(
+                    new Node(start),
+                    new Node(end),
+                    tileValidity ?? DefaultTileValidity,
+                    distanceFunction ?? DefaultDistanceFunction,
+                    heuristic ?? DefaultHeuristic
+                )
+            {
+            }
+
+            public PathfindingWork(
+                Vector2 start,
+                Vector2 end,
+                Func<Point, bool> tileValidity = null,
+                Func<Point, Point, float> distanceFunction = null,
+                Func<Point, Point, float> heuristic = null) : this(
+                    new Node(start.ToTileCoordinates()),
+                    new Node(end.ToTileCoordinates()),
+                    tileValidity ?? DefaultTileValidity,
+                    distanceFunction ?? DefaultDistanceFunction,
+                    heuristic ?? DefaultHeuristic
+                )
+            {
+            }
+
+            /// <summary>
+            /// Calculates a path from the start to the end position using the A* pathfinding algorithm.
+            /// </summary>
+            /// 
+            /// <returns>
+            /// A list of <see cref="Vector2"/> positions representing the path from start to end, or <see langword="null"/> if no path is found.
+            /// </returns>
+            public List<Vector2> CalculatePath()
+            {
+                if (Main.tile[End.Position].IsTileSolid())
+                    return null;
+
+                var openSet = new List<Node>();
+                var closedSet = new HashSet<Node>();
+                openSet.Add(Start);
+
+                while (openSet.Count > 0)
+                {
+                    // Get the node with the lowest F value.
+                    var current = openSet[0];
+                    for (int i = 1; i < openSet.Count; i++)
+                    {
+                        if (openSet[i].F < current.F || (openSet[i].F == current.F && openSet[i].H < current.H))
+                            current = openSet[i];
+                    }
+
+                    openSet.Remove(current);
+                    closedSet.Add(current);
+
+                    // Check if we've reached the goal.
+                    if (current.Position == End.Position)
+                        return current.ReconstructPath();
+
+                    // Generate neighbors.
+                    foreach (var neighbor in current.GetNeighbors())
+                    {
+                        if (closedSet.Contains(neighbor) || Main.tile[neighbor.Position].IsTileSolid() || !TileValidity.Invoke(neighbor.Position))
+                            continue;
+
+                        float tentativeG = current.G + DistanceFunction.Invoke(current.Position, neighbor.Position);
+
+                        if (!openSet.Contains(neighbor) || tentativeG < neighbor.G)
+                        {
+                            neighbor.Parent = current;
+                            neighbor.G = tentativeG;
+                            neighbor.H = Heuristic.Invoke(neighbor.Position, End.Position);
+
+                            if (!openSet.Contains(neighbor))
+                                openSet.Add(neighbor);
+                        }
+                    }
+                }
+
+                return null; // No path found.
+            }
+        }
 
         /// <summary>
         /// Represents a node in a pathfinding algorithm, containing position, cost, and parent information.
@@ -139,174 +323,42 @@ namespace CalamityMod
             }
 
             public override int GetHashCode() => Position.GetHashCode();
-        }
 
-        /// <summary>
-        /// Represents the parameters required for the <see cref="FindPathAsync(PathfindingParams)"/> method.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Has 2 overloads, one for inputting the start and end nodes as <see cref="Vector2"/>, and the other one as <see cref="Point"/>.
-        /// </para>
-        /// <para>
-        /// This record contains the start and end nodes, along with functions for tile validity, distance calculation, and heuristic estimation.
-        /// </para>
-        /// <para>
-        /// - <see cref="TileValidity"/>: A function that checks if a tile at a given point is valid for traversal. If not provided, all non-solid tiles are considered valid.<br/>
-        /// - <see cref="DistanceFunction"/>: A function that calculates the distance between two points. Defaults to <see cref="OctileDistance"/>.<br/>
-        /// - <see cref="Heuristic"/>: A function that estimates the cost from a given point to the end point. Defaults to <see cref="OctileDistance"/>.<br/>
-        /// </para>
-        /// </remarks>
-        public record PathfindingParams(Node Start, Node End, Func<Point, bool> TileValidity, Func<Point, Point, float> DistanceFunction, Func<Point, Point, float> Heuristic)
-        {
-            private static readonly Func<Point, bool> DefaultTileValidity = point => true;
-            private static readonly Func<Point, Point, float> DefaultDistanceFunction = OctileDistance;
-            private static readonly Func<Point, Point, float> DefaultHeuristic = OctileDistance;
-
-            public PathfindingParams(
-                Point start,
-                Point end,
-                Func<Point, bool> tileValidity = null,
-                Func<Point, Point, float> distanceFunction = null,
-                Func<Point, Point, float> heuristic = null) : this(
-                    new Node(start),
-                    new Node(end),
-                    tileValidity ?? DefaultTileValidity,
-                    distanceFunction ?? DefaultDistanceFunction,
-                    heuristic ?? DefaultHeuristic
-                )
+            public List<Node> GetNeighbors()
             {
-            }
+                var neighbors = new List<Node>(Directions.Count);
 
-            public PathfindingParams(
-                Vector2 start,
-                Vector2 end,
-                Func<Point, bool> tileValidity = null,
-                Func<Point, Point, float> distanceFunction = null,
-                Func<Point, Point, float> heuristic = null) : this(
-                    new Node(start.ToTileCoordinates()),
-                    new Node(end.ToTileCoordinates()),
-                    tileValidity ?? DefaultTileValidity,
-                    distanceFunction ?? DefaultDistanceFunction,
-                    heuristic ?? DefaultHeuristic
-                )
-            {
-            }
-        }
+                int nodeX = Position.X;
+                int nodeY = Position.Y;
 
-        /// <summary>
-        /// Asynchronously finds a path from the start to the end position using the A* pathfinding algorithm.
-        /// </summary>
-        /// 
-        /// <param name="parameters">The parameters for the pathfinding algorithm, including start, end, and cost functions.</param>
-        /// 
-        /// <returns>
-        /// A task that represents the asynchronous operation.<br/> The task result contains a list of <see cref="Vector2"/> positions
-        /// representing the path from start to end, or <see langword="null"/> if no path is found.
-        /// </returns>
-        /// 
-        /// <remarks>
-        /// <para>
-        /// This method runs the pathfinding calculations on a separate CPU thread using <see cref="Task.Run"/>.<br/>
-        /// Use <see cref="Task.IsCompleted"/> to check if the pathfinding is complete, and <see cref="Task{TResult}.Result"/>
-        /// to retrieve the resulting path.
-        /// </para>
-        /// </remarks>
-        /// 
-        /// <example>
-        /// <code>
-        /// var parameters = new PathfindingParams(start, end, TileValidity, DistanceFunction, Heuristic);
-        /// var pathTask = FindPathAsync(parameters);
-        /// if (pathTask.Result != null)
-        ///     PathPoints = pathTask.Result;
-        /// </code>
-        /// </example>
-        public static async Task<List<Vector2>> FindPathAsync(PathfindingParams parameters)
-        {
-            return await Task.Run(() =>
-            {
-                // If the entity isn't actually supposed to follow a path right now, null
-                // can be passed as the parameters to make implementation more concise.
-                if (parameters is null || Main.tile[parameters.End.Position].IsTileSolid())
-                    return null;
-
-                var openSet = new List<Node>();
-                var closedSet = new HashSet<Node>();
-                openSet.Add(parameters.Start);
-
-                while (openSet.Count > 0)
+                foreach (var direction in Directions)
                 {
-                    // Get the node with the lowest F value.
-                    var current = openSet[0];
-                    for (int i = 1; i < openSet.Count; i++)
-                    {
-                        if (openSet[i].F < current.F || (openSet[i].F == current.F && openSet[i].H < current.H))
-                            current = openSet[i];
-                    }
+                    int newX = nodeX + (int)direction.X;
+                    int newY = nodeY + (int)direction.Y;
 
-                    openSet.Remove(current);
-                    closedSet.Add(current);
-
-                    // Check if we've reached the goal.
-                    if (current.Position == parameters.End.Position)
-                        return ReconstructPath(current);
-
-                    // Generate neighbors.
-                    foreach (var neighbor in GetNeighbors(current))
-                    {
-                        if (closedSet.Contains(neighbor) || Main.tile[neighbor.Position].IsTileSolid() || !parameters.TileValidity.Invoke(neighbor.Position))
-                            continue;
-
-                        float tentativeG = current.G + parameters.DistanceFunction.Invoke(current.Position, neighbor.Position);
-
-                        if (!openSet.Contains(neighbor) || tentativeG < neighbor.G)
-                        {
-                            neighbor.Parent = current;
-                            neighbor.G = tentativeG;
-                            neighbor.H = parameters.Heuristic.Invoke(neighbor.Position, parameters.End.Position);
-
-                            if (!openSet.Contains(neighbor))
-                                openSet.Add(neighbor);
-                        }
-                    }
+                    if (WorldGen.InWorld(newX, newY))
+                        neighbors.Add(new Node(new Point(newX, newY)));
                 }
 
-                return null; // No path found.
-            });
-        }
-
-        private static List<Node> GetNeighbors(Node node)
-        {
-            var neighbors = new List<Node>(Directions.Count);
-
-            int nodeX = node.Position.X;
-            int nodeY = node.Position.Y;
-
-            foreach (var direction in Directions)
-            {
-                int newX = nodeX + (int)direction.X;
-                int newY = nodeY + (int)direction.Y;
-
-                if (WorldGen.InWorld(newX, newY))
-                    neighbors.Add(new Node(new Point(newX, newY)));
+                return neighbors;
             }
 
-            return neighbors;
-        }
-
-        private static List<Vector2> ReconstructPath(Node node)
-        {
-            var pathStack = new Stack<Vector2>();
-            while (node != null)
+            public List<Vector2> ReconstructPath()
             {
-                pathStack.Push(node.Position.ToWorldCoordinates());
-                node = node.Parent;
+                var pathStack = new Stack<Vector2>();
+                var node = this;
+
+                while (node != null)
+                {
+                    pathStack.Push(node.Position.ToWorldCoordinates());
+                    node = node.Parent;
+                }
+
+                var path = new List<Vector2>(pathStack.Count);
+                path.AddRange(pathStack);
+
+                return path;
             }
-
-            var path = new List<Vector2>(pathStack.Count);
-            path.AddRange(pathStack);
-
-            return path;
         }
 
         #region Heuristic Functions

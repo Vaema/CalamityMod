@@ -3,44 +3,51 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using CalamityMod.Enums;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using static CalamityMod.CalamityUtils;
+using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Probesnout : SunkenSeaNPC, IPathFinder
+    public class Probesnout : SunkenSeaNPC
     {
+        public static float PathDetectionSize = 300f;
+        private static Task<List<Vector2>> _pathfindingTask;
+
         #region Members
 
-        public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 200;
-        public static int IdleMaxPathDistance = 400;
-
-        public static int FleeTileAnticipationDistance = 5 * 16;
-        public static int FleeMinPathDistance = 80;
-        public static int FleeMaxPathDistance = 160;
-
-        protected override List<int> PreyIDs =>
-        [
+        protected override List<int> HuntNPCs => new()
+        {
             // NPCType<Slugbun>(),
-        ];
+        };
 
-        protected override List<int> PredatorIDs =>
-        [
+        protected override List<int> AvoidNPCs => new()
+        {
             // NPCType<IlmerianAxolotl>(),
             NPCType<Sharkoon>(),
             // NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),
             // NPCType<Hermititan>(),
-        ];
+        };
 
-        private enum AnimationState { Idle, Eating }
+        private enum PersonalityType { Curious, Shy, Paranoid }
+
+        private PersonalityType Personality
+        {
+            get => (PersonalityType)NPC.ai[0];
+            set
+            {
+                NPC.ai[0] = (float)value;
+                NetUpdate();
+            }
+        }
+
+        private enum AnimationState { Idle, Attack }
 
         private AnimationState Animation
         {
@@ -59,157 +66,166 @@ namespace CalamityMod.NPCs.SunkenSea
                         AnimationFrames = 8;
                         TimePerAnimationFrame = 5;
                         break;
-                    case AnimationState.Eating:
+                    case AnimationState.Attack:
                         AnimationFrames = 12;
                         TimePerAnimationFrame = 7;
                         break;
                 }
 
                 NPC.ai[1] = (float)value;
+                NetUpdate();
             }
         }
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
+        protected override float SpawningChance => 0f;
+
         private int AnimationFrames = 8;
 
         private int TimePerAnimationFrame = 5;
 
+        private float MaximumSpeed = 6f;
+
         private Vector2 ScaleSquish = Vector2.One;
-
-        private Action _currentBehavior;
-        private Action CurrentBehavior
-        {
-            get => _currentBehavior;
-            set
-            {
-                if (value != _currentBehavior)
-                    OnBehaviorChange(value);
-                _previousBehavior = _currentBehavior;
-                _currentBehavior = value;
-            }
-        }
-
-        private Action _previousBehavior;
-
-        public Task<List<Vector2>> Paths { get; set; }
-
-        public Vector2 Position => NPC.Center;
-
-        public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
-
-        public float Acceleration => 0.4f;
-
-        public float MaxSpeed => 8f;
 
         #endregion
 
         #region AI
 
-        protected override bool PlayerSearchFilter(Player p)
+        protected override void BehaviorOnSpawn()
         {
-            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 960f * 960f;
-        }
+            CurrentBehavior = IdleBehavior;
 
-        protected override bool NPCSearchFilter(NPC n)
-        {
-            return base.NPCSearchFilter(n) || (n == CurrentPrey || n == CurrentPredator) && Vector2.DistanceSquared(NPC.Center, n.Center) < 960f * 960f;
-        }
+            WeightedRandom<PersonalityType> randomPersonality = new();
+            randomPersonality.Add(PersonalityType.Curious, 0.6f);
+            randomPersonality.Add(PersonalityType.Shy, 0.3f);
+            randomPersonality.Add(PersonalityType.Paranoid, 0.1f);
+            Personality = randomPersonality.Get();
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
         }
 
-        public override void AI()
+        protected override void CreatureAI()
         {
-            CurrentBehavior?.Invoke();
+            CurrentBehavior.Invoke();
 
-            NPC.rotation = MathHelper.ToRadians(NPC.velocity.X * 3f);
-            NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
+            if (!NPC.velocity.HasNaNs())
+                ConeDetectionDirection = (NPC.rotation * MathF.Sign(NPC.velocity.Y) + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0f)).ToRotationVector2();
 
+            NPC.rotation = MathHelper.ToRadians(NPC.velocity.Length() * 3f) * MathF.Sign(NPC.velocity.X);
 
+            if (MathF.Abs(NPC.velocity.X) > 2f)
+                NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
 
             if (!NPC.wet)
                 CurrentBehavior = OutsideWaterBehavior;
 
+            if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
+                NPC.velocity = NPC.velocity.SafeNormalize(-Vector2.UnitY) * MaximumSpeed;
+
             if (ScaleSquish.Y > 1f)
-            {
                 ScaleSquish.Y -= 0.025f;
-                if (ScaleSquish.Y < 1f)
-                    ScaleSquish.Y = 1f;
-            }
+
+            if (ScaleSquish.Y < 1f)
+                ScaleSquish.Y = 1f;
         }
 
-        private void OnBehaviorChange(Action newBehavior) => NPC.noGravity = newBehavior != OutsideWaterBehavior;
+        protected override void OnBehaviorChange(Action newBehavior) => NPC.noGravity = newBehavior != OutsideWaterBehavior;
 
         protected override void OnPreyDetection(NPC prey)
         {
             // If it's not a small fish and it's not being chased by a predator, the Probesnout may hunt.
-            if (CurrentPredator != null)
-                return;
+            if (CurrentPredator is null)
+            {
+                CurrentBehavior = HuntBehavior;
+                React(Color.Orange * 0.6f, EmoteExpressionParticle.EmoteType.Exclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+            }
 
-            CurrentBehavior = HuntBehavior;
-            ScaleSquish.Y += 0.4f;
+            ScaleSquish.Y += 1.4f;
         }
 
         protected override void OnPredatorDetection(NPC predator)
         {
             // Regardless of anything, if it detects a predator, time to run.
-            CurrentBehavior = FleeingBehavior;
-            ScaleSquish.Y += 0.4f;
+            CurrentBehavior = AvoidBehavior;
+
+            React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+
+            ScaleSquish.Y += 1.4f;
         }
 
         protected override void OnPlayerDetection(Player player)
         {
-            if (CurrentPredator != null)
-                return;
+            // If the Probesnout is shy, it'll run away from the player.
+            if (Personality == PersonalityType.Shy)
+            {
+                CurrentBehavior = AvoidBehavior;
+                React(Color.Orange, EmoteExpressionParticle.EmoteType.QuestionExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+            }
+
+            if (Personality == PersonalityType.Curious)
+                React(Color.Green, EmoteExpressionParticle.EmoteType.Question, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
 
             ScaleSquish.Y += 0.4f;
         }
 
-        private void IdlingBehavior()
+        private void IdleBehavior()
         {
-            // At random, the mob will choose a random nearby point and pathfind there.
-            PathfindingParams parameters = null;
-            if (Main.rand.NextBool(IdleRandomMovementUnlikeliness))
+            if (_pathfindingTask.Result == null)
             {
-                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance);
-                NPC.netUpdate = true;
-                parameters = new PathfindingParams(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
+                NPC.velocity *= 0.95f;
+
+                if (Main.rand.NextBool(125))
+                    _pathfindingTask = CalamityUtils.FindPath(new(
+                        NPC.Center,
+                        NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f),
+                        SunkenSeaTileValidity));
             }
-            this.DoPathfinding(parameters);
+            else
+                GenericPathFollowing(acceleration: 0.03f);
         }
 
-        private void FleeingBehavior()
+        private void AvoidBehavior()
         {
-            // If the avoided entity is gone, go back to idling.
-            if (CurrentPredator == null)
+            // Depending on the personality, the Sharkoon will choose who to avoid.
+            Entity entityToAvoid = null;
+            switch (Personality)
             {
-                CurrentBehavior = IdlingBehavior;
+                case PersonalityType.Shy:
+                    entityToAvoid = (NearestEntity is NPC nearestNPC && HuntNPCs.Contains(nearestNPC.type)) ? null : NearestEntity;
+                    break;
+                case PersonalityType.Curious:
+                    entityToAvoid = CurrentPredator;
+                    break;
+                case PersonalityType.Paranoid:
+                    entityToAvoid = CurrentPredator;
+                    break;
+            }
+
+            // If there aren't any more targets detected, go back to idling.
+            if (entityToAvoid is null)
+            {
+                CurrentBehavior = IdleBehavior;
                 return;
             }
 
-            // While it doesn't have any obstacles in front of it, run away in a straight line.
-            // Try to manuever if there are any obstacles.
-            if (!Collision.CanHitLine(NPC.Center, 1, 1, NPC.Center + CurrentPredator.DirectionTo(NPC.Center) * 120f, 1, 1))
+            bool isAvoidingPredator = entityToAvoid is NPC npc && npc.whoAmI == CurrentPredator.whoAmI;
+
+            if (HasPath)
             {
-                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * 80f;
-                NPC.netUpdate = true;
-                this.DoPathfinding(new PathfindingParams(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                float fleeingDistance = isAvoidingPredator ? 600f : 300f;
+
+                Vector2 randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f);
+                while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid())
+                    randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f);
+
+                
             }
             else
-            {
-                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
-                Paths = null;
-
-                // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
-            }
+                GenericPathFollowing(acceleration: 0.14f);
         }
 
         private void HuntBehavior()
@@ -217,24 +233,25 @@ namespace CalamityMod.NPCs.SunkenSea
             // If there's no more prey, go back to idling.
             if (CurrentPrey is null)
             {
-                CurrentBehavior = IdlingBehavior;
+                CurrentBehavior = IdleBehavior;
                 return;
             }
 
-            // With sight, just go straight at him. Without it, try to pathfind over them.
-            if (!NPC.HasSight(CurrentPrey.Center))
-                this.DoPathfinding(new PathfindingParams(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+            if (!HasLineOfSight(CurrentPrey.Center))
+            {
+                if (HasPath)
+                    GenericPathFollowing(acceleration: 0.14f);
+                else
+                    _pathfindingTask = CalamityUtils.FindPath(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+            }
             else
-                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * 0.14f;
         }
 
         private void OutsideWaterBehavior()
         {
             if (NPC.wet)
-            {
-                NPC.noGravity = true;
-                CurrentBehavior = _previousBehavior;
-            }
+                CurrentBehavior = PreviousBehavior;
         }
 
         #endregion
@@ -257,7 +274,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos;
-            Rectangle frame = texture.Frame(horizontalFrames: 2, verticalFrames: 12, frameX: (int)Animation, frameY: NPC.frame.Y / 44);
+            Rectangle frame = texture.Frame(horizontalFrames: 2, verticalFrames: 12, frameX: (int)Animation, frameY: NPC.frame.Y / NPC.height);
             Vector2 anchorPoint = frame.Size() * 0.5f;
             SpriteEffects flip = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
@@ -284,28 +301,32 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.lifeMax = 5;
 
+            NPC.aiStyle = -1;
+            AIType = -1;
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.chaseable = false;
 
-            NPC.width = 32;
-            NPC.height = 32;
+            NPC.width = 44;
+            NPC.height = 55;
         }
 
         #endregion
 
         #region Syncing
 
-        private Vector2 _randomPathPoint;
-
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.WriteVector2(_randomPathPoint);
+            base.SendExtraAI(writer);
+            writer.Write7BitEncodedInt(AnimationFrames);
+            writer.Write7BitEncodedInt(TimePerAnimationFrame);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            _randomPathPoint = reader.ReadVector2();
+            base.ReceiveExtraAI(reader);
+            AnimationFrames = reader.Read7BitEncodedInt();
+            TimePerAnimationFrame = reader.Read7BitEncodedInt();
         }
 
         #endregion

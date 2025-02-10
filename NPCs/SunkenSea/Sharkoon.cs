@@ -12,7 +12,6 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -157,7 +156,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region IPathFinder Implementation
 
-        public Task<List<Vector2>> Paths { get; set; }
+        public PathfindingTask Path { get; set; }
 
         public Vector2 Position => NPC.Center;
 
@@ -257,14 +256,14 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            PathfindingParams parameters = null;
+            PathfindingTask task = null;
             if (Main.rand.NextBool(IdleRandomMovementUnlikeliness))
             {
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance);
                 NPC.netUpdate = true;
-                parameters = new PathfindingParams(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
+                task = new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
             }
-            this.DoPathfinding(parameters);
+            this.DoPathfinding(task);
         }
 
         private void HuntingBehavior()
@@ -278,7 +277,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
             if (!NPC.HasSight(CurrentPrey.Center))
-                this.DoPathfinding(new PathfindingParams(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+                this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
             else
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
         }
@@ -311,7 +310,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                this.DoPathfinding(new PathfindingParams(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                this.DoPathfinding(new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
             // If it's capable of exploding and the predator's within distance, kaboom.
