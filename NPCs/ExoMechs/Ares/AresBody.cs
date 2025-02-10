@@ -750,8 +750,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 // Fly above target and become immune
                 case (int)SecondaryPhase.PassiveAndImmune:
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if (((!exoWormAlive || exoWormLifeRatio < 0.7f) || (!exoTwinsAlive || exoTwinsLifeRatio < 0.7f)) && !otherMechIsBerserk)
                     {
                         // Tells Ares to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed

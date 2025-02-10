@@ -851,8 +851,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                     // Do nothing while immune
                     AIState = (float)Phase.Normal;
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoPrimeLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if ((!exoWormAlive || exoWormLifeRatio < 0.7f || !exoPrimeAlive || exoPrimeLifeRatio < 0.7f) && !otherMechIsBerserk)
                     {
                         // Set Artemis variables
                         if (exoMechTwinRedAlive)

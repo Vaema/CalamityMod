@@ -671,8 +671,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     // Do nothing while immune
                     AIState = (float)Phase.UndergroundLaserBarrage;
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoPrimeLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if ((!exoPrimeAlive || exoPrimeLifeRatio < 0.7f || !exoTwinsAlive || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
                     {
                         // Tells Thanatos to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
