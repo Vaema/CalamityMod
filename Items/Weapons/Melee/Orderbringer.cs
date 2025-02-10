@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = 0; i < 4; i++)
             {
                 Vector2 vel = (velocity * 2.5f).RotatedByRandom(0.6f);
-                Projectile.NewProjectile(source, Main.MouseWorld - (velocity * 40) + Main.rand.NextVector2Circular(130, 130), vel * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<StarofJudgement>(), (int)(damage * 0.1f), knockback * 0.2f, player.whoAmI, 0, 0, 1);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld() - (velocity * 40) + Main.rand.NextVector2Circular(130, 130), vel * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<StarofJudgement>(), (int)(damage * 0.1f), knockback * 0.2f, player.whoAmI, 0, 0, 1);
             }
             return false;
         }
@@ -102,6 +102,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
+            Vector2 mouseClamped = player.ClampedMouseWorld();
             for (int i = 0; i < 2; i++)
             {
                 Vector2 targetPos = Main.MouseWorld;
@@ -109,7 +110,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 if (target2 != null)
                     targetPos = target2.Center + target2.velocity * 14;
 
-                Vector2 spawnPos = Main.MouseWorld + new Vector2(Main.rand.NextFloat(-300, 300), -900);
+                Vector2 spawnPos = mouseClamped + new Vector2(Main.rand.NextFloat(-300, 300), -900);
                 Vector2 vel = (targetPos - spawnPos).SafeNormalize(Vector2.UnitY) * 10;
                 Projectile.NewProjectile(player.GetSource_ItemUse(Item), spawnPos, vel, ModContent.ProjectileType<OrderbringerBeam>(), beamDamage, 0, player.whoAmI);
             }

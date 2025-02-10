@@ -9,11 +9,12 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Particles
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class GeneralParticleHandler
+    [Autoload(Side = ModSide.Client)]
+    public sealed class GeneralParticleHandler : ModSystem
     {
         private static List<Particle> particles;
         private static Queue<Particle> particlesToSpawnNextFrame;
@@ -22,58 +23,54 @@ namespace CalamityMod.Particles
         //Static list for details concerning every particle type
         internal static Dictionary<Type, int> particleTypes;
         internal static Dictionary<int, Texture2D> particleTextures;
-        private static List<Particle> particleInstances;
         //Lists used when drawing particles batched
         private static List<Particle> batchedAlphaBlendParticles;
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
-        public static void LoadModParticleInstances()
+        public override void PostSetupContent()
         {
             Type baseParticleType = typeof(Particle);
-            foreach (Mod mod in ModLoader.Mods)
+            ReflectionHelper.IterateEveryModsTypes<Particle>(action: type =>
             {
-                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
-                {
-                    if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
-                    {
-                        int ID = particleTypes.Count; //Get the ID of the particle
-                        particleTypes[type] = ID;
+                int ID = particleTypes.Count; //Get the ID of the particle
+                particleTypes[type] = ID;
 
-                        Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-                        particleInstances.Add(instance);
+                // Flow: 2024/09/17
+                // 'UnintializedObject' is allowed to use here as it's only read for Texture string Property
+                // But do NOT EVER use it's instance as they are literally Uninitialized.
+                // It might cause unintended behaviour if we do that.
+#pragma warning disable SYSLIB0050
+                Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
+#pragma warning restore SYSLIB0050
 
-                        string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
-                        if (instance.Texture != "")
-                            texturePath = instance.Texture;
-                        particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
-                    }
-                }
-            }
+                string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                if (instance.Texture != "")
+                    texturePath = instance.Texture;
+                particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+            });
         }
 
-        internal static void Load()
+        public override void Load()
         {
-            particles = new List<Particle>();
-            particlesToSpawnNextFrame = new Queue<Particle>();
-            particlesToKill = new List<Particle>();
-            particleTypes = new Dictionary<Type, int>();
-            particleTextures = new Dictionary<int, Texture2D>();
-            particleInstances = new List<Particle>();
+            particles = [];
+            particlesToSpawnNextFrame = [];
+            particlesToKill = [];
+            particleTypes = [];
+            particleTextures = [];
 
-            batchedAlphaBlendParticles = new List<Particle>();
-            batchedNonPremultipliedParticles = new List<Particle>();
-            batchedAdditiveBlendParticles = new List<Particle>();
+            batchedAlphaBlendParticles = [];
+            batchedNonPremultipliedParticles = [];
+            batchedAdditiveBlendParticles = [];
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             particles = null;
             particlesToSpawnNextFrame = null;
             particlesToKill = null;
             particleTypes = null;
             particleTextures = null;
-            particleInstances = null;
 
             batchedAlphaBlendParticles = null;
             batchedNonPremultipliedParticles = null;
@@ -88,7 +85,7 @@ namespace CalamityMod.Particles
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
             // Don't spawn particles if on the server either, or if the particles dictionary is somehow null.
-            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+            if (Main.gamePaused || Main.dedServ || particles == null)
                 return;
 
             if (particles.Count >= CalamityClientConfig.Instance.ParticleLimit && !particle.Important)
@@ -103,7 +100,7 @@ namespace CalamityMod.Particles
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
             // Don't spawn particles if on the server side, or if the particles dictionary is somehow null.
-            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+            if (Main.gamePaused || Main.dedServ || particles == null)
                 return;
 
             particlesToSpawnNextFrame.Enqueue(particle);

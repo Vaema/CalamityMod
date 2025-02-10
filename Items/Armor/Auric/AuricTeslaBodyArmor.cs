@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Armor.Auric
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Add equip textures
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Auric/AuricTeslaBodyArmor_Back", EquipType.Back, this);

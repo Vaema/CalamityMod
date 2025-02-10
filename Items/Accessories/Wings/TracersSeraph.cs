@@ -15,21 +15,22 @@ namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
     [LegacyName("CelestialTracers")]
-    public class TracersSeraph : ModItem, ILocalizedModType
+    public class TracersSeraph : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
+        public override float BonusAscentWhileFalling => 0.95f;
+        public override float BonusAscentWhileRising => 0.16f;
+        public override float RisingSpeedThreshold => 1.2f;
+        public override float MaxAscentSpeed => 2.9f;
+        public override float BaseAscent => 0.145f;
 
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 11f, 2.8f);
-        }
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 11f, 2.8f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.accessory = true;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -63,15 +64,6 @@ namespace CalamityMod.Items.Accessories.Wings
             modPlayer.tracersDust = !hideVisual;
             modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersSeraph = true; // Grants immunity to Auric Rejection and other walk-on-block effects
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.95f;
-            ascentWhenRising = 0.16f;
-            maxCanAscendMultiplier = 1.2f;
-            maxAscentMultiplier = 2.9f;
-            constantAscend = 0.145f;
         }
 
         public override void AddRecipes()

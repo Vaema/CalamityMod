@@ -18,6 +18,7 @@ namespace CalamityMod.Systems
 
         #region Overridable Properties
         public abstract int NPCType { get; }
+        public virtual int? ProjType => null;
         public abstract int? MusicModMusic { get; }
         public abstract int VanillaMusic { get; }
         public abstract int OtherworldMusic { get; }
@@ -95,6 +96,22 @@ namespace CalamityMod.Systems
 
                 Rectangle npcBox = new Rectangle((int)npc.Center.X - MusicDistance, (int)npc.Center.Y - MusicDistance, musicDistance, musicDistance);
                 if (screenRect.Intersects(npcBox))
+                    return true;
+            }
+
+            if (ProjType is null)
+                return false;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                bool isActive = false;
+                if (proj.type == ProjType)
+                    isActive = true;
+
+                if (!isActive)
+                    continue;
+
+                Rectangle projBox = new Rectangle((int)proj.Center.X - MusicDistance, (int)proj.Center.Y - MusicDistance, musicDistance, musicDistance);
+                if (screenRect.Intersects(projBox))
                     return true;
             }
             return false;

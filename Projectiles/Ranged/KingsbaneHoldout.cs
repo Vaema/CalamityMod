@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
         public override void AI()
         {
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 2;
             }
@@ -149,6 +149,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Kingsbane itself
+
                 float interpolant = Utils.GetLerpValue(0f, 55f, Owner.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), 0.185f).SafeNormalize(Vector2.UnitY);

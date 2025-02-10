@@ -272,7 +272,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Initiate charge
                     float chargeDistanceY = phase6 ? 100f : phase4 ? 50f : 20f;
-                    chargeDistanceY += 100f * enrageScale;
+                    chargeDistanceY += 50f * enrageScale;
                     if (death)
                         chargeDistanceY += MathHelper.Lerp(0f, 100f, 1f - lifeRatio);
                     if (masterMode)
@@ -923,7 +923,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
             }
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
 
             npc.netSpam = 5;

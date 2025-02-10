@@ -13,9 +13,13 @@ namespace CalamityMod.Items.Tools
         private const int HammerPower = 110;
         private const int AxePower = 180 / 5;
 
+        public static float DamageBoost = 0.15f;
+        public static int DefenseBoost = 30;
+        public static float DamageReductionBoost = 0.1f;
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()

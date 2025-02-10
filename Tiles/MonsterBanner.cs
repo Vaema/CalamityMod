@@ -29,6 +29,7 @@ namespace CalamityMod.Tiles
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = true;
+            TileID.Sets.MultiTileSway[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
@@ -62,7 +63,7 @@ namespace CalamityMod.Tiles
             }
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public static int GetBannerNPC(int style)
         {
@@ -105,9 +106,9 @@ namespace CalamityMod.Tiles
                 case 11:
                     npc = NPCType<WildBumblefuck>(); // There's also the boss variant but I dont think we want banners to affect them?
                     break;
-                case 12:
-                    npc = NPCType<SeaUrchin>();
-                    break;
+                /*case 12:
+                    npc = NPCType<Unused>(); - Formerly Sea Urchin
+                    break*/
                 case 13:
                     npc = NPCType<BoxJellyfish>();
                     break;
@@ -381,9 +382,9 @@ namespace CalamityMod.Tiles
                 case 103:
                     npc = NPCType<SeaFloaty>();
                     break;
-                case 104:
-                    npc = NPCType<BlindedAngler>();
-                    break;
+                /*case 104:
+                    npc = NPCType<Unused>(); - Formerly Blinded Angler
+                    break*/
                 case 105:
                     npc = NPCType<SeaMinnow>();
                     break;

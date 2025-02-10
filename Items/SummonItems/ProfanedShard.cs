@@ -3,6 +3,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.ProfanedGuardians;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +12,7 @@ namespace CalamityMod.Items.SummonItems
     public class ProfanedShard : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianSpawn");
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
@@ -39,10 +41,9 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            CalamityUtils.SpawnBossUsingItem<ProfanedGuardianCommander>(player, SoundID.Roar);
+            CalamityUtils.SpawnBossUsingItem<ProfanedGuardianCommander>(player, UseSound);
             return true;
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[SPAWN]", this.GetLocalizedValue(Main.remixWorld ? "SpawnRemix" : "SpawnNormal"));
 
         public override void AddRecipes()
         {

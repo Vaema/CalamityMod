@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -17,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -41,9 +42,13 @@ namespace CalamityMod.Projectiles.Melee
             Main.dust[dustParticle].noGravity = true;
             Main.dust[dustParticle].velocity *= 0.5f;
 
-            if (target.active)
+            if (target.CanBeChasedBy(Projectile))
             {
                 Projectile.Center = target.Center;
+
+                // TBB sigil marks the enemy with Armor Crunch
+                if (Projectile.ai[1] == 1f)
+                    target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 5);
             }
             else
                 Projectile.active = false;
@@ -53,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Main.myPlayer != Projectile.owner) // don't show for other players
                 return false;
-            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

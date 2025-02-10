@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class PlayerDashManager
+    public sealed class PlayerDashManager : ModSystem
     {
         internal static Dictionary<string, PlayerDashEffect> DashIdentificationTable = new();
 
@@ -41,28 +41,20 @@ namespace CalamityMod.CalPlayer.Dashes
 
         }
 
-        internal static void Load()
+        public override void OnModLoad()
         {
             DashIdentificationTable = new();
-            Type baseType = typeof(PlayerDashEffect);
-            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
-            foreach (Type type in types)
+            ReflectionHelper.IterateCalamityTypes<PlayerDashEffect>(action: type =>
             {
-                // Ignore any types which are not dash effects or are abstract.
-                // This eliminates the PlayerDashEffect template type, which cannot have instances.
-                if (!type.IsSubclassOf(baseType) || type.IsAbstract)
-                    continue;
-
-                // Use reflection to get the static ID manually. This shouldn't be a performance problem, as this only happens at load-time.
                 string id = (string)type.GetProperty("ID").GetValue(null);
 
                 PlayerDashEffect dashEffect = (PlayerDashEffect)Activator.CreateInstance(type);
                 DashIdentificationTable[id] = dashEffect;
-            }
+            });
         }
 
 
-        internal static void Unload()
+        public override void Unload()
         {
             DashIdentificationTable = null;
         }

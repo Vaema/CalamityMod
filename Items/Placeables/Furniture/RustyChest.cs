@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Tiles.Abyss;
 using Terraria;
 using Terraria.ID;
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<HardenedSulphurousSandstone>(8).
+                AddIngredient<Items.Placeables.Abyss.HardenedSulphurousSandstone>(8).
                 AddRecipeGroup("IronBar", 2).
                 AddTile(TileID.Anvils).
                 Register();

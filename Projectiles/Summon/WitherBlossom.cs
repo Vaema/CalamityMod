@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void MinionAI()
         {
-            Projectile.Center = Owner.Center + OffsetAngle.ToRotationVector2() * 150f;
+            Projectile.Center = Owner.Center + OffsetAngle.ToRotationVector2() * 150f + Vector2.UnitY * Owner.gfxOffY;
 
             Time++;
             if (Time % 50 == 49 && Main.myPlayer == Projectile.owner && Target != null)

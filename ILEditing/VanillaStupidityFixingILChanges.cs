@@ -128,24 +128,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
-        #region Remove Feral Bite Random Debuffs
-        private static void RemoveFeralBiteRandomDebuffs(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
-            {
-                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
-                return;
-            }
-
-            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0f);
-        }
-        #endregion
-
         #region Remove Expert Brain of Cthulhu Random Debuffs
         private static void RemoveExpertBrainRandomDebuffs(ILContext il)
         {
@@ -269,6 +251,15 @@ namespace CalamityMod.ILEditing
                 pickPower = 65;
 
             return orig(self, x, y, pickPower, hitBufferIndex, tileTarget);
+        }
+        #endregion
+
+        #region Remove Flail Throw Velocity Being Affected By Player Velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
         }
         #endregion
 
@@ -629,7 +620,7 @@ namespace CalamityMod.ILEditing
 
                 case 17:
                     item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    item.SetDefaults(ItemID.LavaFishingHook);
                     rewardItems.Add(item);
                     break;
 
@@ -653,7 +644,7 @@ namespace CalamityMod.ILEditing
 
                 case 21:
                     item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
                     rewardItems.Add(item);
                     break;
 
@@ -837,7 +828,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Honey Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 17)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 21)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
@@ -893,7 +884,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Lavaproof Fishing Hook
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 21)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 17)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.LavaFishingHook);
@@ -1055,11 +1046,30 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
-        #region Celestial Sigil Non-Linearity Change
-        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        #region Vanilla Non-Linearity Fixes
+        private static void RemovePowerCellPlanteraLock(ILContext il)
+        {
+            // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<NPC>("downedPlantBoss")))
+            {
+                LogFailure("Remove Power Cell Plantera Lock", "Could not locate the downed Plantera bool.");
+                return;
+            }
+
+            // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
+            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4_1);
+        }
+
+        private static bool RemoveUseLocks(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+            if (sItem.type == ItemID.SolarTablet)
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }
@@ -1084,8 +1094,36 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove NPC.damage Condition from Radar
+        private static void RemoveDamageConditionFromRadar(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            Func<Instruction, bool>[] searchFor =
+            [
+                (x => x.MatchLdfld<NPC>(nameof(NPC.damage))),
+                (x => x.MatchLdcI4(out var comp) && comp == 0),
+                (x => x.MatchBle(out _)) //ble.s
+            ];
+
+            if (!cursor.TryGotoNext(MoveType.After, searchFor))
+            {
+                LogFailure("Radar Condition", "Unable to locate condition for NPC.damage > 0");
+                return;
+            }
+
+            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            cursor.Prev.OpCode = OpCodes.Nop;
+
+            // After that we pop NPC.damage and 0 from stack
+            cursor.EmitPop();
+            cursor.EmitPop();
+        }
+        #endregion
+
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property
+        [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]
         private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);

@@ -18,10 +18,11 @@ namespace CalamityMod.Projectiles.Summon
         public float Hue => OffsetAngle % MathHelper.TwoPi / MathHelper.TwoPi % 1f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -61,7 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 shootVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 10f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<MortalityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
-            Projectile.Center = player.Center + OffsetAngle.ToRotationVector2() * (150f + (float)Math.Sin(Time * 0.08f) * 15f);
+            Projectile.Center = player.Center + OffsetAngle.ToRotationVector2() * (150f + (float)Math.Sin(Time * 0.08f) * 15f) + Vector2.UnitY * Owner.gfxOffY;
             Projectile.rotation += MathHelper.ToRadians(7f);
             OffsetAngle += MathHelper.ToRadians(6f);
         }
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D petalTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D petalTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D coreTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/FlowersOfMortalityCore").Value;
             Color drawColor = Main.hslToRgb(Hue, 0.95f, 0.5f) * 2.3f;
 

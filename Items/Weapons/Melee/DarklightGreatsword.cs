@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Weapons.Melee
             else
                 position += offset;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             type = Main.rand.NextBool() ? type : ModContent.ProjectileType<LightBeam>();
             Projectile.NewProjectile(source, position, velocity, type, (int)(damage * ProjectileDamageMultiplier), knockback * ProjectileDamageMultiplier, player.whoAmI);
@@ -59,14 +60,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.ShadowFlame, 240);
-            int slashCreatorID = ModContent.ProjectileType<DarklightGreatswordSlashCreator>();
-            int slashDamage = (int)(player.CalcIntDamage<MeleeDamageClass>(Item.damage) * TrueMeleeSlashProjectileDamageMultiplier);
-            float slashKnockback = Item.knockBack * TrueMeleeSlashProjectileDamageMultiplier;
-            if (player.ownedProjectileCounts[slashCreatorID] < SlashProjectileLimit)
-            {
-                Projectile.NewProjectile(player.GetSource_ItemUse(Item), target.Center, Vector2.Zero, slashCreatorID, slashDamage, slashKnockback, player.whoAmI, target.whoAmI, player.itemRotation, Main.rand.Next(2));
-                player.ownedProjectileCounts[slashCreatorID]++;
-            }
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.ShadowFlame, 240);

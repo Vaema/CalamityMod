@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -113,7 +114,9 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 target.AddBuff(BuffID.ShadowFlame, 450);
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 900);
-                player.ApplyDamageToNPC(target, Item.damage * 4, 0f, 0, false);
+                int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(4 * Item.damage);
+                Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+                blast.DamageType = Item.DamageType;
                 float firstDustScale = 1.7f;
                 float secondDustScale = 0.8f;
                 float thirdDustScale = 2f;

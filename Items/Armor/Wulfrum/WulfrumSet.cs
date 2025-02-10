@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
@@ -274,7 +274,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
                 ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
@@ -318,7 +318,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
                 ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlot] = true;
@@ -361,7 +361,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (WulfrumHat.PowerModeEngaged(Player, out var cd) && Main.netMode != NetmodeID.Server)
+            if (WulfrumHat.PowerModeEngaged(Player, out var cd) && !Main.dedServ)
             {
                 SetBonusEndEffect(true);
                 if (!Player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped)
@@ -385,7 +385,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 if (cd.timeLeft < WulfrumHat.BastionCooldown)
                 {
                     cd.timeLeft = WulfrumHat.BastionCooldown - 1;
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                         SetBonusEndEffect(true);
                 }
             }

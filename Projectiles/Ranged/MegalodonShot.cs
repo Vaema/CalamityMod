@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                 bubble.type = Main.rand.NextBool(3) ? 412 : 411;
             }
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
     }
 }

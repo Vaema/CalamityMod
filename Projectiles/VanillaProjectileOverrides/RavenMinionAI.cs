@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             return false;
         }
 
-        public static bool DoRavenMinionDrawing(Projectile proj, ref Color lightColor)
+        public static void DoRavenMinionDrawing(Projectile proj, ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[proj.type].Value;
             Vector2 drawPosition = proj.Center - Main.screenPosition;
@@ -113,8 +113,6 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 CalamityUtils.DrawAfterimagesCentered(proj, 0, Color.MediumPurple with { A = 50 });
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, proj.GetAlpha(lightColor), proj.rotation, origin, proj.scale, effects);
-
-            return false;
         }
 
         #region AI Methods

@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             int length = texture.Width / horizontalFrames;
             int height = texture.Height / verticalFrames;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);

@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 spawnPosition = Projectile.Center + new Vector2(Main.rand.NextFloat(-randomOffset, randomOffset), -80f);
                 MakeSpawnValid(ref spawnPosition);
 
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     spawnPosition,
                     Vector2.Zero,
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             Color drawColor = Projectile.GetAlpha(lightColor);

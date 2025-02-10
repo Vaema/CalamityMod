@@ -29,6 +29,8 @@ namespace CalamityMod.Tiles.MusicBoxes
             AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName(ItemID.MusicBox));
         }
 
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+
         public override void MouseOver(int i, int j)
         {
             Player player = Main.LocalPlayer;
@@ -37,7 +39,6 @@ namespace CalamityMod.Tiles.MusicBoxes
             player.cursorItemIconID = ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonTalkMusicBox>();
         }
 
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
         public override bool CreateDust(int i, int j, ref int type) => false;
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

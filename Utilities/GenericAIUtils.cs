@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Enums;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,7 +30,10 @@ namespace CalamityMod
                     projectile.ai[1] = 1f;
                     projectile.ai[0] = 0f;
                     projectile.extraUpdates = initialUpdates;
-                    projectile.numUpdates = 0;
+                    // CIT 2OCT2024: This line was breaking how the game counted minions,
+                    // which resulted in minions being counted extra times and despawning other minions, most notoriously with Resurrection Butterfly.
+                    // As such, I have commented it out.
+                    // projectile.numUpdates = 0;
                     projectile.netUpdate = true;
                 }
                 else
@@ -357,15 +361,10 @@ namespace CalamityMod
             float playerDist = playerVector.Length();
             if (playerDist < 50f && projectile.position.X < player.position.X + player.width && projectile.position.X + projectile.width > player.position.X && projectile.position.Y < player.position.Y + player.height && projectile.position.Y + projectile.height > player.position.Y)
             {
-                if (projectile.owner == Main.myPlayer && !Main.player[Main.myPlayer].moonLeech)
+                if (projectile.owner == Main.myPlayer && !Main.LocalPlayer.moonLeech)
                 {
                     int healAmt = healing;
-                    player.HealEffect(healAmt, false);
-                    player.statLife += healAmt;
-                    if (player.statLife > player.statLifeMax2)
-                    {
-                        player.statLife = player.statLifeMax2;
-                    }
+                    player.HealPlayer(healAmt, HealTextType.Local);
                     NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, target, healAmt, 0f, 0f, 0, 0, 0);
                 }
                 projectile.Kill();

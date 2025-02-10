@@ -33,7 +33,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float SightHomingRange = 288f; // Range of homing for Sight bombs, in pixels
         public const int FrightFlatDamage = 20;
 
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        public override Color? TooltipExtensionColor => new Color(31, 251, 255);
+
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
 
         public override void SetDefaults()
         {

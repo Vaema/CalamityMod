@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Vector2 pos = new Vector2(targetPos.X + width * 0.5f + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                 Vector2 velocity = (targetPos - pos) / 40f;
-                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.25), Projectile.knockBack, Projectile.owner);
+                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<LeonidCometBig>(), (int)(Projectile.damage * 1.25), Projectile.knockBack, Projectile.owner);
                 if (comet.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[comet].DamageType = RogueDamageClass.Instance;
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.dust[astral].velocity *= 2f;
                 Main.dust[astral].noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int g = 0; g < 3; g++)
                 {

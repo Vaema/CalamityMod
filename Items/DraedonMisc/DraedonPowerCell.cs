@@ -16,7 +16,7 @@ namespace CalamityMod.Items.DraedonMisc
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
         }
 
         public override void SetDefaults()
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.DraedonMisc
             Item.width = 26;
             Item.height = 14;
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
 
             Item.MakeUsableWithChlorophyteExtractinator();
             Item.useTime = 2;

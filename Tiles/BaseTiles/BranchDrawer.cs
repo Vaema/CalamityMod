@@ -73,7 +73,7 @@ namespace CalamityMod.Tiles.BaseTiles
         {
             get
             {
-                if (Main.netMode != NetmodeID.Server && basicShader is null)
+                if (!Main.dedServ && basicShader is null)
                 {
                     basicShader = new BasicEffect(Main.instance.GraphicsDevice)
                     {

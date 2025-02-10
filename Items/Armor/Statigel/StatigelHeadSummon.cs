@@ -16,6 +16,8 @@ namespace CalamityMod.Items.Armor.Statigel
     public class StatigelHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+        public static int SlimeDamage = 18;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -49,11 +51,8 @@ namespace CalamityMod.Items.Armor.Statigel
                     player.AddBuff(ModContent.BuffType<BabySlimeGodBuff>(), 3600, true);
                 }
 
-                var minionID = -1;
-
-                // 08DEC2023: Ozzatron: Corruption and Crimson Slimes spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                var baseDamage = player.ApplyArmorAccDamageBonusesTo(18);
-                var minionDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                int minionID = -1;
+                int minionDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(SlimeDamage);
 
                 if (WorldGen.crimson && player.ownedProjectileCounts[ModContent.ProjectileType<CrimsonSlimeGodMinion>()] < 1)
                     minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CrimsonSlimeGodMinion>(), minionDamage, 0f, Main.myPlayer);
@@ -61,7 +60,7 @@ namespace CalamityMod.Items.Armor.Statigel
                     minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CorruptionSlimeGodMinion>(), minionDamage, 0f, Main.myPlayer);
 
                 if (Main.projectile.IndexInRange(minionID))
-                    Main.projectile[minionID].originalDamage = baseDamage;
+                    Main.projectile[minionID].originalDamage = SlimeDamage;
             }
         }
 
@@ -76,6 +75,7 @@ namespace CalamityMod.Items.Armor.Statigel
                 AddIngredient<PurifiedGel>(5).
                 AddIngredient<BlightedGel>(5).
                 AddTile<StaticRefiner>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelHeadRogue>()).
                 Register();
         }
     }

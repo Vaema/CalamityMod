@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Accessories;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
@@ -11,6 +12,11 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
+        }
+
+        public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
+        {
+            tip = base.Description.Format((AbyssalDivingSuit.PlatesAllDamageReduction - Main.LocalPlayer.Calamity().abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay).ToPercent());
         }
 
         public override void Update(Player player, ref int buffIndex)

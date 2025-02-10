@@ -22,7 +22,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
-    [AutoloadBossHead]
     public class Foveanator : ModNPC
     {
         public static int phase1IconIndex;
@@ -30,21 +29,18 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public static Asset<Texture2D> GlowTexture;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/NormalNPCs/Foveanator_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/NormalNPCs/Foveanator_Phase2_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
 
@@ -318,7 +314,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float laserSpeed = 3f + 1.5f * enrageScale;
+                                float laserSpeed = 6f + 1.5f * enrageScale;
                                 int type = ModContent.ProjectileType<FoveanatorLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
 
@@ -482,7 +478,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            float projectileSpeed = shootLaser ? (3f + 1.5f * enrageScale) : 16f;
+                            float projectileSpeed = shootLaser ? (6f + 1.5f * enrageScale) : 16f;
+                            float ai0 = shootLaser ? 0f : (death ? 1f : 0f);
                             Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                             int numProj = shootLaser ? 4 : 2;
                             int spread = shootLaser ? 15 : 30;
@@ -490,7 +487,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, ai0);
                             }
                         }
                     }
@@ -508,7 +505,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
 
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             for (int i = 0; i < 2; i++)
                             {
@@ -590,7 +587,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     // Fire flamethrower for x seconds
                     NPC.ai[2] += (retAlive && spazAlive) ? 1f : 2f;
-                    float phaseGateValue = NPC.IsMechQueenUp ? 1350f : 270f - (death ? 90f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float phaseGateValue = NPC.IsMechQueenUp ? 1350f : 360f - (death ? 90f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                     if (NPC.ai[2] >= phaseGateValue)
                     {
                         // Go to charge phase or fire large barrage of lasers and energy bombs if in final phase
@@ -601,7 +598,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
 
                     // Fire fireballs and flamethrower
-                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                    else if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
                         // Play flame sound on timer
                         NPC.localAI[2] += 1f;
@@ -619,12 +616,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.localAI[1] = 0f;
 
                                 float foveanatorFlamethrowerSpeed = 4f + 2f * enrageScale;
-                                float timeForFlamethrowerToReachMaxVelocity = 60f;
+                                float timeForFlamethrowerToReachMaxVelocity = (retAlive && spazAlive) ? 120f : 60f;
                                 float flamethrowerSpeedScalar = MathHelper.Clamp(NPC.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
                                 foveanatorFlamethrowerSpeed = MathHelper.Lerp(0.1f, foveanatorFlamethrowerSpeed, flamethrowerSpeedScalar);
 
-                                // TODO - Change this to Foveanator's flamethrower when it's done
-                                int type = ModContent.ProjectileType<Shadowflamethrower>();
+                                int type = ModContent.ProjectileType<FoveanatorFlamethrower>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -643,7 +639,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 if (NPC.IsMechQueenUp)
                                     flamethrowerVelocity = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * foveanatorFlamethrowerSpeed + NPC.velocity * 0.5f;
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 40f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 100f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -742,7 +738,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer, death ? 2f : 1f);
                             }
                         }
 
@@ -842,7 +838,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, death ? 1f : 0f);
                                 }
                             }
 
@@ -868,7 +864,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                float projectileSpeed = 4f + 2f * enrageScale;
+                                float projectileSpeed = 8f + 2f * enrageScale;
                                 Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                                 int numProj = 4;
                                 int spread = 40;
@@ -910,7 +906,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
 
             Texture2D glowTexture = GlowTexture.Value;
             spriteBatch.Draw(glowTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
@@ -931,7 +927,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < 150; i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -957,7 +953,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.dust[dust].velocity *= 3f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default, Main.rand.Next(61, 64));
                 Main.gore[gore].velocity *= 0.4f;

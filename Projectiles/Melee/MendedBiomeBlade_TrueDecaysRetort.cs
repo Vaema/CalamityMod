@@ -59,6 +59,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 CanBounce = 1f;
                 Projectile.timeLeft = (int)MaxTime;
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
@@ -154,12 +155,11 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!cannotLifesteal) //trolled
             {
-                Owner.statLife += TrueBiomeBlade.EvilAttunement_Lifesteal;
-                Owner.HealEffect(TrueBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
+                Owner.HealPlayer(TrueBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
             }
 
             // Bounce off
-            float bounceStrength = Math.Max((LungeSpeed / 2f), Owner.velocity.Length());
+            float bounceStrength = LungeSpeed / 2f;
             bounceStrength *= Owner.velocity.Y == 0 ? 0.2f : 1f; //Reduce the bounce if the player is on the ground
             Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(bounceStrength, 0f, 22f);
             CanBounce = 0f;

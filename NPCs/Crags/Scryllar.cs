@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)
@@ -296,7 +296,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Scryllar").Type, NPC.scale);
                 }

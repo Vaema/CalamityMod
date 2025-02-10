@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Fabsol_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Fabsol_Body", EquipType.Body, this);
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);

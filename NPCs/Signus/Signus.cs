@@ -46,8 +46,8 @@ namespace CalamityMod.NPCs.Signus
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -78,7 +78,7 @@ namespace CalamityMod.NPCs.Signus
             NPC.height = 130;
             NPC.defense = 60;
             NPC.LifeMaxNERB(300000, 360000, 320000);
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -392,21 +392,21 @@ namespace CalamityMod.NPCs.Signus
                         SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
 
                         int cosmicMineSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + 750f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn, 0f, 0f, 0f, 0, 0, 0);
 
                         int cosmicMineSpawn2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - 750f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn2, 0f, 0f, 0f, 0, 0, 0);
 
                         if (stealthTimer >= maxStealth)
                         {
                             int stealthCosmicMine = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + 950f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine, 0f, 0f, 0f, 0, 0, 0);
 
                             int stealthCosmicMine2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - 950f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine2, 0f, 0f, 0f, 0, 0, 0);
 
                             SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
@@ -590,21 +590,21 @@ namespace CalamityMod.NPCs.Signus
                                 type = ModContent.NPCType<CosmicMine>();
                             }
                             int cosmicMineSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + spawnX), (int)(player.position.Y + spawnY), type);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn, 0f, 0f, 0f, 0, 0, 0);
 
                             int cosmicMineSpawn2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - spawnX), (int)(player.position.Y + spawnY), type);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn2, 0f, 0f, 0f, 0, 0, 0);
 
                             if (buffed)
                             {
                                 int stealthCosmicMine = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + spawnX + spawnX / 2), (int)(player.position.Y + spawnY), ModContent.NPCType<CosmicLantern>());
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine, 0f, 0f, 0f, 0, 0, 0);
 
                                 int stealthCosmicMine2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - spawnX - spawnX / 2), (int)(player.position.Y + spawnY), ModContent.NPCType<CosmicLantern>());
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine2, 0f, 0f, 0f, 0, 0, 0);
                             }
 
@@ -809,7 +809,7 @@ namespace CalamityMod.NPCs.Signus
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D NPCTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D NPCTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowMaskTexture = Texture_Glow.Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -818,7 +818,7 @@ namespace CalamityMod.NPCs.Signus
 
             int afterimageAmt = 5;
             Rectangle frame = NPC.frame;
-            int frameCount = Main.npcFrameCount[NPC.type];
+            int frameCount = Main.npcFrameCount[Type];
 
             if (NPC.ai[0] == 4f)
             {
@@ -838,7 +838,7 @@ namespace CalamityMod.NPCs.Signus
             }
             else
             {
-                NPCTexture = TextureAssets.Npc[NPC.type].Value;
+                NPCTexture = TextureAssets.Npc[Type].Value;
                 glowMaskTexture = Texture_Glow.Value;
             }
 
@@ -1019,7 +1019,7 @@ namespace CalamityMod.NPCs.Signus
                     teleportDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[teleportDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("Signus").Type, 1f);

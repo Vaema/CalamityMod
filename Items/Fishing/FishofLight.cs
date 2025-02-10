@@ -10,14 +10,14 @@ namespace CalamityMod.Items.Fishing
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 34;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Orange;

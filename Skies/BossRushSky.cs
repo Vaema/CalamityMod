@@ -33,14 +33,6 @@ namespace CalamityMod.Skies
                     SkyManager.Instance.Deactivate("CalamityMod:BossRush", new object[0]);
             }
 
-            if (useEffect != Filters.Scene["CalamityMod:BossRush"].IsActive())
-            {
-                if (useEffect)
-                    Filters.Scene.Activate("CalamityMod:BossRush");
-                else
-                    Filters.Scene["CalamityMod:BossRush"].Deactivate(new object[0]);
-            }
-
             return useEffect;
         }
 

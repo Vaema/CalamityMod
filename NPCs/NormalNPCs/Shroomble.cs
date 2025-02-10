@@ -16,9 +16,9 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 8;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -37,7 +37,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = NPCAIStyleID.Passive;
             AIType = NPCID.Squirrel;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 0, 20);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -110,7 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.TownCritter.Chance) * 0.05f;
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDay.Chance) * 0.1f;
         }
 
         public override void FindFrame(int frameHeight)
@@ -130,7 +129,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.velocity.X == 0f)
                     {
-                        NPC.frame.Y = frameHeight * 1;
+                        NPC.frame.Y = 0;
                         NPC.frameCounter = 0.0;
                         return;
                     }
@@ -142,7 +141,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.frame.Y = NPC.frame.Y + frameHeight;
                     NPC.frameCounter = 0.0;
                 }
-                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - 1)
+                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
                 {
                     NPC.frame.Y = frameHeight;
                 }
@@ -150,7 +149,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else
             {
                 NPC.frameCounter = 0.0;
-                NPC.frame.Y = frameHeight * (Main.npcFrameCount[NPC.type] - 1);
+                NPC.frame.Y = frameHeight * (Main.npcFrameCount[Type] - 1);
             }
         }
 
@@ -168,7 +167,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                      Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, hit.HitDirection * 0.5f, -0.5f, 0, default, 0.5f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble").Type);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble2").Type);

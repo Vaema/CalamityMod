@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ThunderboltShot : ModProjectile, ILocalizedModType
+    public class VolterionShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -84,6 +84,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(BuffID.Electrified, 60);
             if (Projectile.numHits == 0)
                 Decay();
         }
@@ -115,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 5; i++)
                 {
                     Vector2 velocity = Vector2.UnitX.RotatedBy(rotOffset + MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.4f, 0.4f))) * (Main.rand.NextFloat(40f, 45f));
-                    Projectile orb = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ThunderboltOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, i);
+                    Projectile orb = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<VolterionOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, i);
                     orb.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
                 }
             }
@@ -123,7 +124,7 @@ namespace CalamityMod.Projectiles.Magic
             int boltCount = secondary ? 6 : 10;
             for (int i = 0; i < boltCount; i++)
             {
-                Color color = OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : (Main.rand.NextBool() ? Color.Cyan : Color.Orchid);
+                Color color = OrbType > 0f ? VolterionOrb.GetColor(OrbType - 1f) : (Main.rand.NextBool() ? Color.Cyan : Color.Orchid);
                 Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.4f, 0.4f))) * (Main.rand.NextFloat(12f, 15f));
                 BoltParticle bolt = new BoltParticle(Projectile.Center, velocity, false, 18, Main.rand.NextFloat(0.4f, 0.6f), color, new Vector2(0.6f, 1f), true);
                 GeneralParticleHandler.SpawnParticle(bolt);
@@ -138,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 15f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
-        internal Color TrailColorFunction(float completionRatio) => OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
+        internal Color TrailColorFunction(float completionRatio) => OrbType > 0f ? VolterionOrb.GetColor(OrbType - 1f) : Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
 
         public override bool PreDraw(ref Color lightColor)
         {

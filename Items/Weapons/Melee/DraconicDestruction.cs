@@ -50,9 +50,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<ShadowspecBar>(5).
-                AddIngredient<CoreofSunlight>(3).
-                AddIngredient<CoreofEleum>(3).
                 AddIngredient(ItemID.FragmentSolar, 10).
+                AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofEleum>(3).
                 AddTile<DraedonsForge>().
                 Register();
         }

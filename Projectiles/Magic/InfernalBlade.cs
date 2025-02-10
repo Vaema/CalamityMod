@@ -79,8 +79,8 @@ namespace CalamityMod.Projectiles.Magic
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            Texture2D texture2D3 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D3 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 halfRect = rectangle.Size() / 2f;
@@ -90,11 +90,11 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Color alphaColor = colorArea;
                 alphaColor = Projectile.GetAlpha(alphaColor);
-                alphaColor *= (float)(3 - i) / ((float)ProjectileID.Sets.TrailCacheLength[Projectile.type] * 1.5f);
+                alphaColor *= (float)(3 - i) / ((float)ProjectileID.Sets.TrailCacheLength[Type] * 1.5f);
                 Vector2 oldPosition = Projectile.oldPos[i];
                 float projRotation = Projectile.rotation;
                 SpriteEffects effects = spriteEffects;
-                if (ProjectileID.Sets.TrailingMode[Projectile.type] == 2)
+                if (ProjectileID.Sets.TrailingMode[Type] == 2)
                 {
                     projRotation = Projectile.oldRot[i];
                     effects = (Projectile.oldSpriteDirection[i] == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

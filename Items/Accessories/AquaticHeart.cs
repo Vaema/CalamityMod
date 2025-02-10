@@ -11,10 +11,14 @@ namespace CalamityMod.Items.Accessories
     public class AquaticHeart : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float WaterSpeedBoost = 0.15f;
+        public static double IceShieldAllDamageReduction = 0.2D;
+
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Add equip textures
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/AquaticTrans_Head", EquipType.Head, this);
@@ -25,7 +29,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
                 int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);

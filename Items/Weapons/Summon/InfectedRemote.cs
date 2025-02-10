@@ -32,6 +32,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float EnemyTargetingRange = 1300f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 46;
@@ -58,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CalamityUtils.KillShootProjectiles(true, type, player);
 
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             return false;

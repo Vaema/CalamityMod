@@ -1,4 +1,6 @@
+// Vanilla UI edits
 SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
+WorldMaster: Game over man, game over! (Brutally hard boss changes, for the truly brave)
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -86,16 +88,17 @@ Cooldowns: {
 	BloodflareRangedSet: Bloodflare Soul Cooldown
 	BrimflameFrenzy: Brimflame Frenzy Cooldown
 	ChaosState: Teleportation Cooldown
-	CounterScarf: Scarf Cooldown
 	DivineBless: Divine Bless Cooldown
 	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability
 	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
+	DSOCritCooldown: Extra Critical Strike Chance
 	ParryCooldown: Parry Ability Cooldown
-	EvasionScarf: Scarf Cooldown
 	FleshTotem: Contact Damage Halving Cooldown
 	GaelsRage: Gael's Greatsword Rage Cooldown
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
+	HellbornShots: Hellborn Shots
+	HolyProtection: Holy Protection
 	InkBomb: Ink Bomb Cooldown
 	LifeSteal: Life Steal Cooldown
 	LionHeartShield: Energy Shell Cooldown
@@ -111,11 +114,12 @@ Cooldowns: {
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
 	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
 	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
-	RelicOfResilience: Relic of Resilience Cooldown
+	RelicOfResilienceCooldown: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown
 	SandsmokeBombActive: Sandsmoke Bomb Duration
 	SandsmokeBombCooldown: Sandsmoke Bomb Cooldown
+	ScarfCooldown: Scarf Cooldown
 	SilvaRevive: Silva Revive Cooldown
 	SpeedBlasterBoost: Speed Blaster Boost
 	SpongeDurability: Sponge Barrier Durability
@@ -124,6 +128,7 @@ Cooldowns: {
 	TarragonCloak: Tarragon Cloak Cooldown
 	TarragonImmunity: Tarragon Immunity Cooldown
 	UniverseSplitter: Universe Splitter Cooldown
+	WarbanneroftheRighteousBuff: Warbanner Strength
 	WulfrumBastionActive: Power Armor Durability
 	WulfrumBastionCooldown: Wulfrum Bastion Cooldown
 	WulfrumRoverDriveDurability: Protective Matrix Durability

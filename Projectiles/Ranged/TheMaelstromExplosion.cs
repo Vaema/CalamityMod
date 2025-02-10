@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 75;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 75;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Projectile.scale * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
             // Emit sparks and dust.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int sparkLifetime = Main.rand.Next(22, 36);
                 float sparkScale = Main.rand.NextFloat(1f, 1.3f);
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
 
             float scale = Projectile.scale * Projectile.width / texture.Width;

@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.EmpressFlightBooster).
                 AddIngredient<EffulgentFeather>(5).
-                AddIngredient<RuinousSoul>(5).
+                AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.SoulofFlight, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

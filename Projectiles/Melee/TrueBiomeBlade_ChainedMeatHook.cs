@@ -66,6 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Projectile.timeLeft == MaxTwirlTime)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                     SoundEngine.PlaySound(SoundID.Item71, Projectile.Center);
                     for (int i = 0; i < 4; i++)
@@ -109,12 +110,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            int debuffTime = 100;
-            target.AddBuff(BuffType<GlacialState>(), debuffTime);
-        }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffType<GlacialState>(), 100);
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);

@@ -60,12 +60,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Player owner = Main.player[Projectile.owner];
             // We start drawing the laser if we have charged up
             if (IsAtMaxCharge)
             {
-                Vector2 maxLength = Main.MouseWorld - Main.player[Projectile.owner].Center;
+                Vector2 maxLength = owner.ClampedMouseWorld() - owner.Center;
 
-                DrawLaser(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Main.player[Projectile.owner].Center,
+                DrawLaser(Terraria.GameContent.TextureAssets.Projectile[Type].Value, owner.Center,
                     Projectile.velocity, 15f, Projectile.damage, -MathHelper.PiOver2, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
             }
             return false;
@@ -149,7 +150,7 @@ namespace CalamityMod.Projectiles.Melee
          */
         private void SetLaserPosition(Player player)
         {
-            Distance = MathHelper.Max(Main.player[Projectile.owner].Distance(Main.MouseWorld) - 20f, MOVE_DISTANCE + 5f);
+            Distance = MathHelper.Max(player.Distance(player.ClampedMouseWorld()) - 20f, MOVE_DISTANCE + 5f);
         }
 
         private void ChargeLaser(Player player)
@@ -204,6 +205,7 @@ namespace CalamityMod.Projectiles.Melee
             // Multiplayer support here, only run this code if the client running it is the owner of the projectile
             if (Projectile.owner == Main.myPlayer)
             {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 diff = Main.MouseWorld - player.Center;
                 diff.Normalize();
                 Projectile.velocity = diff;

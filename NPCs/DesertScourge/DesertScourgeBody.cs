@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
 
             this.HideFromBestiary();
 
@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1400000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
@@ -323,7 +323,7 @@ namespace CalamityMod.NPCs.DesertScourge
                             NPC.frame.Y += frameHeight;
                             NPC.frameCounter = 0D;
                         }
-                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                             NPC.frame.Y = 0;
                     }
                 }
@@ -339,7 +339,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     switch ((int)NPC.ai[3])
                     {
@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.DesertScourge
             // Sometimes "Deflect" projectiles in gfb into water blasts.
             if (Main.rand.NextBool(20) && Main.zenithWorld)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 velocity = new Vector2(-projectile.velocity.X, -projectile.velocity.Y);
                     velocity.Normalize();

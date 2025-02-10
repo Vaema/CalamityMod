@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.nCore = true;
+            modPlayer.nebulousCore = true;
             player.GetDamage<GenericDamageClass>() += 0.1f;
 
             // Spawn nebula stars
@@ -67,10 +67,9 @@ namespace CalamityMod.Items.Accessories
                                 {
                                     var source = player.GetSource_Accessory(Item);
                                     int damage = (int)player.GetBestClassDamage().ApplyTo(250);
-                                    damage = player.ApplyArmorAccDamageBonusesTo(damage);
                                     float knockBack = 3f;
 
-                                    Projectile.NewProjectile(source, center.X, center.Y, 0f, 0f, ModContent.ProjectileType<NebulaStar>(), damage, knockBack, player.whoAmI);
+                                    Projectile.NewProjectile(source, center, Vector2.Zero, ModContent.ProjectileType<NebulaStar>(), damage, knockBack, player.whoAmI);
                                     return;
                                 }
                             }

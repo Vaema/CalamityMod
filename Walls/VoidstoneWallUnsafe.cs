@@ -37,7 +37,7 @@ namespace CalamityMod.Walls
                 Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Water;
                 Main.tile[i, j].LiquidAmount = byte.MaxValue;
                 WorldGen.SquareTileFrame(i, j);
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.sendWater(i, j);
             }
         }
@@ -72,12 +72,19 @@ namespace CalamityMod.Walls
             {
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
-                brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawcolor *= brightness;
                 Color glowColor = drawcolor * 0.4f;
+
+                if (lightColor.R > glowColor.R) glowColor.R = lightColor.R;
+                if (lightColor.G > glowColor.G) glowColor.G = lightColor.G;
+                if (lightColor.B > glowColor.B) glowColor.B = lightColor.B;
+
+                if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
+                    return;
 
                 // For now checking for glowing frames greatly reducing the bottleneck
                 // But maybe we could squeeze bit more by removing the loop

@@ -65,6 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 shotPosition = player.RotatedRelativePoint(player.MountedCenter, true);
                 shotPosition += Projectile.velocity.ToRotation().ToRotationVector2().RotatedByRandom(MathHelper.ToRadians(40f)).RotatedBy(-0.25f * Projectile.spriteDirection) * 42f;
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = player.SafeDirectionTo(Main.MouseWorld);
 
                 Vector2 shotVelocity = Projectile.velocity * shotSpeed; // The velocity should always be a unit vector.

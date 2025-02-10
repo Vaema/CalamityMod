@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity.Y > velocityYCap)
                 Projectile.velocity.Y = velocityYCap;
 
-            float velocityX = !ProvUtils.DayAI() ? 0.025f : 0.02f;
+            float velocityX = !ProvUtils.StandardAI() ? 0.025f : 0.02f;
             if (Projectile.position.X + Projectile.width < player.position.X)
             {
                 if (Projectile.velocity.X < 0f)
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.velocity.X -= velocityX;
             }
 
-            float velocityXCap = !ProvUtils.DayAI() ? 10f : 8f;
+            float velocityXCap = !ProvUtils.StandardAI() ? 10f : 8f;
             if (Projectile.velocity.X > velocityXCap || Projectile.velocity.X < -velocityXCap)
                 Projectile.velocity.X *= 0.97f;
 
@@ -93,8 +93,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFlareNight").Value;
-            int framing = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFlareNight").Value;
+            int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);

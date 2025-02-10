@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 //register the faulds texture. This appears either when the leggings  or the chestplate is equipped (both works)
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Victide/VictideFaulds_Waist", EquipType.Waist, name: "VictideFaulds");
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Armor.Victide
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
                 ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;

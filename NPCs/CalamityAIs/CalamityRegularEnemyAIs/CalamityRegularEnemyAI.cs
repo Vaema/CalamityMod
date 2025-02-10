@@ -322,7 +322,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs
                             Dust.NewDust(npc.position, npc.width, npc.height, DustID.Water, 0f, -1f, 0, default, 1f);
                         }
                     }
-                    if (npc.type == ModContent.NPCType<AquaticUrchin>() || npc.type == ModContent.NPCType<SeaUrchin>())
+                    if (npc.type == ModContent.NPCType<AquaticUrchin>())
                     {
                         for (int k = 0; k < 5; k++)
                         {

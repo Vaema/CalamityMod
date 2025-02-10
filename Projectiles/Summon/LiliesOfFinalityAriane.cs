@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 // When the minion goes into its attack state, it spawns a lingering AoE.
                 if (value == AIState.Attack && Main.myPlayer == Projectile.owner)
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileType<LiliesOfFinalityAoE>(), Projectile.damage, 0f, Projectile.owner, Projectile.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileType<LiliesOfFinalityAoE>(), Projectile.damage, 0f, Projectile.owner, Projectile.whoAmI);
 
                 Timer = 0f;
             }
@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Vector2 shootDirection = Projectile.SafeDirectionTo(Target.Center).RotatedByRandom(MathHelper.PiOver4);
 
-            Projectile.NewProjectileDirect(
+            Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 Projectile.Center,
                 shootDirection * Ariane_BoltProjectileSpeed,
@@ -379,7 +379,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = Request<Texture2D>(GlowTexture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(3, 9, (int)Animation, Projectile.frame);

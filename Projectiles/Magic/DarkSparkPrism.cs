@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
             Color prismColorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
+            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Type])
             {
                 prismColorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
@@ -169,8 +169,8 @@ namespace CalamityMod.Projectiles.Magic
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            Texture2D texture2D14 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D14 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y7 = framing * Projectile.frame;
             Vector2 drawStart = (Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition).Floor();
             if (Main.player[Projectile.owner].shroomiteStealth && Main.player[Projectile.owner].inventory[Main.player[Projectile.owner].selectedItem].CountsAsClass<RangedDamageClass>())

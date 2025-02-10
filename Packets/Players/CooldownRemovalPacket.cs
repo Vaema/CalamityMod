@@ -52,7 +52,7 @@ namespace CalamityMod.Packets
                     player.cooldowns.Remove(CooldownRegistry.registry[netID].ID);
                 }
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 // Server should NOT handle cooldown itself!
                 // Server doesn't have information for cooldown netIDs!

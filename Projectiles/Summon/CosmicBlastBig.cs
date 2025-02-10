@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon
                 Main.dust[rainbowDust].velocity = value3 * 0.66f;
                 Main.dust[rainbowDust].position = Projectile.Center + value3 * 12f;
             }
-            if (Main.rand.NextBool(24) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(24) && !Main.dedServ)
             {
                 int rainbowGore = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
                 Main.gore[rainbowGore].velocity *= 0.66f;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Summon
                     int rainbowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.2f);
                     Main.dust[rainbowDust].noGravity = true;
                 }
-                if (Main.rand.NextBool(10) && Main.netMode != NetmodeID.Server)
+                if (Main.rand.NextBool(10) && !Main.dedServ)
                 {
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
                 }

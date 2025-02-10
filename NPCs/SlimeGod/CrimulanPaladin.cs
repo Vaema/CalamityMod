@@ -148,8 +148,40 @@ namespace CalamityMod.NPCs.SlimeGod
                 Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X - 80, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 0f);
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X + 80, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 45f);
-                if (Main.zenithWorld && NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) < 3) // Split into 3 slimes if the other large slime hasn't split yet
+                if (Main.zenithWorld && NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) < 3) // Split into 3 slimes if the other large slime hasn't split yet.
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X, (int)spawnAt.Y - 80, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 90f);
+
+                // Calculate stretch here so that the spike spread looks more natural.
+                float stretch = NPC.velocity.Y * 0.03f;
+                stretch = Math.Abs(stretch) + addedStretch;
+
+                // Stretch rapidly if about to jump or teleport, stretch normally while idle.
+                if (NPC.velocity.Y == 0f)
+                    stretch += MathHelper.Lerp(0f, 0.16f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * (NPC.aiAction == 1 ? 15f : 2f)) / 2f + 0.5f);
+
+                if (stretch > 0.5f)
+                    stretch = 0.5f;
+
+                Vector2 scaleStretch = new Vector2(1f - stretch, 1f + stretch) * NPC.scale;
+
+                // Spread of spikes.
+                float projectileVelocity = 2f;
+                int type2 = ModContent.ProjectileType<CrimulanSpike>();
+                int damage = NPC.GetProjectileDamage(type2);
+                Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
+                destination.Normalize();
+                destination *= projectileVelocity;
+                int numProj = 9;
+                float rotation = MathHelper.ToRadians(100);
+                float maxVelocity = death ? 18f : revenge ? 16f : 14f;
+                float acceleration = death ? 1.03f : revenge ? 1.025f : 1.02f;
+                int spikeType = 0;
+                for (int i = 0; i < numProj; i++)
+                {
+                    spikeType = numProj - 1 - i;
+                    Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(perturbedSpeed) * 20f * scaleStretch, perturbedSpeed, type2, damage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                }
 
                 NPC.life = 0;
                 NPC.HitEffect();
@@ -763,7 +795,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         Main.npc[slimeSpawn].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                         Main.npc[slimeSpawn].ai[0] = (float)(-1000 * Main.rand.Next(3));
                         Main.npc[slimeSpawn].ai[1] = 0f;
-                        if (Main.netMode == NetmodeID.Server && slimeSpawn < Main.maxNPCs)
+                        if (Main.dedServ && slimeSpawn < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeSpawn, 0f, 0f, 0f, 0, 0, 0);
                     }
                 }

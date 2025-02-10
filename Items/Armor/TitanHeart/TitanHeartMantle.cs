@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Astral;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            player.Calamity().rogueAmmoCost *= 0.55f;
             // 15% attack speed penalty
             player.GetAttackSpeed<ThrowingDamageClass>() -= 0.15f;
         }
@@ -45,6 +44,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
                 AddIngredient<AstralMonolith>(20).
                 AddIngredient<Materials.TitanHeart>().
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<TitanHeartBoots>()).
                 Register();
         }
     }

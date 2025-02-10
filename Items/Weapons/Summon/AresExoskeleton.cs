@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void Load()
         {
             // Add the body equip texture.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
         }
 

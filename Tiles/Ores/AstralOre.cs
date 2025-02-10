@@ -45,6 +45,8 @@ namespace CalamityMod.Tiles.Ores
         }
         public override void NearbyEffects(int i, int j, bool closer)
         {
+            if (j < 2)
+                return; 
             Tile tile = Main.tile[i, j];
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
@@ -74,7 +76,12 @@ namespace CalamityMod.Tiles.Ores
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
             if (!DownedBossSystem.downedAstrumDeus)
-                yield return new Item(ModContent.ItemType<StarblightSoot>(), Main.rand.Next(1, 2 + 1));
+            {
+                if (Main.rand.NextBool())
+                    yield return new Item(ModContent.ItemType<StarblightSoot>());
+                else
+                    yield return new Item(0);
+            }
             else
                 yield return new Item(ModContent.ItemType<Items.Placeables.Ores.AstralOre>());
         }

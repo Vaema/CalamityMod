@@ -9,6 +9,12 @@ namespace CalamityMod.Items.Accessories
     public class SpiritGlyph : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 2;
+        public static int DefenseBoost = 6;
+        public static float DamageReductionBoost = 0.03f;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetDefaults()
         {
             Item.width = 24;

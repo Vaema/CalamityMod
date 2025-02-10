@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Events;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -34,7 +36,8 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         private const int TimeLeft = 300;
-        private const int ExplodeTime = TimeLeft - FrameTimer * ExplodeFrames;
+        private const int SlowDownTime = TimeLeft / 2;
+        private const int ExplosionDuration = FrameTimer * ExplodeFrames;
 
         private const float ExplodeDistance = 50f;
 
@@ -51,22 +54,26 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            // If moving, decelerate.
+            if (Projectile.velocity.Length() > 0f && Projectile.timeLeft <= SlowDownTime)
+                Projectile.velocity *= 0.95f;
+
             // Get a target and calculate distance from it.
             int target = Player.FindClosest(Projectile.Center, 1, 1);
-            float distanceFromTarget = (Main.player[target].Center - Projectile.Center).Length();
+            float distanceFromTarget = Projectile.Distance(Main.player[target].Center);
 
             // Explode when within a certain distance of the target.
-            if (distanceFromTarget <= ExplodeDistance && Projectile.timeLeft > ExplodeTime)
-                Projectile.timeLeft = ExplodeTime;
+            if (distanceFromTarget <= ExplodeDistance && Projectile.timeLeft > ExplosionDuration)
+                Projectile.timeLeft = ExplosionDuration;
 
-            bool explode = Projectile.timeLeft <= ExplodeTime;
+            bool explode = Projectile.timeLeft <= ExplosionDuration;
 
             // Stop immediately if explosion is triggered.
             if (explode && Projectile.velocity.Length() > 0f)
                 Projectile.velocity = Vector2.Zero;
 
             // Reset the frame counter and frameY when explosion is triggered.
-            if (Projectile.timeLeft == ExplodeTime)
+            if (Projectile.timeLeft == ExplosionDuration)
             {
                 Projectile.frameCounter = 0;
                 frameY = 0;
@@ -90,16 +97,41 @@ namespace CalamityMod.Projectiles.Boss
                 // Kill the projectile when the explosion animation is done.
                 if (explode && frameY >= ExplodeFrames)
                 {
+                    if (Projectile.ai[0] > 0f)
+                    {
+                        if (Projectile.owner == Main.myPlayer)
+                        {
+                            float laserSpeed = 2f;
+                            int type = ModContent.ProjectileType<FoveanatorLaser>();
+                            int damage = (int)Math.Round(Projectile.damage * 0.85);
+                            Vector2 laserVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 16f, laserVelocity, type, damage, 0f, Main.myPlayer);
+
+                            if (Projectile.ai[0] == 2f)
+                            {
+                                Vector2 projectileVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed * 0.75f;
+                                int numProj = 2;
+                                int spread = 30;
+                                float rotation = MathHelper.ToRadians(spread);
+                                for (int i = 0; i < numProj; i++)
+                                {
+                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 16f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                }
+                            }
+                        }
+                    }
+
                     Projectile.Kill();
+                    
                     return;
                 }
             }
 
             // Explosion has brighter light.
-            float redLight = explode ? 1.2f : 0.6f;
-            float greenLight = explode ? 0.3f : 0.15f;
-            float blueLight = (Main.DiscoB / 255f) * (explode ? 1.5f : 0.75f);
-            Lighting.AddLight(Projectile.Center, redLight, greenLight, blueLight);
+            Color lightColor = Color.Lerp(new Color(25, 25, 128), new Color(100, 25, 128), Main.DiscoR / 255f);
+            float divisor = explode ? 128f : 255f;
+            Lighting.AddLight(Projectile.Center, lightColor.R / divisor, lightColor.G / divisor, lightColor.B / divisor);
         }
 
         public override bool PreDraw(ref Color lightColor) => false;
@@ -113,20 +145,20 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() / new Vector2(TotalXFrames, TotalYFrames) * 0.5f;
             Rectangle frame = texture.Frame(TotalXFrames, TotalYFrames, frameX, frameY);
             Main.EntitySpriteDraw(texture, position, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None);
         }
 
-        public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= ExplodeTime && frameY >= ExplodeDamageStartFrame;
+        public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= ExplosionDuration && frameY >= ExplodeDamageStartFrame;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplodeDistance, targetHitbox);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (Projectile.timeLeft <= ExplodeTime)
+            if (Projectile.timeLeft <= ExplosionDuration)
                 target.AddBuff(BuffID.Frostburn, 180);
         }
     }

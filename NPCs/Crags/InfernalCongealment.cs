@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.lifeMax = 380;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.alpha = 50;
             NPC.lavaImmune = true;
             NPC.noGravity = false;

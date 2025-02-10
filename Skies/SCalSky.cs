@@ -215,7 +215,7 @@ namespace CalamityMod.Skies
             {
                 float x = 0f;
                 if (SCalIndex != -1)
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.SCalIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.SCalIndex].Center);
                 float intensityFactor = BossRushEvent.BossRushActive ? -0.2f : 1f;
 
                 return (1f - Utils.SmoothStep(4500f, 9000f, x)) * intensityFactor;

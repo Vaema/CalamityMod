@@ -2,9 +2,10 @@
 using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Packets;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -41,7 +42,7 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 23;
+            Main.npcFrameCount[Type] = 23;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -279,7 +280,7 @@ namespace CalamityMod.NPCs.Abyss
             HopTimer = ai2 == -1 ? 0 : ai2;
             CalmDownTimer = ai3 == -1 ? 0 : ai3;
             NPC.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI);
         }
 
@@ -405,7 +406,10 @@ namespace CalamityMod.NPCs.Abyss
                         if (player.ItemAnimationActive)
                         {
                             // ouch!
-                            player.ApplyDamageToNPC(NPC, (int)player.GetDamage(DamageClass.MeleeNoSpeed).ApplyTo(player.HeldItem.damage), 0, player.direction);
+                            Item pick = player.HeldItem;
+                            int pickDamage = (int)player.GetDamage(pick.DamageType).ApplyTo(pick.damage);
+                            Projectile hit = Projectile.NewProjectileDirect(pick.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), pickDamage, 0f, player.whoAmI, NPC.whoAmI);
+                            hit.DamageType = pick.DamageType;
                             SoundEngine.PlaySound(SoundID.Dig, NPC.Center); // this is the dig sound that shale piles use
                             if (CurrentPhase < (int)AIState.Enraged)
                             {
@@ -449,7 +453,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 5; i++)
                     {

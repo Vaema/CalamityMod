@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
                 AddIngredient<Acidwood>(10).
                 AddIngredient<SulphuricScale>(10).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SulphurousBreastplate>()).
                 Register();
         }
     }

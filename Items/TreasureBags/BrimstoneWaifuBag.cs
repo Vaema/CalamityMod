@@ -25,14 +25,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.expert = true;
             Item.rare = ItemRarityID.Cyan;
@@ -67,9 +67,9 @@ namespace CalamityMod.Items.TreasureBags
             {
                 ModContent.ItemType<Brimlance>(),
                 ModContent.ItemType<SeethingDischarge>(),
-                ModContent.ItemType<DormantBrimseeker>()
+                ModContent.ItemType<DormantBrimseeker>(),
+                ModContent.ItemType<Hellborn>()
             }));
-            itemLoot.Add(ModContent.ItemType<Hellborn>(), 10);
 
             // Equipment
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

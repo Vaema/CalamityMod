@@ -33,16 +33,12 @@ namespace CalamityMod
         {
             _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
 
-            var types = ModLoader.Mods.SelectMany(mod => AssemblyManager.GetLoadableTypes(mod.Code));
-            foreach (var type in types)
+            ReflectionHelper.IterateEveryModsTypes<CalamityPacket>(action: type =>
             {
                 try
                 {
-                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityPacket)))
-                        continue;
-
                     if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
-                        continue;
+                        return;
 
                     var msgType = packetHandler.MessageType;
                     var existingHandler = _PacketRegistry[msgType];
@@ -52,7 +48,7 @@ namespace CalamityMod
                             $" [Failed On: '{type.FullName}'" +
                             $" Current Owner: '{existingHandler.GetType().FullName}'," +
                             $" msgTypeToRegister: '{msgType}']");
-                        continue;
+                        return;
                     }
 
                     _PacketRegistry[packetHandler.MessageType] = packetHandler;
@@ -81,9 +77,9 @@ namespace CalamityMod
                 catch (Exception e)
                 {
                     CalamityMod.Instance.Logger.Error($"Exception was thrown while loading for Packets! {e}");
-                    continue;
+                    return;
                 }
-            }
+            });
         }
 
         public override void OnModUnload()
@@ -140,7 +136,7 @@ namespace CalamityMod
 
         public static void SyncWorld()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.WorldData);
         }
 
@@ -249,6 +245,7 @@ namespace CalamityMod
         UpdateCodebreakerContainedStuff,
         UpdateCodebreakerDecryptCountdown,
         UnlockAbyssChests,
+        UpdateCanvasPainting,
 
         // Draedon Summoner
         CodebreakerSummonStuff,

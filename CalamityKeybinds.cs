@@ -18,6 +18,7 @@ namespace CalamityMod
         public static ModKeybind RageHotKey { get; private set; }
         public static ModKeybind SandCloakHotkey { get; private set; }
         public static ModKeybind SpectralVeilHotKey { get; private set; }
+        public static ModKeybind TransformerHotKey { get; private set; }
 
         public override void Load()
         {
@@ -36,6 +37,7 @@ namespace CalamityMod
             RageHotKey = KeybindLoader.RegisterKeybind(Mod, "RageMode", "V");
             SandCloakHotkey = KeybindLoader.RegisterKeybind(Mod, "SandCloakEffect", "C");
             SpectralVeilHotKey = KeybindLoader.RegisterKeybind(Mod, "SpectralVeilTeleport", "Z");
+            TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
         }
 
         public override void Unload()
@@ -54,6 +56,7 @@ namespace CalamityMod
             RageHotKey = null;
             SandCloakHotkey = null;
             SpectralVeilHotKey = null;
+            TransformerHotKey = null;
         }
     }
 }

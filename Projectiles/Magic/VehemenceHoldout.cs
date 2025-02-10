@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.rotation = Projectile.AngleTo(Main.MouseWorld);
             Projectile.velocity = Projectile.rotation.ToRotationVector2();
 

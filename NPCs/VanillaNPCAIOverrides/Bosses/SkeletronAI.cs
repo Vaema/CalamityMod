@@ -157,38 +157,38 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Hand variables
             bool handsDead = numHandsAlive == 0;
             int numProj = Main.getGoodWorld ? 22 : death ? 5 : 3;
-            float spread = MathHelper.ToRadians(Main.getGoodWorld ? 180 : 60);
+            float spread = Main.getGoodWorld ? 180 : 60;
             float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 12f : 4.5f);
 
             switch (numHandsAlive)
             {
                 case 0:
                     numProj = Main.getGoodWorld ? 36 : death ? 9 : 7;
-                    spread = MathHelper.ToRadians(Main.getGoodWorld ? 180 : death ? 90 : 82);
+                    spread = Main.getGoodWorld ? 180 : death ? 90 : 82;
                     headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 12f : 6f);
                     break;
 
                 case 1:
                     numProj = Main.getGoodWorld ? 27 : death ? 7 : 5;
-                    spread = MathHelper.ToRadians(Main.getGoodWorld ? 150 : death ? 76 : 68);
+                    spread = Main.getGoodWorld ? 150 : death ? 76 : 68;
                     headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 11.5f : 5f);
                     break;
 
                 case 2:
                     numProj = Main.getGoodWorld ? 18 : death ? 6 : 4;
-                    spread = MathHelper.ToRadians(Main.getGoodWorld ? 140 : death ? 70 : 62);
+                    spread = Main.getGoodWorld ? 140 : death ? 70 : 62;
                     headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 11f : 4.5f);
                     break;
 
                 case 3:
                     numProj = Main.getGoodWorld ? 15 : death ? 5 : 3;
-                    spread = MathHelper.ToRadians(Main.getGoodWorld ? 130 : death ? 64 : 56);
+                    spread = Main.getGoodWorld ? 130 : death ? 64 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 10.5f : 4f);
                     break;
 
                 case 4:
                     numProj = Main.getGoodWorld ? 12 : death ? 4 : 3;
-                    spread = MathHelper.ToRadians(Main.getGoodWorld ? 120 : 56);
+                    spread = Main.getGoodWorld ? 120 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 10f : 7f) : (phase3 ? 10f : 3.5f);
                     break;
             }
@@ -241,42 +241,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float skullSpeed = death ? 6f : 5f;
                             int type = ProjectileID.Skull;
                             int damage = npc.GetProjectileDamage(type);
 
-                            float boltTargetXDist = Main.player[npc.target].Center.X - npc.Center.X;
-                            float boltTargetYDist = Main.player[npc.target].Center.Y - npc.Center.Y;
-                            float boltTargetDistance = (float)Math.Sqrt(boltTargetXDist * boltTargetXDist + boltTargetYDist * boltTargetYDist);
-
-                            boltTargetDistance = skullSpeed / boltTargetDistance;
-                            boltTargetXDist *= boltTargetDistance;
-                            boltTargetYDist *= boltTargetDistance;
-                            Vector2 center = npc.Center;
-                            center.X += boltTargetXDist * 5f;
-                            center.Y += boltTargetYDist * 5f;
-
-                            float baseSpeed = (float)Math.Sqrt(boltTargetXDist * boltTargetXDist + boltTargetYDist * boltTargetYDist);
-                            double startAngle = Math.Atan2(boltTargetXDist, boltTargetYDist) - spread / 2;
-                            double deltaAngle = spread / numProj;
-                            double offsetAngle;
-
                             // Inverse parabolic projectile spreads
-                            bool evenNumberOfProjectiles = numProj % 2 == 0;
-                            int centralProjectile = evenNumberOfProjectiles ? numProj / 2 : (numProj - 1) / 2;
-                            int otherCentralProjectile = evenNumberOfProjectiles ? centralProjectile - 1 : -1;
-                            float centralScalingAmount = (float)Math.Floor(numProj / (double)centralProjectile) * 0.75f;
-                            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
-                            float originalBaseSpeed = baseSpeed;
-                            float minVelocityMultiplier = 0.5f;
+                            Vector2 baseVel = npc.SafeDirectionTo(Main.player[npc.target].Center) * (death ? 6f : 5f);
+                            Vector2 firingPos = npc.Center + baseVel * 5f;
+                            float centralCount = 0.5f * (numProj - 1f);
                             for (int i = 0; i < numProj; i++)
                             {
-                                float velocityScalar = (evenNumberOfProjectiles && (i == centralProjectile || i == otherCentralProjectile)) ? minVelocityMultiplier : MathHelper.Lerp(minVelocityMultiplier, centralScalingAmount, Math.Abs((i + amountToAdd) - centralProjectile) / (float)centralProjectile);
-                                baseSpeed = originalBaseSpeed;
-                                baseSpeed *= velocityScalar;
-                                offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), center.X, center.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, -2f);
-                                Main.projectile[proj].timeLeft = 600;
+                                float offset = MathHelper.ToRadians(MathHelper.Lerp(-spread * 0.5f, spread * 0.5f, i / (numProj - 1f)));
+                                float velocityMult = MathHelper.Lerp(0.5f, 1.5f, MathF.Abs(centralCount - i) / centralCount);
+                                Projectile shot = Projectile.NewProjectileDirect(npc.GetSource_FromAI(), firingPos, baseVel.RotatedBy(offset) * velocityMult, type, damage, 0f, Main.myPlayer, -2f);
+                                shot.timeLeft = 600;
                             }
 
                             npc.netUpdate = true;
@@ -390,7 +367,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Skull shooting
             if ((handsDead || masterMode) && npc.ai[1] == 0f && !phase4)
             {
-                float skullProjFrequency = bossRush ? 10f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
+                float skullProjFrequency = bossRush ? 15f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
                 if (Main.getGoodWorld)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
@@ -587,7 +564,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                 {
                                     int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                    if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
@@ -611,7 +588,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                     {
                                         int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DiabolistWhite);
-                                        if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                        if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                         break;
@@ -688,7 +665,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(headYAcceleration, headYTopSpeed))
                                 {
                                     int headXAcceleration = NPC.NewNPC(npc.GetSource_FromAI(), headYAcceleration * 16 + 8, headYTopSpeed * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && headXAcceleration < Main.maxNPCs)
+                                    if (Main.dedServ && headXAcceleration < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
@@ -907,7 +884,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -1423,7 +1400,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (!WorldGen.SolidTile(num169, num170))
                                 {
                                     int num171 = NPC.NewNPC(npc.GetSource_FromAI(), num169 * 16 + 8, num170 * 16, NPCID.DarkCaster);
-                                    if (Main.netMode == NetmodeID.Server && num171 < Main.maxNPCs)
+                                    if (Main.dedServ && num171 < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num171);
 
                                     break;
@@ -1560,7 +1537,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();

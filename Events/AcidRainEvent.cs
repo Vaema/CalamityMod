@@ -60,7 +60,7 @@ namespace CalamityMod.Events
 
         public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = new();
 
-        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).ToList().Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
+        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
 
         public static bool AnyRainMinibosses
         {
@@ -331,13 +331,13 @@ namespace CalamityMod.Events
                         DownedBossSystem.downedAquaticScourgeAcidRain = DownedBossSystem.downedAquaticScourge;
                     }
                     HasTriedToSummonOldDuke = false;
-                    CalamityMod.StopRain();
+                    CalamityWorld.StopRain();
                 }
                 CalamityNetcode.SyncWorld();
 
                 // Flow: 2024/09/06 
                 // Salute for the one who wrote 3 if conditional block after experiencing immeasurable torment with packet generations
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     AcidRainSyncPacket.Send();
                     AcidRainOldDukeSummonSyncPacket.Send();

@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 AltTexture = ModContent.Request<Texture2D>(Texture + "AltSpectral", AssetRequestMode.AsyncLoad);
@@ -122,9 +122,9 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            Texture2D mainWormTex = altBodyTextures ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D mainWormTex = altBodyTextures ? AltTexture.Value : TextureAssets.Npc[Type].Value;
             Texture2D secondWormTex = TextureGlow2.Value;
-            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(mainWormTex.Width, mainWormTex.Height) * NPC.scale / 2f;
@@ -193,7 +193,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                     astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                     Main.dust[astralDust].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     if (NPC.localAI[3] == 1f)

@@ -16,6 +16,7 @@ using Terraria.DataStructures;
 using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using Terraria.Graphics.Shaders;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -90,6 +91,15 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1]++;
 
             Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], MathHelper.TwoPi * dir, 0.15f);
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
         }
 
         public override bool? CanDamage()

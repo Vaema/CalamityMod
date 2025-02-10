@@ -9,6 +9,8 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
 using CalamityMod.Items.Potions;
@@ -18,6 +20,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -77,7 +80,6 @@ namespace CalamityMod.NPCs
             "XiaoEn0426", // <@!440448864772816896> (xiaoen0426)
             "Jeffred", // <@!295362230038560768> (paladinsamuel)
             "The Cooler Arthur", // <@!568263512523014154> (gokuartillery)
-            "Markie", // <@!291141964039061504> (markie_)
             "Shark", // <@!874464051697172492> (congratsistrash)
             "Sagi", // <@!508233115781693441> (sagittariod)
         };
@@ -89,6 +91,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] CyborgNames =
         {
             "Sylux", // <@!331812782183809025> (gonkachino)
+            "XL-39 Nemesis", // <@!1104036024063107082> (yashimayamanata)
         };
         private static readonly string[] DemolitionistNames =
         {
@@ -137,6 +140,7 @@ namespace CalamityMod.NPCs
             "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Cooler Kevin", // <@!614126424751603714> (exellent.)
+            "Dinkleberg", // <@!581993958037520404> (hyperionzx)
         };
         private static readonly string[] MechanicNames =
         {
@@ -144,7 +148,7 @@ namespace CalamityMod.NPCs
             "Daawn", // <@!206162323541458944> (daawnily)
             "Robin", // <@!654737510030639112> (altzeus)
             "Curly", // <@!673092101780668416> (curly4830)
-			"Cobalt", // <@!132962828922388481> (cobalt_44)
+            "Cobalt", // <@!132962828922388481> (cobalt_44)
         };
         private static readonly string[] MerchantNames =
         {
@@ -165,6 +169,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PartyGirlNames =
         {
             "Arin", // <@!268169458302976012> (kiyotu)
+            "Typhäne", // <@!222064016107896832> (typhane.)
         };
         private static readonly string[] PirateNames =
         {
@@ -200,6 +205,7 @@ namespace CalamityMod.NPCs
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
+            "Eira", // <@!1166136068408623234> (taela_gemetha)
         };
         private static readonly string[] StylistNames =
         {
@@ -244,7 +250,7 @@ namespace CalamityMod.NPCs
             "Merasmus", // <@!288066987819663360> (spiderprovidence)
             "Habolo", // <@!163028025494077441> (hellgoat2)
             "Ortho", // <@!264984390910738432> (worcuus)
-            "Chris Tallballs", // <@!770211589076418571> (bewearium)
+            "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
         };
@@ -1025,7 +1031,7 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (CalamityLists.BoundNPCIDs.Contains(npc.type))
+            if (BoundNPCIDList.Includes(npc.type))
             {
                 npc.dontTakeDamageFromHostiles = true;
             }
@@ -1095,7 +1101,6 @@ namespace CalamityMod.NPCs
 
             bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.9;
 
-            Condition potionSells = CalamityConditions.PotionSellingConfig;
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
             Condition roguePlayer = CalamityConditions.PlayerHasRogueArmor;
             Condition wingedPlayer = CalamityConditions.PlayerHasWings;
@@ -1106,16 +1111,14 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Merchant)
             {
-                shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), potionSells, Condition.HappyEnough);
-                shop.Add(ItemID.HealingPotion, potionSells, Condition.HappyEnough, Condition.DownedEowOrBoc)
-                .Add(ItemID.ManaPotion, potionSells, Condition.HappyEnough, Condition.DownedEowOrBoc)
-                .Add(ItemID.Flare, hasFlareGunUpgrade)
+                shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20))
+                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
+                shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<THIEF>()))
-                .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnough);
+                .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.DyeTrader)
@@ -1148,7 +1151,7 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<RageHairDye>(), revengeance)
                 .AddWithCustomValue(ItemID.StylistKilLaKillScissorsIWish, Item.buyPrice(gold: 15))
                 .Add(ItemType<CirrusDress>(), Condition.NpcIsPresent(NPCType<FAP>()), drunk)
-                .AddWithCustomValue(ItemID.ChocolateChipCookie, Item.buyPrice(gold: 3), Condition.HappyEnough, Condition.NpcIsPresent(NPCType<FAP>()));
+                .AddWithCustomValue(ItemID.ChocolateChipCookie, Item.buyPrice(gold: 3), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCType<FAP>()));
             }
 
             if (type == NPCID.Cyborg)
@@ -1163,21 +1166,23 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
-                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron)
-                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard);
+                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .Add(ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
+                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
+                .Add(ItemType<AstralGrassSeeds>(), Condition.NotBloodMoon, Condition.Hardmode);
             }
 
             if (type == NPCID.GoblinTinkerer)
             {
-                shop.AddWithCustomValue(ItemID.StinkPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
-                .Add(ItemType<StatMeter>())
-                .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.DownedSkeletron);
+                shop.Add(ItemType<StatMeter>())
+                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
+                .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
             }
 
             if (type == NPCID.Mechanic)
             {
-                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 4), potionSells, Condition.HappyEnough)
+                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 4), Condition.HappyEnoughToSellPylons)
                 .AddWithCustomValue(ItemID.CombatWrench, Item.buyPrice(gold: 10));
             }
 
@@ -1223,14 +1228,14 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<AstralFountainItem>())
                 .Add(ItemType<BrimstoneLavaFountainItem>())
                 .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.FriedEgg, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough);
+                .AddWithCustomValue(ItemID.FriedEgg, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.PartyGirl)
             {
-                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ItemID.Pizza, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CreamSoda, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough);
+                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons)
+                .AddWithCustomValue(ItemID.Pizza, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
+                .AddWithCustomValue(ItemID.CreamSoda, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.Princess)
@@ -1247,7 +1252,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.SkeletonMerchant)
             {
-                shop.AddWithCustomValue(ItemType<CalciumPotion>(), Item.buyPrice(silver: 25), potionSells)
+                shop.AddWithCustomValue(ItemType<CalciumPotion>(), Item.buyPrice(silver: 25))
                 .Add(ItemID.MilkCarton)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
                 .AddWithCustomValue(ItemType<GiantShell>(), Item.buyPrice(gold: 12))
@@ -1256,12 +1261,12 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Golfer)
             {
-                shop.AddWithCustomValue(ItemID.PotatoChips, Item.buyPrice(gold: 1), Condition.HappyEnough);
+                shop.AddWithCustomValue(ItemID.PotatoChips, Item.buyPrice(gold: 1), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.BestiaryGirl)
             {
-                shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.Hardmode);
+                shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
             }
         }
         #endregion

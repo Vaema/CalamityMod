@@ -38,16 +38,10 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float spread = 60f * 0.0174f;
-            double startAngle = Math.Atan2(velocity.X, velocity.Y) - spread / 2;
-            double deltaAngle = spread / 6f;
-            double offsetAngle;
-            int i;
-            for (i = 0; i < 3; i++)
+            for (int i = 0; i < 6; i++)
             {
-                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(Math.Sin(offsetAngle) * 2f), (float)(Math.Cos(offsetAngle) * 2f), type, damage, knockback, Main.myPlayer, 0f, 0f);
-                Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(-Math.Sin(offsetAngle) * 2f), (float)(-Math.Cos(offsetAngle) * 2f), type, damage, knockback, Main.myPlayer, 0f, 0f);
+                Vector2 circleVel = (MathHelper.TwoPi * i / 6f + velocity.ToRotation()).ToRotationVector2() * 2.2f;
+                Projectile.NewProjectile(source, player.Center, circleVel, type, damage, knockback, Main.myPlayer);
             }
             return false;
         }
@@ -57,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.DemonScythe).
                 AddIngredient<BloodstoneCore>(6).
-                AddIngredient<CoreofHavoc>(6).
+                AddIngredient<EssenceofHavoc>(6).
                 AddTile(TileID.Bookcases).
                 Register();
         }

@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = TimeLeft;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -56,16 +56,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity = storedVel;
 
                     NPC target = Projectile.Center.ClosestNPCAt(500);
-                    Vector2 moveToMouse;
-                    if (target != null)
-                        moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    else
-                        moveToMouse = Vector2.Zero;
-
-                    if (Projectile.velocity.Length() < 12 && Projectile.timeLeft > 60)
-                        Projectile.velocity += moveToMouse * 0.2f;
-                    else
-                        Projectile.velocity *= 0.9f;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.3f, 10, 0.99f);
 
                     if (Main.rand.NextBool(5))
                     {
@@ -76,17 +67,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (Projectile.ai[0] == 1)
             {
-                NPC target = Projectile.Center.ClosestNPCAt(200);
-                Vector2 moveToMouse;
-                if (target != null)
-                    moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                else
-                    moveToMouse = Vector2.Zero;
-
-                if (Projectile.velocity.Length() < 8 && Projectile.timeLeft > 60)
-                    Projectile.velocity += moveToMouse * 0.1f;
-                else
-                    Projectile.velocity *= 0.98f;
+                NPC target = Projectile.Center.ClosestNPCAt(155);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.15f, 9, 0.98f, accelerate: true);
             }
             else
             {
@@ -137,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.ai[0] == 0) // "Jaw" teeth
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             }
             for (int i = 0; i <= 4; i++)
             {

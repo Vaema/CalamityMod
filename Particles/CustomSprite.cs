@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 
 namespace CalamityMod.Particles
 {
@@ -22,10 +21,11 @@ namespace CalamityMod.Particles
         int Timer = 0;
 
         float maxGravity = 0f;
+        float Opacity = 1f;
 
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
-        public override bool UseAdditiveBlend => false;
+        public override bool UseAdditiveBlend => addBlend;
         public override bool Important => important;
         public override string Texture => "CalamityMod/Particles/CuteStars";
         public override int FrameVariants => frames;
@@ -54,6 +54,7 @@ namespace CalamityMod.Particles
             if (Timer > Lifetime - 20)
             {
                 Scale *= 0.9f;
+                Opacity *= 0.9f;
             }
 
             Velocity *= 0.85f;
@@ -73,7 +74,7 @@ namespace CalamityMod.Particles
 
             Rectangle fr = tex.Frame(1, frames, 0, currentFrame);
 
-            Main.EntitySpriteDraw(tex.Value, Position - Main.screenPosition, fr, Color.Lerp(Color.Transparent, Color, Scale), Rotation, new Vector2(tex.Width() * 0.5f, tex.Height() / frames * 0.5f), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, Position - Main.screenPosition, fr, Color.Lerp(Color.Transparent, Color, Opacity), Rotation, new Vector2(tex.Width() * 0.5f, tex.Height() / frames * 0.5f), 1f, SpriteEffects.None);
         }
     }
 }

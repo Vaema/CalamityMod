@@ -38,6 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = Projectile.height = 34;
             Projectile.timeLeft = 600;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.extraUpdates = 1;
             Projectile.friendly = true;
             Projectile.usesLocalNPCImmunity = true;
         }
@@ -159,7 +160,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = Request<Texture2D>("CalamityMod/Projectiles/Ranged/ScorpioRocket_Glow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);

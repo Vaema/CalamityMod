@@ -14,28 +14,27 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public int SetUseTime = 6;
-        public int SetUseAnimation = 6;
         public int ShotNumber = 0;
         public bool Happy = false;
+        public float fireSpeed = 1;
 
         public static readonly SoundStyle Shot = new("CalamityMod/Sounds/Item/PolarisShot") { Volume = 0.6f };
         public static readonly SoundStyle Squeak = new("CalamityMod/Sounds/Custom/CuteSqueak") { Volume = 0.75f };
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
-            Item.staff[Item.type] = true; //so it doesn't look weird af when holding it
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+            Item.staff[Type] = true; //so it doesn't look weird af when holding it
         }
 
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 34;
-            Item.damage = 46;
+            Item.damage = 35;
             Item.DamageType = DamageClass.Ranged;
 
-            Item.useTime = SetUseTime;
-            Item.useAnimation = SetUseAnimation;
+            Item.useTime = 9;
+            Item.useAnimation = 9;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -48,7 +47,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 10f;
         }
         public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 2; // Max of 2 shots on screen at once, get closer to fire faster
         public override bool AltFunctionUse(Player player) => Main.zenithWorld ? true : false;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -116,17 +114,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                if (Happy) // If she's happy, fire much faster
-                {
-                    Item.useTime = (int)(SetUseTime * 0.5f);
-                    Item.useAnimation = (int)(SetUseAnimation * 0.5f);
-                }
-                else // Otherwise reset usetime
-                {
-                    Item.useTime = SetUseTime;
-                    Item.useAnimation = SetUseAnimation;
-                }
-
                 if (Main.zenithWorld) // 1% chance to get tired when firing a projectile
                 {
                     if (Happy && Main.rand.NextBool(100))
@@ -141,7 +128,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 else
                     SoundEngine.PlaySound(Shot, player.Center);
 
-                Projectile.NewProjectile(source, position + velocity * 5f, velocity.RotatedByRandom(0.05f), ModContent.ProjectileType<PolarStar>(), damage, knockback, player.whoAmI, 0f, ShotNumber);
+                for (int i = 0; i < (Happy ? 3 : 1); i++)
+                    Projectile.NewProjectile(source, position + velocity * 5f, velocity.RotatedByRandom(0.05f * (i != 0 ? 6 : 1)), ModContent.ProjectileType<PolarStar>(), damage, knockback, player.whoAmI, 0f, ShotNumber);
 
                 if (ShotNumber >= 2) // Cycle the shot color
                     ShotNumber = 0;
@@ -149,6 +137,12 @@ namespace CalamityMod.Items.Weapons.Ranged
                     ShotNumber++;
             }
             return false;
+        }
+        public override float UseSpeedMultiplier(Player player)
+        {
+            NPC target = player.Center.ClosestNPCAt(400);
+            fireSpeed = (target == null ? 1 : Utils.Remap(Utils.Distance(player.Center, target.Center), 100, 400, 2, 1, true));
+            return (Happy ? fireSpeed * 2 : fireSpeed);
         }
     }
 }

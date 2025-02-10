@@ -25,9 +25,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), 150);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 150);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center);
 
             int bloodCount = 6 + 10 * (int)SawLevel;
@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return true;
 
             // Special afterimage drawing to include the slashes
-            Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D buzzsawTexture = TextureAssets.Projectile[Type].Value;
             Rectangle frame = buzzsawTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             for (int i = 1; i < Projectile.oldPos.Length; i++)
             {

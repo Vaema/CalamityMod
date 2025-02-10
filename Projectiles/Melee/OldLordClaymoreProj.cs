@@ -41,8 +41,10 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
+            base.SetStaticDefaults(); // DO NOT REMOVE THIS
+
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -143,6 +145,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.myPlayer == Projectile.owner)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Owner.velocity = Vector2.Lerp(Owner.velocity, Owner.SafeDirectionTo(Main.MouseWorld) * 16f, 0.125f);
                     NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.myPlayer);
                 }
@@ -331,5 +334,10 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         public override void OnKill(int timeLeft) => Owner.fullRotation = 0f;
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
+        }
     }
 }

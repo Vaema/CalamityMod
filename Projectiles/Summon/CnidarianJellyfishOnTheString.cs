@@ -71,6 +71,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void Initialize()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary -- the helper function caps this based on whip range
             //Initialize the segments
             SetOrigin(Owner.Calamity().mouseWorld);
 
@@ -106,6 +107,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Owner.channel)
                 Projectile.timeLeft = FadeoutTime;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary -- the helper function caps this based on whip range
             SetOrigin(Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 10f));
 
             SimulateSegments();
@@ -176,7 +178,7 @@ namespace CalamityMod.Projectiles.Summon
 
                         if (Projectile.owner == Main.myPlayer)
                         {
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), CnidarianPos, velocity, ProjectileType<CnidarianSpark>(), (int)(Projectile.damage * ZapDamageMultiplier), Projectile.knockBack, Projectile.owner, targetArray[i], 0f);
                         }
                     }
                 }
@@ -241,7 +243,7 @@ namespace CalamityMod.Projectiles.Summon
 
             PrimitiveRenderer.RenderTrail(segmentPositions, new(PrimWidthFunction, PrimColorFunction), 66);
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Vector2 squish = new Vector2(2 - StretchRatio(), StretchRatio());
 

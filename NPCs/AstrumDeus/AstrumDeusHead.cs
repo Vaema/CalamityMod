@@ -17,6 +17,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
@@ -52,13 +53,12 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.70f,
-                PortraitScale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/AstrumDeus_Bestiary"
+                PortraitScale = 0.75f
             };
             value.Position.X += 55f;
             value.Position.Y += 23f;
@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<AstrumDeusBossBar>();
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(0, 50, 0, 0);
             NPC.alpha = 255;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -157,7 +157,10 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<AstrumDeusBody>()].Value, AstrumDeusBody.AltTexture.Value, 7, 26, 0.3f, new Vector2(0, 10), 5, 10, 4);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
@@ -167,9 +170,9 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = NPC.Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            Texture2D mainWormTex = TextureAssets.Npc[NPC.type].Value;
+            Texture2D mainWormTex = TextureAssets.Npc[Type].Value;
             Texture2D secondWormTex = TextureGlow2.Value;
-            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(mainWormTex.Width, mainWormTex.Height) * NPC.scale / 2f;
@@ -227,7 +230,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                         astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                         Main.dust[astralDust].velocity *= 2f;
                     }
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         float randomSpread = Main.rand.Next(-200, 201) / 100f;
                         Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusHead1").Type, 1f);

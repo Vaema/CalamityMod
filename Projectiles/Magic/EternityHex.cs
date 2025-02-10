@@ -42,8 +42,8 @@ namespace CalamityMod.Projectiles.Magic
         public const float NormalEnemyLifeMaxDamageMult = 1f / 100f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 63;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 63;
         }
 
         public override void SetDefaults()
@@ -77,7 +77,8 @@ namespace CalamityMod.Projectiles.Magic
 
             if (!target.active)
             {
-                NPC potentialTarget = Main.MouseWorld.ClosestNPCAt(4400f, true, true);
+                // 14NOV2024: Ozzatron: Eternity's range is so absurdly high (more than two 1080p screens wide) that it doesn't really matter whether this is capped.
+                NPC potentialTarget = player.ClampedMouseWorld().ClosestNPCAt(4400f, true, true);
                 if (potentialTarget != null)
                 {
                     // If something happens to the original NPC, such as death, attempt to locate a new target and attack to them.

@@ -25,12 +25,10 @@ namespace CalamityMod.NPCs.DevourerofGods
     {
         public static int phase2IconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyS_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         private const float LaserVelocityMultiplierMin = 0.5f;
@@ -232,7 +230,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (phase2)
                     {
                         // Fire lasers from every 15th (20th in normal mode) body segment if not in laser wall phase
-                        float laserWallPhaseGateValue = 720f;
+                        float laserWallPhaseGateValue = DevourerofGodsHead.LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
                         if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[3] < laserWallPhaseGateValue - 180f)
                         {
                             NPC.localAI[0] += 1f;
@@ -261,7 +259,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else
                     {
                         // Fire lasers from every 20th (25th in normal mode) body segment if not in laser barrage phase
-                        float laserBarrageGateValue = bossRush ? 780f : death ? 900f : 960f;
+                        float laserBarrageGateValue = bossRush ? 1080f : death ? 1320f : 1440f;
                         float laserBarrageShootGateValue = bossRush ? 160f : 240f;
                         float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue * 1.5f;
                         if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[1] < laserBarragePhaseGateValue)
@@ -400,7 +398,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -503,7 +501,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("DoGS6").Type, NPC.scale);

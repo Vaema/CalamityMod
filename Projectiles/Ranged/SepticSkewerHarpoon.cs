@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 28f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
         public Vector2 DrawStartPosition
         {
@@ -256,22 +256,19 @@ namespace CalamityMod.Projectiles.Ranged
                                     closestTarget = Main.npc[index];
                                 }
                             }
-                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Projectile.type] < 80)
+                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Type] < 80)
                             {
                                 closestTarget = Main.npc[index];
-                                Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                             }
                         }
                         if (closestTarget != null)
                         {
-                            Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
                         int heal = 25;
-                        Owner.statLife += heal;
-                        Owner.HealEffect(heal);
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
+                        Owner.HealPlayer(heal);
 
                         spawnPullBlood = false;
                     }
@@ -380,7 +377,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
                     hasLatchedTarget = true;
-                    if ((chosenTarget.life <= chosenTarget.lifeMax * 0.3f) || chosenTarget.boss)
+                    if ((chosenTarget.lifeMax >= Projectile.damage * 28f) || chosenTarget.boss)
                         strongEnemy = true;
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
                     SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);

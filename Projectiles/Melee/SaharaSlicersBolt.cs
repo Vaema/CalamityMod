@@ -13,14 +13,15 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 9;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public ref int Bolts => ref Main.player[Projectile.owner].Calamity().saharaSlicersBolts;
         public override void SetDefaults()
         {
             Projectile.width = 18;
             Projectile.height = 18;
+            Projectile.timeLeft = 300;
             Projectile.friendly = true;
             Projectile.penetrate = 2;
             Projectile.tileCollide = true;
@@ -42,12 +43,12 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.extraUpdates = 6;
                 if (Main.rand.NextBool(2))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5), Main.rand.NextBool() ? 288 : 207);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5), Main.rand.NextBool() ? 288 : 121);
                     dust.scale = Main.rand.NextFloat(0.2f, 0.45f);
                     dust.noGravity = true;
                     dust.velocity = -Projectile.velocity * 0.5f;
                 }
-                if (Projectile.timeLeft % 2 == 0 && playerDist < 1400f)
+                if (Projectile.timeLeft % 2 == 0 && playerDist < 1400f && Projectile.timeLeft < 295)
                 {
                     SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 3f, -Projectile.velocity * 0.05f, false, 10, 1f, Color.White * 0.135f);
                     GeneralParticleHandler.SpawnParticle(spark);
@@ -73,10 +74,10 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i <= 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.9f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.9f));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.6f, 0.9f);
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
                 dust2.noGravity = false;
                 dust2.scale = Main.rand.NextFloat(0.6f, 0.9f);
             }
@@ -88,10 +89,10 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
                 for (int i = 0; i <= 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.1f, 1.8f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(1.1f, 1.8f);
                 }
@@ -100,7 +101,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.ai[0] == 1)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return true;
         }
         public override bool? CanDamage() => Projectile.ai[0] == 1 ? true : false;

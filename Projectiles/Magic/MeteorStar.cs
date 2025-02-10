@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            Main.projFrames[Projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
             Color LightYellow = new Color(255, 255, 76);
             Lighting.AddLight(Projectile.Center, LightYellow.ToVector3() * Projectile.Opacity * 0.5f);
 
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.rand.NextBool(4) || explodingSoon)
                     SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
             }
-            if ((Main.rand.NextBool(12) || (explodingSoon && Main.rand.NextBool(3))) && Main.netMode != NetmodeID.Server)
+            if ((Main.rand.NextBool(12) || (explodingSoon && Main.rand.NextBool(3))) && !Main.dedServ)
             {
                 Gore star = Gore.NewGoreDirect(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
                 star.velocity *= 0.66f;
@@ -81,6 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                     Owner.mount?.Dismount(Owner);
                     Owner.RemoveAllGrapplingHooks();
 
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld) * 14f;
                     Owner.velocity = Projectile.velocity;
                     Owner.ChangeDir(Math.Sign(Projectile.velocity.X) <= 0 ? -1 : 1);
@@ -112,10 +113,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
 
             // Draw the main texture in fullbright
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
@@ -141,7 +142,7 @@ namespace CalamityMod.Projectiles.Magic
                     smoke.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 5; i++)
                 {

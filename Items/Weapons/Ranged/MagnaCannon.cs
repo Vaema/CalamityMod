@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
 
         public override void SetDefaults()
         {
@@ -52,7 +52,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter);
-            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter), ModContent.ProjectileType<MagnaCannonHoldout>(), damage, knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter), ModContent.ProjectileType<MagnaCannonHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
 

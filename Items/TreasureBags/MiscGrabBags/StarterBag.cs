@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             itemLoot.Add(ItemID.Chest, 1, 3, 3);
 
             // Calamity title theme music box (if music mod is enabled)
-            Mod musicMod = CalamityMod.Instance.musicMod;
+            Mod musicMod = ExternalMods.musicMod;
             if (musicMod is not null)
                 itemLoot.Add(musicMod.Find<ModItem>("CalamityMusicbox").Type);
 
@@ -80,6 +80,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName == "Aleksh" || playerName == "Shark Lad";
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
+
+            // Mihaii dev item
+            // Name specific: "Mihaii"
+            static bool getsGoldenBomb(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Mihaii";
+            };
+            itemLoot.AddIf(getsGoldenBomb, ModContent.ItemType<GoldenBomb>());
 
             // HPU dev item
             // Name specific: "Heart Plus Up"
@@ -118,6 +127,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
+
+            // Xyk dev item
+            // Name specific: "Xyk"
+            static bool getsXyksBlessing(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName.Contains("Xyk"); // Any name containing "Xyk" will work
+            }
+
+            itemLoot.AddIf(getsXyksBlessing, ModContent.ItemType<XyksBlessingBlue>());
 
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"

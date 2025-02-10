@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithAbyss(Type);
 
             DustType = 2;
-            AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.PlantyMush>());
+            AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.Abyss.PlantyMush>());
             HitSound = MineSound;
 
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
@@ -72,7 +72,7 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(7) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
 
@@ -109,7 +109,7 @@ namespace CalamityMod.Tiles.Abyss
                             newVineTile.TileType = (ushort)ModContent.TileType<ViperVines>();
                             newVineTile.Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
                         }
                     }

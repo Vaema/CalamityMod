@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             // Sets the amount of frames this minion has on its spritesheet
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public sealed override void SetDefaults() //If you want to change the damage of this projectile, just change the base damage of AquasScepter, the item. Note that this will affect the damage of AquasScepterTeslaAura as well, because the damage of said projectile is set as a multiple of the base damage at the bottom of AquasScepterCloud.cs

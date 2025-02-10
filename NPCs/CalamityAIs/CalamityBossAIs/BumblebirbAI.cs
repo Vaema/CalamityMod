@@ -1064,7 +1064,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.velocity *= 1.15f;
 
                     npc.netSpam = 5;
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
 
                     return;
