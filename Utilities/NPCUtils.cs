@@ -893,6 +893,8 @@ namespace CalamityMod
             return false;
         }
 
+        public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
+
         #region Boss Spawning
         /// <summary>
         /// Shortcut for the generic boss summon message.

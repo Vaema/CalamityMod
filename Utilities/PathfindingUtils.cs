@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,12 +13,6 @@ namespace CalamityMod
     /// </summary>
     public interface IPathFinder
     {
-        /// <summary>
-        /// The parameters to be used in <see cref="FindPathAsync(PathfindingParams)"/> that determines how pathfinding should be calculated.<br/>
-        /// This can return <see langword="null"/> if you do not want the entity to find a path.
-        /// </summary>
-        public PathfindingParams Pathfinding { get; }
-
         /// <summary>
         /// The result of the pathfinding task that contains a set of points this entity should follow.
         /// </summary>
@@ -85,7 +77,7 @@ namespace CalamityMod
         /// Assigns the value of <see cref="Paths"/> to <see cref="FindPathAsync(PathfindingParams)"/> based on <see cref="Pathfinding"/>.<br/>
         /// You can override this and do <c
         /// </summary>
-        public void FindPath() => Paths = FindPathAsync(Pathfinding);
+        public void FindPath(PathfindingParams parameters) => Paths = FindPathAsync(parameters);
     }
 
     public static partial class CalamityUtils
@@ -95,33 +87,38 @@ namespace CalamityMod
         /// This method should be called every frame that you want your entity to follow it's pathfinding logic.
         /// </summary>
         /// <param name="pathfinder">The entity that should be moving.</param>
-        public static void DoPathfinding(this IPathFinder pathfinder)
+        public static void DoPathfinding(this IPathFinder pathfinder, PathfindingParams parameters)
         {
-            // Checks to make sure that:
-            //    A. The pathfinding task has completed
-            //    B. There is a valid result
-            //    C. There are points left in the previously found path
-            if (pathfinder.Paths.Result != null &&
-                pathfinder.Paths.Result.Count > 0)
+            // If the task is NOT in-progress...
+            if (pathfinder.Paths == null || pathfinder.Paths.IsCompleted)
             {
-                // Follows the point at index 0 of the path result.
-                Vector2 nextPoint = pathfinder.Paths.Result[0];
+                // If the task result has entries...
+                if ((pathfinder.Paths?.Result?.Count ?? 0) > 0)
+                {
+                    // Follows the point at index 0 of the path result.
+                    Vector2 nextPoint = pathfinder.Paths.Result[0];
 
-                // Once that point is reached, it is removed from the list of points to follow.
-                if (pathfinder.FollowPath(nextPoint))
-                    pathfinder.Paths.Result.RemoveAt(0);
+                    // Once that point is reached, it is removed from the list of points to follow.
+                    if (pathfinder.FollowPath(nextPoint))
+                        pathfinder.Paths.Result.RemoveAt(0);
+                }
+
+                // If it does not have entries, that means the pathfinding task is
+                // complete OR the last pathfinding attempt was invalid.
+                // We need to attempt pathfinding again. Idle in the meantime.
+                else
+                {
+                    pathfinder.FindPath(parameters);
+                    pathfinder.IdleBehavior();
+                }
             }
 
-            // Idle if the task is currently finding a path or there is no path to be followed.
+            // If the task IS in-progress, just idle while waiting for it to complete.
             else
-            {
                 pathfinder.IdleBehavior();
-
-                // Only attempt to find a path again if the task is not currently running.
-                if (pathfinder.Paths.Status != TaskStatus.Running)
-                    pathfinder.FindPath();
-            }   
         }
+
+        public static void DoPathfinding(this IPathFinder pathfinder, Vector2 target) => pathfinder.DoPathfinding(new PathfindingParams(pathfinder.Position, target));
 
         /// <summary>
         /// Represents a node in a pathfinding algorithm, containing position, cost, and parent information.
@@ -230,7 +227,7 @@ namespace CalamityMod
             {
                 // If the entity isn't actually supposed to follow a path right now, null
                 // can be passed as the parameters to make implementation more concise.
-                if (parameters is null)
+                if (parameters is null || Main.tile[parameters.End.Position].IsTileSolid())
                     return null;
 
                 var openSet = new List<Node>();
