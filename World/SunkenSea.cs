@@ -1274,8 +1274,32 @@ namespace CalamityMod.World
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
                         }
                     }
-                    if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>())
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<SeaPrism>())
                     {
+                        //Medium Sea Prism down
+                        if (WorldGen.genRand.NextBool(9))
+                        {
+                            ushort[] CrystalRandom = new ushort[] { (ushort)ModContent.TileType<MediumSeaPrismCrystal>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(CrystalRandom), true, 0, 0, 7);
+                        }
+                        if (WorldGen.genRand.NextBool(9))
+                        {
+                            ushort[] CrystalRandom = new ushort[] { (ushort)ModContent.TileType<MediumSeaPrismCrystal>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(CrystalRandom), true, 0, 0, 5);
+                        }
+                        if (WorldGen.genRand.NextBool(9))
+                        {
+                            ushort[] CrystalRandom = new ushort[] { (ushort)ModContent.TileType<MediumSeaPrismCrystal>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(CrystalRandom), true, 0, 0, 4);
+                        }
+                        if (WorldGen.genRand.NextBool(9))
+                        {
+                            ushort[] CrystalRandom = new ushort[] { (ushort)ModContent.TileType<MediumSeaPrismCrystal>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(CrystalRandom), true, 0, 0, 2);
+                        }
+                    }
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>())
+                        {
                         //stalactites
                         if (WorldGen.genRand.NextBool(10))
                         {
@@ -1289,6 +1313,7 @@ namespace CalamityMod.World
                         {
                             WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<SunkenStalactitesSmall>(), true, false, -1, 0);
                         }
+                        
 
                         //stalagmites
                         if (WorldGen.genRand.NextBool(12))
