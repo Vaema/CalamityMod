@@ -27,10 +27,12 @@ namespace CalamityMod.Items.Placeables.Astral
             CreateRecipe().
                 AddIngredient<AstralMonolithWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
 
             CreateRecipe().
                 AddIngredient<MonolithPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

@@ -24,6 +24,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAuric
             /*CreateRecipe().
                 AddIngredient<ActivatedAuricPanelWallItem>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();*/
         }
     }

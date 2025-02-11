@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Placeables.Abyss
             CreateRecipe().
                 AddIngredient<Walls.HardenedSulphurousSandstoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

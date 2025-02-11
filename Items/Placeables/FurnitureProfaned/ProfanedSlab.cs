@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
             CreateRecipe().
                 AddIngredient<ProfanedSlabWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

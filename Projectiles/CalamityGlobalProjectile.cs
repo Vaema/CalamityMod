@@ -241,7 +241,7 @@ namespace CalamityMod.Projectiles
         /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
-        /// <summary> A timer for preventing projectiles from being "transformed" by transformer every frame. </summary>
+        /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
         public int TransformerTimer = 0;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben

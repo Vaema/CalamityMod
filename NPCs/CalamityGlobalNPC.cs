@@ -98,10 +98,10 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary> Boss Kill Time data structure </summary>
+        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary> Damage Reduction Lookup Table </summary>
+        /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
         /// <summary> Damage Reduction Value </summary>
@@ -216,13 +216,9 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        /// <summary>
-        /// Constant multiplier used to increase vanilla enemy health.
-        /// </summary>
+        /// <summary> Constant multiplier used to increase vanilla enemy health. </summary>
         private const double EnemyHPMultiplier = 1.25;
-        /// <summary>
-        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
-        /// </summary>
+        /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
         /// <summary>
         /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
@@ -330,10 +326,15 @@ namespace CalamityMod.NPCs
         public float warbannerBurnIntensity = 0;
         public bool warbannerBurnMarked = false;
         public bool warbannerBurnHideEffects = false;
+        /// <summary> Constant variable representing the delay, in frames, before Verium Bolt's extra damage applies. </summary>
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        /// <summary>
+        /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
+        /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
+        /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
