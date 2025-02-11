@@ -8,15 +8,6 @@ Abaddon: {
 		'''
 }
 
-AbyssalAmulet: {
-	DisplayName: Abyssal Amulet
-	Tooltip:
-		'''
-		Attacks inflict Riptide, and grants immunity to Riptide
-		While in the abyss you gain 10% increased max life
-		'''
-}
-
 AbyssalDivingGear: {
 	DisplayName: Abyssal Diving Gear
 	Tooltip:
@@ -1488,6 +1479,18 @@ ScuttlersJewel: {
 		'''
 		Stealth strike projectiles spawn a jewel spike when destroyed
 		Can also be broken down at an extractinator
+		'''
+}
+
+SeaSpiritAmulet: {
+	DisplayName: Sea Spirit Amulet
+	Tooltip:
+		'''
+Slowly accumulate up to eight spirit orbs that follow you
+Spirits disperse when dashing
+If below 50% life, they will heal you, otherwise they will attack nearby enemies
+Multiplies all water debuff damage by 1.35x
+Spirit orbs are transparent and silent if visibility is disabled
 		'''
 }
 

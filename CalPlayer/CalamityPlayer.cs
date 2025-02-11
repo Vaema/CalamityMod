@@ -846,7 +846,9 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public int bootLevel = 0;
         public bool hellfireTreads = false;
-        public bool abyssalAmulet = false;
+        public bool sSpiritAmulet = false;
+        public int sSpiritAmuletTimer = 0;
+        public bool sSpiritAmuletVisual = false;
         public bool lumenousAmulet = false;
         public bool oceanCrest = false;
         public bool aquaticEmblem = false;
@@ -1898,8 +1900,8 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-            if (ZoneAbyss && (abyssalAmulet || lumenousAmulet))
-                percentMaxLifeIncrease += lumenousAmulet ? 25 : 10;
+            if (ZoneAbyss && lumenousAmulet)
+                percentMaxLifeIncrease += 25;
 
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
@@ -2239,7 +2241,7 @@ namespace CalamityMod.CalPlayer
             fairyBoots = false;
             flameWakerBoots = false;
             hellfireTreads = false;
-            abyssalAmulet = false;
+            sSpiritAmulet = false;
             lumenousAmulet = false;
             oceanCrest = false;
             aquaticEmblem = false;

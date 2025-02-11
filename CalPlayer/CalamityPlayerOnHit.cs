@@ -83,6 +83,9 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
+            target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
+
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
@@ -198,6 +201,9 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
+
+            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            cgn.IncreasedWaterEffects_Amulet2 = false;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
@@ -1180,10 +1186,6 @@ namespace CalamityMod.CalPlayer
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (abyssalAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());
             }
             if (lumenousAmulet)
             {

@@ -168,6 +168,10 @@ namespace CalamityMod.NPCs
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
+        // Amulets effects
+        public bool IncreasedWaterEffects_Amulet1 = false;
+        public bool IncreasedWaterEffects_Amulet2 = false;
+
         // Sickness and Water debuff effects
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
@@ -513,6 +517,8 @@ namespace CalamityMod.NPCs
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
+            myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
@@ -937,6 +943,11 @@ namespace CalamityMod.NPCs
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
+
+            if (IncreasedWaterEffects_Amulet1)
+                waterDamageMult += 0.35;
+            if (IncreasedWaterEffects_Amulet2)
+                waterDamageMult += 0.75;
 
             if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
             {

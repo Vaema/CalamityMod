@@ -291,6 +291,7 @@ namespace CalamityMod.CalPlayer
                         ModContent.ItemType<RustedJingleBell>()
                     };
                     legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
+                    legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
                     legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SerpentsBite>(), Main.hardMode);
                     itemDrop = legendaryCatches[Main.rand.Next(legendaryCatches.Count)];
                 }
@@ -314,11 +315,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (attempt.legendary)
                 {
-                    itemDrop = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        ModContent.ItemType<AlluringBait>(),
-                        ModContent.ItemType<AbyssalAmulet>()
-                    });
+                    ModContent.ItemType<AlluringBait>();
                 }
                 else if (attempt.common && Main.rand.NextBool())
                     itemDrop = ModContent.ItemType<PlantyMush>();
