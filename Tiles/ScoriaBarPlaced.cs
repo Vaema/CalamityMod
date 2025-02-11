@@ -5,7 +5,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
 {
-    // TODO -- this name is inconsistent with all other placed bars, and needs to be updated for Scoria
     [LegacyName("ChaoticBarPlaced")]
     public class ScoriaBarPlaced : ModTile
     {
