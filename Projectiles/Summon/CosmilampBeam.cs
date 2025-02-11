@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
@@ -103,6 +104,8 @@ namespace CalamityMod.Projectiles.Summon
 
             return MathHelper.Lerp(0f, maxWidth, expansionCompletion);
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 240);
 
         public override bool PreDraw(ref Color lightColor)
         {

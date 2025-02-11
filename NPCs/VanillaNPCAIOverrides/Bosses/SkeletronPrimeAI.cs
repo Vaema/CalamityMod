@@ -198,14 +198,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[destroyer].localAI[3] = 1f;
                         Main.npc[destroyer].SyncVanillaLocalAI();
                         string typeName = Main.npc[destroyer].TypeName;
-                        if (Main.netMode == NetmodeID.Server && destroyer < Main.maxNPCs)
+                        if (Main.dedServ && destroyer < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, destroyer);
 
                         AchievementsHelper.CheckMechaMayhem();
 
                         if (Main.netMode == NetmodeID.SinglePlayer)
                             Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), 175, 75);
-                        else if (Main.netMode == NetmodeID.Server)
+                        else if (Main.dedServ)
                             ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[destroyer].GetTypeNetName()), new Color(175, 75, 255));
                     }
                 }
@@ -230,14 +230,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[retinazer].localAI[3] = 1f;
                         Main.npc[retinazer].SyncVanillaLocalAI();
                         string typeName = Main.npc[retinazer].TypeName;
-                        if (Main.netMode == NetmodeID.Server && retinazer < Main.maxNPCs)
+                        if (Main.dedServ && retinazer < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazer);
 
                         AchievementsHelper.CheckMechaMayhem();
 
                         if (Main.netMode == NetmodeID.SinglePlayer)
                             Main.NewText(Lang.misc[48].Value, 175, 75);
-                        else if (Main.netMode == NetmodeID.Server)
+                        else if (Main.dedServ)
                             ChatHelper.BroadcastChatMessage(Lang.misc[48].ToNetworkText(), new Color(175, 75, 255));
                     }
                 }
@@ -683,7 +683,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.localAI[0] += 1f;
 
-                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 64f)
+                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 96f)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
@@ -839,7 +839,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -1106,7 +1106,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -1403,7 +1403,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -1768,7 +1768,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);
@@ -2385,7 +2385,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();
@@ -2670,7 +2670,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();
@@ -2945,7 +2945,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();
@@ -3249,7 +3249,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect();

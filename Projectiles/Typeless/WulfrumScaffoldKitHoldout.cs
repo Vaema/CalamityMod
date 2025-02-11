@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
                             Owner.ConsumeItem(ModContent.ItemType<WulfrumMetalScrap>());
                             Kit.storedScrap = WulfrumScaffoldKit.TilesPerScrap - 1;
                             SoundEngine.PlaySound(SoundID.Item65);
-                            if (Main.netMode != NetmodeID.Server)
+                            if (!Main.dedServ)
                             {
                                 Gore shard = Gore.NewGoreDirect(Projectile.GetSource_FromThis(), Owner.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("WulfrumPinger2").Type, Main.rand.NextFloat(0.5f, 1f));
                                 shard.timeLeft = 10;

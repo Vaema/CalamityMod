@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.dust[extraDust].position = Projectile.Center + extraDustVel * 12f;
             }
 
-            if (Main.rand.NextBool(48) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(48) && !Main.dedServ)
             {
                 int gore = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
                 Main.gore[gore].velocity *= 0.66f;
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
                     Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FireworkFountain_Blue, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
-                if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
+                if (Main.rand.NextBool(20) && !Main.dedServ)
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
             }
 

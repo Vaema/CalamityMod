@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -28,10 +27,7 @@ namespace CalamityMod.Tiles.Ores
             Main.tileSpelunker[Type] = true;
         }
 
-        public override bool CanExplode(int i, int j)
-        {
-            return false;
-        }
+        public override bool CanExplode(int i, int j) => false;
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {

@@ -393,7 +393,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle2").Type, 1f);
@@ -415,7 +415,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.AddIf(() => NPC.downedGolemBoss, ItemID.MartianConduitPlating, 1, 10, 30);
             npcLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 2);
-            npcLoot.Add(ModContent.ItemType<TheTransformer>(), 10);
             npcLoot.Add(ModContent.ItemType<OracleHeadphones>(), (DateTime.Now.Day == 21 && DateTime.Now.Month == 8) ? 9 : 20);
             var postML = npcLoot.DefineConditionalDropSet(() => NPC.downedMoonlord);
             postML.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<ExodiumCluster>(), 1, 8, 12, 11, 16));

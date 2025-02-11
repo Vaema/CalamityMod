@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -28,5 +29,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         // This needs to happen retroactively due to Deadshot Brooch and other potential items boosting updates
         public override void AI() => Projectile.localNPCHitCooldown = 6 * Projectile.MaxUpdates;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+        }
     }
 }

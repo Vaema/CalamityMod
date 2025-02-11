@@ -936,7 +936,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }
@@ -1307,7 +1307,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }
@@ -2051,7 +2051,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }

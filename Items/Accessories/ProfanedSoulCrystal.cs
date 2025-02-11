@@ -157,7 +157,7 @@ namespace CalamityMod.Items.Accessories
          */
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransHead", EquipType.Head, this);
@@ -174,7 +174,7 @@ namespace CalamityMod.Items.Accessories
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -229,7 +229,7 @@ namespace CalamityMod.Items.Accessories
             }
             else
             {
-                string manaCost = (100 * Main.player[Main.myPlayer].manaCost).ToString("N0");
+                string manaCost = (100 * Main.LocalPlayer.manaCost).ToString("N0");
                 string full = this.GetLocalization("FullTooltip").Format(maxMinionRequirement, manaCost);
                 tooltips.FindAndReplace("[STATUS]", full);
             }

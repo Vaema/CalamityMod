@@ -3,6 +3,8 @@ using System.Threading;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Tiles.AstralSnow;
+using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
@@ -23,7 +25,7 @@ namespace CalamityMod.Systems
         public override void PreWorldGen()
         {
             Abyss.TotalPlacedIslandsSoFar = 0;
-            roxShrinePlaced = false;
+            //roxShrinePlaced = false;
 
             // This will only be applied at world-gen time to new worlds.
             // Old worlds will never receive this marker naturally.
@@ -261,6 +263,9 @@ namespace CalamityMod.Systems
 
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SurfaceShrine").Value;
                     UndergroundShrines.PlaceSurfaceShrine(GenVars.structures);
+
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
+                    UndergroundShrines.PlaceRoxShrine(GenVars.structures);
                 }));
 
                 // Aerialite
@@ -334,13 +339,6 @@ namespace CalamityMod.Systems
                     SulphurousSea.SulphurSeaGenerationAfterAbyss();
                 }));
 
-                // Roxcalibur
-                tasks.Insert(++currentFinalIndex, new PassLegacy("Roxcalibur", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
-                    MiscWorldgenRoutines.PlaceRoxShrine();
-                }));
-
                 // No Traps/GFB Auric Land Mines
                 if (Main.noTrapsWorld)
                 {
@@ -389,7 +387,7 @@ namespace CalamityMod.Systems
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
             {
                 //Delaying it a bit so that weaker pcs dont suffer - Shade
-                ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
+                ThreadPool.QueueUserWorkItem(_ => AstralBiome.PlaceAstralMeteor());
             }));
         }
         #endregion

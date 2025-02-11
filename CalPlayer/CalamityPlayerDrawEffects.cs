@@ -253,6 +253,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 
+            if (calamityPlayer.heavybleeding && drawInfo.shadow == 0f)
+                HeavyBleeding.DrawEffects(drawInfo);
+
             // Holy Flames, Holy Inferno and Banishing Fire share the same visual effects
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
@@ -263,6 +266,9 @@ namespace CalamityMod.CalPlayer
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
             else if (calamityPlayer.icarusFolly && drawInfo.shadow == 0f)
                 IcarusFolly.DrawEffects(drawInfo);
+
+            if (calamityPlayer.laceration && drawInfo.shadow == 0f)
+                Laceration.DrawEffects(drawInfo);
 
             if (calamityPlayer.miracleBlight && drawInfo.shadow == 0f)
                 MiracleBlight.DrawEffects(drawInfo);
@@ -369,7 +375,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && Main.netMode != NetmodeID.Server && drawInfo.shadow == 0f)
+            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && !Main.dedServ && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(5))
                 {

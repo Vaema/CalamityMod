@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Pets
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         int heartCount = Main.rand.Next(20, 31);
                         for (int i = 0; i < heartCount; i++)

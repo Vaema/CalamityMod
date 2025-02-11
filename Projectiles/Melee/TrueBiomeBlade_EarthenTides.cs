@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CurrentIndicator => ref Projectile.localAI[0]; //What "indicator" stage are you on.
         public ref float OverCharge => ref Projectile.localAI[1];
 
-        const float MaxCharge = 500;
+        const float MaxCharge = 420;
 
         public Vector2 lastDisplacement;
         public float dashDuration;
@@ -141,6 +138,15 @@ namespace CalamityMod.Projectiles.Melee
                         SoundEngine.PlaySound(FullChargeSound, Projectile.Center);
                         CurrentIndicator++;
                     }
+
+                    if (Main.rand.NextBool())
+                    {
+                        Vector2 sparkPos = Projectile.Center + direction * Main.rand.NextFloat(50f, 100f);
+                        Vector2 sparkVel = direction.RotatedByRandom(MathHelper.Pi / 15f) * Main.rand.NextFloat(9f, 18f) + (Owner.velocity * 0.5f);
+                        Color sparkColor = Color.Lerp(new Color(71, 191, 71), new Color(122, 213, 233), Main.rand.NextFloat());
+                        CustomSprite critSpark = new(sparkPos, sparkVel, 16, "CalamityMod/Particles/CritSpark", 1.4f, sparkColor, frameCount: 4, frame: Main.rand.Next(4));
+                        GeneralParticleHandler.SpawnParticle(critSpark);
+                    }
                 }
             }
 
@@ -228,12 +234,12 @@ namespace CalamityMod.Projectiles.Melee
             Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
 
             if (!CalamityUtils.AnyProjectiles(ProjectileType<EarthenTidesShockwave>()))
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), (int)(Projectile.damage * 0.5f), 0f, Owner.whoAmI, 1f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), (int)(Projectile.damage * 0.75f), 0f, Owner.whoAmI, 1f);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 1f + OmegaBiomeBlade.ShockwaveAttunement_FullChargeBoost * (float)Math.Pow(Charge / MaxCharge, 2);
+            modifiers.SourceDamage *= (OmegaBiomeBlade.ShockwaveAttunement_FullChargeMult * (float)Math.Pow(Charge / MaxCharge, 2));
 
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_SwordProc)
                 sword.OnHitProc = true;

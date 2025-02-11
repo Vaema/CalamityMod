@@ -177,7 +177,7 @@ namespace CalamityMod
                     return true;
                 }
             }
-            return FindFirstProjectile(ProjectileType<DeusRitualDrama>()) != -1;
+            return false;
         }
         #endregion
 
@@ -757,6 +757,19 @@ namespace CalamityMod
             }
         }
 
+        /// <summary>
+        /// Spawns a <see cref="CombatText"/> indicating the amount of damage manually dealt to the NPC, such as from self-damage. Automatically syncs it in multiplayer.
+        /// </summary>
+        public static void DamageEffect(this NPC npc, int damageAmount)
+        {
+            Rectangle r = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
+            Color textColor = new Color(255, 30, 100);
+            if (Main.dedServ)
+                NetMessage.SendData(MessageID.CombatTextInt, -1, -1, null, (int)textColor.PackedValue, r.Center.X, r.Center.Y, damageAmount);
+            else
+                CombatText.NewText(r, textColor, damageAmount);
+        }
+
         public static void ProduceGoldCritterDust(this NPC npc)
         {
             npc.position += npc.netOffset;
@@ -879,7 +892,7 @@ namespace CalamityMod
             {
                 Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), new Color(175, 75, 255));
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", [Main.npc[npcIndex].GetTypeNetName()]), new Color(175, 75, 255));
             }
@@ -989,7 +1002,7 @@ namespace CalamityMod
                 npc.timeLeft *= 20;
                 
                 // Server Exclusive: Sync NPC Data
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
                 }
@@ -1022,7 +1035,7 @@ namespace CalamityMod
         /// <param name="playerIndex">The index of the player who will spawn Old Duke.</param>
         internal static void SpawnOldDuke(int playerIndex)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             Player player = Main.player[playerIndex];

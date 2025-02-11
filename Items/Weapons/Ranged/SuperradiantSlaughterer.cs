@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 

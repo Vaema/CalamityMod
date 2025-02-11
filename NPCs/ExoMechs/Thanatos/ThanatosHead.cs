@@ -671,8 +671,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     // Do nothing while immune
                     AIState = (float)Phase.UndergroundLaserBarrage;
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoPrimeLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if ((!exoPrimeAlive || exoPrimeLifeRatio < 0.7f || !exoTwinsAlive || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
                     {
                         // Tells Thanatos to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
@@ -887,7 +888,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                             if (calamityGlobalNPC.newAI[2] == 1f)
                             {
                                 //Commented out in case we decide its better for it to simply play from anywhere in range
-                                //if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
+                                //if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
                                 LaserSoundSlot = SoundEngine.PlaySound(LaserSound, NPC.Center);
 
                                 // Create a bunch of lightning bolts in the sky
@@ -1109,10 +1110,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             if (NPC.IsABestiaryIconDummy)
                 NPC.Opacity = 1f;
 
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
@@ -1145,12 +1142,12 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             Vector2 center = NPC.Center - screenPos;
             center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, SpriteEffects.None, 0f);
 
             texture = GlowTexture.Value;
             Color glowmaskColor = vulnerable ? ((AIState == (int)Phase.Deathray && SecondaryAIState != (int)SecondaryPhase.PassiveAndImmune) ? Color.Lerp(new Color(255, 64, 64), Color.CornflowerBlue, NPC.Calamity().newAI[2] / deathrayTelegraphDuration) : new Color(255, 64, 64)) : Color.White;
 
-            spriteBatch.Draw(texture, center, NPC.frame, glowmaskColor * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, glowmaskColor * NPC.Opacity, NPC.rotation, vector, NPC.scale, SpriteEffects.None, 0f);
 
             SmokeDrawer.DrawSet(NPC.Center);
 
@@ -1339,7 +1336,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ThanatosHead").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ThanatosHead2").Type, 1f);

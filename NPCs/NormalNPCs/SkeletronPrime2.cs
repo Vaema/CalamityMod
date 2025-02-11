@@ -225,7 +225,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Main.npc[spazmatism].localAI[3] = 1f;
                         Main.npc[spazmatism].SyncVanillaLocalAI();
                         string typeName = Main.npc[spazmatism].TypeName;
-                        if (Main.netMode == NetmodeID.Server && spazmatism < Main.maxNPCs)
+                        if (Main.dedServ && spazmatism < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spazmatism);
 
                         AchievementsHelper.CheckMechaMayhem();
@@ -875,7 +875,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_1").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_2").Type, NPC.scale);

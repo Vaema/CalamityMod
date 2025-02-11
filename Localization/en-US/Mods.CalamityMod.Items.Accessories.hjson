@@ -8,15 +8,6 @@ Abaddon: {
 		'''
 }
 
-AbyssalAmulet: {
-	DisplayName: Abyssal Amulet
-	Tooltip:
-		'''
-		Attacks inflict Riptide and you are immune to it
-		While in the abyss you gain 10% increased max life
-		'''
-}
-
 AbyssalDivingGear: {
 	DisplayName: Abyssal Diving Gear
 	Tooltip:
@@ -56,9 +47,7 @@ AbyssalMirror: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
+		{$Common.DodgeInformation}
 		Dodging an attack gives stealth
 		'''
 	FlavorTooltip: "'Light does not reach the depths of the ocean'"
@@ -83,7 +72,7 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and lessens damage taken from the Plague
+		All attacks inflict the Plague and reduces damage taken from the Plague
 		Projectiles spawn plague seekers on enemy hits
 		Releases plague bees when damaged and douses you in honey 
 		'''
@@ -108,12 +97,7 @@ AmalgamatedBrain: {
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 AmbrosialAmpoule: {
@@ -176,7 +160,7 @@ AngelTreads: {
 		36% increased running acceleration
 		Increased flight time and grants rocket flight
 		Provides water walking and extra mobility on ice
-		Immunity to On Fire! and temporary immunity to lava
+		Grants immunity to On Fire! and temporary immunity to lava
 		'Extreme speed!'
 		'''
 }
@@ -252,11 +236,11 @@ AsgardianAegis: {
 		'''
 	HoldShiftTooltip:
 		'''
-		  On Fire!, Hellfire, Chilled, Frozen, Frostburn, Frostbite, Weak, Broken Armor,
-		  Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
-		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch,
-		  Blackout, Brain Rot, Burning Blood, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno, Burning
+		  On Fire!, Hellfire, Burning, Chilled, Frozen, Frostburn, Frostbite, Weak,
+		  Broken Armor, Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
+		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch, Blackout,
+		  Brain Rot, Burning Blood, Heavy Bleeding, Laceration, Cursed Inferno, Brimstone Flames,
+		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno
 		'''
 }
 
@@ -331,6 +315,7 @@ BloodPact: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
+		Grants immunity to Bleeding, Burning Blood and Heavy Bleeding
 		Healing Potions are 25% more effective
 		'''
 }
@@ -396,10 +381,11 @@ ChaliceOfTheBloodGod: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
+		Grants immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
-		Taking more than 5 damage converts the hit into a damage over time bleed debuff
+		Taking more than 5 damage converts the hit into a damage over time bleed effect
 		This bleeding does not interfere with life regeneration
-		Drinking a healing potion cancels up to 50% of its heal value in remaining bleed damage
+		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
 		'All that for a drop of blood...'
 		'''
@@ -439,8 +425,9 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		All rogue weapons inflict poison and spawn poisoned clouds on enemy hits
-		You release a ton of clouds everywhere on hit
+		Multiplies all sickness and water-related debuff damage by 1.25x
+		All attacks irradiate enemies and reduces the severity of the sulphuric waters
+		You burst into radioactive clouds when struck
 		'''
 }
 
@@ -449,7 +436,7 @@ CorruptFlask: {
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the corruption
-		Immunity to Brain Rot
+		Grants immunity to Brain Rot
 		'''
 }
 
@@ -477,7 +464,7 @@ CrimsonFlask: {
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the crimson
-		Immunity to Burning Blood
+		Grants immunity to Burning Blood
 		'''
 }
 
@@ -539,7 +526,7 @@ DarkSunRing: {
 	DisplayName: Dark Sun Ring
 	Tooltip:
 		'''
-		12% increase to damage
+		12% increased damage
 		+0.5 HP/s life regen and +2 max minions
 		Increased minion knockback
 		Grants various buffs as the day goes on
@@ -555,11 +542,7 @@ DarkSunRing: {
 
 DeadshotBrooch: {
 	DisplayName: Deadshot Brooch
-	Tooltip:
-		'''
-		10% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
-		Greatly increases all ranged projectile velocity
-		'''
+	Tooltip: 10% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
 }
 
 DeepDiver: {
@@ -630,7 +613,7 @@ DragonScales: {
 		Rogue projectiles spawn slow fireballs as they travel
 		Stealth strikes create infernados where they hit
 		+10% max run speed and acceleration
-		Immunity to Dragonfire
+		Grants immunity to Dragonfire
 		'Only a living dragon holds true treasure'
 		'''
 }
@@ -658,10 +641,8 @@ EclipseMirror: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		{$Common.DodgeInformation}
 		Dodging an attack grants a lot of stealth
-		This cooldown is shared with all other dodges and reflects
 		'''
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
 }
@@ -671,7 +652,7 @@ EldritchSoulArtifact: {
 	Tooltip:
 		'''
 		Boosts melee speed by 10%, ranged velocity by 25%, rogue stealth regen by 15%, max minions by 1 and reduces mana cost by 25%
-		Immunity to Whispering Death
+		Grants immunity to Whispering Death
 		Knowledge
 		'''
 }
@@ -681,7 +662,7 @@ ElectriciansGlove: {
 	Tooltip:
 		'''
 		Stealth strikes summon sparks on enemy hits and heal you for 2 HP
-		Stealth strikes also have +8 armor penetration, deal 8% more damage
+		Stealth strikes also have +8 armor penetration and deal 8% more damage
 		'''
 }
 
@@ -720,7 +701,7 @@ EnchantedPearl: {
 		'''
 		Increases fishing power by 10
 		Increases chance to catch crates and loot-containing fish by 15%
-		Crates are 25% more likely to be higher quality
+		Crate catches emit pearls and are 25% more likely to be higher quality
 		'''
 }
 
@@ -799,7 +780,7 @@ FrostBarrier: {
 	Tooltip:
 		'''
 		You will freeze nearby enemies when you are struck
-		Immunity to Chilled and Frostburn
+		Grants immunity to Chilled and Frostburn
 		'''
 }
 
@@ -808,7 +789,7 @@ FrostFlare: {
 	Tooltip:
 		'''
 		All attacks and projectiles inflict Frostbite
-		Immunity to Frostburn, Chilled and Frozen
+		Grants immunity to Frostburn, Chilled and Frozen
 		Being above 50% life grants 10% increased damage
 		Being below 50% life grants 20 defense and 15% increased max movement speed and acceleration
 		Grants resistance against cold attacks
@@ -937,10 +918,10 @@ HideofAstrumDeus: {
 	Tooltip:
 		'''
 		Taking damage or inflicting true melee strikes drops an immense amount of astral stars from the sky
-		Taking damage temporarily boosts true melee damage by 30%
+		Taking damage temporarily increases true melee damage by 30%
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Immunity to Astral Infection, Cursed Inferno, On Fire!, and Frostburn
 		Attackers take damage and are inflicted with Astral Infection
+		Nullifies the Astral Infection debuff
 		'''
 }
 
@@ -1059,7 +1040,7 @@ LumenousAmulet: {
 	DisplayName: Lumenous Amulet
 	Tooltip:
 		'''
-		Attacks inflict Crush Depth and you are immune to it and Riptide
+		Attacks inflict Crush Depth, and grants immunity to Crush Depth and Riptide
 		While in the abyss you gain 25% increased max life
 		{$Common.AbyssLightLevel2}
 		'''
@@ -1153,7 +1134,7 @@ NuclearFuelRod: {
 		'''
 		Increases your max number of minions by 1
 		Minions release an irradiated aura on enemy hits
-		Immunity to Irradiated
+		Grants immunity to Irradiated
 		'''
 }
 
@@ -1162,7 +1143,7 @@ Nucleogenesis: {
 	Tooltip:
 		'''
 		Increases your max number of mininons by 4
-		Immunity to Shadowflame and Irradiated
+		Grants immunity to Shadowflame and Irradiated
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs
 		Minions spawn damaging sparks on enemy hits
@@ -1231,7 +1212,7 @@ OrnateShield: {
 		'''
 		Allows the ability to dash
 		This dash can ram through enemies without taking damage
-		Immunity to Chilled, Frostburn, Frostbite, and Frozen
+		Grants immunity to Chilled, Frostburn, Frostbite, and Frozen
 		'''
 }
 
@@ -1408,8 +1389,11 @@ Regenator: {
 	DisplayName: Regenator
 	Tooltip:
 		'''
-		+6 HP/s life regen and massively accelerated natural life regen
-		However, your health cannot exceed 50% of its maximum
+		Your health cannot exceed 50% of its maximum
+		Increases length of invincibility after taking damage
+		Provides powerful special life regen to heal you for 8.5 HP/s
+		All normal life regen is negated and converted into damage 
+		Current damage boost: [DAMAGE]%
 		'''
 }
 
@@ -1465,7 +1449,7 @@ RustyMedallion: {
 	Tooltip:
 		'''
 		Causes most ranged weapons to release acid droplets from the sky
-		Immunity to Irradiated
+		Grants immunity to Irradiated
 		'''
 }
 
@@ -1495,6 +1479,18 @@ ScuttlersJewel: {
 		'''
 		Stealth strike projectiles spawn a jewel spike when destroyed
 		Can also be broken down at an extractinator
+		'''
+}
+
+SeaSpiritAmulet: {
+	DisplayName: Sea Spirit Amulet
+	Tooltip:
+		'''
+Slowly accumulate up to eight spirit orbs that follow you
+Spirits disperse when dashing
+If below 50% life, they will heal you, otherwise they will attack nearby enemies
+Multiplies all water debuff damage by 1.35x
+Spirit orbs are transparent and silent if visibility is disabled
 		'''
 }
 
@@ -1619,7 +1615,7 @@ StarTaintedGenerator: {
 		'''
 		Increases your max number of minions by 2, and summon damage by 7%
 		Minion attacks spawn astral explosions and inflict several debuffs
-		Immunity to Irradiated
+		Grants immunity to Irradiated
 		Does not stack with downgrades
 		'''
 }
@@ -1639,7 +1635,7 @@ StatisCurse: {
 		'''
 		Increases your max number of minions by 3, and summon damage by 12%
 		Increased minion knockback
-		Minion attacks inflict Shadowflame and you are immune to it
+		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
 		Does not stack with downgrades
 		'''
 }
@@ -1655,12 +1651,7 @@ StatisNinjaBelt: {
 		Provides light when worn
 		{$Common.AbyssLightLevel1}
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 StatisVoidSash: {
@@ -1675,12 +1666,7 @@ StatisVoidSash: {
 		Provides light when worn
 		{$Common.AbyssLightLevel1}
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 // Be warned translators, this thing fucking sucks
@@ -1809,12 +1795,7 @@ TheAmalgam: {
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
-	HoldShiftTooltip:
-		'''
-		Attacks that deal less than 5% of your max life in damage will not be dodged
-		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
-		This cooldown is shared with all other dodges and reflects
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
 TheBee: {
@@ -1863,11 +1844,9 @@ TheEvolution: {
 	Tooltip:
 		'''
 		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
-		Projectiles that deal less than 5% of your max life in damage will not be reflected
-		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
-		This cooldown is shared with all other dodges and reflects
+		{$Common.ReflectInformation}
 		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
-		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
+		Getting hit by the same enemy projectile type during cooldown will resist its damage by 20%
 		'''
 }
 
@@ -1876,7 +1855,7 @@ TheFirstShadowflame: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Shadowflame and you are immune to it
+		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
 		'''
 }
 
@@ -1895,13 +1874,22 @@ TheSponge: {
 
 TheTransformer: {
 	DisplayName: The Transformer
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
-		Multiplies all electricity debuff damage by 1.5x
-		Attacks inflict Static Discharge while underwater
-		Reduces the damage of all electricity debuffs by 50%
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
+		Generates an aura around you that creates morphing globs when projectiles pass through it
+		The globs encircle you and deal low damage and knockback to enemies they collide with
+		The circle can contain up to 30 globs at once
+		Press [KEY] to transform all globs into needles and launch them at your cursor
+		'How did this come out of the junk you cobbled together? You're lucky it doesn't transform you'
+		'''
+	TooltipGFB:
+		'''
+		Generates an aura around you that creates morphing globs when projectiles pass through it
+		The globs encircle you and deal low damage and knockback to enemies they collide with
+		The circle has no limit to the number of globs it can hold, but your PC might
+		Press [KEY] to transform all globs into needles and launch them at your cursor
+		'It's like catch and release if the release was a particle accelerator'
 		'''
 }
 
@@ -1920,7 +1908,7 @@ TrinketofChi: {
 	DisplayName: Trinket of Chi
 	Tooltip:
 		'''
-		Provides 4% damage reduction 5 seconds after taking damage
+		Increases damage reduction by 4% if you avoid taking damage for 5 seconds
 		This buff expires on hit
 		+1 HP/s life regen for teammates
 		'''
@@ -1964,7 +1952,7 @@ VoidofCalamity: {
 	DisplayName: Void of Calamity
 	Tooltip:
 		'''
-		12% increase to all damage
+		12% increased damage
 		Brimstone fire rains down after getting hit
 		'''
 }
@@ -2070,6 +2058,11 @@ GhostBracelet: {
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
+GoldenBomb: {
+	DisplayName: Golden Bomb
+	Tooltip: "'El Pene betraying the human body to become an item of Terraria Calamity Mod'"
+}
+
 HapuFruit: {
 	DisplayName: Ha-pu Fruit
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
@@ -2100,7 +2093,7 @@ PunchCard: {
 
 SharkyPlush: {
 	DisplayName: Sharky Plush
-	Tooltip: "[c/696969:'Look around, at the sight and sound...']"
+	Tooltip: "[c/696969:'Look out, for the force without form...']"
 }
 
 TheComb: {

@@ -595,9 +595,13 @@ namespace CalamityMod.NPCs.Leviathan
                             return;
                         }
 
+                        // Used to scale lineup speed and acceleration
+                        if (NPC.ai[2] < 300f)
+                            NPC.ai[2]++;
+
                         // Velocity calculations
-                        float chargeSpeed = revenge ? 7.5f : 6.5f;
-                        float chargeAcceleration = revenge ? 0.12f : 0.11f;
+                        float chargeSpeed = (revenge ? 7.5f : 6.5f) + (NPC.ai[2] * 0.0083f);
+                        float chargeAcceleration = (revenge ? 0.12f : 0.11f) + (NPC.ai[2] * 0.001f);
                         chargeSpeed += 2f * enrageScale;
                         chargeAcceleration += 0.04f * enrageScale;
 
@@ -801,7 +805,7 @@ namespace CalamityMod.NPCs.Leviathan
                     bloody2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloody2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("LeviGore").Type, NPC.scale);
@@ -831,8 +835,8 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (!DownedBossSystem.downedLeviathan)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.LocalPlayer.Center);
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }
@@ -916,13 +920,10 @@ namespace CalamityMod.NPCs.Leviathan
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

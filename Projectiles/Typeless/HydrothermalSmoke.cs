@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             Vector2 goreVec = Projectile.position;
-            if (Main.rand.NextBool(8) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(8) && !Main.dedServ)
             {
                 int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), goreVec, default, Main.rand.Next(375, 378), 0.75f);
                 Main.gore[smoke].behindTiles = true;

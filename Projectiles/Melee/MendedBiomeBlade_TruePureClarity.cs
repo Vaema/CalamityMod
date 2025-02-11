@@ -226,6 +226,10 @@ namespace CalamityMod.Projectiles.Melee
 
             if (State == 1f)
             {
+                // Biome Blade's Pure Clarity lunge gives iframes when striking enemies in a similar manner to a ram dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(TrueBiomeBlade.DefaultAttunement_LungeIFrames);
+
                 foreach (Projectile proj in Main.projectile)
                 {
                     if (proj.active && proj.type == ModContent.ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)

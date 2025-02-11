@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public int sineDir = 1;
 
         public Player Owner => Main.player[Projectile.owner];
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                 baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
             }
             else
-                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             if (!Positive)
             {
@@ -189,13 +189,13 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-            SoundStyle fire = OntologicalDespoiler.SmallImpact;
-            SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (!Positive ? 3 : 1) }, Projectile.Center);
+            SoundStyle fire = Positive ? new SoundStyle("CalamityMod/Sounds/Item/OntologicalDespoilerSmallImpact") : OntologicalDespoiler.SmallImpact; // Yes these are two different sounds...
+            SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.3f), Pitch = Main.rand.NextFloat(0.05f, 0.15f) * (!Positive ? 3 : 5), MaxInstances = !Positive ? 1 : 6 }, Projectile.Center);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.35f;
-            int hitsToMinMult = 8;
+            int hitsToMinMult = 3;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }

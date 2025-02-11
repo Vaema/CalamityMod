@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public int sineDir = 1;
         public override void SetStaticDefaults()
         {
@@ -172,36 +172,68 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.zenithWorld)
             {
                 #region NPC Nullification
-                int nullBuff = Main.rand.Next(8);
-                switch (nullBuff)
+                if (Projectile.ai[1] == 5)
                 {
-                    case 0:
-                        if (target.type != ModContent.NPCType<SuperDummyNPC>())
-                            target.damage += 10;
-                        break;
-                    case 1:
-                        target.damage -= 10;
-                        break;
-                    case 2:
-                        target.knockBackResist = 0f;
-                        break;
-                    case 3:
-                        target.knockBackResist = 1f;
-                        break;
-                    case 4:
-                        target.defense += 5;
-                        break;
-                    case 5:
-                        target.defense -= 5;
-                        break;
-                    case 6:
-                        target.scale *= 2f;
-                        break;
-                    case 7:
-                        target.scale *= 0.5f;
-                        break;
-                    default:
-                        break;
+                    // Enemies tend to float away when corrupted, this helps with that
+                    if (Utils.Distance(Main.player[Projectile.owner].Center, target.Center) > 1000)
+                        target.velocity = Utils.DirectionTo(target.Center, Main.player[Projectile.owner].Center);
+
+                    int nullCorrupt = Main.rand.Next(4);
+                    switch (nullCorrupt)
+                    {
+                        case 0:
+                            target.ai[0] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[0] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 1:
+                            target.ai[1] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[1] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 2:
+                            target.ai[2] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[2] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 3:
+                            target.ai[3] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[3] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    int nullBuff = Main.rand.Next(8);
+                    switch (nullBuff)
+                    {
+                        case 0:
+                            if (target.type != ModContent.NPCType<SuperDummyNPC>())
+                                target.damage += Main.rand.Next(5, 40 + 1);
+                            break;
+                        case 1:
+                            target.damage -= Main.rand.Next(5, 40 + 1);
+                            break;
+                        case 2:
+                            target.knockBackResist = 0f;
+                            break;
+                        case 3:
+                            target.knockBackResist = Main.rand.Next(1, 3 + 1);
+                            break;
+                        case 4:
+                            target.defense += Main.rand.Next(5, 30 + 1);
+                            break;
+                        case 5:
+                            target.defense -= Main.rand.Next(5, 30 + 1);
+                            break;
+                        case 6:
+                            target.scale *= 2f;
+                            break;
+                        case 7:
+                            target.scale *= 0.5f;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 #endregion
             }

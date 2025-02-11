@@ -54,6 +54,7 @@ namespace CalamityMod.Projectiles.Typeless
         public float ramLerp;
 
         public float damageMult = 1;
+        public int hitCountDamageSource = 0;
 
         public override void SetStaticDefaults()
         {
@@ -254,6 +255,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                         boostTimer = 120 * driftPower;
                         Projectile.numHits = 0;
+                        hitCountDamageSource = 0;
                     }
                     if (boostTimer > 0)
                         boostTimer--;
@@ -324,7 +326,7 @@ namespace CalamityMod.Projectiles.Typeless
                     respawnTimer++;
                     Projectile.soundDelay--;
                 }
-                if (respawnTimer >= 180)
+                if (respawnTimer >= 300)
                 {
                     Projectile.Center = respawnPoint;
                     Owner.Center = respawnPoint;
@@ -356,7 +358,7 @@ namespace CalamityMod.Projectiles.Typeless
                     zound.Volume = (drifting ? 0.6f : 1f);
                 }
 
-                respawnMult = Utils.GetLerpValue(60, 180, respawnTimer);
+                respawnMult = Utils.GetLerpValue(60, 300, respawnTimer);
             }
             else
             {
@@ -445,13 +447,13 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.01f;
+            float minMult = 0.15f;
             int hitsToMinMult = 15;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float damageMult = Utils.Remap(hitCountDamageSource, 0, hitsToMinMult, 1, minMult, true);
 
             float driftMult = (driftPower == 1 ? 0.3f : driftPower == 2 ? 1.6f : 2.5f) * damageMult; // Drift power scaling is lower than regular
             
-            float totalMult = driftMult * ((Projectile.numHits == 0 && driftPower > 1) ? 1.9f : 1) * (Owner.Calamity().profanedSoulRelicBuff ? 8 : 1);
+            float totalMult = driftMult * ((hitCountDamageSource == 0 && driftPower > 1) ? 1.9f : 1) * (Owner.Calamity().profanedSoulRelicBuff ? 8 : 1);
             modifiers.SourceDamage *= totalMult;
 
             if (Projectile.numHits == 0 && driftPower > 1)
@@ -510,6 +512,18 @@ namespace CalamityMod.Projectiles.Typeless
             }
             return false;
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            bool onKill = (target.life <= 0 && target.realLife == -1);
+            if (!onKill)
+                hitCountDamageSource++;
+            else
+                hitCountDamageSource -= 3;
+
+            if (hitCountDamageSource < 0)
+                hitCountDamageSource = 0;
+        }
+
         // Force the spear to have "priority" when drawing so that it draws over the player.
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {

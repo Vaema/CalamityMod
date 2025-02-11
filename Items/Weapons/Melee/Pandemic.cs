@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Pandemic : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 480f;
+        public static float Speed = 40f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Yoyo[Type] = true;

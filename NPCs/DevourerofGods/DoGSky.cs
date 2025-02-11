@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 float x = 0f;
                 if (DoGIndex != -1)
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[DoGIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[DoGIndex].Center);
 
                 float intensityScalar = 0.5f;
                 return (1f - Utils.SmoothStep(3000f, 6000f, x)) * intensityScalar;

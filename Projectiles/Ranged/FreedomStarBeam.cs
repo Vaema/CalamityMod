@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Ranged
             ProduceBeamDust(beamColor);
 
             // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
 

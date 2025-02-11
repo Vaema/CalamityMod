@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             Item.width = 32;
             Item.height = 46;
-            Item.damage = 1818;
+            Item.damage = 1700;
             Item.useAnimation = Item.useTime = 35;
             Item.reuseDelay = 15;
             Item.useStyle = ItemUseStyleID.Shoot;

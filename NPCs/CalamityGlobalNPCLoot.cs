@@ -206,6 +206,12 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Desert
+                // Antlion
+                // Antlion Skewer @ 5%
+                case NPCID.Antlion:
+                    npcLoot.Add(ModContent.ItemType<AntlionSkewer>(), 20);
+                    break;
+
                 // Tomb Crawler
                 // Burnt Sienna @ 4% Normal, 6.67% Expert+
                 case NPCID.TombCrawlerHead:
@@ -473,16 +479,18 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Demon, Voodoo Demon
-                // Bladecrest Oathsword @ 4% Normal, 6.67% Expert+
+                // Bladecrest Oathsword @ 2%, 6.67% after defeating EoW/BoC
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BladecrestOathsword>(), 25, 15));
+                    npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 50);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 15);
                     break;
 
                 // Bone Serpent
-                // Old Lord Oathsword @ 8.33% Normal, 14.29% Expert+
+                // Old Lord Oathsword @ 4% Normal, 14.29% after defeating EoW/BoC
                 case NPCID.BoneSerpentHead:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OldLordClaymore>(), 12, 7));
+                    npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 25);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 7);
                     break;
 
                 // Red Devil
@@ -783,26 +791,33 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 5% chance to drop Shock Grenade
+                // 1.5% chance to drop any of the three Calamity martian drops
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
-                case NPCID.MartianEngineer:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 20);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 66);
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
+                    break;
+
+                // Martian Engineer
+                // 10% chance to drop Wingman
+                case NPCID.MartianEngineer:
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 10);
                     break;
 
                 // Martian Officer
-                // 10% chance to drop Shock Grenade
+                // 8% chance to drop Shock Grenade
                 case NPCID.MartianOfficer:
-                    npcLoot.Add(ModContent.ItemType<ShockGrenade>(), 10);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 12);
                     break;
 
                 // Martian Walker
-                // Wingman @ 14.29% Normal, 25% Expert+
+                // 12% chance to drop Nullification Pistol
                 case NPCID.MartianWalker:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Wingman>(), 7, 4));
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 8);
                     break;
 
                 // Martian Saucer
@@ -825,7 +840,6 @@ namespace CalamityMod.NPCs
                             ItemID.LaserMachinegun,
                             ItemID.ElectrosphereLauncher,
                             ItemID.InfluxWaver,
-                            ModContent.ItemType<NullificationPistol>()
                         };
 
                         npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, saucerItems));
@@ -1963,8 +1977,8 @@ DukeEditFailed:
                     // If Golem has never been killed, send a message about the Plague.
                     if (!NPC.downedGolemBoss && !BossRushEvent.BossRushActive)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                            SoundEngine.PlaySound(PlagueSound, Main.player[Main.myPlayer].Center);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                            SoundEngine.PlaySound(PlagueSound, Main.LocalPlayer.Center);
 
                         string key3 = "Mods.CalamityMod.Status.Progression.BabyBossText";
                         Color messageColor3 = Color.Lime;

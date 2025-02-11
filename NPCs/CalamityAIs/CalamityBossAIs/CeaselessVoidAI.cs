@@ -230,7 +230,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             int damageAmt = npc.lifeMax / 200;
                             npc.life -= damageAmt;
-                            npc.HealEffect(-damageAmt, true);
+                            npc.DamageEffect(damageAmt);
                         }
 
                         if (npc.life <= ((npc.lifeMax / 200) * 5) && !npc.ModNPC<CeaselessVoid.CeaselessVoid>().playedbuildsound)

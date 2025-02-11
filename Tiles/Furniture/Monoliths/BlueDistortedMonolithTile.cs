@@ -28,6 +28,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
         {
             RegisterItemDrop(ModContent.ItemType<BlueDistortedMonolith>());
             Main.tileFrameImportant[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.Width = 5;
             TileObjectData.newTile.Height = 5;

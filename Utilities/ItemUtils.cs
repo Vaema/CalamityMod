@@ -435,7 +435,7 @@ namespace CalamityMod
 
         public static Rectangle FixSwingHitbox(float hitboxWidth, float hitboxHeight)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             Item item = player.ActiveItem();
             float hitbox_X, hitbox_Y;
             float mountOffsetY = player.mount.PlayerOffsetHitbox;

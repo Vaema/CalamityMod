@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Vector2 sc = Vector2.One;
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.owner == Main.myPlayer)
             {
-                int totalProjectiles = !ProvUtils.DayAI() ? 8 : 6;
+                int totalProjectiles = !ProvUtils.StandardAI() ? 8 : 6;
                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                     totalProjectiles *= 2;
 

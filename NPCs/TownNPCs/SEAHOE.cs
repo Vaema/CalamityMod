@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.TownNPCs
         public override string GetChat()
         {
             WeightedRandom<string> dialogue = new WeightedRandom<string>();
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
 
             if (NPC.homeless)
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
@@ -192,7 +192,7 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 Main.npcChatText = Lore();
                 NPC.Calamity().newAI[0]++;
-                Player player = Main.player[Main.myPlayer];
+                Player player = Main.LocalPlayer;
                 player.AddBuff(ModContent.BuffType<AmidiasBlessing>(), 36000);
             }
         }
@@ -219,7 +219,7 @@ namespace CalamityMod.NPCs.TownNPCs
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Amidias").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Amidias2").Type, 1f);

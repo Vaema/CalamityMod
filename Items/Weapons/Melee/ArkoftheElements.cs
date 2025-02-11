@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 

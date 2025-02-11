@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Main.dust[skyDust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

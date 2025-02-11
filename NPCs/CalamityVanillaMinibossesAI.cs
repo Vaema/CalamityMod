@@ -622,7 +622,7 @@ namespace CalamityMod.NPCs
             if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != 58)
             {
                 npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || Main.netMode != NetmodeID.Server)
+                if (npc.ai[2] > 50f || !Main.dedServ)
                 {
                     npc.life = -1;
                     npc.HitEffect(0, 10.0);

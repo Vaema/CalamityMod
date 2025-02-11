@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             if (Main.zenithWorld)
             {
                 target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);

@@ -96,7 +96,7 @@ namespace CalamityMod.Tiles.Abyss
 					tileBelow.TileType = Type;
 					tileBelow.HasTile = true;
 					WorldGen.SquareTileFrame(i, j + 1, true);
-					if (Main.netMode == NetmodeID.Server) 
+					if (Main.dedServ) 
                     {
 						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
 					}

@@ -120,26 +120,44 @@ namespace CalamityMod.NPCs
 
         public int KillTime { get; set; } = 0;
 
-        // Debuff Vulnerabilities
-        // null = neutral, true = vulnerable, false = resistant
-        // neutral = 100% effective, vulnerable = 400% effective DoT and 200% effective non-DoT effects (within reason, some aren't exactly 200% more effective), resistant = 50% effective
+        /// <summary>
+        /// Controls the effectiveness of heat debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToHeat = null;
+        /// <summary>
+        /// Controls the effectiveness of cold debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToCold = null;
+        /// <summary>
+        /// Controls the effectiveness of sickness debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToSickness = null;
+        /// <summary>
+        /// Controls the effectiveness of electricity debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToElectricity = null;
+        /// <summary>
+        /// Controls the effectiveness of water debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToWater = null;
 
         public const double BaseDoTDamageMult = 1D;
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
+        public const double ResistantToDoTDamageMult = 0.5;
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
         public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
-        // Transformer effect
-        public bool IncreasedElectricityEffects_Transformer = false;
+        // Electric effects
+        public bool IncreasedElectricityEffects_Unused = false;
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
@@ -150,14 +168,19 @@ namespace CalamityMod.NPCs
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
-        // Evergreen Gin effect
-        public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        // Amulets effects
+        public bool IncreasedWaterEffects_Amulet1 = false;
+        public bool IncreasedWaterEffects_Amulet2 = false;
 
-        /// <summary> Constant representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
+        // Sickness and Water debuff effects
+        public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
+
+        /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
         /// <summary>
-        /// Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Variable for worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
         /// Currently only used by DoG.
         /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
@@ -278,9 +301,14 @@ namespace CalamityMod.NPCs
         public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
+        /// <summary>
+        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
+        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
+        /// </summary>
         public int pearlAuraCounter = 0;
         public int bBlood = 0;
         public int brainRot = 0;
+        public int heavybleeding = 0;
         public int laceration = 0;
         public int elementalMix = 0;
         public int marked = 0;
@@ -288,10 +316,12 @@ namespace CalamityMod.NPCs
         public int irradiated = 0;
         public int bFlames = 0;
         public int hFlames = 0;
+        /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int antlionCloudDebuffTimer = 0;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -336,8 +366,6 @@ namespace CalamityMod.NPCs
         public int nightwither = 0;
         /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        /// <summary> If greater than 0, this NPC has been "shocked" by The Transformer's on hurt effect. </summary>
-        public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
@@ -484,12 +512,15 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
             myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
-            myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
+            myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
+            myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
+            myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
@@ -537,6 +568,7 @@ namespace CalamityMod.NPCs
             myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
+            myClone.heavybleeding = heavybleeding;
             myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
             myClone.marked = marked;
@@ -548,6 +580,7 @@ namespace CalamityMod.NPCs
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -580,7 +613,6 @@ namespace CalamityMod.NPCs
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
-            myClone.transformerShocked = transformerShocked;
             myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
@@ -843,13 +875,16 @@ namespace CalamityMod.NPCs
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
+            bool wetReducedEffectiveness = npc.wet || npc.honeyWet || npc.dripping;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            if (wetReducedEffectiveness)
+                heatDamageMult *= wormBoss || slimeGod ? 0.66 : ResistantToDoTDamageMult;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
                     heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 1.25 : 1.5) : ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : 0.5) : 0.5;
+                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double coldDamageMult = BaseDoTDamageMult;
@@ -858,7 +893,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToCold.Value)
                     coldDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    coldDamageMult *= 0.5;
+                    coldDamageMult *= ResistantToDoTDamageMult;
             }
 
             double sicknessDamageMult = irradiated > 0 ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
@@ -867,7 +902,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToSickness.Value)
                     sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
@@ -877,7 +912,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToElectricity.Value)
                     electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double waterDamageMult = BaseDoTDamageMult;
@@ -886,7 +921,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToWater.Value)
                     waterDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    waterDamageMult *= 0.5;
+                    waterDamageMult *= ResistantToDoTDamageMult;
             }
 
             if (IncreasedColdEffects_EskimoSet)
@@ -896,7 +931,7 @@ namespace CalamityMod.NPCs
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
-            if (IncreasedElectricityEffects_Transformer)
+            if (IncreasedElectricityEffects_Unused)
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
@@ -911,6 +946,16 @@ namespace CalamityMod.NPCs
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
+            if (IncreasedWaterEffects_Amulet1)
+                waterDamageMult += 0.35;
+            if (IncreasedWaterEffects_Amulet2)
+                waterDamageMult += 0.75;
+
+            if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
+            {
+                sicknessDamageMult += 0.25;
+                waterDamageMult += 0.25;
+            }
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
@@ -1262,10 +1307,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (laceration > 0)
+            if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
+            if (laceration > 0)
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
-                ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
                 ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
@@ -1652,7 +1699,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 75000;
+                    npc.lifeMax = 80000;
                     break;
 
                 case NPCID.PlanterasTentacle:
@@ -3671,9 +3718,9 @@ namespace CalamityMod.NPCs
                     cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
-            bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
+            bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
             bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (nightProvi || dayEmpress))
+            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (enragedProvi || dayEmpress))
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
@@ -3826,10 +3873,10 @@ namespace CalamityMod.NPCs
             if (KillTime > 0 || npc.type == NPCType<Draedon>())
             {
                 // Apply Boss Effects while any boss NPC is active
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < BossZenDistance)
-                        Main.player[Main.myPlayer].AddBuff(BuffType<BossEffects>(), 2);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -4999,7 +5046,7 @@ namespace CalamityMod.NPCs
                     }
 
                     Lighting.AddLight(npc.Center, dustLerpColor1.ToVector3() * 0.7f);
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Player localPlayer = Main.LocalPlayer;
                         if (!localPlayer.dead && localPlayer.HitboxForBestiaryNearbyCheck.Intersects(npc.Hitbox))
@@ -5545,6 +5592,8 @@ namespace CalamityMod.NPCs
                 bBlood--;
             if (brainRot > 0)
                 brainRot--;
+            if (heavybleeding > 0)
+                heavybleeding--;
             if (laceration > 0)
                 laceration--;
             if (elementalMix > 0)
@@ -5601,8 +5650,6 @@ namespace CalamityMod.NPCs
                 nightwither--;
             if (shocked > 0)
                 shocked--;
-            if (transformerShocked > 0)
-                transformerShocked--;
             if (voidfrost > 0)
                 voidfrost--;
             if (shellfishVore > 0)
@@ -5624,6 +5671,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            if (antlionCloudDebuffTimer > 0)
+                antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
 
@@ -5715,28 +5764,21 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Amidias' Spark and Transformer spark spawning
-            if (shocked > 0 || transformerShocked > 0)
+            // Amidias' Spark spark spawning
+            if (shocked > 0)
             {
                 var player = Main.LocalPlayer;
-                bool strongerShock = transformerShocked > 0;
 
-                int frequency = strongerShock ? 10 : 12;
+                int frequency = 12;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
                 {
-                    int sDamage = strongerShock ? 50 : 10;
+                    int sDamage = 10;
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
                     spark.penetrate = 3;
-                    if (strongerShock)
-                    {
-                        spark.timeLeft = 240;
-                        spark.extraUpdates = 1;
-                        spark.penetrate = 10;
-                    }
                 }
             }
 
@@ -5950,10 +5992,7 @@ namespace CalamityMod.NPCs
 
             if (target.Calamity().aSpark)
             {
-                if (target.Calamity().transformer)
-                    transformerShocked = 120;
-                else
-                    shocked = 120;
+                shocked = 120;
             }
 
             if (target.Calamity().snowman)
@@ -5999,16 +6038,16 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffID.Bleeding, 180);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.Plantera:
@@ -6029,6 +6068,10 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    break;
+
+                case NPCID.DukeFishron:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.AncientLight:
@@ -6449,9 +6492,9 @@ namespace CalamityMod.NPCs
                 //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
                 //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    var color = ProvUtils.GetDayNightColor(!Main.dayTime, 0);
+                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
                     var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
                     var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
@@ -6559,7 +6602,7 @@ namespace CalamityMod.NPCs
                                     npc2.velocity.Y -= Main.rand.Next(0, 10) * (Main.getGoodWorld ? 0.5f : 0.1f) + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
-                                    if (Main.netMode == NetmodeID.Server && slime < Main.maxNPCs)
+                                    if (Main.dedServ && slime < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slime, 0f, 0f, 0f, 0, 0, 0);
                                 }
                             }
@@ -6848,7 +6891,7 @@ namespace CalamityMod.NPCs
                 if (typeToSpawn != NPCID.None)
                 {
                     int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
-                    if (Main.netMode == NetmodeID.Server && spawnedNPC < Main.maxNPCs)
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
                     {
                         Main.npc[spawnedNPC].position.Y -= 8f;
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
@@ -7156,6 +7199,9 @@ namespace CalamityMod.NPCs
             if (hFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
 
+            if (heavybleeding > 0)
+                HeavyBleeding.DrawEffects(npc, ref drawColor);
+
             if (laceration > 0)
                 Laceration.DrawEffects(npc, ref drawColor);
 
@@ -7178,7 +7224,7 @@ namespace CalamityMod.NPCs
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
-            if (somaShredStacks > 0 && Main.netMode != NetmodeID.Server)
+            if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
 
             if (sulphurPoison > 0)
@@ -7245,7 +7291,7 @@ namespace CalamityMod.NPCs
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if (ladHearts > 0 && !npc.loveStruck && Main.netMode != NetmodeID.Server)
+            if (ladHearts > 0 && !npc.loveStruck && !Main.dedServ)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -7345,6 +7391,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hadopelagicpressure > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
@@ -7381,6 +7428,10 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            // This is used so that NPCs with specific PreDraws can still have Odd Mushroom clone drawing.
+            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
+            bool shouldDrawBool = true;
+
             if (npc.IsABestiaryIconDummy)
             {
                 switch (npc.netID)
@@ -7529,7 +7580,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc.type))
-                    return false;
+                    shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
@@ -7542,7 +7593,7 @@ namespace CalamityMod.NPCs
 
                 Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
-                return false;
+                shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.GolemHeadFree)
@@ -7567,7 +7618,7 @@ namespace CalamityMod.NPCs
                 frame = npc.frame;
                 Rectangle glowFrame2 = frame;
                 spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-                return false;
+                shouldDrawBool = false;
             }
 
             if (Main.LocalPlayer.Calamity().trippy && !npc.IsABestiaryIconDummy)
@@ -7583,97 +7634,97 @@ namespace CalamityMod.NPCs
                 alphaColor.G = (byte)(alphaColor.G * RGBMult);
                 alphaColor.B = (byte)(alphaColor.B * RGBMult);
                 alphaColor.A = (byte)(alphaColor.A * RGBMult);
-                int totalAfterimages = Main.player[Main.myPlayer].Calamity().trippyLevel == 3 ? 16 : (Main.player[Main.myPlayer].Calamity().trippyLevel == 2 ? 12 : 4);
+                int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
                 for (int i = 0; i < totalAfterimages; i++)
                 {
                     Vector2 position = npc.position;
-                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
 
                     float smallDistanceMult = 0.48f;
                     float largeDistanceMult = 1.33f;
-                    bool whatTheFuck = Main.player[Main.myPlayer].Calamity().trippyLevel == 3;
+                    bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
 
                     switch (i)
                     {
                         case 0:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 1:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 2:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 3:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 4: // 1 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 5: // 4 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 6: // 7 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 7: // 10 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 8: // 11 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 9: // 2 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 10: // 5 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 11: // 8 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 12:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 13:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 14:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
                         case 15:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
 
@@ -7726,7 +7777,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            return true;
+            return shouldDrawBool;
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -7983,8 +8034,8 @@ namespace CalamityMod.NPCs
                             currentColor.A = (byte)((float)(int)currentColor.A * opacity);
 
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i > 3)
                             {
                                 currentColor *= 0.5f;
@@ -7998,46 +8049,46 @@ namespace CalamityMod.NPCs
                             {
                                 case 0:
                                 case 4:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 1:
                                 case 5:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 2:
                                 case 6:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 3:
                                 case 7:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 8:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 9:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 10:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 case 11:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 default:
@@ -8089,18 +8140,18 @@ namespace CalamityMod.NPCs
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i == 0 || i == 2)
-                                position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
                             else
-                                position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
 
                             position.X -= npc.width / 2;
                             if (i == 0 || i == 1)
-                                position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             else
-                                position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
 
                             position.Y -= npc.height / 2;
 
@@ -8125,8 +8176,8 @@ namespace CalamityMod.NPCs
                             for (int i = 0; i < totalAfterimages; i++)
                             {
                                 Vector2 position = npc.position;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                                 if (i > 3)
                                 {
                                     currentColor *= 0.5f;
@@ -8138,46 +8189,46 @@ namespace CalamityMod.NPCs
                                 {
                                     case 0:
                                     case 4:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 1:
                                     case 5:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 2:
                                     case 6:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 3:
                                     case 7:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 8:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 9:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 10:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     case 11:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     default:

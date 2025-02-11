@@ -178,7 +178,7 @@ namespace CalamityMod.NPCs.Ravager
                     Main.dust[rockDust2].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float y = NPC.height / 6f;
                     float randomVelocityScale = 0.25f;

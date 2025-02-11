@@ -443,8 +443,8 @@ namespace CalamityMod.World
                 NetMessage.SendTileSquare(-1, i, j, 40, TileChangeType.None);
                 if (CanAstralBiomeSpawn())
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                        SoundEngine.PlaySound(MeteorSound, Main.player[Main.myPlayer].position);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                        SoundEngine.PlaySound(MeteorSound, Main.LocalPlayer.position);
 
                     // Immediately prior to mass-converting blocks to Astral, write down the Y position of this event.
                     YStart = j;
@@ -1177,7 +1177,7 @@ namespace CalamityMod.World
                     {
                         WorldGen.SquareTileFrame(x, y, true);
                     }
-                    else if (Main.netMode == NetmodeID.Server)
+                    else if (Main.dedServ)
                     {
                         NetMessage.SendTileSquare(-1, x, y, 1);
                     }

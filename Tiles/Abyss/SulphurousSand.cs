@@ -88,7 +88,7 @@ namespace CalamityMod.Tiles.Abyss
                                     Main.tile[i, tileLocationY - 4].LiquidAmount == 255)
                                 {
                                     WorldGen.PlaceTile(i, tileLocationY, 81, true, false, -1, 0);
-                                    if (Main.netMode == NetmodeID.Server && Main.tile[i, tileLocationY].HasTile)
+                                    if (Main.dedServ && Main.tile[i, tileLocationY].HasTile)
                                         NetMessage.SendTileSquare(-1, i, tileLocationY, 1, TileChangeType.None);
                                 }
                             }
@@ -108,7 +108,7 @@ namespace CalamityMod.Tiles.Abyss
                                 if (ambientObjectAmt < ambientObjectMax)
                                 {
                                     WorldGen.PlaceTile(i, tileLocationY, 324, true, false, -1, Main.rand.Next(2));
-                                    if (Main.netMode == NetmodeID.Server && Main.tile[i, tileLocationY].HasTile)
+                                    if (Main.dedServ && Main.tile[i, tileLocationY].HasTile)
                                         NetMessage.SendTileSquare(-1, i, tileLocationY, 1, TileChangeType.None);
                                 }
                             }
@@ -162,7 +162,7 @@ namespace CalamityMod.Tiles.Abyss
                             Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<SulphurousVines>();
                             Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
                         }
                         Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;

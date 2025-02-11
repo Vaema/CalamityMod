@@ -183,8 +183,8 @@ namespace CalamityMod.Items
             // 170 -> 200 flight time
             ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings].FlyTime = 200;
 
-            // (Empress Wings) 150 -> 100 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings].FlyTime = 100;
+            // (Empress Wings) 150 -> 120 flight time
+            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
             // 12 -> 10.8 hover stats
             ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
@@ -655,6 +655,16 @@ namespace CalamityMod.Items
         #endregion
 
         #region Use Item Changes
+        public override void HoldItem(Item item, Player player)
+        {
+            // Clear Evil Smasher buffs if not holding Evil Smasher
+            if (player.Calamity().evilSmasherBoost > 0)
+            {
+                if (item.type != ModContent.ItemType<EvilSmasher>())
+                    player.Calamity().evilSmasherBoost = 0;
+            }
+        }
+
         public override bool? UseItem(Item item, Player player)
         {
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
@@ -663,20 +673,6 @@ namespace CalamityMod.Items
                 {
                     //one hour of NOU when using rod of harmony while LORDE is alive
                     player.AddBuff(ModContent.BuffType<NOU>(), 3600 * 60);
-                }
-            }
-            if (player.Calamity().evilSmasherBoost > 0)
-            {
-                if (item.type != ModContent.ItemType<EvilSmasher>())
-                    player.Calamity().evilSmasherBoost = 0;
-            }
-
-            if (player.HasBuff(BuffID.ParryDamageBuff))
-            {
-                if (item.type != ItemID.DD2SquireDemonSword && item.type != ItemID.BouncingShield)
-                {
-                    player.parryDamageBuff = false;
-                    player.ClearBuff(BuffID.ParryDamageBuff);
                 }
             }
 
@@ -1373,30 +1369,9 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
-            if (item.type == ItemID.CelestialStone)
+            if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
                 player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-            }
-
-            if (item.type == ItemID.CelestialShell)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            //Moon Charm and Moon Shell melee speed removal
-
-            if (item.type == ItemID.MoonCharm)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            if (item.type == ItemID.MoonShell)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
             }
 
             if (item.type == ItemID.TerrasparkBoots)

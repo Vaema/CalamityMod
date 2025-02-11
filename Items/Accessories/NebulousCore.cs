@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.nCore = true;
+            modPlayer.nebulousCore = true;
             player.GetDamage<GenericDamageClass>() += 0.1f;
 
             // Spawn nebula stars

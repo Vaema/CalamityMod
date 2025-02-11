@@ -79,25 +79,24 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
             {
-                // Stolen from Twisting Thunder, the old "lightning" effect was so puny -CIT
+                // Stolen from Twisting Thunder, the old "lightning" effect was just ???? -CIT
                 SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Projectile.position);
-                var source = Projectile.GetSource_FromThis();
                 for (int n = 0; n < 4; n++)
                 {
-                    Vector2 spawnPoint = new Vector2(Projectile.Center.X + (float)Main.rand.Next(-20, 21), Projectile.Center.Y - (float)Main.rand.Next(700, 801));
+                    Vector2 spawnPoint = new Vector2(Projectile.Center.X + Main.rand.NextFloat(-20f, 20f), Projectile.Center.Y - Main.rand.NextFloat(700f, 800f));
                     float randomVelocity = Main.rand.NextFloat() - 0.5f;
                     Vector2 fireTo = new Vector2(spawnPoint.X + 20f * randomVelocity, spawnPoint.Y + 900);
                     Vector2 ai0 = fireTo - spawnPoint;
-                    float ai = (float)Main.rand.Next(100);
-                    Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(0.31415)) * 9f;
-                    int proj = Projectile.NewProjectile(source, spawnPoint.X, spawnPoint.Y, velocity.X, velocity.Y, ProjectileID.CultistBossLightningOrbArc, Projectile.damage, Projectile.knockBack, Projectile.owner, ai0.ToRotation(), ai);
-                    Main.projectile[proj].extraUpdates += 14;
-                    Main.projectile[proj].friendly = true;
-                    Main.projectile[proj].hostile = false;
-                    Main.projectile[proj].tileCollide = false;
-                    Main.projectile[proj].penetrate = 3;
-                    Main.projectile[proj].usesLocalNPCImmunity = true;
-                    Main.projectile[proj].localNPCHitCooldown = -1;
+                    Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.Pi / 10f)) * 9f;
+
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPoint, velocity, ProjectileID.CultistBossLightningOrbArc, Projectile.damage, Projectile.knockBack, Projectile.owner, ai0.ToRotation(), Main.rand.NextFloat(100f), 1f);
+                    proj.extraUpdates += 14;
+                    proj.friendly = true;
+                    proj.hostile = false;
+                    proj.tileCollide = false;
+                    proj.penetrate = 3;
+                    proj.usesLocalNPCImmunity = true;
+                    proj.localNPCHitCooldown = -1;
                 }
             }
         }

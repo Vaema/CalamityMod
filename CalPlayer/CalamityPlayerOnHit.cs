@@ -18,6 +18,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -73,7 +74,7 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
-            target.Calamity().IncreasedElectricityEffects_Transformer = transformer;
+            target.Calamity().IncreasedElectricityEffects_Unused = false;
 
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
@@ -82,7 +83,11 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
+            target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
+
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
+            target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
             switch (item.type)
             {
@@ -188,7 +193,7 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
-            cgn.IncreasedElectricityEffects_Transformer = transformer;
+            cgn.IncreasedElectricityEffects_Unused = false;
 
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
@@ -197,7 +202,11 @@ namespace CalamityMod.CalPlayer
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
+            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            cgn.IncreasedWaterEffects_Amulet2 = false;
+
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
+            cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
             switch (proj.type)
             {
@@ -223,6 +232,11 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.DeathSickle:
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
+                    break;
+
+                case ProjectileID.ButchersChainsaw:
+                case ProjectileID.MechanicalPiranha:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case ProjectileID.LunarFlare:
@@ -453,7 +467,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int heal = (int)Math.Round(hit.Damage * 0.035);
-                    if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                    if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                         return;
 
                     CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
@@ -473,7 +487,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int heal = (int)Math.Round(hit.Damage * 0.01);
-                    if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                    if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                         return;
 
                     for (int i = 0; i <= 2; i++)
@@ -1027,39 +1041,6 @@ namespace CalamityMod.CalPlayer
                 titanCooldown = 15;
             }
 
-            if (corrosiveSpine && modProj.stealthStrikeHitCount < 3 && (Player.ownedProjectileCounts[ProjectileType<Corrocloud1>()] + Player.ownedProjectileCounts[ProjectileType<Corrocloud2>()] + Player.ownedProjectileCounts[ProjectileType<Corrocloud3>()]) < 3)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    if (Main.rand.NextBool())
-                    {
-                        int type = -1;
-                        switch (Main.rand.Next(15))
-                        {
-                            case 0:
-                                type = ProjectileType<Corrocloud1>();
-                                break;
-                            case 1:
-                                type = ProjectileType<Corrocloud2>();
-                                break;
-                            case 2:
-                                type = ProjectileType<Corrocloud3>();
-                                break;
-                        }
-
-                        if (type != -1)
-                        {
-                            int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
-
-                            float speed = Main.rand.NextFloat(5f, 11f);
-                            int cloud = Projectile.NewProjectile(spawnSource, position, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, type, damage, proj.knockBack, Player.whoAmI);
-                            if (cloud.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[cloud].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-            }
-
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
@@ -1160,10 +1141,6 @@ namespace CalamityMod.CalPlayer
                 {
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), 120);
                 }
-                if (corrosiveSpine)
-                {
-                    target.AddBuff(BuffID.Poisoned, 240);
-                }
             }
             if (summon)
             {
@@ -1207,16 +1184,16 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffID.Poisoned, 60);
             if (aSpark && Player.IsUnderwater())
             {
-                int duration = transformer ? 120 : 60;
+                int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (abyssalAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());
             }
             if (lumenousAmulet)
             {
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<CrushDepth>());
+            }
+            if (corrosiveSpine)
+            {
+                target.AddBuff(BuffType<Irradiated>(), 120);
             }
             if (alchFlask)
             {
@@ -1254,7 +1231,7 @@ namespace CalamityMod.CalPlayer
                 Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ProjectileType<GladiatorHealOrb>(), 0, 0f);
             }
 
-            if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
+            if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
             {
                 // Increases the degree to which Spectre Healing set contributes to the lifesteal cap
                 if (Player.ghostHeal && proj.CountsAsClass<MagicDamageClass>())
@@ -1266,7 +1243,7 @@ namespace CalamityMod.CalPlayer
                         cooldownMult = 0f;
 
                     float cooldown = damage * cooldownMult;
-                    Main.player[Main.myPlayer].lifeSteal -= cooldown;
+                    Main.LocalPlayer.lifeSteal -= cooldown;
                 }
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
@@ -1385,12 +1362,12 @@ namespace CalamityMod.CalPlayer
 
             if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && target.lifeMax > 5)
             {
-                if (target.IsAnEnemy(false) && Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech)
+                if (target.IsAnEnemy(false) && Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech)
                 {
                     int heal = 4;
-                    if (!Main.player[Main.myPlayer].moonLeech)
+                    if (!Main.LocalPlayer.moonLeech)
                     {
-                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealSetBonusCooldownMultiplier;
+                        Main.LocalPlayer.lifeSteal -= heal * BalancingConstants.LifeStealSetBonusCooldownMultiplier;
 
                         float lowestHealthCheck = 0f;
                         int healTarget = Player.whoAmI;
@@ -1422,16 +1399,16 @@ namespace CalamityMod.CalPlayer
 
             if (reaverDefense)
             {
-                if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
+                if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
                 {
                     double healMult = 0.1;
                     int heal = (int)Math.Round(damage * healMult);
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
-                    if (heal > 0 && !Main.player[Main.myPlayer].moonLeech)
+                    if (heal > 0 && !Main.LocalPlayer.moonLeech)
                     {
-                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealReaverTankCooldownMultiplier;
+                        Main.LocalPlayer.lifeSteal -= heal * BalancingConstants.LifeStealReaverTankCooldownMultiplier;
 
                         float lowestHealthCheck = 0f;
                         int healTarget = Player.whoAmI;

@@ -47,7 +47,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Explode into a bunch of rocks when broken.

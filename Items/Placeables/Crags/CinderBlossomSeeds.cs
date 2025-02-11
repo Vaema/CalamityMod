@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Placeables.Crags
             Item.useTime = 10;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
 
             Item.value = Item.buyPrice(silver: 1, copper: 50); // Sold by Dryad; equal to Ash Grass Seeds
         }

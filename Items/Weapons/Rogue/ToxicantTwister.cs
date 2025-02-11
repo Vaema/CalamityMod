@@ -14,10 +14,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 42;
             Item.height = 46;
-            Item.damage = 300;
+            Item.damage = 230;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 50;
+            Item.useAnimation = Item.useTime = 40;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
@@ -30,18 +30,18 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override float StealthDamageMultiplier => 0.25f;
+        public override float StealthDamageMultiplier => 0.4f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float angle1 = MathHelper.ToRadians(20f);
+            float rotationAngle = MathHelper.ToRadians(20f);
             if (player.Calamity().StealthStrikeAvailable())
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int proj = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
-                    int proj2 = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1 * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
-                    angle1 *= -1;
+                    int proj = Projectile.NewProjectile(source, position, velocity.RotatedBy(rotationAngle), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
+                    int proj2 = Projectile.NewProjectile(source, position, velocity.RotatedBy(rotationAngle * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
+                    rotationAngle *= -1;
                     if (proj.WithinBounds(Main.maxProjectiles))
                         Main.projectile[proj].Calamity().stealthStrike = true;
                     if (proj2.WithinBounds(Main.maxProjectiles))
@@ -52,9 +52,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int proj = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
-                    int proj2 = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1 * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
-                    angle1 *= -1;
+                    Projectile.NewProjectile(source, position, velocity.RotatedBy(rotationAngle), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
+                    Projectile.NewProjectile(source, position, velocity.RotatedBy(rotationAngle * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
+                    rotationAngle *= -1;
                 }
             }
             return false;

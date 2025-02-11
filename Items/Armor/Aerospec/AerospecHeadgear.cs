@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
         }
 

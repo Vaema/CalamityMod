@@ -66,7 +66,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 MaxCutoffBranchesPerBranch = MaxCutoffBranchesPerBranch
             };
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 BranchDrawer.BarkTexture = ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value;
         }
 

@@ -62,7 +62,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Load the layer asset wrapper.

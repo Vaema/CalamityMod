@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Owner.moonLeech)
                 return;
 
-            Owner.HealPlayer(OmegaBiomeBlade.SuperPogoAttunementSlashLifesteal);
+            Owner.HealPlayer(OmegaBiomeBlade.SuperPogoAttunementSliceLifesteal);
         }
 
         public override bool PreDraw(ref Color lightColor) //OMw to reuse way too much code from the entangling vines

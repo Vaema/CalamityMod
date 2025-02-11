@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.TownNPCs
             dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
             dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
 
-            if (Main.dayTime && !Main.player[Main.myPlayer].ZoneSnow)
+            if (Main.dayTime && !Main.LocalPlayer.ZoneSnow)
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
@@ -144,7 +144,6 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void AddShops()
         {
-            Condition potionSells = CalamityConditions.PotionSellingConfig;
             NPCShop shop = new(Type);
                 shop.Add(ModContent.ItemType<FrostbiteBlaster>())
                 .Add(ModContent.ItemType<IcicleTrident>())

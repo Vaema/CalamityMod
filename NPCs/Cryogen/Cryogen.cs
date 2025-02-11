@@ -311,7 +311,7 @@ namespace CalamityMod.NPCs.Cryogen
                         if (!WorldGen.SolidTile(enemySpawnX, enemySpawnY))
                         {
                             int legendEnemySpawn = NPC.NewNPC(NPC.GetSource_FromAI(), enemySpawnX * 16 + 8, enemySpawnY * 16, spawnType);
-                            if (Main.netMode == NetmodeID.Server && legendEnemySpawn < Main.maxNPCs)
+                            if (Main.dedServ && legendEnemySpawn < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, legendEnemySpawn);
 
                             break;
@@ -1240,7 +1240,7 @@ namespace CalamityMod.NPCs.Cryogen
         {
             SoundStyle sound = Main.zenithWorld ? SoundID.NPCDeath14 : TransitionSound;
             SoundEngine.PlaySound(sound, NPC.Center);
-            if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+            if (!Main.dedServ && !Main.zenithWorld)
             {
                 int chipGoreAmount = newPhase >= 5 ? 3 : newPhase >= 3 ? 2 : 1;
                 for (int i = 1; i < chipGoreAmount; i++)
@@ -1379,7 +1379,7 @@ namespace CalamityMod.NPCs.Cryogen
                     icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+                if (!Main.dedServ && !Main.zenithWorld)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     for (int i = 1; i < 4; i++)
@@ -1460,8 +1460,6 @@ namespace CalamityMod.NPCs.Cryogen
             if (!DownedBossSystem.downedCryogen)
             {
                 string key = "Mods.CalamityMod.Status.Progression.IceOreText";
-                Color messageColor = Color.LightSkyBlue;
-
                 List<int> tileTypes = [
                     TileID.SnowBlock,
                     TileID.IceBlock,
@@ -1476,7 +1474,7 @@ namespace CalamityMod.NPCs.Cryogen
                     tileTypes.Add(TileID.JungleGrass);
                 CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

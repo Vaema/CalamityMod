@@ -101,7 +101,7 @@ namespace CalamityMod.Tiles.FloralParadise
                             Main.tile[i, belowY].TileType = (ushort)ModContent.TileType<SmallVines>();
                             Main.tile[i, belowY].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(i, belowY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
                                 NetMessage.SendTileSquare(-1, i, belowY, 3, TileChangeType.None);
                             }

@@ -68,16 +68,16 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 // Stealth strikes play a wraith death noise, summon a larger dust explosion, a swarm of 20 bats, and a rain of 10 skulls
                 SoundEngine.PlaySound(SoundID.NPCDeath52 with { Volume = SoundID.NPCDeath52.Volume * 0.75f }, Projectile.Center);
-                SpawnBats(20, -12, 12); //"At least 20"...
+                SpawnBats(10, -12, 12); // "At least 20" -  Sorry, balancing!
                 DustExplosion(15, 6, 12, 30, 2.4f);
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 600f, 100f, 700f, 1000f, 20, ModContent.ProjectileType<GrimreaverSkull>(), (int)(Projectile.damage * 0.35f), 3f, Projectile.owner);
                 }
             }
             else
             {
-                // Normal strikes play no extra sound, have a smaller dust explosion, and summon 4 bats 
+                // Normal strikes play no extra sound, have a smaller dust explosion, and summon 4 bats
                 SpawnBats(4, -12, 12);
                 DustExplosion(10, 3, 9, 20, 2.15f);
             }

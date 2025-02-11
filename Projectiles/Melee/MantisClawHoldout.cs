@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Melee
                 { 
                     if (SlashTimer % SlashSpeed == 0)
                     {
-                        SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe" + (Main.rand.Next(2) + 1).ToString());
+                        SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2);
                         SlashStyle.PitchVariance = 0.3f;
                         SlashStyle.Volume = 0.7f;
 

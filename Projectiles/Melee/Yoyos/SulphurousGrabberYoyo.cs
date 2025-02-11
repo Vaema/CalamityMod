@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Type] = 400f;
-            ProjectileID.Sets.YoyosTopSpeed[Type] = 16f; // 32 effective, 48 bubbled
+            ProjectileID.Sets.YoyosMaximumRange[Type] = SulphurousGrabber.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = SulphurousGrabber.Speed / 2;
 
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 0;

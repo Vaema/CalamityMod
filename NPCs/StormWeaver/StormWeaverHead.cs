@@ -201,7 +201,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.Calamity().VulnerableToCold = true;
                     NPC.Calamity().VulnerableToSickness = true;
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWArmorHead1").Type, NPC.scale);
 
                     SoundEngine.PlaySound(ArmorShedSound, NPC.Center);
@@ -370,7 +370,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 if (phase3 && !useTornadoes)
                 {
                     // Let it snow while able to use the frost wave attack
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Vector2 scaledSize = Main.Camera.ScaledSize;
                         Vector2 scaledPosition = Main.Camera.ScaledPosition;
@@ -446,9 +446,9 @@ namespace CalamityMod.NPCs.StormWeaver
                         if (phase4)
                         {
                             // Lightning strike
-                            if (!Main.DisableIntenseVisualEffects)
+                            if (!Main.DisableIntenseVisualEffects && !CalamityClientConfig.Instance.Photosensitivity)
                             {
-                                if (Main.netMode != NetmodeID.Server)
+                                if (!Main.dedServ)
                                 {
                                     if (lightningSpeed == 0f)
                                     {
@@ -792,7 +792,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (phase4)
             {
                 // Adjust lightning flash variables when in phase 3
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (lightningSpeed > 0f)
                     {
@@ -902,7 +902,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeHead1").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeHead2").Type, NPC.scale);
@@ -989,7 +989,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 {
                     ModContent.ItemType<SkytideDragoon>(),
                     ModContent.ItemType<TheStorm>(),
-                    ModContent.ItemType<Thunderbolt>(),
+                    ModContent.ItemType<Volterion>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 

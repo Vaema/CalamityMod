@@ -16,6 +16,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -43,10 +44,36 @@ namespace CalamityMod.CalPlayer
                 {
             		int uncommonRate = Math.Clamp(240 / attempt.fishingLevel, 3, 240); // Iron/Mythril (originally 300)
                     attempt.uncommon = Main.rand.NextBool(uncommonRate);
+
+                    // These roll result bools are individually stored for the rarifying visuals
             		int rareRate = Math.Clamp(840 / attempt.fishingLevel, 4, 840); // Biome (originally 1050)
-                    attempt.uncommon = Main.rand.NextBool(rareRate);
+                    bool rareRoll = Main.rand.NextBool(rareRate);
+                    attempt.rare = rareRoll;
+
             		int veryRareRate = Math.Clamp(1800 / attempt.fishingLevel, 5, 1800); // Golden/Titanium (originally 2250)
-                    attempt.uncommon = Main.rand.NextBool(veryRareRate);
+                    bool veryRareRoll = Main.rand.NextBool(veryRareRate);
+                    attempt.veryrare = veryRareRoll;
+
+                    Vector2 basePos = new Vector2(attempt.X * 16f, attempt.Y * 16f);
+                    if (rareRoll || veryRareRoll)
+                    {
+                        for (int i = 0; i < 8; i++)
+                        {
+                            Vector2 position = basePos + Vector2.UnitX * Main.rand.NextFloat(-16f, 16f);
+                            Vector2 velocity = (Vector2.UnitY * Main.rand.NextFloat(-12f, -9f)).RotatedByRandom(MathHelper.ToRadians(18f));
+                            float scale = Main.rand.NextFloat(0.5f, 1.5f);
+                            CritSpark spark = new(position, velocity, Color.White, Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.5f), scale, 36, 0.2f, scale * 2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                    }
+
+                    for (int i = 0; i < 6; i++)
+                    {
+                        Vector2 position = basePos + Vector2.UnitX * Main.rand.NextFloat(-16f, 16f);
+                        Vector2 velocity = (Vector2.UnitY * Main.rand.NextFloat(-3f, -0.5f)).RotatedByRandom(MathHelper.ToRadians(12f));
+                        PearlParticle pearl = new(position, velocity, false, 24, Main.rand.NextFloat(0.5f, 1f), Main.hslToRgb(Main.rand.NextFloat(), 1f, (rareRoll || veryRareRoll) ? 0.75f : 1f));
+                        GeneralParticleHandler.SpawnParticle(pearl);
+                    }
                 }
             }
         }
@@ -264,6 +291,7 @@ namespace CalamityMod.CalPlayer
                         ModContent.ItemType<RustedJingleBell>()
                     };
                     legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
+                    legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
                     legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SerpentsBite>(), Main.hardMode);
                     itemDrop = legendaryCatches[Main.rand.Next(legendaryCatches.Count)];
                 }
@@ -287,11 +315,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (attempt.legendary)
                 {
-                    itemDrop = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        ModContent.ItemType<AlluringBait>(),
-                        ModContent.ItemType<AbyssalAmulet>()
-                    });
+                    ModContent.ItemType<AlluringBait>();
                 }
                 else if (attempt.common && Main.rand.NextBool())
                     itemDrop = ModContent.ItemType<PlantyMush>();

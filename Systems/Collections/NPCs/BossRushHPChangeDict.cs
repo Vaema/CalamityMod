@@ -71,10 +71,10 @@ namespace CalamityMod.Systems.Collections
                 { NPCID.Retinazer, 125000 },
                 { NPCType<Foveanator>(), 137500 },
 
-                { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
-                { NPCID.TheDestroyerBody, 250000 },
-                { NPCID.TheDestroyerTail, 250000 },
-                { NPCID.Probe, 5000 },
+                { NPCID.TheDestroyer, 600000 }, // 30 seconds + immunity timer at start
+                { NPCID.TheDestroyerBody, 600000 },
+                { NPCID.TheDestroyerTail, 600000 },
+                { NPCID.Probe, 10000 },
 
                 { NPCID.SkeletronPrime, 160000 }, // 30 seconds
                 { NPCType<SkeletronPrime2>(), 160000 },

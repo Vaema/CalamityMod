@@ -59,10 +59,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public Player Owner => Main.player[Projectile.owner];
 
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 6; //The true trolling is that we only really use this for the third swing.
-        }
+        public override void SetStaticDefaults() => Main.projFrames[Type] = 6; //The true trolling is that we only really use this for the third swing.
+
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -83,13 +81,13 @@ namespace CalamityMod.Projectiles.Melee
             switch (SwingMode)
             {
                 case 0:
-                    bladeLength = 90f * Projectile.scale;
+                    bladeLength = 95f * Projectile.scale;
                     break;
                 case 1:
-                    bladeLength = 110f * Projectile.scale;
+                    bladeLength = 120f * Projectile.scale;
                     break;
                 case 2:
-                    bladeLength = Projectile.frame <= 2 ? 85f : 150f; //Only use the extended hitbox after the blade actually extends. For realism.
+                    bladeLength = Projectile.frame <= 2 ? 85f : 180f; //Only use the extended hitbox after the blade actually extends. For realism.
                     bladeLength *= Projectile.scale;
                     displace = direction * ThrustDisplaceRatio() * 60f;
                     break;

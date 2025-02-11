@@ -361,7 +361,7 @@ namespace CalamityMod
             float playerDist = playerVector.Length();
             if (playerDist < 50f && projectile.position.X < player.position.X + player.width && projectile.position.X + projectile.width > player.position.X && projectile.position.Y < player.position.Y + player.height && projectile.position.Y + projectile.height > player.position.Y)
             {
-                if (projectile.owner == Main.myPlayer && !Main.player[Main.myPlayer].moonLeech)
+                if (projectile.owner == Main.myPlayer && !Main.LocalPlayer.moonLeech)
                 {
                     int healAmt = healing;
                     player.HealPlayer(healAmt, HealTextType.Local);

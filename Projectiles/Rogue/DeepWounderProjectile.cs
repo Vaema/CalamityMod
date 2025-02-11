@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
                 if (StuckTo == null)
                 {
                     StuckTo = target;
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             }
         }
 

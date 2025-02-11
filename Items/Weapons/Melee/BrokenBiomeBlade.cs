@@ -43,11 +43,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int ColdAttunement_BaseDamage = 40;
         public static float ColdAttunement_ThirdSwingBoost = 1.15f;
 
-        public static int HotAttunement_BaseDamage = 35;
-        public static int HotAttunement_FullChargeDamage = 60;
-        public static int HotAttunement_ShredIFrames = 6;
-        public static int HotAttunement_LocalIFrames = 40; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int HotAttunement_LocalIFramesCharged = 25;
+        public static int HotAttunement_BaseDamage = 42;
+        public static int HotAttunement_ShredPlayerIFrames = 6;
+        public static int HotAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 1f; //How much charge is lost per frame.
         #endregion
 
@@ -58,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -130,7 +128,7 @@ namespace CalamityMod.Items.Weapons.Melee
             var clone = base.Clone(item);
 
             if (Main.mouseItem.type == ItemType<BrokenBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
 
             if (clone is BrokenBiomeBlade a && item.ModItem is BrokenBiomeBlade a2)
             {

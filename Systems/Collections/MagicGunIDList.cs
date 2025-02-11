@@ -38,7 +38,7 @@ namespace CalamityMod.Systems.Collections
                 ItemType<SHPC>(),
                 ItemType<TeslaCannon>(),
                 ItemType<TheSwarmer>(),
-                ItemType<Thunderbolt>(),
+                ItemType<Volterion>(),
                 ItemType<Wingman>(),
                 ItemID.BeeGun,
                 ItemID.BubbleGun,

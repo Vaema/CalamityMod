@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public Color mainColor1 = Color.Goldenrod;
         public Color mainColor2 = Color.OrangeRed;
+        public bool playSwingSound = true;
 
         public SlotId AudSlot;
         public override void SetDefaults()
@@ -67,7 +68,7 @@ namespace CalamityMod.Projectiles.Melee
             useAnim = Owner.itemAnimationMax;
             storedUseAnim = useAnim;
 
-            chargeTimerMax = (int)(useAnim * 1.5f); // Max charge time is set here
+            chargeTimerMax = (int)(useAnim * 1.1f); // Max charge time is set here
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -125,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.05f);
 
-                    float rotationValue = 65f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
+                    float rotationValue = 45f + (25 * Utils.GetLerpValue(0, chargeTimerMax, chargeTimer, true)) * (FlipAsSword ? 1 : -1) * -Projectile.ai[1];
                     Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(rotationValue), 0.3f);
                     Animation = 0;
                     Owner.itemAnimation++;
@@ -202,11 +203,12 @@ namespace CalamityMod.Projectiles.Melee
                 
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
-                if (AnimationProgress < (useAnim / 3))
+                if (AnimationProgress < (useAnim / 1.6f))
                 {
                     if (Projectile.ai[2] == 5 && !chargedSwing)
                         doSwing = false;
 
+                    playSwingSound = true;
                     aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
                     postSwing = false;
@@ -221,7 +223,7 @@ namespace CalamityMod.Projectiles.Melee
                         useAnim = storedUseAnim;
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
-                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.2f);
+                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.15f, useAnim * 0.35f, Animation, true)) * 0.35f)), 0.2f);
                     FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 }
                 else
@@ -229,7 +231,7 @@ namespace CalamityMod.Projectiles.Melee
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
-                    if (time == (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)))
+                    if (time >= (int)(timeMax * (chargedSwing ? 0.2f : 0.4f)) && playSwingSound)
                     {
                         if (!chargedSwing)
                         {
@@ -245,6 +247,7 @@ namespace CalamityMod.Projectiles.Melee
                             SoundStyle swing2 = new("CalamityMod/Sounds/Item/SwingMid");
                             SoundEngine.PlaySound(swing2 with { Volume = 0.9f, Pitch = -0.55f }, Projectile.Center);
                         }
+                        playSwingSound = false;
                     }
                     if ( time > (int)(timeMax * (chargedSwing ? 0.1f : 0.3f)) && time < (int)(timeMax * (chargedSwing ? 0.95f : 0.85f)))
                     {
@@ -400,14 +403,14 @@ namespace CalamityMod.Projectiles.Melee
                     for (int i = 0; i < 4; i++)
                     {
                         Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
-                        Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
+                        Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 4f;
 
-                        Particle pulse = new GlowSparkParticle(target.Center, vel, false, 12, 0.1f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, 0.85f);
+                        Particle pulse = new CustomSpark(target.Center, vel, "CalamityMod/Particles/BloomCircle", false, 12, 1.2f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, shrinkSpeed: 0.95f);
                         GeneralParticleHandler.SpawnParticle(pulse);
                     }
                     for (int i = 0; i < 4; i++)
                     {
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -13).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
                     }
                 }
             }

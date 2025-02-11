@@ -130,9 +130,9 @@ namespace CalamityMod.NPCs
             }
             if (sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
                 {
-                    SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
+                    SoundEngine.PlaySound(Mauler.RoarSound, Main.LocalPlayer.Center);
                 }
 
                 int lastPlayer = slainedNPC.lastInteraction;

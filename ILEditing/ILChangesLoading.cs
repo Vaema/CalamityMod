@@ -44,6 +44,7 @@ namespace CalamityMod.ILEditing
             On_Main.DrawInfernoRings += DrawForegroundParticles;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
+            On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;
 
             // Graphics (dyeable shader stuff)
             On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;
@@ -67,6 +68,7 @@ namespace CalamityMod.ILEditing
             On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
+            On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
             On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
@@ -189,6 +191,7 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
+            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
@@ -199,7 +202,7 @@ namespace CalamityMod.ILEditing
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
-            On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
+            On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
 

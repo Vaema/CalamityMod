@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Player player = Main.player[playerIndex];
                 float targetDist = Vector2.Distance(player.Center, Projectile.Center);
 
-                if (targetDist < 200f * areaScale && time % 12 == 0)
+                if (targetDist < 200f * areaScale && time % 15 == 0)
                 {
                     player.HealPlayer(1);
                 }

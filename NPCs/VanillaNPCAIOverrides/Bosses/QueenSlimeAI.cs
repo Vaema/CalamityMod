@@ -900,7 +900,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Main.npc[slimeScale2].velocity.Y = Main.rand.Next(-30, 1) * 0.1f;
             Main.npc[slimeScale2].ai[0] = -500 * Main.rand.Next(3);
             Main.npc[slimeScale2].ai[1] = 0f;
-            if (Main.netMode == NetmodeID.Server && slimeScale2 < Main.maxNPCs)
+            if (Main.dedServ && slimeScale2 < Main.maxNPCs)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeScale2);
 
             return false;
@@ -1634,7 +1634,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 Main.npc[num33].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                 Main.npc[num33].ai[0] = -500 * Main.rand.Next(3);
                 Main.npc[num33].ai[1] = 0f;
-                if (Main.netMode == NetmodeID.Server && num33 < Main.maxNPCs)
+                if (Main.dedServ && num33 < Main.maxNPCs)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num33);
             }
 

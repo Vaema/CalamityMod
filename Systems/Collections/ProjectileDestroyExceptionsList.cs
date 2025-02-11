@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using Terraria.ID;
@@ -32,7 +33,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileID.ChargedBlasterCannon,
                 ProjectileID.MedusaHead,
 
-                ProjectileType<UrchinMaceProjectile>(),
+                ProjectileType<UrchinMaceProj>(),
                 ProjectileType<BrokenBiomeBladeHoldout>(),
                 ProjectileType<AridGrandeur>(),
                 ProjectileType<BitingEmbrace>(),

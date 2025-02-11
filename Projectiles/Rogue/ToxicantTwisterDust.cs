@@ -26,8 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
+            Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 180;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
@@ -69,6 +68,10 @@ namespace CalamityMod.Projectiles.Rogue
             
             Projectile.ai[1]++;
         }
+
+        public override bool? CanHitNPC(NPC target) => target == targetedNPC ? null : false;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 2; i++)
@@ -77,18 +80,5 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.noGravity = true;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-            return true;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
-            if (target == targetedNPC)
-                Projectile.Kill();
-        }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
     }
 }

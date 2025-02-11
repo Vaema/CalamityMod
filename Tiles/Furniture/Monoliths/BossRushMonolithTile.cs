@@ -34,6 +34,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
 
             RegisterItemDrop(ModContent.ItemType<BossRushMonolith>());
             Main.tileFrameImportant[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4);
             TileObjectData.newTile.Width = 4;
             TileObjectData.newTile.Origin = new Point16(2, 3);

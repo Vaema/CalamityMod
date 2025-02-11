@@ -20,7 +20,7 @@ namespace CalamityMod.Packets
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             // Only Server should send Reponse to Clients
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             var packet = Instance.CreateBasePacket();

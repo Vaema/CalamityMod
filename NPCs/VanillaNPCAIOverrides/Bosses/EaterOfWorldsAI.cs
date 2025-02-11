@@ -302,7 +302,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // If for any reason this segment was deleted, send info to clients so they also see it die.
-                if (!npc.active && Main.netMode == NetmodeID.Server)
+                if (!npc.active && Main.dedServ)
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f);
             }
 
@@ -563,13 +563,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     Main.npc[segmentAmt].active = false;
                                     npc.life = 0;
 
-                                    if (Main.netMode == NetmodeID.Server)
+                                    if (Main.dedServ)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segmentAmt, 0f, 0f, 0f, 0, 0, 0);
 
                                     segmentAmt = attachedSegments;
                                 }
 
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                             }
                             targetPosX = 0f;
@@ -760,7 +760,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Manually sync newAI because there is no GlobalNPC.SendExtraAI
-            if (npc.active && npc.netUpdate && Main.netMode == NetmodeID.Server)
+            if (npc.active && npc.netUpdate && Main.dedServ)
             {
                 SyncCalamityNPCAIArrayPacket.Send(npc);
             }
@@ -936,7 +936,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.alpha = 0;
                 }
 
-                if (!npc.active && Main.netMode == NetmodeID.Server)
+                if (!npc.active && Main.dedServ)
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f);
             }
 
@@ -1143,13 +1143,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     int num76 = (int)Main.npc[num75].ai[0];
                                     Main.npc[num75].active = false;
                                     npc.life = 0;
-                                    if (Main.netMode == NetmodeID.Server)
+                                    if (Main.dedServ)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num75);
 
                                     num75 = num76;
                                 }
 
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                             }
 

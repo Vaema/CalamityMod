@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Typeless
             BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
 
             CalamityNetcode.SyncWorld();
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 BossRushStagePacket.Send();
             }

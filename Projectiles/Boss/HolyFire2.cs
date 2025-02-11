@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
                 playerDirection.Normalize();
                 playerDirection *= projVelocityMult;
-                float inertia = !ProvUtils.DayAI() ? 20f : 25f;
+                float inertia = !ProvUtils.StandardAI() ? 20f : 25f;
                 Projectile.velocity = (Projectile.velocity * (inertia - 1f) + playerDirection) / inertia;
                 Projectile.velocity.Normalize();
                 Projectile.velocity *= projVelocityMult;
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
             int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, texture);

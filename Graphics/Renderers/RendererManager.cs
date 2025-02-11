@@ -21,7 +21,7 @@ namespace CalamityMod.Graphics.Renderers
         #region Loading
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Main.QueueMainThreadAction(() =>
@@ -38,7 +38,7 @@ namespace CalamityMod.Graphics.Renderers
 
         public override void Unload()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Clear the cached renderers, so they can be readded on mod loading when initialized.

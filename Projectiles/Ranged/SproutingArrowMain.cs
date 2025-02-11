@@ -1,9 +1,14 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -22,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 35;
-            Projectile.extraUpdates = 8;
+            Projectile.extraUpdates = 80;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
@@ -35,11 +40,48 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.ai[0] == 0)
             {
                 Projectile.damage = (int)(Projectile.damage * 0.3f);
-                Projectile.velocity *= 0.25f;
-                LineParticle spark = new LineParticle(Projectile.Center + Projectile.velocity * 4, Projectile.velocity * 4.95f, false, 9, 2.4f, Color.LimeGreen);
-                GeneralParticleHandler.SpawnParticle(spark);
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5;
+
+                Particle orb2 = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 86, Projectile.velocity * 0.1f, "CalamityMod/Particles/BloomArrow", false, 9, 0.7f, Main.rand.NextBool() ? Color.LimeGreen : Color.Lime, new Vector2(0.5f, 4f), true, true, shrinkSpeed: Main.rand.NextFloat(0.1f, 0.3f), glowCenterScale: 0.95f, glowOpacity: 0.8f);
+                GeneralParticleHandler.SpawnParticle(orb2);
             }
             Projectile.ai[0]++;
+
+            if (Projectile.timeLeft == 1)
+            {
+                for (int index = 0; index < Main.npc.Length; index++)
+                {
+                    NPC nPC = Main.npc[index];
+                    float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f);
+
+                    if (Utils.Distance(nPC.Center, Projectile.Center) < 15 + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && nPC.CanBeChasedBy() && !hitDirect)
+                    {
+                        float blastSize = 45;
+                        float minMultiplier = 0.4f;
+                        int hitsToMinMult = 4;
+                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.25f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                        blast.DamageType = DamageClass.Ranged;
+                        blast.ArmorPenetration = 8;
+
+                        hitDirect = true;
+
+                        for (int i = 0; i < 2; i++)
+                            SoundEngine.PlaySound((i == 0 ? SoundID.Item53 : SoundID.Item52) with { Pitch = (i == 0 ? 0.9f : 0.5f), Volume = 0.45f, MaxInstances = 2 }, nPC.Center);
+                        int Dusts = 8;
+                        float radians = MathHelper.TwoPi / Dusts;
+                        Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                        float rotRando = Main.rand.NextFloat(0.1f, 2.5f);
+                        for (int i = 0; i < Dusts; i++)
+                        {
+                            Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f * rotRando) * 6f;
+                            Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 264, dustVelocity);
+                            dust2.noGravity = true;
+                            dust2.scale = Main.rand.NextFloat(0.85f, 1.35f);
+                            dust2.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;
+                        }
+                    }
+                }
+            }
 
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
@@ -51,6 +93,8 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 vel1 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(0.015f, 0.04f));
                 Vector2 vel2 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(-0.015f, -0.04f));
 
+                Particle sparker = new CustomSpark(Projectile.Center, Projectile.velocity.RotatedByRandom(0.9f) * 0.01f, "CalamityMod/Particles/FullStar", false, 10, Main.rand.NextFloat(0.8f, 1.1f) * (hitDirect ? 4 : 2), Color.LimeGreen, new Vector2(1f, 0.5f), true, true, shrinkSpeed: 1f, glowCenterScale: 0.8f, glowOpacity: 0.8f);
+                GeneralParticleHandler.SpawnParticle(sparker);
                 Projectile split1 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
                 Projectile split2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
                 if (Projectile.Calamity().conditionalHomingRange > 0f) // Allows the split arrows to home when using Arterial Assault as well
@@ -58,33 +102,11 @@ namespace CalamityMod.Projectiles.Ranged
                     split1.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;
                     split2.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;
                 }
-                
-                PointParticle spark = new PointParticle(Projectile.Center - Projectile.velocity + Projectile.velocity.RotatedBy(2.3f), Projectile.velocity.RotatedBy(2.3f) * 0.5f, false, 5, 1.1f, Color.LimeGreen);
-                GeneralParticleHandler.SpawnParticle(spark);
-                PointParticle spark2 = new PointParticle(Projectile.Center - Projectile.velocity + Projectile.velocity.RotatedBy(-2.3f), Projectile.velocity.RotatedBy(-2.3f) * 0.5f, false, 5, 1.1f, Color.LimeGreen);
-                GeneralParticleHandler.SpawnParticle(spark2);
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.timeLeft <= 4)
-            {
-                hitDirect = true;
-                SoundEngine.PlaySound(SoundID.Item53 with { Pitch = 0.9f, Volume = 0.4f }, Projectile.Center);
-                int Dusts = 8;
-                float radians = MathHelper.TwoPi / Dusts;
-                Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
-                float rotRando = Main.rand.NextFloat(0.1f, 2.5f);
-                for (int i = 0; i < Dusts; i++)
-                {
-                    Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f * rotRando) * 6f;
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 264, dustVelocity);
-                    dust2.noGravity = true;
-                    dust2.scale = Main.rand.NextFloat(0.85f, 1.35f);
-                    dust2.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;
-                }
-                Projectile.Kill();
-            }
+            
         }
     }
 }

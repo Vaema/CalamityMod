@@ -17,7 +17,6 @@ namespace CalamityMod.Systems.Collections
             List =
             [
                 ItemType<SkyStabber>(),
-                ItemType<Nychthemeron>(),
                 ItemType<GodsParanoia>(),
                 ItemType<SlickCane>(),
                 ItemType<Mycoroot>(),

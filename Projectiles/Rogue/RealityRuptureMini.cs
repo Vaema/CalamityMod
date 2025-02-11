@@ -23,14 +23,11 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 3;
             Projectile.timeLeft = 800;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
             Projectile.extraUpdates = 3;
-            Projectile.tileCollide = false;
         }
 
         public override void AI()
@@ -96,7 +93,5 @@ namespace CalamityMod.Projectiles.Rogue
         {
             SoundEngine.PlaySound(Hitsound, Projectile.position);
         }
-
-        //public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Ichor, 120);
     }
 }

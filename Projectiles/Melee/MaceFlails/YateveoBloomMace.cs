@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             base.SetDefaults();
         }
 
-        public override void ExtraBehavior()
+        public override bool ExtraBehavior()
         {
             if (Main.rand.NextBool(3))
             {
@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 spore.noGravity = true;
                 spore.scale = 1.5f;
             }
+            return true;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Poisoned, 180);

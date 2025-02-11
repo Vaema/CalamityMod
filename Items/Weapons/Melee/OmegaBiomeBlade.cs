@@ -34,26 +34,24 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 200;
 
-        public static int WhirlwindAttunement_BaseDamage = 140;
+        public static int WhirlwindAttunement_BaseDamage = 120;
         public static int WhirlwindAttunement_LocalIFrames = 20; //Remember its got one extra update
         public static float WhirlwindAttunement_EnergyDamageMult = 0.5f;
-        public static float WhirlwindAttunement_BaseDamageReduction = 0.3f;
-        public static float WhirlwindAttunement_FullChargeDamageBoost = 0.9f;
+        public static float WhirlwindAttunement_BaseSwingDamageMult = 0.4f;
+        public static float WhirlwindAttunement_FullSwingDamageMult = 1f;
         public static float WhirlwindAttunement_ThrowDamageBoost = 3.3f;
         public static float WhirlwindAttunement_MonolithDamageMult = 0.5f;
 
         public static int WhirlwindAttunement_PassiveBaseDamage = 80;
 
 
-        public static int SuperPogoAttunement_BaseDamage = 200;
-        public static int SuperPogoAttunement_FullChargeDamage = 380;
-        public static int SuperPogoAttunement_ShredIFrames = 10;
-        public static int SuperPogoAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int SuperPogoAttunement_LocalIFramesCharged = 16;
-        public static float SuperPogoAttunement_SlashDamageBoost = 2.5f; //Keep in mind the slice always crits
-        public static int SuperPogoAttunementSlashLifesteal = 4;
-        public static int SuperPogoAttunement_SlashIFrames = 20;
-        public static float SuperPogoAttunement_ShotDamageBoost = 2.5f;
+        public static int SuperPogoAttunement_BaseDamage = 190;
+        public static int SuperPogoAttunement_PlayerShredIFrames = 8;
+        public static int SuperPogoAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
+        public static float SuperPogoAttunement_ShotDamageMult = 2.5f;
+        public static float SuperPogoAttunement_SliceDamageMult = 2.5f; //Keep in mind the slice always crits
+        public static int SuperPogoAttunementSliceLifesteal = 4;
+        public static int SuperPogoAttunement_PlayerSliceIFrames = 20;
         public static float SuperPogoAttunement_ShredDecayRate = 0.65f;//How much charge is lost per frame.
 
         public static int SuperPogoAttunement_PassiveLifeSteal = 7;
@@ -62,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int ShockwaveAttunement_BaseDamage = 550;
         public static float ShockwaveAttunement_BeamDamageMult = 0.25f;
         public static int ShockwaveAttunement_DashHitIFrames = 20;
-        public static float ShockwaveAttunement_FullChargeBoost = 2.5f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
+        public static float ShockwaveAttunement_FullChargeMult = 3.6f;
         public static int ShockwaveAttunement_SigilTime = 1000;
         public static float ShockwaveAttunement_MonolithDamageBoost = 0.75f;
 
@@ -105,7 +103,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -196,7 +194,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             var clone = base.Clone(item);
             if (Main.mouseItem.type == ItemType<OmegaBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
             if (clone is OmegaBiomeBlade a && item.ModItem is OmegaBiomeBlade a2)
             {
                 a.mainAttunement = a2.mainAttunement;

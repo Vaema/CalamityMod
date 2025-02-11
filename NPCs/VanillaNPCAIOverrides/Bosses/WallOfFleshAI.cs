@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!WorldGen.SolidTile(targetTileX, targetTileY))
                         {
                             int impSpawn = NPC.NewNPC(npc.GetSource_FromAI(), targetTileX * 16 + 8, targetTileY * 16, NPCID.FireImp);
-                            if (Main.netMode == NetmodeID.Server && impSpawn < Main.maxNPCs)
+                            if (Main.dedServ && impSpawn < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, impSpawn);
 
                             break;
@@ -272,8 +272,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[3] = 1f;
 
                         // Play roar sound on players nearby
-                        if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < 2800f)
-                            SoundEngine.PlaySound(SoundID.NPCDeath10 with { Pitch = SoundID.NPCDeath10.Pitch - 0.25f }, Main.player[Main.myPlayer].Center);
+                        if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < 2800f)
+                            SoundEngine.PlaySound(SoundID.NPCDeath10 with { Pitch = SoundID.NPCDeath10.Pitch - 0.25f }, Main.LocalPlayer.Center);
                     }
                 }
                 else if (distanceFromTarget < distanceBeforeSlowingDown)
@@ -892,8 +892,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int projectileType = ProjectileID.EyeLaser;
                         int damage = npc.GetProjectileDamage(projectileType);
 
+                        bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
+                        float projectileOffset = targetTooClose ? 60f : 150f;
                         Vector2 projectileVelocity = (lookAt - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 150f;
+                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
 
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
                         Main.projectile[proj].timeLeft = 900;
@@ -944,7 +946,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!WorldGen.SolidTile(num353, num354))
                         {
                             int num355 = NPC.NewNPC(npc.GetSource_FromAI(), num353 * 16 + 8, num354 * 16, 24);
-                            if (Main.netMode == NetmodeID.Server && num355 < Main.maxNPCs)
+                            if (Main.dedServ && num355 < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num355);
 
                             break;
@@ -1510,16 +1512,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.1)
                         num397 += 1f;
 
-                    vector39 = npc.Center;
-                    num392 = Main.player[npc.target].Center.X - vector39.X;
-                    num393 = Main.player[npc.target].Center.Y - vector39.Y;
+                    num392 = Main.player[npc.target].Center.X - npc.Center.X;
+                    num393 = Main.player[npc.target].Center.Y - npc.Center.Y;
                     num394 = (float)Math.Sqrt(num392 * num392 + num393 * num393);
                     num394 = num397 / num394;
                     num392 *= num394;
                     num393 *= num394;
+
+                    bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
+                    float projectileOffset = targetTooClose ? 60f : 150f;
                     Vector2 projectileVelocity = new Vector2(num392, num393);
-                    vector39 += projectileVelocity.SafeNormalize(Vector2.UnitY) * 150f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector39, projectileVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 1f, 0f);
+                    Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 1f, 0f);
                 }
             }
 

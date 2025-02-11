@@ -42,17 +42,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // Deadshot Brooch moment
-            if (Projectile.MaxUpdates > 1)
-                Projectile.MaxUpdates = 1;
-
             if (Projectile.ai[2] == boomTime)
                 Ignited = true;
             if (Ignited)
             {
                 if (Projectile.ai[2] == boomTime)
                 {
-                    Projectile.damage *= 7; // This is probably too much lol
+                    // Xyk: "This is probably too much lol"
+                    // Yeah I'd say 7x base damage is a bit much
+                    Projectile.damage *= 4;
                     FogColor = Color.Lerp(Color.OrangeRed, Color.Goldenrod, Main.rand.NextFloat());
 
                     SoundStyle ignite = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
@@ -82,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Utils.GetLerpValue(280f, 135f, Projectile.timeLeft, true) * Utils.GetLerpValue(0f, 90f, Projectile.timeLeft, true);
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.

@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
             // Everclear is clear so uhm... yeah?
             ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
                 new Color(153, 168, 162, 180),

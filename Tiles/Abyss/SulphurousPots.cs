@@ -37,7 +37,7 @@ namespace CalamityMod.Tiles.Abyss
             Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(i, j);
             if (tileAtPosition.TileFrameX % 36 == 0 && tileAtPosition.TileFrameY % 36 == 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int goreAmt = Main.rand.Next(1, 2 + 1);
                     for (int k = 0; k < goreAmt; k++)

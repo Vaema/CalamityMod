@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Armor.Wulfrum;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
@@ -32,7 +31,6 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
-using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,13 +54,10 @@ using Terraria.Graphics.Capture;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 using Terraria.WorldBuilding;
-using static Terraria.WaterfallManager;
 
 namespace CalamityMod.ILEditing
 {
@@ -92,7 +87,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
             {
                 orig();
@@ -476,6 +471,13 @@ namespace CalamityMod.ILEditing
 
             // No interference with ShadowDodge (previously Titanium armor, now Hallowed armor)
         }
+
+        private static void AddHolyProtectionCooldown(On_Player.orig_PutHallowedArmorSetBonusOnCooldown orig, Player self)
+        {
+            // Adds Calamity's Holy Protection cooldown when triggering Hallowed armor's dodge.
+            orig(self);
+            self.AddCooldown(HolyProtection.ID, CalamityUtils.SecondsToFrames(30));
+        }
         #endregion
 
         #region Custom Gate Door Logic
@@ -657,7 +659,7 @@ namespace CalamityMod.ILEditing
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
                     // Display text indicating that healing was applied to the bleedout buffer.
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         string text = $"(+{amountOfBleedToClear})";
                         Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
@@ -852,7 +854,7 @@ namespace CalamityMod.ILEditing
 
             cursor.EmitDelegate<Action>(() =>
             {
-                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
                     DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
 
@@ -920,6 +922,17 @@ namespace CalamityMod.ILEditing
         {
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
+        }
+        #endregion
+
+        #region Disable Moon Lord Style Flashes With Photosensitivity Config
+        private static void DisableFlashesWithPhotosensitivityConfig(On_MoonlordDeathDrama.orig_RequestLight orig, float light, Vector2 spot)
+        {
+            // Disable this function from running if the Photosensitivity config is enabled.
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                return;
+
+            orig(light, spot);
         }
         #endregion
 
@@ -1842,6 +1855,12 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, newPos, Style, extraInfo);
+                // Potion of Return triggers Jared if used in the Abyss
+                if (Style == 8)
+                {
+                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                        self.AddBuff(BuffID.ChaosState, 2);
+                }
             }
         }
         #endregion
@@ -1859,7 +1878,7 @@ namespace CalamityMod.ILEditing
                 Main.npc[retinazerIndex].target = targetPlayerIndex;
                 Main.npc[retinazerIndex].timeLeft *= 20;
 
-                if (Main.netMode == NetmodeID.Server && retinazerIndex < 200)
+                if (Main.dedServ && retinazerIndex < 200)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
                 }

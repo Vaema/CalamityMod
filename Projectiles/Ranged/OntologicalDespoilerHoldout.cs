@@ -27,11 +27,12 @@ namespace CalamityMod.Projectiles.Ranged
         public int MaxLoadableShots = 23;
         public float BulletSpeed = 6.5f;
         public SlotId OntologicalChargeSlot;
+        public SlotId OntologicalChargeSlotDeep;
         public int Time = 0;
 
         public ref float CurrentChargingFrames => ref Projectile.ai[0];
         public float ShotsLoaded = 1;
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public Color color1;
         public Color color2;
         public Color color3;
@@ -80,6 +81,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
+            if (SoundEngine.TryGetActiveSound(OntologicalChargeSlotDeep, out var ChargeSound6) && ChargeSound6.IsPlaying)
+                ChargeSound6.Position = Projectile.Center;
 
             if (Owner.shirtColor != Color.White)
             {
@@ -100,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
             if ((!Positive && Projectile.ai[2] < 10) || Projectile.ai[2] == 15) // Color is white when Negative
                 baseColor = Color.White;
             else if (Owner.shirtColor == Color.White)
-                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             #region Frame control
             Projectile.frameCounter++;
@@ -188,6 +191,8 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound3))
                     ChargeSound3?.Stop();
+                if (SoundEngine.TryGetActiveSound(OntologicalChargeSlotDeep, out var ChargeSound4))
+                    ChargeSound4?.Stop();
 
                 KeepRefreshingLifetime = false;
 
@@ -203,18 +208,20 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                         int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
-                        int charge2DamageNeg = Projectile.damage * 28;
+                        int charge2DamageNeg = Projectile.damage * 40; // Big charge time? Check. No pierce? Check. 40x damage? Yes!
 
                         if (Positive)
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2.5f, ModContent.ProjectileType<OntologicalDespoilerGrenade>(), charge2DamagePos, Projectile.knockBack, Projectile.owner);
+                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot, Projectile.Center);
                         }
                         else
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 0.6f, ModContent.ProjectileType<OntologicalDespoilerBeam>(), charge2DamageNeg, Projectile.knockBack * 3, Projectile.owner);
                             Owner.Calamity().GeneralScreenShakePower = 12f;
+                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot2 with { Pitch = 0.2f }, Projectile.Center);
+                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot with { Pitch = -0.3f }, Projectile.Center);
                         }
-                        SoundEngine.PlaySound(OntologicalDespoiler.BigShot, Projectile.position);
 
                         // Setting stats for the flash visual effect so it doesn't stick to the gun
                         flashPos = GunTipPosition + Projectile.velocity * 90;
@@ -260,18 +267,20 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.5f), Projectile.knockBack, Projectile.owner, 0, 0, i);
                             }
                         }
                         else
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2.5f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
                             }
                         }
 
-                        SoundEngine.PlaySound(OntologicalDespoiler.SmallShot, Projectile.position);
+                        SoundEngine.PlaySound(OntologicalDespoiler.SmallShot with { Pitch = Positive ? 0 : -0.2f, MaxInstances = Positive ? 1 : -1, Volume = Positive ? 1 : 0.5f }, Projectile.Center);
+                        if (!Positive)
+                            SoundEngine.PlaySound(MagnaCannon.Fire with { Pitch = 0.3f, Volume = 0.5f }, Projectile.Center);
                         for (int i = 0; i < 3; i++)
                         {
                             Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, !Positive ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 2.3f));
@@ -296,7 +305,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ChargeLV1)
                     ShotsLoaded = MaxLoadableShots;
 
-                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
+                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 0.5f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
 
                 // Sounds
                 if (!hasBegunFiring)
@@ -308,6 +317,14 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     else
                         OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeLoop with { Volume = 0.01f, Pitch = 0f, IsLooped = true }, Projectile.Center);
+
+                    if (SoundEngine.TryGetActiveSound(OntologicalChargeSlotDeep, out var ChargeSound5))
+                    {
+                        ChargeSound5.Volume = Positive ? 0 : Utils.Remap(CurrentChargingFrames, Charge1Frames, Charge2Frames, 0, 1.8f, true) * 100;
+                        ChargeSound5.Pitch = Utils.Remap(CurrentChargingFrames, Charge2Frames * 0.9f, Charge2Frames, 1f, (CurrentChargingFrames >= Charge2Frames ? -0.1f : 0.2f), true);
+                    }
+                    else
+                        OntologicalChargeSlotDeep = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MagnaCannonChargeLoop") with { Volume = 0.01f, Pitch = 0f, IsLooped = true }, Projectile.Center);
                 }
 
                 // Charge-up visuals
@@ -400,6 +417,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (SoundEngine.TryGetActiveSound(OntologicalChargeSlot, out var ChargeSound))
                 ChargeSound?.Stop();
+            if (SoundEngine.TryGetActiveSound(OntologicalChargeSlotDeep, out var ChargeSound2))
+                ChargeSound2?.Stop();
         }
         public Color GetRandomColor()
         {
@@ -411,7 +430,7 @@ namespace CalamityMod.Projectiles.Ranged
                 _ => color4,
             };
             if (Owner.shirtColor == Color.White)
-                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
             return useColor;
         }
         public override bool PreDraw(ref Color lightColor)

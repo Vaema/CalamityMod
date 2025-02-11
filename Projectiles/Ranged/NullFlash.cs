@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
         public override void SetDefaults()
         {
@@ -74,43 +74,6 @@ namespace CalamityMod.Projectiles.Ranged
                 // Custom knockback
                 Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20;
                 target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
-
-            if (Main.zenithWorld)
-            {
-                #region NPC Nullification
-                int nullBuff = Main.rand.Next(8);
-                switch (nullBuff)
-                {
-                    case 0:
-                        if (target.type != ModContent.NPCType<SuperDummyNPC>())
-                            target.damage += 10;
-                        break;
-                    case 1:
-                        target.damage -= 10;
-                        break;
-                    case 2:
-                        target.knockBackResist = 0f;
-                        break;
-                    case 3:
-                        target.knockBackResist = 1f;
-                        break;
-                    case 4:
-                        target.defense += 5;
-                        break;
-                    case 5:
-                        target.defense -= 5;
-                        break;
-                    case 6:
-                        target.scale *= 2f;
-                        break;
-                    case 7:
-                        target.scale *= 0.5f;
-                        break;
-                    default:
-                        break;
-                }
-                #endregion
             }
         }
         public override bool PreDraw(ref Color lightColor)

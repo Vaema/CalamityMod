@@ -71,7 +71,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.height = 150;
             NPC.defense = 15;
             NPC.value = Item.buyPrice(0, 16, 0, 0);
-            NPC.LifeMaxNERB(41000, 49200, 780000);
+            NPC.LifeMaxNERB(41000, 49200, 500000);
             NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -290,7 +290,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("BrimstoneGore1").Type, 1f);
