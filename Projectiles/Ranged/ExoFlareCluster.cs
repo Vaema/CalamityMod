@@ -75,6 +75,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
+            Projectile.tileCollide = false;
+
             float numberOflines = 5;
             float rotFactorlines = 360f / numberOflines;
             for (int i = 0; i < numberOflines; i++)
