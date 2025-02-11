@@ -13,6 +13,7 @@ using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.Astral
 {
