@@ -23,6 +23,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             CreateRecipe().
                 AddIngredient<ShellstoneSlabWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

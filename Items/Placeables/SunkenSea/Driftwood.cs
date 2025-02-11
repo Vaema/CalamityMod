@@ -24,6 +24,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             CreateRecipe(4).
             AddIngredient<Walls.DriftwoodWall>(4).
             AddTile(TileID.WorkBenches).
+            DisableDecraft().
             Register();
         }
     }

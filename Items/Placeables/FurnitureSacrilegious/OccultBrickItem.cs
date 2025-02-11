@@ -25,10 +25,12 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
                 Register();
             CreateRecipe().
                 AddIngredient<OccultPlatformItem>(2).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<OccultBrickWallItem>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

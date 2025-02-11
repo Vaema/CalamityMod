@@ -25,9 +25,11 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlagWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<AshenPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

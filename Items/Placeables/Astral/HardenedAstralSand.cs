@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Placeables.Astral
             CreateRecipe().
                 AddIngredient<HardenedAstralSandWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

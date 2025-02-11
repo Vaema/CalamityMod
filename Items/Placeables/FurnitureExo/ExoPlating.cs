@@ -31,10 +31,12 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
                 Register();
             CreateRecipe().
                 AddIngredient<ExoPlatform>(2).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<ExoPlatingWallItem>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

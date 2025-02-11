@@ -26,10 +26,12 @@ namespace CalamityMod.Items.Placeables.Abyss
         {
             CreateRecipe().
                 AddIngredient<AcidwoodPlatform>(2).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<AcidwoodWallItem>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

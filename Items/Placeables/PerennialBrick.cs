@@ -24,10 +24,12 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe().
                 AddIngredient<PerennialBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<FloralWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }
