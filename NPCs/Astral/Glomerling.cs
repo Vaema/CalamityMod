@@ -44,6 +44,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             Banner = ModContent.NPCType<Astraglomerate>();
+            BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 50;
