@@ -12,7 +12,7 @@ using CalamityMod.Items.Weapons.Melee;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class MediumSeaPrismCrystal : ModTile
+    public class BranchCoral : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -20,16 +20,12 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = true;
-            Main.tileSpelunker[Type] = true;
-            Main.tileShine[Type] = 2000;
-            Main.tileShine2[Type] = true;
+            Main.tileSpelunker[Type] = false;
 
-            HitSound = SoundID.Item27;
+            HitSound = SoundID.Dig;
             DustType = 67;
-            MinPick = 55;
 
-            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<PrismShard>());
+            AddMapEntry(new Color(48, 201, 214));
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
@@ -69,20 +65,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            var tile = Main.tile[i, j];
-            bool lessLightDueToLowWater = tile.LiquidAmount > 50 && tile.LiquidType == LiquidID.Water;
-
-            //Blue
-            Color blue = new Color(202, 236, 238);
-            Color darkviolet = new Color(18, 67, 116);
-            Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
-            Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 10) / 50f + Main.GameUpdateCount * 0.064f + -i / 30f) + 1f) / 2f);
-            r = lessLightDueToLowWater ? 0.27f : 0.36f;
-            g = lessLightDueToLowWater ? 0.405f : 0.54f;
-            b = lessLightDueToLowWater ? 0.405f : 0.54f;
-            r *= (value.R + value1.R) / 300f;
-            g *= (value.G + value1.G) / 300f;
-            b *= (value.B + value1.B) / 300f;
+            r = 232 / 500f;
+            g = 122 / 500f;
+            b = 122 / 500f;
         }
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {

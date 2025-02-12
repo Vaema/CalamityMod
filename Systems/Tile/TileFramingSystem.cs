@@ -92,6 +92,7 @@ namespace CalamityMod.Systems
             (ushort)ModContent.TileType<TenebrisRemnant>(),
             (ushort)ModContent.TileType<PhoviamareHalm>(),
             (ushort)ModContent.TileType<SmallCorals>(),
+            (ushort)ModContent.TileType<LongScarletSeagrass>(),
         ];
 
         private static int[][] PlantValidGrounds;

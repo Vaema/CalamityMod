@@ -15,13 +15,13 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+            Main.tileBlockLight[Type] = false;
             TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
             Main.tileLighted[Type] = true;
-            Main.tileShine[Type] = 3500;
+            Main.tileShine[Type] = 3000;
             Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
@@ -50,13 +50,13 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.9f;
-            Color blue = new Color(67, 187, 204);
+            Color blue = new Color(202, 236, 238);
             Color darkviolet = new Color(18, 67, 116);
             Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
-            r = (value.R + value1.R) / 900f;
-            g = (value.G + value1.G) / 900f;
-            b = (value.B + value1.B) / 900f;
+            r = (value.R + value1.R) / 800f;
+            g = (value.G + value1.G) / 800f;
+            b = (value.B + value1.B) / 800f;
             r *= brightness;
             g *= brightness;
             b *= brightness;

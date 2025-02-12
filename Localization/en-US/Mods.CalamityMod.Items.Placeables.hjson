@@ -4048,3 +4048,8 @@ MediumSeaPrismCrystal: {
 	DisplayName: Medium Sea Prism Crystal
 	Tooltip: ""
 }
+
+BranchCoral: {
+	DisplayName: Branch Coral
+	Tooltip: ""
+}

@@ -1346,6 +1346,92 @@ namespace CalamityMod.World
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
                         }
                     }
+                    //Polyp Forest Ambient tiles
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>())
+                    {
+                        //BranchCoralsOnLimestone
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 7);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 1);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 5);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 4);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 2);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 6);
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<PolypSand>())
+                    {
+                        //BranchCoralsOnSand
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 1);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 5);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 4);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 2);
+                        }
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 8);
+                        }
+                        if (WorldGen.genRand.NextBool(3))
+                        {
+                            ushort[] DigitateCorals = new ushort[] { (ushort)ModContent.TileType<DigitateCoral>(),
+                            (ushort)ModContent.TileType<DigitateCoral3>(), (ushort)ModContent.TileType<DigitateCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DigitateCorals));
+                        }
+                    }
 
                     //radiant reefs ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>())

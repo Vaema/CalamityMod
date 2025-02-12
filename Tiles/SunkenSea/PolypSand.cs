@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -88,6 +90,27 @@ namespace CalamityMod.Tiles.SunkenSea
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile tile = Main.tile[i, j];
+            Tile up = Main.tile[i, j - 1];
+            Tile up2 = Main.tile[i, j - 2];
+
+            // Place LongScarletSeagrass
+            if (WorldGen.genRand.NextBool(1) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            {
+                up.TileType = (ushort)ModContent.TileType<LongScarletSeagrass>();
+                up.HasTile = true;
+                up.TileFrameY = 0;
+
+                // 16 different frames, choose a random one
+                up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
+                WorldGen.SquareTileFrame(i, j - 1, true);
+
+                if (Main.dedServ)
+                    NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
+            }
         }
 
         #region 'Extra Drapes' Drawing
