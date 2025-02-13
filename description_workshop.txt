@@ -34,7 +34,7 @@ A more detailed breakdown of the content available in Calamity:
 [*] 2400+ items
 [*] 700+ weapons
 [*] Almost 100 blocks
-[*] 200+ pieces of furniture
+[*] 600+ pieces of furniture
 [*] 11 ores
 [*] 2 full difficulty settings above Expert which can be combined with Master
 [*] Significant improvements and changes to Master difficulty
