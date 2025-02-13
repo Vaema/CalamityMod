@@ -1,5 +1,5 @@
 ﻿using System;
-using CalamityMod.Items.Placeables.DraedonStructures;
+using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -9,9 +9,9 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.DraedonStructures
+namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
-    public class CagedLablight : ModTile
+    public class AgedFrostlight : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -72,9 +72,9 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 31f / 255f;
-            g = 251f / 255f;
-            b = 255f / 255f;
+            r = 9f / 510f;
+            g = 158f / 510f;
+            b = 238f / 510f;
         }
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
