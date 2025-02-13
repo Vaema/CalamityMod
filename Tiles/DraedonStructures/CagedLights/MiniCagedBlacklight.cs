@@ -72,12 +72,25 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
         {
             num = fail ? 1 : 3;
         }
+        public override void HitWire(int i, int j)
+        {
+            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+        }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 182f / 255f;
-            g = 28f / 255f;
-            b = 232f / 255f;
+            if (Main.tile[i, j].TileFrameX < 18)
+            {
+                r = 182f / 255f;
+                g = 29f / 255f;
+                b = 232f / 255f;
+            }
+            else
+            {
+                r = 0f;
+                g = 0f;
+                b = 0f;
+            }
         }
     }
 }
