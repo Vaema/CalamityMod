@@ -8,11 +8,14 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
+using Terraria.Audio;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class MiniCagedLablight : ModTile
     {
+        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -20,7 +23,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = SoundID.Item27;
+            HitSound = MinePlatingSound;
             DustType = 67;
             MinPick = 55;
 
