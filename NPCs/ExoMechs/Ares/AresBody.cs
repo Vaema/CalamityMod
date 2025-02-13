@@ -984,10 +984,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             }
                         }
 
+                        // The sound stops a few seconds before the attack ends as the lasers shrink in size
+                        float stopSound = deathrayTelegraphDuration + deathrayDuration - 160;
+
                         // Update the deathray sound if it's being played.
-                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying)
+                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying && calamityGlobalNPC.newAI[2] < stopSound)
                             deathraySound.Position = NPC.Center;
-                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration)
+                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration && calamityGlobalNPC.newAI[2] < stopSound)
                         {
                             // Start the loop sound if the start sound finished.
                             if (deathraySound is null || !deathraySound.IsPlaying || calamityGlobalNPC.newAI[2] == deathrayTelegraphDuration + 180f)
@@ -1000,6 +1003,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 else if (deathraySound is not null)
                                     deathraySound.Resume();
                             }
+                        }
+
+                        // Stop the laser loop and play the end sound.
+                        if (calamityGlobalNPC.newAI[2] == stopSound)
+                        {
+                            deathraySound?.Stop();
+                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
                         }
 
                         if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration + deathrayDuration)
@@ -1066,10 +1076,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (EnragedState == (float)Enraged.Yes)
                                     EnragedState = (float)Enraged.No;
                             }
-
-                            // Stop the laser loop and play the end sound.
-                            deathraySound?.Stop();
-                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
 
                             NPC.localAI[0] += 1f;
                             NPC.TargetClosest();
