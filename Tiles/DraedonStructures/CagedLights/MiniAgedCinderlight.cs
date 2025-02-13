@@ -78,9 +78,9 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 252f / 255f;
-            g = 184f / 255f;
-            b = 29f / 255f;
+            r = 252f / 510f;
+            g = 184f / 510f;
+            b = 29f / 510f;
         }
     }
 }
