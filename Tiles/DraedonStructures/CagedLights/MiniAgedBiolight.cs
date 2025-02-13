@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 using Terraria.Audio;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
@@ -71,16 +72,12 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             TileObjectData.addTile(Type);
         }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            num = fail ? 1 : 3;
-        }
+            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 9f / 510f;
-            g = 195f / 510f;
-            b = 0f;
+            Lighting.AddLight(new Vector2(i * 16, j * 16), 9f / 255f * brightness, 195f / 255f * brightness, 0f * brightness);
         }
     }
 }

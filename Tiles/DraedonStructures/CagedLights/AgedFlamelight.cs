@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 using Terraria.Audio;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
@@ -76,12 +77,14 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             num = fail ? 1 : 3;
         }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            r = 255f / 510f;
-            g = 104f / 510f;
-            b = 104f / 510f;
+            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
+
+            Lighting.AddLight(new Vector2(i * 16, j * 16), (255f / 255f) * brightness, (104f / 255f) * brightness, (104f / 255f) * brightness);
         }
+
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedLablightItem>());
