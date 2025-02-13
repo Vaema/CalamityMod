@@ -12,18 +12,10 @@ namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CagedBlacklightItem>();
+
             Item.DefaultToPlaceableTile(ModContent.TileType<AgedBlacklight>());
             Item.value = Item.sellPrice(silver: 1);
         }
-
-        //public override void AddRecipes()
-        //{
-        //    CreateRecipe().
-        //        AddIngredient<RustedPlating>(10).
-        //        AddIngredient<MysteriousCircuitry>().
-        //        AddIngredient<DraedonPowerCell>(8).
-        //        AddTile(TileID.Anvils).
-        //        Register();
-        //}
     }
 }

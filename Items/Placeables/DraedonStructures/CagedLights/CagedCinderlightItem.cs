@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Tiles.DraedonStructures.CagedLights;
 using Terraria;
 using Terraria.ID;
@@ -12,18 +13,20 @@ namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AgedCinderlightItem>();
+
             Item.DefaultToPlaceableTile(ModContent.TileType<CagedCinderlight>());
             Item.value = Item.sellPrice(silver: 1);
         }
 
-        //public override void AddRecipes()
-        //{
-        //    CreateRecipe().
-        //        AddIngredient<RustedPlating>(10).
-        //        AddIngredient<MysteriousCircuitry>().
-        //        AddIngredient<DraedonPowerCell>(8).
-        //        AddTile(TileID.Anvils).
-        //        Register();
-        //}
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient<DubiousPlating>(10).
+                AddIngredient<MysteriousCircuitry>(5).
+                AddIngredient<Cinderplate>().
+                AddTile(TileID.Anvils).
+                Register();
+        }
     }
 }
