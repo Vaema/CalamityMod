@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = true;
             Main.tileSpelunker[Type] = true;
-            Main.tileShine[Type] = 2000;
+            Main.tileShine[Type] = 3500;
             Main.tileShine2[Type] = true;
 
             HitSound = SoundID.Item27;

@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
             Main.tileLighted[Type] = true;
-            Main.tileShine[Type] = 3000;
+            Main.tileShine[Type] = 5000;
             Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
