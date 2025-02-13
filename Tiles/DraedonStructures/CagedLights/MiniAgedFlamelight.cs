@@ -8,19 +8,25 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
+using Terraria.Audio;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class MiniAgedFlamelight : ModTile
     {
+        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
+        internal static GrayscaleTexture1D PulseGradient;
+
         public override void SetStaticDefaults()
         {
+            PulseGradient = new("CalamityMod/Tiles/Plates/HavocplatePulse");
+
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = SoundID.Item27;
+            HitSound = MinePlatingSound;
             DustType = 67;
             MinPick = 55;
 

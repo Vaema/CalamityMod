@@ -8,19 +8,25 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
+using Terraria.Audio;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class AgedCinderlight : ModTile
     {
+        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
+        internal static GrayscaleTexture1D PulseGradient;
+
         public override void SetStaticDefaults()
         {
+            PulseGradient = new("CalamityMod/Tiles/Plates/CinderplatePulse");
+
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = SoundID.Item27;
+            HitSound = MinePlatingSound;
             DustType = 67;
             MinPick = 55;
 
@@ -76,6 +82,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             g = 184f / 255f;
             b = 29f / 255f;
         }
+
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedLablightItem>());
