@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileObsidianKill[Type] = false;
 
             HitSound = MinePlatingSound;
-            DustType = 67;
+            DustType = 60;
             MinPick = 55;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
