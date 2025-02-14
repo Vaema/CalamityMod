@@ -3393,7 +3393,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeMagnet = true;
             }
 
-            if (wDeath && !purity)
+            if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
             if (astralInfection && !(infectedJewel || hideOfDeus || purity))
@@ -4080,7 +4080,9 @@ namespace CalamityMod.CalPlayer
             if (laudanum)
             {
                 // Laudanum removes immunity to debuffs that it counters, so that you can get inflicted with them
-                int[] buffsAffected = [ModContent.BuffType<ArmorCrunch>(), BuffID.Obstructed, BuffID.VortexDebuff, BuffID.Ichor, BuffID.Bleeding, BuffID.Chilled, BuffID.BrokenArmor, BuffID.Weak, BuffID.Slow, BuffID.Confused, BuffID.Blackout, BuffID.Darkness];
+                int[] buffsAffected = [ModContent.BuffType<ArmorCrunch>(), ModContent.BuffType<WhisperingDeath>(), BuffID.VortexDebuff, BuffID.Ichor, BuffID.Bleeding,
+                    BuffID.Chilled, BuffID.BrokenArmor, BuffID.Weak, BuffID.Slow, BuffID.Confused, BuffID.Cursed, BuffID.Silenced, BuffID.Blackout, BuffID.Darkness];
+                
                 for (int i = 0; i < buffsAffected.Length; i++)
                     Player.buffImmune[buffsAffected[i]] = false;
 
@@ -4096,21 +4098,18 @@ namespace CalamityMod.CalPlayer
                                 Player.buffTime[l] += 1;
                         }
 
-                        // Laudanum directly cancels out the normal effects
+                        // Calamity buffs cannot be handled inside the switch case
+                        // Their negative effects are canceled out earlier
                         if (hasBuff == ModContent.BuffType<ArmorCrunch>())
+                            Player.statDefense += ArmorCrunch.DefenseReduction; // +15 net defense
+                        else if (hasBuff == ModContent.BuffType<WhisperingDeath>())
                         {
-                            // +15 defense
-                            Player.statDefense += ArmorCrunch.DefenseReduction;
+                            Player.lifeRegenCount += 5;
+                            Player.GetDamage<GenericDamageClass>() += 0.2f;
                         }
 
                         switch (hasBuff)
                         {
-                            case BuffID.Obstructed:
-                                Player.headcovered = false;
-                                Player.bleed = false;
-                                Player.lifeRegen += 8;
-                                Player.GetCritChance<GenericDamageClass>() += 25;
-                                break;
                             case BuffID.VortexDebuff:
                                 Player.vortexDebuff = false;
                                 Player.moveSpeed += 0.2f;
@@ -4147,14 +4146,22 @@ namespace CalamityMod.CalPlayer
                                 Player.confused = false;
                                 Player.statDefense += 50;
                                 break;
+                            case BuffID.Cursed:
+                                Player.cursed = false;
+                                if (Player.mount.Type != MountID.Drill) // DCU also uses the noItems variable, make sure to not break that
+                                    Player.noItems = false;
+                                Player.GetDamage<GenericDamageClass>() += 0.1f;
+                                break;
+                            case BuffID.Silenced:
+                                Player.silence = false;
+                                Player.GetDamage<MagicDamageClass>() += 0.1f;
+                                break;
                             case BuffID.Blackout:
                                 Player.blackout = false;
-                                Player.lifeRegen += 4;
                                 Player.GetCritChance<GenericDamageClass>() += 15;
                                 break;
                             case BuffID.Darkness:
                                 Player.blind = false;
-                                Player.lifeRegen += 2;
                                 Player.GetCritChance<GenericDamageClass>() += 10;
                                 break;
                         }

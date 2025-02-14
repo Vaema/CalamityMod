@@ -1006,8 +1006,8 @@ Laudanum: {
 		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak, Bleeding,
-		  Broken Armor, Armor Crunch, Chilled, Ichor, Distorted, and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 }
 
