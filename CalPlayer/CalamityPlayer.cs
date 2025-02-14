@@ -4253,6 +4253,7 @@ namespace CalamityMod.CalPlayer
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
+                    (laudanum && Player.HasBuff(BuffID.VortexDebuff) ? 0.15f : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (kamiBoost ? YanmeisKnife.RunAccelerationBoost : 0f) +

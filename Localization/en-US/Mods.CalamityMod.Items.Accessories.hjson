@@ -999,11 +999,15 @@ JellyChargedBattery: {
 
 Laudanum: {
 	DisplayName: Laudanum
-	Tooltip: Converts certain debuffs into buffs and extends their durations
+	Tooltip:
+		'''
+		Converts certain debuffs into buffs and extends their durations
+		This also removes debuff immunities if you have them
+		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
-		  Broken Armor, Armor Crunch, Chilled, Ichor, and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 }
 

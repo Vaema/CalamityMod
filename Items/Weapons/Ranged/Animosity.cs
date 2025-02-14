@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             string tooltip = Main.zenithWorld ? this.GetLocalizedValue("TooltipGFB") : this.GetLocalizedValue("TooltipNormal");
-            list.FindAndReplace("[GFB]", tooltip);
+            list.FindAndReplace("[GFB]", Lang.SupportGlyphs(tooltip));
             //Distortion wind do whisper one truth...
         }
 

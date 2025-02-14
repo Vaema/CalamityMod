@@ -2987,6 +2987,8 @@ namespace CalamityMod.CalPlayer
                             Player.gravity = 0.1f;
                         else if (Player.merman)
                             Player.gravity = 0.3f;
+                        else if (Player.trident && !Player.lavaWet)
+                            Player.gravity = Player.controlUp ? 0.1f : 0.25f;
                         else
                             Player.gravity = 0.2f;
                     }
@@ -3391,7 +3393,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeMagnet = true;
             }
 
-            if (wDeath && !purity)
+            if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
             if (astralInfection && !(infectedJewel || hideOfDeus || purity))
@@ -4077,50 +4079,64 @@ namespace CalamityMod.CalPlayer
             // Laudanum boosts
             if (laudanum)
             {
+                // Laudanum removes immunity to debuffs that it counters, so that you can get inflicted with them
+                int[] buffsAffected = [ModContent.BuffType<ArmorCrunch>(), ModContent.BuffType<WhisperingDeath>(), BuffID.VortexDebuff, BuffID.Ichor, BuffID.Bleeding,
+                    BuffID.Chilled, BuffID.BrokenArmor, BuffID.Weak, BuffID.Slow, BuffID.Confused, BuffID.Cursed, BuffID.Silenced, BuffID.Blackout, BuffID.Darkness];
+                
+                for (int i = 0; i < buffsAffected.Length; i++)
+                    Player.buffImmune[buffsAffected[i]] = false;
+
                 if (Main.myPlayer == Player.whoAmI)
                 {
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
                         int hasBuff = Player.buffType[l];
-                        if (hasBuff == ModContent.BuffType<ArmorCrunch>() || hasBuff == BuffID.Obstructed ||
-                            hasBuff == BuffID.Ichor || hasBuff == BuffID.Chilled || hasBuff == BuffID.BrokenArmor || hasBuff == BuffID.Weak ||
-                            hasBuff == BuffID.Slow || hasBuff == BuffID.Confused || hasBuff == BuffID.Blackout || hasBuff == BuffID.Darkness)
+                        if (buffsAffected.Contains(hasBuff))
                         {
                             // Every other frame, increase the buff timer by one frame. Thus, the buff lasts twice as long.
                             if (Player.miscCounter % 2 == 0)
                                 Player.buffTime[l] += 1;
                         }
 
-                        // See later as Laud cancels out the normal effects
+                        // Calamity buffs cannot be handled inside the switch case
+                        // Their negative effects are canceled out earlier
                         if (hasBuff == ModContent.BuffType<ArmorCrunch>())
+                            Player.statDefense += ArmorCrunch.DefenseReduction; // +15 net defense
+                        else if (hasBuff == ModContent.BuffType<WhisperingDeath>())
                         {
-                            // +15 defense
-                            Player.statDefense += ArmorCrunch.DefenseReduction;
+                            Player.lifeRegenCount += 5;
+                            Player.GetDamage<GenericDamageClass>() += 0.2f;
                         }
 
                         switch (hasBuff)
                         {
-                            case BuffID.Obstructed:
-                                Player.headcovered = false;
-                                Player.statDefense += 50;
-                                Player.GetDamage<GenericDamageClass>() += 0.5f;
-                                Player.GetCritChance<GenericDamageClass>() += 25;
+                            case BuffID.VortexDebuff:
+                                Player.vortexDebuff = false;
+                                Player.moveSpeed += 0.2f;
+                                Player.jumpSpeedBoost += 1f;
+                                // Also gives acceleration, which is done in PostUpdateRunSpeeds
                                 break;
                             case BuffID.Ichor:
-                                Player.statDefense += 40;
+                                Player.statDefense += 40; // +25 net defense
+                                break;
+                            case BuffID.Bleeding:
+                                Player.bleed = false;
+                                Player.lifeRegen += 4;
+                                Player.lifeRegenTime += 4;
                                 break;
                             case BuffID.Chilled:
                                 Player.chilled = false;
-                                Player.moveSpeed *= 1.3f;
+                                Player.moveSpeed *= 1.25f;
                                 break;
                             case BuffID.BrokenArmor:
                                 Player.brokenArmor = false;
                                 Player.statDefense += (int)(Player.statDefense * 0.25);
                                 break;
                             case BuffID.Weak:
-                                Player.GetDamage<MeleeDamageClass>() += 0.151f;
-                                Player.statDefense += 14;
-                                Player.moveSpeed += 0.3f;
+                                Player.GetDamage<MeleeDamageClass>() += 0.051f; // Cancel melee damage nerf, add 10% all damage
+                                Player.GetDamage<GenericDamageClass>() += 0.1f;
+                                Player.statDefense += 14; // +10 net defense
+                                Player.moveSpeed += 0.25f; // +15% net move speed
                                 break;
                             case BuffID.Slow:
                                 Player.slow = false;
@@ -4128,21 +4144,25 @@ namespace CalamityMod.CalPlayer
                                 break;
                             case BuffID.Confused:
                                 Player.confused = false;
-                                Player.statDefense += 30;
-                                Player.GetDamage<GenericDamageClass>() += 0.25f;
-                                Player.GetCritChance<GenericDamageClass>() += 10;
+                                Player.statDefense += 50;
+                                break;
+                            case BuffID.Cursed:
+                                Player.cursed = false;
+                                if (Player.mount.Type != MountID.Drill) // DCU also uses the noItems variable, make sure to not break that
+                                    Player.noItems = false;
+                                Player.GetDamage<GenericDamageClass>() += 0.1f;
+                                break;
+                            case BuffID.Silenced:
+                                Player.silence = false;
+                                Player.GetDamage<MagicDamageClass>() += 0.1f;
                                 break;
                             case BuffID.Blackout:
                                 Player.blackout = false;
-                                Player.statDefense += 30;
-                                Player.GetDamage<GenericDamageClass>() += 0.25f;
-                                Player.GetCritChance<GenericDamageClass>() += 10;
+                                Player.GetCritChance<GenericDamageClass>() += 15;
                                 break;
                             case BuffID.Darkness:
                                 Player.blind = false;
-                                Player.statDefense += 15;
-                                Player.GetDamage<GenericDamageClass>() += 0.1f;
-                                Player.GetCritChance<GenericDamageClass>() += 5;
+                                Player.GetCritChance<GenericDamageClass>() += 10;
                                 break;
                         }
                     }
