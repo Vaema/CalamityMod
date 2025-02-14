@@ -17,29 +17,28 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 10;
             Item.height = 26;
-            Item.damage = 13;
-            Item.noMelee = true;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = 14;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 14;
+            Item.damage = 15;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 14;
             Item.knockBack = 1.5f;
+
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.useStyle = ItemUseStyleID.Swing;
+
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
+            Item.consumable = true;
             Item.maxStack = Item.CommonMaxStack;
-            Item.value = 200;
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<UrchinStingerProj>();
             Item.shootSpeed = 12f;
-            Item.DamageType = RogueDamageClass.Instance;
         }
-
-        public override float StealthDamageMultiplier => 2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int proj = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<UrchinStingerProj>(), damage, knockback, player.whoAmI);
+            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (player.Calamity().StealthStrikeAvailable())
                 Main.projectile[proj].Calamity().stealthStrike = true;
             return false;
