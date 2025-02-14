@@ -47,7 +47,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
             brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
             brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
+            brightness += 0.4f;
             brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
             r = 187f / 255f;
             g = 43f / 255f;

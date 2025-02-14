@@ -46,7 +46,21 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                             if (Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 && Main.tile[i, tileLocationY - 2].LiquidAmount == 255)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                        for (int t = 0; t < 5; t++)
+                                        {
+                                            Dust dust = Dust.NewDustDirect(new Vector2(i, j + 0.5f) * 16, 16, 16, DustID.BlueTorch, 0, 0, 1, default, 1.5f);
+                                            dust.velocity *= 0.2f;
+                                            dust.noGravity = true;
+                                            dust.noLight = true;
+                                            dust.noLightEmittence = true;
+                                        }
+                                    Dust dust2 = Dust.NewDustDirect(new Vector2(i, j + 0.5f) * 16, 16, 16, DustID.MagicMirror, 0, 0, 1, Color.LightSkyBlue, 0.5f);
+                                    dust2.velocity *= 0.2f;
+
                                     Projectile.NewProjectile(new EntitySource_WorldEvent(), i * 16 + 16, tileLocationY * 16 + 16, 0f, -0.1f, ModContent.ProjectileType<CoralBubbleSmall>(), 0, 1f, Main.myPlayer);
+                                }
                             }
                         }
                     }
