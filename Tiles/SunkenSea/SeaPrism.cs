@@ -50,7 +50,7 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.9f;
-            Color blue = new Color(202, 236, 238);
+            Color blue = new Color(162, 216, 218);
             Color darkviolet = new Color(18, 67, 116);
             Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
