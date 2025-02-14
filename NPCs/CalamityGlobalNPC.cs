@@ -98,10 +98,10 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary> Boss Kill Time data structure </summary>
+        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary> Damage Reduction Lookup Table </summary>
+        /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
         /// <summary> Damage Reduction Value </summary>
@@ -168,6 +168,10 @@ namespace CalamityMod.NPCs
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
+        // Amulets effects
+        public bool IncreasedWaterEffects_Amulet1 = false;
+        public bool IncreasedWaterEffects_Amulet2 = false;
+
         // Sickness and Water debuff effects
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
@@ -212,13 +216,9 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        /// <summary>
-        /// Constant multiplier used to increase vanilla enemy health.
-        /// </summary>
+        /// <summary> Constant multiplier used to increase vanilla enemy health. </summary>
         private const double EnemyHPMultiplier = 1.25;
-        /// <summary>
-        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
-        /// </summary>
+        /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
         /// <summary>
         /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
@@ -326,10 +326,15 @@ namespace CalamityMod.NPCs
         public float warbannerBurnIntensity = 0;
         public bool warbannerBurnMarked = false;
         public bool warbannerBurnHideEffects = false;
+        /// <summary> Constant variable representing the delay, in frames, before Verium Bolt's extra damage applies. </summary>
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        /// <summary>
+        /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
+        /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
+        /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
@@ -513,6 +518,8 @@ namespace CalamityMod.NPCs
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
+            myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
@@ -937,6 +944,11 @@ namespace CalamityMod.NPCs
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
+
+            if (IncreasedWaterEffects_Amulet1)
+                waterDamageMult += 0.35;
+            if (IncreasedWaterEffects_Amulet2)
+                waterDamageMult += 0.75;
 
             if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
             {

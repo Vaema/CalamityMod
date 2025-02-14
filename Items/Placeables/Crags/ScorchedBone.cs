@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Placeables.Crags
             CreateRecipe().
             AddIngredient<ScorchedBoneWall>(4).
             AddTile(TileID.WorkBenches).
+            DisableDecraft().
             Register();
         }
     }

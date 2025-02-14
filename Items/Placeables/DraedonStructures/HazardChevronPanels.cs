@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
             CreateRecipe().
                 AddIngredient<HazardChevronWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

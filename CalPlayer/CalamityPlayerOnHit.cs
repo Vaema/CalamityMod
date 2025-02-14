@@ -83,6 +83,9 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
+            target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
+
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
@@ -198,6 +201,9 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
+
+            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            cgn.IncreasedWaterEffects_Amulet2 = false;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
@@ -962,7 +968,7 @@ namespace CalamityMod.CalPlayer
                     {
                         Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                         Vector2 velocity = (position - source) / 40f;
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(120);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(95);
                         Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
                     }
                 }
@@ -1180,10 +1186,6 @@ namespace CalamityMod.CalPlayer
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (abyssalAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());
             }
             if (lumenousAmulet)
             {

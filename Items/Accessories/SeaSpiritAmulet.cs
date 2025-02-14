@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
+    [LegacyName("AbyssalAmulet")]
     [AutoloadEquip(EquipType.Neck)]
-    public class AbyssalAmulet : ModItem, ILocalizedModType
+    public class SeaSpiritAmulet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -22,8 +23,8 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.abyssalAmulet = true;
-            player.buffImmune[ModContent.BuffType<RiptideDebuff>()] = true;
+            modPlayer.sSpiritAmulet = true;
+            modPlayer.sSpiritAmuletVisual = !hideVisual;
         }
     }
 }

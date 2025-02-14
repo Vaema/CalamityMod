@@ -100,26 +100,21 @@ namespace CalamityMod.CalPlayer
         public static int chaosStateDuration = 900;
         /// <summary> Constant variable used for how long Chaos State is inflicted by Normality Relocator while a boss is alive. </summary>
         public static int chaosStateDuration_NR = 1200;
+        /// <summary> Used by Sky Stabber and Gods' Paranoia to delete spiky balls when using right-click. </summary>
         public bool killSpikyBalls = false;
         public float KameiTrailXScale = 0.1f;
         public int KameiBladeUseDelay = 0;
+        /// <summary> Stores the positions of the player within the previous 4 frames. Used for drawing trail effects. </summary>
         public Vector2[] OldPositions = new Vector2[4];
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
-        /// <summary>
-        /// How many stacks of Evil Smasher's boost the player has. This increases the weapon's damage, use speed, and knockback.<br/>
-        /// Getting hit decreases this by 1. Switching to a different item resets this to 0.
-        /// </summary>
-        public int evilSmasherBoost = 0;
-        /// <summary> Cooldown variable which prevents using Burning Sea during its "burn-out" mechanic. </summary>
-        public int burningSeaBurnOut = 0;
         public int hellbornShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
         public int potionTimer = 0;
         public bool cirrusDress = false;
-        /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain and Stygian Shield. </summary>
+        /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
         public bool resetHeightandWidth = false;
@@ -177,8 +172,6 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
-        /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
-        public int plagueTaintedSMGDroneCooldown = 0;
         #endregion
 
         #region Speedrun Timer
@@ -261,6 +254,15 @@ namespace CalamityMod.CalPlayer
         public int PhotoTimer = 90;
         /// <summary> Cooldown variable used to add a delay between Anahita's Arpeggio uses. </summary>
         public int arpeggioCooldown = 0;
+        /// <summary> Cooldown variable which prevents using Burning Sea during its "burn-out" mechanic. </summary>
+        public int burningSeaBurnOut = 0;
+        /// <summary>
+        /// How many stacks of Evil Smasher's boost the player has. This increases the weapon's damage, use speed, and knockback.<br/>
+        /// Getting hit decreases this by 1. Switching to a different item resets this to 0.
+        /// </summary>
+        public int evilSmasherBoost = 0;
+        /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
+        public int plagueTaintedSMGDroneCooldown = 0;
         /// <summary>
         /// If true, this player's Brittle Star Staff minions are in their orbiting mode.<br/>
         /// While in this mode, they orbit around the player, do not break on hits, and increase defense.
@@ -570,7 +572,7 @@ namespace CalamityMod.CalPlayer
         internal const int DefenseDamageBaseRecoveryTime = 60;
         /// <summary>
         /// The maximum possible recovery time is 15 seconds.<br/>
-        /// This is to prevent annoyance where godmode defense damage never goes away.
+        /// This is to prevent annoyance where God Mode defense damage never goes away.
         /// </summary>
         internal const int DefenseDamageMaxRecoveryTime = 900;
         /// <summary> How many frames the player will continue to be recovering from defense damage. </summary>
@@ -693,6 +695,7 @@ namespace CalamityMod.CalPlayer
         public bool fishingStation = false;
         public bool rBrain = false;
         public bool bloodyWormTooth = false;
+        /// <summary> NOT the primary Affliction variable, used instead for the Afflicted buff which is given to teammates. </summary>
         public bool afflicted = false;
         public bool chiRegen = false;
         public bool affliction = false;
@@ -838,15 +841,20 @@ namespace CalamityMod.CalPlayer
         public bool anechoicPlating = false;
         /// <summary> Used for increasing light level in the Abyss. </summary>
         public bool jellyfishNecklace = false;
+        /// <summary> Calamity's Fairy Boots effect; makes fairies spawn around you which give stats. </summary>
         public bool fairyBoots = false;
+        /// <summary> Calamity's Flame Waker Boots effect; multiplies heat debuff damage and makes attacks inflict On Fire. </summary>
         public bool flameWakerBoots = false;
+        /// <summary> Calamity's Hellfire Treads effect; multiplies heat debuff damage and makes attacks inflict Hellfire. </summary>
+        public bool hellfireTreads = false;
         /// <summary>
         /// Used to prevent heat debuff damage stacking with Flame Waker Boots and Hellfire Treads.<br/>
         /// Flame Waker Boots = 1, Hellfire Treads = 2
         /// </summary>
         public int bootLevel = 0;
-        public bool hellfireTreads = false;
-        public bool abyssalAmulet = false;
+        public bool sSpiritAmulet = false;
+        public int sSpiritAmuletTimer = 0;
+        public bool sSpiritAmuletVisual = false;
         public bool lumenousAmulet = false;
         public bool oceanCrest = false;
         public bool aquaticEmblem = false;
@@ -1358,7 +1366,7 @@ namespace CalamityMod.CalPlayer
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
         public bool allWaifus = false;
-        /// <summary> Hearts of the Elements; however, the minion will not attack. </summary>
+        /// <summary> Hearts of the Elements; however, the minions will not attack. </summary>
         public bool allWaifusVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
         public bool sCrystal = false;
@@ -1898,8 +1906,8 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-            if (ZoneAbyss && (abyssalAmulet || lumenousAmulet))
-                percentMaxLifeIncrease += lumenousAmulet ? 25 : 10;
+            if (ZoneAbyss && lumenousAmulet)
+                percentMaxLifeIncrease += 25;
 
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
@@ -2239,7 +2247,7 @@ namespace CalamityMod.CalPlayer
             fairyBoots = false;
             flameWakerBoots = false;
             hellfireTreads = false;
-            abyssalAmulet = false;
+            sSpiritAmulet = false;
             lumenousAmulet = false;
             oceanCrest = false;
             aquaticEmblem = false;

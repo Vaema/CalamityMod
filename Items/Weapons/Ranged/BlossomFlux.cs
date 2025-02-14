@@ -7,9 +7,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class BlossomFlux : ModItem, ILocalizedModType
+    public class BlossomFlux : LegendaryItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override Color? TooltipExtensionColor => new Color(109, 161, 84);
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;

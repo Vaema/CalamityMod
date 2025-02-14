@@ -23,9 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
             CreateRecipe().
                 AddIngredient<SmoothVoidstoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<SmoothVoidstonePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

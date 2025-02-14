@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             CreateRecipe().
                 AddIngredient<EutrophicSandWallSafe>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

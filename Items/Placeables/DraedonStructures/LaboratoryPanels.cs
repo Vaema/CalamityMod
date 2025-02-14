@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
             CreateRecipe().
                 AddIngredient<LaboratoryPanelWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }
