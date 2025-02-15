@@ -124,7 +124,7 @@ SlagCrate: {
 
 Slurpfish: {
 	DisplayName: Slurpfish
-	QuestDescription: Hey {0}, wouldn't it be an absolute calamity if I sent you to those ruins in the depths of hell? Well, I heard of a scary fish that can slurp the souls out of people! I want to keep my soul, so scram! The fish isn't going to catch itself!
+	QuestDescription: Hey {0}, wouldn't it be absolutely calamitous if I sent you to those ruins in the depths of hell? Well, I heard of a scary fish that can slurp the souls out of people! I want to keep my soul, so scram! The fish isn't going to catch itself!
 }
 
 // Sunken Sea Catches
