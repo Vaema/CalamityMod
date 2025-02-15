@@ -96,7 +96,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Whispering Death sets positive regen to zero but doesn't actually deal any damage
-            ApplyDoTDebuff(wDeath, 0);
+            ApplyDoTDebuff(wDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4, purity);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);

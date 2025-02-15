@@ -26,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-        public override float StealthDamageMultiplier => 1f;
         public override float StealthVelocityMultiplier => 1.25f;
 
 
