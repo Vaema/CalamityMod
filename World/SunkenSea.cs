@@ -1225,7 +1225,27 @@ namespace CalamityMod.World
                             new Actions.ClearTile(), new Actions.PlaceTile(WorldGen.genRand.Next(Corals))
                         }));
                     }
+                    //Timeless Shores ambiant tiles
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<RuneSand>())
+                    {
+                        //Driftwood Ambiance
+                        if (WorldGen.genRand.NextBool(5))
+                        {
+                            ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
 
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>())
+                    {
+                        //Driftwood Ambiance
+                        if (WorldGen.genRand.NextBool(5))
+                        {
+                            ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                        }
+                    }
                     //gleaming burrows ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {
@@ -1345,6 +1365,13 @@ namespace CalamityMod.World
 
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
                         }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] NavystoneAmbients = new ushort[] { (ushort)ModContent.TileType<NavystoneAmbient>(),
+                            (ushort)ModContent.TileType<NavystoneAmbient2>(), (ushort)ModContent.TileType<NavystoneAmbient3>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(NavystoneAmbients));
+                        }
                     }
                     //Polyp Forest Ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>())
@@ -1424,18 +1451,67 @@ namespace CalamityMod.World
                             ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
                             WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 8);
                         }
-                        if (WorldGen.genRand.NextBool(6))
+                        if (WorldGen.genRand.NextBool(30))
                         {
                             ushort[] DigitateCorals = new ushort[] { (ushort)ModContent.TileType<DigitateCoral>(),
                             (ushort)ModContent.TileType<DigitateCoral3>(), (ushort)ModContent.TileType<DigitateCoral2>() };
 
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DigitateCorals));
                         }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] FryCorals = new ushort[] { (ushort)ModContent.TileType<FryCoral>(),
+                            (ushort)ModContent.TileType<FryCoral3>(), (ushort)ModContent.TileType<FryCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(FryCorals));
+                        }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] WideScarletSeagrasss = new ushort[] { (ushort)ModContent.TileType<WideScarletSeagrass>(),
+                            (ushort)ModContent.TileType<WideScarletSeagrass3>(), (ushort)ModContent.TileType<WideScarletSeagrass2>(), (ushort)ModContent.TileType<WideScarletSeagrass4>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(WideScarletSeagrasss));
+                        }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] StalkCorals = new ushort[] { (ushort)ModContent.TileType<StalkCoral>(),
+                            (ushort)ModContent.TileType<StalkCoral3>(), (ushort)ModContent.TileType<StalkCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(StalkCorals));
+                        }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] FryCorals = new ushort[] { (ushort)ModContent.TileType<FryCoral>(),
+                            (ushort)ModContent.TileType<FryCoral3>(), (ushort)ModContent.TileType<FryCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(FryCorals));
+                        }
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] TallDigitateCorals = new ushort[] { (ushort)ModContent.TileType<TallDigitateCoral>(),
+                            (ushort)ModContent.TileType<TallDigitateCoral3>(), (ushort)ModContent.TileType<TallDigitateCoral2>(), (ushort)ModContent.TileType<TallDigitateCoral4>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(TallDigitateCorals));
+                        }
+                        //Driftwood Ambiance
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                        }
                     }
 
                     //radiant reefs ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>())
                     {
+                        //Driftwood Ambiance
+                        if (WorldGen.genRand.NextBool(5))
+                        {
+                            ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                        }
                         //multi-colored corals
                         if (WorldGen.genRand.NextBool(3))
                         {
@@ -1480,7 +1556,7 @@ namespace CalamityMod.World
                     //grow depth vines on navystone
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
                     {
-                        if (WorldGen.genRand.NextBool(7))
+                        if (WorldGen.genRand.NextBool(1))
                         {
                             WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<DepthVines>());
                         }
