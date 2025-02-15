@@ -407,6 +407,25 @@ namespace CalamityMod.CalPlayer
                     IsFirstDashFrame = true;
             }
 
+            if (sandCloak)
+            {
+                // Spawn sand veil when dashing if it does not exist and you do not have the cooldown
+                if (Player.dashDelay == -1)
+                {
+                    if (IsFirstDashFrame)
+                    {
+                        if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<SandCloakVeil>()) || Player.HasCooldown(Cooldowns.SandCloak.ID)))
+                        {
+                            Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 13, 2.5f, Player.whoAmI);
+                            SoundEngine.PlaySound(SoundID.Item45, Player.Center);
+                        }
+                        IsFirstDashFrame = false;
+                    }
+                }
+                else
+                    IsFirstDashFrame = true;
+            }
+
             if (tortShell)
             {
                 //reduce player dash velocity as long as you didn't just get hit
