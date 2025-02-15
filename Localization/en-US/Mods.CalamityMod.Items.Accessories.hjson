@@ -1463,7 +1463,7 @@ SandCloak: {
 		'''
 		5% increased movement speed
 		Press [KEY] to create a protective sand veil which damages enemies inside it
-		While inside the veil, you gain 6 defense and 3% critical strike chance
+		While inside the veil, you gain 8 defense and 3% critical strike chance
 		This effect has a 20 second cooldown before it can be used again
 		'''
 }
