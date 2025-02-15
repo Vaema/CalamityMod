@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -10,6 +11,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void SetStaticDefaults()
         {
+            Main.tileLighted[Type] = true;
             AnimationFrameHeight = 36;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
@@ -26,6 +28,21 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             num = fail ? 1 : 3;
         }
 
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            float brightness = 0.7f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
+            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
+            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
+            brightness += 0.4f;
+            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
+            r = 85f / 255f;
+            b = 151f / 255f;
+            g = 196f / 255f;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
+        }
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
             frameCounter++;
