@@ -311,8 +311,8 @@ namespace CalamityMod.NPCs
         public int absorberAffliction = 0;
         public int irradiated = 0;
         public int bFlames = 0;
-        public int demonFlames = 0;
-        public int demonFlamesBonusDamage = 0;
+        public int demonicFlames = 0;
+        public int demonicFlamesBonusDamage = 0;
         public int hFlames = 0;
         /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
@@ -578,8 +578,8 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
-            myClone.demonFlames = demonFlames;
-            myClone.demonFlamesBonusDamage = demonFlamesBonusDamage;
+            myClone.demonicFlames = demonicFlames;
+            myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
@@ -976,7 +976,7 @@ namespace CalamityMod.NPCs
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || demonFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            bool hasModHotOil = bFlames > 0 || demonicFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
             if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
             {
                 double multiplier = 1D;
@@ -1126,13 +1126,13 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Deep Brimstone Flames
-            // Has simular base power to Brimstone Flames but can't be resisted
-            // Additionally, when you apply the debuff you can give it extra damage. This way it can be viable for multiple tiers
-            if (demonFlames > 0) // This is like Brimstone Flames but purple and it can't be resisted
+            // Demonic Flames
+            // An unresistable fire debuff that you can set the damage of when it is applied
+            // This way it can be viable for multiple tiers
+            if (demonicFlames > 0)
             {
-                int baseDemonFlamesDoTValue = (int)((demonFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
-                ApplyDPSDebuff(baseDemonFlamesDoTValue, baseDemonFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
+                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
             // Holy Flames
@@ -5622,10 +5622,10 @@ namespace CalamityMod.NPCs
                 irradiated--;
             if (bFlames > 0)
                 bFlames--;
-            if (demonFlames > 0)
-                demonFlames--;
+            if (demonicFlames > 0)
+                demonicFlames--;
             else
-                demonFlamesBonusDamage = 0;
+                demonicFlamesBonusDamage = 0;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)
@@ -7176,8 +7176,8 @@ namespace CalamityMod.NPCs
             if (bFlames > 0 || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
 
-            if (demonFlames > 0)
-                DemonFlames.DrawEffects(npc, ref drawColor);
+            if (demonicFlames > 0)
+                DemonicFlames.DrawEffects(npc, ref drawColor);
 
             if (bBlood > 0)
                 BurningBlood.DrawEffects(npc, ref drawColor);
@@ -7398,7 +7398,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/DemonFlames", NPC => NPC.Calamity().demonFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
             ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),
