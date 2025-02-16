@@ -6419,7 +6419,7 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
 
