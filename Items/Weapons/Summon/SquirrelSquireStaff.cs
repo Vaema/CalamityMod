@@ -49,11 +49,23 @@ namespace CalamityMod.Items.Weapons.Summon
             // Find the base farthest position
             Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
 
-            // Push the squirrel away from the collision in either direction if applicable
-            if (initialSpawn != Main.MouseWorld || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 16f, 0, 0) || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 16f, 0, 0))
-                initialSpawn.X += (velocity.X < 0f).ToDirectionInt() * 32f * (float)Math.Abs(Math.Cos(velocity.ToRotation()));
-            if (initialSpawn != Main.MouseWorld || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 20f, 0, 0) || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 20f, 0, 0))
-                initialSpawn.Y += (velocity.Y < 0f).ToDirectionInt() * 40f * (float)Math.Abs(Math.Sin(velocity.ToRotation()));
+            // Push the squirrel away from collision in all directions if applicable
+            while (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) 
+            {
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X += 1f;
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y += 1f;
+            }
 
             Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
