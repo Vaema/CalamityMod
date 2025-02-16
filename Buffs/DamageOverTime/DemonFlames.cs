@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
-    public class DeepBrimstoneFlames : ModBuff
+    public class DemonFlames : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -22,13 +22,13 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().deepBrimstoneFlames = true;
+            player.Calamity().demonFlames = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().deepBrimstoneFlames < npc.buffTime[buffIndex])
-                npc.Calamity().deepBrimstoneFlames = npc.buffTime[buffIndex];
+            if (npc.Calamity().demonFlames < npc.buffTime[buffIndex])
+                npc.Calamity().demonFlames = npc.buffTime[buffIndex];
             npc.DelBuff(buffIndex);
             buffIndex--;
         }

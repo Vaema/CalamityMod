@@ -239,10 +239,10 @@ namespace CalamityMod.Projectiles.Melee
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
             int bonusDamage = 300;
-            if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+            if (target.Calamity().demonFlamesBonusDamage <= bonusDamage)
             {
-                target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
-                target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 180);
+                target.Calamity().demonFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DemonFlames>(), 180);
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);

@@ -225,10 +225,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int bonusDamage = 120;
-            if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+            if (target.Calamity().demonFlamesBonusDamage <= bonusDamage)
             {
-                target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
-                target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 120);
+                target.Calamity().demonFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DemonFlames>(), 120);
             }
 
             if (!exitedTarget)

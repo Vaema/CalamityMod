@@ -99,10 +99,10 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
 
                 int bonusDamage = 4500;
-                if (lastHitTarget.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+                if (lastHitTarget.Calamity().demonFlamesBonusDamage <= bonusDamage)
                 {
-                    lastHitTarget.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
-                    lastHitTarget.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 210);
+                    lastHitTarget.Calamity().demonFlamesBonusDamage = bonusDamage;
+                    lastHitTarget.AddBuff(ModContent.BuffType<DemonFlames>(), 210);
                 }
             }
         }
@@ -302,10 +302,10 @@ namespace CalamityMod.Projectiles.Melee
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
             int bonusDamage = 4500;
-            if (target.Calamity().deepBrimstoneFlamesBonusDamage <= bonusDamage)
+            if (target.Calamity().demonFlamesBonusDamage <= bonusDamage)
             {
-                target.Calamity().deepBrimstoneFlamesBonusDamage = bonusDamage;
-                target.AddBuff(ModContent.BuffType<DeepBrimstoneFlames>(), 180);
+                target.Calamity().demonFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DemonFlames>(), 180);
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
