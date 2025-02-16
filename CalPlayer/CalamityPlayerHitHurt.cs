@@ -1276,36 +1276,19 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= proj.Calamity().DealsDefenseDamage;
 
-            // CIT 22JUL2024: This entire code segment is bugged, so I'm disabling it.
-            // Very likely because it's trying to index into Main.npc using Projectile.owner.
-            /*if (!proj.friendly && hurtInfo.Damage > 0)
+            // CIT 15FEB2025: This code previously tried to use Main.npc[proj.owner] to find the NPC the projectile came from.
+            // This doesn't work because the server owns NPC-spawned projectiles.
+            // All projectiles spawned from hostile NPCs are now fed the index of the NPC into ParentNPCIndex, so that these can work.
+            if (!proj.friendly && hurtInfo.Damage > 0 && proj.Calamity().ParentNPCIndex != -1)
             {
-                if (Main.player[proj.owner] is null)
+                if (Main.npc[proj.Calamity().ParentNPCIndex].active)
                 {
-                    if (!Main.npc[proj.owner].friendly)
-                    {
-                        if (sulphurSet)
-                            Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
-                        if (aSpark)
-                        {
-                            if (transformer)
-                                Main.npc[proj.owner].Calamity().transformerShocked = 120;
-                            else
-                                Main.npc[proj.owner].Calamity().shocked = 120;
-                        }
-                    } 
-                }
-                else
-                {
-                    Player p = Main.player[proj.owner];
-                    if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                    {
-                        if (sulphurSet)
-                            p.AddBuff(BuffID.Poisoned, 60);
-                    }
-                        
-                }
-            }*/
+                    if (sulphurSet)
+                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
+                    if (aSpark)
+                        Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
+                }   
+            }
 
             if (proj.hostile && hurtInfo.Damage > 0)
             {

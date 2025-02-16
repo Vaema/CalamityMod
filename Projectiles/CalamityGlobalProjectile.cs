@@ -62,6 +62,11 @@ namespace CalamityMod.Projectiles
         /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
         /// </summary>
         public bool CreatedByPlayerDash = false;
+        /// <summary>
+        /// If a projectile is spawned from a hostile NPC, this variable is set to the index of the NPC.<br/>
+        /// Used for identifying which NPC to apply certain retaliatory effects on from projectiles hitting the player.
+        /// </summary>
+        public int ParentNPCIndex = -1;
 
         /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
@@ -283,6 +288,12 @@ namespace CalamityMod.Projectiles
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
             if (sourceItem != null)
                 extorterBoost = true;
+
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
 
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
