@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -45,8 +46,16 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
-            Projectile.NewProjectile(source, new(XPosition, YPosition - YOffset), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            // Find the base farthest position
+            Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
+
+            // Push the squirrel away from the collision in either direction if applicable
+            if (initialSpawn != Main.MouseWorld || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 16f, 0, 0) || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 16f, 0, 0))
+                initialSpawn.X += (velocity.X < 0f).ToDirectionInt() * 32f * (float)Math.Abs(Math.Cos(velocity.ToRotation()));
+            if (initialSpawn != Main.MouseWorld || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 20f, 0, 0) || !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 20f, 0, 0))
+                initialSpawn.Y += (velocity.Y < 0f).ToDirectionInt() * 40f * (float)Math.Abs(Math.Sin(velocity.ToRotation()));
+
+            Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
             return false;
         }
