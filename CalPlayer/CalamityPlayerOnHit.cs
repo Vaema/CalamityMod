@@ -1187,10 +1187,6 @@ namespace CalamityMod.CalPlayer
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
             }
-            if (lumenousAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<CrushDepth>());
-            }
             if (corrosiveSpine)
             {
                 target.AddBuff(BuffType<Irradiated>(), 120);
