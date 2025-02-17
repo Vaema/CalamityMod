@@ -182,6 +182,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
 
             NPC.dontTakeDamage = hide;
+            NPC.canDisplayBuffs = !hide;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)

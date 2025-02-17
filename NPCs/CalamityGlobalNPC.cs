@@ -7126,6 +7126,9 @@ namespace CalamityMod.NPCs
         // Debuff visuals. Alphabetical order as per usual, please
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            if (!npc.canDisplayBuffs)
+                return;
+
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
