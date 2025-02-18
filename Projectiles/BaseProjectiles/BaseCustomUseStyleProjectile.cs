@@ -67,6 +67,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public bool FlipAsSword = false;
 
         /// <summary>
+        /// If true, the sword will be active reguardless of the player being in an item use state.
+        /// </summary>
+        public bool IgnoreActiveAnimation = false;
+
+        /// <summary>
         /// The offset in radians of the weapon's rotation from its current rotation.
         /// </summary>
         public float RotationOffset = 0f;
@@ -164,7 +169,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             bool ItemAnimationActive = Owner.ItemAnimationActive;
 
-            if (Owner.HeldItem.type != AssignedItemID)
+            if (Owner.HeldItem.type != AssignedItemID || Owner.dead)
             {
                 Projectile.Kill();
             }
@@ -172,7 +177,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.Calamity().mouseWorldListener = true;
             Owner.Calamity().rightClickListener = true;
 
-            if (ItemAnimationActive)
+            if (ItemAnimationActive || IgnoreActiveAnimation)
             {
                 Animation++;
 
