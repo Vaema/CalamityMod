@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.MainMenu
 {
-    public class CalamityClassicMainMenu : ModMenu
+    public class CalamityMainMenu_Classic : ModMenu
     {
         public class Cinder
         {

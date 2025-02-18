@@ -9,7 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.MainMenu
 {
-    public class CalamityModernMainMenu : ModMenu
+    // Intentionally masquerades over the previous main menu, which is now the Classic main menu.
+    public class CalamityMainMenu : ModMenu
     {
         public class Cinder
         {
@@ -40,7 +41,7 @@ namespace CalamityMod.MainMenu
         } = new();
 
         public float remixLogoRotation = 0f;
-        public override string DisplayName => "Calamity Style - Modern";
+        public override string DisplayName => "Calamity Style";
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Logo");
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");
