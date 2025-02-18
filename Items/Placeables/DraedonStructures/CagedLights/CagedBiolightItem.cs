@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
         public override void AddRecipes()
         {
             CreateRecipe(10).
-                AddIngredient<DubiousPlating>(10).
-                AddIngredient<MysteriousCircuitry>(5).
+                AddIngredient<DubiousPlating>(2).
+                AddIngredient<MysteriousCircuitry>().
                 AddIngredient<Plagueplate>().
                 AddTile(TileID.Anvils).
                 Register();
