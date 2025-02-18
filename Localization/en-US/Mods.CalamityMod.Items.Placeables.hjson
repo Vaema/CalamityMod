@@ -4053,3 +4053,8 @@ BranchCoral: {
 	DisplayName: Branch Coral
 	Tooltip: ""
 }
+
+EutrophicGlassWall: {
+	DisplayName: Eutrophic Glass Wall
+	Tooltip: ""
+}

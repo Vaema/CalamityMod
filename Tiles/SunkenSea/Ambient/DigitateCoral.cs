@@ -29,9 +29,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 62f / 400f;
-            g = 89f / 400f;
-            b = 171f / 400f;
+            r = 56f / 400f;
+            g = 164f / 400f;
+            b = 180f / 400f;
         }
     }
 
@@ -39,9 +39,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 62f / 400f;
-            g = 89f / 400f;
-            b = 171f / 400f;
+            r = 56f / 400f;
+            g = 164f / 400f;
+            b = 180f / 400f;
         }
     }
     
@@ -49,9 +49,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 62f / 400f;
-            g = 89f / 400f;
-            b = 171f / 400f;
+            r = 56f / 400f;
+            g = 164f / 400f;
+            b = 180f / 400f;
         }
     }
 }

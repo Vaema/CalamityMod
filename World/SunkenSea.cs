@@ -751,11 +751,35 @@ namespace CalamityMod.World
 
                         if (canPlaceSand)
                         {
-                            PlaceSand(X, Y, 5, ModContent.TileType<PolypSand>());
+                            PlaceSand(X, Y, 4, ModContent.TileType<PolypSand>());
+                        }
+                        
+                    }
+                }
+            });
+            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 20; Y <= origin.Y + verticalRadius + 20; Y++)
+                {
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
+                    {
+                        bool canPlaceGrass = false;
+
+                        //place sand clumps on top of exposed limestone
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<PolypSand>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile &&
+                        !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
+                        {
+                            canPlaceGrass = true;
+                        }
+
+                        if (canPlaceGrass)
+                        {
+                            PlaceSand(X, Y, 0, ModContent.TileType<ScarletSeaGrassTile>());
                         }
                     }
                 }
             });
+            
 
             //cleanup again
             ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
@@ -1413,7 +1437,7 @@ namespace CalamityMod.World
                             WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 6);
                         }
                     }
-                    if (Main.tile[X, Y].TileType == ModContent.TileType<PolypSand>())
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<ScarletSeaGrassTile>())
                     {
                         //BranchCoralsOnSand
                         if (WorldGen.genRand.NextBool(15))
