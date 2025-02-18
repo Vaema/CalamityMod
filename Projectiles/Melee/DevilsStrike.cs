@@ -71,8 +71,11 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Projectile.ai[1] > 0)
                     Projectile.ai[0] -= 0.08f;
-                Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 0.8f).RotatedBy(Main.rand.NextBool() ? -0.6f : 0.6f), ModContent.ProjectileType<DevilsStrike>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[0] * 0.7f, 0);
-                crack.timeLeft = 250;
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 0.8f).RotatedBy(Main.rand.NextBool() ? -0.6f : 0.6f), ModContent.ProjectileType<DevilsStrike>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[0] * 0.7f, 0);
+                    crack.timeLeft = 250;
+                }
             }
         }
 

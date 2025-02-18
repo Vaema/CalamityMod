@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             Owner.Calamity().demonSwordKillMode = false;
-            if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active && Owner.HeldItem.type == AssignedItemID)
+            if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active && Owner.HeldItem.type == AssignedItemID && Main.myPlayer == Projectile.owner)
             {
                 Owner.Calamity().GeneralScreenShakePower = 12.5f;
                 Particle blastRing = new CustomPulse(lastHitTarget.Center, Vector2.Zero, clr, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.6f, 20, true);
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < 4; i++)
                 {
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
-                    Projectile crack = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
                 Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 2.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
