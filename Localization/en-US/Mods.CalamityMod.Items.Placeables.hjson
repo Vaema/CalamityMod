@@ -4185,3 +4185,13 @@ MiniAgedFloodlightItem: {
 	DisplayName: Mini Aged Floodlight
 	Tooltip: ""
 }
+
+BranchCoral: {
+	DisplayName: Branch Coral
+	Tooltip: ""
+}
+
+EutrophicGlassWall: {
+	DisplayName: Eutrophic Glass Wall
+	Tooltip: ""
+}
