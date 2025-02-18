@@ -29,7 +29,6 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
             HitSound = MinePlatingSound;
             DustType = 6;
-            MinPick = 55;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());
