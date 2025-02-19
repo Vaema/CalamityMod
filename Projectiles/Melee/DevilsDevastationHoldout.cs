@@ -4,6 +4,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Ranged;
@@ -103,6 +104,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     lastHitTarget.Calamity().demonicFlamesBonusDamage = bonusDamage;
                     lastHitTarget.AddBuff(ModContent.BuffType<DemonicFlames>(), 210);
+                    // I'm like 95% confident this shouldn't need a sync since OnKill is called on all clients
                 }
             }
         }
@@ -306,6 +308,9 @@ namespace CalamityMod.Projectiles.Melee
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;
                 target.AddBuff(ModContent.BuffType<DemonicFlames>(), 180);
+                // Demonic Flames damage must be synced, because OnHitNPC is only run for the client that hit the NPC
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    DemonicFlamesSyncPacket.Send(target);
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);

@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -229,6 +230,9 @@ namespace CalamityMod.Projectiles.Melee
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;
                 target.AddBuff(ModContent.BuffType<DemonicFlames>(), 120);
+                // Demonic Flames damage must be synced, because OnHitNPC is only run for the client that hit the NPC
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    DemonicFlamesSyncPacket.Send(target);
             }
 
             if (!exitedTarget)
