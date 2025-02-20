@@ -90,8 +90,8 @@ namespace CalamityMod
         public static string ToRegenPerSecond(this int regen) => Round(regen * 0.5f, "N2");
         public static string ToJumpSpeedPercent(this float boost) => Round(boost * 20f, "N2");
 
-        public static string ToPercent(this float percent) => Round(percent * 100f);
-        public static string ToPercent(this double percent) => Round(percent * 100D);
+        public static string ToPercent(this float percent, string precision = "N1") => Round(percent * 100f, precision);
+        public static string ToPercent(this double percent, string precision = "N1") => Round(percent * 100D, precision);
         // Double-rounded for proper digit cutoffs
         public static string Round(this float number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
         public static string Round(this double number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();

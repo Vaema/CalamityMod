@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Armor.Wulfrum;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
@@ -32,7 +31,6 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
-using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,13 +54,10 @@ using Terraria.Graphics.Capture;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 using Terraria.WorldBuilding;
-using static Terraria.WaterfallManager;
 
 namespace CalamityMod.ILEditing
 {
@@ -475,6 +470,13 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4_0);
 
             // No interference with ShadowDodge (previously Titanium armor, now Hallowed armor)
+        }
+
+        private static void AddHolyProtectionCooldown(On_Player.orig_PutHallowedArmorSetBonusOnCooldown orig, Player self)
+        {
+            // Adds Calamity's Holy Protection cooldown when triggering Hallowed armor's dodge.
+            orig(self);
+            self.AddCooldown(HolyProtection.ID, CalamityUtils.SecondsToFrames(30));
         }
         #endregion
 
@@ -920,6 +922,17 @@ namespace CalamityMod.ILEditing
         {
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
+        }
+        #endregion
+
+        #region Disable Moon Lord Style Flashes With Photosensitivity Config
+        private static void DisableFlashesWithPhotosensitivityConfig(On_MoonlordDeathDrama.orig_RequestLight orig, float light, Vector2 spot)
+        {
+            // Disable this function from running if the Photosensitivity config is enabled.
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                return;
+
+            orig(light, spot);
         }
         #endregion
 

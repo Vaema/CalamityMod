@@ -33,8 +33,8 @@ namespace CalamityMod.Projectiles.Boss
         {
             get
             {
-                Color c1 = blue ? Color.MediumTurquoise : Color.Gray;
-                Color c2 = blue ? Color.Cyan : Color.White;
+                Color c1 = blue ? Color.MediumTurquoise : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.Gray);
+                Color c2 = blue ? Color.Cyan : (CalamityClientConfig.Instance.Photosensitivity ? new Color(79, 79, 79) : Color.White);
                 Color color = Color.Lerp(c1, c2, Projectile.identity % 5f / 5f) * 1.1f;
                 color.A = 0;
                 return color;
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         // Can hit if white (regardless of condition) or blue only if the player is (close to) still
-        public override bool CanHitPlayer(Player target) => (!blue || target.velocity.Length() <= 0.25f) && Projectile.scale >= 0.5f;
+        public override bool CanHitPlayer(Player target) => (!blue || target.velocity.Length() >= 0.25f) && Projectile.scale >= 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {

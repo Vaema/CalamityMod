@@ -8,15 +8,6 @@ Abaddon: {
 		'''
 }
 
-AbyssalAmulet: {
-	DisplayName: Abyssal Amulet
-	Tooltip:
-		'''
-		Attacks inflict Riptide, and grants immunity to Riptide
-		While in the abyss you gain 10% increased max life
-		'''
-}
-
 AbyssalDivingGear: {
 	DisplayName: Abyssal Diving Gear
 	Tooltip:
@@ -392,9 +383,9 @@ ChaliceOfTheBloodGod: {
 		Increases max HP by 25%
 		Grants immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
-		Taking more than 5 damage converts the hit into a damage over time bleed debuff
+		Taking more than 5 damage converts the hit into a damage over time bleed effect
 		This bleeding does not interfere with life regeneration
-		Drinking a healing potion cancels up to 50% of its heal value in remaining bleed damage
+		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
 		'All that for a drop of blood...'
 		'''
@@ -1008,11 +999,15 @@ JellyChargedBattery: {
 
 Laudanum: {
 	DisplayName: Laudanum
-	Tooltip: Converts certain debuffs into buffs and extends their durations
+	Tooltip:
+		'''
+		Converts certain debuffs into buffs and extends their durations
+		This also removes immunities to these debuffs if you have them
+		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
-		  Broken Armor, Armor Crunch, Chilled, Ichor, and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 }
 
@@ -1166,13 +1161,14 @@ OccultSkullCrown: {
 		'''
 		You constantly gain rage over time, and rage does not fade when out of combat
 		Converts certain debuffs into buffs and extends their durations
+		This also removes immunities to these debuffs if you have them
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
 		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
-		  Broken Armor, Armor Crunch, Chilled, Ichor and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 	FlavorTooltip: "'Only a fool would ever wear this...'"
 }
@@ -1398,8 +1394,11 @@ Regenator: {
 	DisplayName: Regenator
 	Tooltip:
 		'''
-		+6 HP/s life regen and massively accelerated natural life regen
-		However, your health cannot exceed 50% of its maximum
+		Your health cannot exceed 50% of its maximum
+		Increases length of invincibility after taking damage
+		Provides powerful special life regen to heal you for 8.5 HP/s
+		All normal life regen is negated and converted into damage 
+		Current damage boost: [DAMAGE]%
 		'''
 }
 
@@ -1463,10 +1462,10 @@ SandCloak: {
 	DisplayName: Sand Cloak
 	Tooltip:
 		'''
-		5% increased movement speed
-		Press [KEY] to create a protective sand veil which damages enemies inside it
-		While inside the veil, you gain 6 defense and 3% critical strike chance
-		This effect has a 20 second cooldown before it can be used again
+		Dashing creates a large protective sand veil which damages enemies inside it
+		The sand veil lasts 15 seconds, but dissipates early if you dash again
+		While inside the veil, you gain 10 defense and 1.75x acceleration
+		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
 
@@ -1488,6 +1487,18 @@ ScuttlersJewel: {
 		'''
 }
 
+SeaSpiritAmulet: {
+	DisplayName: Sea Spirit Amulet
+	Tooltip:
+		'''
+		Slowly accumulate up to eight spirit orbs that follow you
+		Spirits disperse when dashing
+		If below 50% life, they will heal you, otherwise they will attack nearby enemies
+		Multiplies all water debuff damage by 1.35x
+		Spirit orbs are transparent and silent if visibility is disabled
+		'''
+}
+
 ShatteredCommunity: {
 	DisplayName: Shattered Community
 	Tooltip:
@@ -1506,7 +1517,7 @@ ShatteredCommunity: {
 		'''
 	RageAdd:
 		'''
-		Adds the Rage meter, which generates over time
+		Adds the Rage meter, which fills over time
 		Rage generates faster when in proximity of enemies
 		When Rage is maxed, press {0} for a temporary damage boost
 		'''

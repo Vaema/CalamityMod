@@ -295,6 +295,19 @@ DesecratedWater: {
 		'''
 }
 
+DoomsdayDevice: {
+	DisplayName: Doomsday Device
+	Tooltip:
+		'''
+		Direct hits from the weapon grants stealth
+		Non-stealth strikes do not consume stealth when fully charged
+		Holding a stealth strike charge beyond its limit rapidly drains stealth
+		Stealth strikes ricochet between multiple enemies, ending in a strong impact
+		'A high-tech explosive with devastating power... If only you could figure out how to arm it'
+		'At least you can throw it really hard!'
+		'''
+}
+
 DukesDecapitator: {
 	DisplayName: Duke's Decapitator
 	Tooltip:
@@ -501,10 +514,9 @@ GodsParanoia: {
 	DisplayName: Gods' Paranoia
 	Tooltip:
 		'''
-		Hurls up to 10 speedy homing spiky balls
-		Attaches to enemies and summons a localized storm of god slayer kunai
-		Stealth strikes home in faster and summon kunai at a faster rate
-		Press <right> to delete all existing spiky balls
+		Hurls homing spiky balls which attach to enemies
+		Attached spiky balls summon a localized storm of god slayer kunai on each hit
+		Stealth strikes home in faster and hit at a faster rate
 		'''
 }
 
@@ -966,13 +978,17 @@ SeafoamBomb: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Throws a bomb that explodes into a bubble which deals extra damage to enemies
-		Stealth strikes are faster and explode into 5 bubbles
+		Hurls a lightweight bomb which bursts into a foam bubble
+		Foam bubbles combine in pairs to form huge bubbles
+		Huge bubbles pop into small homing suds after a delay
+		Stealth strikes are cluster bombs that release eight normal bombs
 		'''
 	TooltipGFB:
 		'''
-		Throws a bomb that explodes into a bubble which deals extra damage to enemies
-		Stealth strikes are faster and explode into 5 bubbles
+		Rapidly hurls a lightweight bomb which bursts into a foam bubble
+		Foam bubbles combine in pairs to form huge bubbles
+		Huge bubbles pop into small homing suds after a delay
+		Stealth strikes are cluster bombs that release 38 normal bombs
 		[c/256b93:'Right back in S tier!']
 		'''
 }
@@ -1035,15 +1051,6 @@ ShinobiBlade: {
 		'''
 		Throws a fast blade that spawns healing orbs when it kills an enemy
 		Stealth strikes repeatedly stab the struck enemy from random directions
-		'''
-}
-
-ShockGrenade: {
-	DisplayName: Shock Grenade
-	Tooltip:
-		'''
-		Throws a grenade that explodes into a burst of lightning
-		Stealth strikes cause the grenade to leave an electrifying aura when it explodes
 		'''
 }
 
@@ -1315,7 +1322,12 @@ TwistingThunder: {
 
 UrchinStinger: {
 	DisplayName: Urchin Stinger
-	Tooltip: Stealth strikes stick to enemies while releasing sulphuric bubbles
+	Tooltip:
+		'''
+		Sticks into enemies and injects an extremely potent poison
+		Stealth strikes stick into and poison enemies for longer
+		Sticking seven stingers in an enemy with a stealth strike stuck in it spawns an irradiated blast
+		'''
 }
 
 UtensilPoker: {

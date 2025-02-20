@@ -26,9 +26,11 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe().
                 AddIngredient<UelibloomBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<BotanicPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

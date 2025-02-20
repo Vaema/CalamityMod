@@ -376,18 +376,22 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
                     Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                    bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
-                    for (int i = 0; i < 3; i++)
+                    if (!photos)
                     {
-                        Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, GFBFlashWarning ? (int)(18 * GFBMulti) : 18, true);
-                        GeneralParticleHandler.SpawnParticle(blastRing);
-                        Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, GFBFlashWarning ? (int)(18 * GFBMulti) : 18, true);
-                        GeneralParticleHandler.SpawnParticle(blastRing2);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                            GeneralParticleHandler.SpawnParticle(blastRing);
+                            Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                            GeneralParticleHandler.SpawnParticle(blastRing2);
+                        }
                     }
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * GFBMulti, Color.OrangeRed, new Vector2(3, 0.8f), true);
+                        Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
                     for (int i = 0; i < 15; i++)

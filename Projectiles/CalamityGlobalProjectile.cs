@@ -62,6 +62,11 @@ namespace CalamityMod.Projectiles
         /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
         /// </summary>
         public bool CreatedByPlayerDash = false;
+        /// <summary>
+        /// If a projectile is spawned from a hostile NPC, this variable is set to the index of the NPC.<br/>
+        /// Used for identifying which NPC to apply certain retaliatory effects on from projectiles hitting the player.
+        /// </summary>
+        public int ParentNPCIndex = -1;
 
         /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
@@ -246,7 +251,7 @@ namespace CalamityMod.Projectiles
         /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
-        /// <summary> A timer for preventing projectiles from being "transformed" by transformer every frame. </summary>
+        /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
         public int TransformerTimer = 0;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
@@ -288,6 +293,12 @@ namespace CalamityMod.Projectiles
             IEntitySource sourceItem = source as EntitySource_ItemUse_WithAmmo;
             if (sourceItem != null)
                 extorterBoost = true;
+
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
 
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())

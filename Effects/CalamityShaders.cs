@@ -89,7 +89,7 @@ namespace CalamityMod.Effects
         // Clips a sprite along a fixed plane. Used by Stream Gouge to have half-spears come out of portals.
         internal static Effect IntersectionClipShader;
 
-        // Used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
+        // Was previously used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
         internal static Effect LocalLinearTransformationShader;
 
         // UNUSED -- Probably leftover from Dominic's experiments with applying shaders to primitives (arbitrary GPU-rendered triangles)

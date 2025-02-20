@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
             float progress = (float)Math.Sin(Projectile.ai[0] / Lifetime * MathHelper.Pi);
             if (Projectile.ai[0] > 55f)
                 progress = MathHelper.Lerp(progress, 0f, (Projectile.ai[0] - 55f) / 5f);
-            if (!Main.dedServ && Projectile.ai[0] > 15f) // Otherwise a white flash appears, but it quickly disappears.
+            if (!Main.dedServ && !CalamityClientConfig.Instance.Photosensitivity && Projectile.ai[0] > 15f) // Otherwise a white flash appears, but it quickly disappears.
             {
                 if (!Filters.Scene["CalamityMod:LightBurst"].IsActive())
                     Filters.Scene.Activate("CalamityMod:LightBurst", Projectile.Center).GetShader().UseTargetPosition(Projectile.Center).UseProgress(0f);

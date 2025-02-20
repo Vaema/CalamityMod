@@ -1,6 +1,7 @@
 AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
+AmuletEnergy.DisplayName: Sea Spirit
 ArcZap.DisplayName: Arc Zap
 ArtifactOfResilienceShards.DisplayName: Artifact Shard
 AscendantAura.DisplayName: Ascendant Aura
@@ -101,6 +102,7 @@ ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
 RelicGuard.DisplayName: Relic Guard
+RetaliationProjectile.DisplayName: Retaliation Shard
 RiftReelerBobber.DisplayName: Chaotic Bobber
 SandCloakVeil.DisplayName: Dust Veil
 SandExplosion.DisplayName: Sand

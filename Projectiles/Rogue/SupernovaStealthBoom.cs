@@ -74,16 +74,21 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             mainColor = Color.Lerp(mainColor, variedColor, 0.07f);
-
             Lighting.AddLight(Projectile.Center, mainColor.ToVector3() * 4);
+
+            // Golly gee willikers I sure wonder why Supernova stealth needs the Photosensitivity config
+            bool photosen = CalamityClientConfig.Instance.Photosensitivity;
 
             if (time <= 72)
             {
                 float orbScale = MathHelper.Clamp(Utils.GetLerpValue(85, 0, time), 0, 1);
                 Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 2.5f * orbScale, 2.5f * orbScale, 4);
                 GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 2f * orbScale, 2f * orbScale, 4);
-                GeneralParticleHandler.SpawnParticle(orb2);
+                if (!photosen)
+                {
+                    Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 2f * orbScale, 2f * orbScale, 4);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
 
                 radius = 90 * orbScale;
 
@@ -163,141 +168,63 @@ namespace CalamityMod.Projectiles.Rogue
                     dust2.alpha = Main.rand.Next(40, 100 + 1);
                 }
 
-                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4.5f, 3.5f, 20);
-                GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4f, 3f, 20);
-                GeneralParticleHandler.SpawnParticle(orb2);
-
-                Vector2 BurstFXDirection = new Vector2(0, 5);
-                for (int i = 0; i < 8; i++)
+                if (!photosen)
                 {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
+                    Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4.5f, 3.5f, 20);
+                    GeneralParticleHandler.SpawnParticle(orb);
+                    Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4f, 3f, 20);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
 
-                    GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, (BurstFXDirection) * (i + 1f), false, 12, (0.25f - i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                Vector2 BurstFXDirectionX = Vector2.UnitX * 5f;
+                Vector2 BurstFXDirectionY = Vector2.UnitY * 5f;
+
+                if (!photosen)
+                {
+                    for (int i = 0; i < 8; i++)
+                    {
+                        randomColor = RandomizeColor();
+                        GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, BurstFXDirectionX * (i + 1f), false, 12, (0.09f + i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        randomColor = RandomizeColor();
+                        GlowSparkParticle sparkOpp = new GlowSparkParticle(Projectile.Center, (-BurstFXDirectionX) * (i + 1f), false, 12, (0.09f + i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
+                        GeneralParticleHandler.SpawnParticle(sparkOpp);
+
+                        randomColor = RandomizeColor();
+                        GlowSparkParticle sparkBurst = new GlowSparkParticle(Projectile.Center, BurstFXDirectionY * (i + 1f), false, 12, (0.09f + i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
+                        GeneralParticleHandler.SpawnParticle(sparkBurst);
+
+                        randomColor = RandomizeColor();
+                        GlowSparkParticle sparkBurstOpp = new GlowSparkParticle(Projectile.Center, (-BurstFXDirectionY) * (i + 1f), false, 12, (0.09f + i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
+                        GeneralParticleHandler.SpawnParticle(sparkBurstOpp);
+                    }
                 }
                 for (int k = 0; k < 25; k++)
                 {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
-
-                    GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), BurstFXDirection * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
+                    randomColor = RandomizeColor();
+                    GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), BurstFXDirectionX * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
                     GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                for (int i = 0; i < 8; i++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
 
-                    GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, (-BurstFXDirection) * (i + 1f), false, 12, (0.25f - i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                for (int k = 0; k < 25; k++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
+                    randomColor = RandomizeColor();
+                    GlowSparkParticle spark2Opp = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), -BurstFXDirectionX * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
+                    GeneralParticleHandler.SpawnParticle(spark2Opp);
 
-                    GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), -BurstFXDirection * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                Vector2 BurstFXDirection2 = new Vector2(5, 0);
-                for (int i = 0; i < 8; i++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
+                    randomColor = RandomizeColor();
+                    GlowSparkParticle spark2Burst = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), BurstFXDirectionY * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
+                    GeneralParticleHandler.SpawnParticle(spark2Burst);
 
-                    GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, (BurstFXDirection2) * (i + 1f), false, 12, (0.25f - i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                for (int k = 0; k < 25; k++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
-
-                    GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), BurstFXDirection2 * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                for (int i = 0; i < 8; i++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
-
-                    GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, (-BurstFXDirection2) * (i + 1f), false, 12, (0.25f - i * 0.02f) * 1.5f, randomColor, new Vector2(2.7f, 1.3f), true);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                for (int k = 0; k < 25; k++)
-                {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
-
-                    GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), -BurstFXDirection2 * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
-                    GeneralParticleHandler.SpawnParticle(spark2);
+                    randomColor = RandomizeColor();
+                    GlowSparkParticle spark2BurstOpp = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(30, 30), -BurstFXDirectionY * Main.rand.NextFloat(1f, 20.5f), false, Main.rand.Next(40, 50 + 1), Main.rand.NextFloat(0.04f, 0.095f), randomColor, new Vector2(0.3f, 1.6f));
+                    GeneralParticleHandler.SpawnParticle(spark2BurstOpp);
                 }
 
                 for (int i = 0; i < 10; i++)
                 {
-                    randomColor = Main.rand.Next(4) switch
-                    {
-                        0 => Color.Red,
-                        1 => Color.MediumTurquoise,
-                        2 => Color.Orange,
-                        _ => Color.LawnGreen,
-                    };
-
+                    randomColor = RandomizeColor();
                     Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, randomColor * 0.7f, "CalamityMod/Particles/FlameExplosion", new Vector2(1f, 1f), Main.rand.NextFloat(-20, 20), 0f, 4f - i * 0.28f, 50);
                     GeneralParticleHandler.SpawnParticle(pulse2);
                 }
-
-
-                /*
-                for (int i = 0; i < 45; i++)
-                {
-                    Vector2 randVel = new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
-                    Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, new Color(57, 46, 115) * 0.9f, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.4f);
-                    GeneralParticleHandler.SpawnParticle(smoke);
-                }
-                */
 
             }
             if (time < 80)
@@ -323,9 +250,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public Color RandomizeColor(Color randomColor)
+        public Color RandomizeColor()
         {
-            randomColor = Main.rand.Next(4) switch
+            Color randomColor = Main.rand.Next(4) switch
             {
                 0 => Color.Red,
                 1 => Color.MediumTurquoise,
@@ -333,6 +260,8 @@ namespace CalamityMod.Projectiles.Rogue
                 _ => Color.LawnGreen,
             };
 
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                randomColor *= 0.5f;
             return randomColor;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);

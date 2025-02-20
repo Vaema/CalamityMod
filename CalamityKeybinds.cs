@@ -16,7 +16,6 @@ namespace CalamityMod
         public static ModKeybind GravistarSabatonHotkey { get; private set; }
         public static ModKeybind NormalityRelocatorHotKey { get; private set; }
         public static ModKeybind RageHotKey { get; private set; }
-        public static ModKeybind SandCloakHotkey { get; private set; }
         public static ModKeybind SpectralVeilHotKey { get; private set; }
         public static ModKeybind TransformerHotKey { get; private set; }
 
@@ -35,7 +34,6 @@ namespace CalamityMod
             GravistarSabatonHotkey = KeybindLoader.RegisterKeybind(Mod, "GravistarSabatonHotkey", "X");
             NormalityRelocatorHotKey = KeybindLoader.RegisterKeybind(Mod, "NormalityRelocator", "Z");
             RageHotKey = KeybindLoader.RegisterKeybind(Mod, "RageMode", "V");
-            SandCloakHotkey = KeybindLoader.RegisterKeybind(Mod, "SandCloakEffect", "C");
             SpectralVeilHotKey = KeybindLoader.RegisterKeybind(Mod, "SpectralVeilTeleport", "Z");
             TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
         }
@@ -54,7 +52,6 @@ namespace CalamityMod
             GravistarSabatonHotkey = null;
             NormalityRelocatorHotKey = null;
             RageHotKey = null;
-            SandCloakHotkey = null;
             SpectralVeilHotKey = null;
             TransformerHotKey = null;
         }

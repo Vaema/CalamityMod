@@ -42,8 +42,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool AltFunctionUse(Player player) => true;
         public override float UseSpeedMultiplier(Player player)
         {
+
             if (player.altFunctionUse == 2)
                 return 1.3f;
+
+            if (Main.zenithWorld)
+                return 3 * (shotType ? 0.7f : 1);
 
             if (!shotType)
                 return 1.5f - mult;

@@ -96,7 +96,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Whispering Death sets positive regen to zero but doesn't actually deal any damage
-            ApplyDoTDebuff(wDeath, 0);
+            ApplyDoTDebuff(wDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4, purity);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
@@ -111,6 +111,7 @@ namespace CalamityMod.CalPlayer
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
+            ApplyDoTDebuff(demonicFlames, 33, purity);
             ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, 40, purity);
@@ -651,11 +652,6 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
             }
 
-            if (regenator)
-            {
-                Player.lifeRegenTime += 3;
-                Player.lifeRegen += 12;
-            }
             if (handWarmer && eskimoSet)
             {
                 Player.lifeRegen += 2;
@@ -782,9 +778,9 @@ namespace CalamityMod.CalPlayer
             if (Player.statLife < actualMaxLife)
             {
                 // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, or The Camper.
+                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Regenator, or The Camper.
                 int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper) &&
+                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper || regenator) &&
                     Player.StandingStill() && Player.itemAnimation == 0;
 
                 if (!noLifeRegenCap)
@@ -818,6 +814,19 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (regenator) // Gives special regen of it's own, but disables all regular life regen
+            {
+                if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
+                    Player.HealPlayer(1, HealTextType.None);
+
+                // Boost life regen time quite a bit.
+                // This is so that in events and such where small hits are common, your damage boost isn't completley negated
+                if (Player.lifeRegenTime < 3600)
+                    Player.lifeRegenTime += 10;
+            }
+            else
+                regenatorDamage = 0;
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
@@ -869,6 +878,37 @@ namespace CalamityMod.CalPlayer
                     velocity.Normalize();
                     velocity *= 34f;
                     heart.position = Player.Center - velocity;
+                }
+            }
+
+            // Regenator trades all positive regen for damage, and caps your health gain at 50%
+            if (regenator)
+            {
+                int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
+                finalRegen = (int)Math.Max(finalRegen, 0);
+
+                // Rapid Healing increments RegenCount directly so it needs to be manually added
+                // It also works while debuffs are active so the same logic applies here
+                if (Player.palladiumRegen)
+                    finalRegen += 4;
+
+                regenatorDamage = (finalRegen * 1.75f) * 0.01f;
+                Player.GetDamage<GenericDamageClass>() += regenatorDamage;
+
+                if (Player.lifeRegen > 0)
+                    Player.lifeRegen = 0;
+                if (regen > 0f)
+                    regen = 0f;
+                if (Player.lifeRegenCount > 0)
+                    Player.lifeRegenCount = 0;
+
+                //Hard-lock the player's health to 50%.
+                //No lifesteal, no regen, no healing pots
+                if (Player.statLife >= (int)(Player.statLifeMax2 * 0.5f))
+                {
+                    Player.statLife = (int)(Player.statLifeMax2 * 0.5f);
+                    Player.moonLeech = true;
+                    healingPotionMultiplier = 0;
                 }
             }
         }

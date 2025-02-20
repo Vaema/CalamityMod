@@ -98,7 +98,10 @@ Cooldowns: {
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
 	HellbornShots: Hellborn Shots
+	HolyProtection: Holy Protection
 	InkBomb: Ink Bomb Cooldown
+	KillModeActive: Kill Mode Active
+	KillModeCooldown: Kill Mode Cooldown
 	LifeSteal: Life Steal Cooldown
 	LionHeartShield: Energy Shell Cooldown
 	MasterChefShieldDurability: MJOLNIR Shield Level

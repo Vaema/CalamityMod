@@ -3,8 +3,10 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
@@ -126,47 +128,46 @@ namespace CalamityMod.Projectiles.Boss
 
             if (!Main.dedServ)
             {
-                Vector2 goreSource = Projectile.Center;
-                int goreAmt = 3;
-                Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
+                Vector2 source = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
+                for (int g = 1; g <= 3; g++)
                 {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
+                    float velocityMult = g * 0.33f;
+                    for (int spawn = 0; spawn < 4; spawn++)
                     {
-                        velocityMult = 0.66f;
+                        int type = Main.rand.Next(61, 64);
+                        int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
+                        Gore gore = Main.gore[smoke];
+                        gore.velocity *= velocityMult;
+                        gore.velocity.X += 1f;
+                        gore.velocity.Y += 1f;
                     }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
-                    int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    Gore gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
                 }
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            int timeToStartWarning = 180;
+
+            Color initialColor = lightColor;
+            Color finalColor = Color.Lerp(Color.White, Color.Red, (float)Math.Abs(Math.Sin((timeToStartWarning - Projectile.timeLeft) * (MathHelper.Pi * 7f / 180f))));
+            Color warningColor;
+            finalColor.A = (byte)(255 - Projectile.alpha);
+
+            if (Projectile.timeLeft <= timeToStartWarning)
+            {
+                float colorTransitionRatio = (timeToStartWarning - Projectile.timeLeft) / (float)timeToStartWarning;
+                warningColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
+            }
+            else
+                warningColor = initialColor;
+
+            float strength = Utils.GetLerpValue(0, timeToStartWarning / 1.5f, timeToStartWarning - Projectile.timeLeft, true);
+            Rectangle frame = TextureAssets.Projectile[Type].Value.Frame(1, 5, 0, Projectile.frame);
+            SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            Projectile.DrawProjectileWithBackglow(new Color(64, 255, 255) * strength, Projectile.GetAlpha(warningColor), 4.5f, null, frame, sp);
+            return false;
         }
     }
 }

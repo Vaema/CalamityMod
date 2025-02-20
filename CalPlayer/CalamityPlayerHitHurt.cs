@@ -451,7 +451,7 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Riptide" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
                 }
-                if (bFlames || weakBrimstoneFlames)
+                if (bFlames || weakBrimstoneFlames || demonicFlames)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrimstoneFlames" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
@@ -1276,36 +1276,19 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= proj.Calamity().DealsDefenseDamage;
 
-            // CIT 22JUL2024: This entire code segment is bugged, so I'm disabling it.
-            // Very likely because it's trying to index into Main.npc using Projectile.owner.
-            /*if (!proj.friendly && hurtInfo.Damage > 0)
+            // CIT 15FEB2025: This code previously tried to use Main.npc[proj.owner] to find the NPC the projectile came from.
+            // This doesn't work because the server owns NPC-spawned projectiles.
+            // All projectiles spawned from hostile NPCs are now fed the index of the NPC into ParentNPCIndex, so that these can work.
+            if (!proj.friendly && hurtInfo.Damage > 0 && proj.Calamity().ParentNPCIndex != -1)
             {
-                if (Main.player[proj.owner] is null)
+                if (Main.npc[proj.Calamity().ParentNPCIndex].active)
                 {
-                    if (!Main.npc[proj.owner].friendly)
-                    {
-                        if (sulphurSet)
-                            Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
-                        if (aSpark)
-                        {
-                            if (transformer)
-                                Main.npc[proj.owner].Calamity().transformerShocked = 120;
-                            else
-                                Main.npc[proj.owner].Calamity().shocked = 120;
-                        }
-                    } 
-                }
-                else
-                {
-                    Player p = Main.player[proj.owner];
-                    if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                    {
-                        if (sulphurSet)
-                            p.AddBuff(BuffID.Poisoned, 60);
-                    }
-                        
-                }
-            }*/
+                    if (sulphurSet)
+                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
+                    if (aSpark)
+                        Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
+                }   
+            }
 
             if (proj.hostile && hurtInfo.Damage > 0)
             {
@@ -2268,6 +2251,21 @@ namespace CalamityMod.CalPlayer
             // Give Rage combat frames because being hurt counts as combat.
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
+
+            // Regenator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
+            if (regenator && false)
+            {
+                // Projectile damage and count is based on source damage of the hit
+                float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
+                int projCount = (int)MathHelper.Clamp((15 * hitPower), 2, 15) * 2; // they come out in pairs of 2
+                int projBonusDamage = (int)(hurtInfo.SourceDamage * 0.5f);
+                int projDamage = (int)Player.GetBestClassDamage().ApplyTo(20 + projBonusDamage);
+                for (int i = 0; i < projCount; i++)
+                {
+                    Vector2 vel = (MathHelper.TwoPi * i / projCount).ToRotationVector2() * (i % 2 == 0 ? 0.75f : 1f) * 10;
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, vel.RotatedBy(-0.2f * (i % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<RetaliationProjectile>(), projDamage, 0f, Player.whoAmI, 0, (i % 2 == 0 ? -1 : 1), -5);
+                }
+            }
 
             // Hide of Astrum Deus' melee boost
             if (hideOfDeus)

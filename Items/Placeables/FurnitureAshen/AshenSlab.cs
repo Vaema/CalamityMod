@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
             CreateRecipe().
                 AddIngredient<AshenSlabWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }
