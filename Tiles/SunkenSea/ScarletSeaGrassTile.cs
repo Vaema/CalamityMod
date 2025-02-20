@@ -94,7 +94,7 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.7f;
-            brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
+            brightness *= (float)MathF.Sin(-i / 40f + Main.GameUpdateCount * 0.01f + j);
             brightness += 0.5f;
             r = 187f / 255f;
             g = 43f / 255f;

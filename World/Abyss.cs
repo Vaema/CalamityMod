@@ -309,11 +309,13 @@ namespace CalamityMod.World
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
                                     tile.WallType = (ushort)ModContent.WallType<PlantyMushWall>();
                                 }
+
                             }
                         }
                     }
                 }
             }
+
 
             //initial hole
             MiscWorldgenRoutines.ChasmGenerator(abyssChasmX, Main.remixWorld ? 100 : (int)GenVars.worldSurfaceLow + 65, Main.remixWorld ? AbyssChasmBottom + 110 : AbyssChasmBottom, true);
@@ -650,11 +652,11 @@ namespace CalamityMod.World
                             if (tile.TileType == ModContent.TileType<AbyssGravel>())
                             {
                                 //place coral blobs
-                                if (WorldGen.genRand.NextBool(125) && !Main.tile[X, Y - 1].HasTile)
+                                if (WorldGen.genRand.NextBool(125) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ShapeData circle = new ShapeData();
                                     GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-                                    WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(3, 4)), Actions.Chain(new GenAction[]
+                                    WorldUtils.Gen(new Point(X, Y), new Shapes.Mound(WorldGen.genRand.Next(4, 5), 3), Actions.Chain(new GenAction[]
                                     {
                                         blotchMod.Output(circle)
                                     }));
@@ -666,13 +668,13 @@ namespace CalamityMod.World
                                 }
 
                                 //rare pearls
-                                if (WorldGen.genRand.NextBool(50))
+                                if (WorldGen.genRand.NextBool(50) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     WorldGen.PlaceObject(X, Y, (ushort)ModContent.TileType<MassiveRarePearl>());
                                 }
 
                                 //giant kelp on abyss gravel
-                                if (WorldGen.genRand.NextBool(15))
+                                if (WorldGen.genRand.NextBool(15) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] Kelps = new ushort[] { (ushort)ModContent.TileType<AbyssGiantKelp1>(), (ushort)ModContent.TileType<AbyssGiantKelp2>(),
                                     (ushort)ModContent.TileType<AbyssGiantKelp3>(), (ushort)ModContent.TileType<AbyssGiantKelp4>() };
@@ -681,7 +683,7 @@ namespace CalamityMod.World
                                 }
 
                                 //plany mush piles
-                                if (WorldGen.genRand.NextBool(15))
+                                if (WorldGen.genRand.NextBool(15) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] PlantPiles = new ushort[] { (ushort)ModContent.TileType<PlantyMushPile1>(),
                                     (ushort)ModContent.TileType<PlantyMushPile2>(), (ushort)ModContent.TileType<PlantyMushPile3>() };
@@ -690,7 +692,7 @@ namespace CalamityMod.World
                                 }
 
                                 //gravel rock piles
-                                if (WorldGen.genRand.NextBool(15))
+                                if (WorldGen.genRand.NextBool(15) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] GravelPiles = new ushort[] { (ushort)ModContent.TileType<GravelPile1>(),
                                     (ushort)ModContent.TileType<GravelPile2>(), (ushort)ModContent.TileType<GravelPile3>() };
@@ -699,7 +701,7 @@ namespace CalamityMod.World
                                 }
 
                                 //abyss gravel vents
-                                if (WorldGen.genRand.NextBool(45))
+                                if (WorldGen.genRand.NextBool(45) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] Vents = new ushort[] { (ushort)ModContent.TileType<AbyssVent1>(),
                                     (ushort)ModContent.TileType<AbyssVent2>(), (ushort)ModContent.TileType<AbyssVent3>() };
@@ -708,7 +710,7 @@ namespace CalamityMod.World
                                 }
 
                                 //pirate crates
-                                if (WorldGen.genRand.NextBool(17))
+                                if (WorldGen.genRand.NextBool(17) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] PirateCrate = new ushort[] { (ushort)ModContent.TileType<PirateCrate1>(),
                                     (ushort)ModContent.TileType<PirateCrate2>(), (ushort)ModContent.TileType<PirateCrate3>(), (ushort)ModContent.TileType<PirateCrate4>(), (ushort)ModContent.TileType<PirateCrate5>(), (ushort)ModContent.TileType<PirateCrate6>() };
@@ -721,7 +723,7 @@ namespace CalamityMod.World
                             if (tile.TileType == ModContent.TileType<PyreMantle>())
                             {
                                 //spider coral
-                                if (WorldGen.genRand.NextBool(12))
+                                if (WorldGen.genRand.NextBool(12) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] SpiderCorals = new ushort[] { (ushort)ModContent.TileType<SpiderCoral1>(),
                                     (ushort)ModContent.TileType<SpiderCoral2>(), (ushort)ModContent.TileType<SpiderCoral3>(),
@@ -731,7 +733,7 @@ namespace CalamityMod.World
                                 }
 
                                 //thermal vent
-                                if (WorldGen.genRand.NextBool(15))
+                                if (WorldGen.genRand.NextBool(15) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] Vents = new ushort[] { (ushort)ModContent.TileType<ThermalVent1>(),
                                     (ushort)ModContent.TileType<ThermalVent2>(), (ushort)ModContent.TileType<ThermalVent3>() };
@@ -744,7 +746,7 @@ namespace CalamityMod.World
                             if (tile.TileType == ModContent.TileType<Voidstone>())
                             {
                                 //bulb trees
-                                if (WorldGen.genRand.NextBool(25))
+                                if (WorldGen.genRand.NextBool(25) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                                 {
                                     ushort[] BulbTrees = new ushort[] { (ushort)ModContent.TileType<BulbTree1>(),
                                     (ushort)ModContent.TileType<BulbTree2>(), (ushort)ModContent.TileType<BulbTree3>() };
@@ -758,7 +760,7 @@ namespace CalamityMod.World
                         if ((tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() || 
                         tile.TileType == ModContent.TileType<Voidstone>()) && Y > (Main.remixWorld ? rockLayer - (int)((y - 200) * 0.8f) : rockLayer))
                         {
-                            if (WorldGen.genRand.NextBool(5))
+                            if (WorldGen.genRand.NextBool(5) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                             {
                                 WorldGen.PlacePot(X, Y, (ushort)ModContent.TileType<AbyssalPots>());
                                 CalamityUtils.SafeSquareTileFrame(X, Y, true);
@@ -768,7 +770,7 @@ namespace CalamityMod.World
                         //sulphur pots
                         else if (tile.TileType == ModContent.TileType<SulphurousShale>() && Y < (Main.remixWorld ? Main.UnderworldLayer : (int)Main.worldSurface))
                         {
-                            if (WorldGen.genRand.NextBool(3))
+                            if (WorldGen.genRand.NextBool(3) && !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                             {
                                 WorldGen.PlacePot(X, Y, (ushort)ModContent.TileType<SulphurousPots>());
                                 CalamityUtils.SafeSquareTileFrame(X, Y, true);
