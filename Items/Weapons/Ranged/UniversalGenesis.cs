@@ -93,7 +93,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Disseminator>().
+                AddIngredient<ConferenceCall>().
                 AddIngredient(ItemID.StarCloak, 3).
                 AddIngredient<CosmiliteBar>(5).
                 AddIngredient<AscendantSpiritEssence>(4).
