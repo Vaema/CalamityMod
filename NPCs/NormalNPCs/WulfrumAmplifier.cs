@@ -7,6 +7,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class WulfrumAmplifier : ModNPC
     {
+        public static readonly SoundStyle Hit = new("CalamityMod/Sounds/WulfrumHit", 3);
         public bool Charging
         {
             get => NPC.ai[0] != 0f;
@@ -54,7 +56,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.noGravity = false;
             NPC.noTileCollide = false;
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumAmplifierBanner>();
