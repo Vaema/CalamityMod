@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class RuneSand : ModTile
+    public class Dunesand : ModTile
     {
         public override void SetStaticDefaults()
         {

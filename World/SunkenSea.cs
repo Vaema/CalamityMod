@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using ReLogic.Threading;
 using ReLogic.Utilities;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
@@ -30,15 +31,14 @@ namespace CalamityMod.World
         /*
          ena todo
 
-        fix the fucking forest being shaved
+        fix the fucking forest being shaved (done - HPU)
         cut a half oval out of the top of forest in anticipation of structure placement
-        change the type of noise both reefs and forest use (reefs more jagged, forest more flat)
-        cut a curve out of the top of shores (the desert part)
+        change the type of noise both reefs and forest use (reefs more jagged, forest more flat) (done - HPU)
+        cut a curve out of the top of shores (the desert part) (done - HPU)
         extend basalt to hell - DONE
-            convert normal terrain blocks below basalt into basalt
+            convert normal terrain blocks below basalt into basalt (maybe??? - HPU)
         BLOTCHES EVERYWHERE
          */
-
         public static void NormalForLoop(int fromInclusive, int toExclusive, int step, Action<int> action)
         {
             for (int i = fromInclusive; i < toExclusive; i += step)
@@ -81,7 +81,7 @@ namespace CalamityMod.World
             //
             // Places a trapezoid of circles to serve as the main area for the biome.
             //
-            const float steepness = 15f;
+            const float steepness = 25f;
             static float trapezoidLateralSteep(float x)
             {
                 if (x <= 1f / steepness)
@@ -91,14 +91,14 @@ namespace CalamityMod.World
                 else
                     return -steepness * x + steepness;
             }
-            ForLoop.Invoke(startPosX - biomeSize - 20, startPosX + biomeSize + 20, 15, (X) =>
+            ForLoop.Invoke(startPosX - biomeSize - 5, startPosX + biomeSize + 20, 15, (X) =>
             {
                 float height = MathHelper.Lerp(
                         startPosY + 35, //top
                         startPosY - 15, //bottom
                         trapezoidLateralSteep(Utils.GetLerpValue(startPosX - biomeSize - 20, startPosX + biomeSize + 20, X)));
 
-                for (int Y = startPosY + 50; Y >= height; Y -= 10)
+                for (int Y = startPosY + 25; Y >= height; Y -= 10)
                 {
                     ShapeData circle = new ShapeData();
                     WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(30), Actions.Chain(new GenAction[]
@@ -114,14 +114,14 @@ namespace CalamityMod.World
             // Makes the bottom borders of the Timeless Shores curved downwards.
             //
             const int totalCuveDepth = 90;
-            ForLoop.Invoke(startPosX - biomeSize - 20, startPosX - biomeSize + 200, 10, (x) =>
+            ForLoop.Invoke(startPosX - biomeSize - 10, startPosX - biomeSize + 200, 10, (x) =>
             {
                 int curveDepth = (int)MathHelper.Lerp(
                         totalCuveDepth,
                         0f,
                         MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 17, startPosX - biomeSize + 200, x, true)));
 
-                for (int y = startPosY + 25; y <= startPosY + 50 + curveDepth; y += 5)
+                for (int y = startPosY + 50; y <= startPosY + 70 + curveDepth; y += 5)
                 {
                     ShapeData circle = new();
                     WorldUtils.Gen(new Point(x, y), new Shapes.Slime(30), Actions.Chain(new GenAction[]
@@ -132,14 +132,14 @@ namespace CalamityMod.World
                     WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 }
             });
-            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize + 20, 5, (x) =>
+            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize + 10, 5, (x) =>
             {
                 int curveDepth = (int)MathHelper.Lerp(
                         totalCuveDepth,
                         0f,
                         MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 20, startPosX + biomeSize - 200, x, true)));
 
-                for (int y = startPosY + 50; y <= startPosY + 50 + curveDepth; y += 5)
+                for (int y = startPosY + 50; y <= startPosY + 70 + curveDepth; y += 5)
                 {
                     ShapeData circle = new();
                     WorldUtils.Gen(new Point(x, y), new Shapes.Slime(30), Actions.Chain(new GenAction[]
@@ -153,7 +153,7 @@ namespace CalamityMod.World
 
             //clear a smaller square out of the center where the biomes stuff will be
             //Added curves to the top of the biome via curve depth -hpu 02/19/25
-            ForLoop.Invoke(startPosX - biomeSize + 35, startPosX + biomeSize - 35, 1, (X) =>
+            ForLoop.Invoke(startPosX - biomeSize + 10, startPosX + biomeSize - 10, 1, (X) =>
             {
                 int curveDepth = (int)MathHelper.Lerp(
                         totalCuveDepth,
@@ -183,26 +183,29 @@ namespace CalamityMod.World
             //
             // Places slopes at the sides of the shores to actually make shores.
             //
-            ForLoop.Invoke(startPosX - biomeSize + 20, startPosX - biomeSize + 200, 20, (moundX) =>
+            ForLoop.Invoke(startPosX - biomeSize - 15, startPosX - biomeSize + 200, 20, (moundX) =>
             {
+                int RandomX = Main.rand.Next(15, 20);
                 ShapeData mound = new();
                 GenAction blotchMod = new Modifiers.Blotches().Output(mound);
-                int moundY = startPosY + 60;
+                int moundY = startPosY + 75;
                 int moundHeight = (int)MathHelper.Lerp(60f, 5f, MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize + 27, startPosX - biomeSize + 200, moundX)));
 
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
-                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
+                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>())); 
+                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
             });
-            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize - 20, 20, (moundX) =>
+            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize - 15, 20, (moundX) =>
             {
                 ShapeData mound = new();
                 GenAction blotchMod = new Modifiers.Blotches().Output(mound);
-                int moundY = startPosY + 60;
+                int moundY = startPosY + 75;
                 int moundHeight = (int)MathHelper.Lerp(60f, 5f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize - 27, startPosX + biomeSize - 200, moundX)));
 
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
             });
+            
 
             //
             // Makes a large platform in the middle of the Timeless Shores.
@@ -219,7 +222,7 @@ namespace CalamityMod.World
                 {
                     WorldUtils.Gen(new Point(platformX, platformY), new Shapes.Circle(5), Actions.Chain(new GenAction[]
                     {
-                            new Actions.Clear(),                                                // Clears all tiles and walls.
+                            new Actions.ClearTile(),                                                // Clears all tiles
                             new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>())     // Places tiles.
                     }));
                 }
@@ -229,44 +232,76 @@ namespace CalamityMod.World
                 float interpolator = CalamityUtils.Convert01To010(Utils.GetLerpValue(startPosX - platformSize / 2, startPosX + platformSize / 2, x, true));
                 int elevation = (int)MathHelper.Lerp(4f, 1f, interpolator);
                 WorldUtils.Gen(new Point(x, startPosY + platformHeight - 7), new Shapes.Circle(elevation), Actions.Chain(new GenAction[] { new Actions.Clear(), }));
+            }); 
+            const int furthestDistanceFromCenter = 100;
+            const int shortestDistanceFromCenter = 60;
+            const int holeStart = 10;
+            const int holeDepth = 80;
+            // Platu
+            ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 100, (wallPillarX) =>
+            {
+                int randomDisplacement = WorldGen.genRand.Next(-27, 46);
+                int RandomX = Main.rand.Next(15, 20);
+                int RandomH = Main.rand.Next(20, 35);
+                
+                for (int wallPillarY = startPosY + RandomH; wallPillarY <= startPosY + 60; wallPillarY += 10)
+                {
+                    // Along the height of the pillar, it becomes shorter the more closer to the center we get.
+                    int pillarWidth = (int)(CalamityUtils.Convert01To010(Utils.GetLerpValue(startPosY - RandomH, startPosY + 45, wallPillarY)) * 25);
+
+                    ShapeData rectangle = new ShapeData();
+                    GenAction blotchFilter = new Modifiers.Blotches(1, 0.4);
+                    GenAction ditherFilter = new Modifiers.Dither(Math.Min(Utils.GetLerpValue(startPosY + 30, startPosY + 70, wallPillarY) + 0.25, 1));
+
+                    WorldUtils.Gen(new Point(randomDisplacement + wallPillarX + pillarWidth / 2, wallPillarY), new Shapes.Circle(RandomX - pillarWidth + 3, RandomX), Actions.Chain(new GenAction[]
+                    {
+                            blotchFilter.Output(rectangle),     // Applies a blotch filter to the rectangle.
+                    }));
+
+                    WorldUtils.Gen(new Point(randomDisplacement + wallPillarX + pillarWidth / 4, wallPillarY), new ModShapes.All(rectangle), Actions.Chain(new GenAction[]
+                    {
+                            new Actions.SetTile((ushort)ModContent.TileType<Runestone>())
+                    }))
+                    ;
+                }
+
             });
 
-            //
-            // Makes a hole into the actual Sunken Sea at the botoom-left and bottom-right of the middle platform of the Timeless Shores.
-            //
-            const int furthestDistanceFromCenter = 55;
-            const int shortestDistanceFromCenter = 35;
-            const int holeStart = 50;
-            const int holeDepth = 32;
+            //Makes a hole into the actual Sunken Sea at the bottom - left and bottom-right of the middle platform of the Timeless Shores.
+
+
             ForLoop.Invoke(startPosX - furthestDistanceFromCenter, startPosX - shortestDistanceFromCenter, 1, (holeX) =>
             {
-                for (int holeY = startPosY + holeStart; holeY <= startPosY + holeStart + holeDepth; holeY += 3)
+                for (int holeY = startPosY + holeStart; holeY <= startPosY + holeDepth; holeY += 1)
                 {
-                    ShapeData circle = new();
+                    ShapeData circle = new ShapeData();
+                    GenAction blotchFilter = new Modifiers.Blotches(6, 1.9);
 
-                    // As the hole gets deeper, we want the holes to be bigger and more blurry, so it's not so monotonous.
-                    int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 5);
+                    //WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(2, 3), Actions.Chain(new GenAction[]
+                    //{
+                    //        blotchFilter.Output(circle),     // Applies a blotch filter to the rectangle.
+                    //}));
 
-                    // may or may not be useful later
-                    //GenAction dither = new Modifiers.RadialDither(2 * sizeIncrement, 5 * sizeIncrement);
-
-                    WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Tail(sizeIncrement, new Vector2D(6,20)), Actions.Chain(new GenAction[]
+                    WorldUtils.Gen(new Point(holeX / 2, holeY / 2), new Shapes.Circle(2, 3), Actions.Chain(new GenAction[]
                     {
                             new Actions.ClearTile(),    // The shape removes tiles.
                             new Actions.SetLiquid()     // The shape adds liquid (Default to max water).
                     }));
                 }
             });
-            ForLoop.Invoke(startPosX + shortestDistanceFromCenter, startPosX + furthestDistanceFromCenter, 1, (holeX) =>
+            ForLoop.Invoke(startPosX - furthestDistanceFromCenter, startPosX + furthestDistanceFromCenter, 1, (holeX) =>
             {
-                for (int holeY = startPosY + holeStart; holeY <= startPosY + holeStart + holeDepth; holeY += 3)
+                for (int holeY = startPosY + holeStart; holeY <= startPosY + holeDepth; holeY += 1)
                 {
-                    ShapeData circle = new();
+                    ShapeData circle = new ShapeData();
+                    GenAction blotchFilter = new Modifiers.Blotches(6, 1.9);
 
-                    // As the hole gets deeper, we want the holes to be bigger and more blurry, so it's not so monotonous.
-                    int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 20);
+                    //WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(2, 3), Actions.Chain(new GenAction[]
+                    //{
+                    //        blotchFilter.Output(circle),     // Applies a blotch filter to the rectangle.
+                    //}));
 
-                    WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Tail(sizeIncrement, new Vector2D(6, 20)), Actions.Chain(new GenAction[]
+                    WorldUtils.Gen(new Point(holeX / 2, holeY / 2), new Shapes.Circle(2, 3), Actions.Chain(new GenAction[]
                     {
                             new Actions.ClearTile(),    // The shape removes tiles.
                             new Actions.SetLiquid()     // The shape adds liquid (Default to max water).
@@ -283,35 +318,15 @@ namespace CalamityMod.World
                     Main.tile[WaterX, WaterY].LiquidAmount = byte.MaxValue;
                 }
             });
-
-            //place layer of sand on valid runestone blocks
-            ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 1, (X) =>
-            {
-                for (int Y = startPosY - 50; Y <= startPosY + 50; Y++)
-                {
-                    bool canPlaceSand = false;
-
-                    if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile &&
-                    !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
-                    {
-                        canPlaceSand = true;
-                    }
-
-                    if (canPlaceSand)
-                    {
-                        PlaceSand(X, Y, 5, ModContent.TileType<RuneSand>());
-                    }
-                }
-            });
-
             //
             // Generates pillars made out of walls at random points in the Timeless Shores.
             //
-            ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 100, (wallPillarX) =>
+            ForLoop.Invoke(startPosX - (biomeSize / 2) - furthestDistanceFromCenter, startPosX + (biomeSize / 2) + furthestDistanceFromCenter, 100, (wallPillarX) =>
             {
-                int randomDisplacementX = WorldGen.genRand.Next(-40, 80);
+                int randomDisplacementX = WorldGen.genRand.Next(-10, 10);
+                int RandomX = Main.rand.Next(3, 6);
 
-                for (int wallPillarY = startPosY - 75; wallPillarY <= startPosY + 120; wallPillarY += 10)
+                for (int wallPillarY = startPosY - 75; wallPillarY <= startPosY + 80; wallPillarY += 10)
                 {
                     // Along the height of the pillar, it becomes shorter the more closer to the center we get.
                     int pillarWidth = (int)(CalamityUtils.Convert01To010(Utils.GetLerpValue(startPosY - 75, startPosY + 50, wallPillarY)) * 25);
@@ -329,7 +344,8 @@ namespace CalamityMod.World
                     WorldUtils.Gen(new Point(randomDisplacementX + wallPillarX + pillarWidth / 2, wallPillarY), new ModShapes.All(rectangle), Actions.Chain(new GenAction[]
                     {
                             new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()) // The shape places walls.
-                    }));
+                    }))
+                    ;
                 }
             });
 
@@ -357,7 +373,7 @@ namespace CalamityMod.World
                             new Modifiers.OnlyTiles(TileID.Sand, TileID.HardenedSand),
                             new Modifiers.Dither(ditherStrength + 0f),
                             new Actions.ClearTile(),
-                            new Actions.PlaceTile((ushort)ModContent.TileType<RuneSand>()),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<Dunesand>()),
                     }));
                     // changing these makes the walls dither higher up than tiles, to prevent the biome from changing earlier than expected. still looks nice imo :)
                     interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 200, y, true);
@@ -381,6 +397,15 @@ namespace CalamityMod.World
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>()),
                     }));
+                    interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 150, y, true);
+                    ditherStrength = MathHelper.Lerp(0f, 0f, interpolator);
+                    WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
+                    {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<Basalt>()),
+                            new Modifiers.Dither(ditherStrength),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>()),
+                    }));
 
                     if (Main.tile[x, y].Get<LiquidData>().LiquidType == LiquidID.Lava)
                         WorldUtils.Gen(new Point(x, y), new Shapes.Rectangle(5, 5), new Actions.SetLiquid(LiquidID.Lava, 0));
@@ -394,6 +419,64 @@ namespace CalamityMod.World
                         }));
                     }
                 }
+                
+                    //place layer of sand on valid runestone blocks
+                    ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 1, (X) =>
+                {
+                    for (int Y = startPosY - 100; Y <= startPosY + 100; Y++)
+                    {
+                        bool canPlaceSand = false;
+
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile &&
+                        !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
+                        {
+                            canPlaceSand = true;
+                        }
+
+                        if (canPlaceSand)
+                        {
+                            PlaceSand(X, Y, 5, ModContent.TileType<Dunesand>());
+                        }
+                        //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
+                        bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
+                        bool OnlyLeft = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X + 1, Y].HasTile;
+                        bool OnlyDown = !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile;
+                        bool OnlyUp = !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile;
+
+                        if (OnlyRight || OnlyLeft || OnlyDown || OnlyUp)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
+
+                        //kill random single floating tiles
+                        if (!Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
+                        //Timeless Shores ambiant tiles
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
+                        {
+                            //Driftwood Ambiance
+                            if (WorldGen.genRand.NextBool(150))
+                            {
+                                ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
+
+                                WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                            }
+                        }
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>())
+                        {
+                            //Driftwood Ambiance
+                            if (WorldGen.genRand.NextBool(150))
+                            {
+                                ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
+
+                                WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
+                            }
+                        }
+                    }
+
+                });
 
 
                 //slope tiles
@@ -486,7 +569,7 @@ namespace CalamityMod.World
                     }
                 }
             });
-            bool runonce = false;
+            bool runonce = false; // this is used to make the wall on the left side go boom on the second run
             //generate the actual caverns
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
@@ -654,7 +737,7 @@ namespace CalamityMod.World
             int cavePerlinSeed = WorldGen.genRand.Next();
             int cavePerlinSeedWalls = WorldGen.genRand.Next();
 
-            Point origin = new Point(startPosX, startPosY);
+            Point origin = new Point(startPosX, startPosY - 200);
             Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
 
             float angle = MathHelper.Pi * 0.15f;
@@ -674,9 +757,10 @@ namespace CalamityMod.World
             //place the polyp forest caverns
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
-                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                for (int Y = (int)(origin.Y + verticalRadius * 0.4f) + 3; Y >= origin.Y - verticalRadius - 3; Y--)
                 {
-                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
+                    // Modify this part so that the generation happens from bottom to top
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y < origin.Y))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.98f;
@@ -684,10 +768,11 @@ namespace CalamityMod.World
                         //biome "blending" on the edges (disabled for now)
                         if (percent > blurPercent)
                         {
+                            
                             if (Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Limestone>())
                             {
                                 ShapeData circle = new ShapeData();
-                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                GenAction blotchMod = new Modifiers.Blotches(4, 0.7);
                                 WorldUtils.Gen(new Point(X, Y), new Shapes.Slime(WorldGen.genRand.Next(1, 3)), Actions.Chain(new GenAction[]
                                 {
                                     blotchMod.Output(circle)
@@ -898,7 +983,7 @@ namespace CalamityMod.World
                                 ShapeData circle = new ShapeData();
                                 GenAction blotchMod = new Modifiers.Blotches(10, 0.4);
 
-                                WorldUtils.Gen(new Point(X, Y + 5), new Shapes.Slime(20), Actions.Chain(new GenAction[]
+                                WorldUtils.Gen(new Point(X, Y + 5), new Shapes.Rectangle(10, 10), Actions.Chain(new GenAction[]
                                 {
                                         blotchMod.Output(circle)
                                 }));
@@ -1085,49 +1170,73 @@ namespace CalamityMod.World
         //basalt biome underneath the sunken sea
         public static void PlaceBasaltGully(int startPosX, int startPosY)
         {
-            int biomeSize = 200 + (Main.maxTilesX / 180);
+            int biomeSize = 250 + (Main.maxTilesX / 180);
 
-            int XLeft = GenVars.UndergroundDesertLocation.Left + 53;
-            int XRight = GenVars.UndergroundDesertLocation.Right - 53;
-            
+            int XLeft = GenVars.UndergroundDesertLocation.Left + 40;
+            int XRight = GenVars.UndergroundDesertLocation.Right - 70;
+
             //place circles of basalt along the 2 edges of the area
-            for (int Y = startPosY - 120; Y <= Main.maxTilesY - 230; Y += 20)
-            {
-                ShapeData circle = new ShapeData();
-                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+            //for (int Y = startPosY - 50; Y <= Main.maxTilesY - 200; Y += 20)
+            //{
+            //    ShapeData circle = new ShapeData();
+            //    GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
 
-                int radius = WorldGen.genRand.Next(30, 45);
-                int RandomX = Main.rand.Next(-25, 25);
+            //    int radius = WorldGen.genRand.Next(30, 45);
+            //    int RandomX = Main.rand.Next(-25, 25);
 
-                WorldUtils.Gen(new Point(XLeft, Y), new Shapes.Slime(radius), Actions.Chain(new GenAction[]
-                {
-                    blotchMod.Output(circle)
-                }));
+            //    WorldUtils.Gen(new Point(XLeft, Y), new Shapes.Rectangle(radius, (radius)), Actions.Chain(new GenAction[]
+            //    {
+            //        blotchMod.Output(circle)
+            //    }));
 
-                WorldUtils.Gen(new Point(XLeft, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
-                {
-                    new Actions.Clear(),
-                    new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
-                    new Actions.PlaceWall(WallID.LavaUnsafe1)
-                }));
+            //    WorldUtils.Gen(new Point(XLeft, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+            //    {
+            //        new Actions.Clear(),
+            //        new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
+            //        new Actions.PlaceWall(WallID.LavaUnsafe1)
+            //    }));
 
-                WorldUtils.Gen(new Point(XRight, Y), new Shapes.Slime(radius), Actions.Chain(new GenAction[]
-                {
-                    blotchMod.Output(circle)
-                }));
+            //    WorldUtils.Gen(new Point(XRight, Y), new Shapes.Rectangle(radius, (radius)), Actions.Chain(new GenAction[]
+            //    {
+            //        blotchMod.Output(circle)
+            //    }));
 
-                WorldUtils.Gen(new Point(XRight, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
-                {
-                    new Actions.Clear(),
-                    new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
-                    new Actions.PlaceWall(WallID.LavaUnsafe1)
-                }));
-            }
+            //    WorldUtils.Gen(new Point(XRight, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+            //    {
+            //        new Actions.Clear(),
+            //        new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
+            //        new Actions.PlaceWall(WallID.LavaUnsafe1)
+            //    }));
+            //}
+            
 
             //place blocks of basalt all the way down to hell, here it just places one block and wall so it doesnt hurt preformance
             ForLoop.Invoke(startPosX - biomeSize - 25, startPosX + biomeSize + 25, 1, (X) =>
             {
-                for (int Y = startPosY - 30; Y <= Main.maxTilesY - 250; Y++)
+                //const int totalCuveDepth = -120;
+                //const int totalCuveDepth2 = 120;
+                int basaltbordernoise = Main.rand.Next(180, 185);
+                int basaltbordernoisetop = Main.rand.Next(145, 150);
+                const int totalCuveDepth = -220;
+                const int totalCuveDepth2 = 80;
+                int curveDepth = (int)MathHelper.Lerp(
+                            totalCuveDepth,
+                            0f,
+                            MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 20, startPosX + biomeSize - 200, X, true)));
+                int curveDepth2 = (int)MathHelper.Lerp(
+                        totalCuveDepth,
+                        0f,
+                        MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 20, startPosX - biomeSize + 200, X, true)));
+                int curveDepthtop = (int)MathHelper.Lerp(
+                            totalCuveDepth2,
+                            0f,
+                            MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 20, startPosX + biomeSize - 200, X, true)));
+                int curveDepth2top = (int)MathHelper.Lerp(
+                        totalCuveDepth2,
+                        0f,
+                        MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 20, startPosX - biomeSize + 200, X, true)));
+
+                for (int Y = startPosY - basaltbordernoisetop + curveDepthtop + curveDepth2top; Y <= Main.maxTilesY - basaltbordernoise + curveDepth + curveDepth2; Y++)
                 {
                     Main.tile[X, Y].ClearEverything();
                     WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Basalt>());
@@ -1135,31 +1244,10 @@ namespace CalamityMod.World
                 }
             });
 
-            //place another wall of circles along the bottom of the biome so it doesnt just end unnaturally
-            ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 20, (X) =>
-            {
-                int Y = Main.maxTilesY - 230;
-
-                ShapeData circle = new ShapeData();
-                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-
-                WorldUtils.Gen(new Point(X, Y), new Shapes.Slime(25), Actions.Chain(new GenAction[]
-                {
-                        blotchMod.Output(circle)
-                }));
-
-                WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
-                {
-                        new Actions.Clear(),
-                        new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
-                        new Actions.PlaceWall(WallID.LavaUnsafe1)
-                }));
-            });
-
             //place caverns and lava
             for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
             {
-                for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
+                for (int Y = startPosY; Y <= Main.maxTilesY - 190; Y++)
                 {
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Basalt>())
                     {
@@ -1290,7 +1378,7 @@ namespace CalamityMod.World
                         }));
                     }
                     //Timeless Shores ambiant tiles
-                    if (Main.tile[X, Y].TileType == ModContent.TileType<RuneSand>())
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
                     {
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(5))
@@ -1479,6 +1567,13 @@ namespace CalamityMod.World
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<ScarletSeaGrassTile>())
                     {
+                        if (WorldGen.genRand.NextBool(100) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(7), Actions.Chain(new GenAction[]
+                        {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<ScarletSeaGrassTile>(),(ushort)ModContent.TileType<PolypSand>()),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<PinkPearlPile>()),
+                        }));
                         //BranchCoralsOnSand
                         if (WorldGen.genRand.NextBool(55))
                         {
@@ -1570,6 +1665,13 @@ namespace CalamityMod.World
                     //radiant reefs ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>())
                     {
+                        if (WorldGen.genRand.NextBool(100) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(7), Actions.Chain(new GenAction[]
+                        {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<EutrophicSand>()),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<WhitePearlPile>()),
+                        }));
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(15))
                         {
@@ -1617,6 +1719,17 @@ namespace CalamityMod.World
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(MiscCorals));
                         }
                     }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
+                    {
+                        if (WorldGen.genRand.NextBool(1))
+                        {
+                            WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<RefractiveHangingCoral>());
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<RefractiveHangingCoral>())
+                    {
+                        CalamityUtils.GrowVines(X, Y, WorldGen.genRand.Next(1, 4), (ushort)ModContent.TileType<RefractiveHangingCoral>());
+                    }
 
                     //grow depth vines on navystone
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
@@ -1651,6 +1764,26 @@ namespace CalamityMod.World
 
                             WorldGen.PlaceTile(X - 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
                         }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<VolcanicSand>())
+                    {
+                        if (WorldGen.genRand.NextBool(100) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(7), Actions.Chain(new GenAction[]
+                        {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<VolcanicSand>()),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<BlackPearlPile>()),
+                        }));
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
+                    {
+                        if (WorldGen.genRand.NextBool(60) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(7), Actions.Chain(new GenAction[]
+                        {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<HardenedEutrophicSand>()),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<WhitePearlPile>()),
+                        }));
                     }
                 }
             }
@@ -1702,6 +1835,7 @@ namespace CalamityMod.World
             ShapeData circle3 = new ShapeData();
 
             GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+            GenAction blotchMod2 = new Modifiers.Blotches(1, 0.1);
 
             //first circle of navystone
             WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius), Actions.Chain(new GenAction[]
@@ -1728,7 +1862,7 @@ namespace CalamityMod.World
             //clear out the middle of the circle
             WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 9), Actions.Chain(new GenAction[]
             {
-                blotchMod.Output(circle3)
+                blotchMod2.Output(circle3)
             }));
             WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle3), Actions.Chain(new GenAction[]
             {
@@ -1755,6 +1889,11 @@ namespace CalamityMod.World
                 (ushort)ModContent.TileType<Basalt>(),
                 (ushort)ModContent.TileType<VolcanicSand>(),
                 (ushort)ModContent.TileType<ScarletSeaGrassTile>(),
+                (ushort)ModContent.TileType<CyanCoral>(),
+                (ushort)ModContent.TileType<MagentaCoral>(),
+                (ushort)ModContent.TileType<OrangeCoral>(),
+                (ushort)ModContent.TileType<YellowCoral>(),
+                (ushort)ModContent.TileType<LimeCoral>(),
             };
 
             void getAttachedPoints(int x, int y, List<Point> points)

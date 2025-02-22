@@ -3565,8 +3565,8 @@ Runestone: {
 	Tooltip: ""
 }
 
-RuneSand: {
-	DisplayName: Runesand
+Dunesand: {
+	DisplayName: Dunesand
 	Tooltip: ""
 }
 

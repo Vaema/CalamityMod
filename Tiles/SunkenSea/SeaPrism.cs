@@ -32,6 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
             MinPick = 55;
 
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

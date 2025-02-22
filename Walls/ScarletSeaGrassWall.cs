@@ -26,8 +26,8 @@ namespace CalamityMod.Walls
 
             WallID.Sets.Conversion.Grass[Type] = true;
 
-            AddMapEntry(new Color(104, 24, 24));
-            this.AddMapEntryWithWaterVisibility(new Color(87, 20, 38));
+            AddMapEntry(new Color(103, 24, 24));
+            this.AddMapEntryWithWaterVisibility(new Color(89, 49, 108));
             if (!Main.dedServ)
             {
                 leafTexture = ModContent.Request<Texture2D>("CalamityMod/Walls/ScarletSeaGrassWall_Leaves");
