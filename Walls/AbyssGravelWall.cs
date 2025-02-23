@@ -5,12 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class AbyssGravelWall : ModWall
+    public class AbyssGravelWall : ModWall, IVisibleThroughWater
     {
+        int IVisibleThroughWater.WaterMapEntry { get; set; }
         public override void SetStaticDefaults()
         {
             DustType = 33;
             AddMapEntry(new Color(6, 10, 54));
+            this.AddMapEntryWithWaterVisibility(new Color(21, 47, 111));
         }
 
         public override void RandomUpdate(int i, int j)

@@ -8,8 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class PlantyMushWall : ModWall
+    public class PlantyMushWall : ModWall, IVisibleThroughWater
     {
+        int IVisibleThroughWater.WaterMapEntry { get; set; }
         public static Asset<Texture2D> leafTexture = null;
 
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
@@ -22,6 +23,7 @@ namespace CalamityMod.Walls
         {
             DustType = DustID.Grass;
             AddMapEntry(new Color(54, 72, 9));
+            this.AddMapEntryWithWaterVisibility(new Color(37, 59, 69));
             if (!Main.dedServ)
             {
                 leafTexture = ModContent.Request<Texture2D>("CalamityMod/Walls/PlantyMushWallLeaves");

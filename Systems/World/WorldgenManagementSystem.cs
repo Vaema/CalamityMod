@@ -173,14 +173,14 @@ namespace CalamityMod.Systems
                     };
 
                     // place each piece of the sunken sea based on the above positons
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
-                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX, sunkenSeaY + 110);
+                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
-                    SunkenSea.PlaceSunkenSeaAmbience();
-                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 615);
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
+                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
 

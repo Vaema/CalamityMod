@@ -26,6 +26,8 @@ namespace CalamityMod.Tiles
         public static List<int> GrowthTiles = new List<int>()
         {
             ModContent.TileType<SeaPrism>(),
+            ModContent.TileType<AbyssGravel>(),
+            ModContent.TileType<PyreMantle>(),
             ModContent.TileType<Navystone>(),
             ModContent.TileType<Shellstone>(),
             ModContent.TileType<Limestone>(),

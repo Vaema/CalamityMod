@@ -17,6 +17,10 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
+            TileID.Sets.IsVine[Type] = true;
+            TileID.Sets.ReplaceTileBreakDown[Type] = true;
+            TileID.Sets.VineThreads[Type] = true;
+            TileID.Sets.DrawFlipMode[Type] = 1;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
@@ -36,15 +40,14 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            if (WorldGen.loadSuccess)
+            Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+
+            if (!tileAbove.HasTile)
             {
-                Tile tileAbove = Framing.GetTileSafely(i, j - 1);
-                if (!tileAbove.HasTile)
-                {
-                    WorldGen.KillTile(i, j);
-                    return true;
-                }
+                WorldGen.KillTile(i, j);
+                return true;
             }
+
             return true;
         }
 
@@ -67,7 +70,7 @@ namespace CalamityMod.Tiles.Abyss
                 }
             }
         }
-
+        private const int MaxVineHeight = 20;
         public override void RandomUpdate(int i, int j)
 		{
 			Tile tileBelow = Framing.GetTileSafely(i, j + 1);

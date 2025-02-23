@@ -5,12 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class PyreMantleWall : ModWall
+    public class PyreMantleWall : ModWall, IVisibleThroughWater
     {
+        int IVisibleThroughWater.WaterMapEntry { get; set; }
         public override void SetStaticDefaults()
         {
             DustType = 33;
             AddMapEntry(new Color(33, 30, 30));
+            this.AddMapEntryWithWaterVisibility(new Color(16, 35, 82));
         }
 
         public override void RandomUpdate(int i, int j)

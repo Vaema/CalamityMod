@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
@@ -15,7 +16,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			Main.tileSolid[Type] = false;
 			Main.tileNoFail[Type] = true;
 			Main.tileNoAttach[Type] = true;
-			TileID.Sets.IsVine[Type] = true;
+            Main.tileNoSunLight[Type] = false;
+            TileID.Sets.IsVine[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
 			AddMapEntry(new Color(48, 98, 192));
 			DustType = DustID.Grass;
@@ -50,17 +52,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 		}
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            // Baby blue
-            if (closer && Main.rand.NextBool(1200))
-            {
-                Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(106, 154, 238), 1.5f)];
-                dust.noGravity = true;
-                dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
-            }
             // Light Cyan
-            if (closer && Main.rand.NextBool(1200))
+            if (closer && Main.rand.NextBool(600))
             {
                 Dust dust;
                 dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(136, 206, 215), 1.7f)];
@@ -68,17 +61,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                 dust.noLight = true;
                 dust.fadeIn = 2.5813954f;
             }
-            //Mint Green
-            if (closer && Main.rand.NextBool(1200))
-            {
-                Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(163, 252, 195), 1.4f)];
-                dust.noGravity = true;
-                dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
-            }
             //Lilac
-            if (closer && Main.rand.NextBool(1200))
+            if (closer && Main.rand.NextBool(600))
             {
                 Dust dust;
                 dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(236, 194, 252), 1.6f)];
@@ -86,15 +70,23 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                 dust.noLight = true;
                 dust.fadeIn = 2.5813954f;
             }
-            //Dim Lilac
-            if (closer && Main.rand.NextBool(1200))
-            {
-                Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(192, 170, 233), 1.3f)];
-                dust.noGravity = true;
-                dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
-            }
+        }
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            float brightness = 0.9f;
+            brightness += 0.6f;
+            brightness = MathHelper.Clamp(brightness, 0.5f, 0.9f);
+            brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
+            Color lilac = new Color(236, 194, 252);
+            Color mint = new Color(163, 252, 195);
+            Color value = Color.Lerp(lilac, mint, (MathF.Sin(j / 30f + Main.GameUpdateCount * 0.017f + -i / 40f) + 1f) / 2f);
+            Color value1 = Color.Lerp(lilac, mint, (MathF.Sin((-j - 100) / 40f + Main.GameUpdateCount * 0.014f + i / 20f) + 1f) / 2f);
+            r = (value.R + value1.R) / 300f;
+            g = (value.G + value1.G) / 300f;
+            b = (value.B + value1.B) / 300f;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
         }
 
         public override void RandomUpdate(int i, int j)
