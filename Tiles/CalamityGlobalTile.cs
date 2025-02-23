@@ -36,6 +36,10 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
+
+            // Allow Queen Bee larvae to be protected by Guide to Environmental Protection
+            // Yes this naming is backwards. Do not blame me!
+            TileID.Sets.TileCutIgnore.IgnoreDontHurtNature[TileID.Larva] = true;
         }
 
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
