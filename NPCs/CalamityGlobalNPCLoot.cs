@@ -309,21 +309,21 @@ namespace CalamityMod.NPCs
 
                 #region Aquatic / Ocean
                 // Pink Jellyfish
-                // Life Jelly @ 14.29% Normal, 25% Expert+
+                // Life Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.PinkJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
                     break;
 
                 // Blue Jellyfish
-                // Cleansing Jelly @ 14.29% Normal, 25% Expert+
+                // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
                     break;
 
                 // Green Jellyfish
-                // Vital Jelly @ 14.29% Normal, 25% Expert+
+                // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
                     break;
 
                 // Shark
