@@ -8,18 +8,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class UrchinStinger : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 10;
             Item.height = 26;
-            Item.damage = 15;
+            Item.damage = 9;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.useAnimation = Item.useTime = 14;
+            Item.useAnimation = Item.useTime = 17;
             Item.knockBack = 1.5f;
 
             Item.noMelee = true;
@@ -28,9 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.value = Item.sellPrice(silver: 2);
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<UrchinStingerProj>();
             Item.shootSpeed = 12f;
@@ -38,10 +31,28 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable())
-                Main.projectile[proj].Calamity().stealthStrike = true;
-            return false;
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(23f)) * 0.6f;
+            Vector2 newVel2 = velocity.RotatedByRandom(MathHelper.ToRadians(23f)) * 0.8f;
+            if (!player.Calamity().StealthStrikeAvailable())
+            {
+                Projectile.NewProjectile(source, position, newVel, type, damage / 2, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, newVel2, type, damage / 2, knockback, player.whoAmI);
+            }
+
+            if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    newVel = velocity.RotatedByRandom(MathHelper.ToRadians(23f));
+                    int stealth = Projectile.NewProjectile(source, position, newVel, type, damage, knockback, player.whoAmI);
+                    if (stealth.WithinBounds(Main.maxProjectiles))
+                    {
+                        Main.projectile[stealth].Calamity().stealthStrike = true;
+                    }
+                }
+                return false;
+            }
+            return true;
         }
     }
 }
