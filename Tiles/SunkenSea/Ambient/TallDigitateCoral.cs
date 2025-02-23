@@ -26,9 +26,13 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			TileObjectData.newTile.CoordinatePadding = 2;
 			TileObjectData.newTile.DrawYOffset = 3;
 			TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
+            AddMapEntry(new Color(48, 201, 214));
             DustType = 96;
             HitSound = SoundID.Dig;
+        }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
@@ -55,9 +59,13 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
+            AddMapEntry(new Color(48, 201, 214));
             DustType = 96;
             HitSound = SoundID.Dig;
+        }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
@@ -83,10 +91,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
+            AddMapEntry(new Color(48, 201, 214));
             DustType = 96;
             HitSound = SoundID.Dig;
         }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
+        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 56f / 400f;
@@ -111,7 +124,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
+            AddMapEntry(new Color(48, 201, 214));
             DustType = 96;
             HitSound = SoundID.Dig;
         }

@@ -10,7 +10,7 @@ using Terraria.Enums;
 using Terraria.ObjectData;
 using CalamityMod.Items.Weapons.Melee;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class BranchCoral : ModTile
     {
@@ -23,13 +23,13 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSpelunker[Type] = false;
 
             HitSound = SoundID.Dig;
-            DustType = 67;
+            DustType = DustID.CrimsonPlants;
 
-            AddMapEntry(new Color(48, 201, 214));
+            AddMapEntry(new Color(210, 66, 90));
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.StyleHorizontal = true; 
+            TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleMultiplier = 32; // total 32 frames, all should be same "itemStyle"
             TileObjectData.newTile.StyleWrapLimit = 8; // only 1 placement alternative per row
             TileObjectData.newTile.RandomStyleRange = 8; // 8 different style will be selected upon placing
@@ -68,10 +68,6 @@ namespace CalamityMod.Tiles.SunkenSea
             r = 232 / 500f;
             g = 122 / 500f;
             b = 122 / 500f;
-        }
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<PrismShard>(), 4);
         }
     }
 }

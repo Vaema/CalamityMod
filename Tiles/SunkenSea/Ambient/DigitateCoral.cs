@@ -18,8 +18,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(233, 132, 58));
-            DustType = DustID.Coralstone;
+            AddMapEntry(new Color(48, 201, 214));
+            DustType = DustID.IceGolem;
 
             base.SetStaticDefaults();
         }

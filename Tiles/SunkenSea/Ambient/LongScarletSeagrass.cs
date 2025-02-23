@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(187, 43, 44));
-            DustType = DustID.Grass;
+            DustType = DustID.CrimsonPlants;
             HitSound = SoundID.Grass;
 
             base.SetStaticDefaults();

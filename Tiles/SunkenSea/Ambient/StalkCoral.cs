@@ -26,11 +26,16 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			TileObjectData.newTile.CoordinatePadding = 2;
 			TileObjectData.newTile.DrawYOffset = 3;
 			TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(156, 87, 57));
+            DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
 
         }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
+        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 192f / 450f;
@@ -56,10 +61,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(156, 87, 57));
+            DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
         }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
+        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 192f / 450f;
@@ -84,10 +94,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(156, 87, 57));
+            DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
         }
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
+        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 192f / 450f;
