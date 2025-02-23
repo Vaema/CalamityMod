@@ -20,6 +20,7 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.width = 30;
             Item.height = 28;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(silver: 75);
             Item.vanity = true;
         }
     }
