@@ -150,7 +150,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<UrchinStinger>(), 1, 30, 50);
+            npcLoot.Add(ModContent.ItemType<UrchinStinger>(), 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
