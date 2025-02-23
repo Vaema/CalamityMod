@@ -242,8 +242,8 @@ namespace CalamityMod.Projectiles.Melee
                 target.noTileCollide = false;
 
                 // Launch the suckers
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (Main.zenithWorld ? -50 : -30) * (rightClicked ? 2 : 1);
-                target.velocity = launchVel * 0.5f;
+                Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                target.MoveNPC(launchVel, (Main.zenithWorld ? 50 : 30) * (rightClicked ? 2 : 1), true);
 
                 // Remove knockback resist, just like it used to
                 target.knockBackResist = 1;

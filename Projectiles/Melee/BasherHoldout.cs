@@ -187,13 +187,9 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
             target.AddBuff(BuffID.Poisoned, 90);
 
-            if (target.CanBeMoved(true))
-            {
-                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -12;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 7 * (Owner.Calamity().mouseRight ? 2 : 1), true);
+
             if (Owner.Calamity().mouseRight)
             {
                 SoundStyle fire3 = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion");
