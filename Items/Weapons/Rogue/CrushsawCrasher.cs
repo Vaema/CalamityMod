@@ -61,8 +61,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (!HasHoveredOverNameInGFB)
                     {
                         HasHoveredOverNameInGFB = true;
-                        string firstWord = this.GetLocalizedValue("GFBFirstWord" + Main.rand.Next(1, 12 + 1).ToString());
-                        string lastWord = this.GetLocalizedValue("GFBLastWord" + Main.rand.Next(1, 10 + 1).ToString());
+                        string firstWord = this.GetLocalizedValue("GFBFirstWord" + Main.rand.Next(1, 16 + 1).ToString());
+                        string lastWord = this.GetLocalizedValue("GFBLastWord" + Main.rand.Next(1, 13 + 1).ToString());
                         Item.SetNameOverride(firstWord + " " + lastWord);
                     }
                 }

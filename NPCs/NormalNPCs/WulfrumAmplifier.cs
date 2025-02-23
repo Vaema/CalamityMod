@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class WulfrumAmplifier : ModNPC
     {
-        public static readonly SoundStyle Hit = new("CalamityMod/Sounds/WulfrumHit", 3);
+        public static readonly SoundStyle Hit = new("CalamityMod/Sounds/NPCHit/WulfrumHit", 3);
         public bool Charging
         {
             get => NPC.ai[0] != 0f;
