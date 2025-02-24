@@ -2709,6 +2709,8 @@ namespace CalamityMod.CalPlayer
                     // Record the final breath loss rate for the stat meter
                     abyssBreathLossRateStat = (float)tick;
 
+                    float resistanceSlowdownFactor = 1f;
+
                     // Reduce breath over ticks (frames)
                     abyssBreathCD++;    
                     if (abyssBreathCD >= (int)tick)
@@ -2721,7 +2723,9 @@ namespace CalamityMod.CalPlayer
                         {
                             Main.NewText(Player.breath);
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
-                            Player.breath -= (int)(hadopelagicpressure && !abyssalDivingSuit ? breathLoss + 0.5D : breathLoss);
+
+                            if (hadopelagicpressure)
+                                resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
                         }
                     }
 
