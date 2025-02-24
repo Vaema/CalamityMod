@@ -2713,7 +2713,7 @@ namespace CalamityMod.CalPlayer
 
                     // Reduce breath over ticks (frames)
                     abyssBreathCD++;    
-                    if (abyssBreathCD >= (int)tick)
+                    if (abyssBreathCD >= (int)(tick * resistanceSlowdownFactor))
                     {
                         // Reset modded breath variable
                         abyssBreathCD = 0;
