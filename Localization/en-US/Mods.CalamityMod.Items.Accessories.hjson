@@ -34,6 +34,7 @@ AbyssalDivingSuit: {
 		Provides a moderate amount of light and reduces breath loss in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
 		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
+		Grants resistance to the increased breath loss caused by Hadopelagic Pressure
 		'''
 }
 
