@@ -523,7 +523,7 @@ namespace CalamityMod.NPCs
                 // Drop Blood Orbs @ 100% (25% for common enemies)
                 case NPCID.BloodZombie:
                 case NPCID.Drippler:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 4);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
 
                 case NPCID.Clown:
@@ -534,11 +534,11 @@ namespace CalamityMod.NPCs
                 // Bouncing Eyeball @ 10% Normal, 16.66% Expert+
                 case NPCID.EyeballFlyingFish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BouncingEyeball>(), 10, 6));
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
                 case NPCID.ZombieMerman:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
                 case NPCID.GoblinShark:
