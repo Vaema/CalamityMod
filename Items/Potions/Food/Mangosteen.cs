@@ -19,7 +19,8 @@ namespace CalamityMod.Items.Potions.Food
 				new Color(123, 99, 130)
 			};
 			ItemID.Sets.IsFood[Type] = true;
-		}
+            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ambrosia;
+        }
 
 		public override void SetDefaults()
 		{

@@ -35,13 +35,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (target.CanBeMoved(true))
-            {
-                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                // Launch
-                Vector2 launchVel = (Owner.Calamity().mouseWorld - target.Center).SafeNormalize(Vector2.UnitY) * 16;
-                target.velocity = launchVel;
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 16, true);
 
             target.AddBuff(BuffID.Wet, 300);
             target.AddBuff(ModContent.BuffType<Buffs.DamageOverTime.RiptideDebuff>(), 180);

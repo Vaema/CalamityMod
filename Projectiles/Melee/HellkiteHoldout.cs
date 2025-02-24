@@ -411,12 +411,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (chargedSwing ? -24 : -19);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

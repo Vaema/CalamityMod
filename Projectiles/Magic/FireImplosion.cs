@@ -113,10 +113,8 @@ namespace CalamityMod.Projectiles.Magic
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult * (frigidFlash ? 0.5f : 1); // Frigidflash explosion are spawned at full power, so their damage is reduced here
 
-            if (target.CanBeMoved(false)) // The vortex sucks in enemies
-            {
-                target.velocity = (-pushVelocity);
-            }
+            // The vortex sucks in enemies
+            target.MoveNPC(-pushVelocity, customKnockback, frigidFlash);
         }
         public override void OnKill(int timeLeft)
         {
