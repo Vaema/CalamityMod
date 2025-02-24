@@ -297,8 +297,9 @@ namespace CalamityMod.Projectiles.Melee
                 spawnBoom = false;
             }
 
-            int heal = (int)(MathHelper.Clamp(85 - Projectile.numHits * 65, 1, 85));
-            if (Projectile.numHits < 15)
+            int healPower = (Projectile.ai[1] == -1 ? 100 : 85);
+            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
+            if (Projectile.numHits < 10)
             {
                 Owner.HealPlayer(heal);
             }
