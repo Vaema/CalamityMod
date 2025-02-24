@@ -509,7 +509,7 @@ namespace CalamityMod.NPCs
                 case NPCID.MaggotZombie:
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 10);
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
@@ -519,13 +519,15 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Blood Moon
-                // All Blood Moon enemies
+                // After EoC, All Blood Moon enemies
                 // Drop Blood Orbs @ 100% (25% for common enemies)
                 case NPCID.BloodZombie:
                 case NPCID.Drippler:
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
-
+                
+                //Hardmode enemies drop orbs even if EoC is not dead
+                //99% of players will not encounter this and challenge runners will appreciate it
                 case NPCID.Clown:
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 6, 12);
                     break;
