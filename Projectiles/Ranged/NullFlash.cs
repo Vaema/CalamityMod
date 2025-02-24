@@ -68,13 +68,9 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NullImpact");
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.5f }, Projectile.Center);
             }
-            if (target.CanBeMoved(true))
-            {
-                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 20, true);
         }
         public override bool PreDraw(ref Color lightColor)
         {

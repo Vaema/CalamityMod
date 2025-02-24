@@ -216,6 +216,71 @@ namespace CalamityMod.CalPlayer
             //Todo - Move this back to the wulfrum set class whenever statmodifiers are implemented for stats other than damage
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
+            
+            if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
+            {
+                float fxScale = 1;
+                if (exaltedKillMode)
+                {
+                    if (Player.wingTime > 0 && Player.miscCounter % 2 == 0)
+                        Player.wingTime++;
+
+                    if (Player.miscCounter % 4 == 0)
+                        Player.HealPlayer(1, HealTextType.None);
+
+                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    {
+                        Player.dashDelay = 0;
+                    }
+                    if (Player.dashDelay == -1)
+                    {
+                        fxScale = 1.5f;
+                    }
+                }
+                else
+                {
+                    if (Player.wingTime > 0 && Player.miscCounter % 3 == 0)
+                        Player.wingTime += 2;
+
+                    if (Player.miscCounter % 5 == 0)
+                        Player.HealPlayer(2, HealTextType.None);
+
+                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    {
+                        Player.dashDelay = 0;
+                    }
+                    if (Player.dashDelay == -1)
+                    {
+                        fxScale = 1.5f;
+                    }
+                }
+
+                if (Player.velocity.Length() > 2)
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        Particle spark2 = new CustomSpark(Player.Center + Main.rand.NextVector2Circular(20, 20), -Player.velocity * Main.rand.NextFloat(0.3f, 0.8f) * fxScale, "CalamityMod/Particles/DemonSigilParticle", false, 22, Main.rand.NextFloat(0.2f, 0.3f) * fxScale, Color.Lerp(Color.MediumOrchid, Color.BlueViolet, Main.rand.NextFloat(0, 0.7f)) * 0.8f, new Vector2(1, 1), true, false, 0, false, false, fxScale - 1);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                    }
+                    else
+                    {
+                        // Spawn in a helix-style pattern
+                        float sine = (float)Math.Sin(Player.miscCounter * 0.575f / MathHelper.Pi);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
+                            float scale = Main.rand.NextFloat(0.8f, 1.6f) * fxScale;
+
+                            Dust dust2 = Dust.NewDustPerfect(Player.Center + offset * (i == 0 ? -1 : 1) * fxScale, ModContent.DustType<LightDust>(), Player.velocity * Main.rand.NextFloat(0.2f, 0.5f));
+                            dust2.noGravity = true;
+                            dust2.scale = scale;
+                            dust2.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
+                        }
+                    }
+                }
+
+                Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
+            }
 
             if (gShell)
             {
@@ -401,6 +466,25 @@ namespace CalamityMod.CalPlayer
 
                         Dust dust2 = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 10, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.9f, 1.4f) * sparkscale1);
                         dust2.noGravity = true;
+                    }
+                }
+                else
+                    IsFirstDashFrame = true;
+            }
+
+            if (sandCloak)
+            {
+                // Spawn sand veil when dashing if it does not exist and you do not have the cooldown
+                if (Player.dashDelay == -1)
+                {
+                    if (IsFirstDashFrame)
+                    {
+                        if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<SandCloakVeil>()) || Player.HasCooldown(Cooldowns.SandCloak.ID)))
+                        {
+                            Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 13, 2.5f, Player.whoAmI);
+                            SoundEngine.PlaySound(SoundID.Item45, Player.Center);
+                        }
+                        IsFirstDashFrame = false;
                     }
                 }
                 else
@@ -1721,7 +1805,7 @@ namespace CalamityMod.CalPlayer
                 {
                     handler.OnCompleted();
                     if (handler.EndSound != null && handler.ShouldPlayEndSound)
-                        SoundEngine.PlaySound(handler.EndSound.GetValueOrDefault());
+                        SoundEngine.PlaySound(handler.EndSound.GetValueOrDefault(), Player.Center);
                     expiredCooldowns.Add(id);
                 }
             }
@@ -1751,6 +1835,8 @@ namespace CalamityMod.CalPlayer
 
             if (arsenalCooldown > 0)
                 arsenalCooldown--;
+            if (killModeCooldown > 0)
+                killModeCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (transformerCooldown > 0)
@@ -2493,6 +2579,14 @@ namespace CalamityMod.CalPlayer
             {
                 Player.ClearBuff(ModContent.BuffType<AbyssalMadness>());
                 omegaBlueCD.timeLeft = 1500;
+            }
+
+            bool hasKillMode = cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
+            if (hasKillMode && killModeCD.timeLeft > KillMode.cooldownMax && !(Player.ActiveItem().type == ModContent.ItemType<ForbiddenOathblade>() || Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>() || Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>()))
+            {
+                killModeCD.timeLeft = KillMode.cooldownMax - 1;
+                Player.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                Player.Calamity().demonSwordKillMode = false;
             }
 
             bool hasPlagueBlackoutCD = cooldowns.TryGetValue(PlagueBlackout.ID, out CooldownInstance plagueBlackoutCD);

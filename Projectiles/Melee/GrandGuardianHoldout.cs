@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (CanHit)
-                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.2f);
+                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.3f);
             else
                 fadeIn = MathHelper.Lerp(fadeIn, 0, 0.25f);
 
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
                 
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
-                if (AnimationProgress < (useAnim / 1.3f))
+                if (AnimationProgress < (useAnim / 1.2f))
                 {
                     aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
@@ -173,7 +173,7 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 3; i++)
                         {
                             bool color = Main.rand.NextBool();
-                            GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(190, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
+                            GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(198, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
                             Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
@@ -193,12 +193,8 @@ namespace CalamityMod.Projectiles.Melee
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            if (target.CanBeMoved(false))
-            {
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -8;
-                target.velocity = launchVel;
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 8, true);
 
             if (spawnBoom)
             {
@@ -211,8 +207,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
             SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(3 - Projectile.numHits, 1, 3));
-            if (Projectile.numHits < 3)
+            int heal = (int)(MathHelper.Clamp(4 - Projectile.numHits * 2, 1, 4));
+            if (Projectile.numHits < 5)
             {
                 Owner.HealPlayer(heal);
             }
@@ -262,7 +258,7 @@ namespace CalamityMod.Projectiles.Melee
                     Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
                 if (swingCount > 0)
-                    Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.DarkOrchid with { A = 0 } * fadeIn * 0.9f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 != 0 ? -70 : 70) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 2.45f / 4, SpriteEffects.None);
+                    Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.DarkOrchid with { A = 0 } * fadeIn * 0.9f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 != 0 ? -70 : 70) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 2.55f / 4, SpriteEffects.None);
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 Main.EntitySpriteDraw(glowTex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), glowTex.Frame(1, FrameCount, 0, Frame), Color.White, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(glowTex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));

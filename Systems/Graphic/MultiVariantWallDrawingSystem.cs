@@ -39,7 +39,7 @@ namespace CalamityMod.Systems
                 return;
             }
 
-            if (!cursor.TryGotoNext(x => x.MatchStfld<Rectangle>(nameof(Rectangle.Y))))
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchStfld<Rectangle>(nameof(Rectangle.Y))))
             {
                 LogILFailure("Stfld::Rectangle.Y was not found!");
                 return;

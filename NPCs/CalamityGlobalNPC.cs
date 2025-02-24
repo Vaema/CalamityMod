@@ -311,6 +311,8 @@ namespace CalamityMod.NPCs
         public int absorberAffliction = 0;
         public int irradiated = 0;
         public int bFlames = 0;
+        public int demonicFlames = 0;
+        public int demonicFlamesBonusDamage = 0;
         public int hFlames = 0;
         /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
@@ -337,6 +339,7 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
+        public int demonSwordImpales = 0;
 
         /// <summary>
         /// If set to true, prevents this NPC from dealing contact damage.<br/>
@@ -576,6 +579,8 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
+            myClone.demonicFlames = demonicFlames;
+            myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
@@ -594,6 +599,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
+            myClone.demonSwordImpales = demonSwordImpales;
 
             myClone.pacified = pacified;
 
@@ -972,7 +978,7 @@ namespace CalamityMod.NPCs
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            bool hasModHotOil = bFlames > 0 || demonicFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
             if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
             {
                 double multiplier = 1D;
@@ -1120,6 +1126,15 @@ namespace CalamityMod.NPCs
             {
                 int baseBrimstoneFlamesDoTValue = (int)(60 * heatDamageMult);
                 ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Demonic Flames
+            // An unresistable fire debuff that you can set the damage of when it is applied
+            // This way it can be viable for multiple tiers
+            if (demonicFlames > 0)
+            {
+                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
             // Holy Flames
@@ -5616,6 +5631,10 @@ namespace CalamityMod.NPCs
                 irradiated--;
             if (bFlames > 0)
                 bFlames--;
+            if (demonicFlames > 0)
+                demonicFlames--;
+            else
+                demonicFlamesBonusDamage = 0;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)
@@ -5834,6 +5853,9 @@ namespace CalamityMod.NPCs
 
                 if (webbed > 0)
                     velocitySlownessFactor += 0.15f;
+
+                if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+                    npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.9f, 0.3f, true);
 
                 if (gState > 0)
                 {
@@ -6430,7 +6452,7 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
 
@@ -7137,6 +7159,9 @@ namespace CalamityMod.NPCs
         // Debuff visuals. Alphabetical order as per usual, please
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            if (!npc.canDisplayBuffs)
+                return;
+
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
@@ -7161,6 +7186,9 @@ namespace CalamityMod.NPCs
             // TODO -- change this when Demonshade is reworked
             if (bFlames > 0 || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
+
+            if (demonicFlames > 0)
+                DemonicFlames.DrawEffects(npc, ref drawColor);
 
             if (bBlood > 0)
                 BurningBlood.DrawEffects(npc, ref drawColor);
@@ -7384,6 +7412,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
             ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),

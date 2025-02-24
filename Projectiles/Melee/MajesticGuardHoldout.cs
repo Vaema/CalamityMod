@@ -192,12 +192,8 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.HealPlayer(heal);
             }
 
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -15;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 15, true);
 
             for (int i = 0; i < MathHelper.Clamp(6 - Projectile.numHits * 2, 2, 6); i++)
             {

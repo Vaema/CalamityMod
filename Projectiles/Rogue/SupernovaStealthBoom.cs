@@ -227,7 +227,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
             }
-            if (time < 80)
+            if (time < 80) // Suck in enemies
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
@@ -238,6 +238,7 @@ namespace CalamityMod.Projectiles.Rogue
                         {
                             if (Vector2.Distance(target.Center, Projectile.Center) > 40 && Vector2.Distance(target.Center, Projectile.Center) < 2000)
                                 target.Center += target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 38;
+                            target.SyncMotionToServer();
                         }
                     }
                 }
@@ -293,11 +294,8 @@ namespace CalamityMod.Projectiles.Rogue
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.9f);
                 }
 
-                if (!target.boss && target.IsAnEnemy(true, true) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false) && target != null)
-                {
-                    Vector2 velToApply = target.Center.DirectionFrom(Projectile.Center).SafeNormalize(Vector2.UnitX) * 40;
-                    target.velocity = velToApply + (velToApply.Y <= 0 ? new Vector2(0, -5) : Vector2.Zero);
-                }
+                Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+                target.MoveNPC(launchVel, 60, true);
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) // Add to regular plz

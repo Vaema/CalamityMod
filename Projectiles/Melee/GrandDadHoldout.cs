@@ -38,6 +38,7 @@ namespace CalamityMod.Projectiles.Melee
         public int useAnim;
         public int swingCount;
         public bool finalFlip = false;
+        public bool swingSound = true;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
-            Projectile.ai[1] = 1;
+            Projectile.ai[1] = -1;
             base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Dad has no projectiles
@@ -76,9 +77,9 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (CanHit)
-                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.1f);
+                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.3f);
             else
-                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.15f);
+                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.35f);
 
 
             if (!doSwing)
@@ -97,6 +98,7 @@ namespace CalamityMod.Projectiles.Melee
                 doSwing = true;
                 swingCount++;
                 finalFlip = false;
+                swingSound = true;
             }
             else
             {
@@ -114,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
                 
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
-                if (AnimationProgress < (useAnim / 3))
+                if (AnimationProgress < (useAnim / 1.5f))
                 {
                     aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
@@ -124,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
                         doSwing = false;
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
-                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.2f);
+                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.8f, useAnim, Animation, true)) * 0.35f)), 0.2f);
                 }
                 else
                 {
@@ -136,10 +138,11 @@ namespace CalamityMod.Projectiles.Melee
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
-                    if (time == (int)(timeMax * 0.4f))
+                    if (time >= (int)(timeMax * 0.4f) && swingSound)
                     {
                         SoundStyle fire = new("CalamityMod/Sounds/Item/HeavySwing");
                         SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = Main.rand.NextFloat(0.2f, 0.32f) }, Projectile.Center);
+                        swingSound = false;
                     }
                     if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
                     {
@@ -239,8 +242,8 @@ namespace CalamityMod.Projectiles.Melee
                 target.noTileCollide = false;
 
                 // Launch the suckers
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (Main.zenithWorld ? -50 : -30) * (rightClicked ? 2 : 1);
-                target.velocity = launchVel * 0.5f;
+                Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                target.MoveNPC(launchVel, (Main.zenithWorld ? 50 : 30) * (rightClicked ? 2 : 1), true);
 
                 // Remove knockback resist, just like it used to
                 target.knockBackResist = 1;
@@ -285,6 +288,10 @@ namespace CalamityMod.Projectiles.Melee
                 Asset<Texture2D> glowTex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandDadGlow");
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
+
+                Asset<Texture2D> swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearLarge");
+                if (Animation > useAnim * 0.2f)
+                    Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.DodgerBlue with { A = 0 } * fadeIn * 0.65f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(Projectile.ai[1] == 1 ? -90 : 90) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 0.6f, SpriteEffects.None);
 
                 for (int i = 0; i < 25; i++)
                 {

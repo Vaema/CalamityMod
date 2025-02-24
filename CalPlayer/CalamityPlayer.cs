@@ -244,6 +244,10 @@ namespace CalamityMod.CalPlayer
         #region Timer and Counter
         public int gaelSwipes = 0;
         public int arsenalCooldown = 0;
+        public int killModeCooldown = 0;
+        public bool demonSwordKillMode = false;
+        public bool exaltedKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>());
+        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>());
         /// <summary>
         /// Tracks Dragoon Drizzlefish's "gel feed" mechanic in Get fixed boi.<br/>
         /// Consuming Gel adds 1 to this counter, up to a maximum of 6, and using the weapon has a random chance to decrement the counter.<br/>
@@ -933,6 +937,8 @@ namespace CalamityMod.CalPlayer
         public bool bloodyGlove = false;
         public bool filthyGlove = false;
         public bool sandCloak = false;
+        /// <summary> Solely used for granting the acceleration boost while within Sand Cloak's veil. Other stat boosts are directly given by the projectile. </summary>
+        public bool getSandCloakAccelBoost = false;
         public bool spectralVeil = false;
         public int spectralVeilImmunity = 0;
         /// <summary> Check for if the player has Plagued Fuel Pack OR Blunder Booster equipped. </summary>
@@ -1177,6 +1183,7 @@ namespace CalamityMod.CalPlayer
         public bool irradiated = false;
         public bool bFlames = false;
         public bool weakBrimstoneFlames = false;
+        public bool demonicFlames = false;
         public bool gsInferno = false;
         public bool astralInfection = false;
         /// <summary> Plague debuff. </summary>
@@ -2364,6 +2371,7 @@ namespace CalamityMod.CalPlayer
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
+            demonicFlames = false;
             gsInferno = false;
             astralInfection = false;
             pFlames = false;
@@ -2775,6 +2783,7 @@ namespace CalamityMod.CalPlayer
             hideOfDeusMeleeBoostTimer = 0;
             rOfResilienceCooldown = 0;
             rOfResilienceEffect = 0;
+            demonSwordKillMode = false;
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
@@ -2818,6 +2827,7 @@ namespace CalamityMod.CalPlayer
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
+            demonicFlames = false;
             gsInferno = false;
             astralInfection = false;
             pFlames = false;
@@ -3284,17 +3294,6 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), proj.damage / 10, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
                     Player.HealPlayer(2);
                 }
-            }
-            if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Cooldowns.SandCloak.ID))
-            {
-                Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(20));
-
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<Items.Accessories.SandCloak>()));
-                float knockback = 2.5f;
-
-                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<SandCloakVeil>(), 12, knockback, Player.whoAmI);
-                Main.projectile[veil].Center = Player.Center;
-                SoundEngine.PlaySound(SoundID.Item45, Player.Center);
             }
             if (CalamityKeybinds.SpectralVeilHotKey.JustPressed && spectralVeil && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
                 wearingRogueArmor && rogueStealthMax > 0)
@@ -4259,10 +4258,12 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? YanmeisKnife.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
+                    (getSandCloakAccelBoost ? 0.75f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
+                    //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
@@ -4278,6 +4279,7 @@ namespace CalamityMod.CalPlayer
                     (silvaSet ? 0.05f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
+                    //(exaltedKillMode ? 0.4f : devilsDevastationKillMode ? 0.7f : 0) +
                     (hasteLevel * 0.05f);
 
                 if ((Player.slippy || Player.slippy2) && Player.iceSkate)

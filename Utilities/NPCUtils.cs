@@ -740,7 +740,21 @@ namespace CalamityMod
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// Moves an NPC, usually used as custom knockback
+        /// </summary>
+        /// <param name="target">The NPC being moved.</param>
+        /// <param name="ignoreKBImmune">Whether or not NPC's that normally have knockback immunity can be moved around.</param>
+        public static void MoveNPC(this NPC target, Vector2 direction, float strength, bool ignoreKBImmune = false)
+        {
+            if (target.CanBeMoved(ignoreKBImmune))
+            {
+                Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
+                float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
+                target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
+            }
+            target.SyncMotionToServer();
+        }
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))

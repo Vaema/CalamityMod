@@ -36,7 +36,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            AddMapEntry(new Color(200, 250, 100), CreateMapEntryName());
+            AddMapEntry(new Color(64, 207, 97), CreateMapEntryName());
             MineResist = 2f;
             MinPick = 200;
             HitSound = SoundID.Tink;

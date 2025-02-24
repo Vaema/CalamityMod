@@ -257,12 +257,8 @@ namespace CalamityMod.Projectiles.Melee
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center)) * 37;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center));
+            target.MoveNPC(launchVel, 37, true);
 
             if (spawnBoom)
             {

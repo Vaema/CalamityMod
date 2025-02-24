@@ -46,12 +46,8 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool? CanDamage() => base.CanDamage();
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 15;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 15, true);
         }
 
         public override bool? CanCutTiles() => false;
