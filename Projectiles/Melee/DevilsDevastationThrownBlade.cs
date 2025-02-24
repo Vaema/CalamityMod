@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Packets.Entities;
@@ -11,6 +12,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -89,8 +91,6 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.timeLeft == Lifetime)
             {
-                Projectile.netUpdate = true;
-
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 toMouse = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
                 Projectile.velocity = toMouse * 14;
@@ -99,6 +99,8 @@ namespace CalamityMod.Projectiles.Melee
                 thrown = true;
                 time = 0;
                 Projectile.extraUpdates = 3;
+
+                Projectile.netUpdate = true;
             }
 
             if (Projectile.velocity.X > 0)
@@ -147,6 +149,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.numHits = 0;
                         SoundStyle unstuck = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
                         SoundEngine.PlaySound(unstuck with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.3f, 0.4f), MaxInstances = 3 }, Projectile.Center);
+                        Projectile.netUpdate = true;
                     }
                 }
                 if (exitedTarget && !stuckInGround)
@@ -319,6 +322,9 @@ namespace CalamityMod.Projectiles.Melee
                 impalePos = Projectile.Center - stabbedTarget.Center;
                 stuckTimer = 3600;
             }
+            Projectile.netUpdate = true;
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                DemonSwordImpalesSyncPacket.Send(target);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -359,6 +365,18 @@ namespace CalamityMod.Projectiles.Melee
             Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.BlueViolet with { A = 0 }, lightColor, Projectile.Opacity) * Projectile.Opacity, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
 
             return false;
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.localAI[2]);
+            writer.Write(Projectile.localAI[0]);
+            writer.WriteFlags(stuckInTarget, exitedTarget, stuckInGround, thrown);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.localAI[2] = reader.ReadSingle();
+            Projectile.localAI[0] = reader.ReadSingle();
+            reader.ReadFlags(out stuckInTarget, out exitedTarget, out stuckInGround, out thrown);
         }
     }
 }

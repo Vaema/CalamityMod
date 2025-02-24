@@ -1,11 +1,15 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Dusts;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -16,7 +20,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/BladecrestOathsword";
 
         public int ChargeupTime => (int)Projectile.localAI[2];
-        public int Lifetime = 100;
+        public static int Lifetime = 100;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
         public float ChargeProgress => 1 - (Projectile.timeLeft - Lifetime) / (float)(ChargeupTime);
@@ -28,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref NPC stabbedTarget => ref Main.npc[(int)Projectile.ai[2]];
 
         public bool thrown = false;
-        public int fadeOutTime = 60;
+        public static int fadeOutTime = 60;
         public bool stuckInTarget = false;
         public int stuckTimer = 0;
         public bool exitedTarget = false;
@@ -62,6 +66,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            Projectile.netUpdate = true;
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
@@ -70,8 +75,6 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.timeLeft == Lifetime)
             {
-                Projectile.netUpdate = true;
-
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 toMouse = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
                 Projectile.velocity = toMouse * 14;
@@ -259,6 +262,9 @@ namespace CalamityMod.Projectiles.Melee
                 impalePos = Projectile.Center - stabbedTarget.Center;
                 stuckTimer = 3600;
             }
+            Projectile.netUpdate = true;
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                DemonSwordImpalesSyncPacket.Send(target);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -297,7 +303,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 impaleGround(oldVelocity);
             }
-
+            Projectile.netUpdate = true;
             return false;
         }
         public void impaleGround(Vector2 oldVelocity)
@@ -333,6 +339,26 @@ namespace CalamityMod.Projectiles.Melee
             Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Red with { A = 0 }, lightColor, Projectile.Opacity) * Projectile.Opacity, Projectile.rotation, centerTexture.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
 
             return false;
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.timeLeft);
+            writer.Write(stuckTimer);
+            writer.Write(Projectile.rotation);
+            writer.Write(Projectile.localAI[2]);
+            writer.Write(Projectile.localAI[0]);
+
+            writer.WriteFlags(stuckInTarget, exitedTarget, stuckInGround, thrown);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.timeLeft = reader.Read();
+            stuckTimer = reader.Read();
+            Projectile.rotation = reader.ReadSingle();
+            Projectile.localAI[2] = reader.ReadSingle();
+            Projectile.localAI[0] = reader.ReadSingle();
+
+            reader.ReadFlags(out stuckInTarget, out exitedTarget, out stuckInGround, out thrown);
         }
     }
 }
