@@ -841,7 +841,14 @@ namespace CalamityMod.CalPlayer
                 // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
                 // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
-                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
+                // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
+                bool rejectionImmunity = auricSet || tracersSeraph || Player.creativeGodMode || externalAuricRejectionImmunity;
+                bool oreRejection = (tile.TileType == auricOreID) && !rejectionImmunity;
+
+                // Repulsers always perform this effect because they are player-placed tiles made for this exact purpose
+                bool repulserRejection = tile.TileType == auricRepulserID;
+
+                if (oreRejection || repulserRejection)
                 {
                     // Cut grappling hooks so the player is surely thrown
                     Player.RemoveAllGrapplingHooks();

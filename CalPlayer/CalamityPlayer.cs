@@ -198,10 +198,16 @@ namespace CalamityMod.CalPlayer
         public float externalBreathLossMultBoost = 0f;
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
+
+        // 25FEB2025: Ozzatron: per request, there are now three-state controls for enabling or disabling rippers
         public bool? externalRageEnabled = null;
         public bool? externalAdrenalineEnabled = null;
+
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
+
+        // 25FEB2025: Ozzatron: per request, there is now an external bool for Auric Rejection immunity
+        public bool externalAuricRejectionImmunity = false;
 
         // 27AUG2024: Ozzatron: per request, there is now an external bool for per-player defense damage immunity
         public bool externalDefenseDamageImmunity = false;
@@ -1979,6 +1985,7 @@ namespace CalamityMod.CalPlayer
             externalRageEnabled = externalAdrenalineEnabled = null;
             externalColdImmunity = externalHeatImmunity = false;
             externalDefenseDamageImmunity = false;
+            externalAuricRejectionImmunity = false;
 
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
