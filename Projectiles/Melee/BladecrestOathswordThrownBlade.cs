@@ -347,6 +347,7 @@ namespace CalamityMod.Projectiles.Melee
             writer.Write(Projectile.rotation);
             writer.Write(Projectile.localAI[2]);
             writer.Write(Projectile.localAI[0]);
+            writer.WriteVector2(impalePos);
 
             writer.WriteFlags(stuckInTarget, exitedTarget, stuckInGround, thrown);
         }
@@ -357,6 +358,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = reader.ReadSingle();
             Projectile.localAI[2] = reader.ReadSingle();
             Projectile.localAI[0] = reader.ReadSingle();
+            impalePos = reader.ReadVector2();
 
             reader.ReadFlags(out stuckInTarget, out exitedTarget, out stuckInGround, out thrown);
         }

@@ -5844,7 +5844,10 @@ namespace CalamityMod.NPCs
                     velocitySlownessFactor += 0.15f;
 
                 if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+                {
                     npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.9f, 0.3f, true);
+                    npc.SyncMotionToServer();
+                }
 
                 if (gState > 0)
                 {
