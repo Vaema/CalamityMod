@@ -198,6 +198,8 @@ namespace CalamityMod.CalPlayer
         public float externalBreathLossMultBoost = 0f;
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
+        public bool? externalRageEnabled = null;
+        public bool? externalAdrenalineEnabled = null;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
 
@@ -499,7 +501,15 @@ namespace CalamityMod.CalPlayer
         /// Rage is gained from staying close to enemies, or passively by using certain accessories.<br/>
         /// When the bar is filled, Rage can be activated to provide a small damage boost over a longer duration.
         /// </summary>
-        public bool RageEnabled => CalamityWorld.revenge || shatteredCommunity;
+        public bool RageEnabled
+        {
+            get
+            {
+                if (externalRageEnabled.HasValue)
+                    return externalRageEnabled.Value;
+                return CalamityWorld.revenge || shatteredCommunity;
+            }
+        }
         public bool rageModeActive = false;
         /// <summary> The player's current Rage level. Expressed as a percentage of maximum Rage. </summary>
         public float rage = 0f;
@@ -525,7 +535,15 @@ namespace CalamityMod.CalPlayer
         /// Adrenaline is gained by avoiding taking damage while a boss is alive.<br/>
         /// When the bar is filled, Adrenaline can be activated to provide a large damage boost over a short duration.
         /// </summary>
-        public bool AdrenalineEnabled => CalamityWorld.revenge || draedonsHeart;
+        public bool AdrenalineEnabled
+        {
+            get
+            {
+                if (externalAdrenalineEnabled.HasValue)
+                    return externalAdrenalineEnabled.Value;
+                return CalamityWorld.revenge || draedonsHeart;
+            }
+        }
         public bool adrenalineModeActive = false;
         public bool AdrenalineTrail = false;
         /// <summary> The player's current Adrenaline level. Expressed as a percentage of maximum Adrenaline. </summary>
@@ -1958,6 +1976,7 @@ namespace CalamityMod.CalPlayer
             externalBreathLossMultBoost = 0f;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
+            externalRageEnabled = externalAdrenalineEnabled = null;
             externalColdImmunity = externalHeatImmunity = false;
             externalDefenseDamageImmunity = false;
 
