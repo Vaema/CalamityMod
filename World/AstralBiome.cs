@@ -455,7 +455,7 @@ namespace CalamityMod.World
                     if (j < 181)
                         j = 181;
 
-                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-80, -40) : WorldGen.genRand.Next(40, 80);
+                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-100, -50) : WorldGen.genRand.Next(50, 100);
 
                     bool altarPlaced = false;
                     while (!altarPlaced)
@@ -473,6 +473,7 @@ namespace CalamityMod.World
                         if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x, y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType]
                             && (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType))) //AVOID HOUSES
                         {
+
                             bool place = true;
                             SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(x, y - 5), SchematicAnchor.Center, ref place);
 
