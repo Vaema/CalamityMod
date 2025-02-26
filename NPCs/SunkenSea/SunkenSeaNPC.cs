@@ -97,15 +97,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
                 .ToArray();
 
-            try
-            {
-                Banner = Type;
-                BannerItem = ModContent.Find<ModItem>($"{Name}Banner").Type;
-            }
-            catch (Exception ex)
-            {
-                CalamityMod.Instance.Logger.Warn(ex);
-            }
+            Banner = Type;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -163,15 +155,18 @@ namespace CalamityMod.NPCs.SunkenSea
             var searchResults = SearchForTarget(NPC, playerFilter: PlayerSearchFilter, npcFilter: NPCSearchFilter);
             if (searchResults.FoundTarget)
             {
-                if (PredatorIDs.Contains(searchResults.NearestNPC.type))
-                    CurrentPredator = searchResults.NearestNPC;
-                else
-                    CurrentPredator = null;
+                if (searchResults.FoundNPC)
+                {
+                    if (PredatorIDs.Contains(searchResults.NearestNPC.type))
+                        CurrentPredator = searchResults.NearestNPC;
+                    else
+                        CurrentPredator = null;
 
-                if (PreyIDs.Contains(searchResults.NearestNPC.type))
-                    CurrentPrey = searchResults.NearestNPC;
-                else
-                    CurrentPrey = null;
+                    if (PreyIDs.Contains(searchResults.NearestNPC.type))
+                        CurrentPrey = searchResults.NearestNPC;
+                    else
+                        CurrentPrey = null; 
+                }
 
                 CurrentPlayer = searchResults.NearestTankOwner;
             }
@@ -189,6 +184,11 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <param name="point">The tile location to check.</param>
         /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
         protected bool SunkenSeaTileValidity(Point point)
-            => Main.tile[point].LiquidAmount > 128 && Main.tile[point].LiquidType == LiquidID.Water && NPC.DoesEntityFitInPath(point, 6, 6);
+        {
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+            return NPC.Hitbox.Contains(actualFuckingPoint) 
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolid() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using CalamityMod.Enums;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
@@ -12,6 +12,8 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -137,7 +139,8 @@ namespace CalamityMod.NPCs.SunkenSea
         [
             // NPCType<GildedAxolotl>(),
             NPCType<SeaFloaty>(),
-            // NPCType<Probesnout>(),
+            NPCType<Probesnout>(),
+            NPCType<ProbesnoutGold>(),
             NPCType<SeaMinnow>(),
             NPCType<EutrophicRay>(),
         ];
@@ -182,6 +185,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            // BannerItem = ItemType<SharkoonBanner>();
+
             NPC.damage = 20;
             NPC.lifeMax = 350;
             NPC.defense = 5;
@@ -218,7 +223,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            //CurrentBehavior = IdlingBehavior;
+            CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
@@ -279,9 +284,12 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.HasSight(CurrentPrey.Center))
                 this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
             else
+            {
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+            }
         }
-
 
         private void FleeingBehavior()
         {
@@ -389,6 +397,8 @@ namespace CalamityMod.NPCs.SunkenSea
             // When it gets outside of water, it'll try to gravitate downards towards the water.
             if (newBehavior == OutsideWaterBehavior)
                 NPC.noGravity = false;
+
+            Path = null;
         }
 
         protected override void OnPreyDetection(NPC prey)
@@ -438,7 +448,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public override bool CanBeHitByNPC(NPC attacker) => attacker.whoAmI != NPC.whoAmI;
+        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
 
         public override void OnHitByNPC(NPC attacker)
         {
