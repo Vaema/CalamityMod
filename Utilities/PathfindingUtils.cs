@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using static CalamityMod.CalamityUtils;
@@ -76,7 +77,7 @@ namespace CalamityMod
         /// Defines how this entity should behave while there is no current path to follow.<br/>
         /// By default, decelerates and stops based on <see cref="Acceleration"/>.
         /// </summary>
-        public void IdleBehavior() => Velocity -= Velocity.SafeNormalize(Vector2.Zero) * Math.Min(Velocity.Length(), Acceleration);
+        public void IdleBehavior() => Velocity *= 0.95f;
 
         /// <summary>
         /// Assigns the value of <see cref="Paths"/> to <paramref name="pathfindingTask"/> and executes the pathfinding calculations on a background thread.<br/>
@@ -84,6 +85,9 @@ namespace CalamityMod
         /// </summary>
         public void FindPath(PathfindingTask pathfindingTask)
         {
+            if (pathfindingTask == null)
+                return;
+            
             Path = pathfindingTask;
             Path.Run();
         }
@@ -165,22 +169,25 @@ namespace CalamityMod
         /// Causes this <see cref="IPathFinder"/> to perform path finding and follow the path result, idling when a path is not available.<br/>
         /// This method should be called every frame that you want your entity to follow it's pathfinding logic.
         /// </summary>
-        public static void DoPathfinding(this IPathFinder pathfinder, PathfindingTask task)
+        public static void DoPathfinding(this IPathFinder pathfinder, PathfindingTask task, bool continuouslyUpdatePath = false)
         {
-            // If the task has not been started, or was previously unable to find
-            // a path, OR is now being told to follow a new path, start the task (potentially again).
+            // If the task has been started but is not finished yet, just idle.
+            if (pathfinder.Path?.Running ?? false)
+                pathfinder.IdleBehavior();
 
-            if (pathfinder.Path == null || // Not started
-                pathfinder.Path.EndPosition != task.EndPosition || // New destination
-                (pathfinder.Path.Ready && pathfinder.Path.Result == null)) // Unable to find previous path
+            // If the task has not been started,
+            // or was previously unable to find a path,
+            // OR is now being told to follow a new path...
+            //
+            // start the task (potentially again).
+            else if (pathfinder.Path == null || // Not started
+                pathfinder.Path.Result == null || // Unable to find previous path
+                pathfinder.Path.Result.Count == 0 || // Previous path is done being followed
+                (continuouslyUpdatePath && pathfinder.Path.EndPosition != task.EndPosition)) // New path
             {
                 pathfinder.FindPath(task);
                 pathfinder.IdleBehavior();
             }
-
-            // If the task has been started but is not finished yet, just idle.
-            else if (pathfinder.Path.Running)
-                pathfinder.IdleBehavior();
 
             // Otherwise, the task has been started, completed, and found a valid path.
             // Follow the found path.
@@ -407,6 +414,27 @@ namespace CalamityMod
             }
 
             return doesFit;
+        }
+
+        public static List<Point> GetIntersectingHitboxPoints(this Entity entity, Point position, int fluffX = 0, int fluffY = 0)
+        {
+            Rectangle hitbox = entity.Hitbox;
+            hitbox.Location = new Point(position.X - hitbox.Width / 2, position.Y - hitbox.Height / 2);
+            hitbox.Inflate(fluffX, fluffY);
+            
+            int startX = (int)MathF.Floor(hitbox.Left / 16);
+            int endX = (int)Math.Floor((hitbox.Right - float.Epsilon) / 16);
+            int startY = (int)MathF.Floor(hitbox.Top / 16);
+            int endY = (int)Math.Floor((hitbox.Bottom - float.Epsilon) / 16);
+
+            List<Point> intersectingPoints = [];
+            for (int i = startX; i <= endX; i++)
+            {
+                for (int j = startY; j <= endY; j++)
+                    intersectingPoints.Add(new Point(i, j));
+            }
+
+            return intersectingPoints;
         }
     }
 }
