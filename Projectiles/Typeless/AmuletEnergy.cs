@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Emit some light
-            Lighting.AddLight(Projectile.Center, bColor.ToVector3() * 1.5f);
+            Lighting.AddLight(Projectile.Center, bColor.ToVector3() * 0.65f);
 
             if (SoundEngine.TryGetActiveSound(soundSlot, out var sound) && sound.IsPlaying)
                 sound.Position = Projectile.Center;
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Typeless
                     if (!outOfRange)
                         Projectile.velocity = Projectile.velocity.RotatedBy(0.0065f * (energyNumber % 2 == 0 ? -1 : 1)) * 1.004f;
 
-                    if (soundCooldown == 0 && Main.rand.NextBool(4500 * Projectile.MaxUpdates) && visuals && time > 18000) // Sounds are an easter egg that only plays if they've been alive for over 5 minutes
+                    if (soundCooldown == 0 && Main.rand.NextBool(4500 * Projectile.MaxUpdates) && visuals && time > 18000 * Projectile.MaxUpdates && !Main.dedServ) // Sounds are an easter egg that only plays if they've been alive for over 5 minutes
                     {
                         SoundStyle certainlyNotADeadChild = new("CalamityMod/Sounds/Item/AmuletVox", 6);
                         soundSlot = SoundEngine.PlaySound(certainlyNotADeadChild with { Volume = 0.3f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);

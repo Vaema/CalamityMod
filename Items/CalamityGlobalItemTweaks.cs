@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -1417,6 +1420,11 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<LifeJelly>()] = ModContent.ItemType<CleansingJelly>();
             shimmerTransmute[ModContent.ItemType<CleansingJelly>()] = ModContent.ItemType<VitalJelly>();
             shimmerTransmute[ModContent.ItemType<VitalJelly>()] = ModContent.ItemType<LifeJelly>();
+
+            //Astral Fishing Swap
+            shimmerTransmute[ModContent.ItemType<PolarisParrotfish>()] = ModContent.ItemType<GacruxianMollusk>();
+            shimmerTransmute[ModContent.ItemType<GacruxianMollusk>()] = ModContent.ItemType<UrsaSergeant>();
+            shimmerTransmute[ModContent.ItemType<UrsaSergeant>()] = ModContent.ItemType<PolarisParrotfish>();
 
             //Calamity Permanent Upgrades
             shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();

@@ -102,10 +102,12 @@ namespace CalamityMod.Projectiles.Melee
             int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
+            Projectile.netUpdate = true;
         }
 
         public override void OnKill(int timeLeft)
         {
+            Projectile.netUpdate = true;
             Player Owner = Main.player[Projectile.owner];
             SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
 
