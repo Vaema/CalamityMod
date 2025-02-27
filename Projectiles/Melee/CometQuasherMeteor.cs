@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.damage = (int)(Projectile.damage * 0.3f);
+                Projectile.damage = (int)(Projectile.damage * 0.7f);
                 Projectile.ExpandHitboxBy((int)(128f * Projectile.scale));
                 Projectile.penetrate = -1;
                 Projectile.Damage();

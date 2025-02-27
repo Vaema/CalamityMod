@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Accessories
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 16));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
-
+        public static int blobCap = 30;
+        public static int blobDamage = 50;
         public override void SetDefaults()
         {
             Item.width = 42;

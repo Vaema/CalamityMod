@@ -66,7 +66,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.netUpdate = true;
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
@@ -84,6 +83,7 @@ namespace CalamityMod.Projectiles.Melee
                 time = 0;
                 Projectile.extraUpdates = 1;
                 Projectile.tileCollide = true;
+                Projectile.netUpdate = true;
             }
 
             if (Projectile.velocity.X > 0)
@@ -343,24 +343,20 @@ namespace CalamityMod.Projectiles.Melee
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.timeLeft);
-            writer.Write(stuckTimer);
             writer.Write(Projectile.rotation);
             writer.Write(Projectile.localAI[2]);
             writer.Write(Projectile.localAI[0]);
-            writer.WriteVector2(impalePos);
 
-            writer.WriteFlags(stuckInTarget, exitedTarget, stuckInGround, thrown);
+            writer.WriteFlags(stuckInTarget, thrown);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.timeLeft = reader.Read();
-            stuckTimer = reader.Read();
             Projectile.rotation = reader.ReadSingle();
             Projectile.localAI[2] = reader.ReadSingle();
             Projectile.localAI[0] = reader.ReadSingle();
-            impalePos = reader.ReadVector2();
 
-            reader.ReadFlags(out stuckInTarget, out exitedTarget, out stuckInGround, out thrown);
+            reader.ReadFlags(out stuckInTarget, out thrown);
         }
     }
 }

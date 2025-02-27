@@ -37,27 +37,27 @@ namespace CalamityMod.Projectiles.Typeless
         public Color cl1 = Color.LightSkyBlue;
         public Color cl2 = Color.DodgerBlue;
         public float poweredLerp => (float)Math.Pow(Utils.GetLerpValue(poweredTimerMax, 90, poweredTimer, true), 4);
-        public override void SendExtraAI(BinaryWriter writer)
+        public override void SendExtraAI(BinaryWriter writer) // These MP syncs cause tons of errors so they're disabled until we can fix that
         {
-            writer.Write(time);
-            writer.Write(currentLayer);
-            writer.Write(speed);
-            writer.Write(rotSpeed);
-            writer.Write(rotationAngle);
-            writer.Write(Projectile.localAI[0]);
+            //writer.Write(time);
+            //writer.Write(currentLayer);
+            //writer.Write(speed);
+            //writer.Write(rotSpeed);
+            //writer.Write(rotationAngle);
+            //writer.Write(Projectile.localAI[0]);
 
-            writer.WriteFlags(canDamage);
+            //writer.WriteFlags(canDamage);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            time = reader.Read();
-            currentLayer = reader.Read();
-            speed = reader.ReadSingle();
-            rotSpeed = reader.ReadSingle();
-            rotationAngle = reader.ReadSingle();
-            Projectile.localAI[0] = reader.ReadSingle();
+            //time = reader.Read();
+            //currentLayer = reader.Read();
+            //speed = reader.ReadSingle();
+            //rotSpeed = reader.ReadSingle();
+            //rotationAngle = reader.ReadSingle();
+            //Projectile.localAI[0] = reader.ReadSingle();
 
-            reader.ReadFlags(out canDamage);
+            //reader.ReadFlags(out canDamage);
         }
         public override void SetStaticDefaults()
         {
@@ -83,16 +83,14 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Player Owner = Main.player[Projectile.owner];
 
-            if (time % (Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1) == 0)
-                Projectile.netUpdate = true;
-
             Lighting.AddLight(Projectile.Center, cl1.ToVector3() * 0.5f);
 
             sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (Projectile.ai[1] % 2 == 0 ? 10 : 6) / MathHelper.Pi) * 0.4f;
             if (!powered)
                 poweredTimerMax = (int)(140 + (MathHelper.Clamp(Utils.Remap(Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()], 1, 30, 7, 6, false), 1, 120)) * Projectile.ai[1]);
             if (time == 0)
-            { 
+            {
+                Projectile.netUpdate = true;
                 rotationAngle = Projectile.ai[2];
                 Projectile.frame = 8;
             }
@@ -140,6 +138,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (poweredTimer == 1)
                 {
+                    Projectile.netUpdate = true;
                     if (visuals)
                         Owner.Calamity().GeneralScreenShakePower = 3.5f;
                     Projectile.numHits = 0;

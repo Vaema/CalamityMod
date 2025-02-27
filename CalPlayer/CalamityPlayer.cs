@@ -775,6 +775,7 @@ namespace CalamityMod.CalPlayer
         public bool transformerVisual = false;
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
+        public int transformerStoredKills = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -892,9 +893,8 @@ namespace CalamityMod.CalPlayer
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
-        public bool HasReducedDashFirstFrame = false;
         public bool HasIncreasedDashFirstFrame = false;
-        public bool IsFirstDashFrame = false;
+        public bool IsFirstDashFrame = true;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -2793,11 +2793,11 @@ namespace CalamityMod.CalPlayer
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             VoidCooldown = 0;
-            ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
             transformerCooldown = 0;
             transformerDelay = 0;
+            transformerStoredKills = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
