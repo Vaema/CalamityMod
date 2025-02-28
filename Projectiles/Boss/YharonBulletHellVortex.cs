@@ -4,6 +4,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -112,22 +113,23 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Kill();
         }
 
-        internal Color ColorFunction(float completionRatio) => Color.Lerp(Color.Yellow, Color.Yellow, completionRatio);
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D vortexTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/OldDukeVortex").Value;
-            for (int i = 0; i < 50; i++)
+            Main.spriteBatch.EnterShaderRegion();
+            Texture2D vortexNoise = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Cracks").Value;
+            GameShaders.Misc["CalamityMod:DoGPortal"].UseOpacity(1f);
+            GameShaders.Misc["CalamityMod:DoGPortal"].UseColor(Color.Gold);
+            GameShaders.Misc["CalamityMod:DoGPortal"].UseSecondaryColor(Color.White);
+            GameShaders.Misc["CalamityMod:DoGPortal"].Apply();
+            for (int i = 0; i < 10; i++)
             {
-                float angle = MathHelper.TwoPi * i / 50f + Main.GlobalTimeWrappedHourly * MathHelper.TwoPi;
-                Color drawColor = Color.White * 0.04f;
+                float angle = MathHelper.TwoPi * i / 10f + Main.GlobalTimeWrappedHourly * MathHelper.TwoPi;
+                Color drawColor = Color.White;
                 drawColor.A = 0;
-                Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-
-                drawPosition += (angle + Main.GlobalTimeWrappedHourly * i / 16f).ToRotationVector2() * 6f;
-                Main.EntitySpriteDraw(vortexTexture, drawPosition, null, drawColor, angle + MathHelper.PiOver2, vortexTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
+                Vector2 drawPosition = Projectile.Center - Main.screenPosition + angle.ToRotationVector2() * 3f;
+                Main.EntitySpriteDraw(vortexNoise, drawPosition, null, drawColor, angle + MathHelper.PiOver2, vortexNoise.Size() * 0.5f, Projectile.scale * 1.7f, SpriteEffects.None, 0);
             }
-
+            Main.spriteBatch.ExitShaderRegion();
             return false;
         }
     }

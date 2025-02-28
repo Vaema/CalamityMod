@@ -198,8 +198,16 @@ namespace CalamityMod.CalPlayer
         public float externalBreathLossMultBoost = 0f;
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
+
+        // 25FEB2025: Ozzatron: per request, there are now three-state controls for enabling or disabling rippers
+        public bool? externalRageEnabled = null;
+        public bool? externalAdrenalineEnabled = null;
+
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
+
+        // 25FEB2025: Ozzatron: per request, there is now an external bool for Auric Rejection immunity
+        public bool externalAuricRejectionImmunity = false;
 
         // 27AUG2024: Ozzatron: per request, there is now an external bool for per-player defense damage immunity
         public bool externalDefenseDamageImmunity = false;
@@ -499,7 +507,15 @@ namespace CalamityMod.CalPlayer
         /// Rage is gained from staying close to enemies, or passively by using certain accessories.<br/>
         /// When the bar is filled, Rage can be activated to provide a small damage boost over a longer duration.
         /// </summary>
-        public bool RageEnabled => CalamityWorld.revenge || shatteredCommunity;
+        public bool RageEnabled
+        {
+            get
+            {
+                if (externalRageEnabled.HasValue)
+                    return externalRageEnabled.Value;
+                return CalamityWorld.revenge || shatteredCommunity;
+            }
+        }
         public bool rageModeActive = false;
         /// <summary> The player's current Rage level. Expressed as a percentage of maximum Rage. </summary>
         public float rage = 0f;
@@ -525,7 +541,15 @@ namespace CalamityMod.CalPlayer
         /// Adrenaline is gained by avoiding taking damage while a boss is alive.<br/>
         /// When the bar is filled, Adrenaline can be activated to provide a large damage boost over a short duration.
         /// </summary>
-        public bool AdrenalineEnabled => CalamityWorld.revenge || draedonsHeart;
+        public bool AdrenalineEnabled
+        {
+            get
+            {
+                if (externalAdrenalineEnabled.HasValue)
+                    return externalAdrenalineEnabled.Value;
+                return CalamityWorld.revenge || draedonsHeart;
+            }
+        }
         public bool adrenalineModeActive = false;
         public bool AdrenalineTrail = false;
         /// <summary> The player's current Adrenaline level. Expressed as a percentage of maximum Adrenaline. </summary>
@@ -751,6 +775,7 @@ namespace CalamityMod.CalPlayer
         public bool transformerVisual = false;
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
+        public int transformerStoredKills = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -868,9 +893,8 @@ namespace CalamityMod.CalPlayer
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
-        public bool HasReducedDashFirstFrame = false;
         public bool HasIncreasedDashFirstFrame = false;
-        public bool IsFirstDashFrame = false;
+        public bool IsFirstDashFrame = true;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -1958,8 +1982,10 @@ namespace CalamityMod.CalPlayer
             externalBreathLossMultBoost = 0f;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
+            externalRageEnabled = externalAdrenalineEnabled = null;
             externalColdImmunity = externalHeatImmunity = false;
             externalDefenseDamageImmunity = false;
+            externalAuricRejectionImmunity = false;
 
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
@@ -2767,11 +2793,11 @@ namespace CalamityMod.CalPlayer
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             VoidCooldown = 0;
-            ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
             transformerCooldown = 0;
             transformerDelay = 0;
+            transformerStoredKills = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;

@@ -7900,6 +7900,7 @@ PrepareToShoot:
                     npc.velocity.Y -= 6f;
                 }
             }
+
             else if (npc.type == NPCID.Tumbleweed && npc.velocity.Y == 0f && Math.Abs(npc.velocity.X) > 3f && ((npc.Center.X < Main.player[npc.target].Center.X && npc.velocity.X > 0f) || (npc.Center.X > Main.player[npc.target].Center.X && npc.velocity.X < 0f)))
             {
                 npc.velocity.Y -= 6f;
@@ -7956,7 +7957,11 @@ PrepareToShoot:
 
             if (!flag && (npc.velocity.Y == 0f || npc.wet || (npc.velocity.X <= 0f && npc.direction < 0) || (npc.velocity.X >= 0f && npc.direction > 0)))
             {
-                if (npc.type == NPCID.Wolf || npc.type == ModContent.NPCType<Rotdog>())
+                if (npc.type == ModContent.NPCType<Rotdog>())
+                {
+                    npc.velocity.X *= 0.99f;
+                }
+                if (npc.type == NPCID.Wolf)
                 {
                     if (npc.velocity.X > 0f && npc.direction < 0)
                     {
@@ -7971,11 +7976,11 @@ PrepareToShoot:
                 {
                     if (npc.velocity.X > 0f && npc.direction < 0)
                     {
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.2f;
                     }
                     if (npc.velocity.X < 0f && npc.direction > 0)
                     {
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.2f;
                     }
                     if (npc.direction > 0 && npc.velocity.X < 3f)
                     {

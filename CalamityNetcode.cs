@@ -235,6 +235,7 @@ namespace CalamityMod
         SyncNPCMotionDataToServer,
         SyncNPCPosAndRotOnly,
         SyncNPCDemonicFlamesDamage,
+        SyncNPCDemonSwordImpales,
 
         // Tile Entities
         PowerCellFactory,

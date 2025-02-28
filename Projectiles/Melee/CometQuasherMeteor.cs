@@ -20,10 +20,10 @@ namespace CalamityMod.Projectiles.Melee
         public NPC chosenTarget;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -102,10 +102,12 @@ namespace CalamityMod.Projectiles.Melee
             int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
+            Projectile.netUpdate = true;
         }
 
         public override void OnKill(int timeLeft)
         {
+            Projectile.netUpdate = true;
             Player Owner = Main.player[Projectile.owner];
             SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
 
@@ -117,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.damage = (int)(Projectile.damage * 0.3f);
+                Projectile.damage = (int)(Projectile.damage * 0.7f);
                 Projectile.ExpandHitboxBy((int)(128f * Projectile.scale));
                 Projectile.penetrate = -1;
                 Projectile.Damage();
@@ -132,5 +134,6 @@ namespace CalamityMod.Projectiles.Melee
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * 0.7f, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 0.3f, 25, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
         }
+        public override bool? CanCutTiles() => false;
     }
 }

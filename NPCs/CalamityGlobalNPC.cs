@@ -340,6 +340,7 @@ namespace CalamityMod.NPCs
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
         public int demonSwordImpales = 0;
+        public int impalePacketTimer = 0;
 
         /// <summary>
         /// If set to true, prevents this NPC from dealing contact damage.<br/>
@@ -599,6 +600,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
             myClone.demonSwordImpales = demonSwordImpales;
+            myClone.impalePacketTimer = impalePacketTimer;
 
             myClone.pacified = pacified;
 
@@ -5817,6 +5819,17 @@ namespace CalamityMod.NPCs
             else
                 pearlAuraCounter = 0;
 
+            if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+            {
+                npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
+                if (impalePacketTimer > 30) // There's probably a better solution, but this is the best for now
+                {
+                    npc.SyncMotionToServer();
+                    impalePacketTimer = 0;
+                }
+            }
+            impalePacketTimer++;
+
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
                 return;
@@ -5842,9 +5855,6 @@ namespace CalamityMod.NPCs
 
                 if (webbed > 0)
                     velocitySlownessFactor += 0.15f;
-
-                if (demonSwordImpales > 0 && npc.CanBeMoved(true))
-                    npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.9f, 0.3f, true);
 
                 if (gState > 0)
                 {

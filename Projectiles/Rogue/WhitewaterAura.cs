@@ -68,12 +68,9 @@ namespace CalamityMod.Projectiles.Rogue
         {
             target.AddBuff(BuffID.Wet, 300);
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Projectile.Center - target.Center).SafeNormalize(Vector2.UnitY) * -6;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+            target.MoveNPC(launchVel, 6, true);
         }
         public override bool PreDraw(ref Color lightColor)
         {

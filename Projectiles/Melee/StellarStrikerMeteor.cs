@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Melee
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -155,5 +154,6 @@ namespace CalamityMod.Projectiles.Melee
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * 0.7f, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 0.3f, 25, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
         }
+        public override bool? CanCutTiles() => false;
     }
 }

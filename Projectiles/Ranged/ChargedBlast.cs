@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 baseVel = Projectile.velocity;
                 if (Svant)
-                    Projectile.ArmorPenetration = 100;
+                    Projectile.ArmorPenetration = 200;
                 if (Infinity)
                     Projectile.ArmorPenetration = 25;
             }

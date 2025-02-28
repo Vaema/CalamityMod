@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Materials
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.SortingPriorityMaterials[Type] = 110;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ectoplasm;
         }
 
         public override void SetDefaults()
