@@ -27,6 +27,7 @@ namespace CalamityMod.NPCs
         private Vector2 ForcedVel = Vector2.Zero;
         private bool hitVoid = false;
         private Player attacker;
+        private int packetTimer = 0;
 
         public int PotentialEnergyDamage
         {
@@ -109,13 +110,15 @@ namespace CalamityMod.NPCs
                     oldVelocity = npc.velocity.Length();
                     npc.Center += ForcedVel;
                     ForcedVel *= 0.995f;
-
+                    if (packetTimer % 30 == 0)
+                        npc.SyncMotionToServer();
                     if (!WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40) && !hitVoid)
                     {
                         npc.velocity = -npc.velocity * 0.5f;
                         ForcedVel = -ForcedVel * 0.5f;
                         hitVoid = true;
                     }
+                    packetTimer++;
                 }
                 else
                 {

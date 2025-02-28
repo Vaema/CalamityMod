@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
             blade.localAI[2] = useSpeed;
             blade.timeLeft += useSpeed;
-            blade.netUpdate = true;
             return false;
         }
     }

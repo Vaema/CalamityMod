@@ -1513,7 +1513,7 @@ namespace CalamityMod.CalPlayer
                     Player fella = Main.player[index];
                     if (Utils.Distance(fella.Center, Player.Center) < 650 && fella.team == Player.team)
                     {
-                        fella.Calamity().rOfResilienceEffect = (fella != Player ? 120 : 2);
+                        fella.Calamity().rOfResilienceEffect = (fella != Player ? 480 : 2);
                     }
                 }
             }

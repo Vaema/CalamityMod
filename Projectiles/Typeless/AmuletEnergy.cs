@@ -260,6 +260,7 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
         public override bool? CanDamage() => canDamage ? null : false;
+        public override bool? CanCutTiles() => false;
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.WriteFlags(canDamage, healing);
