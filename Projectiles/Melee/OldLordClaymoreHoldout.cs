@@ -208,8 +208,9 @@ namespace CalamityMod.Projectiles.Melee
             for (int x = 0; x < Main.maxProjectiles; x++)
             {
                 Projectile projectile = Main.projectile[x];
-                if (projectile.owner == Projectile.owner && projectile.type == ModContent.ProjectileType<BladecrestOathswordThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                if (projectile.type == ModContent.ProjectileType<BladecrestOathswordThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
                 {
+                    projectile.owner = Owner.whoAmI;
                     projectile.localAI[0] = 5;
                     projectile.velocity = (Vector2.Lerp(projectile.velocity, launchVel * 14, 0.7f) * 1.2f).RotatedByRandom(0.1f);
                 }

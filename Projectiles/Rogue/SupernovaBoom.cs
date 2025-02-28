@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
             }
-            if (currentFrame < 13)
+            if (currentFrame < 13) // suck in enemies, or you if it's GFB
             {
                 if (Main.zenithWorld)
                 {
@@ -183,7 +183,10 @@ namespace CalamityMod.Projectiles.Rogue
                     if (target.CanBeMoved(true) && target.CanBeChasedBy(Projectile, false))
                     {
                         if (Vector2.Distance(target.Center, Projectile.Center) > 40 && Vector2.Distance(target.Center, Projectile.Center) < 600)
+                        {
                             target.Center += target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 22;
+                            target.SyncMotionToServer();
+                        }
                     }
                     else if (target != null && CalamityPlayer.areThereAnyDamnBosses)
                     {
@@ -226,11 +229,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!target.boss && target.IsAnEnemy(true, true) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false) && target != null)
-            {
-                Vector2 velToApply = target.Center.DirectionFrom(Projectile.Center).SafeNormalize(Vector2.UnitX) * 30;
-                target.velocity = velToApply + (velToApply.Y <= 0 ? new Vector2(0, -5) : Vector2.Zero);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+            target.MoveNPC(launchVel, 30, true);
+
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 90);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

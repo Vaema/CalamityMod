@@ -92,6 +92,8 @@ namespace CalamityMod.Projectiles.Summon
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.DisableCrit();
+            if (!Collision.CanHit(Projectile, Main.player[Projectile.owner]))
+                modifiers.SourceDamage *= 0.75f; // Minion deals 75% damage if it doesn't have line of sight with its owner
         }
 
         public override Color? GetAlpha(Color lightColor)

@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Healing
         public override void AI()
         {
             Framecounter++;
-            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 8f / MathHelper.Pi));
+            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 5f / MathHelper.Pi));
             for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
             {
                 Player player = Main.player[playerIndex];
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Healing
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    float areaSize = 260.6f + 20 * sine;
+                    float areaSize = 305f;
                     Vector2 spawnSpot = Projectile.Center + Main.rand.NextVector2CircularEdge(areaSize, areaSize);
                     Dust dust = Dust.NewDustPerfect(spawnSpot, AbDust, null, 0);
                     dust.scale = Main.rand.NextFloat(1.2f, 2.3f);
@@ -109,16 +109,16 @@ namespace CalamityMod.Projectiles.Healing
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResHollowCircleHardEdge").Value;
             Color drawColor1 = Color.DarkSeaGreen;
             Color drawColor2 = Color.PaleGreen;
-            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 8f / MathHelper.Pi));
+            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 5f / MathHelper.Pi));
             float areaScale = Math.Min(Utils.GetLerpValue(TheAbsorber.AuraLifetime + 10, TheAbsorber.AuraLifetime, Projectile.timeLeft, true), Utils.GetLerpValue(0, 10, Projectile.timeLeft, true));
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor1 with { A = 0 } * 0.8f, 0, tex.Size() / 2f, (0.3f - 0.02f * sine) * areaScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor1 with { A = 0 } * 0.6f, 0, tex.Size() / 2f, (0.305f - 0.006f * sine) * areaScale, SpriteEffects.None, 0);
             for (int i = 1; i <= 8; i++)
             {
                 if (i != 0)
                 {
                     float rot = (MathHelper.TwoPi * i / 8f);
-                    Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.055f, Projectile.rotation + rot, tex2.Size() / 2f, new Vector2((0.2f * sine) + 0.8f, 1) * 0.29f * areaScale, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.03f, Projectile.rotation + rot, tex2.Size() / 2f, new Vector2((0.2f * sine) + 0.8f, 1) * 0.29f * areaScale, SpriteEffects.None, 0);
                 }
             }
             //Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor1 with { A = 0 } * 0.3f, -Projectile.rotation, tex2.Size() / 2f, new Vector2(0.97f, 1) * 0.3f * areaScale, SpriteEffects.None, 0);

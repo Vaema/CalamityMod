@@ -275,8 +275,9 @@ namespace CalamityMod.Projectiles.Melee
             for (int x = 0; x < Main.maxProjectiles; x++)
             {
                 Projectile projectile = Main.projectile[x];
-                if (projectile.active && projectile.owner == Projectile.owner && projectile.type == ModContent.ProjectileType<ExaltedOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                if (projectile.active && projectile.type == ModContent.ProjectileType<ExaltedOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
                 {
+                    projectile.owner = Owner.whoAmI;
                     projectile.localAI[0] = 5;
                     projectile.velocity = (launchVel * 16.5f).RotatedByRandom(0.25f);
                     Owner.Calamity().demonSwordKillMode = true;

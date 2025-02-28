@@ -1882,7 +1882,7 @@ TheTransformer: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Generates an aura around you that creates morphing globs when projectiles pass through it
+		Generates an aura around you that creates morphing globs when projectiles pass through it or when enemies are killed
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle can contain up to 30 globs at once
 		Press [KEY] to transform all globs into needles and launch them at your cursor
@@ -1890,11 +1890,11 @@ TheTransformer: {
 		'''
 	TooltipGFB:
 		'''
-		Generates an aura around you that creates morphing globs when projectiles pass through it
+		Generates an aura around you that creates morphing globs when projectiles pass through it or when enemies are killed
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle has no limit to the number of globs it can hold, but your PC might
 		Press [KEY] to transform all globs into needles and launch them at your cursor
-		'It's like catch and release if the release was a particle accelerator'
+		'It's no Beeftank Doctrine, but it sure feels breakthrough!'
 		'''
 }
 

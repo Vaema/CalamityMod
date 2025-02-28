@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 40;
             NPC.knockBackResist = Main.zenithWorld ? 0f : 0.15f;
             NPC.value = Item.buyPrice(0, 0, 0, 75);
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumRoverBanner>();

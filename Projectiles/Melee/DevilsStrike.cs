@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time % 6 == 0)
             {
-                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/BloomCircle", false, 20, Main.rand.NextFloat(0.05f, 0.055f) * deathLerp * Projectile.ai[0], (Main.rand.NextBool() ? Color.MediumOrchid : clr) * 0.7f, new Vector2(0.8f, 1), shrinkSpeed: 0.2f));
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/BloomCircle", false, 20, Main.rand.NextFloat(0.05f, 0.055f) * deathLerp * Projectile.ai[0], (Main.rand.NextBool() ? Color.MediumOrchid : clr) * (CalamityClientConfig.Instance.Photosensitivity ? 0.25f : 0.7f), new Vector2(0.8f, 1), shrinkSpeed: 0.2f));
             }
             if (angleTimer % 60 == 0 && Projectile.ai[0] > 0.7f)
             {

@@ -53,12 +53,11 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             itemLoot.Add(ItemID.Rope, 1, 50, 50);
 
             // Potions
-            itemLoot.Add(ItemID.MiningPotion);
-            itemLoot.Add(ItemID.SpelunkerPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.SwiftnessPotion, 1, 3, 3);
-            itemLoot.Add(ItemID.GillsPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.ShinePotion);
+            LeadingConditionRule multiplayer = itemLoot.DefineConditionalDropSet(() => Main.netMode == NetmodeID.MultiplayerClient);
+            itemLoot.Add(ItemID.MiningPotion, 1, 3, 3);
+            itemLoot.Add(ItemID.SpelunkerPotion, 1, 3, 3);
             itemLoot.Add(ItemID.RecallPotion, 1, 3, 3);
+            multiplayer.Add(ItemID.WormholePotion, 1, 3, 3);
 
             // Tiles
             itemLoot.Add(ItemID.Torch, 1, 25, 25);

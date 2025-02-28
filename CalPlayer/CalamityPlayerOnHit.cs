@@ -146,6 +146,12 @@ namespace CalamityMod.CalPlayer
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
+            // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
+            if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
+            {
+                Player.Calamity().transformerStoredKills += (!Main.zenithWorld ? 2 : 10);
+            }
+
             // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
             // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
             if (arcFlashRing && (Main.rand.Next(0, 100) < 6))
@@ -299,6 +305,12 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
+
+            // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
+            if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
+            {
+                Player.Calamity().transformerStoredKills += (!Main.zenithWorld ? 2 : 10);
+            }
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
             // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)

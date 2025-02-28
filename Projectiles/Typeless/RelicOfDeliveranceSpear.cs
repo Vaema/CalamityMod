@@ -531,14 +531,14 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write7BitEncodedInt(driftPower);
+            writer.Write(driftPower);
             writer.Write(driftPowerScaling);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            driftPower = reader.Read7BitEncodedInt();
-            driftPowerScaling = reader.Read();
+            driftPower = reader.Read();
+            driftPowerScaling = reader.ReadSingle();
         }
     }
 }

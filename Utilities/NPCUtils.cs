@@ -749,11 +749,11 @@ namespace CalamityMod
         {
             if (target.CanBeMoved(ignoreKBImmune))
             {
-                // Launch
                 Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
                 float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
                 target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
             }
+            target.SyncMotionToServer();
         }
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
