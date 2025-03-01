@@ -1464,7 +1464,7 @@ SandCloak: {
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
 		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		While inside the veil, you gain 10 defense and 1.75x acceleration
+		The veil slowly follows you, and any player inside it gains 10 defense and 1.75x acceleration
 		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
