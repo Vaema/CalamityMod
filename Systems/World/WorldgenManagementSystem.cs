@@ -177,7 +177,7 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX, sunkenSeaY + 110);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
-                    SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 615);
+                    SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceSunkenSeaAmbience();

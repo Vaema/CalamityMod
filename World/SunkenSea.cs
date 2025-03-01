@@ -316,11 +316,11 @@ namespace CalamityMod.World
                 int curveDepth = (int)MathHelper.Lerp(
                         totalCuveDepth,
                         0f,
-                        MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 25, startPosX + biomeSize - 200, x, true)));
+                        MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 30, startPosX + biomeSize - 200, x, true)));
                 int curveDepth2 = (int)MathHelper.Lerp(
                         totalCuveDepth,
                         0f,
-                        MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 25, startPosX - biomeSize + 200, x, true)));
+                        MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 30, startPosX - biomeSize + 200, x, true)));
                 for (int y = startPosY - 5; y >= startPosY - 149; y -= 15)
                 {
                     float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 150, y, true);
@@ -1082,22 +1082,22 @@ namespace CalamityMod.World
             Point origin = new Point(startPosX, startPosY);
             Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
 
-            float angle = MathHelper.Pi * 0.15f;
+            float angle = MathHelper.Pi * 0.70f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int biomeSize = 60 + (Main.maxTilesX / 180);
+            int biomeSize = 80 + (Main.maxTilesX / 180);
             float actualSize = biomeSize * 16f;
             float constant = actualSize * 2f / (float)Math.Sin(angle);
 
             float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
-            int verticalRadius = (int)(constant / 16f);
+            int verticalRadius = (int)(constant / 10f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
             Vector2 topFoci = center - fociOffset;
             Vector2 bottomFoci = center + fociOffset;
 
             //place the Clam Den caverns
-            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
+            for (int X = origin.X - biomeSize - 190; X <= origin.X + biomeSize + 190; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -1111,7 +1111,7 @@ namespace CalamityMod.World
                             if (Y > origin.Y - 50)
                             {
                                 //place smaller navystone clumps infront of the basalt so the basalt isnt actually inside of the biome itself
-                                WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<WhitePearlPile>(), true, 0f, 0f, true, true);
+                                WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<Navystone>(), true, 0f, 0f, true, true);
                             }
                             //place clean transition between the burrows and the other biomes
                             if (Y < origin.Y && Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Navystone>())
@@ -1293,7 +1293,7 @@ namespace CalamityMod.World
                         0f,
                         MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 60, startPosX - biomeSize + 200, X, true)));
 
-                for (int Y = startPosY - basaltbordernoisetop + curveDepthtop + curveDepth2top; Y <= Main.maxTilesY - basaltbordernoise + curveDepth + curveDepth2; Y++)
+                for (int Y = startPosY - 650 + curveDepthtop + curveDepth2top; Y <= Main.maxTilesY - 185 + curveDepth + curveDepth2; Y++)
                 {
                     Main.tile[X, Y].ClearEverything();
                     WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Basalt>());

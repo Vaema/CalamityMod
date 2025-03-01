@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Tiles.Abyss;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -27,12 +28,8 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            // 02JUN2024: Ozzatron: Dunesand has no merge
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Dunesand>(), out tileAdjacency);
-            // 02JUN2024: Ozzatron: Shellstone has no merge tile sheet defined
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
-
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
