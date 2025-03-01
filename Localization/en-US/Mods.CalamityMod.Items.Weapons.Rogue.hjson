@@ -306,7 +306,7 @@ DoomsdayDevice: {
 	DisplayName: Doomsday Device
 	Tooltip:
 		'''
-		Direct hits from the weapon grants stealth
+		Direct hits from the weapon grant stealth
 		Non-stealth strikes do not consume stealth when fully charged
 		Holding a stealth strike charge beyond its limit rapidly drains stealth
 		Stealth strikes ricochet between multiple enemies, ending in a strong impact
@@ -1378,11 +1378,10 @@ Whitewater: {
 	DisplayName: Whitewater
 	Tooltip:
 		'''
-		Throws a flask of magic whitewater that tracks your cursor
-		After a second, the flask will glow brightly
-		Flasks that hit enemies while glowing create a temporary burst of returning water spears
-		After exploding or after being thrown for a while, the flask will return to you
-		Stealth strikes create more water spears and will make a swirling vortex of whitewater that heals any player it touches and knocks back enemies
+		Throws a flask of magic white water at the cursor that glows after a short while
+		Flasks that hit enemies while glowing release four water spears that converge back on the flask's position
+		If the flask hits an enemy or gets too far, it will return to the owner
+		Stealth strikes create eight water spears and summon a swirling whitewater vortex that heals players and knocks back enemies
 		'''
 }
 
