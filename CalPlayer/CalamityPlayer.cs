@@ -1204,7 +1204,7 @@ namespace CalamityMod.CalPlayer
         public bool warped = false;
         public bool cDepth = false;
         public bool rTide = false;
-        public bool hadopelagicpressure = false;
+        public bool hPressure = false;
         public bool fishAlert = false;
         public bool clamity = false;
         public bool NOU = false;
@@ -2390,7 +2390,7 @@ namespace CalamityMod.CalPlayer
             warped = false;
             cDepth = false;
             rTide = false;
-            hadopelagicpressure = false;
+            hPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;
@@ -2846,7 +2846,7 @@ namespace CalamityMod.CalPlayer
             warped = false;
             cDepth = false;
             rTide = false;
-            hadopelagicpressure = false;
+            hPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;

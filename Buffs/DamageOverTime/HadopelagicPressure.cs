@@ -19,13 +19,13 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().hadopelagicpressure = true;
+            player.Calamity().hPressure = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().hadopelagicpressure < npc.buffTime[buffIndex])
-                npc.Calamity().hadopelagicpressure = npc.buffTime[buffIndex];
+            if (npc.Calamity().hPressure < npc.buffTime[buffIndex])
+                npc.Calamity().hPressure = npc.buffTime[buffIndex];
             npc.DelBuff(buffIndex);
             buffIndex--;
         }

@@ -2818,7 +2818,7 @@ namespace CalamityMod.CalPlayer
                             Main.NewText(Player.breath);
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
 
-                            if (hadopelagicpressure)
+                            if (hPressure)
                                 resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
                         }
                     }

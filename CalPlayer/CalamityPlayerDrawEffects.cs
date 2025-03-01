@@ -263,7 +263,7 @@ namespace CalamityMod.CalPlayer
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
 
-            if (calamityPlayer.hadopelagicpressure && drawInfo.shadow == 0f)
+            if (calamityPlayer.hPressure && drawInfo.shadow == 0f)
                 HadopelagicPressure.DrawEffects(drawInfo);
 
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
