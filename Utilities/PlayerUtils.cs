@@ -91,7 +91,8 @@ namespace CalamityMod
             }
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > bestDamage)
             {
                 bestClass = RogueDamageClass.Instance;
@@ -125,7 +126,8 @@ namespace CalamityMod
             if (summon > best) best = summon;
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > best) best = rogue;
 
             // Add the best typical damage stat, then return the full modifier.
