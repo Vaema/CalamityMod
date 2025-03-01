@@ -2828,7 +2828,6 @@ namespace CalamityMod.CalPlayer
                         // Reduce breath
                         if (Player.breath > 0)
                         {
-                            Main.NewText(Player.breath);
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
 
                             if (hPressure)
