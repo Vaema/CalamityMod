@@ -1,69 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using CalamityMod.Enums;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
-using Terraria.ModLoader.Utilities;
-using Terraria.Utilities;
+using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Sharkoon : SunkenSeaNPC
+    public class Sharkoon : SunkenSeaNPC, IPathFinder
     {
-        public static float DistanceToKaboom = 80f;
-        public static float IdleMovementMaxRange = 300f;
-        public static int ExplosionRadius = 80;
-        public static float TimeToRecover = 600f;
-        public static float TimeRecovering = 120f;
-
-        private Task<List<Vector2>> _pathfindingTask = null;
-
         #region Fields & Properties
 
-        protected override List<int> HuntNPCs => new()
-        {
-            // NPCType<GildedAxolotl>(),
-            NPCType<SeaFloaty>(),
-            NPCType<Probesnout>(),
-            NPCType<SeaMinnow>(),
-            NPCType<EutrophicRay>(),
-        };
+        #region Static Fields
 
-        protected override List<int> AvoidNPCs => new()
-        {
-            // NPCType<Polyperil>(),
-            // NPCType<Snailord>(),
-            NPCType<PrismBack>(),
-            // NPCType<Hermititan>,
-        };
+        public static int IdleRandomMovementUnlikeliness = 250;
+        public static int IdleMinPathDistance = 200;
+        public static int IdleMaxPathDistance = 400;
 
-        /// <summary>
-        /// The different types of personality this NPC can have.
-        /// </summary>
-        private enum PersonalityType { Shy, Curious, Paranoid }
+        public static int FleeTileAnticipationDistance = 64;
+        public static int FleeMinPathDistance = 80;
+        public static int FleeMaxPathDistance = 160;
 
-        /// <summary>
-        /// The current personality of this NPC.
-        /// </summary>
-        private PersonalityType Personality
-        {
-            get => (PersonalityType)NPC.ai[0];
-            set
-            {
-                NPC.ai[0] = (float)value;
-                NetUpdate();
-            }
-        }
+        public static int ExplosionDistance = 80;
+        public static int ExplosionRadius = 80;
+        public static int ExplosionCooldown = 600;
+        public static int RecoveringTime = 120;
+
+        #endregion
 
         /// <summary>
         /// The different types of animation this enemy can have.
@@ -101,8 +75,6 @@ namespace CalamityMod.NPCs.SunkenSea
                         ChangeAnimation(animationFrames: 6, timePerAnimationFrame: 6, loops: true);
                         break;
                 }
-
-                NetUpdate();
             }
         }
 
@@ -110,19 +82,26 @@ namespace CalamityMod.NPCs.SunkenSea
         /// The amount of frames that one column of sprites has.<br/>
         /// Defaults to 7 since that's the first column's amount of frames.
         /// </summary>
-        private int AnimationFrames = 7;
+        private int _animationFrames = 7;
 
         /// <summary>
         /// The amount, in frames, that it takes to go to the next animation frame.<br/>
         /// Defaults to 7.
         /// </summary>
-        private int TimePerAnimationFrame = 7;
+        private int _timePerAnimationFrame = 7;
 
         /// <summary>
         /// Whether or not the animation loops or not.<br/>
         /// Defaults to <see langword="true"/>.
         /// </summary>
-        private bool AnimationLoop = true;
+        private bool _animationLoop = true;
+
+        /// <summary>
+        /// The squish of this NPC while drawing.
+        /// </summary>
+        private Vector2 _scaleSquish = Vector2.One;
+
+        private Entity _avoidedEntity;
 
         /// <summary>
         /// A timer used to know when the NPC should recover after it explodes.
@@ -130,43 +109,71 @@ namespace CalamityMod.NPCs.SunkenSea
         private ref float RecoverTimer => ref NPC.ai[2];
 
         /// <summary>
-        /// The maximum speed this NPC can have, it cannot be faster than this number.
-        /// </summary>
-        private float MaximumSpeed = 4f;
-
-        /// <summary>
-        /// The acceleration of the Sharkoon.
-        /// </summary>
-        private const float Acceleration = 0.25f;
-
-        /// <summary>
-        /// How unlikely is the Sharkoon going to move normally.<br/>
-        /// Defaults to 250.
-        /// </summary>
-        private int RandomIdleMovementUnlikeliness = 250;
-
-        /// <summary>
         /// Whether or not the Sharkoon is capable of exploding.
         /// </summary>
-        private bool IsBig => Animation == AnimationState.Normal;
+        private bool CanExplode => Animation == AnimationState.Normal;
 
         /// <summary>
         /// Whether or not the Sharkoon is currently exploding.
         /// </summary>
         private bool IsExploding => CurrentBehavior == ExplodingBehavior;
 
+        private Action _currentBehavior;
+        private Action CurrentBehavior
+        {
+            get => _currentBehavior;
+            set
+            {
+                if (value != _currentBehavior)
+                    OnBehaviorChange(value);
+                _previousBehavior = _currentBehavior;
+                _currentBehavior = value;
+            }
+        }
+
+        private Action _previousBehavior;
+
+        #region SunkenSeaNPC Implementation
+
+        protected override List<int> PreyIDs =>
+        [
+            // NPCType<GildedAxolotl>(),
+            NPCType<SeaFloaty>(),
+            NPCType<Probesnout>(),
+            NPCType<ProbesnoutGold>(),
+            NPCType<SeaMinnow>(),
+            NPCType<EutrophicRay>(),
+        ];
+
+        protected override List<int> PredatorIDs =>
+        [
+            // NPCType<Polyperil>(),
+            // NPCType<Snailord>(),
+            NPCType<PrismBack>(),
+            // NPCType<Hermititan>,
+        ];
+
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
-
-        protected override float SpawningChance => SpawnCondition.CaveJellyfish.Chance * 0.9f;
-
-        /// <summary>
-        /// The squish of this NPC while drawing.
-        /// </summary>
-        private Vector2 ScaleSquish = Vector2.One;
 
         #endregion
 
-        #region Other Overridden Methods
+        #region IPathFinder Implementation
+
+        public PathfindingTask Path { get; set; }
+
+        public Vector2 Position => NPC.Center;
+
+        public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
+
+        public float Acceleration { get; set; } = 0.25f;
+
+        public float MaxSpeed { get; set; } = 6f;
+
+        #endregion
+
+        #endregion
+
+        #region SetDefaults
 
         public override void SetStaticDefaults()
         {
@@ -178,14 +185,14 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            // BannerItem = ItemType<SharkoonBanner>();
+
             NPC.damage = 20;
             NPC.lifeMax = 350;
             NPC.defense = 5;
             NPC.knockBackResist = 0.15f;
             NPC.chaseable = false;
 
-            NPC.aiStyle = -1;
-            AIType = -1;
             NPC.width = 52;
             NPC.height = 46;
             NPC.noGravity = true;
@@ -193,8 +200,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
-            // Banner = NPC.type;
-            // BannerItem = ModContent.ItemType<SharkoonBanner>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -202,109 +207,41 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
         }
 
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
-            }
-            if (NPC.life <= 0)
-            {
-                for (int k = 0; k < 25; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
-                }
-            }
-        }
-
-        public override bool CanBeHitByNPC(NPC attacker)
-        {
-            if (attacker.whoAmI == NPC.whoAmI)
-                return false;
-
-            return true;
-        }
-
-        public override void OnHitByNPC(NPC attacker)
-        {
-            if (IsBig)
-                CurrentBehavior = ExplodingBehavior;
-        }
-
-        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
-        {
-            if (IsBig)
-                CurrentBehavior = ExplodingBehavior;
-        }
-
-        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
-        {
-            if (IsBig)
-                CurrentBehavior = ExplodingBehavior;
-        }
-
         #endregion
 
-        #region AI
+        #region Behavior
 
-        protected override void BehaviorOnSpawn()
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 960f * 960f;
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return base.NPCSearchFilter(n) || (n == CurrentPrey || n == CurrentPredator) && Vector2.DistanceSquared(NPC.Center, n.Center) < 960f * 960f;
+        }
+
+        public override void OnSpawn(IEntitySource source)
         {
             CurrentBehavior = IdlingBehavior;
-
-            WeightedRandom<PersonalityType> randomPersonality = new();
-            randomPersonality.Add(PersonalityType.Shy, 0.4f);
-            randomPersonality.Add(PersonalityType.Curious, 0.4f);
-            randomPersonality.Add(PersonalityType.Paranoid, 0.2f);
-            Personality = randomPersonality.Get();
-
-            DetectionDistance = 320f;
-            ConeDetectionAngle = MathHelper.ToRadians(30f);
-
-            if (Personality == PersonalityType.Curious)
-            {
-                DetectionDistance *= 1.5f;
-                ConeDetectionAngle *= 1.5f;
-                RandomIdleMovementUnlikeliness /= 2;
-            }
-
-            if (Personality == PersonalityType.Paranoid)
-                MaximumSpeed *= 1.5f;
-
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
         }
 
-        protected override void CreatureAI()
+        public override void AI()
         {
             CurrentBehavior?.Invoke();
 
-            // Sets the direction at which it looks at the cone.
-            // This makes it look at the direction it's going.
-            if (!NPC.velocity.HasNaNs())
-                ConeDetectionDirection = (NPC.rotation * MathF.Sign(NPC.velocity.Y) + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0f)).ToRotationVector2();
-
             // Leans the Sharkoon towards the direction it's going.
-            NPC.rotation = MathHelper.ToRadians(NPC.velocity.Length() * 3f) * MathF.Sign(NPC.velocity.X);
-
-            // When the Sharkoon is fast enough in one direction, it'll turn to that direction.
-            if (MathF.Abs(NPC.velocity.X) > 1f)
-                NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
-
-            // When the Sharkoon's paranoid, it'll explode at anything that isn't prey which gets close to the Sharkoon.
-            bool isEntityPlayerOrNonPreyNPC = NearestEntity is not null && (NearestEntity is Player || NearestEntity is NPC npc && !HuntNPCs.Contains(npc.type));
-            if (isEntityPlayerOrNonPreyNPC)
-            {
-                bool isWithinDistance = NPC.DistanceSQ(NearestEntity.Center) < DistanceToKaboom * DistanceToKaboom;
-                if (IsBig && Personality == PersonalityType.Paranoid && isEntityPlayerOrNonPreyNPC && isWithinDistance)
-                    CurrentBehavior = ExplodingBehavior;
-            }
+            NPC.rotation = MathHelper.ToRadians(NPC.velocity.X * 3f);
+            NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
 
             // When it has already exploded, a timer will start, which when finished it'll make the Sharkoon recover.
-            if (!IsBig)
+            if (!CanExplode)
             {
                 RecoverTimer++;
-                if (RecoverTimer > TimeToRecover)
+                if (RecoverTimer > ExplosionCooldown)
                     CurrentBehavior = RecoveringBehavior;
             }
 
@@ -312,92 +249,29 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.wet && !IsExploding)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Clamps the velocity at all times.
-            if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
-                NPC.velocity = NPC.velocity.SafeNormalize(Vector2.UnitY) * MaximumSpeed;
-
-            if (ScaleSquish.Y > 1f)
+            // Reset any squish that is done to the Sharkoon.
+            if (_scaleSquish.Y > 1f)
             {
-                ScaleSquish.Y -= 0.025f;
-                if (ScaleSquish.Y < 1f)
-                    ScaleSquish.Y = 1f;
-            }
-        }
-
-        protected override void OnBehaviorChange(Action newBehavior)
-        {
-            // Obviously, when it gets to the exploding behaivor, it should make the explosion animation.
-            if (newBehavior == ExplodingBehavior)
-                Animation = AnimationState.Explosion;
-
-            // Resets the timer when it needs to use it again.
-            if (newBehavior == RecoveringBehavior || CurrentBehavior == RecoveringBehavior)
-                RecoverTimer = 0f;
-
-            // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (newBehavior == OutsideWaterBehavior)
-                NPC.noGravity = false;
-        }
-
-        protected override void OnPreyDetection(NPC prey)
-        {
-            // If it's not a small fish and it's not being chased by a predator, the Sharkoon may hunt.
-            if (IsBig && CurrentPredator is null && !IsExploding)
-            {
-                CurrentBehavior = HuntBehavior;
-                ScaleSquish.Y += 0.4f;
-                React(Color.Orange * 0.6f, EmoteExpressionParticle.EmoteType.Exclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-            }
-        }
-
-        protected override void OnPredatorDetection(NPC predator)
-        {
-            // If it detects a predator, time to run.
-            if (!IsExploding)
-            {
-                CurrentBehavior = AvoidBehavior;
-                React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-                ScaleSquish.Y += 0.4f;
-            }
-        }
-
-        protected override void OnPlayerDetection(Player player)
-        {
-            // When there's a predator, player's shouldn't matter.
-            if (CurrentPredator is not null)
-                return;
-
-            // If the Sharkoon is shy, it'll run away from the player.
-            if (Personality == PersonalityType.Shy)
-            {
-                CurrentBehavior = AvoidBehavior;
-                React(Color.Orange, EmoteExpressionParticle.EmoteType.QuestionExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-                ScaleSquish.Y += 0.4f;
-            }
-
-            if (Personality == PersonalityType.Curious)
-            {
-                React(Color.Green, EmoteExpressionParticle.EmoteType.Question, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-                ScaleSquish.Y += 0.4f;
+                _scaleSquish.Y -= 0.025f;
+                if (_scaleSquish.Y < 1f)
+                    _scaleSquish.Y = 1f;
             }
         }
 
         private void IdlingBehavior()
         {
-            if (_pathfindingTask.Result != null)
+            // At random, the mob will choose a random nearby point and pathfind there.
+            PathfindingTask task = null;
+            if (Main.rand.NextBool(IdleRandomMovementUnlikeliness))
             {
-                // While it hasn't decided yet which path to follow, it'll deaccelerate and stand still.
-                NPC.velocity *= 0.95f;
-
-                // Randomly, it'll decide a path whose destination is somewhere around him.
-                if (Main.rand.NextBool(RandomIdleMovementUnlikeliness) && !_pathfindingTask.IsCompleted)
-                    _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, Main.rand.NextVector2Circular(400f, 400f), SunkenSeaTileValidity));
+                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance);
+                NPC.netUpdate = true;
+                task = new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
             }
-            else
-                GenericPathFollowing(Acceleration);
+            this.DoPathfinding(task);
         }
 
-        private void HuntBehavior()
+        private void HuntingBehavior()
         {
             // If there's no more prey, go back to idling.
             if (CurrentPrey is null)
@@ -406,72 +280,49 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
-            if (!HasLineOfSight(CurrentPrey.Center))
-            {
-                if (_pathfindingTask.Result != null)
-                    PathfindingPoints = _pathfindingTask.Result;
-
-                if (_pathfindingTask.Result != null)
-                    GenericPathFollowing(Acceleration);
-                else
-                    _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
-            }
+            // With sight, just go straight at him. Without it, try to pathfind over them.
+            if (!NPC.HasSight(CurrentPrey.Center))
+                this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
             else
+            {
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+            }
         }
 
-        private void AvoidBehavior()
+        private void FleeingBehavior()
         {
-            // Depending on the personality, the Sharkoon will choose who to avoid.
-            Entity entityToAvoid = null;
-            switch (Personality)
-            {
-                case PersonalityType.Shy:
-                    entityToAvoid = (NearestEntity is NPC nearestNPC && HuntNPCs.Contains(nearestNPC.type)) ? null : NearestEntity;
-                    break;
-                case PersonalityType.Curious:
-                case PersonalityType.Paranoid:
-                    entityToAvoid = CurrentPredator;
-                    break;
-            }
+            // Check who is the avoided entity specifically.
+            _avoidedEntity = _avoidedEntity is NPC ? CurrentPredator : CurrentPlayer;
 
-            // If there aren't any more targets detected, go back to idling.
-            if (entityToAvoid is null)
+            // If the avoided entity is gone, go back to idling.
+            if (_avoidedEntity == null)
             {
                 CurrentBehavior = IdlingBehavior;
                 return;
             }
 
-            // When it's going in a direction and it detects that it'll stumble into tiles, it'll try to path-find a way to continue avoiding whichever entity.
-            const int TileAnticipationDistance = 5 * 16;
-            const float AngleVariance = 2.2f; // In radians.
-            const int MaxAttemptsToFindPath = 20;
-            const int MinimumEscapeDistance = 160;
-            const int MaximumEscapeDistance = 320;
-            if (Main.tile[(NPC.Center + NPC.DirectionFrom(entityToAvoid.Center) * TileAnticipationDistance).ToTileCoordinates()].IsTileSolid() && !HasPath)
+            // While it doesn't have any obstacles in front of it, run away in a straight line.
+            // Try to manuever if there are any obstacles.
+            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(_avoidedEntity.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
             {
-                Vector2 randomEscapePoint;
-                int attempts = 0;
-                do
-                {
-                    randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(AngleVariance) * Main.rand.NextFloat(MinimumEscapeDistance, MaximumEscapeDistance);
-                    attempts++;
-                }
-                while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid() || attempts < MaxAttemptsToFindPath);
+                NPC.velocity += NPC.DirectionFrom(_avoidedEntity.Center) * Acceleration;
 
-                _pathfindingTask = CalamityUtils.FindPathAsync(new(NPC.Center, randomEscapePoint, SunkenSeaTileValidity));
+                // Cap the speed if MaxSpeed has been surpassed.
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+            }
+            else
+            {
+                float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
+                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                NPC.netUpdate = true;
+                this.DoPathfinding(new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
-            if (_pathfindingTask.Result != null)
-                PathfindingPoints = _pathfindingTask.Result;
-
-            if (HasPath)
-                GenericPathFollowing(Acceleration);
-            else
-                NPC.velocity += NPC.DirectionFrom(entityToAvoid.Center) * Acceleration;
-
             // If it's capable of exploding and the predator's within distance, kaboom.
-            if (IsBig && NPC.DistanceSQ(entityToAvoid.Center) < DistanceToKaboom * DistanceToKaboom && entityToAvoid is NPC predator && AvoidNPCs.Contains(predator.type))
+            if (CanExplode && NPC.DistanceSQ(_avoidedEntity.Center) < ExplosionDistance * ExplosionDistance && _avoidedEntity is NPC predator && PredatorIDs.Contains(predator.type))
                 CurrentBehavior = ExplodingBehavior;
         }
 
@@ -491,16 +342,16 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.frame.Y >= NPC.height * 16)
             {
                 Animation = AnimationState.Shrunk;
-                CurrentBehavior = PreviousBehavior;
+                CurrentBehavior = _previousBehavior;
             }
         }
 
         private void RecoveringBehavior()
         {
-            if (RecoverTimer >= TimeRecovering)
+            if (RecoverTimer >= RecoveringTime)
             {
                 Animation = AnimationState.Normal;
-                CurrentBehavior = PreviousBehavior;
+                CurrentBehavior = _previousBehavior;
             }
 
             // Deaccelerates to stay still.
@@ -510,12 +361,10 @@ namespace CalamityMod.NPCs.SunkenSea
             // a dedicated server doesn't need to load these.
             if (!Main.dedServ)
             {
-                float fade = Utils.GetLerpValue(TimeRecovering, 0, RecoverTimer);
-                float rotFactor = 360f;
+                float fade = Utils.GetLerpValue(RecoveringTime, 0, RecoverTimer);
                 if (Main.rand.NextBool())
                 {
-                    float rot = MathHelper.ToRadians(rotFactor);
-                    Vector2 velOffset = CalamityUtils.RandomVelocity(50f, 20f, 70f, 0.04f);
+                    Vector2 velOffset = RandomVelocity(50f, 20f, 70f, 0.04f);
                     velOffset *= Main.rand.NextFloat(15, 20) * fade;
                     Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, 267, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
                     dust.noGravity = true;
@@ -531,8 +380,92 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.wet)
             {
                 NPC.noGravity = true;
-                CurrentBehavior = PreviousBehavior;
+                CurrentBehavior = _previousBehavior;
             }
+        }
+
+        private void OnBehaviorChange(Action newBehavior)
+        {
+            // Obviously, when it gets to the exploding behaivor, it should make the explosion animation.
+            if (newBehavior == ExplodingBehavior)
+                Animation = AnimationState.Explosion;
+
+            // Resets the timer when it needs to use it again.
+            if (newBehavior == RecoveringBehavior || CurrentBehavior == RecoveringBehavior)
+                RecoverTimer = 0f;
+
+            // When it gets outside of water, it'll try to gravitate downards towards the water.
+            if (newBehavior == OutsideWaterBehavior)
+                NPC.noGravity = false;
+
+            Path = null;
+        }
+
+        protected override void OnPreyDetection(NPC prey)
+        {
+            // If it's not a small fish and it's not being chased by a predator, the Sharkoon may hunt.
+            if (CanExplode && CurrentPredator is null && !IsExploding)
+            {
+                CurrentBehavior = HuntingBehavior;
+                _scaleSquish.Y += 0.4f;
+            }
+        }
+
+        protected override void OnPredatorDetection(NPC predator)
+        {
+            // If it detects a predator, time to run.
+            if (!IsExploding)
+            {
+                CurrentBehavior = FleeingBehavior;
+                _avoidedEntity = predator;
+                _scaleSquish.Y += 0.4f;
+            }
+        }
+
+        protected override void OnPlayerDetection(Player player)
+        {
+            // When there's a predator, player's shouldn't matter.
+            if (CurrentPredator is not null && !IsExploding)
+                return;
+
+            CurrentBehavior = FleeingBehavior;
+            _avoidedEntity = player;
+            _scaleSquish.Y += 0.4f;
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
+            }
+            if (NPC.life <= 0)
+            {
+                for (int k = 0; k < 25; k++)
+                {
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
+                }
+            }
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+
+        public override void OnHitByNPC(NPC attacker)
+        {
+            if (CanExplode)
+                CurrentBehavior = ExplodingBehavior;
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            if (CanExplode)
+                CurrentBehavior = ExplodingBehavior;
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            if (CanExplode)
+                CurrentBehavior = ExplodingBehavior;
         }
 
         private void Kaboom()
@@ -544,10 +477,12 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.Center,
                     Vector2.Zero,
                     ProjectileType<SharkoonExplosion>(),
-                    NPC.damage,
+                    NPC.damage * 10,
                     10f,
-                    Main.myPlayer);
+                    ai0: NPC.whoAmI);
             }
+
+            AddScreenshakeAt(NPC.Center, 15f);
 
             // VFX and sound effects go here,
             // a dedicated server doesn't need to load these.
@@ -574,8 +509,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 SoundStyle boom = new("CalamityMod/Sounds/Custom/SharkoonBoom");
                 SoundEngine.PlaySound(boom with { Volume = 0.7f, PitchVariance = 0.15f }, NPC.Center);
             }
-
-            NetUpdate();
         }
 
         #endregion
@@ -587,21 +520,21 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         private void ChangeAnimation(int animationFrames, int timePerAnimationFrame, bool loops)
         {
-            AnimationFrames = animationFrames;
-            TimePerAnimationFrame = timePerAnimationFrame;
-            AnimationLoop = loops;
+            _animationFrames = animationFrames;
+            _timePerAnimationFrame = timePerAnimationFrame;
+            _animationLoop = loops;
         }
 
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            if (NPC.frameCounter > TimePerAnimationFrame)
+            if (NPC.frameCounter > _timePerAnimationFrame)
             {
                 NPC.frame.Y += frameHeight;
-                NPC.frame.Y = Math.Min(NPC.frame.Y, AnimationFrames * frameHeight);
+                NPC.frame.Y = Math.Min(NPC.frame.Y, _animationFrames * frameHeight);
                 NPC.frameCounter = 0;
-                if (AnimationLoop)
-                    NPC.frame.Y = NPC.frame.Y % (AnimationFrames * frameHeight);
+                if (_animationLoop)
+                    NPC.frame.Y = NPC.frame.Y % (_animationFrames * frameHeight);
             }
         }
 
@@ -613,36 +546,25 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 anchorPoint = frame.Size() * 0.5f;
             SpriteEffects flip = NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            if (Personality == PersonalityType.Paranoid)
-                drawPosition += Main.rand.NextVector2Circular(1.5f, 1.5f);
-
-            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, ScaleSquish, flip, 0f);
+            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, _scaleSquish, flip, 0f);
 
             return false;
         }
 
         #endregion
 
-        #region Syncing
+        #region Sycning
+
+        private Vector2 _randomPathPoint;
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            base.SendExtraAI(writer);
-            writer.Write7BitEncodedInt(AnimationFrames);
-            writer.Write7BitEncodedInt(TimePerAnimationFrame);
-            writer.Write(AnimationLoop);
-            writer.Write(MaximumSpeed);
-            writer.Write7BitEncodedInt(RandomIdleMovementUnlikeliness);
+            writer.WriteVector2(_randomPathPoint);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            base.ReceiveExtraAI(reader);
-            AnimationFrames = reader.Read7BitEncodedInt();
-            TimePerAnimationFrame = reader.Read7BitEncodedInt();
-            AnimationLoop = reader.ReadBoolean();
-            MaximumSpeed = reader.ReadSingle();
-            RandomIdleMovementUnlikeliness = reader.Read7BitEncodedInt();
+            _randomPathPoint = reader.ReadVector2();
         }
 
         #endregion

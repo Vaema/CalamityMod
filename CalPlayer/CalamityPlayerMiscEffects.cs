@@ -2816,16 +2816,23 @@ namespace CalamityMod.CalPlayer
                     // Record the final breath loss rate for the stat meter
                     abyssBreathLossRateStat = (float)tick;
 
+                    float resistanceSlowdownFactor = 1f;
+
                     // Reduce breath over ticks (frames)
-                    abyssBreathCD++;
-                    if (abyssBreathCD >= (int)tick)
+                    abyssBreathCD++;    
+                    if (abyssBreathCD >= (int)(tick * resistanceSlowdownFactor))
                     {
                         // Reset modded breath variable
                         abyssBreathCD = 0;
 
                         // Reduce breath
                         if (Player.breath > 0)
+                        {
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
+
+                            if (hPressure)
+                                resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
+                        }
                     }
 
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
