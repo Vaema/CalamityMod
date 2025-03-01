@@ -1026,6 +1026,8 @@ namespace CalamityMod.CalPlayer
         public int tornadoCooldown = 0;
         /// <summary> Calamity's Snow armor set bonus; reduces cold enemy damage and increases cold debuff damage. </summary>
         public bool eskimoSet = false;
+        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash </summary>
+        public bool rainSet = false;
         /// <summary> Calamity's Meteor armor set bonus; makes all magic guns cost 33% mana instead of Space Gun costing 0 mana. </summary>
         public bool meteorSet = false;
         /// <summary> Calamity's Necro armor set bonus; gives a temporary 10 second revive when the player is killed before actually dying. </summary>
@@ -2305,6 +2307,7 @@ namespace CalamityMod.CalPlayer
             miningSetCooldown = 0;
 
             eskimoSet = false;
+            rainSet = false;
             meteorSet = false;
             necroSet = false;
             frostSet = false;
@@ -3082,6 +3085,7 @@ namespace CalamityMod.CalPlayer
             forbiddenCooldown = 0;
             tornadoCooldown = 0;
             eskimoSet = false;
+            rainSet = false;
             meteorSet = false;
             necroSet = false;
             frostSet = false;

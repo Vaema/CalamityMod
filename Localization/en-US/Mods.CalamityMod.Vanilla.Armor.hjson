@@ -41,6 +41,12 @@ SetBonus: {
 		Cold enemies will deal reduced contact damage to the player
 		Provides immunity to the Chilled, Frozen, Frostburn and Glacial State debuffs
 		'''
+	Rain:
+		'''
+		24% increased jump speed and allows auto-jump
+		Jumping creates a puddle splash that damages and knocks back enemies
+		This splash is stronger if it is raining
+		'''
 	Forbidden:
 		'''
 		{$LegacyTooltip.48} {$ArmorSetBonus.Forbidden}

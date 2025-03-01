@@ -68,6 +68,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -1426,6 +1427,17 @@ namespace CalamityMod.CalPlayer
                 }
                 Player.GetDamage<GenericDamageClass>() += damageUp;
                 Player.GetCritChance<GenericDamageClass>() += critUp;
+            }
+
+            // Rain armor set effects
+            if (rainSet)
+            {
+                if (Player.jump == 15) // This is technically the frame after you start jumping from the ground
+                {
+                    bool rainBoost = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(30 * (rainBoost ? 2f : 1));
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Vector2.UnitY * 26, Vector2.Zero, ModContent.ProjectileType<PuddleSplash>(), damage, 0, Main.myPlayer);
+                }
             }
 
             bool profanedSoulBuffs = profanedCrystalBuffs || (!profanedCrystal && pSoulArtifact) || (profanedCrystal && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
