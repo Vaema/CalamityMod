@@ -9,9 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class VoidstoneWall : ModWall, IVisibleThroughWater
+    public class VoidstoneWall : ModWall
     {
-        int IVisibleThroughWater.WaterMapEntry { get; set; }
         internal static FramedMaskTexture GlowMask;
 
         public override void SetStaticDefaults()
@@ -20,7 +19,6 @@ namespace CalamityMod.Walls
 
             Main.wallHouse[Type] = true;
             AddMapEntry(new Color(0, 0, 0));
-            this.AddMapEntryWithWaterVisibility(new Color(11, 28, 67));
         }
 
         public override void Unload()
