@@ -17,11 +17,11 @@ namespace CalamityMod.Tiles.Abyss
         {
             Main.tileLighted[Type] = true;
             Main.tileCut[Type] = true;
-            Main.tileBlockLight[Type] = false;
+            Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileNoSunLight[Type] = false;
-            AddMapEntry(new Color(54, 99, 100));
+            AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
             DustType = 2;
             TileID.Sets.IsVine[Type] = true;
@@ -88,7 +88,7 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         // Ozzatron 01JUL2022: heavily refactored this code to not suck. also, sulphurous vines won't grow in honey anymore.
-        private const int MaxVineHeight = 15;
+        private const int MaxVineHeight = 10;
 
         public override void RandomUpdate(int i, int j)
         {
