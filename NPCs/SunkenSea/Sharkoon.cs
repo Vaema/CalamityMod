@@ -435,15 +435,21 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 25; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
-                for (int k = 0; k < 25; k++)
+                if (CanExplode)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedMoss, hit.HitDirection, -1f, 0, default, 1f);
+                    for (int i = 0; i < 4; i++)
+                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type); 
+                }
+                else
+                {
+                    for (int i = 0; i < 2; i++)
+                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}Small{i + 1}").Type);
                 }
             }
         }
