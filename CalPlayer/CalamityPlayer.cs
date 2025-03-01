@@ -4,6 +4,9 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -1227,6 +1230,7 @@ namespace CalamityMod.CalPlayer
         public bool warped = false;
         public bool cDepth = false;
         public bool rTide = false;
+        public bool hPressure = false;
         public bool fishAlert = false;
         public bool clamity = false;
         public bool NOU = false;
@@ -2415,6 +2419,7 @@ namespace CalamityMod.CalPlayer
             warped = false;
             cDepth = false;
             rTide = false;
+            hPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;
@@ -2870,6 +2875,7 @@ namespace CalamityMod.CalPlayer
             warped = false;
             cDepth = false;
             rTide = false;
+            hPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;

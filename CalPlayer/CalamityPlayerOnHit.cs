@@ -1191,7 +1191,7 @@ namespace CalamityMod.CalPlayer
             if (frostFlare)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffID.Frostburn2);
             if (omegaBlueChestplate)
-                target.AddBuff(BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
             if (aSpark && Player.IsUnderwater())
