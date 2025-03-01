@@ -306,7 +306,7 @@ DoomsdayDevice: {
 	DisplayName: Doomsday Device
 	Tooltip:
 		'''
-		Direct hits from the weapon grants stealth
+		Direct hits from the weapon grant stealth
 		Non-stealth strikes do not consume stealth when fully charged
 		Holding a stealth strike charge beyond its limit rapidly drains stealth
 		Stealth strikes ricochet between multiple enemies, ending in a strong impact
