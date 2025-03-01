@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
+            Item.ArmorPenetration = 15;
         }
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
@@ -34,9 +35,12 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void UseAnimation(Player player)
         {
-            float Rot = (player.direction == -1 ? 5.5f : -5.5f) * Main.rand.NextFloat(0.99f, 1.1f);
-            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, (Main.rand.NextBool() ? Color.DarkTurquoise : Color.Coral) * 0.7f, Rot, Main.rand.NextFloat(1.48f, 1.53f), new Vector2(1, 1), 6, true, false, true);
-            GeneralParticleHandler.SpawnParticle(Smear);
+            if (player.whoAmI == Main.myPlayer)
+            {
+                float Rot = (player.direction == -1 ? 5.5f : -5.5f) * Main.rand.NextFloat(0.99f, 1.1f);
+                Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, (Main.rand.NextBool() ? Color.DarkTurquoise : Color.Coral) * 0.7f, Rot, Main.rand.NextFloat(1.48f, 1.53f), new Vector2(1, 1), 6, true, false, true);
+                GeneralParticleHandler.SpawnParticle(Smear);
+            }
         }
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {

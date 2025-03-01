@@ -239,7 +239,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 //GeneralParticleHandler.SpawnParticle(ash);
 
                 Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, dustid, Scale: 1.5f);
-                dust.noGravity = true;
                 dust.velocity = Vector2.Zero;
             }
             if (Variant == (int)ShoalColor.Gold)

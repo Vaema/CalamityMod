@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 92;
             Item.height = 94;
-            Item.damage = 60;
+            Item.damage = 35;
 
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = Item.useTime = 38;
@@ -25,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 2.75f;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
 
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<CometQuasherHoldout>();
@@ -42,9 +43,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.MeteoriteBar, 25).
-                AddIngredient(ItemID.Ectoplasm, 5).
-                AddTile(TileID.MythrilAnvil).
+                AddIngredient(ItemID.MeteoriteBar, 20).
+                AddIngredient<EssenceofSunlight>(4).
+                AddIngredient<StarblightSoot>(12).
+                AddIngredient(ItemID.FallenStar, 5).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }
