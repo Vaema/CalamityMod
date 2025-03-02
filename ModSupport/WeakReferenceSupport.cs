@@ -621,6 +621,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
+                    ["spawnItems"] = ItemType<NaiadsWarhorn>(),
                     ["collectibles"] = collection,
                     ["customPortrait"] = portrait
                 });
