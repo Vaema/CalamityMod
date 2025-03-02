@@ -2340,7 +2340,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
                 }
 
-                if (gShell) //5 seconds of no dash reduction and reduced defense
+                if (gShell) //3 seconds of no dash reduction and reduced defense
                 {
                     if (giantShellPostHit == 0)
                     {
@@ -2357,10 +2357,10 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.5f, 1.2f);
                         }
                     }
-                    giantShellPostHit = 300;
+                    giantShellPostHit = 180;
                 }
 
-                if (tortShell) //5 seconds of no dash reduction and reduced defense
+                if (tortShell) //3 seconds of no dash reduction and reduced defense
                 {
                     if (tortShellPostHit == 0)
                     {
@@ -2377,7 +2377,7 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.6f, 2.2f);
                         }
                     }
-                    tortShellPostHit = 300;
+                    tortShellPostHit = 180;
                 }
 
                 if (abyssalDivingSuitPlates && hurtInfo.Damage > 50)
