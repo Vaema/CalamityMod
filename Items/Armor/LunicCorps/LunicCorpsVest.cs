@@ -15,15 +15,15 @@ namespace CalamityMod.Items.Armor.LunicCorps
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
-            Item.defense = 20;
+            Item.defense = 24;
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.03f;
-            player.GetCritChance<RangedDamageClass>() += 11;
+            player.GetDamage<RangedDamageClass>() += 0.05f;
+            player.GetCritChance<RangedDamageClass>() += 15;
         }
 
         public override void AddRecipes()

@@ -312,7 +312,7 @@ LunicCorpsBoots: {
 	Tooltip:
 		'''
 		15% increased movement speed
-		4% increased ranged critical strike chance
+		5% increased ranged critical strike chance
 		10% increased max movement speed and acceleration
 		'''
 }
@@ -321,7 +321,7 @@ LunicCorpsHelmet: {
 	DisplayName: Lunic Corps Helmet
 	Tooltip:
 		'''
-		12% increased ranged damage
+		15% increased ranged damage
 		Night vision and creature detect
 		'''
 	SetBonus:
@@ -331,8 +331,8 @@ LunicCorpsHelmet: {
 		The shield starts recharging 5 seconds after being hit
 		Recharging from zero to full charge takes 2 seconds
 		Being hit again while recharging restarts the charge timer
-		10% increased bullet damage
-		10% increased specialist ranged damage
+		15% increased bullet damage
+		15% increased specialist ranged damage
 		These are launchers, dartguns, or anything else that doesn't shoot arrows/bullets
 		20% increased jump speed
 		'''
@@ -343,8 +343,8 @@ LunicCorpsVest: {
 	DisplayName: Lunic Corps Vest
 	Tooltip:
 		'''
-		3% increased ranged damage
-		11% increased ranged critical strike chance
+		5% increased ranged damage
+		15% increased ranged critical strike chance
 		'''
 }
 

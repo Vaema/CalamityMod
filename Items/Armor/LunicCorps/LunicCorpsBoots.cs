@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             player.Calamity().lunicCorpsLegs = true;
             player.moveSpeed += 0.15f;
-            player.GetCritChance<RangedDamageClass>() += 4;
+            player.GetCritChance<RangedDamageClass>() += 5;
         }
 
         public override void AddRecipes()
