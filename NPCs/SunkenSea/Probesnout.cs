@@ -203,9 +203,9 @@ namespace CalamityMod.NPCs.SunkenSea
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
             var headedDirection = CurrentPredator.DirectionTo(NPC.Center) * 200f;
-            // bool tileNotWater = GetIntersectingPoints(NPC.Center, NPC.Center + headedDirection).Any(point => Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount < 255);
+            bool tileNotWater = GetIntersectingPointsInLine(NPC.Center, NPC.Center + headedDirection).Any(point => Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount < 255);
 
-            if (false)
+            if (tileNotWater)
             {
                 do
                 {
