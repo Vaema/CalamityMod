@@ -702,7 +702,7 @@ EnchantedPearl: {
 		'''
 		Increases fishing power by 10
 		Increases chance to catch crates and loot-containing fish by 15%
-		Crate catches emit pearls and are 25% more likely to be higher quality
+		Crate catches are 25% more likely to be higher quality, accompanied by visual pearls
 		'''
 }
 
