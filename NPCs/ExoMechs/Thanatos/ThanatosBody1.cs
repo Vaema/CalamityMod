@@ -442,7 +442,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.chaseable = vulnerable;
 
             // Adjust DR based on vulnerable
-            NPC.Calamity().DR = vulnerable ? 0f : 0.9999f;
+            NPC.Calamity().DR = vulnerable ? 0.15f : 0.9999f;
             NPC.Calamity().unbreakableDR = !vulnerable;
 
             // Vent noise and steam
