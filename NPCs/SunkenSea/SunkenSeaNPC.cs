@@ -18,6 +18,8 @@ namespace CalamityMod.NPCs.SunkenSea
     /// </summary>
     public abstract class SunkenSeaNPC : ModNPC
     {
+        protected PathfindingManager pathfinding = null;
+        
         private NPC _currentPrey;
         private NPC _currentPredator;
         private Player _currentPlayer;
