@@ -832,7 +832,7 @@ GiantShell: {
 	Tooltip:
 		'''
 		10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense for 5 seconds
+		Taking a hit restores dash velocity and reduces defense for 3 seconds
 		'''
 }
 
@@ -842,7 +842,7 @@ GiantTortoiseShell: {
 		'''
 		Grants immunity to knockback
 		5% increased damage reduction and 10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense and damage reduction for 5 seconds
+		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
 		'''
 }
 
@@ -1811,7 +1811,7 @@ TheBee: {
 		When at full HP, your damage is increased based on your damage reduction
 		Damage taken at full HP is halved
 		Any energy shields must be fully charged for this effect to apply
-		This has a 10 second cooldown
+		This has a 6 second cooldown
 		'''
 }
 

@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Custom/DefenseDamage");
             SoundEngine.PlaySound(fire2 with { Volume = 0.55f, Pitch = 0.4f }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(5 - Projectile.numHits * 3, 1, 5));
+            int heal = (int)(MathHelper.Clamp(7 - Projectile.numHits * 5, 1, 7));
             if (Projectile.numHits < 5)
             {
                 Owner.HealPlayer(heal);

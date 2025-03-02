@@ -3241,7 +3241,7 @@ namespace CalamityMod.CalPlayer
 
                 if (tortShellPostHit > 0)
                 {
-                    Player.statDefense -= 10;
+                    Player.statDefense -= 8;
                     tortShellPostHit--;
                 }
                 else

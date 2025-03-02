@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             Vector2 secondCachedVelocity = secondVelocity;
 
-            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.2));
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
             float teethKnockback = Item.knockBack * 0.2f;
             bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
             float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;

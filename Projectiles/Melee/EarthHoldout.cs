@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
                         swingCount++;
                         playSwingSound = false;
                     }
-                    if ((int)(time) % 2 == 0 && Projectile.ai[1] == 1)
+                    if ((int)(time) % 2 == 0 && Projectile.ai[1] == 1 && !Main.dedServ)
                     {
                         SoundStyle swoosh = new("CalamityMod/Sounds/Item/SwooshMid");
                         SoundEngine.PlaySound(swoosh with { Volume = 1f, Pitch = -0.4f, MaxInstances = -1 }, Projectile.Center);
