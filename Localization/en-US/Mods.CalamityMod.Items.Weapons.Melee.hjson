@@ -458,10 +458,7 @@ EarthenPike: {
 
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
-	Tooltip: 
-		'''
-		Throws a flurry of homing knives that bounce off of tiles and heal the user
-		'''
+	Tooltip: Throws a flurry of homing knives that bounce off of tiles and heal the user
 }
 
 EntropicClaymore: {
@@ -779,10 +776,7 @@ HolyCollider: {
 
 IllustriousKnives: {
 	DisplayName: Illustrious Knives
-	Tooltip: 
-		'''
-		Throws a barrage of fast-moving homing knives that heal the user
-		'''
+	Tooltip: Throws a barrage of fast-moving homing knives that heal the user
 }
 
 InsidiousImpaler: {
@@ -876,10 +870,7 @@ MonolithSword: {
 
 MonstrousKnives: {
 	DisplayName: Monstrous Knives
-	Tooltip: 
-		'''
-		Throws a spread of short-range knives that have a chance to heal the user
-		'''
+	Tooltip: Throws a spread of short-range knives that have a chance to heal the user
 }
 
 Mourningstar: {

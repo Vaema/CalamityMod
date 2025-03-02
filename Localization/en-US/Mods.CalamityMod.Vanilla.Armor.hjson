@@ -66,8 +66,8 @@ SetBonus: {
 		'''
 	Gold:
 		'''
-		All enemies have a 2% chance to drop 1 gold. All bosses killed drop 3 gold
-		You gain 1% critical strike chance for every 10 gold in your inventory, capped at 9%
+		All enemies have a 2% chance to drop 1 gold; bosses killed drop 3 gold
+		You gain 1% critical strike chance for every 10 gold in your inventory, capped at 7%
 		'''
 	Iron:
 		'''
@@ -123,9 +123,9 @@ SetBonus: {
 	PlatinumChainmail: 3% increased critical strike chance
 	Platinum:
 		'''
-		Every 10 extra defense gives you 1% increased damage and 1% increased critical strike chance
+		Every 10 extra defense gives you 1% increased damage
 		The 20 defense from the Platinum Armor itself does not contribute to this effect
-		Bonus damage and critical strike chance cap at 40 extra defense
+		Bonus damage caps at 50 extra defense
 		'''
 	Silver:
 		'''

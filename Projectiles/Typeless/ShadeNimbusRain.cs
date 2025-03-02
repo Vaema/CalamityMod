@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = 4;
             Projectile.height = 40;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 180;
@@ -38,6 +38,15 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override Color? GetAlpha(Color lightColor) => new Color(100, 255, 100, Projectile.alpha);
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo info, int damageDone) => target.AddBuff(ModContent.BuffType<BrainRot>(), 60);
+        public override void OnHitNPC(NPC target, NPC.HitInfo info, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 60);
+            if (Projectile.numHits > 0)
+            {
+                Projectile.damage = (int)(Projectile.damage * 0.75f);
+                if (Projectile.damage < 1)
+                    Projectile.damage = 1;
+            }
+        }
     }
 }

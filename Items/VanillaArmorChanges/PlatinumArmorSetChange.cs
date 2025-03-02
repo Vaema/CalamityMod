@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,9 +18,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const float HeadDamage = 0.06f;
         public const float ChestCrit = 3f;
         public const float LegsMoveSpeed = 0.1f;
-        public const float SetBonusDamagePerDefense = 0.001f; // 10 defense = +1% damage
-        public const float SetBonusCritPerDefense = 0.1f; // 10 defense = +1% crit chance
-        public const int SetBonusDefenseCap = 40;
+        public const float SetBonusDamagePerDefense = 0.1f; // 10 defense = +1% damage, this gets divided by 100
+        public const int SetBonusDefenseCap = 50;
 
         public override void ApplyHeadPieceEffect(Player player) => player.GetDamage<GenericDamageClass>() += HeadDamage;
 
@@ -36,14 +35,14 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyArmorSetBonus(Player player)
         {
             // 07MAY2024: Ozzatron: Platinum armor doesn't count its own defense for its set bonus
-            int defenseBesidesThisArmor = player.statDefense - (4 + 6 + 4 + 4);
+            // CIT 1MAR2025: Platinum armor should not count its set bonus defense here, because it hasn't been applied yet
+            int defenseBesidesThisArmor = player.statDefense - (5 + 6 + 5);
             if (defenseBesidesThisArmor <= 0)
                 return;
 
             if (defenseBesidesThisArmor > SetBonusDefenseCap)
                 defenseBesidesThisArmor = SetBonusDefenseCap;
-            player.GetDamage<GenericDamageClass>() += defenseBesidesThisArmor * SetBonusDamagePerDefense;
-            player.GetCritChance<GenericDamageClass>() += defenseBesidesThisArmor * SetBonusCritPerDefense;
+            player.GetDamage<GenericDamageClass>() += (float)Math.Floor(defenseBesidesThisArmor * SetBonusDamagePerDefense) * 0.01f;
         }
     }
 }
