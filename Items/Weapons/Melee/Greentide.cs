@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const int TotalRows = 2;
 
-        internal const int TotalTeeth = 5;
+        internal const int TotalTeeth = 4;
 
         public override void SetDefaults()
         {

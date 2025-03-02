@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             if (Projectile.ai[0] == 0)
             {
+                Projectile.ArmorPenetration = 40;
                 if (Projectile.timeLeft == TimeLeft)
                 {
                     storedVel = Projectile.velocity;

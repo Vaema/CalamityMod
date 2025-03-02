@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().mouseWorldListener = true;
 
                 { 
-                    if (SlashTimer % SlashSpeed == 0)
+                    if (SlashTimer % (int)(SlashSpeed / Owner.GetAttackSpeed<MeleeDamageClass>()) == 0)
                     {
                         SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2);
                         SlashStyle.PitchVariance = 0.3f;
