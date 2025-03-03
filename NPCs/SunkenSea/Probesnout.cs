@@ -136,7 +136,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Acceleration = 0.4f,
                 MaxSpeed = 8f,
-                MinimalPointDistance = 60f,
+                MinimumPointDistance = 60f
             };
         }
 
@@ -191,7 +191,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
+            pathfinding.FindPath(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
         }
 
         private void FleeingBehavior()
@@ -219,7 +219,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.FindPath(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
             }
             else
             {
@@ -245,7 +245,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 HuntCooldown = Main.rand.Next(13, 30);
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
 
             HuntCooldown--;
         }
@@ -265,7 +265,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
             else
-                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                pathfinding.FindPath(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
         }
 
         private void OutsideWaterBehavior()

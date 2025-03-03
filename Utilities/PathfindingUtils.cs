@@ -15,32 +15,42 @@ namespace CalamityMod
         internal static readonly Func<Point, Point, float> DefaultDistanceFunction = OctileDistance;
         internal static readonly Func<Point, Point, float> DefaultHeuristic = OctileDistance;
 
-        public readonly Vector2 start;
-        public readonly Vector2 end;
-        internal readonly Func<Point, bool> tileValidity;
-        internal readonly Func<Point, Point, float> distanceFunction;
-        internal readonly Func<Point, Point, float> heuristic;
+        internal readonly Vector2 Start;
+        internal readonly Vector2 End;
+        internal readonly Func<Point, bool> TileValidity;
+        internal readonly Func<Point, Point, float> DistanceFunction;
+        internal readonly Func<Point, Point, float> Heuristic;
 
-        public PathfindingParameters(Vector2 s, Vector2 e, Func<Point, bool> f_1 = null, Func<Point, Point, float> f_2 = null, Func<Point, Point, float> f_3 = null)
+        public PathfindingParameters(
+            Vector2 start,
+            Vector2 end,
+            Func<Point, bool> tileValidity = null,
+            Func<Point, Point, float> distanceFunction = null,
+            Func<Point, Point, float> heuristic = null)
         {
-            start = s;
-            end = e;
-            tileValidity = f_1;
-            distanceFunction = f_2;
-            heuristic = f_3;
+            Start = start;
+            End = end;
+            TileValidity = tileValidity;
+            DistanceFunction = distanceFunction;
+            Heuristic = heuristic;
         }
     }
     #endregion
 
     #region Pathfinding Manager
-    public class PathfindingManager
+    /// <summary>
+    /// Creates a new PathfindingManager for the selected entity.<br />
+    /// Entities should only ever need one PathfindingManager for their lifetime, but more can be created.
+    /// </summary>
+    /// <param name="e">The entity to pathfind for.</param>
+    public class PathfindingManager(Entity e)
     {
         public List<Vector2> Path { get => lastSuccessfulTask?.Result ?? []; }
         
         /// <summary>
         /// The entity which this PathfindingManager manages. This cannot be changed after creation.
         /// </summary>
-        internal readonly Entity entity;
+        internal readonly Entity entity = e;
 
         /// <summary>
         /// The acceleration this PathfindingManager will impart to its Entity when making it follow a found path.<br />
@@ -54,7 +64,11 @@ namespace CalamityMod
         /// </summary>
         internal float MaxSpeed { get; set; } = 4f;
 
-        internal float MinimalPointDistance { get; set; } = 48f;
+        /// <summary>
+        /// The minimum distance this PathdingManager requires its Entity to reach from its target point before the point is marked as "reached".<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        internal float MinimumPointDistance { get; set; } = 48f;
 
         /// <summary>
         /// The last completed pathfinding task that this manager has performed.<br />
@@ -87,19 +101,11 @@ namespace CalamityMod
         /// </summary>
         public Action CustomIdleBehavior { get; set; }
 
-
         /// <summary>
-        /// Creates a new PathfindingManager for the selected entity.<br />
-        /// Entities should only ever need one PathfindingManager for their lifetime, but more can be created.
+        /// Finds a path based on the specified parameters and assigns it to this manager's entity.<br/>
+        /// This method does not force the entity to begin following the path - it only locates a new path.
         /// </summary>
-        /// <param name="e">The entity to pathfind for.</param>
-        public PathfindingManager(Entity e) => entity = e;
-
-        /// <summary>
-        /// Performs appropriate "path-finding behavior" for the Entity this PathfindingManager is attached to.<br />
-        /// This method is intended to be called every frame that you want the Entity to obey its pathfinding logic.
-        /// </summary>
-        public void DoPathfinding(PathfindingParameters parameters, bool forceNewTask = false)
+        public void FindPath(PathfindingParameters parameters, bool forceNewTask = true)
         {
             var potentialNewTask = new PathfindingTask(parameters);
 
@@ -117,7 +123,7 @@ namespace CalamityMod
             {
                 // Case 2A: We don't care about the previous pathfinding task. We have changed our goals.
                 // In order to trigger this behavior, you must set forceNewTask to true, and provide a different end goal position.
-                bool sameEndPosition = parameters.end.ToTileCoordinates() == currentTask.work.End.Position;
+                bool sameEndPosition = parameters.End.ToTileCoordinates() == currentTask.work.End.Position;
                 bool forceNewPathAttempt = forceNewTask && !sameEndPosition;
 
                 if (forceNewPathAttempt)
@@ -128,7 +134,6 @@ namespace CalamityMod
 
                 // Regardles of whether a new pathing execution is forced, the entity will continue to behave based on any previous successful pathing.
                 // Its calculations have not finished.
-                PathfindingBehavior();
                 return;
             }
 
@@ -143,7 +148,6 @@ namespace CalamityMod
             {
                 currentTask = potentialNewTask;
                 currentTask.Run();
-                PathfindingBehavior();
                 return;
             }
 
@@ -151,20 +155,19 @@ namespace CalamityMod
             // The pathfinding task has completed its execution and a valid path has been found.
             // Lock in that successful pathfinding task so the entity may consume its results.
             lastSuccessfulTask = currentTask;
-            PathfindingBehavior();
         }
 
         /// <summary>
-        /// Internal glue code to cause the Entity to either follow its last successful path, or idle.
+        /// Glue code to cause the Entity to either follow its last successful path, or idle.
         /// </summary>
-        private void PathfindingBehavior()
+        public void PathfindingBehavior()
         {
             if (lastSuccessfulTask is null)
             {
                 IdleBehavior();
                 return;
             }
-            
+
             Vector2 nextPoint = lastSuccessfulTask.Result[0];
 
             // If that point is reached, it is removed from the list of points to follow.
@@ -177,6 +180,16 @@ namespace CalamityMod
                 lastSuccessfulTask = null;
         }
 
+        /// <summary>
+        /// Performs appropriate "path-finding behavior" for the Entity this PathfindingManager is attached to.<br />
+        /// This method is intended to be called every frame that you want the Entity to obey its pathfinding logic.
+        /// </summary>
+        public void DoPathfinding(PathfindingParameters parameters, bool forceNewTask = false)
+        {
+            FindPath(parameters, forceNewTask);
+            PathfindingBehavior();
+        }
+
         private bool DefaultFollowPath(Vector2 nextPoint)
         {
             // Accelerate to the target point.
@@ -187,7 +200,7 @@ namespace CalamityMod
                 entity.velocity = entity.velocity.SafeNormalize(Vector2.UnitY) * MaxSpeed;
 
             // If the entity is within 48 pixels of its target point, consider the point reached.
-            if (Vector2.DistanceSquared(entity.Center, nextPoint) < MinimalPointDistance * MinimalPointDistance)
+            if (Vector2.DistanceSquared(entity.Center, nextPoint) < MinimumPointDistance * MinimumPointDistance)
                 return true;
 
             // Otherwise, continue following.
@@ -298,6 +311,7 @@ namespace CalamityMod
             public PathfindingWork(
                 Point start,
                 Point end,
+                float minimalPointDistance,
                 Func<Point, bool> tileValidity = null,
                 Func<Point, Point, float> distanceFunction = null,
                 Func<Point, Point, float> heuristic = null) : this(
@@ -312,11 +326,11 @@ namespace CalamityMod
 
             public PathfindingWork(
                 PathfindingParameters p) : this(
-                    new PathfindingNode(p.start.ToTileCoordinates()),
-                    new PathfindingNode(p.end.ToTileCoordinates()),
-                    p.tileValidity ?? PathfindingParameters.DefaultTileValidity,
-                    p.distanceFunction ?? PathfindingParameters.DefaultDistanceFunction,
-                    p.heuristic ?? PathfindingParameters.DefaultHeuristic
+                    new PathfindingNode(p.Start.ToTileCoordinates()),
+                    new PathfindingNode(p.End.ToTileCoordinates()),
+                    p.TileValidity ?? PathfindingParameters.DefaultTileValidity,
+                    p.DistanceFunction ?? PathfindingParameters.DefaultDistanceFunction,
+                    p.Heuristic ?? PathfindingParameters.DefaultHeuristic
                 )
             {
             }

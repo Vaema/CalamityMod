@@ -258,7 +258,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
+            pathfinding.FindPath(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
@@ -308,7 +308,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.FindPath(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
             // If it's capable of exploding and the predator's within distance, kaboom.
