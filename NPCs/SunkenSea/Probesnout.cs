@@ -18,7 +18,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Probesnout : SunkenSeaNPC, IPathFinder
+    public class Probesnout : SunkenSeaNPC
     {
         #region Members
 
@@ -94,7 +94,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private Action _previousBehavior;
 
-        public PathfindingTask Path { get; set; }
+        private int HuntCooldown
+        {
+            get => (int)NPC.ai[3];
+            set => NPC.ai[3] = value;
+        }
 
         public Vector2 Position => NPC.Center;
 
@@ -128,6 +132,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.4f,
+                MaxSpeed = 8f,
+                MinimalPointDistance = 60f,
+            };
         }
 
         public override void AI()
@@ -181,14 +191,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            PathfindingTask parameters = null;
-            if (Main.rand.NextBool(150))
-            {
-                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * 300f;
-                NPC.netUpdate = true;
-                parameters = new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
-            }
-            this.DoPathfinding(parameters);
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
         }
 
         private void FleeingBehavior()
@@ -216,12 +219,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                this.DoPathfinding(new PathfindingTask(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
             }
             else
             {
                 NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
-                Path = null;
 
                 // Cap the speed if MaxSpeed has been surpassed.
                 if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
@@ -238,8 +240,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            bool huntReady = HuntCooldown == 0;
+            if (huntReady)
+                HuntCooldown = Main.rand.Next(13, 30);
+
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), continuouslyUpdatePath: true);
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
+
+            HuntCooldown--;
         }
 
         private void EatingBehavior()
@@ -257,7 +265,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
             else
-                this.DoPathfinding(new PathfindingTask(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
         }
 
         private void OutsideWaterBehavior()
@@ -386,7 +394,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             
-            // BannerItem = ItemType<ProbesnoutBanner>();
+            BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
 

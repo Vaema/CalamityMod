@@ -35,6 +35,8 @@ namespace CalamityMod
     #region Pathfinding Manager
     public class PathfindingManager
     {
+        public List<Vector2> Path { get => lastSuccessfulTask?.Result ?? []; }
+        
         /// <summary>
         /// The entity which this PathfindingManager manages. This cannot be changed after creation.
         /// </summary>
@@ -44,13 +46,15 @@ namespace CalamityMod
         /// The acceleration this PathfindingManager will impart to its Entity when making it follow a found path.<br />
         /// This has no impact on the Entity's other behaviors, AI, etc.
         /// </summary>
-        internal float Acceleration { get; set; }
+        internal float Acceleration { get; set; } = 0.2f;
 
         /// <summary>
         /// The maximum speed this PathfindingManager allow its Entity to move at when making it follow a found path.<br />
         /// This has no impact on the Entity's other behaviors, AI, etc.
         /// </summary>
-        internal float MaxSpeed { get; set; }
+        internal float MaxSpeed { get; set; } = 4f;
+
+        internal float MinimalPointDistance { get; set; } = 48f;
 
         /// <summary>
         /// The last completed pathfinding task that this manager has performed.<br />
@@ -183,7 +187,7 @@ namespace CalamityMod
                 entity.velocity = entity.velocity.SafeNormalize(Vector2.UnitY) * MaxSpeed;
 
             // If the entity is within 48 pixels of its target point, consider the point reached.
-            if (Vector2.DistanceSquared(entity.Center, nextPoint) < 48f * 48f)
+            if (Vector2.DistanceSquared(entity.Center, nextPoint) < MinimalPointDistance * MinimalPointDistance)
                 return true;
 
             // Otherwise, continue following.
@@ -216,6 +220,12 @@ namespace CalamityMod
                 CustomIdleBehavior();
             else
                 DefaultIdleBehavior();
+        }
+
+        public void ClearResults()
+        {
+            currentTask = null;
+            lastSuccessfulTask = null;
         }
 
         #region Pathfinding Task
