@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,6 +37,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.timeLeft = Lifetime;
             Projectile.alpha = 255;
         }
+
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(Projectile.rotation);
+        public override void ReceiveExtraAI(BinaryReader reader) => Projectile.rotation = reader.ReadSingle();
 
         private Color DetermineColor()
         {
