@@ -899,7 +899,6 @@ Nadir: {
 	Tooltip:
 		'''
 		Fires void essences which flay nearby enemies with tentacles
-		Ignores immunity frames
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
