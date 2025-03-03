@@ -40,15 +40,19 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.shootSpeed = 10;
         }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int i = 0; i < 2; ++i)
             {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7f), knockback / 3, player.whoAmI, 1f, 0f);
+                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
             }
             for (int i = 0; i < 2; ++i)
             {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7), knockback / 3, player.whoAmI, 1f, 0f);
+                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
             }
             Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, (int)(damage), knockback, player.whoAmI, 2f, 0f);
             strongTooth.penetrate = -1;

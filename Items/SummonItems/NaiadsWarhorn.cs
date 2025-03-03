@@ -17,7 +17,7 @@ namespace CalamityMod.Items.SummonItems
     public class NaiadsWarhorn : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
-        public static readonly SoundStyle HornSound = new("CalamityMod/Sounds/Item/LeviathanHornSound") { Volume = 0.7f };
+        public static readonly SoundStyle HornSound = new("CalamityMod/Sounds/Item/LeviathanHornSound") { Volume = 0.55f };
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Truffle Worm
