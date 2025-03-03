@@ -215,15 +215,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            CurrentBehavior = IdlingBehavior;
-            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.GravityMultiplier *= 2f;
-            NPC.MaxFallSpeedMultiplier *= 2f;
             pathfinding = new PathfindingManager(NPC)
             {
                 Acceleration = 0.25f,
                 MaxSpeed = 6f,
             };
+            CurrentBehavior = IdlingBehavior;
+            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
+            NPC.GravityMultiplier *= 2f;
+            NPC.MaxFallSpeedMultiplier *= 2f;
         }
 
         public override void AI()
@@ -258,7 +258,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.FindPath(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
@@ -308,7 +308,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.FindPath(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
             // If it's capable of exploding and the predator's within distance, kaboom.
@@ -387,6 +387,8 @@ namespace CalamityMod.NPCs.SunkenSea
             // When it gets outside of water, it'll try to gravitate downards towards the water.
             if (newBehavior == OutsideWaterBehavior)
                 NPC.noGravity = false;
+
+            pathfinding.MinimumPointDistance = newBehavior == HuntingBehavior ? 20f : 48f;
         }
 
         protected override void OnPreyDetection(NPC prey)

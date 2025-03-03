@@ -191,7 +191,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.FindPath(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
         }
 
         private void FleeingBehavior()
@@ -213,17 +213,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 do
                 {
                     var randomNormalDirection = headedDirection.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt());
-                    _randomPathPoint = randomNormalDirection.RotatedByRandom(MathHelper.PiOver4);
+                    _randomPathPoint = randomNormalDirection.RotatedByRandom(MathHelper.PiOver4 * 0.7f);
                     if (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid())
                         break;
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                pathfinding.FindPath(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
             }
             else
             {
                 NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
+                pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
                 if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
@@ -265,7 +266,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
             else
-                pathfinding.FindPath(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
         }
 
         private void OutsideWaterBehavior()
