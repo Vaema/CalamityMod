@@ -31,6 +31,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -642,14 +643,14 @@ namespace CalamityMod.CalPlayer
             if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
             {
                 AbaddonCooldown = 15;
-                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 50);
+                int AbaddonExploDamage = (int)Player.GetBestClassDamage().ApplyTo(Abaddon.AbaddonExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
             if (voidOfExtinction && crit && VoidCooldown <= 0)
             {
                 VoidCooldown = 15;
-                int VoidExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 70);
+                int VoidExploDamage = (int)Player.GetBestClassDamage().ApplyTo(VoidofExtinction.VoidExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
             }
 
@@ -738,6 +739,14 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
+            }
+            if (dynamoStemCells && MiniSwamerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            {
+                MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+
+                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
+                Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
         }
         #endregion

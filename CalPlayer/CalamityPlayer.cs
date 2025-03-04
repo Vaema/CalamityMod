@@ -994,7 +994,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Harpy Wings, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
-        public bool MiniSwarmers = false;
         public bool noStupidNaturalARSpawns = false;
         /// <summary> Used for animating Void Concentration Staff's draw layer. </summary>
         public int voidFrameCounter = 0;
@@ -2246,7 +2245,6 @@ namespace CalamityMod.CalPlayer
             silvaWings = false;
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
-            MiniSwarmers = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -4683,18 +4681,6 @@ namespace CalamityMod.CalPlayer
                         Main.projectile[drop].DamageType = DamageClass.Generic;
                     }
                     RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
-                }
-            }
-
-            if (MiniSwarmers && MiniSwamerCooldown <= 0)
-            {
-                if (item.CountsAsClass<RangedDamageClass>() && !item.channel)
-                {
-                    var SwarmerSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DynamoStemCells>()));
-                    int newDamage = (int)(damage * (6 - 5 * (item.useTime >= 25 ? 1 : item.useTime / 25)));
-                    Projectile.NewProjectile(SwarmerSource, position, velocity * 1.25f, ProjectileType<MiniatureFolly>(), newDamage, 2f, Player.whoAmI);
-
-                    MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
                 }
             }
             return true;
