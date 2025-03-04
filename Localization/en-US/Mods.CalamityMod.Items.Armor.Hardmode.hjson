@@ -206,6 +206,7 @@ ForbiddenCirclet: {
 		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
 		Rogue stealth strikes spawn homing eaters on enemy hits
 		Rogue and summon attacks will scale off of the stat with a higher boost
+		Minions no longer deal less damage while wielding rogue weapons
 		'''
 }
 
