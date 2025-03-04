@@ -5,6 +5,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.PlaceableTurrets;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.UI;
@@ -48,6 +49,11 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
+                    int plaguebringerItem = ModContent.ItemType<Abombination>();
+                    TooltipLine aureusDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{plaguebringerItem}] {CalamityUtils.GetItemName(plaguebringerItem)}");
+                    aureusDisplay.OverrideColor = new Color(149, 169, 182);
+                    list.Insert(insertIndex + 1, aureusDisplay);
+
                     int meleeItem = ModContent.ItemType<GalvanizingGlaive>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(149, 243, 43);
