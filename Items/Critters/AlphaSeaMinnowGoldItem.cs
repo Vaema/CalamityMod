@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Critters
         public override void SetDefaults()
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<AlphaSeaMinnowGold>());
-            Item.bait = 30;
+            Item.bait = 50;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Green;
         }

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Critters
         public override void SetDefaults()
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<BabyGhostBell>());
-            Item.bait = 20;
+            Item.bait = 50;
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
