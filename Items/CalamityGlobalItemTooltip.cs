@@ -1057,8 +1057,14 @@ namespace CalamityMod.Items
             // Huntress armor
             if (item.type == ItemID.HuntressJerkin)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressJerkin"));
+            if (item.type == ItemID.HuntressPants)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressPants"));
 
             // Apprentice armor
+            if (item.type == ItemID.ApprenticeHat)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
+            if (item.type == ItemID.ApprenticeRobe)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeRobe"));
             if (item.type == ItemID.ApprenticeTrousers)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 

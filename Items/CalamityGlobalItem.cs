@@ -1065,8 +1065,8 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier2")
             {
-                player.GetDamage<SummonDamageClass>() += 0.05f;
-                player.GetCritChance<MagicDamageClass>() += 15;
+                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetCritChance<MagicDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
             }
             else if (set == "MonkTier3")
@@ -1163,7 +1163,7 @@ namespace CalamityMod.Items
                     player.lifeRegen -= 3;
                     break;
                 case ItemID.SquirePlating:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
                     break;
                 case ItemID.SquireGreaves:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
@@ -1172,9 +1172,19 @@ namespace CalamityMod.Items
 
                 case ItemID.HuntressJerkin:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    player.GetCritChance<RangedDamageClass>() += 5;
+                    break;
+                case ItemID.HuntressPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
+                case ItemID.ApprenticeHat:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeRobe:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeTrousers:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     player.GetCritChance<MagicDamageClass>() -= 15;

@@ -91,8 +91,8 @@ SetBonus: {
 		'''
 	MonkTier2:
 		'''
-		10% increased melee speed, crit, and damage
-		15% increased minion damage
+		10% increased melee damage and critical strike chance
+		15% increased summon damage
 		'''
 	Mythril:
 		'''
@@ -151,23 +151,23 @@ SetBonus: {
 		'''
 	SquireTier2:
 		'''
-		Increases your life regeneration
-		15% increased minion damage and 10% increased melee critical strike chance
+		Grants +1.5 HP/s life regen
+		15% increased summon damage and 10% increased melee critical strike chance
 		'''
-	HuntressTier2: 10% increased minion and ranged damage
-	ApprenticeTier2: 5% increased minion damage and 15% increased magic critical strike chance
+	HuntressTier2: 10% increased summon and ranged damage
+	ApprenticeTier2: 10% increased summon damage and magic critical strike chance
 	MonkTier3:
 		'''
 		10% increased melee damage, melee critical strike chance and melee speed
-		30% increased minion damage
+		30% increased summon damage
 		'''
 	SquireTier3:
 		'''
-		Massively increased life regeneration
-		10% increased minion damage and melee critical strike chance
+		Grants +3 HP/s life regen
+		10% increased summon damage and melee critical strike chance
 		'''
-	HuntressTier3: 10% increased minion and ranged damage
-	ApprenticeTier3: 10% increased minion damage and 15% increased magic critical strike chance
+	HuntressTier3: 10% increased summon and ranged damage
+	ApprenticeTier3: 10% increased summon damage and 15% increased magic critical strike chance
 	SpectreHealing:
 		'''
 		Converts magic damage to healing force

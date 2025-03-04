@@ -323,6 +323,9 @@ namespace CalamityMod.Items
                 { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
                 { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
                 { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
+                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
+                { ItemID.SquireGreaves, Do(DefenseDelta(-2)) },
+                { ItemID.SquirePlating, Do(DefenseDelta(-4)) },
                 #endregion
 
                 #region CATEGORY 3: Tool Balancing

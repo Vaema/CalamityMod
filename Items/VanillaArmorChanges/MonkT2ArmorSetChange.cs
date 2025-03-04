@@ -26,8 +26,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void ApplyBodyPieceEffect(Player player)
         {
-            player.GetDamage<SummonDamageClass>() -= 0.1f;
-            player.GetDamage<MeleeDamageClass>() -= 0.1f;
+            player.GetDamage<SummonDamageClass>() -= 0.15f;
+            player.GetDamage<MeleeDamageClass>() -= 0.15f;
         }
 
         public override void ApplyLegPieceEffect(Player player)
@@ -40,7 +40,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
         {
             player.GetDamage<SummonDamageClass>() += 0.15f;
             player.GetDamage<MeleeDamageClass>() += 0.1f;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
             player.GetCritChance<MeleeDamageClass>() += 10;
         }
     }
