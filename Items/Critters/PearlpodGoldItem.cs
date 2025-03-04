@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Critters
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<PearlpodGold>());
             Item.bait = 50;
-            Item.value = Item.sellPrice(gold: 1);
+            Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.Green;
         }
     }
