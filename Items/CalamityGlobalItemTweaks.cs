@@ -323,6 +323,9 @@ namespace CalamityMod.Items
                 { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
                 { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
                 { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) },
+                { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
+                { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
                 { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
                 { ItemID.SquireGreaves, Do(DefenseDelta(-2)) },
                 { ItemID.SquirePlating, Do(DefenseDelta(-4)) },

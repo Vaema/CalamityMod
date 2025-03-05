@@ -1071,17 +1071,15 @@ namespace CalamityMod.Items
             }
             else if (set == "MonkTier3")
             {
-                player.GetDamage<SummonDamageClass>() += 0.3f;
-                player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
+                player.GetDamage<SummonDamageClass>() += 0.2f;
                 player.GetDamage<MeleeDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.MonkTier3")}";
             }
             else if (set == "SquireTier3")
             {
                 player.lifeRegen += 6;
                 player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
+                player.GetCritChance<MeleeDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier3")}";
             }
             else if (set == "HuntressTier3")
@@ -1092,7 +1090,7 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier3")
             {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetDamage<SummonDamageClass>() += 0.15f;
                 player.GetCritChance<MagicDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier3")}";
             }
@@ -1190,12 +1188,17 @@ namespace CalamityMod.Items
                     player.GetCritChance<MagicDamageClass>() -= 15;
                     break;
 
+                case ItemID.SquireAltHead:
+                    player.GetDamage<MeleeDamageClass>() += 0.05f;
+                    player.GetDamage<SummonDamageClass>() += 0.05f;
+                    break;
                 case ItemID.SquireAltShirt:
                     player.lifeRegen -= 6;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
                     break;
                 case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
+                    player.GetCritChance<MeleeDamageClass>() -= 20;
                     break;
 
                 case ItemID.MonkAltHead:
@@ -1212,13 +1215,24 @@ namespace CalamityMod.Items
                     break;
 
                 case ItemID.HuntressAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    break;
+                case ItemID.HuntressAltPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetCritChance<RangedDamageClass>() -= 5;
                     break;
 
+                case ItemID.ApprenticeAltHead:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeAltShirt:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MagicDamageClass>() -= 15;
+                    player.GetCritChance<MagicDamageClass>() -= 25;
                     break;
 
                 case ItemID.SolarFlareHelmet:

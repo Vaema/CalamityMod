@@ -1069,6 +1069,8 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
             // Valhalla Knight armor
+            if (item.type == ItemID.SquireAltHead)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltHead"));
             if (item.type == ItemID.SquireAltShirt)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
             if (item.type == ItemID.SquireAltPants)
@@ -1085,8 +1087,14 @@ namespace CalamityMod.Items
             // Red Riding armor
             if (item.type == ItemID.HuntressAltShirt)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltShirt"));
+            if (item.type == ItemID.HuntressAltPants)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltPants"));
 
             // Dark Artist armor
+            if (item.type == ItemID.ApprenticeAltHead)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ApprenticeAltHead"));
+            if (item.type == ItemID.ApprenticeAltShirt)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltShirt"));
             if (item.type == ItemID.ApprenticeAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltPants"));
             #endregion
