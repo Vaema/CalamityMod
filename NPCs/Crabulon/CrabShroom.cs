@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Crabulon
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.scale = 2f;
 
-            NPC.lifeMax = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 180 : 30;
+            NPC.lifeMax = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 180 : 25;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 8000;
             if (Main.getGoodWorld)
