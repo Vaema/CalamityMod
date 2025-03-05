@@ -16,8 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
         public bool notTheClone => Projectile.Calamity().stealthStrike && Projectile.ai[0] == 0; // If the bomb is the initial thrown stealth strike bomb and not a split
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 20;
+            Projectile.width = Projectile.height = 38;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 400;

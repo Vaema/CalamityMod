@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class SeafoamBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Typeless/CoralBubble";
         public ref float time => ref Projectile.ai[0];
         public ref float bubbleLevel => ref Projectile.ai[1]; // -1 = small bubble, 0 = fusing bubble, 1 = big bubble
         public bool startEffects = true; // Spawn effects
@@ -22,10 +21,12 @@ namespace CalamityMod.Projectiles.Rogue
         public bool canHit = false; // Only the small bubbles can directly hit enemies
         public Projectile fuseGoal; // The bubble to fuse with
         public NPC targeted; // The enemy to home in on as a small bubble
+
+        public override void SetStaticDefaults() => Main.projFrames[Type] = 2;
+
         public override void SetDefaults()
         {
-            Projectile.width = 28;
-            Projectile.height = 28;
+            Projectile.width = Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
@@ -194,18 +195,12 @@ namespace CalamityMod.Projectiles.Rogue
         {
             float sine = (float)Math.Sin(time * Projectile.scale * 0.275f / MathHelper.Pi);
             float sizeMult = ((sine + 2) * 0.05f);
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
-            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            Texture2D tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRingThinLarge").Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.scale + sizeMult >= 1.5625f ? 1 : 0);
 
             Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 0.7f), Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 2f));
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.DodgerBlue with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, squash * (Projectile.scale + sizeMult) * 0.03f, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(tex3, Projectile.Center - Main.screenPosition, null, Color.Turquoise with { A = 0 }, Projectile.rotation, tex3.Size() * 0.5f, squash * (Projectile.scale + sizeMult) * 0.032f, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition + (MathHelper.PiOver4.ToRotationVector2() * -11.5f * Projectile.scale), null, Color.White with { A = 0 } * 0.5f, Projectile.rotation, tex2.Size() * 0.5f, squash * (Projectile.scale) * 0.3f, SpriteEffects.None, 0);
-
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, frame.Size() * 0.5f, squash * (Projectile.scale + sizeMult), SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanCutTiles() => false;
