@@ -103,5 +103,6 @@ namespace CalamityMod.Projectiles.Typeless
         // CIT 14FEB2025: Replaced old manual knockback code with setting HitDirectionOverride
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Radius, targetHitbox);
+        public override bool? CanCutTiles() => false;
     }
 }

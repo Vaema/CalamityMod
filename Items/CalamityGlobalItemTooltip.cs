@@ -16,7 +16,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Prefixes;
 using CalamityMod.World;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
