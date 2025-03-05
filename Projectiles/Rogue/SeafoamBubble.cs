@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 0.7f), Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 2f));
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, frame.Size() * 0.5f, squash * (Projectile.scale + sizeMult), SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() * 0.5f, squash * (Projectile.scale + sizeMult), SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanCutTiles() => false;
