@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 20;
+            NPC.damage = 10;
             NPC.width = 20;
             NPC.height = 58;
             NPC.defense = 5;
