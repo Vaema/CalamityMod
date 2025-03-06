@@ -80,6 +80,8 @@ JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
 LunicBeam.DisplayName: Lunic Seeker
+Luxor.DisplayName: Luxor
+LuxorsGiftClassless.DisplayName: Luxor's Classless
 MagnusBeam.DisplayName: Magnus Seeker
 MagnusBoom.DisplayName: Nebula Blast
 MythrilFlare.DisplayName: Mythril Flare
@@ -98,6 +100,7 @@ PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
+PuddleSplash.DisplayName: Puddle Splash
 ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
@@ -145,4 +148,3 @@ YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
-PuddleSplash.DisplayName: Puddle Splash

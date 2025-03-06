@@ -709,6 +709,7 @@ namespace CalamityMod.CalPlayer
         #region Accessory
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool luxorsGift = false;
+        public bool luxorHit = false;
         public bool fungalSymbiote = false;
         public bool trinketOfChi = false;
         public bool gladiatorSword = false;
@@ -2770,6 +2771,7 @@ namespace CalamityMod.CalPlayer
             #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            luxorHit = false;
             arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;
             planarSpeedBoost = 0;

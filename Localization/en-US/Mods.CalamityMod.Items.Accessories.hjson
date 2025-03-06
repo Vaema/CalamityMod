@@ -1055,8 +1055,9 @@ LuxorsGift: {
 	DisplayName: Luxor's Gift
 	Tooltip:
 		'''
-		Weapons fire unique projectiles based on their damage type
-		Some weapons are unable to receive this bonus
+		Summons a scarab launcher that follows you closely
+		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to 
+		When not in use, the scarab will condense itself into a small orb of light
 		'''
 }
 
