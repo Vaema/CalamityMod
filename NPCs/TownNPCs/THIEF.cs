@@ -306,7 +306,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCShop shop = new(Type);
             shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
                 .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
+                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 40))
                 .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
                 .Add(ItemID.TigerClimbingGear)
                 .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
