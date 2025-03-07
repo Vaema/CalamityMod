@@ -53,6 +53,9 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Color classColor = Color.White;
             DamageClass itemClass = Owner.HeldItem.DamageType;
+            // Held item class is not updated when you hold any tools
+            if ((Owner.HeldItem.axe > 0 || Owner.HeldItem.hammer > 0 || Owner.HeldItem.pick > 0) && lastDamageClass != null)
+                itemClass = lastDamageClass;
             if (itemClass == null)
             {
                 Projectile.Kill();

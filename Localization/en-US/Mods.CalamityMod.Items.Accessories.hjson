@@ -1056,7 +1056,8 @@ LuxorsGift: {
 	Tooltip:
 		'''
 		Summons a scarab launcher that follows you closely
-		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to 
+		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to
+		Held item class is not updated when holding a tool
 		When not in use, the scarab will condense itself into a small orb of light
 		'''
 }

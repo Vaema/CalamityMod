@@ -88,6 +88,7 @@ namespace CalamityMod.Projectiles.Summon
                     dust.color = Color.Lime;
                     dust.noLightEmittence = true;
                 }
+                Projectile.Kill();
             }
         }
         public override bool? CanHitNPC(NPC target) => (targeted != null && target == targeted && attackTime == 0) ? null : false;
@@ -101,7 +102,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 8; i++)
             {
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 2f;
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 1f;
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, drawColor with { A = 0 } * 0.4f * (float)Math.Pow(fade, 3), Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             }
             Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White * fade, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);

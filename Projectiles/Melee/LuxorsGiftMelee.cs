@@ -30,6 +30,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 2;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
@@ -65,6 +66,9 @@ namespace CalamityMod.Projectiles.Melee
                 Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 2, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 2, false, 14, 0.02f, Color.Red * 0.45f, new Vector2(1.4f, 1f), true, false, 0.6f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
+
+            if (Collision.SolidCollision(Projectile.Center, 9, 9))
+                Projectile.velocity *= 0.91f;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -74,11 +78,6 @@ namespace CalamityMod.Projectiles.Melee
             modifiers.SourceDamage *= damageMult;
             if (Projectile.numHits >= 1 && Projectile.timeLeft > 70)
                 Projectile.timeLeft = 70;
-        }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.velocity = oldVelocity * 0.85f;
-            return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.ai[0] == 5 || Projectile.numHits >= 2) ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 20, targetHitbox);
         public override bool PreDraw(ref Color lightColor)

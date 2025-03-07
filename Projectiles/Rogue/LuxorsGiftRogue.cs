@@ -34,17 +34,13 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, Color.Magenta.ToVector3() * 0.35f);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.numHits == 0)
-            {
                 Projectile.velocity.Y += 0.04f;
-                if (Projectile.velocity.Y > 0)
-                    Projectile.velocity.X *= 0.99f;
-            }
             else
-            {
                 Projectile.velocity.Y += 0.06f;
-                if (Projectile.velocity.Y > 0)
-                    Projectile.velocity.X *= 0.985f;
-            }
+
+            if (Projectile.velocity.Y > 0)
+                Projectile.velocity.X *= 0.99f;
+
             if (Projectile.timeLeft > 60)
             {
                 Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.05f) * Main.rand.NextFloat(0.1f, 0.3f);
@@ -63,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
             modifiers.SourceDamage *= damageMult;
 
             Projectile.velocity = Utils.DirectionTo(target.Center, Projectile.Center).RotatedByRandom(0.2f) * 7;
-            Projectile.velocity.X *= 0.2f;
+            Projectile.velocity.X *= 0.25f;
             Projectile.velocity.Y *= 1.2f;
 
             for (int i = 0; i < 8; i++)
@@ -102,7 +98,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             for (int i = 0; i < 8; i++)
             {
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 2f;
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 1f;
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, drawColor with { A = 0 } * 0.4f * (float)Math.Pow(fade, 3), Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             }
             Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White * fade, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);

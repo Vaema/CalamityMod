@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Accessories
         public const int rogueAttackSpeed = 36; // Rogue has a 12 frame delay between it's two shots, so it's actaully a bit slower than you'd think
         public const int classlessAttackSpeed = 50;
 
-        public const int meleeDamage = 16;
+        public const int meleeDamage = 10;
         public const int rangedDamage = 5;
         public const int magicDamage = 13;
         public const int summonerDamage = 22;

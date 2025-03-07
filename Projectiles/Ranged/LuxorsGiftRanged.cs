@@ -57,18 +57,8 @@ namespace CalamityMod.Projectiles.Ranged
             int hitsToMinMult = 3;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
-
-            for (int i = 0; i < 12; i++)
-            {
-                Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.2f) * Main.rand.NextFloat(2.5f, 8.5f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(11, 11), Main.rand.NextBool() ? 278 : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.3f, 1.7f));
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
-                dust.color = Color.Cyan;
-                dust.noLightEmittence = true;
-            }
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 12; i++)
             {
@@ -79,7 +69,6 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.color = Color.Cyan;
                 dust.noLightEmittence = true;
             }
-            return true;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 20, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
