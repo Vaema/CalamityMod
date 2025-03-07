@@ -26,10 +26,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            Projectile.spriteDirection = Projectile.direction;
             float dustscaleMult = 1;
             if (notTheClone)
             {
-                Projectile.scale = 1.5f;
+                Projectile.scale = 1.15f;
                 Projectile.extraUpdates = 2;
                 dustscaleMult = 1.5f;
             }
@@ -39,12 +40,20 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.velocity.Y > 0)
                 Projectile.velocity.X = Projectile.velocity.X * 0.975f;
             }
-            Projectile.rotation += Projectile.velocity.X * 0.1f;
+            Projectile.rotation += Projectile.velocity.X * 0.07f + Projectile.direction * 0.07f;
 
-            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + (Vector2.UnitY * -5 * Projectile.scale).RotatedBy(Projectile.rotation), ModContent.DustType<LightDust>(), Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f));
+            Vector2 dustPos = Projectile.Center + (Vector2.UnitY * -22 * Projectile.scale).RotatedBy(Projectile.rotation - (MathHelper.PiOver2 + 0.4f) * Projectile.spriteDirection);
+            Dust dust2 = Dust.NewDustPerfect(dustPos, ModContent.DustType<LightDust>(), Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f));
             dust2.noGravity = true;
             dust2.scale = Main.rand.NextFloat(0.4f, 0.55f) * dustscaleMult;
             dust2.color = Color.Lerp(Color.Cyan, Color.Turquoise, Main.rand.NextFloat(0, 0.7f));
+            if (Main.rand.NextBool(5))
+            {
+                Dust dust = Dust.NewDustPerfect(dustPos, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(0.65f, 0.85f));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.7f, 1f) * dustscaleMult;
+                dust.color = Color.Lerp(Color.Cyan, Color.Turquoise, Main.rand.NextFloat(0, 0.7f));
+            }
 
             time++;
             Lighting.AddLight(Projectile.Center, Color.DodgerBlue.ToVector3() * 0.3f * dustscaleMult);
@@ -88,7 +97,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 25; i++)
                 {
                     Color auraColor = Color.Turquoise with { A = 0 } * 0.35f;
-                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 6;
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 3;
                     Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, auraColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
                 }
             }
