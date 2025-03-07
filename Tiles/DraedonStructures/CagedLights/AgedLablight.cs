@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 using Terraria.Audio;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
@@ -78,9 +79,29 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             g = 251f / 510f;
             b = 255f / 510f;
         }
+
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<AgedLablightItem>());
         }
+
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
+            int xFrameOffset = Main.tile[i, j].TileFrameX;
+            int yFrameOffset = Main.tile[i, j].TileFrameY;
+            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/CagedLights/AgedLablight_Glow").Value;
+            Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
+            Color drawColour = Color.White * 0.6f;
+            Tile trackTile = Main.tile[i, j];
+            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
+                spriteBatch.Draw(glowmask, drawPosition, new Rectangle(xFrameOffset, yFrameOffset, 18, 18), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            else if (trackTile.IsHalfBlock)
+                spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+
     }
 }
