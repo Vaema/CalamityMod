@@ -340,6 +340,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
+        /*
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.timeLeft);
@@ -358,5 +359,6 @@ namespace CalamityMod.Projectiles.Melee
 
             reader.ReadFlags(out stuckInTarget, out thrown);
         }
+        */
     }
 }
