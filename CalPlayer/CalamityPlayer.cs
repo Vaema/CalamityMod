@@ -4575,6 +4575,15 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Shoot
+        // Brimflame Frenzy disables mana potion mana recovery
+        // This also covers all Quick Hotkeys
+        public override bool CanUseItem(Item item)
+        {
+            if (item.healMana > 0 && brimflameFrenzy)
+                return false;
+            return base.CanUseItem(item);
+        }
+
         public override bool Shoot(Item item, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
             if (bladeArmEnchant)
