@@ -6604,9 +6604,6 @@ namespace CalamityMod.NPCs
                     modifiers.SourceDamage *= 0.4f;
             }
 
-            if (PierceResistList.Includes(npc.type))
-                PierceResistGlobal(projectile, npc, ref modifiers);
-
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
@@ -6617,28 +6614,6 @@ namespace CalamityMod.NPCs
                 EditWhipTagDamage(projectile, npc, ref modifiers);
         }
 
-        // Generalized pierce resistance that stacks with all other resistances for some specific bosses defined in a list.
-        // The actual resistance formula isn't really a problem, but the implementation of this desperately needs refactoring.
-        private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
-        {
-            // Thanatos segments do not trigger pierce resistance if they are closed
-            if (ThanatosIDList.Includes(npc.type) && unbreakableDR)
-                return;
-
-            // Isolates projectiles which ignore pierce resist only on Leviathan and Astrum Aureus
-            if ((npc.type == NPCType<Leviathan.Leviathan>() || npc.type == NPCType<AstrumAureus.AstrumAureus>()) && PierceResistExceptionLeviAureusList.Includes(projectile.type))
-                return;
-
-            float damageReduction = projectile.Calamity().timesPierced * CalamityGlobalProjectile.PierceResistHarshness;
-            if (damageReduction > CalamityGlobalProjectile.PierceResistCap)
-                damageReduction = CalamityGlobalProjectile.PierceResistCap;
-
-            modifiers.FinalDamage *= 1f - damageReduction;
-
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
-                projectile.Calamity().timesPierced++;
-        }
-        #endregion
         #region OnHitBy overrides
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
         {
@@ -6667,15 +6642,7 @@ namespace CalamityMod.NPCs
 
         }
 
-        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
-        {
-            if (IsArmored())
-            {
-                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
-            }
-        }
-        #endregion
-        #region Whip Tag 
+        #region Whip Tag
         // Make whip tags multiplicative, by effectively reversing the process done to it
         private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
