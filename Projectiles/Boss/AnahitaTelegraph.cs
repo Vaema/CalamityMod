@@ -61,9 +61,23 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            // Treble clef telegraphs sets random rotation on spawn
-            if (Projectile.timeLeft == Lifetime && TeleType == 2f)
-                Projectile.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
+            Player target = Main.player[(int)Projectile.ai[0]];
+
+            // Setting water spear and treble clef rotation on spawn
+            if (Projectile.timeLeft == Lifetime)
+            {
+                switch (TeleType)
+                {
+                    case 0:
+                        Projectile.rotation = (target.Center - Projectile.Center).ToRotation();
+                        break;
+                    case 2:
+                        Projectile.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             // Fade in and fade out
             if (Projectile.timeLeft > Math.Ceiling(Lifetime * 0.66f))
@@ -72,7 +86,6 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.alpha += 25;
 
             // Constantly move with the targeted player
-            Player target = Main.player[(int)Projectile.ai[0]];
             Projectile.Center += target.velocity;
 
             // Dust
@@ -84,7 +97,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 // Water spears: Move inward at constant speed
                 case 0:
-                    Projectile.Center += Vector2.Normalize(target.Center - Projectile.Center) * 9f;
+                    Projectile.Center += Vector2.Normalize(target.Center - Projectile.Center) * 8.5f;
                     break;
                 // Frost mists: Move inward with accelerating speed
                 case 1:
