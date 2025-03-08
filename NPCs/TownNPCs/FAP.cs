@@ -660,7 +660,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             foreach (Player player in Main.ActivePlayers)
             {
-                bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>()) || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>());
+                bool hasVodka = player.InventoryHas(ModContent.ItemType<CirrusVodka>()) || player.PortableStorageHas(ModContent.ItemType<CirrusVodka>());
                 if (hasVodka)
                     return Main.hardMode;
                 else
@@ -802,10 +802,10 @@ namespace CalamityMod.NPCs.TownNPCs
             if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAnahitaTrans"));
 
-            if (player.Calamity().fabsolVodka)
+            if (player.Calamity().cirrusVodka)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasVodka"));
 
-            if (player.HasItem(ModContent.ItemType<Fabsol>()))
+            if (player.HasItem(ModContent.ItemType<PrincessSpiritinaBottle>()))
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn2"));
@@ -885,7 +885,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ModContent.ItemType<Rum>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Tequila>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Fireball>(), Item.buyPrice(gold: 3))
-                .AddWithCustomValue(ModContent.ItemType<FabsolsVodka>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<CirrusVodka>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Vodka>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
                 .AddWithCustomValue(ModContent.ItemType<Screwdriver>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
                 .AddWithCustomValue(ModContent.ItemType<WhiteWine>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)

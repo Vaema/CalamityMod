@@ -3300,8 +3300,8 @@ namespace CalamityMod.CalPlayer
             if (cirrusDress)
                 Player.moveSpeed -= 0.2f;
 
-            if (fabsolVodka)
-                Player.GetDamage<GenericDamageClass>() += FabsolsVodka.DamageBoost;
+            if (cirrusVodka)
+                Player.GetDamage<GenericDamageClass>() += CirrusVodka.DamageBoost;
 
             if (vodka)
             {
@@ -4594,10 +4594,10 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (fabsolVodka)
+            if (cirrusVodka)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * FabsolsVodka.DefenseLossPercent);
+                    Player.statDefense -= (int)(Player.statDefense * CirrusVodka.DefenseLossPercent);
             }
 
             if (vodka)

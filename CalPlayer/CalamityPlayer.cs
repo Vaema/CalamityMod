@@ -1279,7 +1279,7 @@ namespace CalamityMod.CalPlayer
         public bool zen = false;
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
-        public bool fabsolVodka = false;
+        public bool cirrusVodka = false;
         public bool mushy = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
@@ -2467,7 +2467,7 @@ namespace CalamityMod.CalPlayer
             trippy = false;
             amidiasBlessing = false;
             flaskBrimstone = false;
-            fabsolVodka = false;
+            cirrusVodka = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2959,7 +2959,7 @@ namespace CalamityMod.CalPlayer
             sulphurskin = false;
             baguette = false;
             flaskBrimstone = false;
-            fabsolVodka = false;
+            cirrusVodka = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;

@@ -1761,8 +1761,8 @@ namespace CalamityMod.ILEditing
         #region Shimmer effect edits
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<CirrusVodka>())
             {
                 self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
                 self.shimmered = true;
