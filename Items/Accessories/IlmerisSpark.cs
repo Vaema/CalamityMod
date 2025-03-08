@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
+    [LegacyName("AmidiasSpark")]
     public class IlmerisSpark : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
