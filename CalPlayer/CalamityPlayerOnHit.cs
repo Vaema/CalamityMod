@@ -362,9 +362,23 @@ namespace CalamityMod.CalPlayer
                 CalamityGlobalProjectile cgp = proj.Calamity();
                 if (cgp.appliesSomaShred)
                 {
-                    target.AddBuff(BuffType<Shred>(), 320);
-                    // This information cannot be transferred through the buff, but is necessary to calculate damage
-                    cgn.somaShredApplicator = Player.whoAmI;
+                    // 08MAR2025: Ozzatron: Obsessive Warframe accuracy.
+                    // Typical endgame Soma Prime builds have a 5% chance to apply debuff, then 30% extra chance if it's a crit, rolled separately.
+                    bool actuallyApplyShred = false;
+                    if (Main.rand.NextFloat() < 0.05f)
+                        actuallyApplyShred = true;
+                    if (hit.Crit && Main.rand.NextFloat() < 0.3f)
+                        actuallyApplyShred = true;
+
+                    if (actuallyApplyShred)
+                    {
+                        target.AddBuff(BuffType<Shred>(), 320);
+                        // This information cannot be transferred through the buff, but is necessary to calculate damage
+                        cgn.somaShredApplicator = Player.whoAmI;
+
+                        // 08MAR2025: Ozzatron: God Slayer Slugs can no longer apply Shred multiple times.
+                        cgp.appliesSomaShred = false;
+                    }
                 }
 
                 // Similarly, all shots from Animosity are also marked

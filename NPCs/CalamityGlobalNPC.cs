@@ -6304,6 +6304,10 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // 08MAR2025: Simplistic crit damage increase. Doesn't force a crit, though you can do that separately.
+            // STACKS MULTIPLICATIVELY (!!!) with above supercrit behavior.
+            modifiers.CritDamage += cgp.bonusCritDamage;
+
             //
             // DAAWNLIGHT SPIRIT ORIGIN AIM IMPLEMENTATION
             //
