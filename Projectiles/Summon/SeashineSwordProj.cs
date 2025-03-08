@@ -49,8 +49,8 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetDefaults()
         {
-            Projectile.width = 40;
-            Projectile.height = 40;
+            Projectile.width = 32;
+            Projectile.height = 34;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Summon
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.6f);
             ApplyPlayerBuffs();
 
-            tipPosition = Projectile.Center + (Vector2.UnitX * MathHelper.Clamp(bladeCharge * 85, 25, 2000)).RotatedBy(Projectile.rotation) * Projectile.scale;
+            tipPosition = Projectile.Center + (Vector2.UnitX * MathHelper.Clamp(bladeCharge * 103, 0, 2000)).RotatedBy(Projectile.rotation) * Projectile.scale;
             Vector2 tipVel = (savedTipPos - tipPosition);
             savedTipPos = tipPosition;
 
@@ -134,6 +134,7 @@ namespace CalamityMod.Projectiles.Summon
                     else
                         Projectile.rotation += 0.15f;
                 }
+                bladeCharge = 0.4f;
             }
             else // The actual active ai for the summon
             {
@@ -142,6 +143,7 @@ namespace CalamityMod.Projectiles.Summon
                     attackTimer++;
                     if (attackTimer >= 120 + bladeValue) // Reset values after a swing
                     {
+                        Projectile.netUpdate = true;
                         attackTimer = 80;
                         Projectile.ai[0] = 0;
                         setPos = true;
@@ -159,6 +161,7 @@ namespace CalamityMod.Projectiles.Summon
                         float lerp = Utils.GetLerpValue(30 + bladeValue, 100 + bladeValue, attackTimer, true);
                         if (setPos)
                         {
+                            Projectile.netUpdate = true;
                             startPos = Projectile.Center;
                             endPos = Owner.Calamity().mouseWorld + toMouse * 480;
                             Projectile.numHits = 0;
@@ -200,6 +203,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (readySound && bladeCharge >= 1) // Effect when the blade is fully charged
                 {
+                    Projectile.netUpdate = true;
                     for (int i = 0; i < 8; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
@@ -216,13 +220,13 @@ namespace CalamityMod.Projectiles.Summon
             // I do not recommend reusing this effect unless you're using it carefully
             if ((returnSpeed == baseReturnSpeed && bladeCharge >= 1 || (isAttacking && attackTimer > bladeValue + 5)) || isSpawning)
             {
-                Particle orb = new CustomSpark(tipPosition, tipVel.SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/BloomCircle", false, 25, Utils.Remap(tipVel.Length(), 2, 15, 0.15f, 0.3f, true) * Projectile.scale, mainColor * 0.65f, new Vector2(1f, 1), true, true, shrinkSpeed: Utils.Remap(tipVel.Length(), 1, 8, 0f, 0.4f, true), glowOpacity: 0.8f);
+                Particle orb = new CustomSpark(tipPosition, tipVel.SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/BloomCircle", false, isAttacking ? 30 : 12, Utils.Remap(tipVel.Length(), 2, 15, 0.15f, 0.3f, true) * Projectile.scale, mainColor * 0.65f, new Vector2(1f, isAttacking ? 1.3f : 1), true, true, shrinkSpeed: Utils.Remap(tipVel.Length(), 1, 8, 0f, 0.4f, true), glowOpacity: 0.5f, glowCenterScale: 0.8f);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
             // The uncharge of the blades when you're not holding the item or after they slash
             if (!isAttacking && (attackTimer > 0 || !attackMode))
             {
-                bladeCharge = MathHelper.Lerp(bladeCharge, 0, 0.025f);
+                bladeCharge = MathHelper.Clamp(MathHelper.Lerp(bladeCharge, 0, 0.025f), 0.4f, 1);
                 if (attackTimer > 0)
                     attackTimer--;
                 readySound = true;
@@ -258,10 +262,10 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             float extremeLerp = (float)Math.Pow(bladeCharge, 10);
             for (int i = 0; i < 3; i++)
-                Main.EntitySpriteDraw(tex2, drawPos - (Vector2.UnitY.RotatedBy(Projectile.rotation + MathHelper.ToRadians(90)) * 43 * bladeCharge * Projectile.scale), null, Color.Lerp(mainColor, Color.White, i * 0.3f) with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(90), tex2.Size() * 0.5f, new Vector2(0.33f - i * 0.05f, (0.75f + i * 0.03f) * bladeCharge) * 0.05f * Projectile.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex2, drawPos - (Vector2.UnitY.RotatedBy(Projectile.rotation + MathHelper.ToRadians(90)) * 59 * bladeCharge * Projectile.scale), null, Color.Lerp(mainColor, Color.White, i * 0.3f) with { A = 0 }, Projectile.rotation + MathHelper.ToRadians(90), tex2.Size() * 0.5f, new Vector2(0.33f - i * 0.05f, (0.75f + i * 0.03f) * bladeCharge) * 0.05f * Projectile.scale, SpriteEffects.None);
 
             for (int i = 0; i < 2; i++)
-                Main.EntitySpriteDraw(tex, drawPos, null, Color.Lerp(lightColor, (i == 0 ? Color.White : mainColor) with { A = 0 }, extremeLerp), Projectile.rotation + MathHelper.ToRadians(45), tex.Size() * 0.5f, i == 0 ? 0.8f : 1, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex, drawPos, null, Color.Lerp(lightColor, (i == 0 ? Color.White : mainColor) with { A = 0 }, extremeLerp), Projectile.rotation + MathHelper.ToRadians(45), tex.Size() * 0.5f, (i == 0 ? 0.8f : 1) * Projectile.scale, SpriteEffects.None);
             
             if (!isAttacking && bladeCharge < 1)
             {
@@ -279,11 +283,8 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (i % 2 == 0)
                     {
-                        //Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 45, Main.rand.NextFloat(0.85f, 1.1f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
-                        //GeneralParticleHandler.SpawnParticle(spark);
-
-                        BloodParticle water = new BloodParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(7f, 20f) - Vector2.UnitY, 23, Main.rand.NextFloat(0.9f, 1.3f), Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue);
-                        GeneralParticleHandler.SpawnParticle(water);
+                        Particle spark = new SeaPrismParticle(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(10f, 30f), true, 40, Main.rand.NextFloat(0.85f, 1.3f), Color.White, Vector2.One, false, Main.rand.NextFloat(-0.3f, 0.3f), affectedByLight: false);
+                        GeneralParticleHandler.SpawnParticle(spark);
                     }
 
                     Particle e = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(7f, 20f), "CalamityMod/Particles/WaterFoam", false, 14, Main.rand.NextFloat(0.1f, 0.2f) * 2.5f, Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue, new Vector2(1f, 1f), true, false, shrinkSpeed: 0.4f);
