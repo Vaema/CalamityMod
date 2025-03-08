@@ -694,9 +694,14 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 if (Main.rand.NextBool(4))
                 {
-                    player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
-                    SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
-                    return this.GetLocalizedValue("Chat.BloodMoonSlap");
+                    if (!beLessDrunk)
+                    {
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
+                        SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap1");
+                    }
+                    else
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap2");
                 }
                 return this.GetLocalizedValue("Chat.BloodMoon" + Main.rand.Next(1, 3 + 1));
             }
