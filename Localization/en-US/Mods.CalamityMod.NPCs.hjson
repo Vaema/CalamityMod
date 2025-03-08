@@ -399,10 +399,10 @@ FAP: {
 	// Death Count stuffs
 	DeathCountButton: Death Count + Donors
 	DeathCount: You have failed {0} {^0:time;times}.
-	Death10000: Congratulations! You are now, officially, the biggest loser in Terraria's history! Who was number two? Hell if I know.
-	Death5000: I'm not sure what to say this time. That you're bad and should feel bad? That much was known already.
-	Death2500: Bless your heart. I could dodge better than you even if I were drunk high.
-	Death1000: It is said the average Terrarian has a lifespan of 2 minutes or less. ...Well, not really, but I feel like you'd be part of that statistic.
+	Death10000: Congratulations! You are now, officially, the biggest loser in Terraria's history!
+	Death5000: I'm not sure what to say this time... perhaps, that you're bad and should feel bad?
+	Death2500: I could dodge better than you even if I was blackout drunk.
+	Death1000: It is said that the average Terrarian has a lifespan of 2 minutes or less... well, not really, but I feel like you'd be part of that statistic.
 	Death500: Your inability to avoid dying to even the most basic of attacks is astonishing to me.
 	Death250: I admire your tenacity. Keep it up, your enemies are racking up quite the kill count!
 	Death100: Consider lowering the difficulty. If you found that statement irritating, good.
