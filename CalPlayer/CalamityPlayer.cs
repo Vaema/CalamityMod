@@ -783,7 +783,7 @@ namespace CalamityMod.CalPlayer
         public int abyssalDivingSuitPlateHits = 0;
         public bool aquaticHeartWaterBuff = false;
         public bool aquaticHeartIce = false;
-        public bool aSpark = false;
+        public bool ilSpark = false;
         public bool transformer = false;
         public bool transformerVisual = false;
         public int transformerCooldown = 0;
@@ -2140,7 +2140,7 @@ namespace CalamityMod.CalPlayer
             badgeOfBravery = false;
             WarbanneroftheRighteous = false;
             warbannerGlow = false;
-            aSpark = false;
+            ilSpark = false;
             transformer = false;
             transformerVisual = false;
             hideOfDeus = false;

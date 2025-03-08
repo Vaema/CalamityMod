@@ -114,16 +114,6 @@ AmbrosialAmpoule: {
 		'''
 }
 
-AmidiasSpark: {
-	DisplayName: Amidias' Spark
-	Tooltip:
-		'''
-		Attacks inflict Static Discharge while underwater
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
-		'''
-}
-
 AncientFossil: {
 	DisplayName: Ancient Fossil
 	Tooltip: Increases mining speed by 10%
@@ -952,6 +942,16 @@ HowlsHeart: {
 		'''
 		Summons Howl to fight for you, Calcifer to light your way, and Turnip-Head to follow you around
 		Placing this accessory in vanity slots will summon the trio without the combat or exploration utilities
+		'''
+}
+
+IlmerisSpark: {
+	DisplayName: Ilmeris' Spark
+	Tooltip:
+		'''
+		Attacks inflict Static Discharge while underwater
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
 		'''
 }
 

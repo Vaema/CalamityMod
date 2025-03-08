@@ -1289,7 +1289,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
-                    if (aSpark)
+                    if (ilSpark)
                         Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
             }
@@ -2624,7 +2624,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                if (aSpark)
+                if (ilSpark)
                 {
                     SoundEngine.PlaySound(SoundID.Item93, Player.Center);
 

@@ -5791,7 +5791,7 @@ namespace CalamityMod.NPCs
             {
                 var player = Main.LocalPlayer;
 
-                int frequency = 12;
+                int frequency = 15;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
@@ -6023,7 +6023,7 @@ namespace CalamityMod.NPCs
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
 
-            if (target.Calamity().aSpark)
+            if (target.Calamity().ilSpark)
             {
                 shocked = 120;
             }
