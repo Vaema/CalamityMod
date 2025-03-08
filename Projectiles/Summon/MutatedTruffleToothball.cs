@@ -66,8 +66,7 @@ namespace CalamityMod.Projectiles.Summon
                 SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);
             }
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
     }
 }

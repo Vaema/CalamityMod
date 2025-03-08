@@ -273,8 +273,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     
-                    npc.netUpdate = true;
-                    npc.netSpam = 0;
+                    npc.ForceNetUpdate();
                     npc.alpha = 0;
                 }
 
@@ -296,8 +295,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     
-                    npc.netUpdate = true;
-                    npc.netSpam = 0;
+                    npc.ForceNetUpdate();
                     npc.alpha = 0;
                 }
 

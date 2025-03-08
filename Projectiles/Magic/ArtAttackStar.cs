@@ -116,8 +116,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Center = Owner.ClampedMouseWorld();
 
             // Continuously sync since mouse information is local.
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public void EmitIdleDust()

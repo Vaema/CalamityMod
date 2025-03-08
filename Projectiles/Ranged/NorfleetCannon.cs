@@ -322,12 +322,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        private void NetUpdate()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
+        private void NetUpdate() => Projectile.ForceNetUpdate(false);
 
         public override void OnSpawn(IEntitySource source)
         {

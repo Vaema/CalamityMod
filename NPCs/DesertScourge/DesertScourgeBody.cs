@@ -109,11 +109,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture2 is null ? 0 : BodyTexture2.Width(), BodyTexture2 is null ? 0 : BodyTexture2.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
 
@@ -124,11 +120,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture3 is null ? 0 : BodyTexture3.Width(), BodyTexture3 is null ? 0 : BodyTexture3.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
 
@@ -139,11 +131,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture4 is null ? 0 : BodyTexture4.Width(), BodyTexture4 is null ? 0 : BodyTexture4.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
                 }

@@ -223,12 +223,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HideInShellSound, player.Center);
                     }
 
-                    npc.netUpdate = true;
-
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
+                    npc.ForceNetUpdate(false);
                 }
             }
 

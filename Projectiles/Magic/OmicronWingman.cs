@@ -127,8 +127,7 @@ namespace CalamityMod.Projectiles.Magic
             time++;
             Projectile.soundDelay--;
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         private void ManagePlayerProjectileMembers(Vector2 ownerToMouse)

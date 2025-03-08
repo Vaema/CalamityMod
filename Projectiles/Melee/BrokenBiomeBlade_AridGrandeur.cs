@@ -121,8 +121,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Collision.SolidCollision(Owner.Center + (direction * 84 * Projectile.scale) - Vector2.One * 5f, 10, 10))
             {
                 Pogo();
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             // Make the owner look like they're holding the sword bla bla

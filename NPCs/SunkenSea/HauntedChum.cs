@@ -187,8 +187,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 10, loops: 1, gravity: 0.3f);
 
-            NPC.netUpdate = true;
-            NPC.netSpam = 0;
+            NPC.ForceNetUpdate();
         }
 
         internal float WidthFunction(float completionRatio)

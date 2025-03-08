@@ -81,8 +81,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation = direction.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation

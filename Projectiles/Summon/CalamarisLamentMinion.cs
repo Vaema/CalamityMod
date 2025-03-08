@@ -186,12 +186,7 @@ namespace CalamityMod.Projectiles.Summon
             SyncVariables();
         }
 
-        private void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-        }
-
+        private void SyncVariables() => Projectile.ForceNetUpdate();
         #endregion
 
         public override void OnSpawn(IEntitySource source)
