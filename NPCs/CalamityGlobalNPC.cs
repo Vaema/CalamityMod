@@ -6298,14 +6298,15 @@ namespace CalamityMod.NPCs
                     if (Main.rand.NextFloat(100f) <= lastLayerCritChance)
                         ++supercritLayers;
 
-                    // Apply supercrit damage. This projectile is already guaranteed to be a crit, which will double its damage at the end.
-                    // As such, only 50% damage is added per supercrit layer here.
-                    modifiers.SourceDamage *= 1f + 0.5f * supercritLayers;
+                    // 08MAR2025: Ozzatron: changed supercrit implementation to actually increase crit multiplier instead of multiplying source damage
+                    // This means supercrits don't affect on-hits, just like regular crits don't
+                    //
+                    // Apply supercrit damage as a direct increase to the critical strike damage multiplier, which starts at 2.0 (aka 200%).
+                    modifiers.CritDamage += supercritLayers;
                 }
             }
 
             // 08MAR2025: Simplistic crit damage increase. Doesn't force a crit, though you can do that separately.
-            // STACKS MULTIPLICATIVELY (!!!) with above supercrit behavior.
             modifiers.CritDamage += cgp.bonusCritDamage;
 
             //
