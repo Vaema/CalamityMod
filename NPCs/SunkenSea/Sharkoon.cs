@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <summary>
         /// The squish of this NPC while drawing.
         /// </summary>
-        private Vector2 _scaleSquish = Vector2.One;
+        private Vector2 ScaleSquish = Vector2.One;
 
         private Entity _avoidedEntity;
 
@@ -177,7 +177,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
-            // BannerItem = ItemType<SharkoonBanner>();
+            BannerItem = ItemType<SharkoonBanner>();
 
             NPC.damage = 20;
             NPC.lifeMax = 350;
@@ -217,7 +217,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             pathfinding = new PathfindingManager(NPC)
             {
-                Acceleration = 0.25f,
+                Acceleration = 0.3f,
                 MaxSpeed = 6f,
             };
             CurrentBehavior = IdlingBehavior;
@@ -247,12 +247,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 CurrentBehavior = OutsideWaterBehavior;
 
             // Reset any squish that is done to the Sharkoon.
-            if (_scaleSquish.Y > 1f)
-            {
-                _scaleSquish.Y -= 0.025f;
-                if (_scaleSquish.Y < 1f)
-                    _scaleSquish.Y = 1f;
-            }
+            if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 
         private void IdlingBehavior()
@@ -276,6 +272,19 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
             pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
+            pathfinding.CustomIdleBehavior = () =>
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            };
 
             HuntCooldown--;
         }
@@ -397,7 +406,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CanExplode && CurrentPredator is null && !IsExploding)
             {
                 CurrentBehavior = HuntingBehavior;
-                _scaleSquish.Y += 0.4f;
+                ScaleSquish.Y += 0.4f;
             }
         }
 
@@ -408,7 +417,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentBehavior = FleeingBehavior;
                 _avoidedEntity = predator;
-                _scaleSquish.Y += 0.4f;
+                ScaleSquish.Y += 0.4f;
             }
         }
 
@@ -420,7 +429,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             CurrentBehavior = FleeingBehavior;
             _avoidedEntity = player;
-            _scaleSquish.Y += 0.4f;
+            ScaleSquish.Y += 0.4f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -542,7 +551,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 anchorPoint = frame.Size() * 0.5f;
             SpriteEffects flip = NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, _scaleSquish, flip, 0f);
+            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, ScaleSquish, flip, 0f);
 
             return false;
         }
