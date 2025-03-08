@@ -18,7 +18,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Sharkoon : SunkenSeaNPC, IPathFinder
+    public class Sharkoon : SunkenSeaNPC
     {
         #region Fields & Properties
 
@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <summary>
         /// The squish of this NPC while drawing.
         /// </summary>
-        private Vector2 _scaleSquish = Vector2.One;
+        private Vector2 ScaleSquish = Vector2.One;
 
         private Entity _avoidedEntity;
 
@@ -133,6 +133,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private Action _previousBehavior;
 
+        private int HuntCooldown
+        {
+            get => (int)NPC.ai[3];
+            set => NPC.ai[3] = value;
+        }
+
         #region SunkenSeaNPC Implementation
 
         protected override List<int> PreyIDs =>
@@ -157,20 +163,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #endregion
 
-        #region IPathFinder Implementation
-
-        public PathfindingTask Path { get; set; }
-
-        public Vector2 Position => NPC.Center;
-
-        public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
-
-        public float Acceleration { get; set; } = 0.25f;
-
-        public float MaxSpeed { get; set; } = 6f;
-
-        #endregion
-
         #endregion
 
         #region SetDefaults
@@ -185,7 +177,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
-            // BannerItem = ItemType<SharkoonBanner>();
+            BannerItem = ItemType<SharkoonBanner>();
 
             NPC.damage = 20;
             NPC.lifeMax = 350;
@@ -223,6 +215,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.3f,
+                MaxSpeed = 6f,
+            };
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
@@ -250,25 +247,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 CurrentBehavior = OutsideWaterBehavior;
 
             // Reset any squish that is done to the Sharkoon.
-            if (_scaleSquish.Y > 1f)
-            {
-                _scaleSquish.Y -= 0.025f;
-                if (_scaleSquish.Y < 1f)
-                    _scaleSquish.Y = 1f;
-            }
+            if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            PathfindingTask task = null;
-            if (Main.rand.NextBool(IdleRandomMovementUnlikeliness))
-            {
-                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance);
-                NPC.netUpdate = true;
-                task = new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
-            }
-            this.DoPathfinding(task);
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
@@ -280,15 +266,27 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            bool huntReady = HuntCooldown == 0;
+            if (huntReady)
+                HuntCooldown = Main.rand.Next(13, 30);
+
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            if (!NPC.HasSight(CurrentPrey.Center))
-                this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
-            else
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
+            pathfinding.CustomIdleBehavior = () =>
             {
-                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
-                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
-            }
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            };
+
+            HuntCooldown--;
         }
 
         private void FleeingBehavior()
@@ -307,18 +305,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // Try to manuever if there are any obstacles.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(_avoidedEntity.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(_avoidedEntity.Center) * Acceleration;
+                NPC.velocity += NPC.DirectionFrom(_avoidedEntity.Center) * pathfinding.Acceleration;
+                pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                this.DoPathfinding(new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
             // If it's capable of exploding and the predator's within distance, kaboom.
@@ -398,7 +397,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (newBehavior == OutsideWaterBehavior)
                 NPC.noGravity = false;
 
-            Path = null;
+            pathfinding.MinimumPointDistance = newBehavior == HuntingBehavior ? 20f : 48f;
         }
 
         protected override void OnPreyDetection(NPC prey)
@@ -407,7 +406,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CanExplode && CurrentPredator is null && !IsExploding)
             {
                 CurrentBehavior = HuntingBehavior;
-                _scaleSquish.Y += 0.4f;
+                ScaleSquish.Y += 0.4f;
             }
         }
 
@@ -418,7 +417,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentBehavior = FleeingBehavior;
                 _avoidedEntity = predator;
-                _scaleSquish.Y += 0.4f;
+                ScaleSquish.Y += 0.4f;
             }
         }
 
@@ -430,7 +429,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             CurrentBehavior = FleeingBehavior;
             _avoidedEntity = player;
-            _scaleSquish.Y += 0.4f;
+            ScaleSquish.Y += 0.4f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -552,7 +551,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 anchorPoint = frame.Size() * 0.5f;
             SpriteEffects flip = NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, _scaleSquish, flip, 0f);
+            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, ScaleSquish, flip, 0f);
 
             return false;
         }
