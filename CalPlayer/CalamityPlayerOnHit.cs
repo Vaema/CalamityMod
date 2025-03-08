@@ -146,7 +146,14 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
-            
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = item.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
             if (luxorsGift)
                 luxorHit = true;
 
@@ -309,7 +316,14 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
-
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = proj.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
             if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
                 luxorHit = true;
 

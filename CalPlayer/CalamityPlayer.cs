@@ -719,6 +719,15 @@ namespace CalamityMod.CalPlayer
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
+        public bool bGlassBand = false; // Obsidian band
+        public bool bGlassBandVisual = false;
+        public int bGlassbandCooldown = 0;
+        public bool batholithBangle = false; // Granite band
+        public bool batholithBangleVisual = false;
+        public int batholithBangleCooldown = 0;
+        public bool protolithBangle = false; // Marble band
+        public bool protolithBangleVisual = false;
+        public int protolithBangleCooldown = 0;
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
@@ -2120,6 +2129,8 @@ namespace CalamityMod.CalPlayer
             theBee = false;
             arcFlashRing = false;
             arcFlashRingVisual = false;
+            bGlassBand = false;
+            bGlassBandVisual = false;
             alluringBait = false;
             enchantedPearl = false;
             fishingStation = false;

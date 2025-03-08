@@ -1892,6 +1892,12 @@ namespace CalamityMod.CalPlayer
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
+            if (bGlassbandCooldown > 0)
+                bGlassbandCooldown--;
+            if (batholithBangleCooldown > 0)
+                batholithBangleCooldown--;
+            if (protolithBangleCooldown > 0)
+                protolithBangleCooldown--;
             if (AlchFlaskCooldown > 0)
                 AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
