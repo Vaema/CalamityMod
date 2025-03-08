@@ -55,11 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Multiplayer syncing every second.
             if (Projectile.timeLeft % 60 == 0)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam >= 10)
-                    Projectile.netSpam = 9;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         public override void OnSpawn(IEntitySource source)

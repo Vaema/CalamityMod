@@ -193,11 +193,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // If it changed for some reason, fire a net update. This update cannot be blocked by netSpam.
             if (previousDirection != Projectile.direction)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam > 59)
-                    Projectile.netSpam = 59;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         private static bool TargetInSafeBoundaries(NPC target) => target?.Center.Between(WorldTopLeft(), WorldBottomRight()) ?? true;

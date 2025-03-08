@@ -142,8 +142,7 @@ namespace CalamityMod.NPCs
                             else if (selection == 2 && NPC.CountNPCS(NPCID.MothronEgg) + NPC.CountNPCS(NPCID.MothronSpawn) < 2)
                                 aiState = (int)MothronAIState.PickSpotToLayEgg;
                         }
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
                     break;
 
@@ -255,8 +254,7 @@ namespace CalamityMod.NPCs
                     {
                         aiState = (int)MothronAIState.ChargePreparation;
                         flySpeedAdditive = 0f;
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
 
                     flySpeedAdditive += 0.0333333351f;
@@ -297,8 +295,7 @@ namespace CalamityMod.NPCs
 
                             aiState = (int)MothronAIState.DoTheFuckingCharge;
                             chargeDirection = npc.direction;
-                            npc.netUpdate = true;
-                            npc.netSpam = 0;
+                            npc.ForceNetUpdate();
                         }
                     }
                     break;
@@ -325,7 +322,7 @@ namespace CalamityMod.NPCs
                             aiState = (int)MothronAIState.NewAISelection;
                             chargeDirection = 0f;
                             flySpeedAdditive = 0f;
-                            npc.netUpdate = true;
+                            npc.ForceNetUpdate();
                         }
 
                         // Otherwise, if somewhat horizontally far from the target, go to typical flying by default.
@@ -334,9 +331,8 @@ namespace CalamityMod.NPCs
                             aiState = (int)MothronAIState.FlyTowardsPlayer;
                             chargeDirection = 0f;
                             flySpeedAdditive = 0f;
-                            npc.netUpdate = true;
+                            npc.ForceNetUpdate();
                         }
-                        npc.netSpam = 0;
                     }
                     npc.rotation = (npc.rotation * 4f + npc.velocity.X * 0.0175f) / 5f;
                     break;
@@ -383,8 +379,7 @@ namespace CalamityMod.NPCs
                                 }
                             }
                         }
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
                     break;
 

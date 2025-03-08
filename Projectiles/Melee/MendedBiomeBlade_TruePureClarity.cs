@@ -74,8 +74,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.rotation = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX).ToRotation();
                     Projectile.timeLeft = dashTime;
                     lastDisplacement = Projectile.Center - Owner.Center;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
             }
 
@@ -200,8 +199,7 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.itemAnimation = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
 
                 Owner.velocity = dashDirection * 30f;

@@ -179,12 +179,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(140 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 86, 148);
                     NPC.position -= NPC.Size * 0.5f;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
             }
 
@@ -268,11 +263,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (NPC.Opacity < 0.2f)
                                 NPC.Opacity = 0f;
 
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -474,12 +465,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             if (NPC.realLife >= 0)
             {
@@ -489,12 +475,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
-
-                Head.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (Head.netSpam >= 10)
-                    Head.netSpam = 9;
+                Head.ForceNetUpdate(false);
             }
             return false;
         }

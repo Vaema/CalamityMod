@@ -593,8 +593,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.ai[2] = 0f;
                             npc.ai[3] = 0f;
-                            npc.netUpdate = true;
-                            npc.netSpam = 0;
+                            npc.ForceNetUpdate();
                         }
                     }
                     else
@@ -777,10 +776,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         // Net update in Master due to rng
                         if (masterMode)
-                        {
-                            npc.netUpdate = true;
-                            npc.netSpam = 0;
-                        }
+                            npc.ForceNetUpdate();
                     }
                 }
                 else
@@ -1389,7 +1385,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 npc.netSpam = 5;
                 npc.SyncExtraAI();
-                npc.netUpdate = true;
+                npc.ForceNetUpdate();
             }
 
             npc.ai[3] -= 1f +

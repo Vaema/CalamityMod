@@ -233,10 +233,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
 
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (npc.ai[1] == 2f)
                 {
@@ -304,11 +301,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] = 0f;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                    
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -531,10 +524,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 else if (npc.ai[1] == 2f)
@@ -581,10 +571,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
-                            npc.netUpdate = true;
-
-                            if (npc.netSpam > 10)
-                                npc.netSpam = 10;
+                            npc.ForceNetUpdate(false);
                         }
                         else
                             npc.ai[1] = 1f;
@@ -601,10 +588,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -673,10 +657,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         npc.ai[1] = 4f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -711,10 +692,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float lineUpDistNetUpdate = lineUpDistControl + 13f;
                     if (npc.ai[2] >= lineUpDistNetUpdate)
                     {
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
 
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
@@ -889,10 +867,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.SyncExtraAI();
                     }
 
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 else if (npc.ai[1] == 6f)
@@ -908,10 +883,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
 
                         npc.ai[1] = 7f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -948,11 +920,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Deal less damage overall while not charging
                         npc.damage = reducedSetDamage;
-
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
 
                         npc.ai[2] = 0f;
                         npc.ai[1] = 0f;
@@ -1198,9 +1166,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.velocity.X = num24 * num26;
                     npc.velocity.Y = num25 * num26;
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (npc.ai[1] == 2f)
                 {
@@ -1275,10 +1241,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] = 0f;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                    
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 return false;
@@ -1510,9 +1473,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.velocity.X = num45 * num47;
                 npc.velocity.Y = num46 * num47;
                 npc.ai[1] = 2f;
-                npc.netUpdate = true;
-                if (npc.netSpam > 10)
-                    npc.netSpam = 10;
+                npc.ForceNetUpdate(false);
             }
             else if (npc.ai[1] == 2f)
             {
@@ -1567,9 +1528,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] += Main.rand.Next(1, 4);
                         }
 
-                        npc.netUpdate = true;
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                     else
                         npc.ai[1] = 1f;
@@ -1585,9 +1544,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
                     npc.ai[3] = 0f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -1679,9 +1636,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] = 4f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
             }
             else if (npc.ai[1] == 4f)
@@ -1712,9 +1667,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float num63 = num62 + 13f;
                 if (npc.ai[2] >= num63)
                 {
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
 
                     npc.ai[3] += 1f;
                     npc.ai[2] = 0f;

@@ -244,13 +244,7 @@ namespace CalamityMod.Projectiles.Summon
             SyncVariables();
         }
 
-        private void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
-
+        private void SyncVariables() => Projectile.ForceNetUpdate(false);
         #endregion
 
         public override bool MinionContactDamage() => State == AIState.Dashing;

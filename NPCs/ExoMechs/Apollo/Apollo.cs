@@ -1164,8 +1164,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
                         NPC.velocity = Vector2.Normalize(chargeLocations[(int)calamityGlobalNPC.newAI[2] + 1] - chargeLocations[(int)calamityGlobalNPC.newAI[2]]) * chargeVelocity;
                         NPC.localAI[2] = 1f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam -= 5;
+                        NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
                         if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge))) // I'm not that evil (you aren't, but I am - Fab)

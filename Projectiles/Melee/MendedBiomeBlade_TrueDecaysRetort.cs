@@ -67,8 +67,7 @@ namespace CalamityMod.Projectiles.Melee
                     Lunge();
                 SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (ChargedUp && dashTimer == 0f)
@@ -147,8 +146,7 @@ namespace CalamityMod.Projectiles.Melee
             if (ChargedUp)
                 return;
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
 
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;

@@ -493,8 +493,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.alpha = 0;
                     NPC.dontTakeDamage = false;
                     NPC.damage = 0;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
             }
             else
@@ -684,8 +683,7 @@ namespace CalamityMod.NPCs.HiveMind
                             }
                         }
                     }
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
                 else if (burrowTimer < 0)
                 {
@@ -803,8 +801,7 @@ namespace CalamityMod.NPCs.HiveMind
                         if (nextState == 3)
                             rotation = MathHelper.ToRadians(Main.rand.Next(360));
 
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
 
                     if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 8000f)
@@ -860,8 +857,7 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         NPC.velocity *= 2f / 255f * (reelbackFade + 2 * (int)enrageScale);
                         ReelBack();
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -895,8 +891,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
 
                         phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else if (NPC.ai[1] == 0f && NPC.ai[2] == 0f)
                     {
@@ -908,8 +903,7 @@ namespace CalamityMod.NPCs.HiveMind
                             {
                                 NPC.ai[1] = posX;
                                 NPC.ai[2] = posY;
-                                NPC.netUpdate = true;
-                                NPC.netSpam = 0;
+                                NPC.ForceNetUpdate();
                                 break;
                             }
                         }
@@ -955,8 +949,7 @@ namespace CalamityMod.NPCs.HiveMind
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     if (NPC.alpha > 0)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1049,8 +1042,7 @@ namespace CalamityMod.NPCs.HiveMind
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -1063,8 +1055,7 @@ namespace CalamityMod.NPCs.HiveMind
                             SoundEngine.PlaySound(RoarSound, NPC.Center);
                             NPC.velocity.X = MathHelper.Pi * teleportRadius / arcTime;
                             NPC.velocity *= rotationDirection;
-                            NPC.netUpdate = true;
-                            NPC.netSpam = 0;
+                            NPC.ForceNetUpdate();
                         }
                         else
                         {
@@ -1120,8 +1111,7 @@ namespace CalamityMod.NPCs.HiveMind
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -1134,8 +1124,7 @@ namespace CalamityMod.NPCs.HiveMind
                             SoundEngine.PlaySound(RoarSound, NPC.Center);
                             NPC.velocity.X = teleportRadius / arcTime * 3;
                             NPC.velocity *= -rotationDirection;
-                            NPC.netUpdate = true;
-                            NPC.netSpam = 0;
+                            NPC.ForceNetUpdate();
                         }
                         else
                         {
@@ -1179,8 +1168,7 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
                         state = 0;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
 
                     break;
@@ -1275,8 +1263,7 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 NPC.velocity *= -4f;
                 ReelBack();
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 

@@ -553,8 +553,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     NPC.frame.Y = 0;
                 }
             }
@@ -579,8 +578,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -595,8 +593,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 else
                 {
                     NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
             }
         }
@@ -612,8 +609,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 target.AddBuff(BuffID.Bleeding, 180);
                 NPC.ai[3] = 1f;
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 

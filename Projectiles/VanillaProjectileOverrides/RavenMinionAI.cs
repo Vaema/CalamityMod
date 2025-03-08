@@ -143,13 +143,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             }
         }
 
-        private static void SyncVariables(Projectile proj)
-        {
-            proj.netUpdate = true;
-            if (proj.netSpam >= 10)
-                proj.netSpam = 9;
-        }
-
+        private static void SyncVariables(Projectile proj) => proj.ForceNetUpdate(false);
         #endregion
     }
 }

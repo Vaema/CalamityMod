@@ -62,8 +62,7 @@ namespace CalamityMod.Projectiles.Melee
                     Lunge();
                 SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -95,13 +94,10 @@ namespace CalamityMod.Projectiles.Melee
 
         private void OnHitEffects(bool cannotLifesteal)
         {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-
+            Projectile.ForceNetUpdate();
 
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;
-
 
             if (!cannotLifesteal) //trolled
             {
