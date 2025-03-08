@@ -688,7 +688,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
             bool wifeIsAround = wife != -1;
-            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+            bool respectPlayer = NPC.downedMoonlord;
+            bool beLessDrunk = wifeIsAround && respectPlayer;
 
             if (Main.bloodMoon)
             {
@@ -708,11 +709,24 @@ namespace CalamityMod.NPCs.TownNPCs
 
             WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
-            if (ChildSafety.Disabled)
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            if (!beLessDrunk)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            }
+            else
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal3Alt"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalization("Chat.Normal4Alt").Format(Main.npc[wife].GivenName));
+            }
 
             int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
             if (tavernKeep != -1)
@@ -734,11 +748,23 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (wifeIsAround)
             {
-                dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
-                if (ChildSafety.Disabled)
+                if (respectPlayer)
                 {
-                    dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
-                    dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                    dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+                    if (ChildSafety.Disabled)
+                    {
+                        dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
+                    }
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
+                    if (ChildSafety.Disabled)
+                    {
+                        dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                    }
                 }
             }
 
