@@ -687,6 +687,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            //bool wifeIsHappy = Main.npc[wife].Happiness;
             bool wifeIsAround = wife != -1;
             bool respectPlayer = NPC.downedMoonlord;
             bool beLessDrunk = wifeIsAround && respectPlayer;
