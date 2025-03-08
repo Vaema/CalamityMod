@@ -1654,8 +1654,8 @@ DukeEditFailed:
                     rev.Add(ItemID.FairyQueenMasterTrophy);
                     rev.Add(ItemID.FairyQueenPetItem, 4);
 
-                    // GFB Fabsol's Vodka and Terraformer drop
-                    GFB.Add(ModContent.ItemType<FabsolsVodka>(), 1, 1, 9999, true);
+                    // GFB Cirrus' Vodka and Terraformer drop
+                    GFB.Add(ModContent.ItemType<CirrusVodka>(), 1, 1, 9999, true);
                     GFB.Add(ItemID.Clentaminator2, hideLootReport: true);
 
                     // Lore

@@ -4,7 +4,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
 {
-    public class Fabsol : ModItem, ILocalizedModType
+    [LegacyName("Fabsol")]
+    public class PrincessSpiritinaBottle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()

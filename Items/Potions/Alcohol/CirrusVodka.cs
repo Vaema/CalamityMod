@@ -9,7 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class FabsolsVodka : ModItem, ILocalizedModType
+    [LegacyName("FabsolsVodka")]
+    public class CirrusVodka : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
 
@@ -30,7 +31,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 42, ModContent.BuffType<FabsolVodkaBuff>(), CalamityUtils.MinutesToFrames(15), true);
+            Item.DefaultToFood(30, 42, ModContent.BuffType<CirrusVodkaBuff>(), CalamityUtils.MinutesToFrames(15), true);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;

@@ -343,7 +343,7 @@ DILF: {
 
 FAP: {
 	DisplayName: Drunk Princess
-	Census.SpawnCondition: Have {$Items.Potions.FabsolsVodka.DisplayName} [i:CalamityMod/FabsolsVodka] in your inventory in Hardmode
+	Census.SpawnCondition: Have {$Items.Potions.CirrusVodka.DisplayName} [i:CalamityMod/CirrusVodka] in your inventory in Hardmode or defeat Calamitas Clone/Plantera
 	Name.Cirrus: Cirrus
 
 	Chat: {
