@@ -254,6 +254,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // With sight, just go straight at him. Without it, try to pathfind over them.
             pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
             pathfinding.MaxSpeed = 8f;
+            pathfinding.CustomIdleBehavior = () =>
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            };
 
             HuntCooldown--;
         }
