@@ -292,8 +292,8 @@ BlackGlassBand: {
 	DisplayName: Black Glass Band
 	Tooltip:
 		'''
-Enemy hits create an obsidian blast that always critically strikes
-This effect has a 7 second cooldown, but is halved if the blast kills an enemy
+		Enemy hits create an obsidian blast that always critically strikes
+		This effect has a 7 second cooldown, but is halved if the blast kills an enemy
 		'''
 }
 

@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool holding = true;
         public int postSwingCooldown = 0;
         public bool willDie = false;
+        public bool hasLaunchedBlades = false;
         public bool swooshFade = false;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
         public override void SetDefaults()
@@ -143,6 +144,7 @@ namespace CalamityMod.Projectiles.Melee
                 doSwing = true;
                 finalFlip = false;
                 playSwingSound = true;
+                hasLaunchedBlades = false;
                 if (!Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
                 {
                     willDie = true;
@@ -270,18 +272,22 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(blastRing2);
             }
 
-            for (int x = 0; x < Main.maxProjectiles; x++)
+            if (!hasLaunchedBlades)
             {
-                Projectile projectile = Main.projectile[x];
-                if (projectile.active && projectile.type == ModContent.ProjectileType<ForbiddenOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                for (int x = 0; x < Main.maxProjectiles; x++)
                 {
-                    projectile.owner = Owner.whoAmI;
-                    projectile.localAI[0] = 5;
-                    projectile.velocity = (launchVel * 16.5f).RotatedByRandom(0.25f);
-                    Owner.Calamity().demonSwordKillMode = true;
-                    if (hasKillMode)
-                        killModeCD.timeLeft = KillMode.cooldownMax + KillMode.buffMax;
-                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax + KillMode.buffMax;
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<ForbiddenOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                    {
+                        projectile.owner = Owner.whoAmI;
+                        projectile.localAI[0] = 5;
+                        projectile.velocity = (launchVel * 16.5f).RotatedByRandom(0.25f);
+                        Owner.Calamity().demonSwordKillMode = true;
+                        if (hasKillMode)
+                            killModeCD.timeLeft = KillMode.cooldownMax + KillMode.buffMax;
+                        Owner.Calamity().killModeCooldown = KillMode.cooldownMax + KillMode.buffMax;
+                        hasLaunchedBlades = true;
+                    }
                 }
             }
 
