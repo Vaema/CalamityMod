@@ -343,84 +343,6 @@ namespace CalamityMod.Items
                 player.statMana = 0;
             }
 
-            if (modPlayer.luxorsGift && !item.channel)
-            {
-                // useTime 9 = 0.9 useTime 2 = 0.2
-                float damageMult = 1f;
-                if (item.useTime < 10)
-                    damageMult -= (10 - item.useTime) / 10f;
-
-                float newDamage = damage * damageMult;
-
-                if (player.whoAmI == Main.myPlayer)
-                {
-                    if (item.CountsAsClass<MeleeDamageClass>())
-                    {
-                        int meleeDamage = (int)(newDamage * 0.25f);
-
-                        if (meleeDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(playerSource, position, velocity * 0.5f, ModContent.ProjectileType<LuxorsGiftMelee>(), (int)meleeDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<ThrowingDamageClass>())
-                    {
-                        int throwingDamage = (int)(newDamage * 0.2f);
-
-                        if (throwingDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<LuxorsGiftRogue>(), (int)throwingDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<RangedDamageClass>())
-                    {
-                        // This projectile is channeled and has no cooldown unless the gun fires
-                        // The damage of the projectile is also always the max damage of the weapon, and the shot damage is calculated based off of that
-                        // You can see how this may cause issues
-                        // The projectile is fired inside of the scope's code instead
-                        if (type != ModContent.ProjectileType<TitaniumRailgunScope>())
-                        {
-                            int rangedDamage = (int)(newDamage * 0.15f);
-
-                            if (rangedDamage >= 1)
-                            {
-                                int projectile = Projectile.NewProjectile(playerSource, position, velocity * 1.5f, ModContent.ProjectileType<LuxorsGiftRanged>(), (int)rangedDamage, 0f, player.whoAmI);
-                                if (projectile.WithinBounds(Main.maxProjectiles))
-                                    Main.projectile[projectile].DamageType = DamageClass.Generic;
-                            }
-                        }
-                    }
-                    else if (item.CountsAsClass<MagicDamageClass>())
-                    {
-                        int magicDamage = (int)(newDamage * 0.3f);
-
-                        if (magicDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<LuxorsGiftMagic>(), (int)magicDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<SummonDamageClass>() && player.ownedProjectileCounts[ModContent.ProjectileType<LuxorsGiftSummon>()] < 1)
-                    {
-                        if (damage >= 1)
-                        {
-                            int summonDamage = item.damage;
-
-                            int projectile = Projectile.NewProjectile(playerSource, position, Vector2.Zero, ModContent.ProjectileType<LuxorsGiftSummon>(), summonDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                            {
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                                Main.projectile[projectile].originalDamage = item.damage;
-                            }
-                        }
-                    }
-                }
-            }
             if (modPlayer.bloodflareMage && modPlayer.canFireBloodflareMageProjectile)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && !item.channel)
@@ -1065,23 +987,21 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier2")
             {
-                player.GetDamage<SummonDamageClass>() += 0.05f;
-                player.GetCritChance<MagicDamageClass>() += 15;
+                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetCritChance<MagicDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
             }
             else if (set == "MonkTier3")
             {
-                player.GetDamage<SummonDamageClass>() += 0.3f;
-                player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
+                player.GetDamage<SummonDamageClass>() += 0.2f;
                 player.GetDamage<MeleeDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.MonkTier3")}";
             }
             else if (set == "SquireTier3")
             {
                 player.lifeRegen += 6;
                 player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
+                player.GetCritChance<MeleeDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier3")}";
             }
             else if (set == "HuntressTier3")
@@ -1092,7 +1012,7 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier3")
             {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetDamage<SummonDamageClass>() += 0.15f;
                 player.GetCritChance<MagicDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier3")}";
             }
@@ -1163,7 +1083,7 @@ namespace CalamityMod.Items
                     player.lifeRegen -= 3;
                     break;
                 case ItemID.SquirePlating:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
                     break;
                 case ItemID.SquireGreaves:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
@@ -1172,20 +1092,35 @@ namespace CalamityMod.Items
 
                 case ItemID.HuntressJerkin:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    player.GetCritChance<RangedDamageClass>() += 5;
+                    break;
+                case ItemID.HuntressPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
+                case ItemID.ApprenticeHat:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeRobe:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeTrousers:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     player.GetCritChance<MagicDamageClass>() -= 15;
                     break;
 
+                case ItemID.SquireAltHead:
+                    player.GetDamage<MeleeDamageClass>() += 0.05f;
+                    player.GetDamage<SummonDamageClass>() += 0.05f;
+                    break;
                 case ItemID.SquireAltShirt:
                     player.lifeRegen -= 6;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
                     break;
                 case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
+                    player.GetCritChance<MeleeDamageClass>() -= 20;
                     break;
 
                 case ItemID.MonkAltHead:
@@ -1202,13 +1137,24 @@ namespace CalamityMod.Items
                     break;
 
                 case ItemID.HuntressAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    break;
+                case ItemID.HuntressAltPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetCritChance<RangedDamageClass>() -= 5;
                     break;
 
+                case ItemID.ApprenticeAltHead:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeAltShirt:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MagicDamageClass>() -= 15;
+                    player.GetCritChance<MagicDamageClass>() -= 25;
                     break;
 
                 case ItemID.SolarFlareHelmet:

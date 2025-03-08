@@ -262,8 +262,8 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 1f;
                 if (phase3)
                     NPC.ai[1] += 2f;
-                if (NPC.justHit)
-                    NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                if (NPC.justHit && masterMode)
+                    NPC.ai[1] += 4f;
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 

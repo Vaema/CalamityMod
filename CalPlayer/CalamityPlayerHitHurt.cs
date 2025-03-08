@@ -2643,7 +2643,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (rBrain)
                 {
-                    if (!CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()))
+                    if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()) || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbusSpawner>())))
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;

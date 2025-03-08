@@ -18,8 +18,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
@@ -31,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.velocity *= 1.015f;
             if (Projectile.alpha > 0)
             {

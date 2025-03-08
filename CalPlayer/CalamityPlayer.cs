@@ -709,6 +709,7 @@ namespace CalamityMod.CalPlayer
         #region Accessory
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool luxorsGift = false;
+        public bool luxorHit = false;
         public bool fungalSymbiote = false;
         public bool trinketOfChi = false;
         public bool gladiatorSword = false;
@@ -994,7 +995,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Harpy Wings, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
-        public bool MiniSwarmers = false;
         public bool noStupidNaturalARSpawns = false;
         /// <summary> Used for animating Void Concentration Staff's draw layer. </summary>
         public int voidFrameCounter = 0;
@@ -2246,7 +2246,6 @@ namespace CalamityMod.CalPlayer
             silvaWings = false;
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
-            MiniSwarmers = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -2772,6 +2771,7 @@ namespace CalamityMod.CalPlayer
             #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            luxorHit = false;
             arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;
             planarSpeedBoost = 0;
@@ -4575,6 +4575,15 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Shoot
+        // Brimflame Frenzy disables mana potion mana recovery
+        // This also covers all Quick Hotkeys
+        public override bool CanUseItem(Item item)
+        {
+            if (item.healMana > 0 && brimflameFrenzy)
+                return false;
+            return base.CanUseItem(item);
+        }
+
         public override bool Shoot(Item item, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
             if (bladeArmEnchant)
@@ -4683,18 +4692,6 @@ namespace CalamityMod.CalPlayer
                         Main.projectile[drop].DamageType = DamageClass.Generic;
                     }
                     RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
-                }
-            }
-
-            if (MiniSwarmers && MiniSwamerCooldown <= 0)
-            {
-                if (item.CountsAsClass<RangedDamageClass>() && !item.channel)
-                {
-                    var SwarmerSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DynamoStemCells>()));
-                    int newDamage = (int)(damage * (6 - 5 * (item.useTime >= 25 ? 1 : item.useTime / 25)));
-                    Projectile.NewProjectile(SwarmerSource, position, velocity * 1.25f, ProjectileType<MiniatureFolly>(), newDamage, 2f, Player.whoAmI);
-
-                    MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
                 }
             }
             return true;

@@ -9,7 +9,6 @@ namespace CalamityMod.Projectiles.Typeless
     public class ShadeNimbusRain : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        public override string Texture => "CalamityMod/Projectiles/Boss/ShaderainHostile";
 
         public override void SetDefaults()
         {
@@ -23,6 +22,12 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 50;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 6;
+        }
+
+        public override void AI()
+        {
+            if (Projectile.Center.Y > Main.player[Projectile.owner].Center.Y)
+                Projectile.tileCollide = true;
         }
 
         public override void OnKill(int timeLeft)

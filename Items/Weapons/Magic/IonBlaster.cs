@@ -12,8 +12,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.width = 44;
-            Item.height = 28;
+            Item.width = 68;
+            Item.height = 38;
             Item.damage = 29;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;

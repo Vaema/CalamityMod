@@ -31,6 +31,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -145,6 +146,9 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+            
+            if (luxorsGift)
+                luxorHit = true;
 
             // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
             if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
@@ -305,6 +309,9 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
+
+            if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
+                luxorHit = true;
 
             // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
             if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
@@ -642,14 +649,14 @@ namespace CalamityMod.CalPlayer
             if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
             {
                 AbaddonCooldown = 15;
-                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 50);
+                int AbaddonExploDamage = (int)Player.GetBestClassDamage().ApplyTo(Abaddon.AbaddonExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
             if (voidOfExtinction && crit && VoidCooldown <= 0)
             {
                 VoidCooldown = 15;
-                int VoidExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 70);
+                int VoidExploDamage = (int)Player.GetBestClassDamage().ApplyTo(VoidofExtinction.VoidExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
             }
 
@@ -738,6 +745,14 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
+            }
+            if (dynamoStemCells && MiniSwamerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            {
+                MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+
+                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
+                Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
         }
         #endregion

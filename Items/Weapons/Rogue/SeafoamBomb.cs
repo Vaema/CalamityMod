@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         public int throwCount = 0; // Gives bubbles an order to be fused in
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 44;
+            Item.width = 38;
+            Item.height = 42;
             Item.damage = 35;
             Item.noMelee = true;
             Item.noUseGraphic = true;

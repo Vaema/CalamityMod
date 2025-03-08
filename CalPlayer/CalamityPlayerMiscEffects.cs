@@ -222,7 +222,7 @@ namespace CalamityMod.CalPlayer
             bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
             int dir = MathF.Sign(Player.velocity.X);
 
-            if ((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0))
+            if (((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0)) && dashStart)
             {
                 Player.velocity.X *= 0.9f;
             }
@@ -1432,7 +1432,7 @@ namespace CalamityMod.CalPlayer
             // Rain armor set effects
             if (rainSet)
             {
-                if (Player.jump == 15) // This is technically the frame after you start jumping from the ground
+                if (Player.jump == 15 && Player.whoAmI == Main.myPlayer) // This is technically the frame after you start jumping from the ground
                 {
                     bool rainBoost = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(30 * (rainBoost ? 2f : 1));
