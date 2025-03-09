@@ -88,68 +88,79 @@ namespace CalamityMod.Projectiles.Melee
              */
             if (hasHit)
             {
-                if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
-                    Projectile.numHits -= 1;
+                int numHits = 0;
+                foreach (var target in Main.ActiveNPCs)
+                {
+                    Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation + HitboxRotationOffset);
+                    Rectangle hitbox = new((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
+                    if (!hitbox.Intersects(target.getRect()))
+                        continue;
+                    
+                    if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && numHits > 0)
+                        numHits -= 1;
 
-                SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
-                SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
-                SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
-                if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
-                {
-                    SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 8);
-                    SoundEngine.PlaySound(fire3 with { Volume = 0.8f }, Projectile.Center);
-                }
-                if (Projectile.numHits == 0)
-                {
-                    Owner.Calamity().GeneralScreenShakePower = 6.5f;
-                }
-
-                int heal = (int)MathHelper.Clamp(20 - Projectile.numHits * 12, 1, 20);
-                if (Projectile.numHits < 10)
-                {
-                    Owner.HealPlayer(heal);
-                }
-
-                if (target.CanBeMoved(true) || Main.zenithWorld || target.type == ModContent.NPCType<PrimordialWyrmHead>() || (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
-                {
-                    if (target.type == ModContent.NPCType<PrimordialWyrmHead>())
+                    SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
+                    SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
+                    SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                    SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
+                    if (Main.zenithWorld && numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
                     {
-                        CombatText.NewText(target.Hitbox, Color.Aqua, CalamityUtils.GetTextValue("Misc.HecBoop"));
-                        SoundStyle boop = new("CalamityMod/Sounds/Item/SnootBooped");
-                        SoundEngine.PlaySound(boop with { Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
+                        SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 8);
+                        SoundEngine.PlaySound(fire3 with { Volume = 0.8f }, Projectile.Center);
+                    }
+                    if (numHits == 0)
+                    {
+                        Owner.Calamity().GeneralScreenShakePower = 6.5f;
                     }
 
-                    bool rightClicked = Owner.Calamity().mouseRight;
+                    int heal = (int)MathHelper.Clamp(20 - numHits * 12, 1, 20);
+                    if (numHits < 10)
+                    {
+                        Owner.HealPlayer(heal);
+                    }
 
-                    // Make all hit enemies able to hit tiles, so you can dunk them
-                    target.noTileCollide = false;
+                    if (target.CanBeMoved(true) || Main.zenithWorld || target.type == ModContent.NPCType<PrimordialWyrmHead>() || (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
+                    {
+                        if (target.type == ModContent.NPCType<PrimordialWyrmHead>())
+                        {
+                            CombatText.NewText(target.Hitbox, Color.Aqua, CalamityUtils.GetTextValue("Misc.HecBoop"));
+                            SoundStyle boop = new("CalamityMod/Sounds/Item/SnootBooped");
+                            SoundEngine.PlaySound(boop with { Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
+                        }
 
-                    // Launch the suckers
-                    Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-                    float launchPower = (Main.zenithWorld ? 50 : 30) * (rightClicked ? 2 : 1);
-                    target.MoveNPC(launchVel, launchPower * 0.5f, true);
+                        bool rightClicked = Owner.Calamity().mouseRight;
 
-                    // Remove knockback resist, just like it used to
-                    target.knockBackResist = 1;
+                        // Make all hit enemies able to hit tiles, so you can dunk them
+                        target.noTileCollide = false;
 
-                    // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
-                    target.FlungNPC().ApplyCollisionDamage(target, Owner, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel * launchPower, 5f, true);
-                }
+                        // Launch the suckers
+                        Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                        float launchPower = (Main.zenithWorld ? 50 : 30) * (rightClicked ? 2 : 1);
+                        target.MoveNPC(launchVel, launchPower * 0.5f, true);
 
-                if (Projectile.numHits < 3)
-                {
-                    Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (-45 + Projectile.numHits * 5), false, (int)(16 - Projectile.numHits * 3), 0.6f - Projectile.numHits * 0.15f, Color.DodgerBlue, 0.45f);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
+                        // Remove knockback resist, just like it used to
+                        target.knockBackResist = 1;
 
-                for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
-                {
-                    Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 55, Main.rand.NextFloat(0.4f, 1.5f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<VoidDust>(), ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(1.55f, 2.2f));
-                    dust.noGravity = true;
-                    dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
+                        // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
+                        target.FlungNPC().ApplyCollisionDamage(target, Owner, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel * launchPower, 5f, true);
+                    }
+
+                    if (numHits < 3)
+                    {
+                        Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (-45 + numHits * 5), false, (int)(16 - numHits * 3), 0.6f - numHits * 0.15f, Color.DodgerBlue, 0.45f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+
+                    for (int i = 0; i < MathHelper.Clamp(10 - numHits * 2, 2, 10); i++)
+                    {
+                        Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 55, Main.rand.NextFloat(0.4f, 1.5f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                        Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<VoidDust>(), ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(1.55f, 2.2f));
+                        dust.noGravity = true;
+                        dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
+                    }
+
+                    numHits++;
                 }
 
                 hasHit = false;

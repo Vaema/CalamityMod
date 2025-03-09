@@ -87,73 +87,84 @@ namespace CalamityMod.Projectiles.Melee
 
             if (hasHit)
             {
-                // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
-                if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
+                int numHits = 0;
+                foreach (var target in Main.ActiveNPCs)
                 {
-                    pierceReduction -= 1;
-                }
+                    Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation + HitboxRotationOffset);
+                    Rectangle hitbox = new((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
+                    if (!hitbox.Intersects(target.getRect()))
+                        continue;
 
-                if (!chargedSwing)
-                {
-                    if (Projectile.numHits == 0)
+                    // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
+                    if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
                     {
-                        SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
-                        Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                        pierceReduction -= 1;
                     }
-                    for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
-                    {
-                        Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
-                        GeneralParticleHandler.SpawnParticle(spark2);
-                        if (Main.rand.NextBool())
-                        {
-                            Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.DarkRed);
-                            GeneralParticleHandler.SpawnParticle(spark3);
-                        }
-                    }
-                }
-                else
-                {
-                    if (Projectile.numHits == 0)
-                    {
-                        SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
-                        Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
-                        bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
-                        if (!photos)
+                    if (!chargedSwing)
+                    {
+                        if (numHits == 0)
                         {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
-                                GeneralParticleHandler.SpawnParticle(blastRing);
-                                Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
-                                GeneralParticleHandler.SpawnParticle(blastRing2);
-                            }
+                            SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
+                            Owner.Calamity().GeneralScreenShakePower = 4.5f;
                         }
-
-                        for (int i = 0; i < 2; i++)
+                        for (int i = 0; i < MathHelper.Clamp(8 - numHits * 2, 2, 8); i++)
                         {
-                            Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                        for (int i = 0; i < 15; i++)
-                        {
-                            Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
+                            Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
                             GeneralParticleHandler.SpawnParticle(spark2);
                             if (Main.rand.NextBool())
                             {
-                                Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Color.DarkRed);
+                                Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.DarkRed);
                                 GeneralParticleHandler.SpawnParticle(spark3);
                             }
-                            Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
-                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * GFBMulti;
-                            dust2.noGravity = true;
-                            dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
                         }
                     }
+                    else
+                    {
+                        if (numHits == 0)
+                        {
+                            SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
+                            Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                            bool photos = CalamityClientConfig.Instance.Photosensitivity;
+
+                            if (!photos)
+                            {
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                                    GeneralParticleHandler.SpawnParticle(blastRing);
+                                    Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                                }
+                            }
+
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                            }
+                            for (int i = 0; i < 15; i++)
+                            {
+                                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
+                                GeneralParticleHandler.SpawnParticle(spark2);
+                                if (Main.rand.NextBool())
+                                {
+                                    Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Color.DarkRed);
+                                    GeneralParticleHandler.SpawnParticle(spark3);
+                                }
+                                Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
+                                dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * GFBMulti;
+                                dust2.noGravity = true;
+                                dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                            }
+                        } 
+                    }
+
+                    Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                    target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
+                    numHits++;
                 }
 
-                Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-                target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
                 hasHit = false;
             }
 
