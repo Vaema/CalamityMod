@@ -115,7 +115,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.soundDelay = 360;
                 if (hasBeenHit)
                 {
-                    SoundEngine.PlaySound(EnragedRoarSound, NPC.Center);
+                    // Roar becomes lower pitch when crippled
+                    float pitch = phase3 ? -0.4f : 0;
+                    SoundEngine.PlaySound(EnragedRoarSound with { Pitch = pitch }, NPC.Center);
                 }
                 else
                 {
