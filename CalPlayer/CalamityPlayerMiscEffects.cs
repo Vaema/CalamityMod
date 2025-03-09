@@ -1609,7 +1609,7 @@ namespace CalamityMod.CalPlayer
                         {
                             float insanityValue = ((p.ai[1] % 10) + 1);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1660,7 +1660,7 @@ namespace CalamityMod.CalPlayer
                                 {
                                     float insanityValue = ((p.ai[1] % 10) + 1);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                        p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -3395,7 +3395,10 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
+                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
+                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
+                        }
                     }
                 }
             }
