@@ -1436,7 +1436,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling and deal 8% more damage
+	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1945,7 +1945,9 @@ VampiricTalisman: {
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
-		12% increased rogue damage
+        Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+        Stealth strikes inflict heavy bleeding for 5 seconds and armor crunch for 2.5 seconds
+        'Possessing the talisman makes you yearn for blood'
 		'''
 }
 

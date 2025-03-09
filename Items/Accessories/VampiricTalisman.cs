@@ -8,6 +8,10 @@ namespace CalamityMod.Items.Accessories
 {
     public class VampiricTalisman : ModItem, ILocalizedModType
     {
+        internal const int ArmorCrunchDebuffTime = 150;
+        internal const int HeavyBleedingDebuffTime = 300;
+        internal const float StealthStrikeDamageMultiplier = 0.08f;
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -22,13 +26,16 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.vampiricTalisman = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.12f;
+            modPlayer.raiderTalisman = true;
+            modPlayer.rottenDogTooth = true;
+            player.Calamity().bonusStealthDamage += StealthStrikeDamageMultiplier;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<RogueEmblem>().
+                AddIngredient<RaidersTalisman>().
+                AddIngredient<RottenDogtooth>().
                 AddIngredient<SolarVeil>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();

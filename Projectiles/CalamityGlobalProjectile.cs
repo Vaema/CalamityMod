@@ -4147,8 +4147,13 @@ namespace CalamityMod.Projectiles
             if (forcedCrit)
                 modifiers.SetCrit();
 
-            if (modPlayer.rottenDogTooth && projectile.Calamity().stealthStrike)
+            if (modPlayer.rottenDogTooth && projectile.Calamity().stealthStrike && !modPlayer.vampiricTalisman)
                 target.AddBuff(BuffType<Crumbling>(), RottenDogtooth.ArmorCrunchDebuffTime);
+            else if (modPlayer.vampiricTalisman && projectile.Calamity().stealthStrike)
+            {
+                target.AddBuff(BuffType<ArmorCrunch>(), VampiricTalisman.ArmorCrunchDebuffTime);
+                target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
+            }
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);

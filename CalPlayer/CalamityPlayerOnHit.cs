@@ -1303,7 +1303,7 @@ namespace CalamityMod.CalPlayer
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    int heal = (int)Math.Round(damage * 0.015);
+                    int heal = (int)Math.Round(damage * 0.010);
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
