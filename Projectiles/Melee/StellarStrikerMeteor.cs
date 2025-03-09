@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Melee
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -112,7 +111,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.2f;
-            int hitsToMinMult = 4;
+            int hitsToMinMult = 6;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 
@@ -133,7 +132,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.damage = (int)(Projectile.damage * 0.3f);
-                Projectile.ExpandHitboxBy((int)(228f * Projectile.scale));
+                Projectile.ExpandHitboxBy((int)(285f * Projectile.scale));
                 Projectile.penetrate = -1;
                 Projectile.Damage();
             }
@@ -155,5 +154,6 @@ namespace CalamityMod.Projectiles.Melee
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * 0.7f, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 0.3f, 25, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
         }
+        public override bool? CanCutTiles() => false;
     }
 }

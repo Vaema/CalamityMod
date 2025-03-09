@@ -750,8 +750,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 // Fly above target and become immune
                 case (int)SecondaryPhase.PassiveAndImmune:
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if (((!exoWormAlive || exoWormLifeRatio < 0.7f) || (!exoTwinsAlive || exoTwinsLifeRatio < 0.7f)) && !otherMechIsBerserk)
                     {
                         // Tells Ares to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
@@ -983,10 +984,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             }
                         }
 
+                        // The sound stops a few seconds before the attack ends as the lasers shrink in size
+                        float stopSound = deathrayTelegraphDuration + deathrayDuration - 160;
+
                         // Update the deathray sound if it's being played.
-                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying)
+                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying && calamityGlobalNPC.newAI[2] < stopSound)
                             deathraySound.Position = NPC.Center;
-                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration)
+                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration && calamityGlobalNPC.newAI[2] < stopSound)
                         {
                             // Start the loop sound if the start sound finished.
                             if (deathraySound is null || !deathraySound.IsPlaying || calamityGlobalNPC.newAI[2] == deathrayTelegraphDuration + 180f)
@@ -999,6 +1003,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 else if (deathraySound is not null)
                                     deathraySound.Resume();
                             }
+                        }
+
+                        // Stop the laser loop and play the end sound.
+                        if (calamityGlobalNPC.newAI[2] == stopSound)
+                        {
+                            deathraySound?.Stop();
+                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
                         }
 
                         if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration + deathrayDuration)
@@ -1065,10 +1076,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (EnragedState == (float)Enraged.Yes)
                                     EnragedState = (float)Enraged.No;
                             }
-
-                            // Stop the laser loop and play the end sound.
-                            deathraySound?.Stop();
-                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
 
                             NPC.localAI[0] += 1f;
                             NPC.TargetClosest();

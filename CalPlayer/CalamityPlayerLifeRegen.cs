@@ -96,7 +96,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Whispering Death sets positive regen to zero but doesn't actually deal any damage
-            ApplyDoTDebuff(wDeath, 0);
+            ApplyDoTDebuff(wDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4, purity);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
@@ -111,6 +111,7 @@ namespace CalamityMod.CalPlayer
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
+            ApplyDoTDebuff(demonicFlames, 33, purity);
             ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, 40, purity);
@@ -119,6 +120,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
+            ApplyDoTDebuff(hPressure, 40, purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);

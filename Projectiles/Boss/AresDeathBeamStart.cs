@@ -40,7 +40,6 @@ namespace CalamityMod.Projectiles.Boss
             // Ares' eight-pointed-star (more on higher difficulties) laser beams
             Main.projFrames[Type] = 5;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            // This is its serious name
         }
 
         public override void SetDefaults()
@@ -177,7 +176,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.scale < 0.001f)
                 return false;
 
-            Color beamColor = LaserOverlayColor;
+            Color beamColor = CalamityClientConfig.Instance.Photosensitivity ? Color.CornflowerBlue : LaserOverlayColor;
             Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);

@@ -356,11 +356,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float playerLocation2 = npc.Center.X - Main.player[npc.target].Center.X;
                     npc.direction = playerLocation2 < 0 ? 1 : -1;
                     npc.spriteDirection = npc.direction;
-
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else
                 {
@@ -519,10 +515,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.SyncExtraAI();
                     }
 
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -924,9 +917,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (Main.dedServ)
-                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-
-            npc.netSpam = 5;
+                npc.ForceNetUpdate();
 
             return false;
         }

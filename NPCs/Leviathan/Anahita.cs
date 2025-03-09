@@ -666,8 +666,7 @@ namespace CalamityMod.NPCs.Leviathan
                                 Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
                                 int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, LegendaryModeAttackChosen);
                                 Main.projectile[tele].netUpdate = true;
-                                if (LegendaryModeAttackChosen == 0) // Set rotation of water spear telegraph
-                                    Main.projectile[tele].rotation = (player.Center - spawnVector).ToRotation();
+                                    
                             }
                         }
                         else
@@ -690,9 +689,8 @@ namespace CalamityMod.NPCs.Leviathan
                             for (int i = 0; i < totalTelegraphs; i++)
                             {
                                 Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
-                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, NPC.localAI[3]);
-                                if (NPC.localAI[3] == 0f) // Set rotation of water spear telegraph
-                                    Main.projectile[tele].rotation = (player.Center - spawnVector).ToRotation();
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, NPC.localAI[3]);
+                                    
                             }
                         }
                     }

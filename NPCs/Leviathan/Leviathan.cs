@@ -647,10 +647,7 @@ namespace CalamityMod.NPCs.Leviathan
                         NPC.direction = playerLocation2 < 0 ? 1 : -1;
                         NPC.spriteDirection = NPC.direction;
 
-                        NPC.netUpdate = true;
-
-                        if (NPC.netSpam > 10)
-                            NPC.netSpam = 10;
+                        NPC.ForceNetUpdate(false);
                     }
                     else
                     {
@@ -699,10 +696,7 @@ namespace CalamityMod.NPCs.Leviathan
                             NPC.TargetClosest();
                         }
 
-                        NPC.netUpdate = true;
-
-                        if (NPC.netSpam > 10)
-                            NPC.netSpam = 10;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
             }

@@ -31,6 +31,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -82,6 +83,9 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
+
+            target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
 
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
@@ -142,6 +146,22 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = item.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
+            if (luxorsGift)
+                luxorHit = true;
+
+            // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
+            if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
+            {
+                Player.Calamity().transformerStoredKills += (!Main.zenithWorld ? 2 : 10);
+            }
 
             // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
             // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
@@ -198,6 +218,9 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
+
+            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
+            cgn.IncreasedWaterEffects_Amulet2 = false;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
@@ -293,6 +316,22 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = proj.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
+            if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
+                luxorHit = true;
+
+            // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
+            if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
+            {
+                Player.Calamity().transformerStoredKills += (!Main.zenithWorld ? 2 : 10);
+            }
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
             // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
@@ -624,14 +663,14 @@ namespace CalamityMod.CalPlayer
             if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
             {
                 AbaddonCooldown = 15;
-                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 50);
+                int AbaddonExploDamage = (int)Player.GetBestClassDamage().ApplyTo(Abaddon.AbaddonExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
             if (voidOfExtinction && crit && VoidCooldown <= 0)
             {
                 VoidCooldown = 15;
-                int VoidExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 70);
+                int VoidExploDamage = (int)Player.GetBestClassDamage().ApplyTo(VoidofExtinction.VoidExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
             }
 
@@ -720,6 +759,14 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
+            }
+            if (dynamoStemCells && MiniSwamerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            {
+                MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+
+                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
+                Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
         }
         #endregion
@@ -962,7 +1009,7 @@ namespace CalamityMod.CalPlayer
                     {
                         Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                         Vector2 velocity = (position - source) / 40f;
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(120);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(95);
                         Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
                     }
                 }
@@ -1173,17 +1220,13 @@ namespace CalamityMod.CalPlayer
             if (frostFlare)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffID.Frostburn2);
             if (omegaBlueChestplate)
-                target.AddBuff(BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
             if (aSpark && Player.IsUnderwater())
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (abyssalAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());
             }
             if (lumenousAmulet)
             {

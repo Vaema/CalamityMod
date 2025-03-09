@@ -186,18 +186,14 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Custom/DefenseDamage");
             SoundEngine.PlaySound(fire2 with { Volume = 0.55f, Pitch = 0.4f }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(5 - Projectile.numHits * 3, 1, 5));
+            int heal = (int)(MathHelper.Clamp(7 - Projectile.numHits * 5, 1, 7));
             if (Projectile.numHits < 5)
             {
                 Owner.HealPlayer(heal);
             }
 
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -15;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 15, true);
 
             for (int i = 0; i < MathHelper.Clamp(6 - Projectile.numHits * 2, 2, 6); i++)
             {

@@ -19,6 +19,11 @@ CinnamonRollBuff: {
 	Description: Mana regen rate and fire debuff damage increased, defense reduced
 }
 
+CirrusVodkaBuff: {
+	DisplayName: Fab
+	Description: You feel fabulous
+}
+
 EverclearBuff: {
 	DisplayName: Everclear
 	Description: Damage increased, life regen and defense reduced
@@ -27,11 +32,6 @@ EverclearBuff: {
 EvergreenGinBuff: {
 	DisplayName: Evergreen Gin
 	Description: Sickness and water debuff damage increased, life regen reduced
-}
-
-FabsolVodkaBuff: {
-	DisplayName: Fab
-	Description: You feel fabulous
 }
 
 FireballBuff: {
@@ -149,6 +149,11 @@ BurningBlood: {
 BrainRot: {
 	DisplayName: Brain Rot
 	Description: Your neurons are popping like corn kernels
+}
+
+DemonicFlames: {
+	DisplayName: Demonic Flames
+	Description: Immolating flames sear your soul
 }
 
 ElementalMix: {
@@ -1001,6 +1006,11 @@ GalvanicCorrosion: {
 GlacialState: {
 	DisplayName: Glacial State
 	Description: Cannot move
+}
+
+HadopelagicPressure: {
+	DisplayName: Hadopelagic Pressure
+	Description: Rapidly sinking to a watery grave
 }
 
 IcarusFolly: {

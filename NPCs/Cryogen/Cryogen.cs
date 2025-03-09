@@ -1428,8 +1428,6 @@ namespace CalamityMod.NPCs.Cryogen
                 normalOnly.Add(ModContent.ItemType<FrostFlare>(), DropHelper.NormalWeaponDropRateFraction);
             }
 
-            npcLoot.Add(ItemID.FrozenKey, 3);
-
             // Trophy (always directly from boss, never in bag)
             npcLoot.Add(ModContent.ItemType<CryogenTrophy>(), 10);
 

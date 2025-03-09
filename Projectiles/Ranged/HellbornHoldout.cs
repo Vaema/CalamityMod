@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
                         drawRot += 0.75f * Projectile.direction * MathHelper.Clamp(fade, 0.3f, 1f);
 
                         Lighting.AddLight(Projectile.Center, Color.Lerp(Color.OrangeRed, Color.White, 0.6f).ToVector3() * fade * 0.7f);
-                        if (!hasPlayedSound)
+                        if (!hasPlayedSound && !Main.dedServ)
                         {
                             SoundStyle spin = new("CalamityMod/Sounds/Item/SpinningWoosh");
                             SoundSlot = SoundEngine.PlaySound(spin with { Volume = 0.01f, Pitch = -0.1f, IsLooped = true }, Projectile.Center);

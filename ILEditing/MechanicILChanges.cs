@@ -925,6 +925,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Disable Moon Lord Style Flashes With Photosensitivity Config
+        private static void DisableFlashesWithPhotosensitivityConfig(On_MoonlordDeathDrama.orig_RequestLight orig, float light, Vector2 spot)
+        {
+            // Disable this function from running if the Photosensitivity config is enabled.
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                return;
+
+            orig(light, spot);
+        }
+        #endregion
+
         #region Lava Style Edits
         //Nine Layers of Hell brought to you by LIONEIGHTCAKE!!
         //All new liquid rendering for lava can be found in Systems/LavaRendering.cs
@@ -1750,8 +1761,8 @@ namespace CalamityMod.ILEditing
         #region Shimmer effect edits
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<CirrusVodka>())
             {
                 self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
                 self.shimmered = true;

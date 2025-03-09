@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -40,6 +41,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
@@ -62,6 +64,11 @@ namespace CalamityMod.Projectiles
         /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
         /// </summary>
         public bool CreatedByPlayerDash = false;
+        /// <summary>
+        /// If a projectile is spawned from a hostile NPC, this variable is set to the index of the NPC.<br/>
+        /// Used for identifying which NPC to apply certain retaliatory effects on from projectiles hitting the player.
+        /// </summary>
+        public int ParentNPCIndex = -1;
 
         /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
@@ -241,7 +248,7 @@ namespace CalamityMod.Projectiles
         /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
 
-        /// <summary> A timer for preventing projectiles from being "transformed" by transformer every frame. </summary>
+        /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
         public int TransformerTimer = 0;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
@@ -284,6 +291,12 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
+
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
@@ -291,7 +304,8 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
         }
-
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
         #endregion On Spawn
 
         #region Set Defaults
@@ -4618,7 +4632,7 @@ namespace CalamityMod.Projectiles
         public override bool PreKill(Projectile projectile, int timeLeft)
         {
             bool masterRevSkeletronPrimeBomb = projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && (Main.masterMode || BossRushEvent.BossRushActive);
-            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death) && projectile.wet;
+            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death);
             bool revGolemInferno = projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f;
 
             if (revQueenBeeBeeHive)
@@ -4732,11 +4746,12 @@ namespace CalamityMod.Projectiles
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int beeAmt = Main.rand.Next(2, 6);
-                        int availableAmountOfNPCsToSpawnUpToSlot = NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
-                        for (int i = 0; i < availableAmountOfNPCsToSpawnUpToSlot; i++)
+                        int beeAmt = Main.rand.Next(2, 5 + 1);
+                        int totalBeesAlive = NPC.CountNPCS(NPCID.Bee) + NPC.CountNPCS(NPCID.BeeSmall);
+                        int finalBeeAmtToSpawn = NPC.AnyNPCs(NPCID.QueenBee) ? Math.Min(beeAmt, (Main.masterMode ? 9 : 15) - totalBeesAlive) : NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
+                        for (int i = 0; i < finalBeeAmtToSpawn; i++)
                         {
-                            int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
+                            int beeType = Main.rand.NextBool() ? NPCID.Bee : NPCID.BeeSmall;
                             if (Main.zenithWorld)
                             {
                                 beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();

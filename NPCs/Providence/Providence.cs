@@ -329,10 +329,7 @@ namespace CalamityMod.NPCs.Providence
 
             // Be sure to inform clients of the fact that Providence is dying if only the server recieved this packet.
             if (Main.dedServ && !wasDyingBefore && Dying)
-            {
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
-            }
+                NPC.ForceNetUpdate();
         }
 
         public override void AI()
@@ -414,11 +411,7 @@ namespace CalamityMod.NPCs.Providence
                 Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     ProvidenceDyeConditionSyncPacket.Send(this);
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
             }
 
             // Increase all projectile damage while enraged, but reduce to 0 for Zenith
@@ -656,11 +649,7 @@ namespace CalamityMod.NPCs.Providence
                 DespawnSpecificProjectiles(true);
                 Dying = true;
                 NPC.dontTakeDamage = true;
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
 
                 return;
             }
@@ -746,12 +735,7 @@ namespace CalamityMod.NPCs.Providence
                             {
                                 NPC.life += healAmt;
                                 NPC.HealEffect(healAmt, true);
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
-
-                                NPC.netUpdate = true;
+                                NPC.ForceNetUpdate(false);
                             }
                         }
                     }
@@ -1070,12 +1054,7 @@ namespace CalamityMod.NPCs.Providence
                     NPC.ai[3] = 0f;
                     calamityGlobalNPC.newAI[1] = 0f;
                     calamityGlobalNPC.newAI[2] = 0f;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
-
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate(false);
 
                     break;
 
@@ -1092,27 +1071,27 @@ namespace CalamityMod.NPCs.Providence
                             NPC.dontTakeDamage = false;
 
                             CalamityUtils.AddScreenshakeAt(NPC.Center, 8, 2000);
-
                             SoundEngine.PlaySound(HolyRaySound, NPC.Center);
+                            bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
                             for (int i = 0; i < 20; i++)
                             {
-                                Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(1f, 1.6f), Main.rand.NextFloat(2f, 5f), hiColor, loColor);
+                                Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(1f, 1.6f), Main.rand.NextFloat(2f, 5f), hiColor * (photos ? 0.5f : 1f), loColor * (photos ? 0.5f : 1f));
                                 p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
                                 GeneralParticleHandler.SpawnParticle(p);
-                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(2.5f, 5.5f), 2f, Main.rand.NextFloat(-0.05f, 0.05f), true));
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor * (photos ? 0.5f : 1f), 60, Main.rand.NextFloat(2.5f, 5.5f), 2f, Main.rand.NextFloat(-0.05f, 0.05f), true));
                             }
                             CalamityUtils.AddScreenshakeAt(NPC.Center, 10, 2000);
 
-                            Color hColor = ProvUtils.GetProjectileColor(255, false);
-                            Color lColor = ProvUtils.GetProjectileColor(0, true);
+                            Color hColor = ProvUtils.GetProjectileColor(255, false) * (photos ? 0.5f : 1f);
+                            Color lColor = ProvUtils.GetProjectileColor(0, true) * (photos ? 0.5f : 1f);
 
                             for (int i = 0; i < 20; i++)
                             {
                                 Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(0.5f, 0.75f), Main.rand.NextFloat(1f, 2.5f), hColor, lColor);
                                 p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
                                 GeneralParticleHandler.SpawnParticle(p);
-                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(0.75f, 1.75f), 1f, Main.rand.NextFloat(-0.05f, 0.05f), true));
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor * (photos ? 0.5f : 1f), 60, Main.rand.NextFloat(0.75f, 1.75f), 1f, Main.rand.NextFloat(-0.05f, 0.05f), true));
                             }
 
                             GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.1f, 15));
@@ -1131,7 +1110,7 @@ namespace CalamityMod.NPCs.Providence
                             // Move effects slightly lower during enrage animation to appear as if they're converging on her core
                             Vector2 destination = NPC.Center + (NPC.localAI[1] != (float)BossMode.Normal ? new Vector2(0f, 40f) : Vector2.Zero);
 
-                            if (calamityGlobalNPC.newAI[3] % 10f == 0)
+                            if (calamityGlobalNPC.newAI[3] % (CalamityClientConfig.Instance.Photosensitivity ? 15f : 10f) == 0)
                             {
                                 GeneralParticleHandler.SpawnParticle(new CustomPulse(destination, Vector2.Zero, Color.Lerp(new Color(25, 25, 25, 0), medColor, sc), "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1.5f, 1f), Main.rand.NextBool() ? 0f : MathHelper.Pi, sc * 0.5f, sc * 0.1f, 20));
 
@@ -1157,12 +1136,7 @@ namespace CalamityMod.NPCs.Providence
                                 {
                                     NPC.life += healAmt;
                                     NPC.HealEffect(healAmt, true);
-
-                                    // Prevent netUpdate from being blocked by the spam counter.
-                                    if (NPC.netSpam >= 10)
-                                        NPC.netSpam = 9;
-
-                                    NPC.netUpdate = true;
+                                    NPC.ForceNetUpdate(false);
                                 }
                             }
                         }
@@ -1319,11 +1293,7 @@ namespace CalamityMod.NPCs.Providence
                             NPC.ai[2] += 10f;
                         }
 
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                     else
                     {
@@ -1792,11 +1762,7 @@ namespace CalamityMod.NPCs.Providence
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
                                 }
 
-                                NPC.netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
+                                NPC.ForceNetUpdate(false);
                             }
                         }
                     }
@@ -1901,13 +1867,7 @@ namespace CalamityMod.NPCs.Providence
 
             // Do periodic syncs.
             if (Main.dedServ && DeathAnimationTimer % 45f == 44f)
-            {
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
-            }
+                NPC.ForceNetUpdate(false);
 
             // Die and create drops after the star is gone.
             if (DeathAnimationTimer >= 345f)
@@ -1915,12 +1875,7 @@ namespace CalamityMod.NPCs.Providence
                 NPC.active = false;
                 NPC.HitEffect();
                 NPC.NPCLoot();
-
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
             }
         }
 
@@ -2009,12 +1964,7 @@ namespace CalamityMod.NPCs.Providence
             Dying = true;
             NPC.active = true;
             NPC.dontTakeDamage = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             return false;
         }

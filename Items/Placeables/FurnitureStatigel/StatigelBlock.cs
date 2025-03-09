@@ -24,10 +24,12 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
                 Register();
             CreateRecipe().
                 AddIngredient<StatigelPlatform>(2).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<StatigelWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

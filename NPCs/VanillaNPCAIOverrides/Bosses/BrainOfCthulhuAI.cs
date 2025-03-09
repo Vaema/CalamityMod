@@ -609,8 +609,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     npc.ai[0] = npc.ai[0] == -6f ? -7f : -2f;
                                     npc.ai[1] = teleportTileX;
                                     npc.ai[2] = teleportTileY;
-                                    npc.netUpdate = true;
-                                    npc.netSpam = 0;
+                                    npc.ForceNetUpdate();
 
                                     break;
                                 }
@@ -661,8 +660,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                         }
 
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
 
                     npc.alpha = (int)npc.ai[3];
@@ -699,8 +697,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = 0f;
                             npc.ai[0] = -1f;
                         }
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
 
                     npc.alpha = (int)npc.ai[3];
@@ -1198,8 +1195,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     npc.ai[0] = -2f;
                                     npc.ai[1] = num847;
                                     npc.ai[2] = num848;
-                                    npc.netUpdate = true;
-                                    npc.netSpam = 0;
+                                    npc.ForceNetUpdate();
                                     break;
                                 }
                             }
@@ -1225,8 +1221,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.position.Y = npc.ai[2] * 16f - (float)(npc.height / 2);
                         SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                         npc.ai[0] = -3f;
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
 
                     npc.alpha = (int)npc.ai[3];
@@ -1245,8 +1240,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[3] = 0f;
                         npc.ai[0] = -1f;
-                        npc.netUpdate = true;
-                        npc.netSpam = 0;
+                        npc.ForceNetUpdate();
                     }
 
                     npc.alpha = (int)npc.ai[3];

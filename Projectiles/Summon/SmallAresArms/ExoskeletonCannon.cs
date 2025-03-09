@@ -111,8 +111,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 ClampFirstLimbRotation(ref Limbs[0].Rotation);
                 Limbs.Update(connectPosition, endPosition);
 
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
 
             Projectile.ai[1] = 0f;

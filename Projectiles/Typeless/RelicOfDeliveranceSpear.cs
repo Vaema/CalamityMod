@@ -222,6 +222,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (boostTimer == 0 && driftTimer > 0)
                     {
+                        Projectile.netUpdate = true;
                         driftBadMult = (driftPower > 1 ? 1 : time < 60 ? 0 : 0.35f);
                         driftTimer = 0;
 
@@ -328,6 +329,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 if (respawnTimer >= 300)
                 {
+                    Projectile.netUpdate = true;
                     Projectile.Center = respawnPoint;
                     Owner.Center = respawnPoint;
                     Projectile.velocity *= 0.01f;
@@ -422,10 +424,6 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             time++;
-
-            // I pray for the fate of this thing in multiplayer dear god
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
         }
         public void KillProj()
         {
@@ -528,17 +526,6 @@ namespace CalamityMod.Projectiles.Typeless
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             overWiresUI.Add(index);
-        }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write7BitEncodedInt(driftPower);
-            writer.Write(driftPowerScaling);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            driftPower = reader.Read7BitEncodedInt();
-            driftPowerScaling = reader.Read();
         }
     }
 }

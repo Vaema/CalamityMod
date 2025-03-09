@@ -25,9 +25,11 @@ namespace CalamityMod.Items.Placeables.FurnitureCosmilite
             CreateRecipe().
                 AddIngredient<CosmiliteBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<CosmilitePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

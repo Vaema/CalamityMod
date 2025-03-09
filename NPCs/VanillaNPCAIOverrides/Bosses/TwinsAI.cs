@@ -1418,10 +1418,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (npc.ai[1] == 0f)
                                 npc.localAI[1] = -20f;
 
-                            npc.netUpdate = true;
-
-                            if (npc.netSpam > 10)
-                                npc.netSpam = 10;
+                            npc.ForceNetUpdate(false);
                         }
 
                         // Set charging velocity
@@ -1487,10 +1484,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             npc.ai[1] = 4f;
-                            npc.netUpdate = true;
-
-                            if (npc.netSpam > 10)
-                                npc.netSpam = 10;
+                            npc.ForceNetUpdate(false);
                         }
                     }
 
@@ -1529,10 +1523,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float spazmatismRetDeadChargeTimer = spazmatismRetDeadChargeSpeed + 25f;
                         if (npc.ai[2] >= spazmatismRetDeadChargeTimer)
                         {
-                            npc.netUpdate = true;
-
-                            if (npc.netSpam > 10)
-                                npc.netSpam = 10;
+                            npc.ForceNetUpdate(false);
 
                             float chargeIncrement = 1f;
                             if (masterMode && Main.rand.NextBool() && npc.ai[3] < (retAlive ? 2f : 3f))
@@ -1609,10 +1600,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] = 0f;
                         }
 
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                 }
             }

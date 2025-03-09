@@ -54,9 +54,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
 
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
+            Projectile.ForceNetUpdate(false);
         }
 
         public override bool PreDraw(ref Color lightColor)

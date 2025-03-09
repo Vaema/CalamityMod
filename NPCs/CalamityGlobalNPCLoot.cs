@@ -221,9 +221,11 @@ namespace CalamityMod.NPCs
                 // Sand Elemental
                 // Elemental in a Bottle @ 20% Normal, 33.33% Expert+
                 // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
+                // Desert Key @ 10%
                 case NPCID.SandElemental:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottle>(), 5, 3));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottlewithBoobs>(), 10, 6));
+                    npcLoot.Add(ItemID.DungeonDesertKey, 10);
                     break;
                 #endregion
 
@@ -302,28 +304,30 @@ namespace CalamityMod.NPCs
 
                 // Ice Golem
                 // 8-10 Essence of Eleum @ 100%, 10-12 Expert+
+                // Frozen Key @ 10%
                 case NPCID.IceGolem:
                     npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<EssenceofEleum>(), 1, 8, 10, 10, 12));
+                    npcLoot.Add(ItemID.FrozenKey, 10);
                     break;
                 #endregion
 
                 #region Aquatic / Ocean
                 // Pink Jellyfish
-                // Life Jelly @ 14.29% Normal, 25% Expert+
+                // Life Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.PinkJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
                     break;
 
                 // Blue Jellyfish
-                // Cleansing Jelly @ 14.29% Normal, 25% Expert+
+                // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
                     break;
 
                 // Green Jellyfish
-                // Vital Jelly @ 14.29% Normal, 25% Expert+
+                // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
                     break;
 
                 // Shark
@@ -363,13 +367,27 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<IchorSpear>(), 25, 15));
                     break;
 
-                // Biome Mimics
+                // Corrupt Mimic
                 // Celestial Claymore @ 14.29% Normal, 25% Expert+
-                case NPCID.BigMimicHallow:
                 case NPCID.BigMimicCorruption:
-                case NPCID.BigMimicCrimson:
-                case NPCID.BigMimicJungle:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CelestialClaymore>(), 7, 4));
+                    npcLoot.Add(ItemID.CorruptionKey, 10);
+                    break;
+
+                // Crimson Mimic
+                // Celestial Claymore @ 14.29% Normal, 25% Expert+
+                // Crimson Key @ 10%
+                case NPCID.BigMimicCrimson:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CelestialClaymore>(), 7, 4));
+                    npcLoot.Add(ItemID.CrimsonKey, 10);
+                    break;
+
+                // Hallowed Mimic
+                // Celestial Claymore @ 14.29% Normal, 25% Expert+
+                // Hallowed Key @ 10%
+                case NPCID.BigMimicHallow:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CelestialClaymore>(), 7, 4));
+                    npcLoot.Add(ItemID.HallowedKey, 10);
                     break;
 
                 // World Feeder
@@ -410,6 +428,20 @@ namespace CalamityMod.NPCs
                 // Butterfly Dust @ 100% INSTEAD OF 50%
                 case NPCID.Moth:
                     npcLoot.ChangeDropRate(ItemID.ButterflyDust, 1, 1);
+                    break;
+
+                // Jungle Mimic
+                // Celestial Claymore @ 14.29% Normal, 25% Expert+
+                case NPCID.BigMimicJungle:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CelestialClaymore>(), 7, 4));
+                    break;
+
+                // Lihzahrd + Flying Snake
+                // Jungle Key @ 0.67%
+                case NPCID.Lihzahrd:
+                case NPCID.LihzahrdCrawler:
+                case NPCID.FlyingSnake:
+                    npcLoot.Add(ItemID.JungleKey, 150);
                     break;
                 #endregion
 
@@ -490,7 +522,7 @@ namespace CalamityMod.NPCs
                 // Old Lord Oathsword @ 4% Normal, 14.29% after defeating EoW/BoC
                 case NPCID.BoneSerpentHead:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 25);
-                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 7);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 4);
                     break;
 
                 // Red Devil
@@ -509,7 +541,7 @@ namespace CalamityMod.NPCs
                 case NPCID.MaggotZombie:
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 10);
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
@@ -519,13 +551,15 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Blood Moon
-                // All Blood Moon enemies
+                // After EoC, All Blood Moon enemies
                 // Drop Blood Orbs @ 100% (25% for common enemies)
                 case NPCID.BloodZombie:
                 case NPCID.Drippler:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 4);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
-
+                
+                //Hardmode enemies drop orbs even if EoC is not dead
+                //99% of players will not encounter this and challenge runners will appreciate it
                 case NPCID.Clown:
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 6, 12);
                     break;
@@ -534,11 +568,11 @@ namespace CalamityMod.NPCs
                 // Bouncing Eyeball @ 10% Normal, 16.66% Expert+
                 case NPCID.EyeballFlyingFish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BouncingEyeball>(), 10, 6));
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
                 case NPCID.ZombieMerman:
-                    npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
                 case NPCID.GoblinShark:
@@ -1220,10 +1254,6 @@ namespace CalamityMod.NPCs
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
-                    // WoF drops Evil Keys
-                    npcLoot.Add(ItemID.CorruptionKey, 3);
-                    npcLoot.Add(ItemID.CrimsonKey, 3);
-
                     // Master items drop in Revengeance
                     rev.Add(ItemID.WallofFleshMasterTrophy);
                     rev.Add(ItemID.WallOfFleshGoatMountItem, 4);
@@ -1245,9 +1275,6 @@ namespace CalamityMod.NPCs
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-
-                    // Queen Slime drops the Hallowed Key
-                    npcLoot.Add(ItemID.HallowedKey, 3);
 
                     // Master items drop in Revengeance
                     rev.Add(ItemID.QueenSlimeMasterTrophy);
@@ -1401,9 +1428,6 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(ModContent.ItemType<BlossomFlux>(), 10);
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ModContent.ItemType<LivingShard>(), 1, 25, 30));
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-
-                    // Plantera drops Jungle Key
-                    npcLoot.Add(ItemID.JungleKey, 3);
 
                     // Master items drop in Revengeance
                     rev.Add(ItemID.PlanteraMasterTrophy);
@@ -1630,8 +1654,8 @@ DukeEditFailed:
                     rev.Add(ItemID.FairyQueenMasterTrophy);
                     rev.Add(ItemID.FairyQueenPetItem, 4);
 
-                    // GFB Fabsol's Vodka and Terraformer drop
-                    GFB.Add(ModContent.ItemType<FabsolsVodka>(), 1, 1, 9999, true);
+                    // GFB Cirrus' Vodka and Terraformer drop
+                    GFB.Add(ModContent.ItemType<CirrusVodka>(), 1, 1, 9999, true);
                     GFB.Add(ItemID.Clentaminator2, hideLootReport: true);
 
                     // Lore

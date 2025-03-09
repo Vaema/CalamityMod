@@ -128,11 +128,7 @@ namespace CalamityMod.Projectiles.Summon
             // If the head is set to net update every body segment will also update.
             // This update cannot be blocked by netSpam.
             if (head.netUpdate)
-            {
-                projectile.netUpdate = true;
-                if (projectile.netSpam > 59)
-                    projectile.netSpam = 59;
-            }
+                projectile.ForceNetUpdate(false);
 
             projectile.extraUpdates = head.extraUpdates;
 

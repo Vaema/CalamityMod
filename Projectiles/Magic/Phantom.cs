@@ -104,12 +104,10 @@ namespace CalamityMod.Projectiles.Magic
             modifiers.SourceDamage *= (launched ? 1f : 0.4f);
 
             Player Owner = Main.player[Projectile.owner];
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center);
+            target.MoveNPC(launchVel, 10 * (launched ? 0.5f : 1), true);
+            
         }
         public override void OnKill(int timeLeft)
         {

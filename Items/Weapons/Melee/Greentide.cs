@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const int TotalRows = 2;
 
-        internal const int TotalTeeth = 5;
+        internal const int TotalTeeth = 4;
 
         public override void SetDefaults()
         {
@@ -40,15 +40,19 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.shootSpeed = 10;
         }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int i = 0; i < 2; ++i)
             {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7f), knockback / 3, player.whoAmI, 1f, 0f);
+                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
             }
             for (int i = 0; i < 2; ++i)
             {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.7), knockback / 3, player.whoAmI, 1f, 0f);
+                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
             }
             Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, (int)(damage), knockback, player.whoAmI, 2f, 0f);
             strongTooth.penetrate = -1;
@@ -75,7 +79,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             Vector2 secondCachedVelocity = secondVelocity;
 
-            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.2));
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
             float teethKnockback = Item.knockBack * 0.2f;
             bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
             float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;

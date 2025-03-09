@@ -26,9 +26,11 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
             CreateRecipe().
                 AddIngredient<PolishedMarniteWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<PolishedMarnitePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

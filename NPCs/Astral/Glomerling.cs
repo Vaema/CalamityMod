@@ -13,6 +13,7 @@ using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.Astral
 {
@@ -44,6 +45,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             Banner = ModContent.NPCType<Astraglomerate>();
+            BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 50;

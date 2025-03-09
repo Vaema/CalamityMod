@@ -82,8 +82,8 @@ namespace CalamityMod.Balancing
                 // Nerf Mushroom Spear projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, MushroomSpearFilter)),
 
-                // Nerf Orichalcum armor set bonus petals by 33%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.66f, OrichalcumPetalFilter)),
+                // Nerf Orichalcum armor set bonus petals by 25%.
+                Do(new ProjectileSpecificRequirementBalancingRule(0.75f, OrichalcumPetalFilter)),
 
                 // Nerf Spectre Mask set bonus projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, SpectreMaskSetBonusFilter)),
@@ -94,12 +94,12 @@ namespace CalamityMod.Balancing
 
             #region Desert Scourge
             // 25% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DesertScourgeIDList.List, Do(ResistTrueMelee(0.75f))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(DesertScourgeIDList.List, Do(ResistTrueMelee(0.8f))));
             #endregion
 
             #region Crabulon
             // 25% resist to true melee.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.75f)));
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
             #endregion
 
             #region Brain of Cthulhu: Creepers

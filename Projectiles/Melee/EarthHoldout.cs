@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
                         swingCount++;
                         playSwingSound = false;
                     }
-                    if ((int)(time) % 2 == 0 && Projectile.ai[1] == 1)
+                    if ((int)(time) % 2 == 0 && Projectile.ai[1] == 1 && !Main.dedServ)
                     {
                         SoundStyle swoosh = new("CalamityMod/Sounds/Item/SwooshMid");
                         SoundEngine.PlaySound(swoosh with { Volume = 1f, Pitch = -0.4f, MaxInstances = -1 }, Projectile.Center);
@@ -257,12 +257,8 @@ namespace CalamityMod.Projectiles.Melee
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center)) * 37;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center));
+            target.MoveNPC(launchVel, 37, true);
 
             if (spawnBoom)
             {
@@ -301,8 +297,9 @@ namespace CalamityMod.Projectiles.Melee
                 spawnBoom = false;
             }
 
-            int heal = (int)(MathHelper.Clamp(85 - Projectile.numHits * 65, 1, 85));
-            if (Projectile.numHits < 15)
+            int healPower = (Projectile.ai[1] == -1 ? 100 : 85);
+            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
+            if (Projectile.numHits < 10)
             {
                 Owner.HealPlayer(heal);
             }

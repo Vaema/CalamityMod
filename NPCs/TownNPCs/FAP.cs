@@ -660,7 +660,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             foreach (Player player in Main.ActivePlayers)
             {
-                bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>()) || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>());
+                bool hasVodka = player.InventoryHas(ModContent.ItemType<CirrusVodka>()) || player.PortableStorageHas(ModContent.ItemType<CirrusVodka>());
                 if (hasVodka)
                     return Main.hardMode;
                 else
@@ -687,27 +687,47 @@ namespace CalamityMod.NPCs.TownNPCs
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            //bool wifeIsHappy = Main.npc[wife].Happiness;
             bool wifeIsAround = wife != -1;
-            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+            bool respectPlayer = NPC.downedMoonlord;
+            bool beLessDrunk = wifeIsAround && respectPlayer;
 
             if (Main.bloodMoon)
             {
                 if (Main.rand.NextBool(4))
                 {
-                    player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
-                    SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
-                    return this.GetLocalizedValue("Chat.BloodMoonSlap");
+                    if (!beLessDrunk)
+                    {
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
+                        SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap1");
+                    }
+                    else
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap2");
                 }
                 return this.GetLocalizedValue("Chat.BloodMoon" + Main.rand.Next(1, 3 + 1));
             }
 
             WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
-            if (ChildSafety.Disabled)
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            if (!beLessDrunk)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            }
+            else
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal3Alt"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalization("Chat.Normal4Alt").Format(Main.npc[wife].GivenName));
+            }
 
             int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
             if (tavernKeep != -1)
@@ -729,11 +749,23 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (wifeIsAround)
             {
-                dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
-                if (ChildSafety.Disabled)
+                if (respectPlayer)
                 {
-                    dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
-                    dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                    dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+                    if (ChildSafety.Disabled)
+                    {
+                        dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
+                    }
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
+                    if (ChildSafety.Disabled)
+                    {
+                        dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                    }
                 }
             }
 
@@ -797,10 +829,10 @@ namespace CalamityMod.NPCs.TownNPCs
             if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAnahitaTrans"));
 
-            if (player.Calamity().fabsolVodka)
+            if (player.Calamity().cirrusVodka)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasVodka"));
 
-            if (player.HasItem(ModContent.ItemType<Fabsol>()))
+            if (player.HasItem(ModContent.ItemType<PrincessSpiritinaBottle>()))
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn2"));
@@ -880,7 +912,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .AddWithCustomValue(ModContent.ItemType<Rum>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Tequila>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Fireball>(), Item.buyPrice(gold: 3))
-                .AddWithCustomValue(ModContent.ItemType<FabsolsVodka>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<CirrusVodka>(), Item.buyPrice(gold: 3))
                 .AddWithCustomValue(ModContent.ItemType<Vodka>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
                 .AddWithCustomValue(ModContent.ItemType<Screwdriver>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
                 .AddWithCustomValue(ModContent.ItemType<WhiteWine>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)

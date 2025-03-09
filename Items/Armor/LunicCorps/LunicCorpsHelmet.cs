@@ -86,15 +86,15 @@ namespace CalamityMod.Items.Armor.LunicCorps
             string adrenTooltip = CalamityWorld.revenge ? "\n" + this.GetLocalizedValue("ShieldAdren") : "";
             player.setBonus = this.GetLocalization("SetBonus").Format(adrenTooltip);
 
-            player.bulletDamage += 0.1f;
-            player.specialistDamage += 0.1f;
+            player.bulletDamage += 0.15f;
+            player.specialistDamage += 0.15f;
 
             player.jumpSpeedBoost += 1f;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.12f;
+            player.GetDamage<RangedDamageClass>() += 0.15f;
             player.nightVision = true;
             player.detectCreature = true;
         }

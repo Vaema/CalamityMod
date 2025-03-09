@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Melee
                 mousePos = Owner.Calamity().mouseWorld;
             }
 
-            if (CanHit)
+            if (CanHit && Owner.Calamity().mouseRight)
                 fadeIn = MathHelper.Lerp(fadeIn, 1, 0.1f);
             else
                 fadeIn = MathHelper.Lerp(fadeIn, 0, 0.15f);
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         CanHit = true;
 
-                        Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
+                        Vector2 particleVel = new Vector2(0, 7 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                         Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(10, 90), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
 
                         Dust dust = Dust.NewDustPerfect(particlePos, 79);
@@ -162,11 +162,13 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (CanHit)
                     {
-                        for (int i = 0; i < 2; i++)
+                        for (int i = 0; i < (Owner.Calamity().mouseRight ? 3 : 2); i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(90, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.JungleTorch, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.5f));
-                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
-                            dust2.noGravity = true;
+                            Vector2 dustPos = Owner.Center + (new Vector2(90, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f));
+                            Dust dust2 = Dust.NewDustPerfect(dustPos, i == 2 ? 278 : DustID.JungleTorch, Utils.DirectionTo(Owner.Center, dustPos) * Main.rand.NextFloat(1.2f, 2.5f));
+                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * (Owner.Calamity().mouseRight ? 1.3f : 1);
+                            dust2.noGravity = i == 2 ? false : true;
+                            dust2.color = i == 2 ? Color.Chartreuse : default;
                         }
                     }   
                 }
@@ -187,22 +189,22 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
             target.AddBuff(BuffID.Poisoned, 90);
 
-            if (target.CanBeMoved(true))
-            {
-                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -12;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 7.5f * (Owner.Calamity().mouseRight ? 2.5f : 1), true);
+
             if (Owner.Calamity().mouseRight)
             {
+                Owner.Calamity().GeneralScreenShakePower = 1.2f;
+
                 SoundStyle fire3 = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion");
                 SoundEngine.PlaySound(fire3 with { Volume = 0.35f, Pitch = 0.7f }, Projectile.Center);
                 for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.JungleTorch, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3.5f, 7f));
-                    dust2.scale = Main.rand.NextFloat(0.65f, 1.35f);
+                    bool dType = i % 4 == 0;
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, dType ? 278 : DustID.JungleTorch, launchVel.RotatedByRandom(0.5f) * Main.rand.NextFloat(3.5f, 7f) * (dType ? 2 : 1));
+                    dust2.scale = Main.rand.NextFloat(0.65f, 1.35f) * (dType ? 0.7f : 1f);
                     dust2.noGravity = true;
+                    dust2.color = dType ? Color.Chartreuse : default;
                 }
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 playerLaunchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * 10;
@@ -231,6 +233,13 @@ namespace CalamityMod.Projectiles.Melee
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
+
+                for (int i = 0; i < 8; i++)
+                {
+                    Color auraColor = Color.Chartreuse with { A = 0 } * 0.35f * fadeIn;
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 8 * fadeIn;
+                    Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                }
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
             }

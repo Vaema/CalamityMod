@@ -75,8 +75,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = mouse;
             else
                 Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(mouse) * 19f) / 4f;
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         internal void ReturnToOwner()

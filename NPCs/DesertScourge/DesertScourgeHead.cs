@@ -182,6 +182,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
 
             NPC.dontTakeDamage = hide;
+            NPC.canDisplayBuffs = !hide;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -870,8 +871,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     NPC.frame.Y = 0;
                 }
             }
@@ -896,8 +896,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -912,8 +911,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 else
                 {
                     NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
             }
         }
@@ -1053,8 +1051,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 target.AddBuff(BuffID.Bleeding, 600);
                 NPC.ai[3] = 1f;
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 

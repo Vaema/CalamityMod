@@ -98,10 +98,10 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary> Boss Kill Time data structure </summary>
+        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary> Damage Reduction Lookup Table </summary>
+        /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
         /// <summary> Damage Reduction Value </summary>
@@ -168,6 +168,10 @@ namespace CalamityMod.NPCs
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
+        // Amulets effects
+        public bool IncreasedWaterEffects_Amulet1 = false;
+        public bool IncreasedWaterEffects_Amulet2 = false;
+
         // Sickness and Water debuff effects
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
@@ -212,13 +216,9 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        /// <summary>
-        /// Constant multiplier used to increase vanilla enemy health.
-        /// </summary>
+        /// <summary> Constant multiplier used to increase vanilla enemy health. </summary>
         private const double EnemyHPMultiplier = 1.25;
-        /// <summary>
-        /// Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies.
-        /// </summary>
+        /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
         /// <summary>
         /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
@@ -311,6 +311,8 @@ namespace CalamityMod.NPCs
         public int absorberAffliction = 0;
         public int irradiated = 0;
         public int bFlames = 0;
+        public int demonicFlames = 0;
+        public int demonicFlamesBonusDamage = 0;
         public int hFlames = 0;
         /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
@@ -326,12 +328,19 @@ namespace CalamityMod.NPCs
         public float warbannerBurnIntensity = 0;
         public bool warbannerBurnMarked = false;
         public bool warbannerBurnHideEffects = false;
+        /// <summary> Constant variable representing the delay, in frames, before Verium Bolt's extra damage applies. </summary>
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        /// <summary>
+        /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
+        /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
+        /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
+        public int demonSwordImpales = 0;
+        public int impalePacketTimer = 0;
 
         /// <summary>
         /// If set to true, prevents this NPC from dealing contact damage.<br/>
@@ -350,6 +359,7 @@ namespace CalamityMod.NPCs
 
         public int cDepth = 0;
         public int rTide = 0;
+        public int hPressure = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
         public int vermillionFlux = 0;
@@ -513,6 +523,8 @@ namespace CalamityMod.NPCs
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
+            myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
@@ -568,6 +580,8 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
+            myClone.demonicFlames = demonicFlames;
+            myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
@@ -586,6 +600,8 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
+            myClone.demonSwordImpales = demonSwordImpales;
+            myClone.impalePacketTimer = impalePacketTimer;
 
             myClone.pacified = pacified;
 
@@ -595,6 +611,7 @@ namespace CalamityMod.NPCs
 
             myClone.cDepth = cDepth;
             myClone.rTide = rTide;
+            myClone.hPressure = hPressure;
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
@@ -938,6 +955,11 @@ namespace CalamityMod.NPCs
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
+            if (IncreasedWaterEffects_Amulet1)
+                waterDamageMult += 0.35;
+            if (IncreasedWaterEffects_Amulet2)
+                waterDamageMult += 0.75;
+
             if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
             {
                 sicknessDamageMult += 0.25;
@@ -958,7 +980,7 @@ namespace CalamityMod.NPCs
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            bool hasModHotOil = bFlames > 0 || demonicFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
             if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
             {
                 double multiplier = 1D;
@@ -1108,6 +1130,15 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
+            // Demonic Flames
+            // An unresistable fire debuff that you can set the damage of when it is applied
+            // This way it can be viable for multiple tiers
+            if (demonicFlames > 0)
+            {
+                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
             // Holy Flames
             if (hFlames > 0)
             {
@@ -1242,6 +1273,13 @@ namespace CalamityMod.NPCs
             {
                 int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
                 ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
+            }
+
+            //Hadopelagic Pressure
+            if (hPressure > 0)
+            {
+                int baseHadopelagicPressureDoTValue = (int)(400 * waterDamageMult);
+                ApplyDPSDebuff(baseHadopelagicPressureDoTValue, baseHadopelagicPressureDoTValue / 2, ref npc.lifeRegen, ref damage);
             }
             #endregion
 
@@ -5595,6 +5633,10 @@ namespace CalamityMod.NPCs
                 irradiated--;
             if (bFlames > 0)
                 bFlames--;
+            if (demonicFlames > 0)
+                demonicFlames--;
+            else
+                demonicFlamesBonusDamage = 0;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)
@@ -5606,6 +5648,8 @@ namespace CalamityMod.NPCs
                 crumble--;
             if (cDepth > 0)
                 cDepth--;
+            if (hPressure > 0)
+                hPressure--;
             if (rTide > 0)
                 rTide--;
             if (gsInferno > 0)
@@ -5785,6 +5829,17 @@ namespace CalamityMod.NPCs
             }
             else
                 pearlAuraCounter = 0;
+
+            if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+            {
+                npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
+                if (impalePacketTimer > 30) // There's probably a better solution, but this is the best for now
+                {
+                    npc.SyncMotionToServer();
+                    impalePacketTimer = 0;
+                }
+            }
+            impalePacketTimer++;
 
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
@@ -6407,7 +6462,7 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
 
@@ -7114,6 +7169,9 @@ namespace CalamityMod.NPCs
         // Debuff visuals. Alphabetical order as per usual, please
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            if (!npc.canDisplayBuffs)
+                return;
+
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
@@ -7139,6 +7197,9 @@ namespace CalamityMod.NPCs
             if (bFlames > 0 || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
 
+            if (demonicFlames > 0)
+                DemonicFlames.DrawEffects(npc, ref drawColor);
+
             if (bBlood > 0)
                 BurningBlood.DrawEffects(npc, ref drawColor);
 
@@ -7147,6 +7208,9 @@ namespace CalamityMod.NPCs
 
             if (cDepth > 0)
                 CrushDepth.DrawEffects(npc, ref drawColor);
+
+            if (hPressure > 0)
+                HadopelagicPressure.DrawEffects(npc, ref drawColor);
 
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
@@ -7358,11 +7422,13 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
             ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix > 0),
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hPressure > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
             ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),

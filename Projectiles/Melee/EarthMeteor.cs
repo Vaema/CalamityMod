@@ -174,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
                 Player Owner = Main.player[Projectile.owner];
                 Owner.Calamity().GeneralScreenShakePower = 4.5f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     randomColor = Main.rand.Next(3) switch
                     {
@@ -190,28 +190,32 @@ namespace CalamityMod.Projectiles.Melee
                     Particle sparker = new CustomSpark(target.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20), "CalamityMod/Particles/Sparkle", false, 38, Main.rand.NextFloat(2.2f, 4.8f), randomColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
                     GeneralParticleHandler.SpawnParticle(sparker);
                 }
-
+                
                 for (int i = 0; i < 3; i++)
                 {
-                    Particle bolt2 = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.5f - i * 0.05f, 19 - i * 4);
+                    string tex = "CalamityMod/Particles/ShatteredExplosion";
+                    Particle bolt1 = new CustomSpark(target.Center, Vector2.Zero, tex, false, 12, 0.5f - i * 0.08f, Color.OrangeRed * 0.8f, Vector2.One * 0.65f, extraRotation: Main.rand.NextFloat(-10f, 10f), shrinkSpeed: (i == 0 ? 0.6f : 0.8f));
+                    GeneralParticleHandler.SpawnParticle(bolt1);
+                    Particle bolt2 = new CustomSpark(target.Center, Vector2.Zero, tex, false, 10, 0.4f - i * 0.08f, Color.MediumTurquoise * 0.8f, Vector2.One * 0.65f, extraRotation: Main.rand.NextFloat(-10f, 10f), shrinkSpeed: (i == 0 ? 0.6f : 0.8f));
                     GeneralParticleHandler.SpawnParticle(bolt2);
-                    Particle bolt3 = new CustomPulse(target.Center, Vector2.Zero, Color.MediumTurquoise, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.35f - i * 0.05f, 17 - i * 4);
+                    Particle bolt3 = new CustomSpark(target.Center, Vector2.Zero, tex, false, 8, 0.35f - i * 0.08f, Color.LawnGreen * 0.8f, Vector2.One * 0.65f, extraRotation: Main.rand.NextFloat(-10f, 10f), shrinkSpeed: (i == 0 ? 0.6f : 0.8f));
                     GeneralParticleHandler.SpawnParticle(bolt3);
-                    Particle bolt4 = new CustomPulse(target.Center, Vector2.Zero, Color.LawnGreen, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.2f - i * 0.05f, 15 - i * 4);
-                    GeneralParticleHandler.SpawnParticle(bolt4);
-                }
 
+                }
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/EarthMeteor");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.9f }, target.Center);
 
-                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 4f, 3f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 2f, 18, true);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
-
+                if (!CalamityClientConfig.Instance.Photosensitivity)
+                {
+                    Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, mainColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 4f, 3f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 2f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                }
             }
         }
         public override bool? CanDamage() => time < fallTime ? false : null;
+        public override bool? CanCutTiles() => false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 80, targetHitbox);
     }
 }

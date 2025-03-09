@@ -37,17 +37,21 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60);
+            float minMult = 0.15f;
+            int hitsToMinMult = 12;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60);
+            // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits
+            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            {
+                Projectile.numHits -= 1;
+            }
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
     }
 }
 

@@ -578,8 +578,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         float minLowerLimit = death ? 5f : 0f;
                         float maxLowerLimit = death ? 7f : 2f;
-                        int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 7f, 1f - lifeRatio2);
-                        int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 9f, 1f - lifeRatio2);
+                        int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 5f, 1f - lifeRatio2);
+                        int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 7f, 1f - lifeRatio2);
 
                         int npcType;
                         switch (Main.rand.Next(minTypeChoice, maxTypeChoice + 1))
@@ -591,10 +591,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npcType = NPCID.GreenSlime;
                                 break;
                             case 1:
-                                npcType = Main.raining ? NPCID.UmbrellaSlime : NPCID.BlueSlime;
+                                npcType = Main.player[npc.target].ZoneJungle ? NPCID.JungleSlime : Main.player[npc.target].ZoneSnow ? NPCID.IceSlime : NPCID.BlueSlime;
                                 break;
                             case 2:
-                                npcType = NPCID.IceSlime;
+                                npcType = Main.raining ? NPCID.UmbrellaSlime : NPCID.BlueSlime;
                                 break;
                             case 3:
                                 npcType = NPCID.RedSlime;
@@ -606,13 +606,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npcType = NPCID.YellowSlime;
                                 break;
                             case 6:
-                                npcType = NPCID.SlimeSpiked;
-                                break;
-                            case 7:
-                                npcType = NPCID.SpikedIceSlime;
-                                break;
-                            case 8:
-                                npcType = NPCID.SpikedJungleSlime;
+                                npcType = Main.player[npc.target].ZoneJungle ? NPCID.SpikedJungleSlime : Main.player[npc.target].ZoneSnow ? NPCID.SpikedIceSlime : NPCID.SlimeSpiked;
                                 break;
                         }
 
@@ -620,7 +614,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npcType = NPCID.RainbowSlime;
 
                         if (masterMode)
-                            npcType = Main.rand.NextBool() ? NPCID.SpikedIceSlime : NPCID.SpikedJungleSlime;
+                        {
+                            switch (Main.rand.Next(3))
+                            {
+                                case 0:
+                                    npcType = NPCID.SlimeSpiked;
+                                    break;
+                                case 1:
+                                    npcType = NPCID.SpikedIceSlime;
+                                    break;
+                                case 2:
+                                    npcType = NPCID.SpikedJungleSlime;
+                                    break;
+                            }
+                        }
 
                         if (Main.rand.NextBool(100))
                             npcType = NPCID.Pinky;

@@ -319,6 +319,18 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Helper method which both sets <see cref="NPC.netUpdate"/> and resets <see cref="NPC.netSpam"/> to 0 to prevent the net update from being blocked.
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="ignoreCurrentNetSpam">If set to false, the method will only reset <see cref="NPC.netSpam"/> if it is greater than or equal to 10.</param>
+        public static void ForceNetUpdate(this NPC npc, bool ignoreCurrentNetSpam = true)
+        {
+            npc.netUpdate = true;
+            if (npc.netSpam >= 10 || ignoreCurrentNetSpam)
+                npc.netSpam = 0;
+        }
+
+        /// <summary>
         /// Syncs position and velocity from a client to the server. This is to be used in contexts where these things are reliant on client-side information, such as <see cref="Main.MouseWorld"/>.
         /// </summary>
         /// <param name="npc"></param>
@@ -740,7 +752,21 @@ namespace CalamityMod
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// Moves an NPC, usually used as custom knockback
+        /// </summary>
+        /// <param name="target">The NPC being moved.</param>
+        /// <param name="ignoreKBImmune">Whether or not NPC's that normally have knockback immunity can be moved around.</param>
+        public static void MoveNPC(this NPC target, Vector2 direction, float strength, bool ignoreKBImmune = false)
+        {
+            if (target.CanBeMoved(ignoreKBImmune))
+            {
+                Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
+                float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
+                target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
+            }
+            target.SyncMotionToServer();
+        }
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))
@@ -878,6 +904,8 @@ namespace CalamityMod
 
             return false;
         }
+
+        public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
 
         #region Boss Spawning
         /// <summary>

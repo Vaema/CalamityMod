@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class SeafoamBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Typeless/CoralBubble";
         public ref float time => ref Projectile.ai[0];
         public ref float bubbleLevel => ref Projectile.ai[1]; // -1 = small bubble, 0 = fusing bubble, 1 = big bubble
         public bool startEffects = true; // Spawn effects
@@ -22,10 +21,12 @@ namespace CalamityMod.Projectiles.Rogue
         public bool canHit = false; // Only the small bubbles can directly hit enemies
         public Projectile fuseGoal; // The bubble to fuse with
         public NPC targeted; // The enemy to home in on as a small bubble
+
+        public override void SetStaticDefaults() => Main.projFrames[Type] = 2;
+
         public override void SetDefaults()
         {
-            Projectile.width = 28;
-            Projectile.height = 28;
+            Projectile.width = Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
@@ -47,25 +48,26 @@ namespace CalamityMod.Projectiles.Rogue
                     for (int i = 0; i < 5; i++)
                     {
                         Vector2 vel = (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 6f * (i % 2 == 0 ? 0.88f : 1f);
-                        Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1.6f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
+                        Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1.6f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool(3) ? Color.HotPink : Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
                         GeneralParticleHandler.SpawnParticle(sparks);
                     }
                 }
                 if (bubbleLevel == 1)
                 {
+                    Projectile.extraUpdates = 2;
                     Projectile.timeLeft = 180;
-                    Projectile.velocity = Vector2.UnitY * -3;
+                    Projectile.velocity = Vector2.UnitY * -1.5f;
                     canHit = false;
                     for (int i = 0; i < 10; i++)
                     {
                         Vector2 vel = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 8f * (i % 2 == 0 ? 0.88f : 1f);
-                        Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1.6f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
+                        Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1.6f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool(3) ? Color.HotPink : Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
                         GeneralParticleHandler.SpawnParticle(sparks);
                     }
                 }
                 if (bubbleLevel == -1)
                 {
-                    Projectile.scale = 0.5f;
+                    Projectile.scale = 0.6f;
                     canHit = true;
                 }
                 startEffects = false;
@@ -74,6 +76,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Mid
             if (bubbleLevel == 0)
             {
+                Projectile.scale = 1f;
                 float distance = 500;
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
@@ -114,7 +117,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Large
             if (bubbleLevel == 1)
             {
-                Projectile.scale = 1.5f;
+                Projectile.scale = 1f;
                 Projectile.velocity *= 0.99f;
             }
             // Small
@@ -140,7 +143,8 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
             
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            if (Projectile.ai[1] == -1)
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, Color.Turquoise.ToVector3() * 0.3f * Projectile.scale);
             time++;
         }
@@ -161,7 +165,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 vel = (Vector2.One * 2).RotatedByRandom(Math.PI);
-                    Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
+                    Particle sparks = new VelChangingSpark(Projectile.Center, (vel * Main.rand.NextFloat(1f, 2.4f)).RotatedByRandom(0.35f), Vector2.UnitY * -6, "CalamityMod/Particles/BloomRing", Main.rand.Next(28, 32 + 1), Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool(3) ? Color.HotPink : Color.Turquoise, new Vector2(1f, 1), true, false, 0, false, 0.065f, 0.13f);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
             }
@@ -194,18 +198,12 @@ namespace CalamityMod.Projectiles.Rogue
         {
             float sine = (float)Math.Sin(time * Projectile.scale * 0.275f / MathHelper.Pi);
             float sizeMult = ((sine + 2) * 0.05f);
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
-            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            Texture2D tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRingThinLarge").Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.ai[1] == 1 ? 1 : 0);
 
             Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 0.7f), Utils.Remap(Projectile.velocity.Length(), 2, 6, 1, 2f));
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.DodgerBlue with { A = 0 }, Projectile.rotation, tex.Size() * 0.5f, squash * (Projectile.scale + sizeMult) * 0.03f, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(tex3, Projectile.Center - Main.screenPosition, null, Color.Turquoise with { A = 0 }, Projectile.rotation, tex3.Size() * 0.5f, squash * (Projectile.scale + sizeMult) * 0.032f, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition + (MathHelper.PiOver4.ToRotationVector2() * -11.5f * Projectile.scale), null, Color.White with { A = 0 } * 0.5f, Projectile.rotation, tex2.Size() * 0.5f, squash * (Projectile.scale) * 0.3f, SpriteEffects.None, 0);
-
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() * 0.5f, squash * (Projectile.scale + sizeMult), SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanCutTiles() => false;

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.defense = 14;
+            Item.defense = 19;
         }
 
         public override void UpdateEquip(Player player)

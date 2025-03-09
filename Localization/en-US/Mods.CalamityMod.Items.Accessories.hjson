@@ -8,15 +8,6 @@ Abaddon: {
 		'''
 }
 
-AbyssalAmulet: {
-	DisplayName: Abyssal Amulet
-	Tooltip:
-		'''
-		Attacks inflict Riptide, and grants immunity to Riptide
-		While in the abyss you gain 10% increased max life
-		'''
-}
-
 AbyssalDivingGear: {
 	DisplayName: Abyssal Diving Gear
 	Tooltip:
@@ -43,6 +34,7 @@ AbyssalDivingSuit: {
 		Provides a moderate amount of light and reduces breath loss in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
 		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
+		Grants resistance to the increased breath loss caused by Hadopelagic Pressure
 		'''
 }
 
@@ -296,6 +288,15 @@ Baroclaw: {
 		'''
 }
 
+BlackGlassBand: {
+	DisplayName: Black Glass Band
+	Tooltip:
+		'''
+		Enemy hits create an obsidian blast that always critically strikes
+		This effect has a 7 second cooldown, but is halved if the blast kills an enemy
+		'''
+}
+
 BlazingCore: {
 	DisplayName: Blazing Core
 	Tooltip:
@@ -392,9 +393,9 @@ ChaliceOfTheBloodGod: {
 		Increases max HP by 25%
 		Grants immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
-		Taking more than 5 damage converts the hit into a damage over time bleed debuff
+		Taking more than 5 damage converts the hit into a damage over time bleed effect
 		This bleeding does not interfere with life regeneration
-		Drinking a healing potion cancels up to 50% of its heal value in remaining bleed damage
+		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
 		'All that for a drop of blood...'
 		'''
@@ -710,7 +711,7 @@ EnchantedPearl: {
 		'''
 		Increases fishing power by 10
 		Increases chance to catch crates and loot-containing fish by 15%
-		Crate catches emit pearls and are 25% more likely to be higher quality
+		Crate catches are 25% more likely to be higher quality, accompanied by visual pearls
 		'''
 }
 
@@ -840,7 +841,7 @@ GiantShell: {
 	Tooltip:
 		'''
 		10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense for 5 seconds
+		Taking a hit restores dash velocity and reduces defense for 3 seconds
 		'''
 }
 
@@ -850,7 +851,7 @@ GiantTortoiseShell: {
 		'''
 		Grants immunity to knockback
 		5% increased damage reduction and 10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense and damage reduction for 5 seconds
+		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
 		'''
 }
 
@@ -1008,11 +1009,15 @@ JellyChargedBattery: {
 
 Laudanum: {
 	DisplayName: Laudanum
-	Tooltip: Converts certain debuffs into buffs and extends their durations
+	Tooltip:
+		'''
+		Converts certain debuffs into buffs and extends their durations
+		This also removes immunities to these debuffs if you have them
+		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
-		  Broken Armor, Armor Crunch, Chilled, Ichor, and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 }
 
@@ -1059,8 +1064,10 @@ LuxorsGift: {
 	DisplayName: Luxor's Gift
 	Tooltip:
 		'''
-		Weapons fire unique projectiles based on their damage type
-		Some weapons are unable to receive this bonus
+		Summons a scarab launcher that follows you closely
+		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to
+		Held item class is not updated when holding a tool
+		When not in use, the scarab will condense itself into a small orb of light
 		'''
 }
 
@@ -1166,13 +1173,14 @@ OccultSkullCrown: {
 		'''
 		You constantly gain rage over time, and rage does not fade when out of combat
 		Converts certain debuffs into buffs and extends their durations
+		This also removes immunities to these debuffs if you have them
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
 		'''
 	HoldShiftTooltip:
 		'''
-		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
-		  Broken Armor, Armor Crunch, Chilled, Ichor and Obstructed
+		  Debuffs affected: Armor Crunch, Blackout, Bleeding, Broken Armor, Chilled, Confused,
+		  Cursed, Darkness, Distorted, Ichor, Silenced, Slow, Weak, and Whispering Death
 		'''
 	FlavorTooltip: "'Only a fool would ever wear this...'"
 }
@@ -1388,7 +1396,7 @@ ReaperToothNecklace: {
 	DisplayName: Reaper Tooth Necklace
 	Tooltip:
 		'''
-		15% increased damage
+		20% increased damage
 		Increases armor penetration by 15
 		'A grisly trophy from the ultimate predator'
 		'''
@@ -1466,10 +1474,10 @@ SandCloak: {
 	DisplayName: Sand Cloak
 	Tooltip:
 		'''
-		5% increased movement speed
-		Press [KEY] to create a protective sand veil which damages enemies inside it
-		While inside the veil, you gain 6 defense and 3% critical strike chance
-		This effect has a 20 second cooldown before it can be used again
+		Dashing creates a large protective sand veil which damages enemies inside it
+		The sand veil lasts 15 seconds, but dissipates early if you dash again
+		The veil slowly follows you, and any player inside it gains 10 defense and 1.75x acceleration
+		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
 
@@ -1491,6 +1499,18 @@ ScuttlersJewel: {
 		'''
 }
 
+SeaSpiritAmulet: {
+	DisplayName: Sea Spirit Amulet
+	Tooltip:
+		'''
+		Slowly accumulate up to eight spirit orbs that follow you
+		Spirits disperse when dashing
+		If below 50% life, they will heal you, otherwise they will attack nearby enemies
+		Multiplies all water debuff damage by 1.35x
+		Spirit orbs are transparent and silent if visibility is disabled
+		'''
+}
+
 ShatteredCommunity: {
 	DisplayName: Shattered Community
 	Tooltip:
@@ -1509,7 +1529,7 @@ ShatteredCommunity: {
 		'''
 	RageAdd:
 		'''
-		Adds the Rage meter, which generates over time
+		Adds the Rage meter, which fills over time
 		Rage generates faster when in proximity of enemies
 		When Rage is maxed, press {0} for a temporary damage boost
 		'''
@@ -1802,7 +1822,7 @@ TheBee: {
 		When at full HP, your damage is increased based on your damage reduction
 		Damage taken at full HP is halved
 		Any energy shields must be fully charged for this effect to apply
-		This has a 10 second cooldown
+		This has a 6 second cooldown
 		'''
 }
 
@@ -1874,7 +1894,7 @@ TheTransformer: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Generates an aura around you that creates morphing globs when projectiles pass through it
+		Generates an aura around you that creates morphing globs when projectiles pass through it or when enemies are killed
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle can contain up to 30 globs at once
 		Press [KEY] to transform all globs into needles and launch them at your cursor
@@ -1882,11 +1902,11 @@ TheTransformer: {
 		'''
 	TooltipGFB:
 		'''
-		Generates an aura around you that creates morphing globs when projectiles pass through it
+		Generates an aura around you that creates morphing globs when projectiles pass through it or when enemies are killed
 		The globs encircle you and deal low damage and knockback to enemies they collide with
 		The circle has no limit to the number of globs it can hold, but your PC might
 		Press [KEY] to transform all globs into needles and launch them at your cursor
-		'It's like catch and release if the release was a particle accelerator'
+		'It's no Beeftank Doctrine, but it sure feels breakthrough!'
 		'''
 }
 
@@ -2057,7 +2077,7 @@ GhostBracelet: {
 
 GoldenBomb: {
 	DisplayName: Golden Bomb
-	Tooltip: "'El Pene betraying the human body to become an item of Terraria Calamity Mod'"
+	Tooltip: "'I AM THE BOMB'"
 }
 
 HapuFruit: {

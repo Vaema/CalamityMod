@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Mounts
         public override void UpdateEffects(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.fabsolVodka)
+            if (modPlayer.cirrusVodka)
                 player.GetDamage<GenericDamageClass>() += 0.1f;
 
             if (player.velocity.Length() > 9f)

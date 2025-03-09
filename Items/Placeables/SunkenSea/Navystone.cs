@@ -21,10 +21,12 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             CreateRecipe().
                 AddIngredient<NavystoneWallSafe>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
 
             CreateRecipe().
                 AddIngredient<EutrophicPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

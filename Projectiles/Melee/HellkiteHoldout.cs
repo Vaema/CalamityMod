@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (CanHit)
-                fadeIn = MathHelper.Lerp(fadeIn, 1, 0.23f);
+                fadeIn = MathHelper.Lerp(fadeIn, 1, (chargedSwing ? 1.5f : 1) * 0.23f * Owner.GetAttackSpeed<MeleeDamageClass>());
             else
                 fadeIn = MathHelper.Lerp(fadeIn, 0, 0.3f);
             if (chargeTimer > 0)
@@ -242,7 +242,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
 
-                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.35f, useAnim * 0.6f, Animation, true)) * 0.45f)), 0.2f);
+                    RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.35f, useAnim * 0.6f, Animation, true)) * 0.5f)), 0.2f);
                     FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 }
                 else
@@ -376,18 +376,22 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
                     Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                    bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
-                    for (int i = 0; i < 3; i++)
+                    if (!photos)
                     {
-                        Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, GFBFlashWarning ? (int)(18 * GFBMulti) : 18, true);
-                        GeneralParticleHandler.SpawnParticle(blastRing);
-                        Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, GFBFlashWarning ? (int)(18 * GFBMulti) : 18, true);
-                        GeneralParticleHandler.SpawnParticle(blastRing2);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                            GeneralParticleHandler.SpawnParticle(blastRing);
+                            Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                            GeneralParticleHandler.SpawnParticle(blastRing2);
+                        }
                     }
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * GFBMulti, Color.OrangeRed, new Vector2(3, 0.8f), true);
+                        Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
                     for (int i = 0; i < 15; i++)
@@ -407,12 +411,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (chargedSwing ? -24 : -19);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

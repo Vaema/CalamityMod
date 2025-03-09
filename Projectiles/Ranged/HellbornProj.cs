@@ -82,12 +82,10 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Projectile.Center - target.Center).SafeNormalize(Vector2.UnitY) * -17;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            // Launch
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+            target.MoveNPC(launchVel, 6, true);
         }
         public override void OnKill(int timeLeft)
         {

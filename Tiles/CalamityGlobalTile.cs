@@ -36,6 +36,10 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
+
+            // Allow Queen Bee larvae to be protected by Guide to Environmental Protection
+            // Yes this naming is backwards. Do not blame me!
+            TileID.Sets.TileCutIgnore.IgnoreDontHurtNature[TileID.Larva] = true;
         }
 
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
@@ -317,10 +321,10 @@ namespace CalamityMod.Tiles
                     DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
                 }
             }
-            // Drop Golden Bombs at a 1.75% chance from Pots
+            // Drop Golden Bombs at a 0.33% chance from Pots
             if (type == TileID.Pots)
             {
-                if (Main.rand.NextBool(57))
+                if (Main.rand.NextBool(300))
                 {
                     DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
                 }

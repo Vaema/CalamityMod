@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.netUpdate = true;
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                Projectile.Center = Owner.MountedCenter + Projectile.velocity * 12f;
+                Projectile.Center = Owner.MountedCenter + (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 12;
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 28;
                 startDamage = Projectile.damage;
@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 300);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300);
 
             if (spinMode2 && Projectile.numHits == 0)
             {

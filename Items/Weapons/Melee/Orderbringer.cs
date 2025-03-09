@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 108;
-            Item.damage = 400;
+            Item.damage = 415;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = useTime;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -101,7 +101,7 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
+            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.5f);
             Vector2 mouseClamped = player.ClampedMouseWorld();
             for (int i = 0; i < 2; i++)
             {
