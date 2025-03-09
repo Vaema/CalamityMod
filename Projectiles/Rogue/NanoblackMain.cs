@@ -28,12 +28,25 @@ namespace CalamityMod.Projectiles.Rogue
         private Player Owner => Main.player[Projectile.owner];
         internal ref float RealFrameCounter => ref Projectile.ai[0];
         internal ref float TesselationSpawnCooldown => ref Projectile.ai[1];
+
+        // 0f = Initial state
+        // 1f = Can be pulled back, but isn't perfect
+        // 2f = Can be pulled back, is perfect
+        // 3f = Has been pulled back
         internal ref float LightspeedCarveState => ref Projectile.ai[2];
+        internal const float LightspeedCarveState_Initial = 0f;
+        internal const float LightspeedCarveState_CanImperfect = 1f;
+        internal const float LightspeedCarveState_CanPerfect = 2f;
+        internal const float LightspeedCarveState_Performed = 3f;
+
         internal bool Returning
         {
             get => Projectile.localAI[0] != 0f;
             set => Projectile.localAI[0] = (value ? 1f : 0f);
         }
+
+        // The frame at which the scythe started rebounding. This is used to time out the Perfect Lightspeed Carve window.
+        internal ref float ReboundStartFrame => ref Projectile.localAI[1];
 
         public override void SetStaticDefaults()
         {
@@ -79,15 +92,33 @@ namespace CalamityMod.Projectiles.Rogue
             if (RealFrameCounter >= BoomerangReturnTime && RealFrameCounter < BoomerangReturnTime + 1f)
             {
                 Returning = true;
+                ReboundStartFrame = RealFrameCounter;
+
+                // Also on this frame: The window for a Perfect Lightspeed Carve starts.
+                if (LightspeedCarveState == LightspeedCarveState_Initial)
+                    LightspeedCarveState = LightspeedCarveState_CanPerfect;
+
                 Projectile.netUpdate = true;
             }
 
             // The scythe runs its returning AI if the frame counter is greater than ReboundTime.
             if (Returning)
+            {
+                // During this time, make sure the Perfect Lightspeed Carve window expires properly.
+                if (LightspeedCarveState == LightspeedCarveState_CanPerfect)
+                {
+                    bool perfectWindowPassed = RealFrameCounter > ReboundStartFrame + NanoblackReaper.PerfectLightspeedCarveFrames;
+                    if (perfectWindowPassed)
+                        LightspeedCarveState = LightspeedCarveState_CanImperfect;
+                }
+                
                 BoomerangMovement();
+            }
 
             // Spawn Nanoblack Tesselations at a consistent and overwhelming rate while in flight.
-            if (TesselationSpawnCooldown <= 0f)
+            // Tesselations are not spawned if a scythe has been pulled for a Lightspeed Carve.
+            bool spawnTesselations = Projectile.Calamity().stealthStrike || LightspeedCarveState != LightspeedCarveState_Performed;
+            if (spawnTesselations && TesselationSpawnCooldown <= 0f)
             {
                 SpawnTesselation();
                 TesselationSpawnCooldown = InternalTesselationDelay;
@@ -101,7 +132,9 @@ namespace CalamityMod.Projectiles.Rogue
             // If you set these values, you were a fool. Nanoblack Reaper does not care.
             RealFrameCounter = 0f;
             TesselationSpawnCooldown = InternalTesselationDelay;
-            LightspeedCarveState = 0f;
+
+            // Lightspeed Carves are not enabled on Focus Flurry attacks.
+            LightspeedCarveState = Projectile.Calamity().stealthStrike ? LightspeedCarveState_Performed : LightspeedCarveState_Initial;
         }
 
         // Produces electricity and green firework sparks constantly while in flight.
@@ -167,7 +200,8 @@ namespace CalamityMod.Projectiles.Rogue
             
             // Each tesselation spawns with a random delay before it chooses to fire.
             // For consistent RNG iteration, these RNG values are obtained even if they are not needed.
-            static float GetStrikeDelay() => Main.rand.NextFloat(NanoblackTesselation.MinDelay, NanoblackTesselation.MaxDelay);float[] zeroPointStrikeDelays = new float[numTessSpawns];
+            static float GetStrikeDelay() => Main.rand.NextFloat(NanoblackTesselation.MinDelay, NanoblackTesselation.MaxDelay);
+            float[] zeroPointStrikeDelays = new float[numTessSpawns];
             for (int i = 0; i < numTessSpawns; ++i)
                 zeroPointStrikeDelays[i] = GetStrikeDelay();
 
@@ -201,6 +235,17 @@ namespace CalamityMod.Projectiles.Rogue
                     tess.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
                 }
             }
+        }
+
+        internal void PerformLightspeedCarve(bool perfect)
+        {
+            if (perfect)
+                Main.NewText("Jackpot!");
+            else
+                Main.NewText("Lightspeed Carve performed");
+
+            LightspeedCarveState = LightspeedCarveState_Performed;
+            Projectile.netUpdate = true;
         }
 
         private void RotateScytheInFlight()

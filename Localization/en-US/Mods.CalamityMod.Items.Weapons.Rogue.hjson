@@ -797,7 +797,8 @@ NanoblackReaper: {
 		Press <right> just as the scythe begins returning to carve through the enemy closest to your cursor at light-speed
 		Light-speed carves have 150 armor penetration. If timed in a 6-frame window, they supercrit with +100% critical strike chance
 		Carving with a scythe prevents it from spawning tesselations while returning
-		Stealth strikes empower each tesselation to perform a light-speed carve, but cannot be returned manually
+		<right> with sufficient stealth to massively increase attack speed for a short time
+		Scythes thrown during flurries cannot be returned manually
 		'''
 	HoldShiftTooltip:
 		'''

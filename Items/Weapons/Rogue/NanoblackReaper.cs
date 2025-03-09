@@ -1,10 +1,12 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,8 +38,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static float Knockback = 9f;
         public static float Speed = 16f;
 
+        public static int FocusFlurryAttacks = 12;
+        public static int PerfectLightspeedCarveFrames = 6;
+
         public static int ArmorPenetration = 30;
-        // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it. Scary.
+        // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it.
         public static int ZeroPointArmorPenetration = 120; // Total: 150.
         public static int LightspeedCarveArmorPenetration = 120; // Total: 150.
         public static float TesselationDamageRatio = 0.25f;
@@ -68,22 +73,88 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = Speed;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void HoldItem(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.StealthStrikeAvailable())
-            {
-                int stealthDamage = (int)(StealthDamageMultiplier * damage);
+            modPlayer.mouseWorldListener = true;
 
-                // Technically, NewProjectileDirect is optimal.
-                // However, it is unsafe, because it immediately indexes the array without checks, and will blow up on projectile caps.
-                int ssProjIdx = Projectile.NewProjectile(source, position, velocity, type, stealthDamage, knockback, player.whoAmI);
-                if (ssProjIdx.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[ssProjIdx].Calamity().stealthStrike = modPlayer.StealthStrikeAvailable();
+            // Safeguard because focus flurries are currently cross-weapon.
+            if (modPlayer.focusFlurryAttackCount > FocusFlurryAttacks)
+                modPlayer.focusFlurryAttackCount = FocusFlurryAttacks;
+
+            // Nanoblack Reaper has two right click behaviors
+            if (modPlayer.mouseRight)
+            {
+                // "Stealth strikes" with Nanoblack Reaper are Focus Flurries: the next 30 attacks come out very, very quickly.
+                if (modPlayer.StealthStrikeAvailable())
+                {
+                    modPlayer.ConsumeStealthByAttacking();
+                    modPlayer.focusFlurryAttackCount = FocusFlurryAttacks;
+
+                    SoundStyle flurryActivationSound1 = new("CalamityMod/Sounds/Item/StygianDash");
+                    SoundStyle flurryActivationSound2 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
+                    float sound2Pitch = Main.rand.NextFloat(0.08f, 0.2f);
+                    SoundEngine.PlaySound(flurryActivationSound1 with { Volume = 1f }, player.Center);
+                    SoundEngine.PlaySound(flurryActivationSound2 with { Volume = 0.3f, Pitch = sound2Pitch }, player.Center);
+
+                    // Spawn a dramatic void slash particle over the player when this is activated
+                    {
+                        Color color = NanoblackSlashColor1;
+                        float scale = 0.33f;
+                        Vector2 slashDir = (Main.rand.NextBool() ? -1f : 1f) * Vector2.UnitX;
+                        Vector2 vel = 0.01f * slashDir.RotatedByRandom(MathHelper.Pi / 8f);
+
+                        // scale of void sparks is arbitrarily multiplied by 0.357f. thanks!
+                        float voidScale = scale / 0.357f;
+                        Particle blackSpark = new VoidSparkParticle(player.Center, vel, false, 12, voidScale, color, 1f);
+                        GeneralParticleHandler.SpawnParticle(blackSpark);
+
+                        float glowScale = scale * 0.333f;
+                        Vector2 squashStretch = new(1.3333f, 0.8f);
+                        Particle innerSpark = new GlowSparkParticle(player.Center, vel, false, 11, glowScale, color, squashStretch, true, true, 1f);
+                        GeneralParticleHandler.SpawnParticle(innerSpark);
+                    }
+                }
+
+                int scytheID = ModContent.ProjectileType<NanoblackMain>();
+                for (int i = 0; i < Main.maxProjectiles; ++i)
+                {
+                    Projectile p = Main.projectile[i];
+                    if (!p.active || p.type != scytheID || p.owner != player.whoAmI)
+                        continue;
+
+                    // Check each potential carve state individually.
+                    NanoblackMain nr = p.ModProjectile as NanoblackMain;
+                    bool imperfect = nr.LightspeedCarveState == NanoblackMain.LightspeedCarveState_CanImperfect;
+                    bool perfect   = nr.LightspeedCarveState == NanoblackMain.LightspeedCarveState_CanPerfect;
+
+                    // If either occurs, run the logic to perform a lightspeed carve.
+                    if (imperfect || perfect)
+                        nr.PerformLightspeedCarve(perfect);
+                }
+            }
+        }
+
+        // Nanoblack Reaper's attack speed triples (similar to its classic speed) during a Focus Flurry.
+        public override float UseSpeedMultiplier(Player player) => player.Calamity().focusFlurryAttackCount > 0 ? 3f : 1f;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            // Focus flurries produce a different sound and set the stealth strike flag to change behavior.
+            CalamityPlayer modPlayer = player.Calamity();
+            bool focusFlurry = modPlayer.focusFlurryAttackCount > 0;
+            if (focusFlurry)
+            {
+                SoundStyle flurryThrowSound = new("CalamityMod/Sounds/Item/DemonSwordSwing2");
+                float pitch = Main.rand.NextFloat(-0.24f, -0.12f) + modPlayer.focusFlurryAttackCount * 0.01f;
+                SoundEngine.PlaySound(flurryThrowSound with { Volume = 0.2f, Pitch = pitch, MaxInstances = 12 }, player.Center);
+
+                Projectile focusReaper = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
+                focusReaper.Calamity().stealthStrike = true;
+                --modPlayer.focusFlurryAttackCount;
                 return false;
             }
 
-            // In the case of non-stealth strikes, just spawn the projectile normally.
             return true;
         }
 

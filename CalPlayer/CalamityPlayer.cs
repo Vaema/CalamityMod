@@ -300,7 +300,6 @@ namespace CalamityMod.CalPlayer
         public int GalaxyHammer = 0;
         /// <summary> Variable used to apply Ontological Despoiler's nerfs when continuously using a single firing mode. </summary>
         public bool despoilerNerf = false;
-        public int amputatorBuff = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
@@ -458,6 +457,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove and its upgrades, and Rotten Dogtooth. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
+
+        public int focusFlurryAttackCount = 0;
         #endregion
 
         #region Mount
