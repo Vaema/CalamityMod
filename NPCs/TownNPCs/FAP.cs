@@ -687,7 +687,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
-            //bool wifeIsHappy = Main.npc[wife].Happiness;
+            bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
+            bool wifeIsHappy = Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
             bool respectPlayer = NPC.downedMoonlord;
             bool beLessDrunk = wifeIsAround && respectPlayer;
@@ -721,8 +722,11 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
+                if (wifeIsHappy && isHappy)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
+
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal3Alt"));
 
                 if (ChildSafety.Disabled)
