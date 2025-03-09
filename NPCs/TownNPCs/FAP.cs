@@ -687,10 +687,11 @@ namespace CalamityMod.NPCs.TownNPCs
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
-            //bool wifeIsHappy = Main.npc[wife].Happiness;
+            bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
+            bool wifeIsHappy = Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
-            bool respectPlayer = NPC.downedMoonlord;
-            bool beLessDrunk = wifeIsAround && respectPlayer;
+            bool worldIsSafer = NPC.downedMoonlord;
+            bool beLessDrunk = wifeIsAround && worldIsSafer;
 
             if (Main.bloodMoon)
             {
@@ -749,12 +750,16 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (wifeIsAround)
             {
-                if (respectPlayer)
+                if (worldIsSafer)
                 {
-                    dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+                    if (wifeIsHappy && isHappy)
+                        dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+
                     if (ChildSafety.Disabled)
                     {
-                        dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+                        if (!wifeIsHappy || !isHappy)
+                            dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+
                         dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
                     }
                 }

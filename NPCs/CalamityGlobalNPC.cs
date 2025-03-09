@@ -302,6 +302,11 @@ namespace CalamityMod.NPCs
         /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
         /// </summary>
         public int pearlAuraCounter = 0;
+        /// <summary>
+        /// When an NPC is inflicted with Pearl Aura, this variable is set to index of the player who inflicted it.<br/>
+        /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
+        /// </summary>
+        public int pearlAuraOwner = -1;
         public int bBlood = 0;
         public int brainRot = 0;
         public int heavybleeding = 0;
@@ -5815,20 +5820,24 @@ namespace CalamityMod.NPCs
                     SoundEngine.PlaySound(SoundID.Item49, npc.Center);
 
                     // Prevent things from getting too crazy
-                    if (CalamityUtils.CountProjectiles(ProjectileType<PearlAuraShard>()) <= 3)
+                    // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
+                    if (CalamityUtils.CountOwnedProjectiles(ProjectileType<PearlAuraShard>(), pearlAuraOwner) <= 3)
                     {
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
                             Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
                             int damage = 20;
-                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, pearlAuraOwner);
                         }
                     }
                 }
             }
             else
+            {
                 pearlAuraCounter = 0;
+                pearlAuraOwner = -1;
+            }
 
             if (demonSwordImpales > 0 && npc.CanBeMoved(true))
             {
