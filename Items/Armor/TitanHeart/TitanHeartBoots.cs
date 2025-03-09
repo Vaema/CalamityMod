@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
             player.Calamity().titanHeartBoots = true;
             player.Calamity().rogueVelocity += 0.1f;
             player.GetDamage<ThrowingDamageClass>() += 0.04f;
-            player.GetKnockback<ThrowingDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

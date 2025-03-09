@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
             var modPlayer = player.Calamity();
             modPlayer.titanHeartMask = true;
             player.GetDamage<ThrowingDamageClass>() += 0.05f;
-            player.GetKnockback<ThrowingDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

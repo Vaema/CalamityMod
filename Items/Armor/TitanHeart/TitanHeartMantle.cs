@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            player.GetKnockback<ThrowingDamageClass>() += 0.05f;
             player.GetDamage<ThrowingDamageClass>() += 0.05f;
         }
 
