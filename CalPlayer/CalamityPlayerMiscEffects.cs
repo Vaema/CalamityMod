@@ -2290,7 +2290,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Raider Talisman bonus
+            // Raider Talisman bonus (also ffects Aampiric Talisman)
             if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 

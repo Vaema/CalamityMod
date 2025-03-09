@@ -1303,7 +1303,9 @@ namespace CalamityMod.CalPlayer
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    int heal = (int)Math.Round(damage * 0.010);
+                    int heal = (int)Math.Round(damage * ((raiderCritLifespan > 0) ? 0.015 : 0.010));
+                    if (proj.Calamity().stealthStrike)
+                        heal /= 2; //stealth strikes heal half due to generally dealing far more dmg
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 

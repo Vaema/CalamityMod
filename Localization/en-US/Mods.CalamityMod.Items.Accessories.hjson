@@ -1375,7 +1375,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 10 seconds
 }
 
 RampartofDeities: {
@@ -1945,9 +1945,9 @@ VampiricTalisman: {
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
-        Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
-        Stealth strikes inflict heavy bleeding for 5 seconds and armor crunch for 2.5 seconds
-        'Possessing the talisman makes you yearn for blood'
+		Stealth strikes grant 10% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
+		Stealth strikes inflict heavy bleeding for 5 seconds and armor crunch for 2.5 seconds
+		'Possessing the talisman makes you yearn for blood'
 		'''
 }
 
