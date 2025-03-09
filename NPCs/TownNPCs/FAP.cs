@@ -688,8 +688,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
             bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
-            bool wifeIsHappy = Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
+            bool wifeIsHappy = wifeIsAround ? Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D : false;
             bool worldIsSafer = NPC.downedMoonlord;
             bool beLessDrunk = wifeIsAround && worldIsSafer;
 
@@ -776,10 +776,27 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (Main.dayTime)
             {
-                dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day4"));
+                if (!beLessDrunk)
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3Alt"));
+                }
+
+                if (!isHappy)
+                {
+                    int annoyingChild = NPC.FindFirstNPC(NPCID.Angler);
+                    if (annoyingChild != -1)
+                        dialogue.Add(this.GetLocalization("Chat.Day4").Format(Main.npc[annoyingChild].GivenName));
+                }
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day4Alt"));
 
                 if (beLessDrunk)
                 {
