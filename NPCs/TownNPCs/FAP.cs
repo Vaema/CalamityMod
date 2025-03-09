@@ -690,8 +690,8 @@ namespace CalamityMod.NPCs.TownNPCs
             bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
             bool wifeIsHappy = Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
-            bool respectPlayer = NPC.downedMoonlord;
-            bool beLessDrunk = wifeIsAround && respectPlayer;
+            bool worldIsSafer = NPC.downedMoonlord;
+            bool beLessDrunk = wifeIsAround && worldIsSafer;
 
             if (Main.bloodMoon)
             {
@@ -750,7 +750,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (wifeIsAround)
             {
-                if (respectPlayer)
+                if (worldIsSafer)
                 {
                     if (wifeIsHappy && isHappy)
                         dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
