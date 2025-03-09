@@ -534,7 +534,7 @@ TitanHeartMask: {
 		'''
 	SetBonus:
 		'''
-		10% increased rogue damage and knockback
+		10% increased rogue damage and 20% increased rogue knockback
 		+100 maximum stealth
 		Stealth strikes deal double knockback and cause an astral explosion
 		Grants immunity to knockback
