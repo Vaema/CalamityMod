@@ -34,8 +34,8 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            // 15% attack speed penalty
-            player.GetAttackSpeed<ThrowingDamageClass>() -= 0.15f;
+            player.GetKnockback<ThrowingDamageClass>() += 0.05f;
+            player.GetDamage<ThrowingDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

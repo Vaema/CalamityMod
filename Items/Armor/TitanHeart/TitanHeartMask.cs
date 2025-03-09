@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.titanHeartSet = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.15f;
+            player.GetDamage<ThrowingDamageClass>() += 0.10f;
             modPlayer.rogueStealthMax += 1f;
             modPlayer.wearingRogueArmor = true;
             player.noKnockback = true;
@@ -41,6 +41,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             var modPlayer = player.Calamity();
             modPlayer.titanHeartMask = true;
             player.GetDamage<ThrowingDamageClass>() += 0.05f;
+            player.GetKnockback<ThrowingDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

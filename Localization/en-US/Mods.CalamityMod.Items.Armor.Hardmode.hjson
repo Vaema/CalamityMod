@@ -522,7 +522,7 @@ TitanHeartBoots: {
 
 TitanHeartMantle: {
 	DisplayName: Titan Heart Mantle
-	Tooltip: 5% boosted rogue knockback but 15% lowered rogue attack speed
+	Tooltip: 5% boosted rogue damage and knockback
 }
 
 TitanHeartMask: {
@@ -534,7 +534,7 @@ TitanHeartMask: {
 		'''
 	SetBonus:
 		'''
-		15% increased rogue damage and knockback
+		10% increased rogue damage and knockback
 		+100 maximum stealth
 		Stealth strikes deal double knockback and cause an astral explosion
 		Grants immunity to knockback
