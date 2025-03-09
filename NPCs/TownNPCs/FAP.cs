@@ -722,11 +722,8 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                if (wifeIsHappy && isHappy)
-                    dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
-                else
-                    dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
-
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal3Alt"));
 
                 if (ChildSafety.Disabled)
@@ -755,10 +752,14 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 if (respectPlayer)
                 {
-                    dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+                    if (wifeIsHappy && isHappy)
+                        dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+
                     if (ChildSafety.Disabled)
                     {
-                        dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+                        if (!wifeIsHappy || !isHappy)
+                            dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+
                         dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
                     }
                 }
