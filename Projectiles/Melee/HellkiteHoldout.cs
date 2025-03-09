@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -8,7 +9,6 @@ using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -45,6 +45,13 @@ namespace CalamityMod.Projectiles.Melee
         public bool playSwingSound = true;
 
         public SlotId AudSlot;
+
+        private bool hasSpawned;
+        private bool hasHit;
+        private int damageDone;
+        private int targetId;
+        private NPC target => Main.npc[targetId];
+
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -52,29 +59,104 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
-        {
-            CanHit = false;
-            Projectile.knockBack = 0;
-            Projectile.scale = 1;
-            Projectile.ai[1] = -1;
-            base.OnSpawn(source);
 
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Hellkite has no projectiles
-            mousePos = Owner.Calamity().mouseWorld;
-            aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
-            useAnim = Owner.itemAnimationMax;
-            storedUseAnim = useAnim;
-
-            chargeTimerMax = useAnim * 5; // Max charge time is set here
-
-            if (mousePos.X < Owner.Center.X) Owner.direction = -1;
-            else Owner.direction = 1;
-
-            FlipAsSword = Owner.direction == -1 ? true : false;
-        }
         public override void UseStyle()
         {
+            if (!hasSpawned)
+            {
+                CanHit = false;
+                Projectile.knockBack = 0;
+                Projectile.scale = 1;
+                Projectile.ai[1] = -1;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Hellkite has no projectiles
+                mousePos = Owner.Calamity().mouseWorld;
+                aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                useAnim = Owner.itemAnimationMax;
+                storedUseAnim = useAnim;
+
+                chargeTimerMax = useAnim * 5; // Max charge time is set here
+
+                if (mousePos.X < Owner.Center.X) Owner.direction = -1;
+                else Owner.direction = 1;
+
+                FlipAsSword = Owner.direction == -1 ? true : false;
+                hasSpawned = true;
+            }
+
+            if (hasHit)
+            {
+                // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
+                if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
+                {
+                    pierceReduction -= 1;
+                }
+
+                if (!chargedSwing)
+                {
+                    if (Projectile.numHits == 0)
+                    {
+                        SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
+                        Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                    }
+                    for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
+                    {
+                        Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                        if (Main.rand.NextBool())
+                        {
+                            Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.DarkRed);
+                            GeneralParticleHandler.SpawnParticle(spark3);
+                        }
+                    }
+                }
+                else
+                {
+                    if (Projectile.numHits == 0)
+                    {
+                        SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
+                        Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                        bool photos = CalamityClientConfig.Instance.Photosensitivity;
+
+                        if (!photos)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                                GeneralParticleHandler.SpawnParticle(blastRing);
+                                Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
+                                GeneralParticleHandler.SpawnParticle(blastRing2);
+                            }
+                        }
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        for (int i = 0; i < 15; i++)
+                        {
+                            Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                            if (Main.rand.NextBool())
+                            {
+                                Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Color.DarkRed);
+                                GeneralParticleHandler.SpawnParticle(spark3);
+                            }
+                            Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
+                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * GFBMulti;
+                            dust2.noGravity = true;
+                            dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                        }
+                    }
+                }
+
+                Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
+                hasHit = false;
+            }
+
             AnimationProgress = Animation % (chargedSwing ? (int)(storedUseAnim * 0.7f) : storedUseAnim);
 
             if (Owner.Calamity().mouseRight)
@@ -218,7 +300,7 @@ namespace CalamityMod.Projectiles.Melee
                     if ((Owner.Center - aimVel).X < Owner.Center.X) Owner.direction = -1;
                     else Owner.direction = 1;
                 }
-                
+
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
                 if (AnimationProgress < (useAnim / 1.5f))
@@ -332,7 +414,7 @@ namespace CalamityMod.Projectiles.Melee
                                 dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
                             }
                         }
-                    }   
+                    }
                 }
             }
 
@@ -346,73 +428,9 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
-            {
-                pierceReduction -= 1;
-            }
-
-            if (!chargedSwing)
-            {
-                if (Projectile.numHits == 0)
-                {
-                    SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 4.5f;
-                }
-                for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
-                {
-                    Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    if (Main.rand.NextBool())
-                    {
-                        Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.DarkRed);
-                        GeneralParticleHandler.SpawnParticle(spark3);
-                    }
-                }
-            }
-            else
-            {
-                if (Projectile.numHits == 0)
-                {
-                    SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
-                    bool photos = CalamityClientConfig.Instance.Photosensitivity;
-
-                    if (!photos)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f * (i + 1) * GFBMulti, 1f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
-                            GeneralParticleHandler.SpawnParticle(blastRing);
-                            Particle blastRing2 = new CustomPulse(target.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f * (i + 1) * GFBMulti, 0.5f, (GFBFlashWarning && !photos) ? (int)(18 * GFBMulti) : 18, true);
-                            GeneralParticleHandler.SpawnParticle(blastRing2);
-                        }
-                    }
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Particle spark = new GlowSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -25 * (i == 0 ? -1 : 1), false, 12, 0.08f * (photos ? 1f : GFBMulti), Color.OrangeRed, new Vector2(3, 0.8f), true);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-                    for (int i = 0; i < 15; i++)
-                    {
-                        Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed);
-                        GeneralParticleHandler.SpawnParticle(spark2);
-                        if (Main.rand.NextBool())
-                        {
-                            Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Color.DarkRed);
-                            GeneralParticleHandler.SpawnParticle(spark3);
-                        }
-                        Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
-                        dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * GFBMulti;
-                        dust2.noGravity = true;
-                        dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
-                    }
-                }
-            }
-
-            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
+            targetId = target.whoAmI;
+            this.damageDone = damageDone;
+            Projectile.ForceNetUpdate();
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -462,8 +480,19 @@ namespace CalamityMod.Projectiles.Melee
             }
             return false;
         }
-        public override void ResetStyle()
+
+        public override void SendExtraAI(BinaryWriter writer)
         {
+            writer.Write7BitEncodedInt(targetId);
+            writer.Write(damageDone);
+            writer.Write(hasHit);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            targetId = reader.Read7BitEncodedInt();
+            damageDone = reader.ReadInt32();
+            hasHit = reader.ReadBoolean();
         }
     }
 }
