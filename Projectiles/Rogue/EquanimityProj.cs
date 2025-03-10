@@ -152,7 +152,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike)
             {
                 float baseDirectionRotation = Main.rand.NextFloat(MathHelper.TwoPi);
-                Vector2 shootVelocity = (MathHelper.TwoPi * 3 / 15 + baseDirectionRotation).ToRotationVector2() * 9f;
+                Vector2 shootVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
                 if (!swapType)
                 {
                     for (int s = 0; s < 2; s++)
@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 float baseDirectionRotation = Main.rand.NextFloat(MathHelper.TwoPi);
-                Vector2 shootVelocity = (MathHelper.TwoPi * 3 / 15 + baseDirectionRotation).ToRotationVector2() * 9f;
+                Vector2 shootVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
                 if (!swapType)
                 {
                     #region Visuals and Sounds
