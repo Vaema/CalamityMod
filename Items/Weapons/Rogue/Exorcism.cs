@@ -11,24 +11,28 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 42;
-            Item.damage = 64;
+            Item.width = 109;
+            Item.height = 128;
+            Item.damage = 285;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 20;
+            // Due to the amazing sound engine, having more than one of these on screen will cause audio bugs!
+            // Therefore this thing has to be absurdly slow (Not that I've ever complained about that before)
+            Item.useAnimation = Item.useTime = 115;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 1f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 12f;
             Item.autoReuse = true;
-            Item.maxStack = 1;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<ExorcismProj>();
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 6f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-
+        public override float StealthDamageMultiplier => 0.65f;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
@@ -43,15 +47,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             return false;
         }
-
+         
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.HolyWater, 10).
-                AddIngredient(ItemID.HallowedBar, 12).
-                AddIngredient(ItemID.SoulofFright, 6).
-                AddIngredient(ItemID.SoulofMight, 6).
-                AddIngredient(ItemID.SoulofSight, 6).
+                AddIngredient(ItemID.HallowedBar, 20).
+                AddIngredient(ItemID.SoulofFright, 3).
+                AddIngredient(ItemID.SoulofMight, 3).
+                AddIngredient(ItemID.SoulofSight, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
