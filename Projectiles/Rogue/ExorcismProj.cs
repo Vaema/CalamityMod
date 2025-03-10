@@ -279,19 +279,22 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if ((!falling || Projectile.numHits != 0) && !stealth)
+            if (stealth)
+            {
+                float minMult = 0.35f;
+                int hitsToMinMult = 10;
+                float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                modifiers.SourceDamage *= damageMult;
+            }
+            else if (!falling || Projectile.numHits != 0)
                 modifiers.SourceDamage *= 0.1f;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             bool onKill = ((target.life <= 0 && target.realLife == -1) || target.lifeMax == 1);
-            if (!onKill && (falling || stealth))
+            if (!onKill && falling)
             {
-                if (stealth)
-                {
-                    
-                }
-                else
+                if (!stealth)
                 {
                     time = 0;
                     SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit4");
@@ -315,37 +318,53 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (stealth)
             {
-                SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
-                for (int i = 0; i < 3; i++)
-                    SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);
-                SoundStyle soundExplosion = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
-                SoundEngine.PlaySound(soundExplosion with { Volume = 0.65f, Pitch = 0.6f}, Projectile.Center);
-                
+                if (Main.zenithWorld)
+                {
+                    for (int index = 0; index < Main.npc.Length; index++)
+                    {
+                        NPC searchedTarget = Main.npc[index];
+                        searchedTarget.active = false;
+                    }
+
+                    SoundStyle gfb = new("CalamityMod/Sounds/Item/HolyBurst");
+                    for (int i = 0; i < 7; i++)
+                        SoundEngine.PlaySound(gfb with { Volume = 1f, Pitch = 0.2f * i, MaxInstances = 7 }, Projectile.Center);
+                }
+                else
+                {
+                    Owner.Calamity().GeneralScreenShakePower = 7f;
+                    SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
+                    for (int i = 0; i < 3; i++)
+                        SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);
+                    SoundStyle soundExplosion = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
+                    SoundEngine.PlaySound(soundExplosion with { Volume = 0.65f, Pitch = 0.6f }, Projectile.Center);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        for (int y = 0; y < 24; y++)
+                        {
+                            bool red = Main.rand.NextBool(5);
+                            float variance = Main.rand.NextFloat(0.7f, 1);
+                            float placementVariance = 35;
+                            Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * Main.rand.NextFloat(y * 1.2f, y * 1.5f) * (i == 0 ? 1.7f : 1) * variance;
+                            Vector2 fxPos = crossCenter + Main.rand.NextVector2CircularEdge(placementVariance - variance * placementVariance, placementVariance - variance * placementVariance);
+                            Dust dust = Dust.NewDustPerfect(fxPos, ModContent.DustType<LightDust>(), fxVel * 1.7f, 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                            dust.noGravity = true;
+                            dust.scale = (red ? 1.4f : 1.2f) * Main.rand.NextFloat(0.7f, 0.9f);
+                            dust.color = red ? Color.Red : mainColor;
+                            if (y % 2 == 0)
+                            {
+                                Particle spark = new GlowSparkParticle(fxPos, fxVel, false, 24, 0.065f, Main.rand.NextBool() ? Color.Khaki : mainColor, new Vector2(0.8f, 0.3f), true, false, 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                            }
+                        }
+                        Vector2 fxVel2 = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * (i == 0 ? 1.7f : 1);
+                        Particle bigCross = new CustomSpark(crossCenter + fxVel2 * 145, fxVel2, "CalamityMod/Particles/BloomLineFade", false, 15, 0.15f, mainColor, new Vector2(1.8f, 1.2f), true, true, 0, false, false, 0.8f, 0.8f, 0.8f);
+                        GeneralParticleHandler.SpawnParticle(bigCross);
+                    }
+                }
                 Projectile crossBurst = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), crossCenter, Vector2.Zero, ModContent.ProjectileType<ExorcismShockwave>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI);
                 crossBurst.Calamity().stealthStrike = true;
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int y = 0; y < 24; y++)
-                    {
-                        bool red = Main.rand.NextBool(5);
-                        float variance = Main.rand.NextFloat(0.7f, 1);
-                        float placementVariance = 35;
-                        Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * Main.rand.NextFloat(y * 1.2f, y * 1.5f) * (i == 0 ? 1.7f : 1) * variance;
-                        Vector2 fxPos = crossCenter + Main.rand.NextVector2CircularEdge(placementVariance - variance * placementVariance, placementVariance - variance * placementVariance);
-                        Dust dust = Dust.NewDustPerfect(fxPos, ModContent.DustType<LightDust>(), fxVel * 1.7f, 0, default, Main.rand.NextFloat(1.2f, 1.6f));
-                        dust.noGravity = true;
-                        dust.scale = (red ? 1.4f : 1.2f) * Main.rand.NextFloat(0.7f, 0.9f);
-                        dust.color = red ? Color.Red : mainColor;
-                        if (y % 2 == 0)
-                        {
-                            Particle spark = new GlowSparkParticle(fxPos, fxVel, false, 24, 0.065f, Main.rand.NextBool() ? Color.Khaki : mainColor, new Vector2(0.8f, 0.3f), true, false, 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                    }
-                    Vector2 fxVel2 = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * (i == 0 ? 1.7f : 1);
-                    Particle bigCross = new CustomSpark(crossCenter + fxVel2 * 145, fxVel2, "CalamityMod/Particles/BloomLineFade", false, 15, 0.15f, mainColor, new Vector2(1.8f, 1.2f), true, true, 0, false, false, 0.8f, 0.8f, 0.8f);
-                    GeneralParticleHandler.SpawnParticle(bigCross);
-                }
             }
             else
             {
