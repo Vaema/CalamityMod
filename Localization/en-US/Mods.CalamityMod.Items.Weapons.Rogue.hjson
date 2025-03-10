@@ -413,8 +413,10 @@ Exorcism: {
 	DisplayName: Exorcism
 	Tooltip:
 		'''
-		Throws a hallowed cross which explodes into a flash of light that damages nearby enemies
-		Stealth strikes create larger flashes and rain stars infused with holy light
+		Throws a gigantic hallowed cross to the heavens, which will fall at your cursor a moment later
+		Enemies hit as it falls are impaled and repeatedly seared with holy light
+		Upon experation a cross shaped explosion is created
+		Stealth strikes twirl and throw the cross, ending in a stronger explosion at your cursor
 		'''
 }
 
