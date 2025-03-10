@@ -12,11 +12,12 @@ namespace CalamityMod.CalPlayer.DrawLayers
         public enum EncasementType
         {
             BlazingCore,
-            FlameLickedShell
+            FlameLickedShell,
+            ShieldoftheOcean
         }
         public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.FrontAccFront); //me when the player layer is called front acc front :skull:
 
-        public EncasementType GetEncasementTypeFor(CalamityPlayer modPlayer) => modPlayer.blazingCore ? EncasementType.BlazingCore : EncasementType.FlameLickedShell;
+        public EncasementType GetEncasementTypeFor(CalamityPlayer modPlayer) => modPlayer.blazingCore ? EncasementType.BlazingCore : modPlayer.flameLickedShell ? EncasementType.FlameLickedShell : EncasementType.ShieldoftheOcean;
 
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
@@ -28,6 +29,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
             {
                 EncasementType.BlazingCore => visible && modPlayer.blazingCoreParry > 0,
                 EncasementType.FlameLickedShell => visible && modPlayer.flameLickedShellParry > 0,
+                EncasementType.ShieldoftheOcean => visible && modPlayer.shieldOfTheOceanParry > 0,
                 _ => false
             };
             return visible;
@@ -55,6 +57,12 @@ namespace CalamityMod.CalPlayer.DrawLayers
                     currentParry = calPlayer.flameLickedShellParry;
                     defaultOpacity = 0.875f;
                     scale = 1.2f;
+                    break;
+                case EncasementType.ShieldoftheOcean:
+                    tex += "OceanShieldBubble";
+                    currentParry = calPlayer.shieldOfTheOceanParry;
+                    defaultOpacity = 0.6f;
+                    scale = 1.3f;
                     break;
                 default: //should never be this option
                     tex += "BlazingCoreCrystal";

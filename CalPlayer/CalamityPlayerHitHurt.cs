@@ -1878,6 +1878,22 @@ namespace CalamityMod.CalPlayer
                     FlameLickedShell.handleParry(Player);
                 }
             }
+            else if (shieldOfTheOceanParry >= 12)
+            {
+                if (!Player.HasCooldown(ParryCooldown.ID))
+                {
+                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                    int shieldParryIFrames = Player.ComputeParryIFrames();
+                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
+
+                    modifiers.FinalDamage *= 0.4f; // 60% DR
+                    modifiers.DisableSound();
+
+                    SoundEngine.PlaySound(ShieldoftheOcean.ParrySound, Player.Center);
+                    Player.AddCooldown(ParryCooldown.ID, /*1*/200, true, "shieldoftheocean");
+                    ShieldoftheOcean.ActivateParry(Player);
+                }
+            }
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
