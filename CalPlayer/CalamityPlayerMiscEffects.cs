@@ -3552,8 +3552,12 @@ namespace CalamityMod.CalPlayer
             if ((vaporfied && !purity) || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
-            if (molluskSet)
-                Player.velocity.X *= 0.985f;
+            if (molluskHelmet)
+                Player.velocity.X *= 0.994f;
+            if (molluskChest)
+                Player.velocity.X *= 0.994f;
+            if (molluskLegs)
+                Player.velocity.X *= 0.994f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {

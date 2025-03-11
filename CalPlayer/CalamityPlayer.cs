@@ -1038,7 +1038,7 @@ namespace CalamityMod.CalPlayer
         public int tornadoCooldown = 0;
         /// <summary> Calamity's Snow armor set bonus; reduces cold enemy damage and increases cold debuff damage. </summary>
         public bool eskimoSet = false;
-        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash </summary>
+        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash. </summary>
         public bool rainSet = false;
         /// <summary> Calamity's Meteor armor set bonus; makes all magic guns cost 33% mana instead of Space Gun costing 0 mana. </summary>
         public bool meteorSet = false;
@@ -1155,7 +1155,9 @@ namespace CalamityMod.CalPlayer
         public bool valkyrie = false;
         /// <summary> Statigel armor's summoner set bonus minion. </summary>
         public bool slimeGod = false;
-        public bool molluskSet = false;
+        public bool molluskHelmet = false;
+        public bool molluskChest = false;
+        public bool molluskLegs = false;
         public bool fearmongerSet = false;
         public int fearmongerRegenFrames = 0;
         public bool daedalusCrystal = false;
@@ -2098,7 +2100,9 @@ namespace CalamityMod.CalPlayer
             omegaBlueSet = false;
             omegaBlueHentai = false;
 
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
 
             ataxiaBolt = false;
@@ -3054,7 +3058,9 @@ namespace CalamityMod.CalPlayer
             ChlorophyteHealDelay = 0;
             omegaBlueChestplate = false;
             omegaBlueSet = false;
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
             daedalusReflect = false;
             daedalusSplit = false;
