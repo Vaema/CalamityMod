@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -143,7 +140,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterFragmentsI, Do(IDStaticIFrames(15)) },
                 { ProjectileID.ClusterRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterFragmentsII, Do(IDStaticIFrames(15)) },
-                { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },   
+                { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
