@@ -715,7 +715,9 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+
+                if (Main.zenithWorld)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
 
                 if (ChildSafety.Disabled)
                     dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
@@ -815,7 +817,9 @@ namespace CalamityMod.NPCs.TownNPCs
 
                 if (!isHappy)
                 {
-                    dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+                    if (Main.zenithWorld)
+                        dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+
                     dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
                 }
                 else
