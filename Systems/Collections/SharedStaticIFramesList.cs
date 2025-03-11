@@ -45,6 +45,11 @@ namespace CalamityMod.Systems.Collections
                     ModContent.ProjectileType<AstralCrystal>(),
                     ModContent.ProjectileType<AstralCrystalInvisibleExplosion>()
                 ],
+                [
+                    ProjectileID.ToxicCloud,
+                    ProjectileID.ToxicCloud2,
+                    ProjectileID.ToxicCloud3
+                ]
             ];
         }
 
