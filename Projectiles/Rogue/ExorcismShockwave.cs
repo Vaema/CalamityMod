@@ -1,7 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs.Yharon;
+using CalamityMod.UI;
+using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
+using System.Text.RegularExpressions;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -41,6 +47,18 @@ namespace CalamityMod.Projectiles.Rogue
             bool horizontalHit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - Vector2.UnitX * crossSize, Projectile.Center + Vector2.UnitX * crossSize, crosThickness, ref _);
             bool verticalHit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - Vector2.UnitY * crossSize, Projectile.Center + Vector2.UnitY * crossSize * 1.7f, crosThickness, ref _);
             return (horizontalHit || verticalHit);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Player Owner = Main.player[Projectile.owner];
+            float fade = Utils.GetLerpValue(0, 9, Projectile.timeLeft, true);
+            Asset<Texture2D> him = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Jesus");
+
+            if (Projectile.Calamity().stealthStrike && Main.zenithWorld)
+            {
+                Main.EntitySpriteDraw(him.Value, Owner.Center - Main.screenPosition, null, Color.White * 0.45f * fade, 0, him.Size() / 2f, 10, SpriteEffects.None, 0);
+            }
+            return false;
         }
     }
 }
