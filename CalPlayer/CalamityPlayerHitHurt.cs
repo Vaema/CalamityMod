@@ -1886,13 +1886,14 @@ namespace CalamityMod.CalPlayer
                     int shieldParryIFrames = Player.ComputeParryIFrames();
                     Player.GiveUniversalIFrames(shieldParryIFrames, true);
 
+                    shieldOfTheOceanEmpoweredParry = true;
                     modifiers.FinalDamage *= 0.4f; // 60% DR
                     modifiers.DisableSound();
-
-                    SoundEngine.PlaySound(ShieldoftheOcean.ParrySound, Player.Center);
-                    Player.AddCooldown(ParryCooldown.ID, /*1*/200, true, "shieldoftheocean");
-                    ShieldoftheOcean.ActivateParry(Player);
                 }
+
+                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
+                ShieldoftheOcean.ActivateParry(Player);
             }
         }
 

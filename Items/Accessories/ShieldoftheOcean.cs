@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public static readonly SoundStyle TriggerSound = new("CalamityMod/Sounds/Custom/MossMine");
         public static readonly SoundStyle ParrySound = new("CalamityMod/Sounds/Custom/BubbleCracklePop");
+        public static readonly SoundStyle ParrySoundGFB = new("CalamityMod/Sounds/Custom/GFB/OceanShieldParryGFB");
         public const int ParryTime = 30;
         // These damage values scale in Expert and Master.
         public const int ShoveFallBaseDamage = 80;
@@ -55,24 +57,35 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
+        // GFB changes:
+        // Different sound when parrying.
+        // Larger radius for pushing away enemies.
+        // Enemies are pushed much faster.
+        // Damage is multiplied by 10.
         public static void ActivateParry(Player player)
         {
+            bool empowered = player.Calamity().shieldOfTheOceanEmpoweredParry;
+
             // Search for every NPC within a certain radius of the player.
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (Vector2.Distance(player.Center, npc.Center) > 240f)
+                if (Vector2.Distance(player.Center, npc.Center) > (Main.zenithWorld ? 720f : 240f))
                     continue;
 
-                // If the NPC can be moved, violently shove them away, and make them susceptible to fall damage.
-                // Otherwise, simply deal a large amount of damage to them.
+                // Inflict Riptide on empowered parries.
+                if (empowered)
+                    npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
+
+                // If the NPC can be moved, violently shove them away. Make them susceptible to fall damage on empowered parries.
+                // Otherwise, simply deal a large amount of damage to them if empowered.
                 if (npc.CanBeMoved(true))
                 {
                     // The NPC has to actually have its velocity changed, because TileCollisionHarmNPC only changes its position. Not confusing at all!
-                    Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * 12.5f - Vector2.UnitY * 4f;
+                    Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * (Main.zenithWorld ? 35f : 12.5f) - Vector2.UnitY * 6f;
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
-                    int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                    npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
+                    int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                    npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true, !empowered);
 
                     for (int i = -1; i <= 1; i++)
                     {
@@ -83,8 +96,11 @@ namespace CalamityMod.Items.Accessories
                 }
                 else
                 {
-                    int scaledImmuneDamage = ImmuneToShoveBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                    Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), scaledImmuneDamage, 0f, player.whoAmI, npc.whoAmI);
+                    if (empowered)
+                    {
+                        int scaledImmuneDamage = ImmuneToShoveBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                        Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), scaledImmuneDamage, 0f, player.whoAmI, npc.whoAmI);
+                    }
 
                     float randOffset = Main.rand.NextFloat(MathHelper.TwoPi);
                     for (int i = 0; i < 6; i++)
@@ -95,6 +111,7 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
             }
+            player.Calamity().shieldOfTheOceanEmpoweredParry = false;
 
             for (int b = 0; b < 20; b++)
             {

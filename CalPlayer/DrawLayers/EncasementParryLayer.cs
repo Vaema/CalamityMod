@@ -61,7 +61,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 case EncasementType.ShieldoftheOcean:
                     tex += "OceanShieldBubble";
                     currentParry = calPlayer.shieldOfTheOceanParry;
-                    defaultOpacity = 0.6f;
+                    defaultOpacity = 0.7f;
                     scale = 1.3f;
                     break;
                 default: //should never be this option
@@ -78,8 +78,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
             drawPos.X += 15f;
 
 
-            int maxParry = 30; //all parries use thirty seconds as a max at this point in time, if this changes, this too should change
-            float colorIntensity = currentParry >= 18 ? defaultOpacity : 1f - Utils.GetLerpValue(maxParry, 0f, currentParry, true);
+            int maxParry = 30; // All parries currently last 30 frames. If this changes, this too should change.
+            float colorIntensity = currentParry >= 12 ? defaultOpacity : 1f - Utils.GetLerpValue(maxParry, 0f, currentParry, true);
             SpriteEffects spriteEffects = drawPlayer.direction != -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             drawInfo.DrawDataCache.Add(new DrawData(texture, drawPos, null, Color.White * colorIntensity, 0f, texture.Size() * 0.75f, scale, spriteEffects, 0));
         }

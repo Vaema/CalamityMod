@@ -25,6 +25,7 @@ namespace CalamityMod.NPCs
         private float terminalVelocityForFullFallDamage = 0;
         private bool CheckTiles = false;
         private Vector2 ForcedVel = Vector2.Zero;
+        private bool DontDealDamage = false;
         private bool hitVoid = false;
         private Player attacker;
         private int packetTimer = 0;
@@ -74,7 +75,7 @@ namespace CalamityMod.NPCs
         /// <param name="potentialDamage">The maximum fall damage taken by the npc once they hit the ground</param>
         /// <param name="terminalVelocityForFullDamage">The downwards velocity necessary to recieve the full fall damage. By default 10, the npc max fall speed</param>
         /// <param name="checkTiles">Will check for tiles in the collision instead of velocity</param>
-        public void ApplyCollisionDamage(NPC npc, Player player, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
+        public void ApplyCollisionDamage(NPC npc, Player player, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false, bool dontDealDamage = false)
         {
             //NPCs that don't collide with tiles simply don't get fall damage, lol.
             if (npc.noTileCollide)
@@ -87,6 +88,7 @@ namespace CalamityMod.NPCs
             CheckTiles = checkTiles;
             ForcedVel = forcedVel;
             attacker = player;
+            DontDealDamage = dontDealDamage;
         }
 
         public override void PostAI(NPC npc)
@@ -99,9 +101,12 @@ namespace CalamityMod.NPCs
 
                     if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
-                        int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
-                        wallImpact.DamageType = DamageClass.Melee;
+                        if (!DontDealDamage)
+                        {
+                            int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                            Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
+                            wallImpact.DamageType = DamageClass.Melee;
+                        }
 
                         PotentialEnergyDamage = 0;
                         hitVoid = false;
@@ -138,9 +143,12 @@ namespace CalamityMod.NPCs
                     //If the npc hit a tile/Came to a stop after falling
                     if (newVerticalVelocity == 0 && oldVerticalVelocity > 0) //Collision.SolidCollision(npc.Center, npc.width, npc.height))
                     {
-                        int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI);
-                        impact.DamageType = DamageClass.Melee;
+                        if (!DontDealDamage)
+                        {
+                            int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                            Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI);
+                            impact.DamageType = DamageClass.Melee;
+                        }
 
                         PotentialEnergyDamage = 0;
                     }

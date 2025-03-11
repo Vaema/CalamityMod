@@ -1561,10 +1561,11 @@ ShieldoftheOcean: {
 	Tooltip:
 		'''
 		Pressing [KEY] will activate a parry, encasing you in a bubble
-		Being hit shortly after encasement will pop the bubble
-		Upon popping, nearby enemies are violently launched away from you and you receive 60% DR for that hit
+		Being hit shortly after encasement will pop the bubble, granting 60% DR for that hit
+		Upon popping, nearby enemies are violently launched away from you, and will be damaged if they collide with tiles
 		Enemies which cannot be launched instead directly take large damage
-		After popping, the bubble parry effect goes on a 20 second cooldown
+		After popping, the damage reducing effect goes on a 20 second cooldown
+		Damage parried whilst on cooldown will not be reduced, and will not deal collision damage to launched enemies
 		'''
 }
 

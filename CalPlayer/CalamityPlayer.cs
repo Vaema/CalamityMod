@@ -917,6 +917,7 @@ namespace CalamityMod.CalPlayer
         public bool giantPearl = false;
         public bool shieldOfTheOcean = false;
         public int shieldOfTheOceanParry = 0;
+        public bool shieldOfTheOceanEmpoweredParry = false;
         public bool normalityRelocator = false;
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
@@ -3136,6 +3137,7 @@ namespace CalamityMod.CalPlayer
             elysianWingsDust = false;
             GemTechState.OnDeathEffects();
             shieldOfTheOceanParry = 0;
+            shieldOfTheOceanEmpoweredParry = false;
             blazingCoreParry = 0;
             blazingCoreEmpoweredParry = false;
             blazingCoreSuccessfulParry = 0;
@@ -3449,7 +3451,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
                 {
-                    if (!Player.HasCooldown(ParryCooldown.ID))
+                    //if (!Player.HasCooldown(ParryCooldown.ID))
                     {
                         GeneralScreenShakePower = 2f;
                         SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
