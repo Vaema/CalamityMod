@@ -47,6 +47,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

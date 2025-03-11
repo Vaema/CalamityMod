@@ -26,6 +26,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 10;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
         public override void AI()
         {

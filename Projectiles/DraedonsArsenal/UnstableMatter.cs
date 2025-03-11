@@ -31,6 +31,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.tileCollide = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 480;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

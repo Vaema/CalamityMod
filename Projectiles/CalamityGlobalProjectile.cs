@@ -4218,6 +4218,20 @@ namespace CalamityMod.Projectiles
         }
         #endregion
 
+        #region On Hit NPC
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            int sharedIframeIndex = SharedStaticIFrames.IncludesAt(projectile.type);
+            if (sharedIframeIndex > -1 && projectile.usesIDStaticNPCImmunity)
+            {
+                foreach (int projType in SharedStaticIFrames.List[sharedIframeIndex])
+                {
+                    Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+                }
+            }
+        }
+        #endregion
+
         #region Can Damage + Can Hit
         public override bool? CanDamage(Projectile projectile)
         {
