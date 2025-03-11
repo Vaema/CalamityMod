@@ -812,10 +812,19 @@ namespace CalamityMod.NPCs.TownNPCs
             else
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+
+                if (!isHappy)
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3Alt"));
+                }
+
                 dialogue.Add(this.GetLocalizedValue("Chat.Night4"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night5"));
 
                 if (wifeIsAround)
                     dialogue.Add(this.GetLocalization("Chat.NightStylist").Format(Main.npc[wife].GivenName));
