@@ -85,7 +85,10 @@ namespace CalamityMod.Items.Accessories
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
                     int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
-                    npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true, !empowered);
+                    if (empowered)
+                        npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
+                    else
+                        npc.FlungNPC().ApplyForcedVelocity(npc, player, shoveVelocity * 0.5f, true);
 
                     for (int i = -1; i <= 1; i++)
                     {

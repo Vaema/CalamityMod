@@ -3451,12 +3451,9 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
                 {
-                    //if (!Player.HasCooldown(ParryCooldown.ID))
-                    {
-                        GeneralScreenShakePower = 2f;
-                        SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
-                        shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
-                    }
+                    GeneralScreenShakePower = 2f;
+                    SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
+                    shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
                 }
             }
 
