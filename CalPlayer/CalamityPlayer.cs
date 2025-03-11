@@ -915,6 +915,9 @@ namespace CalamityMod.CalPlayer
         public bool auricSArtifact = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
+        public bool shieldOfTheOcean = false;
+        public int shieldOfTheOceanParry = 0;
+        public bool shieldOfTheOceanEmpoweredParry = false;
         public bool normalityRelocator = false;
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
@@ -2215,9 +2218,6 @@ namespace CalamityMod.CalPlayer
             darkSunRing = false;
             crawCarapace = false;
             baroclaw = false;
-            gShell = false;
-            lAmbergris = false;
-            tortShell = false;
             voidOfCalamity = false;
             voidOfExtinction = false;
             eArtifact = false;
@@ -2225,6 +2225,7 @@ namespace CalamityMod.CalPlayer
             auricSArtifact = false;
             pSoulArtifact = false;
             giantPearl = false;
+            shieldOfTheOcean = false;
             normalityRelocator = false;
             flameLickedShell = false;
             Pauldron = false;
@@ -3143,6 +3144,8 @@ namespace CalamityMod.CalPlayer
             tracersDust = false;
             elysianWingsDust = false;
             GemTechState.OnDeathEffects();
+            shieldOfTheOceanParry = 0;
+            shieldOfTheOceanEmpoweredParry = false;
             blazingCoreParry = 0;
             blazingCoreEmpoweredParry = false;
             blazingCoreSuccessfulParry = 0;
@@ -3453,6 +3456,12 @@ namespace CalamityMod.CalPlayer
                         SoundEngine.PlaySound(ProfanedGuardianDefender.RockShieldSpawnSound, Player.Center);
                         flameLickedShellParry = FlameLickedShell.flameLickedParry;
                     }
+                }
+                else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
+                {
+                    GeneralScreenShakePower = 2f;
+                    SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
+                    shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
                 }
             }
 
