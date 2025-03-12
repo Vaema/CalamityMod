@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +19,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.PolypForest;
 
-        protected override float SpawningChance => 0.2f;
+        //protected override float SpawningChance => 0.2f;
 
         public static Asset<Texture2D> blueTexture = null;
 
@@ -28,7 +29,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public static Asset<Texture2D> radiantTexture = null;
 
-        protected override List<int> HuntNPCs => new List<int>()
+        protected override List<int> PreyIDs => new List<int>()
         {
             ModContent.NPCType<SeaMinnow>(),
             ModContent.NPCType<AlphaSeaMinnow>(),
@@ -38,7 +39,7 @@ namespace CalamityMod.NPCs.SunkenSea
         };
 
         // It cannot move lol
-        protected override List<int> AvoidNPCs => new List<int>();
+        protected override List<int> PredatorIDs => new List<int>();
 
         public override void Load()
         {
@@ -80,7 +81,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
         }
 
-        protected override void BehaviorOnSpawn()
+        public override void OnSpawn(IEntitySource source)
         {
             // Pick a random color
             Color = Main.rand.Next(0, 3);
@@ -103,7 +104,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        protected override void CreatureAI()
+        public override void AI()
         {
             Timer++;
             NPC.velocity.Y += 10;

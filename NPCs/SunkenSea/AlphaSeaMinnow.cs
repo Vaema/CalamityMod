@@ -9,11 +9,38 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.DataStructures;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.Enums;
+using System.Collections.Generic;
+using Steamworks;
+using System.IO;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class AlphaSeaMinnow : ModNPC
+    public class AlphaSeaMinnow : SunkenSeaNPC
     {
+        public enum PhaseType
+        {
+            Idle = 0,
+            Flee = 1
+        }
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>() { 
+            ModContent.NPCType<Sharkoon>(), 
+            ModContent.NPCType<Polyperil>(), 
+            ModContent.NPCType<PolyperilTentacle>() 
+        };
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
+
+        public ref float CurrentBehaviour => ref NPC.ai[1];
+
+        public static int IdleRandomMovementUnlikeliness = 250;
+        public static int IdleMinPathDistance = 200;
+        public static int IdleMaxPathDistance = 400;
+
+        public static int FleeTileAnticipationDistance = 64;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;
@@ -56,8 +83,15 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 return;
             }
+            NPC.TargetClosest(false);
             // Spawn a shoal of minnows
             int fishCount = Main.rand.Next(5, 10);
+            // More spawn in the Radiant Reefs
+            if (NPC.HasPlayerTarget)
+            {
+                if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
+                    fishCount += 5;
+            }
             for (int i = 0; i < fishCount; i++)
             {
                 int goldchance = NPC.type == ModContent.NPCType<AlphaSeaMinnowGold>() ? 20 : 50;
@@ -65,75 +99,30 @@ namespace CalamityMod.NPCs.SunkenSea
                 int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.4f,
+                MaxSpeed = 8f,
+            };
         }
 
         public override void AI()
         {
-            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
-            NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
-            NPC.noGravity = true;
-            if (NPC.direction == 0)
-            {
-                NPC.TargetClosest(true);
-            }
             if (NPC.wet)
             {
-                NPC.TargetClosest(false);
-                NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
-                if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
+                switch (CurrentBehaviour)
                 {
-                    NPC.velocity.X = NPC.velocity.X * 0.95f;
-                }
-                if (NPC.ai[0] == -1f)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y - 0.01f;
-                    if ((double)NPC.velocity.Y < -0.3)
-                    {
-                        NPC.ai[0] = 1f;
-                    }
-                }
-                else
-                {
-                    NPC.velocity.Y = NPC.velocity.Y + 0.01f;
-                    if ((double)NPC.velocity.Y > 0.3)
-                    {
-                        NPC.ai[0] = -1f;
-                    }
-                }
-                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
-                {
-                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
-                    {
-                        NPC.ai[0] = -1f;
-                    }
-                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
-                    {
-                        NPC.ai[0] = -1f;
-                    }
-                }
-                if ((double)NPC.velocity.Y > 0.4 || (double)NPC.velocity.Y < -0.4)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y * 0.95f;
+                    case (int)PhaseType.Idle:
+                        IdleBehaviour();
+                        break;
+                    case (int)PhaseType.Flee:
+                        FleeBehaviour();
+                        break;
                 }
             }
             else
             {
-                if (NPC.velocity.Y == 0f)
-                {
-                    NPC.velocity.X = NPC.velocity.X * 0.94f;
-                    if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
-                    {
-                        NPC.velocity.X = 0f;
-                    }
-                }
-                NPC.velocity.Y = NPC.velocity.Y + 0.3f;
-                if (NPC.velocity.Y > 10f)
-                {
-                    NPC.velocity.Y = 10f;
-                }
-                NPC.ai[0] = 1f;
+                BeachedBehaviour();
             }
             NPC.rotation = NPC.velocity.X * 0.05f;
             if ((double)NPC.rotation < -0.1)
@@ -148,6 +137,117 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ProduceGoldCritterDust();
             }
+        }
+
+        public void IdleBehaviour()
+        {
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+            NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
+            NPC.noGravity = true;
+            if (NPC.direction == 0)
+            {
+                NPC.TargetClosest(true);
+            }
+            NPC.TargetClosest(false);
+            NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
+            if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
+            {
+                NPC.velocity.X = NPC.velocity.X * 0.95f;
+            }
+            if (NPC.ai[0] == -1f)
+            {
+                NPC.velocity.Y = NPC.velocity.Y - 0.01f;
+                if ((double)NPC.velocity.Y < -0.3)
+                {
+                    NPC.ai[0] = 1f;
+                }
+            }
+            else
+            {
+                NPC.velocity.Y = NPC.velocity.Y + 0.01f;
+                if ((double)NPC.velocity.Y > 0.3)
+                {
+                    NPC.ai[0] = -1f;
+                }
+            }
+            int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+            int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+            if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
+            {
+                if (Main.tile[npcTileX, npcTileY + 1].HasTile)
+                {
+                    NPC.ai[0] = -1f;
+                }
+                else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
+                {
+                    NPC.ai[0] = -1f;
+                }
+            }
+            if ((double)NPC.velocity.Y > 0.4 || (double)NPC.velocity.Y < -0.4)
+            {
+                NPC.velocity.Y = NPC.velocity.Y * 0.95f;
+            }
+        }
+
+        public void FleeBehaviour()
+        {
+            // If the predator is gone, go back to idling.
+            if (CurrentPredator == null)
+            {
+                CurrentBehaviour = (int)PhaseType.Idle;
+                return;
+            }
+
+            // While it doesn't have any obstacles in front of it, run away in a straight line.
+            // Try to manuever if there are any obstacles.
+            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
+            {
+                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                pathfinding.ClearResults();
+
+                // Cap the speed if MaxSpeed has been surpassed.
+                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+            }
+            else
+            {
+                float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
+                randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                NPC.netUpdate = true;
+                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+            }
+        }
+
+        public void BeachedBehaviour()
+        {
+            if (NPC.velocity.Y == 0f)
+            {
+                NPC.velocity.X = NPC.velocity.X * 0.94f;
+                if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
+                {
+                    NPC.velocity.X = 0f;
+                }
+            }
+            NPC.velocity.Y = NPC.velocity.Y + 0.3f;
+            if (NPC.velocity.Y > 10f)
+            {
+                NPC.velocity.Y = 10f;
+            }
+            NPC.ai[0] = 1f;
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return base.NPCSearchFilter(n) || n == CurrentPredator && Vector2.DistanceSquared(NPC.Center, n.Center) < 960f * 960f;
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 960f * 960f;
+        }
+        protected override void OnPredatorDetection(NPC predator)
+        {
+            CurrentBehaviour = (int)PhaseType.Flee;
         }
 
         public override void ModifyTypeName(ref string typeName)
@@ -188,6 +288,19 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
             }
+        }
+        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+
+        public Vector2 randomPathPoint;
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(randomPathPoint);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            randomPathPoint = reader.ReadVector2();
         }
     }
     public class AlphaSeaMinnowGold : AlphaSeaMinnow

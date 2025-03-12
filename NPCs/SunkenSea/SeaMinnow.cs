@@ -339,6 +339,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
+
+        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
     }
     public class SeaMinnowGold : SeaMinnow
     {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -22,14 +23,12 @@ namespace CalamityMod.NPCs.SunkenSea
         // Tentacles are not a natural enemy, they are manually spawned by Polyperils
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.None;
 
-        protected override float SpawningChance => 0;
-
         public List<VerletSimulatedSegment> Segments;
 
         // Where the tentacle will hover when not attacking
         public Vector2 anchor;
 
-        protected override List<int> HuntNPCs => new List<int>()
+        protected override List<int> PreyIDs => new List<int>()
         {
             ModContent.NPCType<SeaMinnow>(),
             ModContent.NPCType<AlphaSeaMinnow>(),
@@ -38,7 +37,7 @@ namespace CalamityMod.NPCs.SunkenSea
             ModContent.NPCType<KelpieSeadragon>()
         };
         
-        protected override List<int> AvoidNPCs => new List<int>();
+        protected override List<int> PredatorIDs => new List<int>();
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.Polyperil.DisplayName");
 
         public override void SetStaticDefaults()
@@ -82,16 +81,8 @@ namespace CalamityMod.NPCs.SunkenSea
             anchor = new Vector2(reader.ReadSingle(), reader.ReadSingle());
         }
 
-        protected override void BehaviorOnSpawn()
+        public override void AI()
         {
-            DetectionDistance = 620f;
-            ConeDetectionAngle = MathHelper.ToRadians(60f);
-        }
-
-        protected override void CreatureAI()
-        {
-            ConeDetectionDirection = NPC.rotation.ToRotationVector2();
-
             NPC parent = Main.npc[(int)ParentIndex];
             if (parent == null || !parent.active || parent.life < 0 || parent.type != ModContent.NPCType<Polyperil>())
             {
@@ -114,7 +105,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // While aggro'd, launch at the target then retreat
-            if (HasAnyTargets)
+            if (NPC.HasValidTarget)
             {
                 // Remain stationary while at rest
                 if (Timer < 0)
@@ -124,7 +115,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Launch
                 if (Timer == 0)
                 {
-                    NPC.velocity = NPC.SafeDirectionTo(NearestEntity.Center) * 8;
+                    NPC.velocity = NPC.SafeDirectionTo(NPC.GetTargetData().Center) * 8;
                 }
                 // Retreat
                 if (Timer > 20)
