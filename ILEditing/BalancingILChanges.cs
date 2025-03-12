@@ -719,6 +719,29 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Solar Wings Change to Solar Flare Armor Dash
+        private static void SolarWingsDashChange(ILContext il)
+        {
+            // Make Solar Wings always allow using Solar Flare armor's dash.
+            var cursor = new ILCursor(il);
+
+            // Genuinely how the fuck is this the only OR opcode in the entire method
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchOr()))
+            {
+                LogFailure("Solar Dash Change", "Could not locate the OR opcode.");
+                return;
+            }
+
+            // Add an additional check for if the player is wearing Solar Wings.
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsSolar);
+            cursor.EmitCeq();
+            // Then OR it.
+            cursor.EmitOr();
+        }
+        #endregion
+
         #region Remove Melee Armor (Beetle Shell + Solar Flare) Multiplicative DR
         private static void RemoveBeetleAndSolarFlareMultiplicativeDR(ILContext il)
         {
