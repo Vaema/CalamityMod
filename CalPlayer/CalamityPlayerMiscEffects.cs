@@ -467,12 +467,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Solar Wings increase dash velocity of Solar Flare armor dash
-            if (Player.wingsLogic == (int)VanillaWingID.WingsSolar && Player.dash == 3 && dashStart)
-            {
-                Player.velocity.X *= 1.25f;
-            }
-
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
             else
@@ -1609,7 +1603,7 @@ namespace CalamityMod.CalPlayer
                         {
                             float insanityValue = ((p.ai[1] % 10) + 1);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1660,7 +1654,7 @@ namespace CalamityMod.CalPlayer
                                 {
                                     float insanityValue = ((p.ai[1] % 10) + 1);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                        p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -2025,6 +2019,13 @@ namespace CalamityMod.CalPlayer
             else if (flameLickedShell && flameLickedShellParry > 0)
             {
                 FlameLickedShell.HandleParryCountdown(Player);
+            }
+            if (shieldOfTheOceanParry > 0)
+            {
+                if (shieldOfTheOcean)
+                    ShieldoftheOcean.HandleParryCountdown(Player);
+                else
+                    shieldOfTheOceanParry--;
             }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
@@ -3395,7 +3396,10 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
+                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
+                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
+                        }
                     }
                 }
             }
@@ -3549,8 +3553,12 @@ namespace CalamityMod.CalPlayer
             if ((vaporfied && !purity) || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
-            if (molluskSet)
-                Player.velocity.X *= 0.985f;
+            if (molluskHelmet)
+                Player.velocity.X *= 0.994f;
+            if (molluskChest)
+                Player.velocity.X *= 0.994f;
+            if (molluskLegs)
+                Player.velocity.X *= 0.994f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {

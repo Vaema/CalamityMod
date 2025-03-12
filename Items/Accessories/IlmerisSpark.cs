@@ -5,7 +5,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class AmidiasSpark : ModItem, ILocalizedModType
+    [LegacyName("AmidiasSpark")]
+    public class IlmerisSpark : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -19,7 +20,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.aSpark = true;
+            modPlayer.ilSpark = true;
         }
     }
 }

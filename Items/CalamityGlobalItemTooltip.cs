@@ -1079,7 +1079,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.MonkAltHead)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltHead"));
             if (item.type == ItemID.MonkAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltShirt"));
+            {
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltShirt0"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkAltShirt1"));
+            }
             if (item.type == ItemID.MonkAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltPants"));
 

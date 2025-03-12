@@ -302,6 +302,11 @@ namespace CalamityMod.NPCs
         /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
         /// </summary>
         public int pearlAuraCounter = 0;
+        /// <summary>
+        /// When an NPC is inflicted with Pearl Aura, this variable is set to index of the player who inflicted it.<br/>
+        /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
+        /// </summary>
+        public int pearlAuraOwner = -1;
         public int bBlood = 0;
         public int brainRot = 0;
         public int heavybleeding = 0;
@@ -5791,7 +5796,7 @@ namespace CalamityMod.NPCs
             {
                 var player = Main.LocalPlayer;
 
-                int frequency = 12;
+                int frequency = 15;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
@@ -5815,20 +5820,24 @@ namespace CalamityMod.NPCs
                     SoundEngine.PlaySound(SoundID.Item49, npc.Center);
 
                     // Prevent things from getting too crazy
-                    if (CalamityUtils.CountProjectiles(ProjectileType<PearlAuraShard>()) <= 3)
+                    // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
+                    if (CalamityUtils.CountOwnedProjectiles(ProjectileType<PearlAuraShard>(), pearlAuraOwner) <= 3)
                     {
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
                             Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
                             int damage = 20;
-                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, pearlAuraOwner);
                         }
                     }
                 }
             }
             else
+            {
                 pearlAuraCounter = 0;
+                pearlAuraOwner = -1;
+            }
 
             if (demonSwordImpales > 0 && npc.CanBeMoved(true))
             {
@@ -6023,7 +6032,7 @@ namespace CalamityMod.NPCs
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
 
-            if (target.Calamity().aSpark)
+            if (target.Calamity().ilSpark)
             {
                 shocked = 120;
             }
@@ -6298,11 +6307,16 @@ namespace CalamityMod.NPCs
                     if (Main.rand.NextFloat(100f) <= lastLayerCritChance)
                         ++supercritLayers;
 
-                    // Apply supercrit damage. This projectile is already guaranteed to be a crit, which will double its damage at the end.
-                    // As such, only 50% damage is added per supercrit layer here.
-                    modifiers.SourceDamage *= 1f + 0.5f * supercritLayers;
+                    // 08MAR2025: Ozzatron: changed supercrit implementation to actually increase crit multiplier instead of multiplying source damage
+                    // This means supercrits don't affect on-hits, just like regular crits don't
+                    //
+                    // Apply supercrit damage as a direct increase to the critical strike damage multiplier, which starts at 2.0 (aka 200%).
+                    modifiers.CritDamage += supercritLayers;
                 }
             }
+
+            // 08MAR2025: Simplistic crit damage increase. Doesn't force a crit, though you can do that separately.
+            modifiers.CritDamage += cgp.bonusCritDamage;
 
             //
             // DAAWNLIGHT SPIRIT ORIGIN AIM IMPLEMENTATION
@@ -6906,7 +6920,7 @@ namespace CalamityMod.NPCs
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 0f);
                 pool.Add(NPCType<RepairUnitCritter>(), 0.025f);
-                pool.Add(NPCType<Androomba>(), 0.001f);
+                pool.Add(NPCType<Androomba>(), 0.01f);
                 // Normal droids are replaced with plague droids in the Jungle Lab.
                 if (nearPlagueLab)
                 {

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Armor.Mollusk
             Item.height = 22;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 18;
+            Item.defense = 15;
         }
 
         public override void UpdateEquip(Player player)
@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Armor.Mollusk
             player.ignoreWater = true;
             player.GetDamage<GenericDamageClass>() += 0.05f;
             player.GetCritChance<GenericDamageClass>() += 4;
+            player.Calamity().molluskHelmet = true;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -41,10 +42,8 @@ namespace CalamityMod.Items.Armor.Mollusk
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = this.GetLocalizedValue("SetBonus");
-            var modPlayer = player.Calamity();
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            modPlayer.molluskSet = true;
-            player.maxMinions += 4;
+            player.endurance += 0.1f;
+            player.maxMinions += 4; // These are allocated for the Shellfish minions; there is no net change in minion slots.
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_ItemUse(Item);

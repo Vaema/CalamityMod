@@ -96,7 +96,15 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public int supercritHits = 0;
 
-        // TODO -- In the TML 1.4.4 port, there is a much better way to set NPC strike events to be forced crits.
+        /// <summary>
+        /// Bonus damage on critical strikes expressed as a ratio. <br />
+        /// 0f = 200% crit damage, vanilla standard.<br />
+        /// 1f = 300% crit damage.<br /><br />
+        /// This applies independently of supercrits and will stack additively with them.
+        /// </summary>
+        public float bonusCritDamage = 0f;
+
+        // 08MAR2025: This remains so that "delayed forced crits" can still be set. This is used for Marksman Ricoshots.
         /// <summary> Set to true to force a projectile to critically strike. </summary>
         public bool forcedCrit = false;
 

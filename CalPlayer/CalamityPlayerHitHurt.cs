@@ -200,7 +200,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item68, Player.Center);
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
-                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2750);
+                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2000);
 
                 int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
                 if (eclipse.WithinBounds(Main.maxProjectiles))
@@ -1289,7 +1289,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
-                    if (aSpark)
+                    if (ilSpark)
                         Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
             }
@@ -1877,6 +1877,23 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(ParryCooldown.ID, 60 * 20, false, "flamelickedshell");
                     FlameLickedShell.handleParry(Player);
                 }
+            }
+            else if (shieldOfTheOceanParry >= 12)
+            {
+                if (!Player.HasCooldown(ParryCooldown.ID))
+                {
+                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                    int shieldParryIFrames = Player.ComputeParryIFrames();
+                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
+
+                    shieldOfTheOceanEmpoweredParry = true;
+                    modifiers.FinalDamage *= 0.4f; // 60% DR
+                    modifiers.DisableSound();
+                }
+
+                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
+                ShieldoftheOcean.ActivateParry(Player);
             }
         }
 
@@ -2624,7 +2641,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                if (aSpark)
+                if (ilSpark)
                 {
                     SoundEngine.PlaySound(SoundID.Item93, Player.Center);
 
@@ -2647,7 +2664,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 35 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Astral
         {
             player.statLifeMax2 += 20;
             player.statManaMax2 += 80;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
+            player.GetDamage<GenericDamageClass>() += 0.07f;
         }
 
         public override void AddRecipes()

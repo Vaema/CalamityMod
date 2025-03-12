@@ -25,6 +25,10 @@ namespace CalamityMod.NPCs
         private float terminalVelocityForFullFallDamage = 0;
         private bool CheckTiles = false;
         private Vector2 ForcedVel = Vector2.Zero;
+        /// <summary>
+        /// Set to true if you only want the npc to receive forced velocity and not receive damage.
+        /// </summary>
+        private bool ForceVelocityOnly = false;
         private bool hitVoid = false;
         private Player attacker;
         private int packetTimer = 0;
@@ -43,7 +47,7 @@ namespace CalamityMod.NPCs
             }
         }
 
-        public bool FallDamageSusceptible => PotentialEnergyDamage > 0;
+        public bool FallDamageSusceptible => PotentialEnergyDamage > 0 || ForceVelocityOnly;
 
         public override bool InstancePerEntity => true;
 
@@ -67,7 +71,7 @@ namespace CalamityMod.NPCs
         }
 
         /// <summary>
-        /// Sets up a NPC to recieve fall damage when they hit the ground.
+        /// Sets up a NPC to recieve forced velocity in a direction and receive fall damage when they hit the ground.
         /// </summary>
         /// <param name="npc">The npc to apply fall damage to</param>
         /// <param name="player">The player applying fall damage to the npc</param>
@@ -89,6 +93,27 @@ namespace CalamityMod.NPCs
             attacker = player;
         }
 
+        /// <summary>
+        /// Sets up a NPC to recieve forced velocity in a direction.
+        /// </summary>
+        /// <param name="npc">The npc to apply velocity to</param>
+        /// <param name="player">The player applying velocity to the npc</param>
+        /// <param name="forcedVel">The velocity being applied to the npc</param>
+        /// <param name="checkTiles">Will check for tiles in the collision instead of velocity</param>
+        public void ApplyForcedVelocity(NPC npc, Player player, Vector2 forcedVel, bool checkTiles = false)
+        {
+            // NPCs that don't collide with tiles simply don't get velocity, lol.
+            if (npc.noTileCollide)
+                return;
+
+            OldVelocity = npc.velocity;
+            OlderVelocity = npc.velocity;
+            CheckTiles = checkTiles;
+            ForcedVel = forcedVel;
+            attacker = player;
+            ForceVelocityOnly = true;
+        }
+
         public override void PostAI(NPC npc)
         {
             if (FallDamageSusceptible)
@@ -99,15 +124,18 @@ namespace CalamityMod.NPCs
 
                     if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
-                        int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
-                        wallImpact.DamageType = DamageClass.Melee;
+                        if (!ForceVelocityOnly)
+                        {
+                            int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                            Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
+                            wallImpact.DamageType = DamageClass.Melee;
+                        }
 
                         PotentialEnergyDamage = 0;
+                        ForceVelocityOnly = false;
                         hitVoid = false;
                     }
 
-                    oldVelocity = npc.velocity.Length();
                     npc.Center += ForcedVel;
                     ForcedVel *= 0.995f;
                     if (packetTimer % 30 == 0)
@@ -138,11 +166,15 @@ namespace CalamityMod.NPCs
                     //If the npc hit a tile/Came to a stop after falling
                     if (newVerticalVelocity == 0 && oldVerticalVelocity > 0) //Collision.SolidCollision(npc.Center, npc.width, npc.height))
                     {
-                        int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
-                        Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI);
-                        impact.DamageType = DamageClass.Melee;
+                        if (!ForceVelocityOnly)
+                        {
+                            int impactDamage = (int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                            Projectile impact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), impactDamage, 0f, attacker.whoAmI, npc.whoAmI);
+                            impact.DamageType = DamageClass.Melee;
+                        }
 
                         PotentialEnergyDamage = 0;
+                        ForceVelocityOnly = false;
                     }
 
                     OlderVelocity = OldVelocity;

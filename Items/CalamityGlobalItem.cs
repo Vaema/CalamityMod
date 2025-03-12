@@ -935,8 +935,6 @@ namespace CalamityMod.Items
                 return "HuntressTier2";
             if (head.type == ItemID.ApprenticeHat && body.type == ItemID.ApprenticeRobe && legs.type == ItemID.ApprenticeTrousers)
                 return "ApprenticeTier2";
-            if (head.type == ItemID.MonkAltHead && body.type == ItemID.MonkAltShirt && legs.type == ItemID.MonkAltPants)
-                return "MonkTier3";
             if (head.type == ItemID.SquireAltHead && body.type == ItemID.SquireAltShirt && legs.type == ItemID.SquireAltPants)
                 return "SquireTier3";
             if (head.type == ItemID.HuntressAltHead && body.type == ItemID.HuntressAltShirt && legs.type == ItemID.HuntressAltPants)
@@ -990,12 +988,6 @@ namespace CalamityMod.Items
                 player.GetDamage<SummonDamageClass>() += 0.1f;
                 player.GetCritChance<MagicDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
-            }
-            else if (set == "MonkTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.2f;
-                player.GetDamage<MeleeDamageClass>() += 0.1f;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.MonkTier3")}";
             }
             else if (set == "SquireTier3")
             {
@@ -1121,19 +1113,6 @@ namespace CalamityMod.Items
                 case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
                     player.GetCritChance<MeleeDamageClass>() -= 20;
-                    break;
-
-                case ItemID.MonkAltHead:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<MeleeDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.MonkAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.MonkAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
                     break;
 
                 case ItemID.HuntressAltShirt:

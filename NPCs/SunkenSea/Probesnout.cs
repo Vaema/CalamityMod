@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml.XPath;
 using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles;
@@ -18,7 +19,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Probesnout : SunkenSeaNPC, IPathFinder
+    public class Probesnout : SunkenSeaNPC
     {
         #region Members
 
@@ -94,7 +95,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private Action _previousBehavior;
 
-        public PathfindingTask Path { get; set; }
+        private int HuntCooldown
+        {
+            get => (int)NPC.ai[3];
+            set => NPC.ai[3] = value;
+        }
 
         public Vector2 Position => NPC.Center;
 
@@ -128,6 +133,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.4f,
+                MaxSpeed = 8f,
+                MinimumPointDistance = 60f
+            };
         }
 
         public override void AI()
@@ -140,8 +151,11 @@ namespace CalamityMod.NPCs.SunkenSea
             else if (NPC.velocity.LengthSquared() != 0f)
                 NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
 
-            if (Main.rand.NextBool(50) && !HasEatenSponge && CurrentBehavior == IdlingBehavior)
+            if (Main.rand.NextBool(150) && !HasEatenSponge && CurrentBehavior == IdlingBehavior)
                 ThreadPool.QueueUserWorkItem(_ => DetectSponges(), null);
+
+            if (Main.rand.NextBool(300) && HasEatenSponge && Vector2.DistanceSquared(NPC.Center, SpongeFoundPosition) > 160f * 160f)
+                HasEatenSponge = false;
 
             if (!NPC.wet && CurrentBehavior != OutsideWaterBehavior)
             {
@@ -181,14 +195,8 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            PathfindingTask parameters = null;
-            if (Main.rand.NextBool(150))
-            {
-                _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * 300f;
-                NPC.netUpdate = true;
-                parameters = new PathfindingTask(NPC.Center, _randomPathPoint, SunkenSeaTileValidity);
-            }
-            this.DoPathfinding(parameters);
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
+            pathfinding.MaxSpeed = 6f;
         }
 
         private void FleeingBehavior()
@@ -210,18 +218,19 @@ namespace CalamityMod.NPCs.SunkenSea
                 do
                 {
                     var randomNormalDirection = headedDirection.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt());
-                    _randomPathPoint = randomNormalDirection.RotatedByRandom(MathHelper.PiOver4);
+                    _randomPathPoint = randomNormalDirection.RotatedByRandom(MathHelper.PiOver4 * 0.7f);
                     if (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid())
                         break;
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                this.DoPathfinding(new PathfindingTask(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.MaxSpeed = 8f;
             }
             else
             {
                 NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
-                Path = null;
+                pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
                 if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
@@ -238,8 +247,28 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            bool huntReady = HuntCooldown == 0;
+            if (huntReady)
+                HuntCooldown = Main.rand.Next(13, 30);
+
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            this.DoPathfinding(new PathfindingTask(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), continuouslyUpdatePath: true);
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
+            pathfinding.MaxSpeed = 8f;
+            pathfinding.CustomIdleBehavior = () =>
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            };
+
+            HuntCooldown--;
         }
 
         private void EatingBehavior()
@@ -253,11 +282,15 @@ namespace CalamityMod.NPCs.SunkenSea
                     HasEatenSponge = true;
                     Animation = AnimationState.Idle;
                     CurrentBehavior = IdlingBehavior;
+                    SpongeFoundPosition = Vector2.Zero;
                     return;
                 }
             }
             else
-                this.DoPathfinding(new PathfindingTask(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+            {
+                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                pathfinding.MaxSpeed = 6f;
+            }
         }
 
         private void OutsideWaterBehavior()
@@ -271,60 +304,39 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private void DetectSponges()
         {
-            Vector2? closestSpongeFound = null;
-            float closestDistanceSquared = float.MaxValue;
-
-            foreach (var direction in Directions)
+            Vector2? spongeFoundPosition = null;
+            int? tileIndexFound = null;
+            for (int i = 0; i < 360 && spongeFoundPosition == null; i += 15)
             {
-                // var points = GetIntersectingPoints(NPC.Center, NPC.Center + direction * 360f);
-                var points = new Point[1];
-                foreach (var point in points)
+                var points = GetIntersectingPointsInLine(NPC.Center, NPC.Center - Vector2.UnitY.RotatedBy(MathHelper.ToRadians(i)) * 360f);
+                for (int j = points.Count - 1; j >= 0; j--)
                 {
-                    // Check if the tile coordinates are within the valid range
-                    if (!WorldGen.InWorld(point.X, point.Y))
-                        continue;
-
-                    // Check if the current tile is AerialiteBrick
-                    if (Main.tile[point].TileType == TileType<AerialiteBrick>())
+                    if (Main.tile[points[j]].TileType == TileType<AerialiteBrick>())
                     {
-                        // Check all adjacent directions for a non-solid tile with line of sight
-                        foreach (var adjacentDirection in Directions)
-                        {
-                            Point adjacentPoint = point + adjacentDirection.ToPoint();
-
-                            // Validate adjacent tile coordinates
-                            if (!WorldGen.InWorld(adjacentPoint.X, adjacentPoint.Y))
-                                continue;
-
-                            // Skip if the adjacent tile is solid
-                            if (Main.tile[adjacentPoint].IsTileSolid())
-                                continue;
-
-                            Vector2 worldPos = adjacentPoint.ToWorldCoordinates();
-                            if (NPC.HasSight(worldPos))
-                            {
-                                // Calculate the squared distance from NPC to the adjacent tile
-                                float distanceSquared = Vector2.DistanceSquared(NPC.Center, worldPos);
-                                if (distanceSquared < closestDistanceSquared)
-                                {
-                                    closestDistanceSquared = distanceSquared;
-                                    closestSpongeFound = worldPos;
-                                }
-                            }
-                        }
-
-                        // Break after checking the first sponge nutrient in this direction
+                        tileIndexFound = j;
                         break;
                     }
                 }
+
+                if (tileIndexFound == null)
+                    continue;
+
+                for (int k = tileIndexFound.Value; k >= 0; k--)
+                {
+                    Vector2 worldPos = points[k].ToWorldCoordinates();
+                    if (NPC.HasSight(worldPos) && SunkenSeaTileValidity(points[k]))
+                    {
+                        CurrentBehavior = EatingBehavior;
+                        spongeFoundPosition = worldPos;
+                        break;
+                    }
+                }
+
+                tileIndexFound = null;
             }
 
-            // Update behavior if a valid tile was found
-            if (closestSpongeFound.HasValue)
-            {
-                CurrentBehavior = EatingBehavior;
-                SpongeFoundPosition = closestSpongeFound.Value;
-            }
+            if (spongeFoundPosition.HasValue)
+                SpongeFoundPosition = spongeFoundPosition.Value;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -385,8 +397,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetDefaults()
         {
             base.SetDefaults();
-            
-            // BannerItem = ItemType<ProbesnoutBanner>();
+
+            BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
 

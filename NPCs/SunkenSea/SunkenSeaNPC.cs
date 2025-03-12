@@ -18,6 +18,8 @@ namespace CalamityMod.NPCs.SunkenSea
     /// </summary>
     public abstract class SunkenSeaNPC : ModNPC
     {
+        protected PathfindingManager pathfinding = null;
+        
         private NPC _currentPrey;
         private NPC _currentPredator;
         private Player _currentPlayer;
@@ -188,7 +190,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
             return NPC.Hitbox.Contains(actualFuckingPoint) 
                 || !NPC.GetIntersectingHitboxPoints(
-                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolid() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
         }
     }
 }

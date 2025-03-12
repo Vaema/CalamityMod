@@ -687,10 +687,11 @@ namespace CalamityMod.NPCs.TownNPCs
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
-            //bool wifeIsHappy = Main.npc[wife].Happiness;
+            bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
-            bool respectPlayer = NPC.downedMoonlord;
-            bool beLessDrunk = wifeIsAround && respectPlayer;
+            bool wifeIsHappy = wifeIsAround ? Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D : false;
+            bool worldIsSafer = NPC.downedMoonlord;
+            bool beLessDrunk = wifeIsAround && worldIsSafer;
 
             if (Main.bloodMoon)
             {
@@ -714,7 +715,9 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+
+                if (Main.zenithWorld)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
 
                 if (ChildSafety.Disabled)
                     dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
@@ -749,12 +752,16 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (wifeIsAround)
             {
-                if (respectPlayer)
+                if (worldIsSafer)
                 {
-                    dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+                    if (wifeIsHappy && isHappy)
+                        dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+
                     if (ChildSafety.Disabled)
                     {
-                        dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+                        if (!wifeIsHappy || !isHappy)
+                            dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+
                         dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
                     }
                 }
@@ -771,10 +778,27 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (Main.dayTime)
             {
-                dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Day4"));
+                if (!beLessDrunk)
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3Alt"));
+                }
+
+                if (!isHappy)
+                {
+                    int annoyingChild = NPC.FindFirstNPC(NPCID.Angler);
+                    if (annoyingChild != -1)
+                        dialogue.Add(this.GetLocalization("Chat.Day4").Format(Main.npc[annoyingChild].GivenName));
+                }
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day4Alt"));
 
                 if (beLessDrunk)
                 {
@@ -790,10 +814,21 @@ namespace CalamityMod.NPCs.TownNPCs
             else
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+
+                if (!isHappy)
+                {
+                    if (Main.zenithWorld)
+                        dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3Alt"));
+                }
+
                 dialogue.Add(this.GetLocalizedValue("Chat.Night4"));
-                dialogue.Add(this.GetLocalizedValue("Chat.Night5"));
 
                 if (wifeIsAround)
                     dialogue.Add(this.GetLocalization("Chat.NightStylist").Format(Main.npc[wife].GivenName));
