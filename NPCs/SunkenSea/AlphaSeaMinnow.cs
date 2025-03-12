@@ -46,6 +46,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.npcFrameCount[Type] = 8;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()

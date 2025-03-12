@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
@@ -13,13 +15,22 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SeaMinnow : ModNPC
+    public class SeaMinnow : SunkenSeaNPC
     {
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>() {
+            ModContent.NPCType<Sharkoon>(),
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>()
+        };
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()

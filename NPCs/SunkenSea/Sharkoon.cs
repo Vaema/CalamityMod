@@ -148,6 +148,9 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCType<Probesnout>(),
             NPCType<ProbesnoutGold>(),
             NPCType<SeaMinnow>(),
+            NPCType<AlphaSeaMinnow>(),
+            NPCType<SeaMinnowGold>(),
+            NPCType<AlphaSeaMinnowGold>(),
             NPCType<EutrophicRay>(),
         ];
 
@@ -454,6 +457,8 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+
+        public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
 
         public override void OnHitByNPC(NPC attacker)
         {
