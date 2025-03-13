@@ -1878,6 +1878,23 @@ namespace CalamityMod.CalPlayer
                     FlameLickedShell.handleParry(Player);
                 }
             }
+            else if (shieldOfTheOceanParry >= 12)
+            {
+                if (!Player.HasCooldown(ParryCooldown.ID))
+                {
+                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                    int shieldParryIFrames = Player.ComputeParryIFrames();
+                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
+
+                    shieldOfTheOceanEmpoweredParry = true;
+                    modifiers.FinalDamage *= 0.4f; // 60% DR
+                    modifiers.DisableSound();
+                }
+
+                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
+                ShieldoftheOcean.ActivateParry(Player);
+            }
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
@@ -2647,7 +2664,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 35 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;

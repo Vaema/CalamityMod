@@ -6920,7 +6920,7 @@ namespace CalamityMod.NPCs
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 0f);
                 pool.Add(NPCType<RepairUnitCritter>(), 0.025f);
-                pool.Add(NPCType<Androomba>(), 0.001f);
+                pool.Add(NPCType<Androomba>(), 0.01f);
                 // Normal droids are replaced with plague droids in the Jungle Lab.
                 if (nearPlagueLab)
                 {

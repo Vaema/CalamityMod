@@ -915,6 +915,9 @@ namespace CalamityMod.CalPlayer
         public bool auricSArtifact = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
+        public bool shieldOfTheOcean = false;
+        public int shieldOfTheOceanParry = 0;
+        public bool shieldOfTheOceanEmpoweredParry = false;
         public bool normalityRelocator = false;
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
@@ -1038,7 +1041,7 @@ namespace CalamityMod.CalPlayer
         public int tornadoCooldown = 0;
         /// <summary> Calamity's Snow armor set bonus; reduces cold enemy damage and increases cold debuff damage. </summary>
         public bool eskimoSet = false;
-        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash </summary>
+        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash. </summary>
         public bool rainSet = false;
         /// <summary> Calamity's Meteor armor set bonus; makes all magic guns cost 33% mana instead of Space Gun costing 0 mana. </summary>
         public bool meteorSet = false;
@@ -1155,7 +1158,9 @@ namespace CalamityMod.CalPlayer
         public bool valkyrie = false;
         /// <summary> Statigel armor's summoner set bonus minion. </summary>
         public bool slimeGod = false;
-        public bool molluskSet = false;
+        public bool molluskHelmet = false;
+        public bool molluskChest = false;
+        public bool molluskLegs = false;
         public bool fearmongerSet = false;
         public int fearmongerRegenFrames = 0;
         public bool daedalusCrystal = false;
@@ -1450,6 +1455,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Dragonblood Disgorger. </summary>
         public bool dragonFamily = false;
         public bool providenceStabber = false;
+        public bool seashineSwordBuff = false;
         public bool saros = false;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
@@ -2098,7 +2104,9 @@ namespace CalamityMod.CalPlayer
             omegaBlueSet = false;
             omegaBlueHentai = false;
 
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
 
             ataxiaBolt = false;
@@ -2210,9 +2218,6 @@ namespace CalamityMod.CalPlayer
             darkSunRing = false;
             crawCarapace = false;
             baroclaw = false;
-            gShell = false;
-            lAmbergris = false;
-            tortShell = false;
             voidOfCalamity = false;
             voidOfExtinction = false;
             eArtifact = false;
@@ -2220,6 +2225,7 @@ namespace CalamityMod.CalPlayer
             auricSArtifact = false;
             pSoulArtifact = false;
             giantPearl = false;
+            shieldOfTheOcean = false;
             normalityRelocator = false;
             flameLickedShell = false;
             Pauldron = false;
@@ -2596,6 +2602,7 @@ namespace CalamityMod.CalPlayer
             powerfulRaven = false;
             dragonFamily = false;
             providenceStabber = false;
+            seashineSwordBuff = false;
             plaguebringerMK2 = false;
             igneousExaltation = false;
             GlacialEmbrace = false;
@@ -3054,7 +3061,9 @@ namespace CalamityMod.CalPlayer
             ChlorophyteHealDelay = 0;
             omegaBlueChestplate = false;
             omegaBlueSet = false;
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
             daedalusReflect = false;
             daedalusSplit = false;
@@ -3135,6 +3144,8 @@ namespace CalamityMod.CalPlayer
             tracersDust = false;
             elysianWingsDust = false;
             GemTechState.OnDeathEffects();
+            shieldOfTheOceanParry = 0;
+            shieldOfTheOceanEmpoweredParry = false;
             blazingCoreParry = 0;
             blazingCoreEmpoweredParry = false;
             blazingCoreSuccessfulParry = 0;
@@ -3445,6 +3456,12 @@ namespace CalamityMod.CalPlayer
                         SoundEngine.PlaySound(ProfanedGuardianDefender.RockShieldSpawnSound, Player.Center);
                         flameLickedShellParry = FlameLickedShell.flameLickedParry;
                     }
+                }
+                else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
+                {
+                    GeneralScreenShakePower = 2f;
+                    SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
+                    shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
                 }
             }
 

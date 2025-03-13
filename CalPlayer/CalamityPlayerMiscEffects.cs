@@ -467,12 +467,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Solar Wings increase dash velocity of Solar Flare armor dash
-            if (Player.wingsLogic == (int)VanillaWingID.WingsSolar && Player.dash == 3 && dashStart)
-            {
-                Player.velocity.X *= 1.25f;
-            }
-
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
             else
@@ -2026,6 +2020,13 @@ namespace CalamityMod.CalPlayer
             {
                 FlameLickedShell.HandleParryCountdown(Player);
             }
+            if (shieldOfTheOceanParry > 0)
+            {
+                if (shieldOfTheOcean)
+                    ShieldoftheOcean.HandleParryCountdown(Player);
+                else
+                    shieldOfTheOceanParry--;
+            }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
                 flameLickedShellParry--;
@@ -3552,8 +3553,12 @@ namespace CalamityMod.CalPlayer
             if ((vaporfied && !purity) || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
-            if (molluskSet)
-                Player.velocity.X *= 0.985f;
+            if (molluskHelmet)
+                Player.velocity.X *= 0.994f;
+            if (molluskChest)
+                Player.velocity.X *= 0.994f;
+            if (molluskLegs)
+                Player.velocity.X *= 0.994f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {

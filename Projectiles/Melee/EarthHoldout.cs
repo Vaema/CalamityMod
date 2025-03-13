@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public override Vector2 HitboxSize => new Vector2(288, 288) * (1 + bladeFade * 1.2f);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
-        public override Vector2 SpriteOrigin => new(-3, 186f);
+        public override Vector2 SpriteOrigin => new(0, 186f);
         public Vector2 mousePos;
         public Vector2 aimVel;
         public bool doSwing = true;
@@ -48,12 +48,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, it does not influence Earth's projectile spawning
             mousePos = Owner.Calamity().mouseWorld;
@@ -101,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             if (CanHit)
                 fadeIn = MathHelper.Lerp(fadeIn, 1, 0.2f);
             else
-                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.25f);
+                fadeIn = MathHelper.Lerp(fadeIn, 0, 0.28f);
 
             if (Projectile.ai[1] == -1)
                 bladeFade = MathHelper.Lerp(bladeFade, 1, 0.15f);
@@ -379,11 +378,14 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int i = 0; i < draws; i++)
                 {
+                    bool swordTip = i > draws * 0.73f;
+                    float swordTipScale = swordTip ? Utils.Remap(i, (int)(draws * 0.73f), draws, 0.9f, 0.35f) : 1;
                     Vector2 offsetDir = Vector2.One.RotatedBy(Projectile.rotation + RotationOffset + MathHelper.ToRadians(90));
 
-                    Color auraColor = Color.Lerp(mainColor, Color.Lerp(mainColor, Color.White, 0.7f), Utils.GetLerpValue(0, draws - 1, i)) with { A = 0 } * 0.38f * bladeFade;
+                    Color bladeColor = Color.Lerp(Color.MediumTurquoise, Color.Lerp(Color.LimeGreen, Color.OrangeRed, (i * 0.8f) / draws), i / (draws * 0.6f));
+                    Color auraColor = Color.Lerp(bladeColor, Color.White, 0.2f) with { A = 0 } * 0.4f * bladeFade;
                     Vector2 drawOffset = -offsetDir * 9 * i * bladeFade;
-                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 70 - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(2, 2), tex2.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, tex2.Size() * 0.5f, Vector2.One * (1f - i * 0.03f) * 0.7f * bladeFade * spriteMult, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 70 - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(2, 2), tex2.Frame(1, FrameCount, 0, Frame), auraColor, RotationOffset + Projectile.rotation + MathHelper.ToRadians(45), tex2.Size() * 0.5f, new Vector2(0.7f * swordTipScale, 1f) * (0.75f * swordTipScale) * 0.7f * bladeFade * spriteMult, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));

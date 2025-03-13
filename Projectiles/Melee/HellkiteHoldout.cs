@@ -52,13 +52,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             CanHit = false;
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Hellkite has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
