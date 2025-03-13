@@ -36,8 +36,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehaviour => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 200;
-        public static int IdleMaxPathDistance = 400;
+        public static int IdleMinPathDistance = 600;
+        public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
 
@@ -102,8 +102,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             pathfinding = new PathfindingManager(NPC)
             {
-                Acceleration = 0.4f,
-                MaxSpeed = 8f,
+                Acceleration = 0.6f,
+                MaxSpeed = 4f,
             };
         }
 
@@ -125,15 +125,9 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 BeachedBehaviour();
             }
-            NPC.rotation = NPC.velocity.X * 0.05f;
-            if ((double)NPC.rotation < -0.1)
-            {
-                NPC.rotation = -0.1f;
-            }
-            if ((double)NPC.rotation > 0.1)
-            {
-                NPC.rotation = 0.1f;
-            }
+            int dir = NPC.velocity.X.DirectionalSign();
+            NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
+            NPC.spriteDirection = NPC.direction = dir;
             if (NPC.type == ModContent.NPCType<AlphaSeaMinnowGold>())
             {
                 NPC.ProduceGoldCritterDust();
@@ -142,52 +136,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public void IdleBehaviour()
         {
-            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
-            NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
-            NPC.noGravity = true;
-            if (NPC.direction == 0)
-            {
-                NPC.TargetClosest(true);
-            }
-            NPC.TargetClosest(false);
-            NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
-            if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
-            {
-                NPC.velocity.X = NPC.velocity.X * 0.95f;
-            }
-            if (NPC.ai[0] == -1f)
-            {
-                NPC.velocity.Y = NPC.velocity.Y - 0.01f;
-                if ((double)NPC.velocity.Y < -0.3)
-                {
-                    NPC.ai[0] = 1f;
-                }
-            }
-            else
-            {
-                NPC.velocity.Y = NPC.velocity.Y + 0.01f;
-                if ((double)NPC.velocity.Y > 0.3)
-                {
-                    NPC.ai[0] = -1f;
-                }
-            }
-            int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-            int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-            if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
-            {
-                if (Main.tile[npcTileX, npcTileY + 1].HasTile)
-                {
-                    NPC.ai[0] = -1f;
-                }
-                else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
-                {
-                    NPC.ai[0] = -1f;
-                }
-            }
-            if ((double)NPC.velocity.Y > 0.4 || (double)NPC.velocity.Y < -0.4)
-            {
-                NPC.velocity.Y = NPC.velocity.Y * 0.95f;
-            }
+            // At random, the mob will choose a random nearby point and pathfind there.
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
         public void FleeBehaviour()
@@ -196,8 +146,11 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CurrentPredator == null)
             {
                 CurrentBehaviour = (int)PhaseType.Idle;
+                pathfinding.MaxSpeed = 4;
                 return;
             }
+
+            pathfinding.MaxSpeed = 8;
 
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
@@ -312,6 +265,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
             this.HideFromBestiary();
+            base.SetStaticDefaults();
         }
         public override void SetDefaults()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
@@ -25,6 +26,10 @@ namespace CalamityMod.NPCs.SunkenSea
             ModContent.NPCType<PolyperilTentacle>()
         };
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
+
+        public Entity avoidedEntity;
+
+        public Vector2 randomPathPoint;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;
@@ -64,6 +69,11 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void OnSpawn(IEntitySource source)
         {
             NPC.frameCounter = Main.rand.NextFloat(Main.npcFrameCount[Type]);
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.6f,
+                MaxSpeed = 5f,
+            };
         }
         public override void AI()
         {
@@ -182,7 +192,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 else
                 {
-                    float SAImovement = 0.05f;
+                    float SAImovement = 0.2f;
                     for (int k = 0; k < Main.maxNPCs; k++)
                     {
                         NPC otherFish = Main.npc[k];
@@ -191,7 +201,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             continue;
 
                         float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
-                        if (taxicabDist < NPC.width * 1.5f)
+                        if (taxicabDist < NPC.width * 2f)
                         {
                             if (NPC.position.X < otherFish.position.X)
                                 NPC.velocity.X -= SAImovement;
@@ -208,125 +218,41 @@ namespace CalamityMod.NPCs.SunkenSea
                     if (!owner.active)
                         return;
 
-                    float passiveMvtFloat = 0.5f;
-                    float range = 100f;
-                    Vector2 fischPos = NPC.Center;
-                    float xDist = owner.Center.X - fischPos.X;
-                    float yDist = owner.Center.Y - fischPos.Y;
-                    yDist += Main.rand.NextFloat(-10, 20);
-                    xDist += Main.rand.NextFloat(-10, 20);
-                    xDist += 30f * -(float)owner.direction;
-                    Vector2 leaderVector = new Vector2(xDist, yDist);
-                    float leaderDist = leaderVector.Length();
-                    float returnSpeed = 8f;
-                    //If leader is close enough, resume normal
-                    if (leaderDist < range && owner.velocity.Y == 0f &&
-                        NPC.Bottom.Y <= owner.Bottom.Y &&
-                        !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                    {
-                        if (NPC.velocity.Y < -6f)
-                        {
-                            NPC.velocity.Y = -6f;
-                        }
-                    }
-
-                    if (leaderDist < 50f)
-                    {
-                        if (Math.Abs(NPC.velocity.X) > 2f || Math.Abs(NPC.velocity.Y) > 2f)
-                        {
-                            NPC.velocity *= 0.99f;
-                        }
-                        passiveMvtFloat = 0.01f;
-                    }
-                    else
-                    {
-                        if (leaderDist < 100f)
-                        {
-                            passiveMvtFloat = 0.1f;
-                        }
-                        if (leaderDist > 300f)
-                        {
-                            passiveMvtFloat = 1f;
-                        }
-                        leaderDist = returnSpeed / leaderDist;
-                        leaderVector.X *= leaderDist;
-                        leaderVector.Y *= leaderDist;
-                    }
-                    if (NPC.velocity.X < leaderVector.X)
-                    {
-                        NPC.velocity.X += passiveMvtFloat;
-                        if (passiveMvtFloat > 0.05f && NPC.velocity.X < 0f)
-                        {
-                            NPC.velocity.X += passiveMvtFloat;
-                        }
-                    }
-                    if (NPC.velocity.X > leaderVector.X)
-                    {
-                        NPC.velocity.X -= passiveMvtFloat;
-                        if (passiveMvtFloat > 0.05f && NPC.velocity.X > 0f)
-                        {
-                            NPC.velocity.X -= passiveMvtFloat;
-                        }
-                    }
-                    if (NPC.velocity.Y < leaderVector.Y)
-                    {
-                        NPC.velocity.Y += passiveMvtFloat;
-                        if (passiveMvtFloat > 0.05f && NPC.velocity.Y < 0f)
-                        {
-                            NPC.velocity.Y += passiveMvtFloat * 2f;
-                        }
-                    }
-                    if (NPC.velocity.Y > leaderVector.Y)
-                    {
-                        NPC.velocity.Y -= passiveMvtFloat;
-                        if (passiveMvtFloat > 0.05f && NPC.velocity.Y > 0f)
-                        {
-                            NPC.velocity.Y -= passiveMvtFloat * 2f;
-                        }
-                    }
-                    if (NPC.velocity.X >= 0.25f)
-                    {
-                        NPC.direction = -1;
-                    }
-                    else if (NPC.velocity.X < -0.25f)
-                    {
-                        NPC.direction = 1;
-                    }
-                    NPC.spriteDirection = -NPC.direction;
+                    if (NPC.Distance(owner.Center) > 20)
+                        pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
                 }
+                int dir = NPC.velocity.X.DirectionalSign();
+                NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
+                NPC.spriteDirection = NPC.direction = dir;
             }
             else
             {
+                // Check who is the avoided entity specifically.
+                avoidedEntity = avoidedEntity is NPC ? CurrentPredator : CurrentPlayer;
 
+                // While it doesn't have any obstacles in front of it, run away in a straight line.
+                // Try to manuever if there are any obstacles.
+                if (!Main.tile[(NPC.Center + NPC.DirectionFrom(avoidedEntity.Center) * 96).ToTileCoordinates()].IsTileSolid())
                 {
-                    if (NPC.velocity.Y == 0f)
-                    {
-                        NPC.velocity.X = NPC.velocity.X * 0.94f;
-                        if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
-                        {
-                            NPC.velocity.X = 0f;
-                        }
-                    }
-                    NPC.velocity.Y = NPC.velocity.Y + 0.3f;
-                    if (NPC.velocity.Y > 10f)
-                    {
-                        NPC.velocity.Y = 10f;
-                    }
-                    NPC.ai[0] = 1f;
+                    NPC.velocity += NPC.DirectionFrom(avoidedEntity.Center) * pathfinding.Acceleration;
+                    pathfinding.ClearResults();
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
                 }
-                NPC.rotation = NPC.velocity.X * 0.05f;
-                if ((double)NPC.rotation < -0.1)
+                else
                 {
-                    NPC.rotation = -0.1f;
+                    float distanceFromAvoided = Vector2.Distance(NPC.Center, avoidedEntity.Center);
+                    randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                    NPC.netUpdate = true;
+                    pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
                 }
-                if ((double)NPC.rotation > 0.1)
-                {
-                    NPC.rotation = 0.1f;
-                }
-                if (NPC.type == ModContent.NPCType<SeaMinnowGold>())
-                {
-                    NPC.ProduceGoldCritterDust();
-                }
+            }
+
+            if (NPC.type == ModContent.NPCType<SeaMinnowGold>())
+            {
+                NPC.ProduceGoldCritterDust();
             }
         }
 
@@ -352,6 +278,16 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(randomPathPoint);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            randomPathPoint = reader.ReadVector2();
+        }
     }
     public class SeaMinnowGold : SeaMinnow
     {
@@ -361,6 +297,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
             this.HideFromBestiary();
+            base.SetStaticDefaults();
         }
         public override void SetDefaults()
         {

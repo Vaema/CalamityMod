@@ -24,13 +24,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Static Fields
 
-        public static int IdleRandomMovementUnlikeliness = 250;
+        //public static int IdleRandomMovementUnlikeliness = 250;
         public static int IdleMinPathDistance = 200;
         public static int IdleMaxPathDistance = 400;
 
         public static int FleeTileAnticipationDistance = 64;
-        public static int FleeMinPathDistance = 80;
-        public static int FleeMaxPathDistance = 160;
 
         public static int ExplosionDistance = 80;
         public static int ExplosionRadius = 80;
@@ -257,7 +255,7 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
