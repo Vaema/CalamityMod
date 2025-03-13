@@ -143,6 +143,7 @@ namespace CalamityMod.CalPlayer
         public bool disableHiveCystSpawns = false;
         public bool disableNaturalScourgeSpawns = false;
         public bool disableAnahitaSpawns = false;
+        public int whitewaterHeal = 0;
         /// <summary> Used for toggling Calamity's blazing cursor effect. </summary>
         public bool blazingCursorDamage = false;
         /// <summary>
@@ -713,6 +714,7 @@ namespace CalamityMod.CalPlayer
         public bool fungalSymbiote = false;
         public bool trinketOfChi = false;
         public bool gladiatorSword = false;
+        public int gladiatorTimer = 0;
         public bool unstableGraniteCore = false;
         public bool regenator = false;
         public float regenatorDamage = 0;
@@ -2789,6 +2791,7 @@ namespace CalamityMod.CalPlayer
             #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            whitewaterHeal = 0;
             luxorHit = false;
             arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;

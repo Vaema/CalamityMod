@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
                                     }
                                 }
                             }
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.1f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0f, 0f);
                         }
                     }
                 }

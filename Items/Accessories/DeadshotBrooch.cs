@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Accessories
         {
             player.Calamity().deadshotBrooch = true;
             player.Calamity().rangedAmmoCost *= 0.8f;
-            player.GetDamage<RangedDamageClass>() += 0.1f;
-            player.GetCritChance<RangedDamageClass>() += 5;
+            player.GetDamage<RangedDamageClass>() += 0.12f;
+            player.GetCritChance<RangedDamageClass>() += 7;
         }
 
         public override void AddRecipes()
