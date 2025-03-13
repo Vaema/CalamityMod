@@ -415,7 +415,6 @@ namespace CalamityMod.CalPlayer
                     if (healFrameCadence < 52)
                         healFrameCadence += (punishmentFrames < 0) ? 0 : punishmentFrames / 15;
 
-                    Main.NewText(healFrameCadence);
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
                         Player.Heal(1);
 
