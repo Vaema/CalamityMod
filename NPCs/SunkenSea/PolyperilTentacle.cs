@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -27,6 +28,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         // Where the tentacle will hover when not attacking
         public Vector2 anchor;
+
+        Entity target;
 
         protected override List<int> PreyIDs => new List<int>()
         {
@@ -103,9 +106,9 @@ namespace CalamityMod.NPCs.SunkenSea
                 Segments[0].locked = true;
                 Segments[^1].locked = true;
             }
-
+            Entity targ = CurrentPrey != null ? CurrentPrey : CurrentPlayer;
             // While aggro'd, launch at the target then retreat
-            if (NPC.HasValidTarget)
+            if (targ != null)
             {
                 // Remain stationary while at rest
                 if (Timer < 0)
@@ -115,7 +118,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Launch
                 if (Timer == 0)
                 {
-                    NPC.velocity = NPC.SafeDirectionTo(NPC.GetTargetData().Center) * 8;
+                    NPC.velocity = NPC.SafeDirectionTo(targ.Center) * 8;
+                    SoundEngine.PlaySound(SoundID.Item152 with { Volume = 1.5f, Pitch = 0.4f }, NPC.Center);
                 }
                 // Retreat
                 if (Timer > 20)
@@ -179,8 +183,8 @@ namespace CalamityMod.NPCs.SunkenSea
             Segments[0].oldPosition = Segments[0].position;
             Segments[0].position = parent.Center;
 
-            Segments[Segments.Count - 1].oldPosition = Segments[Segments.Count - 1].position;
-            Segments[Segments.Count - 1].position = parent.active ? NPC.Center : parent.Center;
+            Segments[^1].oldPosition = Segments[^1].position;
+            Segments[^1].position = parent.active ? NPC.Center : parent.Center;
 
             Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 5, loops: 1, gravity: 0.3f);
 
@@ -197,22 +201,21 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override void OnPlayerDetection(Player player)
         {
-            Timer = 0;
+            //Timer = -60;
         }
 
         protected override void OnPreyDetection(NPC prey)
         {
-            Timer = 0;
+            //Timer = -60;
+        }
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 460f * 460f;
         }
 
         protected override bool NPCSearchFilter(NPC n)
         {
-            return base.NPCSearchFilter(n);
-        }
-
-        protected override bool PlayerSearchFilter(Player p)
-        {
-            return base.PlayerSearchFilter(p);
+            return base.NPCSearchFilter(n) || n == CurrentPrey && Vector2.DistanceSquared(NPC.Center, n.Center) < 460f * 460f;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

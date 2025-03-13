@@ -230,23 +230,30 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Check who is the avoided entity specifically.
                 avoidedEntity = avoidedEntity is NPC ? CurrentPredator : CurrentPlayer;
 
-                // While it doesn't have any obstacles in front of it, run away in a straight line.
-                // Try to manuever if there are any obstacles.
-                if (!Main.tile[(NPC.Center + NPC.DirectionFrom(avoidedEntity.Center) * 96).ToTileCoordinates()].IsTileSolid())
+                if (avoidedEntity is not null)
                 {
-                    NPC.velocity += NPC.DirectionFrom(avoidedEntity.Center) * pathfinding.Acceleration;
-                    pathfinding.ClearResults();
+                    // While it doesn't have any obstacles in front of it, run away in a straight line.
+                    // Try to manuever if there are any obstacles.
+                    if (!Main.tile[(NPC.Center + NPC.DirectionFrom(avoidedEntity.Center) * 96).ToTileCoordinates()].IsTileSolid())
+                    {
+                        NPC.velocity += NPC.DirectionFrom(avoidedEntity.Center) * pathfinding.Acceleration;
+                        pathfinding.ClearResults();
 
-                    // Cap the speed if MaxSpeed has been surpassed.
-                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                        // Cap the speed if MaxSpeed has been surpassed.
+                        if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                            NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                    }
+                    else
+                    {
+                        float distanceFromAvoided = Vector2.Distance(NPC.Center, avoidedEntity.Center);
+                        randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                        NPC.netUpdate = true;
+                        pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                    }
                 }
                 else
                 {
-                    float distanceFromAvoided = Vector2.Distance(NPC.Center, avoidedEntity.Center);
-                    randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
-                    NPC.netUpdate = true;
-                    pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                    pathfinding.DoPathfinding(new(NPC.Center, Main.rand.NextVector2Unit() * Main.rand.Next(300, 1000), SunkenSeaTileValidity));
                 }
             }
 
