@@ -680,8 +680,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
             }
 
+            bool worldIsSafer = NPC.downedMoonlord;
+
             if (CalamityUtils.AnyBossNPCS())
-                return this.GetLocalizedValue("Chat.BossAlive");
+            {
+                if (!worldIsSafer)
+                    return this.GetLocalizedValue("Chat.BossAlive");
+                else
+                    return this.GetLocalizedValue("Chat.BossAliveAlt");
+            }
 
             if (NPC.homeless)
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
@@ -690,7 +697,6 @@ namespace CalamityMod.NPCs.TownNPCs
             bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
             bool wifeIsAround = wife != -1;
             bool wifeIsHappy = wifeIsAround ? Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D : false;
-            bool worldIsSafer = NPC.downedMoonlord;
             bool beLessDrunk = wifeIsAround && worldIsSafer;
 
             if (Main.bloodMoon)
@@ -834,45 +840,65 @@ namespace CalamityMod.NPCs.TownNPCs
                     dialogue.Add(this.GetLocalization("Chat.NightStylist").Format(Main.npc[wife].GivenName));
             }
 
+            // She needs to be drunk to enjoy festive events, otherwise, she dislikes them. - Fabsol
             if (BirthdayParty.PartyIsUp)
-                dialogue.Add(this.GetLocalizedValue("Chat.Party"));
+            {
+                if (!beLessDrunk)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Party"));
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.PartyAlt"));
+            }
 
+            // She loves her hair and freaks out if it's threatened. Also a reference to the wicked witch of the west. - Fabsol
             if (AcidRainEvent.AcidRainEventIsOngoing)
                 dialogue.Add(this.GetLocalizedValue("Chat.AcidRain"));
 
+            // ayy lmao meme reference (this isn't 4th-wall breaking enough to be put in GFB-only imo). - Fabsol
             if (Main.invasionType == InvasionID.MartianMadness)
                 dialogue.Add(this.GetLocalizedValue("Chat.Martians"));
 
+            // Reference to insane thoughts I had years ago. - Fabsol
             if (DownedBossSystem.downedCryogen && ChildSafety.Disabled)
                 dialogue.Add(this.GetLocalizedValue("Chat.CryogenDefeated"));
 
+            // Reference to the old Leviathan sprite. - Fabsol
             if (DownedBossSystem.downedLeviathan)
                 dialogue.Add(this.GetLocalizedValue("Chat.LeviathanDefeated"));
 
-            if (NPC.downedMoonlord)
+            // Risque tentacle implication... - Fabsol
+            if (NPC.downedMoonlord && ChildSafety.Disabled)
                 dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated"));
 
+            // Reference to some crazy shit I thought up at one point. - Fabsol
             if (DownedBossSystem.downedPolterghast)
                 dialogue.Add(this.GetLocalizedValue("Chat.PolterghastDefeated"));
 
-            if (DownedBossSystem.downedDoG)
+            // MGS2 meme line. - Fabsol
+            if (DownedBossSystem.downedDoG && Main.zenithWorld)
                 dialogue.Add(this.GetLocalizedValue("Chat.DoGDefeated"));
 
+            // Cirrus doesn't like the creature. - Fabsol
             if (player.Calamity().chibii)
-                dialogue.Add(this.GetLocalizedValue("Chat.HasChibii"));
+            {
+                if (!isHappy)
+                    dialogue.Add(this.GetLocalizedValue("Chat.HasChibii"));
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.HasChibiiAlt"));
+            }
 
-            if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled)
+            // She likes fish people (including Amidias, but she has no comments for him yet). - Fabsol
+            if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled && isHappy)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAnahitaTrans"));
 
             if (player.Calamity().cirrusVodka)
                 dialogue.Add(this.GetLocalizedValue("Chat.HasVodka"));
 
-            if (player.HasItem(ModContent.ItemType<PrincessSpiritinaBottle>()))
+            // These are all a bit too risque for children to be seeing lol - Fabsol
+            if (player.HasItem(ModContent.ItemType<PrincessSpiritinaBottle>()) && ChildSafety.Disabled)
             {
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn1"));
                 dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn2"));
-                if (ChildSafety.Disabled)
-                    dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn3"));
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn3"));
             }
 
             return dialogue;
