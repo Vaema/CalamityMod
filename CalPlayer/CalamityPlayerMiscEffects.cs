@@ -467,12 +467,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Solar Wings increase dash velocity of Solar Flare armor dash
-            if (Player.wingsLogic == (int)VanillaWingID.WingsSolar && Player.dash == 3 && dashStart)
-            {
-                Player.velocity.X *= 1.25f;
-            }
-
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
             else
@@ -1794,6 +1788,25 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (whitewaterHeal > 0)
+            {
+                if (whitewaterHeal % 10 == 0)
+                    Player.HealPlayer(1);
+                whitewaterHeal--;
+
+                Vector2 vel = (MathHelper.TwoPi * whitewaterHeal * Player.direction / 25).ToRotationVector2() * 3f;
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    Dust c = Dust.NewDustPerfect(Player.Center + vel * 4 * i, ModContent.DustType<LightDust>());
+                    c.velocity = vel * i;
+                    c.scale = Main.rand.NextFloat(0.9f, 1f);
+                    c.noGravity = true;
+                    c.alpha = 150;
+                    c.color = Color.SkyBlue;
+                    c.noLightEmittence = true;
+                }
+            }
+
             // Tick all cooldowns.
             // Depending on the code for each individual cooldown, this isn't guaranteed to do anything.
             // It may not tick down the timer or not do anything at all.
@@ -1876,6 +1889,8 @@ namespace CalamityMod.CalPlayer
                 KameiBladeUseDelay--;
             if (galileoCooldown > 0)
                 galileoCooldown--;
+            if (gladiatorTimer > 0)
+                gladiatorTimer--;
             if (dragonRageCooldown > 0)
                 dragonRageCooldown--;
             if (soundCooldown > 0)
@@ -2025,6 +2040,13 @@ namespace CalamityMod.CalPlayer
             else if (flameLickedShell && flameLickedShellParry > 0)
             {
                 FlameLickedShell.HandleParryCountdown(Player);
+            }
+            if (shieldOfTheOceanParry > 0)
+            {
+                if (shieldOfTheOcean)
+                    ShieldoftheOcean.HandleParryCountdown(Player);
+                else
+                    shieldOfTheOceanParry--;
             }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
@@ -3552,8 +3574,12 @@ namespace CalamityMod.CalPlayer
             if ((vaporfied && !purity) || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
-            if (molluskSet)
-                Player.velocity.X *= 0.985f;
+            if (molluskHelmet)
+                Player.velocity.X *= 0.994f;
+            if (molluskChest)
+                Player.velocity.X *= 0.994f;
+            if (molluskLegs)
+                Player.velocity.X *= 0.994f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {

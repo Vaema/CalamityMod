@@ -65,6 +65,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "CrabBar",
             "Dandy",
             "Dia",
+            "dozezoze",
             "enamoured",
             "ENNWAY",
             "Flowaria",

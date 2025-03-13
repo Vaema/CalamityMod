@@ -212,6 +212,7 @@ namespace CalamityMod.NPCs
             "Amber", // <@!114677116473180169> (mishirousui)
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
+            "Lain", // <@!655201622863118337> (literallyadeerfr)
         };
         private static readonly string[] TavernkeepNames =
         {

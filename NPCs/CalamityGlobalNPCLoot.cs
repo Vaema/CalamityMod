@@ -505,9 +505,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Fire Imp
-                // Ashen Stalactite @ 10% Normal, 16.67% Expert+
+                // Ashen Stalactite @ 4%, 14.28% after defeating EoW/BoC
                 case NPCID.FireImp:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AshenStalactite>(), 10, 6));
+                    npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 25);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 7);
                     break;
 
                 // Demon, Voodoo Demon

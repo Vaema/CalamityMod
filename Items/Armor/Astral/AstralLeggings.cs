@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.Astral
         public override void UpdateEquip(Player player)
         {
             player.moveSpeed += 0.15f;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
+            player.GetDamage<GenericDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()
