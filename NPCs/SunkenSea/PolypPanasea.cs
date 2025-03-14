@@ -182,7 +182,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Reset polyp index in case the polyp dies
             if (PolypIndex > -1)
             {
-                if (Main.npc[PolypIndex].type != ModContent.NPCType<Polyperil>() || !Main.npc[PolypIndex].active || Main.npc[PolypIndex].life <= 0)
+                if (Main.npc[PolypIndex].type != ModContent.NPCType<Polyperil>() || !Main.npc[PolypIndex].active || Main.npc[PolypIndex].life <= 0 || Main.npc[PolypIndex].Distance(NPC.Center) > 1000)
                 {
                     PolypIndex = -1;
                 }
@@ -238,11 +238,13 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (PolypIndex <= -1 || CurrentPredator == null)
             {
+                NPC.dontTakeDamage = false;
                 CurrentBehaviour = (int)PhaseType.Idle;
                 pathfinding.ClearResults();
                 return;
             }
 
+            NPC.dontTakeDamage = true;
             pathfinding.MaxSpeed = 2;
 
             // At random, the mob will choose a random nearby point and pathfind there.

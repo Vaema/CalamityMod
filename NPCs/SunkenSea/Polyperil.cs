@@ -139,10 +139,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool CanBeHitByNPC(NPC attacker)
         {
-            if (attacker.type == ModContent.NPCType<Polyperil>() || attacker.type == ModContent.NPCType<PolyperilTentacle>())
-                return false;
-
-            return true;
+            return PredatorIDs.Contains(attacker.type);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

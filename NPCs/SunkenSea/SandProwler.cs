@@ -237,37 +237,58 @@ namespace CalamityMod.NPCs.SunkenSea
             float targetXDist = targ.position.X + (float)(targ.width / 2);
             float targetYDist = targ.position.Y + (float)(targ.height / 2);
             bool coinTarget = false;
-            // Look for silver and gold coins to eat
-            for (int i = 0; i < Main.maxItems; i++)
+            if (CurrentPredator != null)
             {
-                Item item = Main.item[i];
-                // continue if not an active silver or gold coin
-                if (item == null || !item.active || (item.type != ItemID.SilverCoin && item.type != ItemID.GoldCoin))
-                    continue;
-                // can only look for coins in a 75 tile radius
-                if (item.Distance(NPC.Center) > 1200)
-                    continue;
-                // if its head touches the coin, eat it
-                if (item.getRect().Intersects(NPC.getRect()))
+                targetYDist += 300;
+                if (Math.Abs(NPC.Center.X - CurrentPredator.Center.X) < 250f)
                 {
-                    SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
-                    SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
-                    int dustType = item.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
-                    for (int j = 0; j < 4; j++)
+                    if (NPC.velocity.X > 0f)
                     {
-                        Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                        targetXDist = CurrentPredator.Center.X + 300f;
                     }
-                    item.active = false;
+                    else
+                    {
+                        targetXDist = CurrentPredator.Center.X - 300f;
+                    }
+                }
+                currentSpeed *= 1.5f;
+                currentTurnSpeed *= 1.5f;
+
+            }
+            else
+            {
+                // Look for silver and gold coins to eat
+                for (int i = 0; i < Main.maxItems; i++)
+                {
+                    Item item = Main.item[i];
+                    // continue if not an active silver or gold coin
+                    if (item == null || !item.active || (item.type != ItemID.SilverCoin && item.type != ItemID.GoldCoin))
+                        continue;
+                    // can only look for coins in a 75 tile radius
+                    if (item.Distance(NPC.Center) > 1200)
+                        continue;
+                    // if its head touches the coin, eat it
+                    if (item.getRect().Intersects(NPC.getRect()))
+                    {
+                        SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
+                        SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
+                        int dustType = item.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
+                        for (int j = 0; j < 4; j++)
+                        {
+                            Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                        }
+                        item.active = false;
+                        break;
+                    }
+                    // if it isn't touching the coin, go to it
+                    targetXDist = item.Center.X;
+                    targetYDist = item.Center.Y;
+                    coinTarget = true;
                     break;
                 }
-                // if it isn't touching the coin, go to it
-                targetXDist = item.Center.X;
-                targetYDist = item.Center.Y;
-                coinTarget = true;
-                break;
             }
             // aggro on coins takes priority over players
-            if ((NPC.life > NPC.lifeMax * 0.99 && targ is Player) && !coinTarget)
+            if (CurrentPredator == null && (NPC.life > NPC.lifeMax * 0.99 && targ is Player) && !coinTarget)
             {
                 targetYDist += 300;
                 if (Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) < 250f)
@@ -289,7 +310,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     BlinkTimer = Main.rand.NextBool(4) ? 48 : 24;
                 }
             }
-            else
+            else if (CurrentPredator == null)
             {
                 currentSpeed *= 1.5f;
                 currentTurnSpeed *= 1.5f;
@@ -572,7 +593,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool NPCSearchFilter(NPC n)
         {
-            return Vector2.DistanceSquared(NPC.Center, n.Center) < 1200f * 1200f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
+            float huntRange = 1200f;
+            float avoidRange = 400f;
+            bool preyFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < huntRange * huntRange && PreyIDs.Contains(n.type);
+            bool predFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < avoidRange * avoidRange && PredatorIDs.Contains(n.type);
+            return preyFilter || predFilter;
         }
 
         public override bool CanBeHitByNPC(NPC attacker)
