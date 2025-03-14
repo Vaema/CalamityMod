@@ -66,7 +66,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public enum PhaseType
         {
             Idle = 0,
-            Flee = 1
+            Flee = 1,
+            Hiding = 2
         }
 
         public static int IdleRandomMovementUnlikeliness = 250;
@@ -196,7 +197,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     case (int)PhaseType.Flee:
                         FleeBehaviour();
                         break;
-                    case 2:
+                    case (int)PhaseType.Hiding:
                         HideBehaviour();
                         break;
                 }
@@ -207,7 +208,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             int dir = NPC.velocity.X.DirectionalSign();
-            if (CurrentBehaviour != 2)
+            if (CurrentBehaviour != (int)PhaseType.Hiding)
             {
                 NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
             }
@@ -269,7 +270,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 if (NPC.Distance(Main.npc[PolypIndex].Center) < 50)
                 {
-                    CurrentBehaviour = 2;
+                    CurrentBehaviour = (int)PhaseType.Hiding;
                     pathfinding.ClearResults();
                 }
             }
@@ -322,9 +323,12 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         protected override void OnPredatorDetection(NPC predator)
         {
-            pathfinding.ClearResults();
-            CurrentBehaviour = (int)PhaseType.Flee;
-            AlertPolyp();
+            if (CurrentBehaviour == (int)PhaseType.Idle)
+            {
+                pathfinding.ClearResults();
+                CurrentBehaviour = (int)PhaseType.Flee;
+                AlertPolyp();
+            }
         }
 
         public void AlertPolyp()
