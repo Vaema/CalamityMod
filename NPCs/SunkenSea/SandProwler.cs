@@ -1,10 +1,12 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,7 +16,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SandProwler : ModNPC
+    public class SandProwler : SunkenSeaNPC
     {
         public const int maxLength = 14;
         public float speed = 3f;
@@ -47,6 +49,18 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentFrame => ref NPC.localAI[0];
 
         public ref float BlinkTimer => ref NPC.localAI[2];
+        protected override List<int> PreyIDs => new List<int>()
+        {
+            ModContent.NPCType<PolypPanasea>()
+        };
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
 
         public override void SetStaticDefaults()
         {
@@ -72,6 +86,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.AsyncLoad);
             }
             Main.npcFrameCount[Type] = 11;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -218,8 +233,9 @@ namespace CalamityMod.NPCs.SunkenSea
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
             Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
+            Entity targ = CurrentPrey != null ? CurrentPrey : Main.player[NPC.target];
+            float targetXDist = targ.position.X + (float)(targ.width / 2);
+            float targetYDist = targ.position.Y + (float)(targ.height / 2);
             bool coinTarget = false;
             // Look for silver and gold coins to eat
             for (int i = 0; i < Main.maxItems; i++)
@@ -251,7 +267,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 break;
             }
             // aggro on coins takes priority over players
-            if (NPC.life > NPC.lifeMax * 0.99 && !coinTarget)
+            if ((NPC.life > NPC.lifeMax * 0.99 && targ is Player) && !coinTarget)
             {
                 targetYDist += 300;
                 if (Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) < 250f)
@@ -306,7 +322,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float timeToReachTarget = currentSpeed / targetDistance;
             targetXDist *= timeToReachTarget;
             targetYDist *= timeToReachTarget;
-            if (targetDistance < 128 && (NPC.life <= NPC.lifeMax * 0.99 || coinTarget))
+            if (targetDistance < 128 && targ is NPC || (NPC.life <= NPC.lifeMax * 0.99 && targ is Player) || coinTarget)
             {
                 CurrentAnimation = (int)AnimType.Bite;
             }
@@ -552,6 +568,16 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CheckActive()
         {
             return IsHead;
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return Vector2.DistanceSquared(NPC.Center, n.Center) < 1200f * 1200f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker)
+        {
+            return attacker.type != Type;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineSandProwlerLoot(npcLoot);
