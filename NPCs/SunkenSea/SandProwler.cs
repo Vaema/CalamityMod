@@ -56,8 +56,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs => new List<int>()
         {
-            ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<Polyperil>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
@@ -237,23 +236,14 @@ namespace CalamityMod.NPCs.SunkenSea
             float targetXDist = targ.position.X + (float)(targ.width / 2);
             float targetYDist = targ.position.Y + (float)(targ.height / 2);
             bool coinTarget = false;
+            // fucking run if it notices a predator
             if (CurrentPredator != null)
             {
-                targetYDist += 300;
-                if (Math.Abs(NPC.Center.X - CurrentPredator.Center.X) < 250f)
-                {
-                    if (NPC.velocity.X > 0f)
-                    {
-                        targetXDist = CurrentPredator.Center.X + 300f;
-                    }
-                    else
-                    {
-                        targetXDist = CurrentPredator.Center.X - 300f;
-                    }
-                }
-                currentSpeed *= 1.5f;
-                currentTurnSpeed *= 1.5f;
-
+                Vector2 dirToPred = NPC.DirectionTo(CurrentPredator.Center);
+                targetXDist = -dirToPred.X * 300;
+                targetYDist = -dirToPred.Y * 300;
+                currentSpeed *= 2f;
+                currentTurnSpeed *= 11.5f;
             }
             else
             {

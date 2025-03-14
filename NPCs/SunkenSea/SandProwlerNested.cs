@@ -60,8 +60,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs => new List<int>()
         {
-            ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<Polyperil>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
