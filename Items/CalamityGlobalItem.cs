@@ -478,25 +478,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.harpyWingBoost && (modPlayer.harpyRing || modPlayer.angelTreads))
-            {
-                if (Main.rand.NextBool(5) && modPlayer.wingProjectileCooldown == 0 && !item.channel)
-                {
-                    modPlayer.wingProjectileCooldown = 20;
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        float spreadX = velocity.X + Main.rand.NextFloat(-0.75f, 0.75f);
-                        float spreadY = velocity.Y + Main.rand.NextFloat(-0.75f, 0.75f);
-                        int feather = Projectile.NewProjectile(playerSource, position, new Vector2(spreadX, spreadY) * 1.25f, ModContent.ProjectileType<TradewindsProjectile>(), (int)(damage * 0.3), 2f, player.whoAmI);
-                        if (feather.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[feather].usesLocalNPCImmunity = true;
-                            Main.projectile[feather].localNPCHitCooldown = 10;
-                            Main.projectile[feather].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-            }
             return true;
         }
         #endregion
@@ -1331,7 +1312,6 @@ namespace CalamityMod.Items
             }
             else if (item.type == ItemID.HarpyWings)
             {
-                modPlayer.harpyWingBoost = true;
                 player.moveSpeed += 0.1f;
                 player.noFallDmg = true;
             }
