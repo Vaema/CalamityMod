@@ -314,7 +314,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool NPCSearchFilter(NPC n)
         {
-            return (base.NPCSearchFilter(n) || n == CurrentPredator && Vector2.DistanceSquared(NPC.Center, n.Center) < 1960f * 1960f) && (n.type != ModContent.NPCType<Polyperil>() && n.type != ModContent.NPCType<PolyperilTentacle>() && n.type != NPC.type);
+            return base.NPCSearchFilter(n) || n == CurrentPredator && Vector2.DistanceSquared(NPC.Center, n.Center) < 1960f * 1960f;
         }
 
         protected override bool PlayerSearchFilter(Player p)
