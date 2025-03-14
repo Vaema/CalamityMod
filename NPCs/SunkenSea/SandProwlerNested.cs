@@ -55,7 +55,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler";
         protected override List<int> PreyIDs => new List<int>()
         {
-            ModContent.NPCType<PolypPanasea>()
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<PolyperilTentacle>()
         };
 
         protected override List<int> PredatorIDs => new List<int>()

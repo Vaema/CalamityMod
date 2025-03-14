@@ -56,7 +56,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs => new List<int>()
         {
-            ModContent.NPCType<Polyperil>()
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
@@ -584,7 +585,7 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override bool NPCSearchFilter(NPC n)
         {
             float huntRange = 1200f;
-            float avoidRange = 400f;
+            float avoidRange = 200f;
             bool preyFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < huntRange * huntRange && PreyIDs.Contains(n.type);
             bool predFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < avoidRange * avoidRange && PredatorIDs.Contains(n.type);
             return preyFilter || predFilter;
