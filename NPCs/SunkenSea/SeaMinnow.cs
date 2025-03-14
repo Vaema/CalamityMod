@@ -18,6 +18,9 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class SeaMinnow : SunkenSeaNPC
     {
+        public Entity avoidedEntity;
+
+        public Vector2 randomPathPoint;
         protected override List<int> PreyIDs => new List<int>();
 
         protected override List<int> PredatorIDs => new List<int>() {
@@ -27,9 +30,6 @@ namespace CalamityMod.NPCs.SunkenSea
         };
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
 
-        public Entity avoidedEntity;
-
-        public Vector2 randomPathPoint;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;

@@ -8,6 +8,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -17,10 +18,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float Timer => ref NPC.ai[0];
 
-        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.PolypForest;
-
-        //protected override float SpawningChance => 0.2f;
-
         public static Asset<Texture2D> blueTexture = null;
 
         public static Asset<Texture2D> greenTexture = null;
@@ -29,17 +26,13 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public static Asset<Texture2D> radiantTexture = null;
 
-        protected override List<int> PreyIDs => new List<int>()
-        {
-            ModContent.NPCType<SeaMinnow>(),
-            ModContent.NPCType<AlphaSeaMinnow>(),
-            ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>(),
-            ModContent.NPCType<KelpieSeadragon>()
-        };
+        // The tentacles do all the work
+        protected override List<int> PreyIDs => new List<int>();
 
         // It cannot move lol
         protected override List<int> PredatorIDs => new List<int>();
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.PolypForest;
 
         public override void Load()
         {
@@ -140,6 +133,15 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CanBeHitByNPC(NPC attacker)
         {
             return PredatorIDs.Contains(attacker.type);
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+            }
+            return 0f;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

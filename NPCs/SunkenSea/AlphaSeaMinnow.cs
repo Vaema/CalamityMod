@@ -24,15 +24,6 @@ namespace CalamityMod.NPCs.SunkenSea
             Flee = 1
         }
 
-        protected override List<int> PreyIDs => new List<int>();
-
-        protected override List<int> PredatorIDs => new List<int>() { 
-            ModContent.NPCType<Sharkoon>(), 
-            ModContent.NPCType<Polyperil>(), 
-            ModContent.NPCType<PolyperilTentacle>() 
-        };
-        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
-
         public ref float CurrentBehaviour => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
@@ -42,6 +33,16 @@ namespace CalamityMod.NPCs.SunkenSea
         public static int FleeTileAnticipationDistance = 64;
 
         public Vector2 randomPathPoint;
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>() {
+            ModContent.NPCType<Sharkoon>(),
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
 
         public override void SetStaticDefaults()
         {

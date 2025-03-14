@@ -21,15 +21,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float Timer => ref NPC.ai[1];
 
-        // Tentacles are not a natural enemy, they are manually spawned by Polyperils
-        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.None;
-
         public List<VerletSimulatedSegment> Segments;
 
         // Where the tentacle will hover when not attacking
         public Vector2 anchor;
-
-        Entity target;
 
         protected override List<int> PreyIDs => new List<int>()
         {
@@ -41,6 +36,10 @@ namespace CalamityMod.NPCs.SunkenSea
         };
         
         protected override List<int> PredatorIDs => new List<int>();
+
+        // Tentacles are not a natural enemy, they are manually spawned by Polyperils
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.None;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.Polyperil.DisplayName");
 
         public override void SetStaticDefaults()
@@ -199,15 +198,6 @@ namespace CalamityMod.NPCs.SunkenSea
             anchor = basePos + new Vector2(Main.rand.Next(-dist, dist), Main.rand.Next(-dist, dist));
         }
 
-        protected override void OnPlayerDetection(Player player)
-        {
-            //Timer = -60;
-        }
-
-        protected override void OnPreyDetection(NPC prey)
-        {
-            //Timer = -60;
-        }
         protected override bool PlayerSearchFilter(Player p)
         {
             return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 460f * 460f;
@@ -215,6 +205,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool NPCSearchFilter(NPC n)
         {
+            // The tentacles go after EVERYTHING
             return (Vector2.DistanceSquared(NPC.Center, n.Center) < 660f * 660f && n.type != NPC.type && n.type != ModContent.NPCType<Polyperil>() && n.type != ModContent.NPCType<PolypPanasea>());
         }
 

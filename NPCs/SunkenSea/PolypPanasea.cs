@@ -22,15 +22,24 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class PolypPanasea : SunkenSeaNPC
     {
-        protected override List<int> PreyIDs => new List<int>();
-
-        protected override List<int> PredatorIDs => new List<int>()
+        public enum FishColor
         {
-            ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>()
-        };
-
-        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
+            Red = 0,
+            Turquoise = 1,
+            Green = 2,
+            Purple = 3,
+            Gold = 4,
+            Radiant = 5
+        }
+        public enum PhaseType
+        {
+            Idle = 0,
+            Flee = 1,
+            Hiding = 2
+        }
+        public ref float CurrentBehaviour => ref NPC.ai[0];
+        public ref float Variant => ref NPC.ai[1];
+        public ref float PanaceaTimer => ref NPC.ai[2];
 
         #region Textures
         // Welcome to the fish texture wall, have a nice stay, or just collapse this region, either works
@@ -47,34 +56,25 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D GoldTextureCoated;
         #endregion
 
-        public Vector2 randomPathPoint;
-
-        public ref float CurrentBehaviour => ref NPC.ai[0];
-        public ref float Variant => ref NPC.ai[1];
-        public ref float PanaceaTimer => ref NPC.ai[2];
-
         public int PolypIndex = -1;
-        public enum FishColor
-        {
-            Red = 0,
-            Turquoise = 1,
-            Green = 2,
-            Purple = 3,
-            Gold = 4,
-            Radiant = 5
-        }
-        public enum PhaseType
-        {
-            Idle = 0,
-            Flee = 1,
-            Hiding = 2
-        }
+
+        public Vector2 randomPathPoint;
 
         public static int IdleRandomMovementUnlikeliness = 250;
         public static int IdleMinPathDistance = 600;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<SandProwler>(),
+            ModContent.NPCType<SandProwlerNested>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
 
         public override void SetStaticDefaults()
         {
@@ -236,6 +236,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public void HideBehaviour()
         {
+            // Once the threat is gone or if the polyp is destroyed, go out of hiding
             if (PolypIndex <= -1 || CurrentPredator == null)
             {
                 NPC.dontTakeDamage = false;
@@ -244,6 +245,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            // Become invincible while hiding
             NPC.dontTakeDamage = true;
             pathfinding.MaxSpeed = 2;
 
@@ -347,6 +349,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                 }
             }
+            // If a polyp is found, cause both NPCs to signal each other with a !
             if (PolypIndex > -1)
             {
                 SoundEngine.PlaySound(SoundID.NPCHit37 with { Pitch = 1 }, NPC.Center);
@@ -392,7 +395,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                return SpawnCondition.CaveJellyfish.Chance * 0.8f;
             }
             return 0f;
         }
