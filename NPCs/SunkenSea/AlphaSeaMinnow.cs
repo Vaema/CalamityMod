@@ -41,6 +41,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public static int FleeTileAnticipationDistance = 64;
 
+        public Vector2 randomPathPoint;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;
@@ -244,8 +246,6 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
         public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
-
-        public Vector2 randomPathPoint;
 
         public override void SendExtraAI(BinaryWriter writer)
         {

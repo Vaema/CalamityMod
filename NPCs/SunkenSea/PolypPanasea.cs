@@ -12,11 +12,26 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using System.Collections.Generic;
+using CalamityMod.Enums;
+using System.IO;
+using CalamityMod.Particles;
+using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class PolypPanasea : ModNPC
+    public class PolypPanasea : SunkenSeaNPC
     {
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<SandProwler>(),
+            ModContent.NPCType<SandProwlerNested>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
+
         #region Textures
         // Welcome to the fish texture wall, have a nice stay, or just collapse this region, either works
         public static Texture2D RadiantTexture;
@@ -31,7 +46,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D TurquoiseTextureCoated;
         public static Texture2D GoldTextureCoated;
         #endregion
+
+        public Vector2 randomPathPoint;
+
+        public ref float CurrentBehaviour => ref NPC.ai[0];
         public ref float Variant => ref NPC.ai[1];
+        public ref float PanaceaTimer => ref NPC.ai[2];
+
+        public int PolypIndex = -1;
         public enum FishColor
         {
             Red = 0,
@@ -41,6 +63,18 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 4,
             Radiant = 5
         }
+        public enum PhaseType
+        {
+            Idle = 0,
+            Flee = 1
+        }
+
+        public static int IdleRandomMovementUnlikeliness = 250;
+        public static int IdleMinPathDistance = 600;
+        public static int IdleMaxPathDistance = 1200;
+
+        public static int FleeTileAnticipationDistance = 64;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 6;
@@ -60,6 +94,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -88,24 +123,29 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.5f,
+                MaxSpeed = 4f,
+            };
             // Panaseas released by the player do not randomize when spawned
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
             {
                 return;
             }
             // Randomize the color of the fish
-            NPC.ai[1] = Main.rand.Next(0, 4);
+            Variant = Main.rand.Next(0, 4);
             // 1 in 30 chance for a rare fish variant (rfv)
             if (Main.rand.NextBool(30))
             {
-                NPC.ai[1] = Main.rand.Next(4, 6);
+                Variant = Main.rand.Next(4, 6);
             }
             // 1 in 5 chance for a Panasea to be coated
             if (Main.rand.NextBool(5))
             {
-                NPC.ai[2] = 61;
+                PanaceaTimer = 61;
             }
-            switch (NPC.ai[1])
+            switch (Variant)
             {
                 case (int)FishColor.Purple:
                     NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
@@ -138,19 +178,193 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 3, 60f, 0.2f, 0.1f, 4f, 4f, 0.05f);
-            NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
-            NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
-            NPC.noGravity = true;
-            // Assure it cant be caught when collecting panacea
-            if (NPC.ai[2] <= 60 && NPC.ai[2] > 0)
+            // Reset polyp index in case the polyp dies
+            if (PolypIndex > -1)
             {
-                NPC.ai[2]--;
+                if (Main.npc[PolypIndex].type != ModContent.NPCType<Polyperil>() || !Main.npc[PolypIndex].active || Main.npc[PolypIndex].life <= 0)
+                {
+                    PolypIndex = -1;
+                }
+            }
+            if (NPC.wet)
+            {
+                switch (CurrentBehaviour)
+                {
+                    case (int)PhaseType.Idle:
+                        IdleBehaviour();
+                        break;
+                    case (int)PhaseType.Flee:
+                        FleeBehaviour();
+                        break;
+                    case 2:
+                        HideBehaviour();
+                        break;
+                }
+            }
+            else
+            {
+                BeachedBehaviour();
+            }
+
+            int dir = NPC.velocity.X.DirectionalSign();
+            if (CurrentBehaviour != 2)
+            {
+                NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
+            }
+            else
+            {
+                NPC.rotation = 0;
+            }
+            NPC.spriteDirection = NPC.direction = dir;
+            // Assure it cant be caught when collecting panacea
+            if (PanaceaTimer <= 60 && PanaceaTimer > 0)
+            {
+                PanaceaTimer--;
             }
             if (Variant == (int)FishColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
                 NPC.rarity = 3;
+            }
+        }
+
+        public void IdleBehaviour()
+        {
+            // At random, the mob will choose a random nearby point and pathfind there.
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(100, IdleMaxPathDistance), SunkenSeaTileValidity));
+        }
+        public void HideBehaviour()
+        {
+            if (PolypIndex <= -1 || CurrentPredator == null)
+            {
+                CurrentBehaviour = (int)PhaseType.Idle;
+                pathfinding.ClearResults();
+                return;
+            }
+
+            pathfinding.MaxSpeed = 2;
+
+            // At random, the mob will choose a random nearby point and pathfind there.
+            pathfinding.DoPathfinding(new(NPC.Center, Main.npc[PolypIndex].Center + Main.rand.NextVector2Unit() * Main.rand.Next(20, 30), SunkenSeaTileValidity));
+        }
+
+        public void FleeBehaviour()
+        {
+            // If the predator is gone, go back to idling.
+            if (CurrentPredator == null && PolypIndex <= -1)
+            {
+                CurrentBehaviour = (int)PhaseType.Idle;
+                pathfinding.MaxSpeed = 4;
+                return;
+            }
+
+            pathfinding.MaxSpeed = 6;
+
+            // If a polyp is found, try to run into it
+            if (PolypIndex > -1)
+            {
+                NPC.netUpdate = true;
+                Vector2 polypPos = Main.npc[PolypIndex].position;
+                pathfinding.DoPathfinding(new(NPC.Center, polypPos, SunkenSeaTileValidity));
+
+                if (NPC.Distance(Main.npc[PolypIndex].Center) < 50)
+                {
+                    CurrentBehaviour = 2;
+                    pathfinding.ClearResults();
+                }
+            }
+            // While it doesn't have any obstacles in front of it, run away in a straight line.
+            // Try to manuever if there are any obstacles.
+            else if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
+            {
+                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                pathfinding.ClearResults();
+
+                // Cap the speed if MaxSpeed has been surpassed.
+                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+            }
+            else
+            {
+                float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
+                randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                NPC.netUpdate = true;
+                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+            }
+        }
+
+        public void BeachedBehaviour()
+        {
+            if (NPC.velocity.Y == 0f)
+            {
+                NPC.velocity.X = NPC.velocity.X * 0.94f;
+                if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
+                {
+                    NPC.velocity.X = 0f;
+                }
+            }
+            NPC.velocity.Y = NPC.velocity.Y + 0.3f;
+            if (NPC.velocity.Y > 10f)
+            {
+                NPC.velocity.Y = 10f;
+            }
+            NPC.ai[0] = 1f;
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return (base.NPCSearchFilter(n) || n == CurrentPredator && Vector2.DistanceSquared(NPC.Center, n.Center) < 1960f * 1960f) && (n.type != ModContent.NPCType<Polyperil>() && n.type != ModContent.NPCType<PolyperilTentacle>() && n.type != NPC.type);
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 960f * 960f;
+        }
+        protected override void OnPredatorDetection(NPC predator)
+        {
+            pathfinding.ClearResults();
+            CurrentBehaviour = (int)PhaseType.Flee;
+            AlertPolyp();
+        }
+
+        public void AlertPolyp()
+        {
+            // Look for a nearby polyp to hide in
+            if (PolypIndex <= -1)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    bool nCloser = PolypIndex <= -1 ? true : n.Distance(NPC.Center) < Main.npc[PolypIndex].Distance(NPC.Center);
+                    if (n.type == ModContent.NPCType<Polyperil>() && nCloser)
+                    {
+                        PolypIndex = n.whoAmI;
+                    }
+                }
+            }
+            if (PolypIndex > -1)
+            {
+                SoundEngine.PlaySound(SoundID.NPCHit37 with { Pitch = 1 }, NPC.Center);
+
+                if (!Main.dedServ)
+                {
+                    var emoteDirection = -Vector2.UnitY * Main.rand.NextFloat(2f, 3f);
+                    Particle emote = new EmoteExpressionParticle(
+                        NPC.Center + emoteDirection * 2f,
+                        emoteDirection,
+                        2.2f,
+                        Color.Red,
+                        Main.rand.Next(30, 46),
+                        EmoteExpressionParticle.EmoteType.Exclamation);
+                    GeneralParticleHandler.SpawnParticle(emote);
+                    Particle emote2 = new EmoteExpressionParticle(
+                        Main.npc[PolypIndex].Center + emoteDirection * 2f,
+                        emoteDirection,
+                        2.2f,
+                        Color.Yellow,
+                        Main.rand.Next(30, 46),
+                        EmoteExpressionParticle.EmoteType.Exclamation);
+                    GeneralParticleHandler.SpawnParticle(emote2);
+                }
             }
         }
 
@@ -190,26 +404,28 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
+            bool Coated = PanaceaTimer >= 61;
+
             Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (Variant)
             {
                 case (int)FishColor.Radiant:
-                    texture = NPC.ai[2] >= 61 ? RadiantTextureCoated : RadiantTexture;
+                    texture = Coated ? RadiantTextureCoated : RadiantTexture;
                     break;
                 case (int)FishColor.Gold:
-                    texture = NPC.ai[2] >= 61 ? GoldTextureCoated : GoldTexture;
+                    texture = Coated ? GoldTextureCoated : GoldTexture;
                     break;
                 case (int)FishColor.Purple:
-                    texture = NPC.ai[2] >= 61 ? PurpleTextureCoated : PurpleTexture;
+                    texture = Coated ? PurpleTextureCoated : PurpleTexture;
                     break;
                 case (int)FishColor.Green:
-                    texture = NPC.ai[2] >= 61 ? GreenTextureCoated : GreenTexture;
+                    texture = Coated ? GreenTextureCoated : GreenTexture;
                     break;
                 case (int)FishColor.Turquoise:
-                    texture = NPC.ai[2] >= 61 ? TurquoiseTextureCoated : TurquoiseTexture;
+                    texture = Coated ? TurquoiseTextureCoated : TurquoiseTexture;
                     break;
                 case (int)FishColor.Red:
-                    texture = NPC.ai[2] >= 61 ? TextureCoated : TextureAssets.Npc[Type].Value;
+                    texture = Coated ? TextureCoated : TextureAssets.Npc[Type].Value;
                     break;
             }
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
@@ -223,16 +439,35 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override bool? CanBeCaughtBy(Item item, Player player)
         {
-            if (NPC.ai[2] > 0)
+            if (PanaceaTimer > 0)
             {
-                if (NPC.ai[2] > 60)
+                if (PanaceaTimer > 60)
                 {
+                    // TODO: add actual panacea item
                     Item.NewItem(NPC.GetSource_CatchEntity(NPC), (int)NPC.Center.X, (int)NPC.Center.Y, 1, 1, ItemID.FlaskofPoison);
-                    NPC.ai[2] = 60;
+                    PanaceaTimer = 60;
                 }
                 return false;
             }            
             return null;
+        }
+        public override bool CanBeHitByNPC(NPC attacker)
+        {
+            if (attacker.type == ModContent.NPCType<Polyperil>() || attacker.type == ModContent.NPCType<PolyperilTentacle>())
+                return false;
+            return attacker.type != Type;                
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(randomPathPoint);
+            writer.Write(PolypIndex);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            randomPathPoint = reader.ReadVector2();
+            PolypIndex = reader.ReadInt32();
         }
     }
 }

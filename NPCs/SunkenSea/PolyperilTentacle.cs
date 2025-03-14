@@ -215,7 +215,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool NPCSearchFilter(NPC n)
         {
-            return base.NPCSearchFilter(n) || n == CurrentPrey && Vector2.DistanceSquared(NPC.Center, n.Center) < 460f * 460f;
+            return (base.NPCSearchFilter(n) || n == CurrentPrey && Vector2.DistanceSquared(NPC.Center, n.Center) < 460f * 460f) && (n.type != ModContent.NPCType<Polyperil>() && n.type != NPC.type);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
