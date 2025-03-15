@@ -210,6 +210,15 @@ namespace CalamityMod.NPCs.SunkenSea
             return (Vector2.DistanceSquared(NPC.Center, n.Center) < 660f * 660f && n.type != NPC.type && n.type != ModContent.NPCType<Polyperil>() && n.type != ModContent.NPCType<PolypPanasea>());
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // Kelpie Seadragons have high resistance to Polyperils as they eat them
+            if (target.type == ModContent.NPCType<KelpieSeadragon>())
+            {
+                modifiers.SourceDamage *= 0.05f;
+            }
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             NPC parent = Main.npc[(int)ParentIndex];

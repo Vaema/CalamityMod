@@ -29,8 +29,10 @@ namespace CalamityMod.NPCs.SunkenSea
         // The tentacles do all the work
         protected override List<int> PreyIDs => new List<int>();
 
-        // It cannot move lol
-        protected override List<int> PredatorIDs => new List<int>();
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<KelpieSeadragon>()
+        };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.PolypForest;
 

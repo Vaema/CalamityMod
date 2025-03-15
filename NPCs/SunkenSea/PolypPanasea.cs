@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Flee = 1,
             Hiding = 2
         }
-        public ref float CurrentBehaviour => ref NPC.ai[0];
+        public ref float CurrentBehavior => ref NPC.ai[0];
         public ref float Variant => ref NPC.ai[1];
         public ref float PanaceaTimer => ref NPC.ai[2];
 
@@ -189,26 +189,26 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (NPC.wet)
             {
-                switch (CurrentBehaviour)
+                switch (CurrentBehavior)
                 {
                     case (int)PhaseType.Idle:
-                        IdleBehaviour();
+                        IdleBehavior();
                         break;
                     case (int)PhaseType.Flee:
-                        FleeBehaviour();
+                        FleeBehavior();
                         break;
                     case (int)PhaseType.Hiding:
-                        HideBehaviour();
+                        HideBehavior();
                         break;
                 }
             }
             else
             {
-                BeachedBehaviour();
+                BeachedBehavior();
             }
 
             int dir = NPC.velocity.X.DirectionalSign();
-            if (CurrentBehaviour != (int)PhaseType.Hiding)
+            if (CurrentBehavior != (int)PhaseType.Hiding)
             {
                 NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
             }
@@ -229,18 +229,18 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public void IdleBehaviour()
+        public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
             pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(100, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
-        public void HideBehaviour()
+        public void HideBehavior()
         {
             // Once the threat is gone or if the polyp is destroyed, go out of hiding
             if (PolypIndex <= -1 || (CurrentPredator == null && Main.rand.NextBool(120)))
             {
                 NPC.dontTakeDamage = false;
-                CurrentBehaviour = (int)PhaseType.Idle;
+                CurrentBehavior = (int)PhaseType.Idle;
                 pathfinding.ClearResults();
                 return;
             }
@@ -253,12 +253,12 @@ namespace CalamityMod.NPCs.SunkenSea
             pathfinding.DoPathfinding(new(NPC.Center, Main.npc[PolypIndex].Center + Main.rand.NextVector2Unit() * Main.rand.Next(20, 30), SunkenSeaTileValidity));
         }
 
-        public void FleeBehaviour()
+        public void FleeBehavior()
         {
             // If the predator is gone, go back to idling.
             if (CurrentPredator == null && PolypIndex <= -1)
             {
-                CurrentBehaviour = (int)PhaseType.Idle;
+                CurrentBehavior = (int)PhaseType.Idle;
                 pathfinding.MaxSpeed = 4;
                 return;
             }
@@ -274,7 +274,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 if (NPC.Distance(Main.npc[PolypIndex].Center) < 50)
                 {
-                    CurrentBehaviour = (int)PhaseType.Hiding;
+                    CurrentBehavior = (int)PhaseType.Hiding;
                     pathfinding.ClearResults();
                 }
             }
@@ -298,7 +298,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public void BeachedBehaviour()
+        public void BeachedBehavior()
         {
             if (NPC.velocity.Y == 0f)
             {
@@ -327,10 +327,10 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         protected override void OnPredatorDetection(NPC predator)
         {
-            if (CurrentBehaviour == (int)PhaseType.Idle)
+            if (CurrentBehavior == (int)PhaseType.Idle)
             {
                 pathfinding.ClearResults();
-                CurrentBehaviour = (int)PhaseType.Flee;
+                CurrentBehavior = (int)PhaseType.Flee;
                 AlertPolyp();
             }
         }

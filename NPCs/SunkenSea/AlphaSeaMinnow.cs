@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Flee = 1
         }
 
-        public ref float CurrentBehaviour => ref NPC.ai[1];
+        public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
         public static int IdleMinPathDistance = 600;
@@ -114,19 +114,19 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (NPC.wet)
             {
-                switch (CurrentBehaviour)
+                switch (CurrentBehavior)
                 {
                     case (int)PhaseType.Idle:
-                        IdleBehaviour();
+                        IdleBehavior();
                         break;
                     case (int)PhaseType.Flee:
-                        FleeBehaviour();
+                        FleeBehavior();
                         break;
                 }
             }
             else
             {
-                BeachedBehaviour();
+                BeachedBehavior();
             }
             int dir = NPC.velocity.X.DirectionalSign();
             NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
@@ -137,18 +137,18 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public void IdleBehaviour()
+        public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
             pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
-        public void FleeBehaviour()
+        public void FleeBehavior()
         {
             // If the predator is gone, go back to idling.
             if (CurrentPredator == null)
             {
-                CurrentBehaviour = (int)PhaseType.Idle;
+                CurrentBehavior = (int)PhaseType.Idle;
                 pathfinding.MaxSpeed = 4;
                 return;
             }
@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public void BeachedBehaviour()
+        public void BeachedBehavior()
         {
             if (NPC.velocity.Y == 0f)
             {
@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         protected override void OnPredatorDetection(NPC predator)
         {
-            CurrentBehaviour = (int)PhaseType.Flee;
+            CurrentBehavior = (int)PhaseType.Flee;
         }
 
         public override void ModifyTypeName(ref string typeName)
