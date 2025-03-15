@@ -155,29 +155,24 @@ namespace CalamityMod.NPCs.SunkenSea
         protected void UpdateTargets()
         {
             var searchResults = SearchForTarget(NPC, playerFilter: PlayerSearchFilter, npcFilter: NPCSearchFilter);
-            if (searchResults.FoundTarget)
-            {
-                if (searchResults.FoundNPC)
-                {
-                    if (PredatorIDs.Contains(searchResults.NearestNPC.type))
-                        CurrentPredator = searchResults.NearestNPC;
-                    else
-                        CurrentPredator = null;
 
-                    if (PreyIDs.Contains(searchResults.NearestNPC.type))
-                        CurrentPrey = searchResults.NearestNPC;
-                    else
-                        CurrentPrey = null; 
-                }
-
-                CurrentPlayer = searchResults.NearestTankOwner;
-            }
-            else
+            if (!searchResults.FoundTarget)
             {
-                CurrentPredator = null;
-                CurrentPrey = null;
-                CurrentPlayer = null;
+                (CurrentPredator, CurrentPrey, CurrentPlayer) = (null, null, null);
+                return;
             }
+
+            CurrentPlayer = searchResults.NearestTankOwner;
+
+            if (!searchResults.FoundNPC)
+            {
+                (CurrentPredator, CurrentPrey) = (null, null);
+                return;
+            }
+
+            var nearestNPC = searchResults.NearestNPC;
+            CurrentPredator = PredatorIDs.Contains(nearestNPC.type) ? nearestNPC : null;
+            CurrentPrey = PreyIDs.Contains(nearestNPC.type) ? nearestNPC : null;
         }
 
         /// <summary>

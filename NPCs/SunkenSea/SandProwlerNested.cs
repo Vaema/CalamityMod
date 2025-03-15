@@ -450,10 +450,7 @@ namespace CalamityMod.NPCs.SunkenSea
             return Vector2.DistanceSquared(NPC.Center, n.Center) < 200f * 200f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
         }
 
-        public override bool CanBeHitByNPC(NPC attacker)
-        {
-            return attacker.type != Type;
-        }
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {

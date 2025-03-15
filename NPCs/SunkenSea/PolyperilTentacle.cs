@@ -51,6 +51,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            NPC.npcSlots = 0f;
             NPC.damage = 20;
             NPC.lifeMax = 200;
             NPC.defense = 0;

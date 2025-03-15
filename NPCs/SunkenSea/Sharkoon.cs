@@ -454,7 +454,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
 

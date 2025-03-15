@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            NPC.npcSlots = 0.1f;
+            NPC.npcSlots = 0.5f;
             NPC.noGravity = true;
             NPC.damage = 0;
             NPC.width = 40;
@@ -246,7 +246,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
-        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override void SendExtraAI(BinaryWriter writer)
         {

@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public void HideBehaviour()
         {
             // Once the threat is gone or if the polyp is destroyed, go out of hiding
-            if (PolypIndex <= -1 || CurrentPredator == null)
+            if (PolypIndex <= -1 || (CurrentPredator == null && Main.rand.NextBool(120)))
             {
                 NPC.dontTakeDamage = false;
                 CurrentBehaviour = (int)PhaseType.Idle;
@@ -464,7 +464,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (attacker.type == ModContent.NPCType<Polyperil>() || attacker.type == ModContent.NPCType<PolyperilTentacle>())
                 return false;
-            return attacker.type != Type;                
+            return PredatorIDs.Contains(attacker.type);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
