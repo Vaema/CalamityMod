@@ -28,6 +28,7 @@ using Terraria.Utilities;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
+    [LegacyName("FAP")]
     public class Cirrus : ModNPC
     {
         public static Asset<Texture2D> AltTexture;

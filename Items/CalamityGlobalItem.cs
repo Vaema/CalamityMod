@@ -1271,7 +1271,7 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.MoonStone)
             {
-                if (!Main.dayTime)
+                if (!Main.dayTime || Main.eclipse)
                     player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
