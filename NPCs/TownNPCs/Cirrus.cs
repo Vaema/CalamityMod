@@ -28,7 +28,7 @@ using Terraria.Utilities;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class FAP : ModNPC
+    public class Cirrus : ModNPC
     {
         public static Asset<Texture2D> AltTexture;
 
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FAP")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cirrus")
             });
         }
 

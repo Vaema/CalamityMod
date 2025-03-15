@@ -341,7 +341,7 @@ DILF: {
 	}
 }
 
-FAP: {
+Cirrus: {
 	DisplayName: Drunk Princess
 	Census.SpawnCondition: Have {$Items.Potions.CirrusVodka.DisplayName} [i:CalamityMod/CirrusVodka] in your inventory in Hardmode or defeat Calamitas Clone/Plantera
 	Name.Cirrus: Cirrus
