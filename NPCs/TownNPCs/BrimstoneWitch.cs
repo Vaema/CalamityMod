@@ -22,7 +22,8 @@ using SCalBoss = CalamityMod.NPCs.SupremeCalamitas.SupremeCalamitas;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class WITCH : ModNPC
+    [LegacyName("WITCH")]
+    public class BrimstoneWitch : ModNPC
     {
         public override void SetStaticDefaults()
         {
@@ -71,7 +72,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WITCH")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BrimstoneWitch")
             });
         }
 
@@ -676,7 +677,7 @@ namespace CalamityMod.NPCs.TownNPCs
             if (cirrus != -1 && ChildSafety.Disabled)
                 dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrus].GivenName), 1.45);
 
-            if (NPC.AnyNPCs(NPCType<SEAHOE>()))
+            if (NPC.AnyNPCs(NPCType<SeaKing>()))
                 dialogue.Add(this.GetLocalizedValue("Chat.SeaKing"), 1.45);
 
             if (BirthdayParty.PartyIsUp)

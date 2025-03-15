@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.CalClone
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedCalamitasClone);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedCalamitasClone);
 
             // Mark the Calamitas Clone as dead
             DownedBossSystem.downedCalamitasClone = true;

@@ -682,11 +682,11 @@ namespace CalamityMod.NPCs
             (NPCID.Cyborg,(Player player) => player.Calamity().newCyborgInventory, (Player player, bool enabled) =>{ player.Calamity().newCyborgInventory = enabled; }),
             (NPCID.Princess, (Player player) => player.Calamity().newPrincessInventory,(Player player, bool enabled) =>{ player.Calamity().newPrincessInventory = enabled; }),
             (NPCID.SkeletonMerchant, (Player player) => player.Calamity().newSkeletonMerchantInventory, (Player player, bool enabled) =>{ player.Calamity().newSkeletonMerchantInventory = enabled; }),
-            (NPCType<SEAHOE>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
-            (NPCType<THIEF>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
+            (NPCType<SeaKing>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
+            (NPCType<Bandit>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
             (NPCType<Cirrus>(), (Player player) => player.Calamity().newCirrusInventory,(Player player, bool enabled) =>{ player.Calamity().newCirrusInventory = enabled; }),
-            (NPCType<DILF>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
-            (NPCType<WITCH>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
+            (NPCType<Archmage>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
+            (NPCType<BrimstoneWitch>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
         };
 
         public void TownNPCAlertSystem(NPC npc, Mod mod, SpriteBatch spriteBatch)
@@ -765,9 +765,9 @@ namespace CalamityMod.NPCs
         public override void GetChat(NPC npc, ref string chat)
         {
             int cirrus = NPC.FindFirstNPC(NPCType<Cirrus>());
-            int permadong = NPC.FindFirstNPC(NPCType<DILF>());
-            int seahorse = NPC.FindFirstNPC(NPCType<SEAHOE>());
-            int thief = NPC.FindFirstNPC(NPCType<THIEF>());
+            int permadong = NPC.FindFirstNPC(NPCType<Archmage>());
+            int seahorse = NPC.FindFirstNPC(NPCType<SeaKing>());
+            int thief = NPC.FindFirstNPC(NPCType<Bandit>());
             int angelstatue = NPC.FindFirstNPC(NPCID.Merchant);
 
             switch (npc.type)
@@ -1116,7 +1116,7 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
                 shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<THIEF>()))
+                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()))
                 .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons);

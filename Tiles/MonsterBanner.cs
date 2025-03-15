@@ -246,7 +246,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<ShockstormShuttle>();
                     break;
                 case 58:
-                    npc = NPCType<ThiccWaifu>();
+                    npc = NPCType<CloudElemental>();
                     break;
                 case 59:
                     npc = NPCType<Rimehound>();

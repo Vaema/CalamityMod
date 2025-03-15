@@ -20,7 +20,8 @@ using Terraria.Utilities;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class SEAHOE : ModNPC
+    [LegacyName("SEAHOE")]
+    public class SeaKing : ModNPC
     {
         public override void SetStaticDefaults()
         {
@@ -67,7 +68,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SEAHOE")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaKing")
             });
         }
 
@@ -109,7 +110,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 dialogue.Add(this.GetLocalization("Chat.Angler2").Format(Main.npc[lilBitch].GivenName));
             }
 
-            int witch = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalizedValue("Chat.BrimstoneWitch"));
 

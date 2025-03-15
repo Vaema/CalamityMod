@@ -24,7 +24,8 @@ using Terraria.Utilities;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class THIEF : ModNPC
+    [LegacyName("THIEF")]
+    public class Bandit : ModNPC
     {
         public static Asset<Texture2D> AltTexture;
 
@@ -76,7 +77,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.THIEF")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bandit")
             });
         }
 
@@ -156,7 +157,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
             }
 
-            int witch = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
 

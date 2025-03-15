@@ -750,11 +750,11 @@ namespace CalamityMod.NPCs.TownNPCs
                     dialogue.Add(this.GetLocalizedValue("Chat.Tavernkeep3"));
             }
 
-            int permadong = NPC.FindFirstNPC(ModContent.NPCType<DILF>());
+            int permadong = NPC.FindFirstNPC(ModContent.NPCType<Archmage>());
             if (permadong != -1)
                 dialogue.Add(this.GetLocalization("Chat.Archmage").Format(Main.npc[permadong].GivenName));
 
-            int witch = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
 

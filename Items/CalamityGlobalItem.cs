@@ -1553,7 +1553,7 @@ namespace CalamityMod.Items
 
             // Draw all particles.
             float currentPower = 0f;
-            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (calamitasNPCIndex != -1)
                 currentPower = Utils.GetLerpValue(11750f, 1000f, Main.LocalPlayer.Distance(Main.npc[calamitasNPCIndex].Center), true);
 
@@ -1617,7 +1617,7 @@ namespace CalamityMod.Items
         {
             storedPrefix = -1;
             // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(ModContent.NPCType<THIEF>()))
+            if (NPC.AnyNPCs(ModContent.NPCType<Bandit>()))
             {
                 // Calculate the item's reforge cost.
                 int value = item.value;
