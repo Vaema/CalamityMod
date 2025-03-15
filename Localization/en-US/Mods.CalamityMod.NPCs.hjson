@@ -549,25 +549,25 @@ Cirrus: {
 
 	TownNPCMood: {
 		Content: It's 5 o'clock somewhere.
-		NoHome: I need a place to crash! My drinks need to be properly cooled before they can be served!
+		NoHome: I need a place to crash! My drinks MUST be properly cooled before they can be served!
 		LoveSpace: Finally, some peace and quiet. Large quantities of people tend to piss me off.
-		FarFromHome: I'm used to running away from home, but this is a little ridiculous.
-		DislikeCrowded: If one more person tells me 'it's happy hour somewhere' to try and get a discount, I'm going to snap!
+		FarFromHome: Don't get me wrong, I'm used to running away from home, but this is a little ridiculous.
+		DislikeCrowded: If one more person tells me 'it's happy hour somewhere', I'm going to snap!
 		HateCrowded: No amount of alcohol can drown out the noise these people make!
-		LoveBiome: Other unicorns? Never thought I'd see the day! This place is incredible!
-		LikeBiome: A good breeze to cool some heads, that's the way to deal with customers who've had a few too many drinks!
+		LoveBiome: Other unicorns? I never thought I'd see the day... this place is incredible!
+		LikeBiome: Ah, a soothing breeze and a gorgeous view; a great way to calm some of my more 'unpleasant' patrons.
 		DislikeBiome: This dry air and heat isn't good for my hair, or my drinks.
-		HateBiome: You think I can fix this mess with a magical friendship rainbow? That's not how it works, dumbass! Get me out of here already!
+		HateBiome: You think I can fix this place with a magical friendship rainbow? That's not how it works, so get me out of here already!
 		LoveNPC_Stylist: "{NPCName} works wonders for my hair... among other things, hehe."
 		LoveNPC_BestiaryGirl: "{NPCName} is so fluffy and squishy! She also says my alicorn form is 'mega rad'."
-		LikeNPC_Truffle: "{NPCName} makes me so hungry... I wonder how great of a trip he'd give..."
+		LikeNPC_DyeTrader: "I tried inviting {NPCName} over for drinks a while back, but he didn't seem interested... oh well, his loss."
 		LikeNPC_PartyGirl: "{NPCName} would make for a great bartender some day. She really knows how to liven the mood!"
-		DislikeNPC_DD2Bartender: "{NPCName} is so bald."
+		DislikeNPC_DD2Bartender: "{NPCName} is so bald. The sheen reflecting off his dome could legit blind someone, like, oh my god."
 		DislikeNPC_TaxCollector: "{NPCName} had best keep his distance... he wouldn't want to wake up one morning with a pipe bomb in his mailbox."
-		HateNPC_GoblinTinkerer: "{NPCName} was so terrible that I had to FORCE him to have a better reforge system. Why would you house me next to him? Do you enjoy watching me relive the stress he gave me!?"
-		HateNPC_Angler: "{NPCName} never stops blabbering about his inane fishing quests. Get me away from him before I stomp him into the ground!"
-		LikeNPC_Princess: You think I'd dislike {NPCName} because we're too different? Quite the contrary, there's a lot we like to talk about, over non-alcoholic drinks of course.
-		Princess_LovesNPC: "{NPCName} has really interesting stories to tell, I've learned a lot from her already!"
+		HateNPC_GoblinTinkerer: "{NPCName} was so terrible that I had to FORCE him to stop ripping off his customers... why would you house me next to him!?"
+		HateNPC_Angler: "{NPCName} never stops blabbering about his inane fishing quests. Get me away from him before I punt him into the sulphurous sea!"
+		LikeNPC_Princess: You think I'd dislike {NPCName} because we're too different? Quite the contrary, there's a lot we like to talk about, over non-alcoholic drinks, of course.
+		Princess_LovesNPC: "{NPCName} has some fascinating stories to tell, I've learned quite a lot from her already."
 		HateNPC: I hate {NPCName}.
 		DislikeNPC: I dislike {NPCName}.
 		LikeNPC: I like {NPCName}.
