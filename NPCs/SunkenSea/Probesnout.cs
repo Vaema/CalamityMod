@@ -14,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -40,7 +41,7 @@ namespace CalamityMod.NPCs.SunkenSea
         [
             // NPCType<IlmerianAxolotl>(),
             NPCType<Sharkoon>(),
-            // NPCType<Polyperil>(),
+            NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),
             // NPCType<Hermititan>(),
         ];
@@ -352,6 +353,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
         #endregion
 
         #region Drawing & Animation
@@ -419,6 +422,16 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
         }
 
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+            }
+            return 0f;
+        }
+
         #endregion
 
         #region Syncing
@@ -463,6 +476,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 for (int i = 0; i < 4; i++)
                     Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
             }
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.015f;
+            }
+            return 0f;
         }
     }
 }

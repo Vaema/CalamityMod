@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
@@ -20,7 +22,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class BabyGhostBell : ModNPC
+    public class BabyGhostBell : SunkenSeaNPC
     {
         public bool hasBeenHit = false;
         public static Texture2D RadiantTexture;
@@ -39,7 +41,11 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 5
         }
 
-        public static Asset<Texture2D> GlowTexture;
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>();
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows;
 
         public override void SetStaticDefaults()
         {
@@ -252,7 +258,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneGleamingBurrows && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.CaveJellyfish.Chance * 1.5f;
             }

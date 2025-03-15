@@ -300,32 +300,17 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 8;
-            Main.npcCatchable[Type] = true;
-            NPCID.Sets.CountsAsCritter[Type] = true;
             this.HideFromBestiary();
             base.SetStaticDefaults();
         }
+
         public override void SetDefaults()
         {
-            NPC.npcSlots = 0.1f;
-            NPC.noGravity = true;
-            NPC.damage = 0;
-            NPC.width = 36;
-            NPC.height = 22;
-            NPC.defense = 0;
-            NPC.lifeMax = 5;
-            NPC.aiStyle = -1;
-            AIType = -1;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaMinnowBanner>();
-            NPC.chaseable = false;
-            NPC.catchItem = (short)ModContent.ItemType<SeaMinnowGoldItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            base.SetDefaults();
+            NPC.catchItem = (short)ModContent.ItemType<SeaMinnowItem>();
             NPC.rarity = 3;
         }
+
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)

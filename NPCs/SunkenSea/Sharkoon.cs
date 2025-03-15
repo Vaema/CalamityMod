@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -517,6 +518,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 SoundStyle boom = new("CalamityMod/Sounds/Custom/SharkoonBoom");
                 SoundEngine.PlaySound(boom with { Volume = 0.7f, PitchVariance = 0.15f }, NPC.Center);
             }
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+            }
+            return 0f;
         }
 
         #endregion
