@@ -42,18 +42,19 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.AttackTime[Type] = 60;
             NPCID.Sets.AttackAverageChance[Type] = 15;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
+            // Happiness is so fucking dogshit, I swear to christ. - Fabsol
             NPC.Happiness
                 .SetBiomeAffection<HallowBiome>(AffectionLevel.Love)
                 .SetBiomeAffection<OceanBiome>(AffectionLevel.Like)
                 .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike)
                 .SetBiomeAffection<UndergroundBiome>(AffectionLevel.Hate)
                 .SetNPCAffection(NPCID.Stylist, AffectionLevel.Love)
-                .SetNPCAffection(NPCID.BestiaryGirl, AffectionLevel.Love)
-                .SetNPCAffection(NPCID.Truffle, AffectionLevel.Like)
-                .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Like)
+                //.SetNPCAffection(NPCID.BestiaryGirl, AffectionLevel.Love)
+                .SetNPCAffection(NPCID.DyeTrader, AffectionLevel.Like)
+                //.SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Like)
                 .SetNPCAffection(NPCID.DD2Bartender, AffectionLevel.Dislike)
-                .SetNPCAffection(NPCID.TaxCollector, AffectionLevel.Dislike)
-                .SetNPCAffection(NPCID.GoblinTinkerer, AffectionLevel.Hate)
+                //.SetNPCAffection(NPCID.TaxCollector, AffectionLevel.Dislike)
+                //.SetNPCAffection(NPCID.GoblinTinkerer, AffectionLevel.Hate)
                 .SetNPCAffection(NPCID.Angler, AffectionLevel.Hate);
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
