@@ -1790,7 +1790,7 @@ namespace CalamityMod.CalPlayer
 
             if (whitewaterHeal > 0)
             {
-                if (whitewaterHeal % 10 == 0)
+                if (whitewaterHeal % 15 == 0)
                     Player.HealPlayer(1);
                 whitewaterHeal--;
 
@@ -2037,9 +2037,14 @@ namespace CalamityMod.CalPlayer
                 else if (blazingCoreParry > 0)
                     BlazingCore.HandleParryCountdown(Player);
             }
-            else if (flameLickedShell && flameLickedShellParry > 0)
+            else if (blazingCoreParry > 0)
+                blazingCoreParry--;
+            else if (flameLickedShellParry > 0)
             {
-                FlameLickedShell.HandleParryCountdown(Player);
+                if (flameLickedShell)
+                    FlameLickedShell.HandleParryCountdown(Player);
+                else
+                    flameLickedShellParry--;
             }
             if (shieldOfTheOceanParry > 0)
             {

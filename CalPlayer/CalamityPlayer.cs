@@ -61,9 +61,11 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -874,8 +876,6 @@ namespace CalamityMod.CalPlayer
         public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
-        /// <summary> Synergy effect while wearing Harpy Wings with Harpy Ring or Angel Treads, allowing attacks to be accompanied by feathers. </summary>
-        public bool harpyWingBoost = false;
         /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
         public int vortexBoosterStealthDelay = 0;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health by 45. </summary>
@@ -2215,7 +2215,6 @@ namespace CalamityMod.CalPlayer
             purity = false;
             harpyRing = false;
             angelTreads = false;
-            harpyWingBoost = false; //harpy wings + harpy ring
             fleshKnuckles = false;
             darkSunRing = false;
             crawCarapace = false;
@@ -3405,6 +3404,80 @@ namespace CalamityMod.CalPlayer
                 rogueStealth -= rogueStealthMax * 0.25f;
                 SoundEngine.PlaySound(SoundID.Item66, Player.Center);
                 SoundEngine.PlaySound(SoundID.Item34, Player.Center);
+            }
+
+            if (CalamityKeybinds.AmmoCycleHotkey.JustPressed && deadshotBrooch)
+            {
+                SoundEngine.PlaySound(SoundID.Item149, Player.Center);
+
+                // I could've made this so simple on myself, but no, I felt the need to make things convenient for the users...
+                // First we need to determine the bounds for what we're swapping.
+                int ammoType = Player.HeldItem.useAmmo;
+                int lastSlot, firstSlot;
+                for (lastSlot = 57; lastSlot >= 54; lastSlot--)
+                {
+                    if (!Player.inventory[lastSlot].IsAir && Player.inventory[lastSlot].ammo == ammoType)
+                        break;
+                }
+                for (firstSlot = 54; firstSlot <= 57; firstSlot++)
+                {
+                    if (!Player.inventory[firstSlot].IsAir && Player.inventory[firstSlot].ammo == ammoType)
+                        break;
+                }
+                // If firstSlot = lastSlot, then there is only one ammo in ammo slots, so don't do anything.
+                if (firstSlot != lastSlot)
+                {
+                    int tempType = Player.inventory[lastSlot].type;
+                    int tempStack = Player.inventory[lastSlot].stack;
+                    // This list tracks the favorited status of the ammo slots. Since swapping the slots around fucks with the favorite status it must be manually set.
+                    List<bool> favorited = [];
+                    for (int z = 54; z <= 57; z++)
+                        favorited.Add(!Player.inventory[z].IsAir && Player.inventory[z].favorited);
+
+                    // It is impossible for lastSlot to equal 54 and firstSlot to not equal 54.
+                    for (int i = lastSlot; i >= 55; i--)
+                    {
+                        if (Player.inventory[i].IsAir || Player.inventory[i].ammo != ammoType)
+                            continue;
+
+                        // If the slot we're interested in is the lower bound of our ammos, set it to the temp values and don't run anything else.
+                        if (i == firstSlot)
+                        {
+                            Player.inventory[i].SetDefaults(tempType);
+                            Player.inventory[i].stack = tempStack;
+                            Player.inventory[i].favorited = favorited[lastSlot - 54];
+                            continue;
+                        }
+
+                        // Find the next slot that has ammo in it.
+                        int nextSlot;
+                        for (nextSlot = i - 1; nextSlot >= 54; nextSlot--)
+                        {
+                            if (!Player.inventory[nextSlot].IsAir && Player.inventory[nextSlot].ammo == ammoType)
+                                break;
+                        }
+
+                        // Set this slot to what is in that slot.
+                        Player.inventory[i].SetDefaults(Player.inventory[nextSlot].type);
+                        Player.inventory[i].stack = Player.inventory[nextSlot].stack;
+                        Player.inventory[i].favorited = favorited[nextSlot - 54];
+                    }
+
+                    // Handles swapping the ammo that is in the first slot.
+                    if (firstSlot == 54)
+                    {
+                        Player.inventory[54].SetDefaults(tempType);
+                        Player.inventory[54].stack = tempStack;
+                        Player.inventory[54].favorited = favorited[lastSlot - 54];
+                    }
+
+                    // Produce a visual effect showing the top ammo that you swapped to.
+                    int visualType = Player.inventory[firstSlot].type;
+                    Texture2D ammoTex = TextureAssets.Item[visualType].Value;
+                    int frameAmt = Main.itemAnimations[visualType] == null ? 1 : ammoTex.Height / Main.itemAnimations[visualType].GetFrame(ammoTex).Height;
+                    CustomSprite ammoVisual = new(Player.Center - Vector2.UnitY * 20f, -Vector2.UnitY * 7f, 30, ammoTex, 1f, Color.White, 0f, false, false, frameAmt);
+                    GeneralParticleHandler.SpawnParticle(ammoVisual);
+                }
             }
 
             if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed)
