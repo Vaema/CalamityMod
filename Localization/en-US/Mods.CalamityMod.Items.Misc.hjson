@@ -446,3 +446,8 @@ SuperDummy: {
 		Right click to kill all super dummies
 		'''
 }
+
+SearslugItem: {
+	DisplayName: Searslug Item
+	Tooltip: ""
+}
