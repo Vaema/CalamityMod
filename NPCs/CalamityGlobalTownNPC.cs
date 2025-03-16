@@ -951,7 +951,11 @@ namespace CalamityMod.NPCs
                     if (Main.rand.NextBool(15) && Main.hardMode)
                         chat = CalamityUtils.GetText("Vanilla.StylistChat.Hardmode").Format(worldEvil);
                     if (Main.rand.NextBool(15) && cirrus != -1)
-                        chat = CalamityUtils.GetText("Vanilla.StylistChat.DrunkPrincess" + (ChildSafety.Disabled ? Main.rand.Next(1, 2 + 1) : 1)).Format(Main.npc[cirrus].GivenName);
+                    {
+                        int noChildSafetyCirrusLines = NPC.downedMoonlord ? Main.rand.Next(2, 3 + 1) : Main.rand.Next(1, 2 + 1);
+                        int childSafetyCirrusLines = NPC.downedMoonlord ? 3 : 1;
+                        chat = CalamityUtils.GetText("Vanilla.StylistChat.DrunkPrincess" + (ChildSafety.Disabled ? noChildSafetyCirrusLines : childSafetyCirrusLines)).Format(Main.npc[cirrus].GivenName);
+                    }
                     if ((Main.rand.NextBool(npc.GivenName == "Amber" ? 10 : 15)) && Main.LocalPlayer.Calamity().pSoulArtifact)
                     {
                         if (Main.LocalPlayer.Calamity().profanedCrystalBuffs)
