@@ -533,7 +533,7 @@ Cirrus: {
 		HasAlicorn1: So... you found my special bottle. Hope you enjoy it, I know I will.
 		HasAlicorn2: Be sure to dismount me once in a while, I get tired. And besides, I can't rip you off-I mean, offer you excellent deals you won't find anywhere else, if you're riding me 24/7.
 		HasAlicorn3: Before you ask, no, I do NOT have a heart on my butt while in human form. Don't question my transformation preferences!
-        NewOutfit: It's so refreshing to finally wear something else. I still love my dress, of course, but it's not exactly ideal for exercising.
+		NewOutfit: It's so refreshing to finally wear something else. I still love my dress, of course, but it's not exactly ideal for exercising.
 	}
 
 	// Death Count stuffs
@@ -561,7 +561,7 @@ Cirrus: {
 		HateBiome: You think I can fix this place with a magical friendship rainbow? That's not how it works, so get me out of here already!
 		LoveNPC_Stylist: "{NPCName} works wonders for my hair... among other things, hehe."
 		LoveNPC_BestiaryGirl: "{NPCName} is so fluffy and squishy! She also says my alicorn form is 'mega rad'."
-		LikeNPC_DyeTrader: "I tried inviting {NPCName} over for drinks a while back, but he didn't seem interested... oh well, his loss."
+		LikeNPC_DyeTrader: I tried inviting {NPCName} over for drinks a while back, but he didn't seem interested... oh well, his loss.
 		LikeNPC_PartyGirl: "{NPCName} would make for a great bartender some day. She really knows how to liven the mood!"
 		DislikeNPC_DD2Bartender: "{NPCName} is so bald. The sheen reflecting off his dome could legit blind someone, like, oh my god."
 		DislikeNPC_TaxCollector: "{NPCName} had best keep his distance... he wouldn't want to wake up one morning with a pipe bomb in his mailbox."
