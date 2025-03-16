@@ -713,6 +713,7 @@ namespace CalamityMod.CalPlayer
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool luxorsGift = false;
         public bool luxorHit = false;
+        public bool luxorsGiftVanity = false;
         public bool fungalSymbiote = false;
         public bool trinketOfChi = false;
         public bool gladiatorSword = false;
@@ -2130,6 +2131,7 @@ namespace CalamityMod.CalPlayer
             blazingCursorVisuals = false;
 
             luxorsGift = false;
+            luxorsGiftVanity = false;
             fungalSymbiote = false;
             trinketOfChi = false;
             gladiatorSword = false;
