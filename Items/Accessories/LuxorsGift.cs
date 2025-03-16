@@ -50,7 +50,18 @@ namespace CalamityMod.Items.Accessories
 
             if (player.ownedProjectileCounts[ProjectileType<Luxor>()] < 1 && !player.dead)
             {
-                Projectile lux = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<Luxor>(), 0, 0f, player.whoAmI);
+                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<Luxor>(), 0, 0f, player.whoAmI);
+            }
+        }
+
+        public override void UpdateVanity(Player player)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.luxorsGiftVanity = true;
+
+            if (player.ownedProjectileCounts[ProjectileType<Luxor>()] < 1 && !player.dead)
+            {
+                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<Luxor>(), 0, 0f, player.whoAmI);
             }
         }
     }
