@@ -533,6 +533,7 @@ Cirrus: {
 		HasAlicorn1: So... you found my special bottle. Hope you enjoy it, I know I will.
 		HasAlicorn2: Be sure to dismount me once in a while, I get tired. And besides, I can't rip you off-I mean, offer you excellent deals you won't find anywhere else, if you're riding me 24/7.
 		HasAlicorn3: Before you ask, no, I do NOT have a heart on my butt while in human form. Don't question my transformation preferences!
+        NewOutfit: It's so refreshing to finally wear something else. I still love my dress, of course, but it's not exactly ideal for exercising.
 	}
 
 	// Death Count stuffs

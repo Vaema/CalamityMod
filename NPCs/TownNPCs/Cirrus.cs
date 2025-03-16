@@ -652,6 +652,17 @@ namespace CalamityMod.NPCs.TownNPCs
                 CalamityWorld.spawnedCirrus = true;
         }
 
+        // I'm not sure what to do here, because she's always called Cirrus. - Fabsol
+        /*public override void ModifyTypeName(ref string typeName)
+        {
+            int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            bool wifeIsAround = wife != -1;
+            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+
+            if (beLessDrunk)
+                typeName = "Cirrus";
+        }*/
+
         public override bool CanTownNPCSpawn(int numTownNPCs)
         {
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas.SupremeCalamitas>()) && Main.zenithWorld)
@@ -738,6 +749,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
                 if (ChildSafety.Disabled)
                     dialogue.Add(this.GetLocalization("Chat.Normal4Alt").Format(Main.npc[wife].GivenName));
+
+                dialogue.Add(this.GetLocalizedValue("Chat.NewOutfit"));
             }
 
             int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
