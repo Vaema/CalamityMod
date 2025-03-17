@@ -526,7 +526,7 @@ namespace CalamityMod.Projectiles
                         homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? (((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -1246,16 +1246,16 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.HallowBossRainbowStreak && projectile.hostile)
             {
-                bool revMasterMode = (Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive;
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 bool spreadOut = false;
                 bool homeIn = false;
                 float spreadOutCutoffTime = EmpressRainbowStreakSpreadOutCutoff;
-                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
+                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (death ? 55f : 65f) : (death ? 70f : 80f);
                 float spreadDeceleration = 0.97f;
-                float minAcceleration = revMasterMode ? 0.075f : 0.05f;
-                float maxAcceleration = revMasterMode ? 0.15f : 0.1f;
-                float homingVelocity = revMasterMode ? 36f : 30f;
+                float minAcceleration = death ? 0.075f : 0.05f;
+                float maxAcceleration = death ? 0.15f : 0.1f;
+                float homingVelocity = death ? 36f : 30f;
                 float maxVelocity = homingVelocity * 1.5f;
                 float accelerationToMaxVelocity = 1.01f;
 

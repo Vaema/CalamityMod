@@ -2872,9 +2872,9 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Rev+ Master Mode
+                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = Main.masterMode && CalamityWorld.revenge;
+                    npc.dontTakeDamage = CalamityWorld.death;
                     break;
 
                 default:
@@ -4048,7 +4048,7 @@ namespace CalamityMod.NPCs
                     return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
             }
 
-            if (Main.masterMode && CalamityWorld.revenge)
+            if (CalamityWorld.death)
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
@@ -7438,7 +7438,7 @@ namespace CalamityMod.NPCs
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
-            if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
+            if (npc.type == NPCID.KingSlime && CalamityWorld.death)
                 return NPC.AnyNPCs(NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
@@ -8420,7 +8420,7 @@ namespace CalamityMod.NPCs
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                 {
-                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
+                    Texture2D npcTexture = (death && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
                     npc.frame.Y = (int)newAI[3];
@@ -8483,7 +8483,7 @@ namespace CalamityMod.NPCs
                     spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                     Color eyesColor = new Color(200, 200, 200, 0);
-                    if (masterMode && revenge)
+                    if (death)
                     {
                         int alpha = 192;
                         eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
@@ -8576,7 +8576,7 @@ namespace CalamityMod.NPCs
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
-            if ((CalamityWorld.revenge && Main.masterMode) || BossRushEvent.BossRushActive)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.Creeper)
                 {
