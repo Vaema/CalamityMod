@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 56;
@@ -21,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<PerditionBeacon>();
             Item.knockBack = 4f;
 
-            Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1.
+            Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1.
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;
@@ -36,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2)
             {
                 if (player.ownedProjectileCounts[type] < 1)
-                    Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
             }
             else
             {

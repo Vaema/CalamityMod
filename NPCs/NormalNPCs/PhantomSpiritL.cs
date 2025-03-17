@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PhantomSpirit.DisplayName");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 80;
             NPC.scale *= 1.2f;
             NPC.defense = 30;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 3750;
             NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 60, 0);
@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

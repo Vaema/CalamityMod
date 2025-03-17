@@ -3,8 +3,8 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Typeless
@@ -14,6 +14,17 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/YanmeiKnifeHit");
         public static readonly SoundStyle ExpireSound = new("CalamityMod/Sounds/Custom/YanmeiKnifeExpire");
+
+        public static int DebuffDuration = 600;
+        public static int DebuffDoT = 250;
+        public static float DebuffDamageReductionMult = 0.8f;
+        public static float DebuffNPCSpeedCap = 16f;
+
+        public static int BoostDuration = 600;
+        public static float RunSpeedBoost = 0.15f;
+        public static float RunAccelerationBoost = 0.15f;
+        public static float DamageBoost = 0.15f; // All 15% so we only need just one in the tooltip -- Same for the respective buff
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RunSpeedBoost.ToPercent(), BoostDuration.FramesToSeconds());
 
         public override void SetDefaults()
         {
@@ -49,12 +60,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             return base.CanUseItem(player);
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            player.Calamity().KameiBladeUseDelay = 180;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
-        }
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => player.Calamity().KameiBladeUseDelay = 180;
 
         public override void AddRecipes()
         {

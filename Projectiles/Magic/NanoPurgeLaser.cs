@@ -1,5 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
@@ -9,9 +12,11 @@ namespace CalamityMod.Projectiles.Magic
         private const float LaserLength = 40f;
         private const float LaserLengthChangeRate = 1.5f;
         public bool HasBounced = false;
+        public int bounceTimer = 0;
 
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 5;
@@ -52,10 +57,36 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.localAI[0] <= 0f)
                     Projectile.Kill();
             }
+
+            if (Projectile.timeLeft % 2 == 0)
+            {
+                Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 4, 0.02f, Color.Lime, new Vector2(0.6f, 1.4f), true, false, shrinkSpeed: 0.95f);
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
+            if (bounceTimer > 0)
+                bounceTimer--;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
+            bounceTimer = 10;
+            for (int i = 0; i < 2; i++)
+            {
+                Color color = i == 0 ? Color.White : Color.Lime;
+                Particle orb2 = new CustomSpark(Projectile.Center, oldVelocity * 0.1f, "CalamityMod/Particles/BloomCircle", false, 15, Main.rand.NextFloat(0.15f, 0.25f) * (i == 0 ? 2 : 3), color, new Vector2(0.7f, 1.1f), true, false);
+                GeneralParticleHandler.SpawnParticle(orb2);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 2.5f));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.45f, 1.1f);
+                dust.color = Color.Lime;
+                dust.noLightEmittence = true;
+            }
+
+            Player owner = Main.player[Projectile.owner];
+
             if (!HasBounced)
             {
                 HasBounced = true;
@@ -67,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (!n.CanBeChasedBy(Projectile))
                         continue;
 
-                    float currentNPCDist = Vector2.Distance(n.Center, Main.MouseWorld);
+                    float currentNPCDist = Vector2.Distance(n.Center, owner.ClampedMouseWorld());
                     if (currentNPCDist < npcDistCheck)
                     {
                         npcDistCheck = currentNPCDist;
@@ -77,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the index is not default, smart bounce in the direction of that enemy.
                 if (index != -1)
                 {
-                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Main.player[Projectile.owner].ActiveItem().shootSpeed, 3);
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.ActiveItem().shootSpeed, 3);
                 }
                 else // Otherwise, use standard bouncing behavior.
                 {
@@ -101,18 +132,24 @@ namespace CalamityMod.Projectiles.Magic
 
         public override Color? GetAlpha(Color lightColor) => new Color(96, 255, 96, 0);
 
-        public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(LaserLength, 2f, lightColor);
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (bounceTimer == 0)
+                Projectile.DrawBeam(LaserLength, 2f, lightColor);
+            return false;
+        }
 
         public override void OnKill(int timeLeft)
         {
-            int dustID = 107;
-            int dustAmt = Main.rand.Next(3, 7);
-            Vector2 dustPos = Projectile.Center - Projectile.velocity / 2f;
-            for (int i = 0; i < dustAmt; ++i)
+            Particle spark2 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.3f, "CalamityMod/Particles/GlowSpark", false, 14, 0.018f, Color.Lime, new Vector2(1f, 1f), true, false, shrinkSpeed: 0.65f);
+            GeneralParticleHandler.SpawnParticle(spark2);
+            for (int i = 0; i < 3; i++)
             {
-                Dust d = Dust.NewDustDirect(dustPos, 0, 0, dustID, 0f, 0f, Scale: 0.8f);
-                d.velocity *= 1.15f;
-                d.noGravity = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.4f, 0.9f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.45f, 1.1f);
+                dust.color = Color.Lime;
+                dust.noLightEmittence = true;
             }
         }
     }

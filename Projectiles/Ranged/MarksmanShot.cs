@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 4000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 4000;
         }
 
         public override void SetDefaults()
@@ -173,7 +173,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Player coinOwner = Main.player[struckCoin.owner];
                 if (coinOwner.name.ToLower() == "v1" || coinOwner.name.ToLower() == "v2" || coinOwner.name.ToLower() == "mirage")
-                    ORDERSystem.JUDGMENT();
+                    ORDERSystem.JUDGEMENT();
             }
         }
 
@@ -183,7 +183,10 @@ namespace CalamityMod.Projectiles.Ranged
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
 
             // Instead of immediately killing the projectile, simply set the time left so the trail can fade out.
-            Projectile.timeLeft = Math.Min(Lifetime - Projectile.timeLeft, trailLength);
+            if (Projectile.numHits == 0)
+                Projectile.timeLeft = Math.Min(Lifetime - Projectile.timeLeft, trailLength);
+
+            Projectile.numHits++;
             return false;
         }
 
@@ -192,8 +195,11 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(BuffID.Midas, 60);
 
             // Instead of immediately killing the projectile, simply set the time left so the trail can fade out.
-            Projectile.velocity = Vector2.Zero;
-            Projectile.timeLeft = Math.Min((Lifetime - Projectile.timeLeft), trailLength);
+            if (Projectile.numHits == 0)
+            {
+                Projectile.velocity = Vector2.Zero;
+                Projectile.timeLeft = Math.Min((Lifetime - Projectile.timeLeft), trailLength);
+            }
         }
 
         internal Color ColorFunction(float completionRatio)

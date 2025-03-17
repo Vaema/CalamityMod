@@ -16,8 +16,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 26;
             Item.height = 26;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 80);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 12);
             Item.rare = ItemRarityID.Lime;
         }
     }

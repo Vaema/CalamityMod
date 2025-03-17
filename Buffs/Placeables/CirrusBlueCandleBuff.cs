@@ -1,15 +1,12 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Placeables.Furniture;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusBlueCandleBuff : ModBuff
-    {
-        public static float MoveSpeedBoost = 0.1f;
-        public static double WingTimeBoost = 0.1D;
-        public static float AccelerationBoost = 0.1f;
-        
+    {        
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:
@@ -28,7 +25,7 @@ namespace CalamityMod.Buffs.Placeables
         // Implementation is partially performed elsewhere using the blueCandle bool.
         public override void Update(Player player, ref int buffIndex)
         {
-            player.moveSpeed += MoveSpeedBoost;
+            player.moveSpeed += WeightlessCandle.MoveSpeedBoost;
             player.Calamity().blueCandle = true;
         }
     }

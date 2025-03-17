@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -26,11 +26,11 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 16;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 100;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.ZombieXmas;
             AIType = NPCID.ChaosElemental;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath50;
             if (DownedBossSystem.downedProvidence)
@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int count = Main.zenithWorld ? 20 : 1; // remember that old oversight in the draedon update?
                     for (int g = 0; g < count; g++)

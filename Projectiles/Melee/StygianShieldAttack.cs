@@ -33,8 +33,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -110,6 +110,7 @@ namespace CalamityMod.Projectiles.Melee
             // Perform the dash if able to
             if (Charge >= MinChargeTime && !Owner.noItems && !Owner.CCed)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Set the destination in which the dash is supposed to be
                 Vector2 intendedDestination = Projectile.Center + Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
 
@@ -189,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             // Textures and general use stuff
-            Texture2D mainTex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D mainTex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Texture2D flatTex = ModContent.Request<Texture2D>("CalamityMod/Particles/FlatShape").Value;
             Texture2D shieldTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StygianShieldBloom").Value;
@@ -269,6 +270,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Charge sight line
                 if (Charge >= MinChargeTime)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     // Where the dash is supposed to take you, taken from above
                     Vector2 dashLength = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
                     Vector2 intendedDestination = Projectile.Center + dashLength;

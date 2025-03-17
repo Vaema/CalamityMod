@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
                 particleSize += 0.5f;
             else
                 particleSize -= 1f;
+            particleSize = MathHelper.Clamp(particleSize, 0, 1000);
 
             Time++;
 
@@ -61,8 +62,18 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.timeLeft < 296) // The main visual of the projectile and the blood mist it produces before turning around
             {
-                BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
-                BloodBoilerMetaball.SpawnParticle(Projectile.Center, particleSize * 1.7f);
+                //BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
+                //BloodBoilerMetaball.SpawnParticle(Projectile.Center, particleSize * 1.7f);
+
+                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
+                GeneralParticleHandler.SpawnParticle(beam3);
+
+                if (Main.rand.NextBool(8))
+                {
+                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
+                    GeneralParticleHandler.SpawnParticle(beam4);
+                }
+
 
                 if (Main.rand.NextBool(6) && Projectile.ai[1] == 0f)
                 {
@@ -189,17 +200,14 @@ namespace CalamityMod.Projectiles.Ranged
                             int bonusHeal = Main.rand.NextBool(3) ? 5 : 3;
                             int heal = improvedHeal ? bonusHeal : 2;
 
-                            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                            if (Main.LocalPlayer.lifeSteal <= 0f)
                             {
                                 Projectile.Kill();
                                 return;
                             }
 
-                            Main.player[Main.myPlayer].lifeSteal -= heal;
-                            player.statLife += heal;
-                            player.HealEffect(heal);
-                            if (Main.player[Projectile.owner].statLife > Main.player[Projectile.owner].statLifeMax2)
-                                Main.player[Projectile.owner].statLife = Main.player[Projectile.owner].statLifeMax2;
+                            Main.LocalPlayer.lifeSteal -= heal;
+                            player.HealPlayer(heal);
                         }
 
                         Projectile.Kill();

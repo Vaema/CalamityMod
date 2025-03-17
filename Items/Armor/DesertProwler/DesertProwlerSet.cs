@@ -205,7 +205,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -236,6 +236,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 AddIngredient<StormlionMandible>(3).
                 AddIngredient(ItemID.Silk, 10).
                 AddTile(TileID.Loom).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DesertProwlerPants>()).
                 Register();
         }
     }

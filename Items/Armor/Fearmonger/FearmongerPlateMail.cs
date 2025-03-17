@@ -33,9 +33,10 @@ namespace CalamityMod.Items.Armor.Fearmonger
             CreateRecipe().
                 AddIngredient(ItemID.SpookyBreastplate).
                 AddIngredient<CosmiliteBar>(12).
-                AddIngredient(ItemID.SoulofFright, 12).
                 AddIngredient<AscendantSpiritEssence>(3).
+                AddIngredient(ItemID.SoulofFright, 12).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<FearmongerGreaves>()).
                 Register();
         }
     }

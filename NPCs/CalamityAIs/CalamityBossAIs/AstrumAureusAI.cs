@@ -56,7 +56,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             // Exhaustion
             bool exhausted = npc.ai[2] >= (phase3 ? 2f : 1f);
-            calamityGlobalNPC.DR = exhausted ? 0.25f : 0.5f;
+            calamityGlobalNPC.DR = exhausted ? 0.2f : 0.4f;
             npc.defense = exhausted ? npc.defDefense / 2 : npc.defDefense;
 
             // Get a target
@@ -916,7 +916,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (npc.life < 1)
                                 npc.life = 1;
 
-                            npc.HealEffect(-damageAmt, true);
+                            npc.DamageEffect(damageAmt);
                         }
                     }
 

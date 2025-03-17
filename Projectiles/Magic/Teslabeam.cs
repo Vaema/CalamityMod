@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 1;
+            Main.projFrames[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -61,8 +61,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(damageMultiplier);
-            writer.Write(damageShouldDecay);
             writer.Write(decayGracePeriod);
+            writer.Write(damageShouldDecay);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -191,9 +191,11 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
+
         // Gently adjusts the aim vector of the laser to point towards the mouse.
         private void UpdateAim(Vector2 source)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimVector = Vector2.Normalize(Main.MouseWorld - source);
             if (aimVector.HasNaNs())
                 aimVector = -Vector2.UnitY;

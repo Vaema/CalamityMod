@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.damage = 48;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2 && totalMinionSlots < player.maxMinions)
             {
                 player.AddBuff(ModContent.BuffType<GlacialEmbraceBuff>(), 120, true);
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;

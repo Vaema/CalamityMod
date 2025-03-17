@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 float SpeedX = velocity.X + Main.rand.Next(-25, 26) * 0.05f;
                 float SpeedY = velocity.Y + Main.rand.Next(-25, 26) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.BubbleGun).
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<SeaPrism>(15).
+                AddIngredient(ItemID.ShimmerBlock, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

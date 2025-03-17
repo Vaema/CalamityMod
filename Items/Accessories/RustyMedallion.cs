@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,15 +28,6 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.RustyMedallionDroplets = true;
             player.buffImmune[ModContent.BuffType<Irradiated>()] = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<SulphuricScale>(20).
-                AddRecipeGroup("AnySilverBar", 10).
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

@@ -12,6 +12,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class VoidConcentrationStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 52;
@@ -23,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 105;
             Item.knockBack = 4f;
-            Item.useTime = Item.useAnimation = 15; // 14 because of useStyle 1
+            Item.useAnimation = Item.useTime = 15; // 14 because of useStyle 1
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
             Item.shootSpeed = 10f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 24;
             Item.damage = 33;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = AftershotCooldownFrames;
+            Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -51,7 +51,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
-            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<OpalStrikerHoldout>(), damage, knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<OpalStrikerHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
 

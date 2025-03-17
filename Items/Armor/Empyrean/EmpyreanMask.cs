@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Head", EquipType.Head, name: "MeldTransformation");
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Body", EquipType.Body, name: "MeldTransformation");
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             var equipSlotHead = EquipLoader.GetEquipSlot(Mod, "MeldTransformation", EquipType.Head);
@@ -68,10 +68,7 @@ namespace CalamityMod.Items.Armor.Empyrean
             modPlayer.rogueStealthMax += 1.15f;
             player.setBonus = this.GetLocalizedValue("SetBonus");
             if (player.statLife <= (int)(player.statLifeMax2 * 0.5))
-            {
                 player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
-                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
-            }
             player.GetDamage<ThrowingDamageClass>() += 0.09f;
             modPlayer.rogueVelocity += 0.09f;
             modPlayer.wearingRogueArmor = true;
@@ -90,6 +87,7 @@ namespace CalamityMod.Items.Armor.Empyrean
                 AddIngredient<MeldConstruct>(10).
                 AddIngredient(ItemID.LunarBar, 8).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<EmpyreanCloak>()).
                 Register();
         }
     }

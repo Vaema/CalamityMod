@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void Load()
         {
             // Add the body equip texture.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
         }
 
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 625;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noUseGraphic = true;
-            Item.useTime = Item.useAnimation = 9;
+            Item.useAnimation = Item.useTime = 9;
             Item.noMelee = true;
             Item.knockBack = 1f;
 

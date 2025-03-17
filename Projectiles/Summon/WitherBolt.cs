@@ -11,8 +11,11 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
 
+        public override string Texture => "CalamityMod/Projectiles/StarProj";
+
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 25;
             ProjectileID.Sets.MinionShot[Type] = true;
@@ -53,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D boltTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D boltTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float completionRatio = i / (float)Projectile.oldPos.Length;

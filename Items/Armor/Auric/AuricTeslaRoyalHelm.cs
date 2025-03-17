@@ -48,6 +48,7 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayer = true;
             modPlayer.godSlayerDamage = true;
             modPlayer.auricSet = true;
+            modPlayer.auricSetMelee = true;
             player.thorns += 3f;
             player.ignoreWater = true;
             player.crimsonRegen = true;
@@ -73,6 +74,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<TarragonHeadMelee>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHoodedFacemask>()).
                 Register();
         }
     }

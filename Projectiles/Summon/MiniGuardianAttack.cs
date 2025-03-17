@@ -85,11 +85,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -323,9 +323,8 @@ namespace CalamityMod.Projectiles.Summon
 
                 if (shouldDrawDust)
                 {
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
                     var shouldAdjust = !Main.dayTime && buffedAi;
-                    int dustId = ProvUtils.GetDustID(pscState);
+                    int dustId = ProvUtils.GetDustID(!Main.dayTime);
                     for (int i = 0; i < 6; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + (Projectile.Size / 2f).RotatedBy(Projectile.rotation), dustId);
@@ -359,7 +358,6 @@ namespace CalamityMod.Projectiles.Summon
 
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
             Projectile.localNPCHitCooldown = SpawnedFromPSC ? 6 : 9;
 
             var currentAIState = getAiState;
@@ -396,7 +394,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
 
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
         }
 
         // Vanity stuff can't damage
@@ -453,7 +451,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (!ForcedVanity && SpawnedFromPSC)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 70;
             Item.height = 80;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(platinum: 6, gold: 50);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(platinum: 1);
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -47,14 +47,14 @@ namespace CalamityMod.Items.Materials
             for (int i = 0; i < 8; i++)
             {
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 8f).ToRotationVector2() * drawPositionOffset;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, 0f, origin, baseScale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Type].Value, drawPosition, frame, drawColor, 0f, origin, baseScale, SpriteEffects.None, 0f);
             }
         }
 
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Rectangle frame = TextureAssets.Item[Item.type].Value.Frame();
+            Rectangle frame = TextureAssets.Item[Type].Value.Frame();
             DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition, frame, Vector2.Zero, scale);
             return true;
         }
@@ -84,12 +84,12 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ExoPrism>(5).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<ExoPrism>(5).
                 AddIngredient<LifeAlloy>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<AscendantSpiritEssence>().
                 AddIngredient<GalacticaSingularity>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile<DraedonsForge>().
                 Register();
         }

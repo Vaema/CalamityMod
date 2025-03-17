@@ -87,9 +87,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 14;
+            NPCID.Sets.TrailCacheLength[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -156,8 +156,8 @@ namespace CalamityMod.NPCs.AcidRain
             hasDoneDeathray = reader.ReadBoolean();
             AttackIndex = reader.ReadInt32();
             DelayTime = reader.ReadInt32();
-            DeathrayTime = reader.ReadInt32();
             JumpTimer = reader.ReadSingle();
+            DeathrayTime = reader.ReadInt32();
             ShootPosition = reader.ReadVector2();
         }
 
@@ -180,12 +180,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (NPC.target < 0 || NPC.target >= 255 || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
             {
                 NPC.TargetClosest(false);
-
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
             }
 
             if (TeleportCountdown > -TeleportCooldown)
@@ -235,35 +230,21 @@ namespace CalamityMod.NPCs.AcidRain
                         NPC.velocity.Y -= MathHelper.Clamp(Math.Abs(Target.Center.Y - NPC.Center.Y) / 12.5f, 8f, 18f);
                         NPC.velocity.X = NPC.SafeDirectionTo(Target.Center).X * 18f;
 
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                     else
                     {
                         if (Walking != Math.Abs(NPC.velocity.X) > 4f)
                         {
                             Walking = Math.Abs(NPC.velocity.X) > 4f;
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
 
                         // Force a jump the next frame to overcome any horizontal obstacles if they exist.
                         if (NPC.collideX)
                         {
                             JumpTimer = 50;
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
 
                         // Otherwise walk towards the target if they're not super close.
@@ -286,12 +267,7 @@ namespace CalamityMod.NPCs.AcidRain
                 if (wrappedAttackTime == 255f)
                 {
                     ShootPosition = Target.Center;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     NPC.spriteDirection = (ShootPosition.X - NPC.Center.X < 0).ToDirectionInt();
                 }
@@ -356,12 +332,7 @@ namespace CalamityMod.NPCs.AcidRain
                             TeleportCountdown = TeleportTime;
                             TeleportLocation = new Vector2(x, y - 6f);
                             HorizontalCollisionSpamCounter = 0f;
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
 
                             return;
 
@@ -384,12 +355,7 @@ Continue:
                 if (TeleportCountdown == 0f && TeleportLocation != Vector2.Zero)
                 {
                     NPC.position = TeleportLocation.ToWorldCoordinates(8f, 0f) - NPC.Size;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     NPC.velocity = Vector2.Zero;
                 }
@@ -606,7 +572,7 @@ Continue:
                     NPC.frame.Y = frameHeight * 8;
                 }
 
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type] && Main.netMode != NetmodeID.MultiplayerClient)
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type] && Main.netMode != NetmodeID.MultiplayerClient)
                     NPC.StrikeInstantKill();
             }
             else if (NPC.frame.Y >= (Walking ? 8 : 4) * frameHeight)
@@ -636,12 +602,7 @@ Continue:
                 NPC.life = 1;
                 NPC.dontTakeDamage = true;
                 NPC.velocity = Vector2.Zero;
-
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
 
                 return false;
             }

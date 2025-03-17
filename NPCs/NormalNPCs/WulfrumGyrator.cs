@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
+            Main.npcFrameCount[Type] = 10;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -55,10 +55,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 5;
-            NPC.lifeMax = 18;
+            NPC.lifeMax = 23;
             NPC.knockBackResist = 0.15f;
-            NPC.value = Item.buyPrice(0, 0, 1, 15);
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.value = Item.buyPrice(0, 0, 0, 75);
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumGyratorBanner>();
@@ -87,9 +87,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.frameCounter += 1;
             }
-            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[NPC.type] / 2);
+            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[Type] / 2);
             if (Supercharged)
-                frame += Main.npcFrameCount[NPC.type] / 2;
+                frame += Main.npcFrameCount[Type] / 2;
 
             NPC.frame.Y = frame * frameHeight;
         }
@@ -109,8 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.netMode != NetmodeID.MultiplayerClient && jumpWouldHitPlayer && NPC.collideY && NPC.velocity.Y == 0f)
                 {
                     NPC.velocity.Y = chargeJumpSpeed;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
 
                 SuperchargeTimer--;
@@ -120,8 +119,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Main.netMode != NetmodeID.MultiplayerClient && HoleAtPosition(NPC.Center.X + NPC.velocity.X * 4f) && NPC.collideY && NPC.velocity.Y == 0f)
             {
                 NPC.velocity.Y = JumpSpeed;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
 
             if (Collision.CanHitLine(player.position, player.width, player.height, NPC.position, NPC.width, NPC.height) &&
@@ -132,8 +130,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.direction != direction)
                 {
                     NPC.direction = direction;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
                 //GOTTA GO FAST (Legendary only)
                 if (CalamityWorld.LegendaryMode)
@@ -155,8 +152,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else if (Main.netMode != NetmodeID.MultiplayerClient && NPC.collideX && NPC.collideY && NPC.velocity.Y == 0f)
             {
                 NPC.velocity.Y = JumpSpeed;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
 
             if (NPC.oldPosition == NPC.position)

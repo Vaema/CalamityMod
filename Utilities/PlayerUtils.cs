@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -88,7 +92,8 @@ namespace CalamityMod
             }
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > bestDamage)
             {
                 bestClass = RogueDamageClass.Instance;
@@ -122,26 +127,13 @@ namespace CalamityMod
             if (summon > best) best = summon;
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > best) best = rogue;
 
             // Add the best typical damage stat, then return the full modifier.
             ret += best - 1f;
             return ret;
-        }
-
-        /// <summary>
-        /// Extension method which calculates the player's current multiplicative boost to armor set bonus and accessory damage.<br />
-        /// This is currently only used by the Old Fashioned drink.
-        /// </summary>
-        /// <param name="player">The player whose armor / accessory damage bonus should be applied.</param>
-        /// <param name="damage">The damage to apply the bonus to.</param>
-        /// <returns>Boosted damage. If no boosts are applicable, returns the damage parameter that was passed in.</returns>
-        public static int ApplyArmorAccDamageBonusesTo(this Player player, float damage)
-        {
-            if (!player.Calamity().oldFashioned)
-                return (int)damage;
-            return (int)(damage * OldFashioned.AccessoryAndSetBonusDamageMultiplier);
         }
 
         public static float GetRangedAmmoCostReduction(this Player player)
@@ -330,11 +322,11 @@ namespace CalamityMod
         #region Location and Biomes
         public static bool IsUnderwater(this Player player) => Collision.DrownCollision(player.position, player.width, player.height, player.gravDir);
 
-        public static bool InSpace(this Player player)
+        public static bool ReducedSpaceGravity(this Player player)
         {
             float x = Main.maxTilesX / 4200f;
             x *= x;
-            float spaceGravityMult = (float)((player.position.Y / 16f - (60f + 10f * x)) / (Main.worldSurface / 6.0));
+            float spaceGravityMult = (float)((player.position.Y / 16f - (60f + 10f * x)) / (Main.worldSurface / (Main.remixWorld ? 1.0 : 6.0)));
             return spaceGravityMult < 1f;
         }
 
@@ -444,7 +436,7 @@ namespace CalamityMod
         public static int GetExtraHitIFrames(this Player player, HurtInfo hurtInfo)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            
+
             int extraIFrames = 0;
             if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
                 extraIFrames += 30;
@@ -472,7 +464,7 @@ namespace CalamityMod
             if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
                 extraIFrames += 30;
 
-            if (modPlayer.fabsolVodka)
+            if (modPlayer.cirrusVodka)
             {
                 if (hurtInfo.Damage == 1)
                     extraIFrames += 5;
@@ -708,7 +700,7 @@ namespace CalamityMod
             {
                 CalamityPlayer mp = p.Calamity();
                 mp.cooldowns[id] = instance;
-                mp.SyncCooldownAddition(Main.netMode == NetmodeID.Server, instance);
+                mp.SyncCooldownAddition(Main.dedServ, instance);
             }
 
             return instance;
@@ -888,12 +880,27 @@ namespace CalamityMod
         #endregion
 
         /// <summary>
+        /// Used to limit the cursor up to a 1080p monitor. A similar method is used for items such as Zenith in vanilla.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <returns>The current position of the player's mouse, clamped to a 1920x1080 screen.</returns>
+        public static Vector2 ClampedMouseWorld(this Player player)
+        {
+            Vector2 mouseWorld = player.Calamity().mouseWorld;
+            
+            // Clamp each axis
+            mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
+            mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);
+            return mouseWorld;
+        }
+
+        /// <summary>
         /// A shorthand bool to check if the player can continue using the holdout or not.
         /// </summary>
         /// <param name="player">The player using the holdout.</param>
         /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
         public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
-        
+
         /// <summary>
         /// A shorthand bool to check if the held item should trigger Calamity's summon damage penalty.
         /// </summary>
@@ -905,9 +912,10 @@ namespace CalamityMod
             var modPlayer = player.Calamity();
 
             bool forbiddenWithMagicWeapon = player.armor[0].type == ItemID.AncientBattleArmorHat && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<MagicDamageClass>();
+            bool circletWithRogueWeapon = player.armor[0].type == ModContent.ItemType<ForbiddenCirclet>() && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<RogueDamageClass>();
             bool gemTechBlueGem = modPlayer.GemTechSet && modPlayer.GemTechState.IsBlueGemActive;
 
-            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
+            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || circletWithRogueWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
 
             if (item.type > ItemID.None && !crossClassNerfDisabled)
             {
@@ -918,10 +926,10 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityLists.BlacklistedWeaponsWithToolPower.Contains(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(item.type);
+                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;
@@ -929,6 +937,22 @@ namespace CalamityMod
             return false;
         }
 
+
+        /// <summary>
+        /// A short method that heals the player.
+        /// All direct heals in Calamity should use this.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="amount">The amount of life being healed.</param>
+        /// <param name="healTextType">Whether the heal CombatText should be displayed, and whether it should be synced. Displays and syncs by default.</param>
+        public static void HealPlayer(this Player player, int amount, HealTextType healTextType = HealTextType.Broadcast)
+        {
+            player.statLife += amount;
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
+            if (healTextType != HealTextType.None)
+                player.HealEffect(amount, healTextType == HealTextType.Broadcast);
+        }
 
         /// <summary>
         /// Makes the given player send the given packet to all appropriate receivers.<br />

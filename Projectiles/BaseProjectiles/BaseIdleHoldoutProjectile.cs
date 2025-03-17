@@ -16,29 +16,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         // The projectile type cannot be directly discerned at load time (Using Activator.CreateInstance will create an associated projectile with an ID of 0) and as
         // such this property exists as a direct means of retrieving it. Not ideal, but it works.
         public abstract int IntendedProjectileType { get; }
-        public static Dictionary<int, int> ItemProjectileRelationship = new();
+        public static Dictionary<int, int> ItemProjectileRelationship = [];
 
-        // TODO -- There is no reason this load hook should need to be called from CalamityMod.
-        // All subclasses of this should be ILoadable and should load themselves.
-        public static void LoadAll()
+        public override void SetStaticDefaults()
         {
-            ItemProjectileRelationship = new Dictionary<int, int>();
+            ItemProjectileRelationship[AssociatedItemID] = IntendedProjectileType;
+        }
 
-            // Look through every type in the mod, and check if it's derived from BaseIdleHoldoutProjectile.
-            // If it is, cache it into the item/projectile relationship cache.
-            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
-            foreach (Type type in types)
-            {
-                // Don't load abstract classes; they cannot have instances.
-                if (type.IsAbstract)
-                    continue;
-
-                if (type.IsSubclassOf(typeof(BaseIdleHoldoutProjectile)))
-                {
-                    BaseIdleHoldoutProjectile instance = Activator.CreateInstance(type) as BaseIdleHoldoutProjectile;
-                    ItemProjectileRelationship[instance.AssociatedItemID] = instance.IntendedProjectileType;
-                }
-            }
+        public override void Unload()
+        {
+            ItemProjectileRelationship?.Clear();
+            ItemProjectileRelationship = null;
         }
 
         public static void CheckForEveryHoldout(Player player)

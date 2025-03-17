@@ -37,13 +37,14 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float ai3 = (Main.rand.NextFloat() - 0.5f) * 0.7853982f; //0.5
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, ai3);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai3);
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<Nebulash>().
                 AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(3).
                 AddIngredient<ExodiumCluster>(16).

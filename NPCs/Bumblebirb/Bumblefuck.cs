@@ -38,8 +38,8 @@ namespace CalamityMod.NPCs.Bumblebirb
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -77,7 +77,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(1, 25, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
@@ -236,8 +236,8 @@ namespace CalamityMod.NPCs.Bumblebirb
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             Color color = drawColor;
             Color altColor = Color.White;
 
@@ -280,7 +280,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 color = altColor;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += afterimageIncrement)
                 {
@@ -289,7 +289,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 afterimageDrawPos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    afterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    afterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     afterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimageDrawPos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -333,7 +333,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 }
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 0; j < extraAfterimageAmt; j++)
                 {
@@ -342,7 +342,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                     extraAfterimageColor = NPC.GetAlpha(extraAfterimageColor);
                     extraAfterimageColor *= 1f - extraAfterimageDampener;
                     Vector2 extraAfterimageDrawPos = NPC.Center + ((float)j / (float)extraAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScaler * extraAfterimageDampener - screenPos;
-                    extraAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    extraAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     extraAfterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, extraAfterimageDrawPos, NPC.frame, extraAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -352,7 +352,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             mainDrawingColor = Color.Lerp(mainDrawingColor, altColor, lerpDrawTransition);
             mainDrawingColor = NPC.GetAlpha(mainDrawingColor);
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, (phase3 && calamityGlobalNPC.newAI[3] == 1f ? mainDrawingColor : NPC.GetAlpha(altColor)), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -375,7 +375,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                     glowmaskColor *= glowmaskDampener;
                 }
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int k = 1; k < afterimageAmt; k += afterimageIncrement)
                     {
@@ -383,7 +383,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         glowmaskAfterimageColor = Color.Lerp(glowmaskAfterimageColor, altColor, lerpDrawTransition);
                         glowmaskAfterimageColor *= (float)(afterimageAmt - k) / 15f;
                         Vector2 glowmaskAfterimageDrawPos = NPC.oldPos[k] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                        glowmaskAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                        glowmaskAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                         glowmaskAfterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, glowmaskAfterimageDrawPos, NPC.frame, glowmaskAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
@@ -395,7 +395,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         extraGlowmaskAfterimageColor = NPC.GetAlpha(extraGlowmaskAfterimageColor);
                         extraGlowmaskAfterimageColor *= 1f - extraAfterimageDampener;
                         Vector2 extraGlowmaskAfterimageDrawPos = NPC.Center + ((float)l / (float)extraAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScaler * extraAfterimageDampener - screenPos;
-                        extraGlowmaskAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                        extraGlowmaskAfterimageDrawPos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                         extraGlowmaskAfterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, extraGlowmaskAfterimageDrawPos, NPC.frame, extraGlowmaskAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
@@ -521,7 +521,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 6; i++) // 1 head, 1 wing, 4 legs = 6. one wing due to them being chonky boyes now
                     {

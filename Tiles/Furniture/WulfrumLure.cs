@@ -82,6 +82,9 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Vector2 offScreen = new Vector2(Main.offScreenRange);
             if (Main.drawToScreen)
             {

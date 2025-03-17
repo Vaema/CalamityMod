@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -21,15 +22,20 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 9;
+            Main.projFrames[Type] = 9;
         }
 
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private ref float PumpkinsCharge => ref Projectile.ai[1];
+        
         private ref float FramesToLoadNextPumpkin => ref Projectile.localAI[0];
+
+        //This possibly could moved to ai[2] ¯\_(ツ)_/¯
         private ref float Overfilled => ref Projectile.localAI[1]; //This functionally is a "IsPlayingShootAnim" variable
+
+        private bool IsOverfilled => (Overfilled >= 0.5f);
         private float angularSpread = MathHelper.ToRadians(15);
 
         public override void SetDefaults()
@@ -49,10 +55,10 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 tipPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Unloads all pumpkins if you can't shoot/stop holding out the projectile or if the gun is overfilled
-            if (Owner.CantUseHoldout() || Overfilled == 1f)
+            if (Owner.CantUseHoldout() || IsOverfilled)
             {
 
-                if (PumpkinsCharge <= 0f && Overfilled == 0f) //If the projectile isnt playing its animation and if there arent any pumpkins loaded, kill it
+                if (PumpkinsCharge <= 0f && !IsOverfilled) //If the projectile isnt playing its animation and if there arent any pumpkins loaded, kill it
                 {
                     Projectile.Kill();
                     return;
@@ -63,12 +69,12 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.frameCounter >= 10) //10 fps anim
                 {
                     Projectile.frame++;
-                    if (Projectile.frame >= Main.projFrames[Projectile.type] - 1)
+                    if (Projectile.frame >= Main.projFrames[Type] - 1)
                         Projectile.frame = 0;
                     Projectile.frameCounter = 0;
                 }
                 // Shoot anim is done? Remove the shoot anim tag
-                if (Projectile.frame == 0 && Overfilled == 1f)
+                if (Projectile.frame == 0 && IsOverfilled)
                     Overfilled = 0f;
                 //Animation stuff end
 
@@ -145,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
             SmokeBurst(tipPosition);
             FramesToLoadNextPumpkin = Owner.ActiveItem().useAnimation; //reset the reload time
             PumpkinsCharge = 0; //Unload the barrel
-            if (!(Overfilled == 1f))
+            if (!IsOverfilled)
                 Overfilled = 1f; //Make the shoot anim play
             Projectile.frame = 6; //Initialize the animation
         }
@@ -168,14 +174,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Pumpler itself
+
                 float interpolant = Utils.GetLerpValue(5f, 25f, Owner.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Owner.SafeDirectionTo(Main.MouseWorld), interpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
             //Please someone kill me i dont want to deal with offset moments,
             //Dom oomfie!
@@ -213,7 +218,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-            if (PumpkinsCharge > 0 && Overfilled == 0f)
+            if (PumpkinsCharge > 0 && !IsOverfilled)
             {
                 GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(MathHelper.Clamp(1f - 0.20f * CurrentChargingFrames - 0.1f * (5f - PumpkinsCharge), 0f, 1f));
                 //tint effect is visible if its charging. The more pumpkins are loaded, the more opacity
@@ -226,8 +231,8 @@ namespace CalamityMod.Projectiles.Ranged
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Frame(1, 9, 0, Projectile.frame);
-            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Frame(1, 9, 0, Projectile.frame);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             Main.spriteBatch.ExitShaderRegion();
 
@@ -240,12 +245,12 @@ namespace CalamityMod.Projectiles.Ranged
         //netcode hell
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(Overfilled);
+            writer.Write(IsOverfilled);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            Overfilled = reader.ReadInt32();
+            Overfilled = reader.ReadBoolean() ? 1.0f : 0.0f;
         }
     }
 }

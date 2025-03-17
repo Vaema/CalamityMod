@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 58;
             Item.damage = 150;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 8;
+            Item.useAnimation = Item.useTime = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -54,9 +54,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
                 AddIngredient<AstralBow>().
-                AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<ExodiumCluster>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             //not really important seeing as custom drawing, but for heights sake, 6
             //also it's visuals are messed up on npc spawners etc. because the sheet is 3 wide.
             //not much we can do. looks fine in-game so /shrug
@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.08f;
-            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.value = Item.buyPrice(0, 0, 50, 0);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
             NPC.rarity = 1;
@@ -139,7 +139,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 100;
                 NPC.defense = 50;
                 NPC.knockBackResist = 0.04f;
-                NPC.lifeMax = 1600;
+                NPC.lifeMax = 1800;
             }
             if (CalamityWorld.revenge)
             {
@@ -464,7 +464,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     //head
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Top, NPC.velocity * 0.5f, Mod.Find<ModGore>("AtlasGore4").Type);
@@ -584,7 +584,7 @@ namespace CalamityMod.NPCs.Astral
             SpriteEffects effect = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             //draw actual sprite
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, position, NPC.frame,
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, position, NPC.frame,
                 drawColor, 0f, default, 1f, //color, rotation, origin, scale
                 effect, 0f); //effect, drawlayer
 
@@ -658,7 +658,7 @@ namespace CalamityMod.NPCs.Astral
         {
             npcLoot.Add(ModContent.ItemType<TitanHeart>());
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 6, 8, 7, 9));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 7);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 10);
         }
     }
 }

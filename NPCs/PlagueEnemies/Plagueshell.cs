@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -28,10 +28,10 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.width = 46;
             NPC.height = 32;
             NPC.defense = 32;
-            NPC.lifeMax = 800;
+            NPC.lifeMax = 1000;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.GiantTortoise;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 15, 0);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.noGravity = false;
             Banner = NPC.type;
@@ -73,7 +73,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Plagueshell").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Plagueshell2").Type, 1f);

@@ -13,6 +13,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class KingSlimeAI
     {
+        public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
+
         public static bool BuffedKingSlimeAI(NPC npc, Mod mod)
         {
             // Percent life remaining
@@ -32,7 +34,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Phases based on life percentage
@@ -50,22 +51,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool spawnBlueCrystal = lifeRatio < 0.3f;
 
             // Check if the crystals are alive
-            bool crystalAlive = true;
+            bool redCrystalAlive = true;
             bool blueCrystalAlive = false;
             bool greenCrystalAlive = true;
 
             if (spawnGreenCrystal)
             {
-                if (masterMode)
+                if (death)
                     greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelEmerald>());
             }
 
             if (phase3)
-                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
+                redCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
 
             if (spawnBlueCrystal)
             {
-                if (masterMode)
+                if (death)
                     blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>());
             }
 
@@ -81,8 +82,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Dust color when the blue crystal is alive
             Color dustColor = Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f);
 
-            // Master Mode Crystal spawning
-            if (masterMode)
+            // Death Mode Crystal spawning
+            if (death)
             {
                 if (spawnGreenCrystal && npc.Calamity().newAI[0] == 0f)
                 {
@@ -102,10 +103,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
 
                 if (phase3 && npc.Calamity().newAI[0] == 1f)
@@ -126,10 +131,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
 
                 if (spawnBlueCrystal && npc.Calamity().newAI[0] == 2f)
@@ -150,10 +159,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
             }
             else
@@ -177,10 +190,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
             }
 
@@ -203,12 +220,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            int despawnDistance = 500;
-            if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
+            int despawnDistance = 60;
+            int forceDespawnDistance = 300;
+            if ((Main.player[npc.target].dead && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance) || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > forceDespawnDistance)
             {
                 CalamityUtils.CalamityTargeting(npc, default);
 
-                if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
+                if ((Main.player[npc.target].dead && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance) || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > forceDespawnDistance)
                 {
                     if (npc.timeLeft > 10)
                         npc.timeLeft = 10;
@@ -223,7 +241,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Faster fall
             if (npc.velocity.Y > 0f)
             {
-                float fallSpeedBonus = (bossRush ? 0.1f : death ? 0.05f : 0f) + (!crystalAlive ? 0.1f : 0f) + (masterMode ? 0.1f : 0f);
+                float fallSpeedBonus = (bossRush ? 0.2f : death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
@@ -266,7 +284,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Get closer to activating teleport
             if (npc.ai[2] < teleportGateValue)
             {
-                if (!Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0) || Math.Abs(npc.Top.Y - Main.player[npc.target].Bottom.Y) > (masterMode ? 160f : 320f))
+                if (!Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0) || Math.Abs(npc.Top.Y - Main.player[npc.target].Bottom.Y) > (death ? 160f : 320f))
                     npc.ai[2] += death ? 3f : 2f;
                 else
                     npc.ai[2] += 1f;
@@ -281,8 +299,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleporting = true;
                 npc.aiAction = 1;
                 
-                float teleportRate = crystalAlive ? 1f : 2f;
-                if (masterMode)
+                float teleportRate = redCrystalAlive ? 1f : 2f;
+                if (death)
                     teleportRate *= 2f;
 
                 npc.ai[0] += teleportRate;
@@ -294,7 +312,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.ai[0] >= 60f)
                     teleported = true;
 
-                if (npc.ai[0] == 60f && Main.netMode != NetmodeID.Server)
+                if (npc.ai[0] == 60f && !Main.dedServ)
                     Gore.NewGore(npc.GetSource_FromAI(), npc.Center + new Vector2(-40f, -(float)npc.height / 2), npc.velocity, 734, 1f);
 
                 if (npc.ai[0] >= 60f && Main.netMode != NetmodeID.MultiplayerClient)
@@ -331,8 +349,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleporting = true;
                 npc.aiAction = 0;
 
-                float teleportRate = crystalAlive ? 1f : 2f;
-                if (masterMode)
+                float teleportRate = redCrystalAlive ? 1f : 2f;
+                if (death)
                     teleportRate *= 2f;
 
                 if (npc.ai[0] == 0f)
@@ -468,7 +486,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.velocity.Y *= 0.6f;
                         }
 
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X *= 1.4f;
 
                         if (bossRush)
@@ -484,8 +502,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Change jump velocity
             else if (npc.target < Main.maxPlayers)
             {
-                float jumpVelocityLimit = crystalAlive ? 3f : 4.5f;
-                if (masterMode)
+                float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
+                if (death)
                     jumpVelocityLimit += 3f;
                 if (Main.getGoodWorld)
                     jumpVelocityLimit = 8f;
@@ -495,13 +513,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
                     {
                         npc.velocity.X += (bossRush ? 0.4f : death ? 0.25f : 0.2f) * npc.direction;
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X += 0.3f * npc.direction;
                     }
                     else
                     {
                         npc.velocity.X *= bossRush ? 0.9f : death ? 0.92f : 0.93f;
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X *= 0.9f;
                     }
                 }
@@ -525,7 +543,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             // Adjust size based on HP
-            float maxScale = death ? (Main.getGoodWorld ? 6f : 3f) : (Main.getGoodWorld ? 3f : 1.25f);
+            float maxScale = death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
@@ -559,8 +577,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         float minLowerLimit = death ? 5f : 0f;
                         float maxLowerLimit = death ? 7f : 2f;
-                        int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 7f, 1f - lifeRatio2);
-                        int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 9f, 1f - lifeRatio2);
+                        int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 5f, 1f - lifeRatio2);
+                        int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 7f, 1f - lifeRatio2);
 
                         int npcType;
                         switch (Main.rand.Next(minTypeChoice, maxTypeChoice + 1))
@@ -572,10 +590,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npcType = NPCID.GreenSlime;
                                 break;
                             case 1:
-                                npcType = Main.raining ? NPCID.UmbrellaSlime : NPCID.BlueSlime;
+                                npcType = Main.player[npc.target].ZoneJungle ? NPCID.JungleSlime : Main.player[npc.target].ZoneSnow ? NPCID.IceSlime : NPCID.BlueSlime;
                                 break;
                             case 2:
-                                npcType = NPCID.IceSlime;
+                                npcType = Main.raining ? NPCID.UmbrellaSlime : NPCID.BlueSlime;
                                 break;
                             case 3:
                                 npcType = NPCID.RedSlime;
@@ -587,21 +605,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npcType = NPCID.YellowSlime;
                                 break;
                             case 6:
-                                npcType = NPCID.SlimeSpiked;
-                                break;
-                            case 7:
-                                npcType = NPCID.SpikedIceSlime;
-                                break;
-                            case 8:
-                                npcType = NPCID.SpikedJungleSlime;
+                                npcType = Main.player[npc.target].ZoneJungle ? NPCID.SpikedJungleSlime : Main.player[npc.target].ZoneSnow ? NPCID.SpikedIceSlime : NPCID.SlimeSpiked;
                                 break;
                         }
 
                         if (((Main.raining && Main.hardMode) || bossRush) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
-                        if (masterMode)
-                            npcType = Main.rand.NextBool() ? NPCID.SpikedIceSlime : NPCID.SpikedJungleSlime;
+                        if (death)
+                        {
+                            switch (Main.rand.Next(3))
+                            {
+                                case 0:
+                                    npcType = NPCID.SlimeSpiked;
+                                    break;
+                                case 1:
+                                    npcType = NPCID.SpikedIceSlime;
+                                    break;
+                                case 2:
+                                    npcType = NPCID.SpikedJungleSlime;
+                                    break;
+                            }
+                        }
 
                         if (Main.rand.NextBool(100))
                             npcType = NPCID.Pinky;
@@ -620,7 +645,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[slimeSpawns].ai[0] = -1000 * Main.rand.Next(3);
                         Main.npc[slimeSpawns].ai[1] = 0f;
 
-                        if (Main.netMode == NetmodeID.Server && slimeSpawns < Main.maxNPCs)
+                        if (Main.dedServ && slimeSpawns < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeSpawns);
                     }
                 }
@@ -982,7 +1007,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 Main.npc[num260].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                 Main.npc[num260].ai[0] = -1000 * Main.rand.Next(3);
                 Main.npc[num260].ai[1] = 0f;
-                if (Main.netMode == NetmodeID.Server && num260 < Main.maxNPCs)
+                if (Main.dedServ && num260 < Main.maxNPCs)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num260);
             }
 

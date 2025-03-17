@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Materials
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CryonicBarTile>());
-            Item.value = Item.sellPrice(silver: 60);
+            Item.value = Item.sellPrice(silver: 72);
             Item.rare = ItemRarityID.Pink;
         }
 

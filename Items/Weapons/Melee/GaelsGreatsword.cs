@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Weapons.Melee
         //NOTE: GetWeaponDamage is in the CalamityPlayer file
         public override void SetDefaults()
         {
-            Item.width = 112;
-            Item.height = 102;
+            Item.width = 108;
+            Item.height = 100;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 13;
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (CalamityUtils.CountProjectiles(ModContent.ProjectileType<LightningThing>()) < 3 &&
+            if (CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<LightningThing>(), player.whoAmI) < 3 &&
                 player.statLife <= player.statLifeMax2 * 0.5f &&
                 Main.myPlayer == player.whoAmI)
             {

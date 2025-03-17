@@ -54,8 +54,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.BeesKnees).
-                AddIngredient<PlagueCellCanister>(10).
                 AddIngredient<InfectedArmorPlating>(5).
+                AddIngredient<PlagueCellCanister>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

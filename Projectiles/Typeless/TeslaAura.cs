@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -60,12 +60,6 @@ namespace CalamityMod.Projectiles.Typeless
 
             Player player = Main.player[Projectile.owner];
             Projectile.Center = player.Center;
-            if (player is null || player.dead)
-            {
-                player.ClearBuff(ModContent.BuffType<TeslaBuff>());
-                player.Calamity().tesla = false;
-                Projectile.Kill();
-            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -94,38 +88,13 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color drawColour = Color.White;
             Rectangle sourceRect = new Rectangle(Projectile.width * (int)Projectile.localAI[1], Projectile.height * (int)Projectile.localAI[0], Projectile.width, Projectile.height);
             Vector2 origin = new Vector2(Projectile.width / 2, Projectile.height / 2);
 
-            float opacity = 1f;
-            int sparkCount = 0;
-            int fadeTime = 20;
-
-            if (Projectile.timeLeft < fadeTime)
-            {
-                opacity = Projectile.timeLeft * (1f / fadeTime);
-                sparkCount = fadeTime - Projectile.timeLeft;
-            }
-
-            for (int i = 0; i < sparkCount * 2; i++)
-            {
-                int dustType = 132;
-                if (Main.rand.NextBool())
-                {
-                    dustType = 264;
-                }
-                float rangeDiff = 2f;
-
-                Vector2 dustPos = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                dustPos.Normalize();
-                dustPos *= radius + Main.rand.NextFloat(-rangeDiff, rangeDiff);
-
-                int dust = Dust.NewDust(Projectile.Center + dustPos, 1, 1, dustType, 0, 0, 0, default, 0.75f);
-                Main.dust[dust].noGravity = true;
-            }
+            float opacity = Main.player[Projectile.owner].Calamity().teslaVisuals ? 1f : 0.25f;
 
             Main.EntitySpriteDraw(sprite, Projectile.Center - Main.screenPosition, sourceRect, drawColour * opacity, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
             return false;

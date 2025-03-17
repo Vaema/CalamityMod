@@ -11,21 +11,23 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class HadarianWings : ModItem, ILocalizedModType
+    public class HadarianWings : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(90, 9f, 1.75f);
-        }
+        public override float BonusAscentWhileFalling => 0.8f;
+        public override float BonusAscentWhileRising => 0.155f;
+        public override float RisingSpeedThreshold => 1.05f;
+        public override float MaxAscentSpeed => 2.55f;
+        public override float BaseAscent => 0.13f;
+
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(90, 9f, 1.75f, true, 11.6f, 11.6f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 24;
             Item.height = 36;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -65,15 +67,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
             }
             player.noFallDmg = true;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.8f;
-            ascentWhenRising = 0.155f;
-            maxCanAscendMultiplier = 1.05f;
-            maxAscentMultiplier = 2.55f;
-            constantAscend = 0.13f;
         }
     }
 }

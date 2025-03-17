@@ -21,12 +21,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 14;
             Item.shootSpeed = 15f;
             Item.shoot = ModContent.ProjectileType<Brick>();
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
-            Item.value = Item.buyPrice(0, 0, 0, 50);
+            Item.value = Item.sellPrice(0, 0, 0, 4);
             Item.rare = ItemRarityID.White;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.UseSound = SoundID.Item1;
             Item.consumable = true;
             Item.noMelee = true;
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             //Check if stealth is full
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 1);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 1);
                 if (p.WithinBounds(Main.maxProjectiles))
                     Main.projectile[p].Calamity().stealthStrike = true;
                 return false;

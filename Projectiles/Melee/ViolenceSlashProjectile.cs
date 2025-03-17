@@ -22,8 +22,8 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Violence";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()
@@ -65,11 +65,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter) + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.45f;
             Projectile.rotation = SwingSine * MathHelper.ToRadians(87f);
 
-            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(Main.MouseWorld, Projectile.height + 15f))
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(mouse, Projectile.height + 15f))
             {
-                Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.velocity = Projectile.SafeDirectionTo(mouse);
+                Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation += Projectile.velocity.ToRotation() + MathHelper.PiOver4;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
 
-            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Player player = Main.player[Projectile.owner];
             List<Vector2> positions = new List<Vector2>();

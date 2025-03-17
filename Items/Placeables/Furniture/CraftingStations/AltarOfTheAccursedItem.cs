@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,16 +14,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 38;
-            Item.height = 32;
-            Item.createTile = ModContent.TileType<SCalAltarLarge>();
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.DefaultToPlaceableTile(ModContent.TileType<SCalAltarLarge>());
+            Item.value = Item.sellPrice(gold: 40);
             Item.rare = ModContent.RarityType<Violet>();
         }
 

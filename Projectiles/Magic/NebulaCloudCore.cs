@@ -16,9 +16,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             // Decide what state the projectile is in.
@@ -260,14 +261,14 @@ namespace CalamityMod.Projectiles.Magic
             float rotationScale = 0.95f + (Projectile.rotation * 0.75f).ToRotationVector2().Y * 0.1f;
             cloudColor *= rotationScale;
             float cloudScale = 0.6f + Projectile.scale * 0.6f * rotationScale;
-            Texture2D coreTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D coreTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D nebulaCloudTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/NebulaCloud", AssetRequestMode.ImmediateLoad).Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
-            Vector2 coreOrigin = coreTexture.Size() / new Vector2(0, Main.projFrames[Projectile.type]) * 0.5f;
+            Vector2 coreOrigin = coreTexture.Size() / new Vector2(0, Main.projFrames[Type]) * 0.5f;
             Vector2 cloudOrigin = nebulaCloudTexture.Size() * 0.5f;
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, cloudColor, 0f - Projectile.rotation + 0.35f, cloudOrigin, cloudScale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, fuckYou, 0f - Projectile.rotation, cloudOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
-            Main.EntitySpriteDraw(coreTexture, position, new Rectangle?(new Rectangle(0, Main.projFrames[Projectile.type] * Projectile.frame, coreTexture.Width, Main.projFrames[Projectile.type])), coreColor, (0f - Projectile.rotation) * 0.7f, coreOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
+            Main.EntitySpriteDraw(coreTexture, position, new Rectangle?(new Rectangle(0, Main.projFrames[Type] * Projectile.frame, coreTexture.Width, Main.projFrames[Type])), coreColor, (0f - Projectile.rotation) * 0.7f, coreOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, fuckYou * 0.8f, Projectile.rotation * 0.5f, cloudOrigin, Projectile.scale * 0.9f, spriteEffects, 0);
             fuckYou.A = 0;
 

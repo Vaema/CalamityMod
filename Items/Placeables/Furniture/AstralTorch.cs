@@ -13,27 +13,14 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.Torches[Item.type] = true;
+            ItemID.Sets.Torches[Type] = true;
             ItemID.Sets.SingleUseInGamepad[Type] = true;
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ShimmerTorch;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 14;
-            Item.height = 16;
-            Item.maxStack = 9999;
-            Item.holdStyle = 1;
-            Item.noWet = true;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.Astral.AstralTorch>();
-            Item.flame = true;
-            Item.value = 500;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.Astral.AstralTorch>(), 0, false);
         }
 
         public override void HoldItem(Player player)

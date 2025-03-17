@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.CanFishInLava[Item.type] = true;
+            ItemID.Sets.CanFishInLava[Type] = true;
         }
 
         public override void SetDefaults()

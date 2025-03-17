@@ -60,8 +60,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.TerraBlade).
-                AddIngredient<LivingShard>(9).
                 AddIngredient<UelibloomBar>(7).
+                AddIngredient<LivingShard>(9).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -18,11 +18,13 @@ namespace CalamityMod.Particles
         private string NewTexture;
         private float OriginalScale;
         private float FinalScale;
+        private float BaseOpacity;
         private float opacity;
+        private bool FadeOut;
         private Vector2 Squish;
         private Color BaseColor;
 
-        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true)
+        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true, float baseOpacity = 1f, bool fade = true)
         {
             Position = position;
             Velocity = velocity;
@@ -32,6 +34,8 @@ namespace CalamityMod.Particles
             FinalScale = finalScale;
             Scale = originalScale;
             Lifetime = lifeTime;
+            BaseOpacity = baseOpacity;
+            FadeOut = fade;
             Squish = squish;
             Rotation = rotation;
             UseAltVisual = UseAdditiveBlend;
@@ -42,7 +46,7 @@ namespace CalamityMod.Particles
             float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
             Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
 
-            opacity = (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2);
+            opacity = (FadeOut ? (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2) : 1f) * BaseOpacity;
 
             Color = BaseColor * opacity;
             Lighting.AddLight(Position, Color.R / 255f, Color.G / 255f, Color.B / 255f);

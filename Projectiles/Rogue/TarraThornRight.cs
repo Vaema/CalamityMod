@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Draw the tip for the final thorn
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[0] == TotalSegments)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/NettleTip").Value;
 

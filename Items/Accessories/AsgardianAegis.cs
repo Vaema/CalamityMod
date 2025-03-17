@@ -19,11 +19,11 @@ namespace CalamityMod.Items.Accessories
 
         public Color? TooltipExtensionColor => new(195, 223, 255);
 
-        public const int ShieldSlamDamage = 1000;
+        public const int ShieldSlamDamage = 900;
         public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;
 
-        public const int RamExplosionDamage = 1000;
+        public const int RamExplosionDamage = 450;
         public const float RamExplosionKnockback = 20f;
 
         public override void SetDefaults()
@@ -63,6 +63,8 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true; // "Stronger" Broken Armor
             player.buffImmune[ModContent.BuffType<BrainRot>()] = true; // Counterpart to Burning Blood
             player.buffImmune[ModContent.BuffType<BurningBlood>()] = true; // "Stronger" Bleeding
+            player.buffImmune[ModContent.BuffType<HeavyBleeding>()] = true;
+            player.buffImmune[ModContent.BuffType<Laceration>()] = true;
             player.buffImmune[BuffID.Venom] = true; // "Stronger" Poisoned
             player.buffImmune[ModContent.BuffType<SulphuricPoisoning>()] = true; // "Stronger" Poisoned
             player.buffImmune[BuffID.Webbed] = true; // "Stronger" Slow
@@ -80,9 +82,10 @@ namespace CalamityMod.Items.Accessories
             // Additional debuff immunities (Everything from Elysian Aegis + thematic counterparts)
             player.buffImmune[BuffID.CursedInferno] = true;
             player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[BuffID.Daybreak] = true;
+            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
             player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+            player.buffImmune[ModContent.BuffType<Voidfrost>()] = true;
 
             // Immune to God Slayer Inferno itself
             player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;

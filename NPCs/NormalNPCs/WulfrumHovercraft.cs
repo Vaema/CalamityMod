@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 12;
+            Main.npcFrameCount[Type] = 12;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -78,9 +78,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 38;
             NPC.defense = 4;
-            NPC.lifeMax = 20;
-            NPC.value = Item.buyPrice(0, 0, 1, 50);
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.lifeMax = 25;
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -119,9 +119,9 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[NPC.type] / 2);
+            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[Type] / 2);
             if (Supercharged)
-                frame += Main.npcFrameCount[NPC.type] / 2;
+                frame += Main.npcFrameCount[Type] / 2;
             NPC.frame.Y = frame * frameHeight;
         }
 
@@ -132,16 +132,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             Player player = Main.player[NPC.target];
 
             bool farFromPlayer = NPC.Distance(player.Center) > 960f;
-            bool obstacleInFrontOfPlayer = Main.remixWorld ? false : !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
 
-            if (NPC.target < 0 || NPC.target >= 255 || farFromPlayer || obstacleInFrontOfPlayer || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target >= 255 || farFromPlayer|| player.dead || !player.active)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
                 farFromPlayer = NPC.Distance(player.Center) > 960f;
-                obstacleInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
-                // Fly away if there is no living target, or the closest target is too far away... unless its Gfb
-                if (player.dead || !player.active || farFromPlayer || obstacleInFrontOfPlayer)
+                // Fly away if there is no living target, or the closest target is too far away.
+                if (player.dead || !player.active || farFromPlayer)
                 {
                     if (FlyAwayTimer > 420)
                     {

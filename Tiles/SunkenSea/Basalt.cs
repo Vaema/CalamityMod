@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             AddMapEntry(new Color(58, 55, 70));
 
-            MinPick = 100;
+            MinPick = 110;
 
             // 02JUN2024: Ozzatron: RuneSand has no merge
             // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);

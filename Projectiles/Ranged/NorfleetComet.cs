@@ -15,13 +15,12 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        private int noTileHitCounter = 120;
         public int time = 0;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -89,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<NorfleetExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1], Projectile.ai[2] == 1 ? 1 : 0);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<NorfleetExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1], Projectile.ai[2] == 1 ? 1 : 0);
 
             if (Projectile.ai[1] == 0)
             {
@@ -185,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.25f * Utils.GetLerpValue(0, 25, time, true) * randSize, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.1f * Utils.GetLerpValue(0, 25, time, true) * randSize, SpriteEffects.None, 0);
 
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 75, targetHitbox);

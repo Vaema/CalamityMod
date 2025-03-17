@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Armor.Tarragon
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<MeleeDamageClass>() += 0.12f;
-            player.GetCritChance<MeleeDamageClass>() += 10;
+            player.GetCritChance<MeleeDamageClass>() += 7;
             player.endurance += 0.1f;
         }
 
@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Armor.Tarragon
                 AddIngredient<UelibloomBar>(7).
                 AddIngredient<DivineGeode>(6).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<TarragonHeadMagic>()).
                 Register();
         }
     }

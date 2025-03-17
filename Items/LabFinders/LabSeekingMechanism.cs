@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,6 +19,7 @@ namespace CalamityMod.Items.LabFinders
         {
             Item.width = 24;
             Item.height = 26;
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
 

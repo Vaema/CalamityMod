@@ -21,13 +21,13 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 30;
             Item.height = 30;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 0, 20);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(copper: 4);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D tex = TextureAssets.Item[Item.type].Value;
+            Texture2D tex = TextureAssets.Item[Type].Value;
             Vector2 positionDisplace = new Vector2(32, 32) * scale;
             Rectangle variant = new Rectangle(CalamityWorld.OreTypes[0] == TileID.Tin ? 0 : 32, CalamityWorld.OreTypes[1] == TileID.Lead ? 0 : 32, 30, 30);
             spriteBatch.Draw(tex, position + positionDisplace, variant, drawColor, 0f, origin, scale * 2f, 0f, 0f);
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Materials
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Texture2D tex = TextureAssets.Item[Item.type].Value;
+            Texture2D tex = TextureAssets.Item[Type].Value;
             Rectangle variant = new Rectangle(CalamityWorld.OreTypes[0] == TileID.Tin ? 0 : 32, CalamityWorld.OreTypes[1] == TileID.Lead ? 0 : 32, 30, 30);
             Vector2 positionDisplace = new Vector2(16, 16) * scale;
 

@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlagueMineGlow", AssetRequestMode.AsyncLoad);
@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (NPC.frameCounter % 6 == 5)
                 NPC.frame.Y += frameHeight;
 
-            if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 
@@ -123,10 +123,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             Color backAfterimageColor = PlaguebringerGoliath.BackglowColor * NPC.Opacity;

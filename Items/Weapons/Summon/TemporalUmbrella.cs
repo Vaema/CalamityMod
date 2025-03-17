@@ -14,6 +14,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class TemporalUmbrella : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+
         public override void SetDefaults()
         {
             Item.width = 74;
@@ -21,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 193;
             Item.knockBack = 1f;
             Item.mana = 99;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.DamageType = DamageClass.Summon;
             Item.shootSpeed = 0f;
             Item.shoot = ModContent.ProjectileType<MagicHat>();

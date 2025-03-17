@@ -16,7 +16,7 @@ namespace CalamityMod.Items.DraedonMisc
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
         }
 
         public override void SetDefaults()
@@ -24,11 +24,11 @@ namespace CalamityMod.Items.DraedonMisc
             Item.width = 26;
             Item.height = 14;
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
 
             Item.MakeUsableWithChlorophyteExtractinator();
             Item.useTime = 2;
-            Item.value = Item.sellPrice(0, 0, 0, 20);
+            Item.value = Item.sellPrice(copper: 10);
         }
 
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
@@ -38,16 +38,16 @@ namespace CalamityMod.Items.DraedonMisc
 
             // 2.5% chance for Mysterious Circuitry
             // 2.5% chance for Dubious Plating
-            // 85% chance for 65-99 Copper Coins
-            // 10% chance for 1 Silver Coin
+            // 90% chance for 25-99 Copper Coins
+            // 5% chance for 1 Silver Coin
             if (dropRand < 0.025f)
                 resultType = ModContent.ItemType<MysteriousCircuitry>();
             else if (dropRand < 0.05f)
                 resultType = ModContent.ItemType<DubiousPlating>();
-            else if (dropRand < 0.9f)
+            else if (dropRand < 0.95f)
             {
                 resultType = ItemID.CopperCoin;
-                resultStack = Main.rand.Next(65, 100);
+                resultStack = Main.rand.Next(25, 100);
             }
             else
                 resultType = ItemID.SilverCoin;

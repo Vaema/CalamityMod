@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class SulphurousSeaBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => Main.zenithWorld ? ModContent.Find<ModWaterStyle>("CalamityMod/PissWater") : ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater");
+        public override ModWaterStyle WaterStyle => Main.zenithWorld ? PissWater.Instance : SulphuricWater.Instance;
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => Main.zenithWorld ? ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<SulphurousTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
@@ -30,6 +31,7 @@ namespace CalamityMod.BiomeManagers
                 if (!CalamityPlayer.areThereAnyDamnBosses)
                 {
                     bool acidRain = AcidRainEvent.AcidRainEventIsOngoing;
+                    bool normalRain = Main.cloudAlpha > 0f;
 
                     // Acid Rain themes
                     if (acidRain)
@@ -41,9 +43,18 @@ namespace CalamityMod.BiomeManagers
 
                     // Regular Sulphur Sea themes, when Acid Rain is not occurring
                     else
-                        music = !Main.dayTime
-                        ? CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaNight") ?? MusicID.Desert // Nighttime
-                        : CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaDay") ?? MusicID.Desert; // Daytime
+                    {
+                        if (normalRain)
+                        {
+                            music = CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaRain") ?? MusicID.Desert; // Normal Rain
+                        }
+                        else
+                        {
+                            music = !Main.dayTime
+                            ? CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaNight") ?? MusicID.Desert // Nighttime
+                            : CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaDay") ?? MusicID.Desert; // Daytime
+                        }
+                    }
                 }
 
                 return music;

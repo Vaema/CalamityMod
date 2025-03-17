@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.ExtraTextures;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using ReLogic.Content;
 
 namespace CalamityMod.Particles
 {
@@ -8,9 +12,11 @@ namespace CalamityMod.Particles
         public override bool UseAdditiveBlend => true;
 
         public override bool SetLifetime => true;
-        public float opacity;
+        public override bool UseCustomDraw => true;
 
-        public CircularSmearVFX(Vector2 position, Color color, float rotation, float scale)
+        public Asset<Texture2D> LoadedAsset;
+
+        public CircularSmearVFX(Vector2 position, Color color, float rotation, float scale, Asset<Texture2D>? texture = null)
         {
             Position = position;
             Velocity = Vector2.Zero;
@@ -18,6 +24,15 @@ namespace CalamityMod.Particles
             Scale = scale;
             Rotation = rotation;
             Lifetime = 2;
+
+            LoadedAsset = texture;
+            if (LoadedAsset is null)
+                LoadedAsset = ExtraTextureRefs.CircularSmear;
+        }
+
+        public override void CustomDraw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(LoadedAsset.Value, Position - Main.screenPosition, null, Color, Rotation, LoadedAsset.Value.Size() * 0.5f, Scale, SpriteEffects.None, 0);
         }
     }
 }

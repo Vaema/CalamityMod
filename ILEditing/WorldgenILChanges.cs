@@ -68,7 +68,7 @@ namespace CalamityMod.ILEditing
         #region Removal of Hardmode Ore Generation from Evil Altars
         private static void PreventSmashAltarCode(Terraria.On_WorldGen.orig_SmashAltar orig, int i, int j)
         {
-            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 return;
 
             orig(i, j);
@@ -161,7 +161,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Change Small World Description
+        #region Change World Generation Descriptions
         /// <summary>
         /// Changes the description of Small worlds to serve as a warning.
         /// </summary>
@@ -181,6 +181,28 @@ namespace CalamityMod.ILEditing
 
             // Emit our new string "Mods.CalamityMod.UI.SmallWorldWarning".
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
+
+
+        }
+
+        /// <summary>
+        /// Changes the description of Master Mode to mention boss changes.
+        /// </summary>
+        private static void SwapMasterModeDescriptionKey(ILContext il)
+        {
+            // Swap vanilla's Master Mode description string (UI.WorldDescriptionMaster) with Calamity's edited version (Mods.CalamityMod.UI.WorldMaster).
+            var cursor = new ILCursor(il);
+
+            // Move to after the string.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdstr("UI.WorldDescriptionMaster")))
+            {
+                LogFailure("Change Master Mode Description", "Could not match string \"UI.WorldDescriptionMaster\".");
+                return;
+            }
+
+            // Pop this value off, then replace it with Calamity's new string.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.WorldMaster");
         }
         #endregion
 

@@ -44,7 +44,6 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().rogueAmmoCost *= 0.5f;
             player.GetDamage<ThrowingDamageClass>() += 0.12f;
             player.GetCritChance<ThrowingDamageClass>() += 10;
             player.moveSpeed += 0.05f;
@@ -56,8 +55,9 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         {
             CreateRecipe().
                 AddIngredient<ScoriaBar>(7).
-                AddIngredient<CoreofHavoc>().
+                AddIngredient<EssenceofHavoc>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HydrothermicArmor>()).
                 Register();
         }
     }

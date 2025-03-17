@@ -69,7 +69,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Owner.Calamity().mouseWorldListener = true;
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 
                     Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * JetDamageMultiplier), 7, Owner.whoAmI);
 
                 for (int i = 0; i < 9; i++)
@@ -117,9 +118,9 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().mouseWorldListener = true;
 
                 { 
-                    if (SlashTimer % SlashSpeed == 0)
+                    if (SlashTimer % (int)(SlashSpeed / Owner.GetAttackSpeed<MeleeDamageClass>()) == 0)
                     {
-                        SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe" + (Main.rand.Next(2) + 1).ToString());
+                        SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2);
                         SlashStyle.PitchVariance = 0.3f;
                         SlashStyle.Volume = 0.7f;
 
@@ -127,7 +128,9 @@ namespace CalamityMod.Projectiles.Melee
 
                         Owner.Calamity().mouseWorldListener = true;
 
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 4f, Owner.whoAmI).rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                        Projectile slash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 4f, Owner.whoAmI);
+                        slash.rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
                     }
 
                     SlashTimer++;
@@ -267,6 +270,6 @@ namespace CalamityMod.Projectiles.Melee
         // The holdout cannot deal damage.
         public override bool? CanDamage() => false;
 
-        public override void OnSpawn(IEntitySource source) => Projectile.scale = 0f;
+        public override void WhenSpawned() => Projectile.scale = 0f;
     }
 }

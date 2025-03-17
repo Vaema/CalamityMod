@@ -68,7 +68,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < DRIncreaseTime;
@@ -77,8 +76,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Phases based on life percentage
-            bool phase2 = lifeRatio < 0.85f || masterMode;
-            bool phase3 = lifeRatio < 0.7f || masterMode;
+            bool phase2 = lifeRatio < 0.85f || death;
+            bool phase3 = lifeRatio < 0.7f || death;
             bool startFlightPhase = lifeRatio < 0.5f;
             bool phase4 = lifeRatio < (death ? 0.4f : 0.25f);
             bool phase5 = lifeRatio < (death ? 0.2f : 0.1f);
@@ -182,7 +181,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                if (masterMode && !bossRush && npc.localAI[3] == 1f)
+                if (death && !bossRush && npc.localAI[3] == 1f)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
@@ -215,14 +214,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool spitLaserSpreads = death;
 
             // Height of the box used to calculate whether The Destroyer should fly at its target or not
-            int noFlyZoneBoxHeight = masterMode ? 1500 : 1800;
+            int noFlyZoneBoxHeight = death ? 1500 : 1800;
 
             // Speed and movement variables
-            float speed = masterMode ? 0.2f : 0.1f;
-            float turnSpeed = masterMode ? 0.3f : 0.15f;
+            float speed = death ? 0.2f : 0.1f;
+            float turnSpeed = death ? 0.3f : 0.15f;
 
             // Max velocity
-            float segmentVelocity = flyAtTarget ? (masterMode ? 22.5f : 15f) : (masterMode ? 30f : 20f);
+            float segmentVelocity = flyAtTarget ? (death ? 22.5f : 15f) : (death ? 30f : 20f);
 
             // Increase velocity based on distance
             float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
@@ -290,7 +289,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Regenerate Probes in Master Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
                 // This doesn't happen if Oblivion is alive
-                if (masterMode && probeLaunched && !oblivionAlive)
+                if (death && probeLaunched && !oblivionAlive)
                 {
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= 600f)
@@ -330,7 +329,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyer)
             {
                 // Spawn segments from head
-                if (npc.ai[0] == 0f)
+                if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.ai[3] = npc.whoAmI;
                     npc.realLife = npc.whoAmI;
@@ -341,13 +340,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (j == totalSegments)
                             type = NPCID.TheDestroyerTail;
 
-                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                        Main.npc[segment].ai[3] = npc.whoAmI;
-                        Main.npc[segment].realLife = npc.whoAmI;
-                        Main.npc[segment].ai[1] = index;
-                        Main.npc[index].ai[0] = segment;
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                        index = segment;
+                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                            Main.npc[segment].ai[3] = npc.whoAmI;
+                            Main.npc[segment].realLife = npc.whoAmI;
+                            Main.npc[segment].ai[1] = index;
+                            Main.npc[index].ai[0] = segment;
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                            index = segment;
                     }
                 }
 
@@ -397,7 +396,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int damage = npc.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
                                 double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                 double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -410,8 +409,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                                int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (masterMode ? 9 : 7) : (masterMode ? 6 : 4);
-                                int spread = masterMode ? 38 : 26;
+                                int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (death ? 9 : 7) : (death ? 6 : 4);
+                                int spread = death ? 38 : 26;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)
                                 {
@@ -442,7 +441,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Set laser color and type
                 if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched)
                 {
-                    if (Main.rand.NextBool(masterMode ? OneInXChanceToFireLaser / (phase5 ? 4 : phase4 ? 3 : 2) : OneInXChanceToFireLaser))
+                    if (Main.rand.NextBool(death ? OneInXChanceToFireLaser / (phase5 ? 4 : phase4 ? 3 : 2) : OneInXChanceToFireLaser))
                     {
                         int random = phase3 ? 4 : phase2 ? 3 : 2;
                         switch (Main.rand.Next(random))
@@ -473,8 +472,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Laser rate of fire
-                float shootProjectileTime = death ? (masterMode ? (phase5 ? 120f : phase4 ? 150f : 180f) : 270f) : (masterMode ? (phase5 ? 150f : phase4 ? 210f : 270f) : 450f);
-                float bodySegmentTime = npc.ai[0] * (masterMode ? 20f : 30f);
+                float shootProjectileTime = death ? (phase5 ? 120f : phase4 ? 150f : 180f) : 450f;
+                float bodySegmentTime = npc.ai[0] * (death ? 20f : 30f);
                 float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
                 float laserTimerIncrement = (calamityGlobalNPC.newAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
                 if (ableToFireLaser)
@@ -528,7 +527,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Shoot nothing if probe has been launched
                 if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue && ableToFireLaser)
                 {
-                    if (!masterMode)
+                    if (!death)
                     {
                         int numProbeSegments = 0;
                         for (int i = 0; i < Main.maxNPCs; i++)
@@ -545,7 +544,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
                     {
-                        if (masterMode)
+                        if (death)
                         {
                             int numProbeSegments = 0;
                             for (int i = 0; i < Main.maxNPCs; i++)
@@ -561,7 +560,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         // Laser speed
-                        float projectileSpeed = (masterMode ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
+                        float projectileSpeed = (death ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
                         projectileSpeed += enrageScale;
 
                         // Set projectile damage and type
@@ -589,7 +588,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int damage = npc.GetProjectileDamage(projectileType);
 
                         // Reduce mech boss projectile damage depending on the new ore progression changes
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         {
                             double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                             double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -607,14 +606,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         npc.netUpdate = true;
 
-                        if (masterMode)
+                        if (death)
                         {
                             calamityGlobalNPC.destroyerLaserColor = -1;
                             npc.SyncDestroyerLaserColor();
                         }
                     }
 
-                    if (!masterMode)
+                    if (!death)
                     {
                         calamityGlobalNPC.destroyerLaserColor = -1;
                         npc.SyncDestroyerLaserColor();
@@ -846,7 +845,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (!shouldFly)
                 {
                     npc.velocity.Y += 0.15f;
-                    if (masterMode && npc.velocity.Y > 0f && Math.Abs(npc.Center.Y - player.Center.Y) > 360f)
+                    if (death && npc.velocity.Y > 0f && Math.Abs(npc.Center.Y - player.Center.Y) > 360f)
                         npc.velocity.Y += 0.05f;
 
                     if (npc.velocity.Y > segmentVelocity)
@@ -1037,7 +1036,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Force the fucker to turn around in ground phase in Master
             // Turns slower if Oblivion is alive, for fairness
-            if (npc.type == NPCID.TheDestroyer && masterMode && !flyAtTarget)
+            if (npc.type == NPCID.TheDestroyer && death && !flyAtTarget)
             {
                 if (npc.Distance(player.Center) > 2000f)
                     npc.velocity += (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * (oblivionAlive ? speed : turnSpeed);
@@ -1293,7 +1292,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int damage = npc.GetProjectileDamage(type);
 
                         // Reduce mech boss projectile damage depending on the new ore progression changes
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         {
                             double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                             double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
@@ -1742,7 +1741,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool BuffedProbeAI(NPC npc, Mod mod)
         {
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
+            bool death = CalamityWorld.death || bossRush;
             bool oblivionAlive = npc.ai[1] == 1f;
 
             // Get a target
@@ -1754,8 +1753,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (targetData.Type == NPCTargetType.Player)
                 targetDead = Main.player[npc.target].dead;
 
-            float velocity = bossRush ? 12f : masterMode ? 8.4f : 7.2f;
-            float acceleration = bossRush ? 0.1f : masterMode ? 0.07f : 0.06f;
+            float velocity = bossRush ? 12f : death ? 8.4f : 7.2f;
+            float acceleration = bossRush ? 0.1f : death ? 0.07f : 0.06f;
             float deceleration = 1f - acceleration;
 
             if (targetDead)
@@ -1785,7 +1784,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (masterMode && !bossRush && npc.ai[1] == 0f)
+                if (death && !bossRush && npc.ai[1] == 0f)
                 {
                     if (Main.npc[i].active && (Main.npc[i].type == ModContent.NPCType<SkeletronPrime2>() || Main.npc[i].type == NPCID.SkeletronPrime))
                         npc.ai[1] = 1f;
@@ -1860,7 +1859,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.dontTakeDamage = false;
 
             npc.localAI[0] += 1f;
-            if ((npc.justHit && !masterMode) || targetDead)
+            if ((npc.justHit && !death) || targetDead)
                 npc.localAI[0] = 0f;
 
             float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : bossRush ? ProbeLaserGateValue_BossRush : ProbeLaserGateValue_Rev;
@@ -1873,7 +1872,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int damage = npc.GetProjectileDamage(type);
 
                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
                         double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                         double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -1883,7 +1882,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             damage = (int)(damage * secondMechMultiplier);
                     }
 
-                    int totalProjectiles = oblivionAlive ? 2 : (CalamityWorld.death || bossRush) ? 3 : 1;
+                    int totalProjectiles = oblivionAlive ? 2 : death ? 3 : 1;
                     Vector2 projectileVelocity = (targetData.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (NPC.IsMechQueenUp)
                     {
@@ -2056,7 +2055,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int damage = npc.GetProjectileDamage(type);
 
                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
                         double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                         double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;

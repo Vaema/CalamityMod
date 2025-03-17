@@ -18,10 +18,10 @@ namespace CalamityMod.Items.Ammo
             Item.width = 22;
             Item.height = 24;
             Item.damage = 1;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 10f;
-            Item.value = Item.buyPrice(gold: 1);
+            Item.value = Item.buyPrice(gold: 1); // Sold by Archmage
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();

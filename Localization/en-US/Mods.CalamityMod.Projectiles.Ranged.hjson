@@ -19,15 +19,13 @@ AuricBullet.DisplayName: Auric Bullet
 AuroraFire.DisplayName: Aurora Blaze
 BallistaGreatArrow.DisplayName: Ballista Great Arrow
 BarinadeArrow.DisplayName: Fin Arrow
-BigCoral.DisplayName: Big Coral
 BlightFlames.DisplayName: Blight Flames
-BlissfulBombardierDustProjectile.DisplayName: Holy Flare Dust
+BlissfulBombardierSplitProjectile.DisplayName: Profaned Mini-Rocket
 BloodBoilerFire.DisplayName: Blood Fire
 BloodClotFriendly.DisplayName: Blood Clot
 BloodfireArrowProj.DisplayName: Bloodfire Arrow
 BloodfireBulletProj.DisplayName: Bloodfire Bullet
 BloodflareSoul.DisplayName: Blood Soul
-Bolt.DisplayName: Storm Bolt
 BoltArrow.DisplayName: Bolt Arrow
 BouncingShotgunPellet.DisplayName: Shotgun Pellet
 BrimstoneBolt.DisplayName: Brimstone Bolt
@@ -59,6 +57,7 @@ CorrodedShell.DisplayName: Corroded Shell
 CosmicFire.DisplayName: Dead Sun's Fire
 DaemonsFlameArrow.DisplayName: Daemon's Arrow
 DeadSunExplosion.DisplayName: Dead Sun's Explosion
+DragonsBreathBurst.DisplayName: Draconic Burst
 DragonsBreathFlames.DisplayName: Draconic Flames
 DragonsBreathMag.DisplayName: Dragons Breath Cartridge
 DragonsBreathRound.DisplayName: Dragon's Breath Round
@@ -138,9 +137,13 @@ NorfleetComet.DisplayName: Comet
 NorfleetExplosion.DisplayName: Explosion
 NovaChargedShot.DisplayName: Charged Nova Blast
 NovaShot.DisplayName: Nova Bolt
-Nuke.DisplayName: Nuke
+NukeOfBliss.DisplayName: Profaned Nuke
+NullFlash.DisplayName: Null Flash
 NullShot.DisplayName: Null
-NullShot2.DisplayName: Null
+OntologicalDespoilerBeam.DisplayName: Null-Annihilation Beam
+OntoligicalDespoilerBurst.DisplayName: Disruption Blast
+OntologicalDespoilerGrenade.DisplayName: Disruption Sphere
+OntologicalDespoilerShot.DisplayName: Unreality Condensate
 OpalChargedStrike.DisplayName: Charged Plasma Bolt
 OpalStrike.DisplayName: Heated Bolt
 PiercingBullet.DisplayName: Piercing Blow
@@ -172,7 +175,7 @@ RealmRavagerBullet.DisplayName: Explosive Bullet
 RicoshotCoin.DisplayName: Ricoshot Coin
 RocketFire.DisplayName: Fire
 RubberMortarRoundProj.DisplayName: Rubber Mortar
-SandstormBullet.DisplayName: Sandstorm
+SandblasterBullet.DisplayName: Sandstorm
 ScorchedEarthBlast.DisplayName: Earth Scorcher
 ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
@@ -183,7 +186,7 @@ SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
 SeasSearingSpout.DisplayName: Spout
-SepticSkewerBacteria.DisplayName: Bacteria
+SepticSkewerBacteria.DisplayName: Septic Gore
 SepticSkewerHarpoon.DisplayName: Septic Skewer
 SevensStrikerBrick.DisplayName: Brick
 SevensStrikerCherry.DisplayName: Cherry
@@ -218,11 +221,15 @@ SulphuricBlast.DisplayName: Sulphuric Blast
 SuperradiantBolt.DisplayName: Superradiant Bolt
 SuperradiantSaw.DisplayName: Superradiant Saw
 SuperradiantSawLingering.DisplayName: Ultraradiant Saw
+TauCannonBeam.DisplayName: Tau Cannon Beam
+TauCannonBolt.DisplayName: Tau Cannon Bolt
+TauCannonPortal.DisplayName: Tau Cannon Portal
 TelluricGlareArrow.DisplayName: Radiant Arrow
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark
 ThePackMinissile.DisplayName: Pack Minissile
 ThePackMissile.DisplayName: Pack Missile
+TheStormLightningShot.DisplayName: Storm Bolt
 TitaniumRailgunScope.DisplayName: Titanium Scope
 TitaniumRailgunShot.DisplayName: Titanium Decimator
 TorrentialArrow.DisplayName: Torrential Arrow
@@ -244,3 +251,13 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+HellbornProj.DisplayName: Hell-born Gunblast
+HellbornShell.DisplayName: Hell's Shell
+RubicoPrimeMag.DisplayName: Rubico Prime Mag
+MegalodonShot.DisplayName: Megalodon Shot
+SulphuricAcidCannonExplosion.DisplayName: Sulphuric Acid Cannon Explosion
+LeviatitanAberration.DisplayName: Leviatitan Aberration
+LeviatitanMeteor.DisplayName: Leviatitan Meteor
+LeviatitanExplosion.DisplayName: Leviatitan Explosion
+SulphuricDrop.DisplayName: Sulphuric Drop
+AcidRocket.DisplayName: Acid Rocket

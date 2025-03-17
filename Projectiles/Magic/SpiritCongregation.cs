@@ -45,8 +45,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -102,7 +103,8 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 previousVelocity = Projectile.velocity;
 
                 // If not sufficiently close to the mouse, move towards it.
-                if (!Projectile.WithinRange(Main.MouseWorld, 80f))
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                if (!Projectile.WithinRange(mouse, 80f))
                     MoveTowardsMouse();
 
                 // Otherwise slow down to a point.
@@ -111,10 +113,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Sync velocity if it changed from what it was before.
                 if (previousVelocity != Projectile.velocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -139,11 +138,6 @@ namespace CalamityMod.Projectiles.Magic
                 if (HoverOffset != Vector2.Zero)
                     HoverOffset = Vector2.Zero;
             }
-
-            // Previously, Gruesome Eminence stopped being able to hurt you when fully charged.
-            // This has been changed so that its threat is everpresent.
-            Projectile.hostile = Time > 75f;
-            // Projectile.hostile = !tame && Time > 75f;
 
             // Explode into a burst of spirit dust and gas clouds when a bigger face appears.
             if (!WasStrongBefore && CurrentPower > LargeMouthPowerLowerBound)
@@ -199,7 +193,7 @@ namespace CalamityMod.Projectiles.Magic
             // Make inertia become more significant the more power the congregation has, due to growing size.
             float inertia = MathHelper.Lerp(18f, 40f, CurrentPower);
 
-            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Main.MouseWorld + HoverOffset);
+            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Owner.ClampedMouseWorld() + HoverOffset);
             Vector2 directionToOwner = Projectile.SafeDirectionTo(Owner.Center);
             Vector2 idealVelocity = Vector2.Lerp(directionToMouseOffset, directionToOwner, 0.25f) * MovementSpeed;
 
@@ -273,7 +267,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (CurrentPower > LargeMouthPowerLowerBound)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBig").Value;
 
@@ -302,22 +296,6 @@ namespace CalamityMod.Projectiles.Magic
                 backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBackBig").Value;
 
             DrawHead(backTexture, 1.04f);
-        }
-
-        // Damage scales up over time as it grows.
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float damageFactor = 0.25f + 0.75f * CurrentPower;
-            int fullPowerDamage;
-            if (Main.masterMode)
-                fullPowerDamage = 540;
-            else if (Main.expertMode)
-                fullPowerDamage = 450;
-            else
-                fullPowerDamage = 360;
-
-            modifiers.SourceDamage *= 0f;
-            modifiers.SourceDamage.Flat += (int)(damageFactor * fullPowerDamage);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

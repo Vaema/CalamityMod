@@ -1,3 +1,4 @@
+// Alcohols (including Odd Mushroom)
 AlcoholPoisoning: {
 	DisplayName: Alcohol Poisoning
 	Description: You drank too much and you are now dying
@@ -10,12 +11,17 @@ BloodyMaryBuff: {
 
 CaribbeanRumBuff: {
 	DisplayName: Caribbean Rum
-	Description: Life regen, movement speed, and wing flight time increased, you are floaty and defense is reduced
+	Description: Life regen and movement speed increased, you are floaty and defense is reduced
 }
 
 CinnamonRollBuff: {
 	DisplayName: Cinnamon Roll
 	Description: Mana regen rate and fire debuff damage increased, defense reduced
+}
+
+CirrusVodkaBuff: {
+	DisplayName: Fab
+	Description: You feel fabulous
 }
 
 EverclearBuff: {
@@ -26,11 +32,6 @@ EverclearBuff: {
 EvergreenGinBuff: {
 	DisplayName: Evergreen Gin
 	Description: Sickness and water debuff damage increased, life regen reduced
-}
-
-FabsolVodkaBuff: {
-	DisplayName: Fab
-	Description: You feel fabulous
 }
 
 FireballBuff: {
@@ -60,7 +61,7 @@ MoscowMuleBuff: {
 
 OldFashionedBuff: {
 	DisplayName: Old Fashioned
-	Description: Accessory and set bonus damage multiplied, damage reduced
+	Description: Non-weapon damage increased, weapon damage reduced
 }
 
 RedWineBuff: {
@@ -95,7 +96,7 @@ TequilaSunriseBuff: {
 
 Trippy: {
 	DisplayName: Trippy
-	Description: You see the world for what it truly is... and you also have a 50% increase to all damage
+	Description: You see the world for what it truly is... and you also have a {0}% increase to all damage
 }
 
 VodkaBuff: {
@@ -113,14 +114,21 @@ WhiteWineBuff: {
 	Description: Magic damage increased, life regen and defense reduced
 }
 
+// Cooldowns
 Withered: {
 	DisplayName: Withered
 	Description: Holding withered weapons causes you to suffer but makes your weapons strong
 }
 
+// Damage over time
 AstralInfectionDebuff: {
 	DisplayName: Astral Infection
 	Description: Your flesh is melting off
+}
+
+AuricRebuke: {
+	DisplayName: Auric Rebuke
+	Description: Your cells are violently bouncing off each other
 }
 
 BanishingFire: {
@@ -143,6 +151,11 @@ BrainRot: {
 	Description: Your neurons are popping like corn kernels
 }
 
+DemonicFlames: {
+	DisplayName: Demonic Flames
+	Description: Immolating flames sear your soul
+}
+
 ElementalMix: {
 	DisplayName: Elemental Mix
 	Description: A beautiful elemental symphony is flaying you alive
@@ -163,19 +176,14 @@ Dragonfire: {
 	Description: Engulfed by roaring flames
 }
 
-VermillionFlux: {
-	DisplayName: Vermillion Flux
-	Description: Sharp arcs of scarlet course through you
-}
-
-StaticDischarge: {
-	DisplayName: Static Discharge
-	Description: Shocked by static electricity
-}
-
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off
+}
+
+HeavyBleeding: {
+	DisplayName: Heavy Bleeding
+	Description: That's gonna need stitches
 }
 
 HolyFlames: {
@@ -238,14 +246,34 @@ SnapClamDebuff: {
 	Description: Clapped by Snap Clams
 }
 
+StaticDischarge: {
+	DisplayName: Static Discharge
+	Description: Shocked by static electricity
+}
+
 SulphuricPoisoning: {
 	DisplayName: Sulphuric Poisoning
 	Description: The acidic water burns away your flesh
 }
 
+TrueVulnerabilityHex: {
+	DisplayName: True Vulnerability Hex
+	Description: The end has come
+}
+
 Vaporfied: {
 	DisplayName: Vaporfied
 	Description: Vape
+}
+
+VermillionFlux: {
+	DisplayName: Vermillion Flux
+	Description: Sharp arcs of scarlet course through you
+}
+
+Voidfrost: {
+	DisplayName: Voidfrost
+	Description: The emptiness of space devours all warmth and life
 }
 
 VulnerabilityHex: {
@@ -258,6 +286,7 @@ WeakBrimstoneFlames: {
 	Description: Using the Supreme Witch's power causes you to suffer, but makes your weapons strong
 }
 
+// Mounts
 AlicornBuff: {
 	DisplayName: Alicorn
 	Description: You beat DoG while drunk, you are truly fabulous!
@@ -286,6 +315,11 @@ BumbledogeMount: {
 DraedonGamerChairBuff: {
 	DisplayName: Exo Chair
 	Description: Riding a physics defying gamer chair
+}
+
+ExoTankBuff: {
+	DisplayName: Rainbow Road Roller
+	Description: Your foes shall fall within your calculations
 }
 
 GazeOfCrysthamyrBuff: {
@@ -318,6 +352,7 @@ TheCartofGodsBuff: {
 	Description: Riding a cosmic terror
 }
 
+// Pets
 AkatoBuff: {
 	DisplayName: Akato
 	Description: Looks like you'll have to take care of it now
@@ -468,6 +503,7 @@ YharonSonBuff: {
 	Description: You better not eat his dinner
 }
 
+// Placeables
 ChaosCandleBuff: {
 	DisplayName: Chaos Candle
 	Description: Spawn rates around the candle are boosted!
@@ -513,16 +549,7 @@ TranquilityCandleBuff: {
 	Description: Spawn rates around the candle are reduced!
 }
 
-PopoBuff: {
-	DisplayName: Popo
-	Description: You are a snowman now!
-}
-
-PopoNoselessBuff: {
-	DisplayName: Noseless Popo
-	Description: Your nose has been stolen!
-}
-
+// Potions
 AnechoicCoatingBuff: {
 	DisplayName: Anechoic Coating
 	Description: Abyssal creatures' detection ranges reduced
@@ -545,12 +572,12 @@ BloodfinBoost: {
 
 BoundingBuff: {
 	DisplayName: Bounding
-	Description: Increased jump height, jump speed, and fall damage resistance
+	Description: Increased jump speed and height
 }
 
 CalciumBuff: {
 	DisplayName: Calcium
-	Description: You are immune to fall damage
+	Description: You take {0}% less knockback
 }
 
 CeaselessHunger: {
@@ -560,7 +587,7 @@ CeaselessHunger: {
 
 GravityNormalizerBuff: {
 	DisplayName: Gravity Normalizer
-	Description: Gravity is now normal in space, immunity to distorted
+	Description: Gravity is now normal in space, immunity to {$BuffName.VortexDebuff}
 }
 
 Omniscience: {
@@ -570,7 +597,7 @@ Omniscience: {
 
 PhotosynthesisBuff: {
 	DisplayName: Photosynthesis
-	Description: Life regen boosted, more during daytime, and hearts heal more HP
+	Description: Hearts heal {0} more HP
 }
 
 ShadowBuff: {
@@ -578,28 +605,18 @@ ShadowBuff: {
 	Description:
 		'''
 		You are a shadow
-		Rogue weapons spawn projectiles on hit
-		8% boosted stealth generation
+		{0}% increased stealth generation
 		'''
 }
 
 Soaring: {
 	DisplayName: Soaring
-	Description:
-		'''
-		10% increased wing flight time and speed
-		True melee hits restore some wing flight time
-		'''
+	Description: "{0}% increased wing flight time and speed"
 }
 
 SulphurskinBuff: {
 	DisplayName: Sulphurskin
 	Description: The sulphuric waters have a lesser effect on you
-}
-
-TeslaBuff: {
-	DisplayName: Tesla's Electricity
-	Description: Summons an aura of electricity
 }
 
 WeaponImbueBrimstone: {
@@ -627,9 +644,14 @@ Zerg: {
 	Description: Spawn rates are greatly boosted
 }
 
-RancorBurn: {
-	DisplayName: Rancor Burn
-	Description: Burning
+// Stat buffs
+AbsorberRegen: {
+	DisplayName: Regeneraga
+	Description:
+		'''
+		You are blessed by the culmimation of nature's powers
+		Life regen increased by {0} HP/s, damage increased by {1}%, damage reduction increased by {2}%
+		'''
 }
 
 AbyssalDivingSuitBuff: {
@@ -639,7 +661,7 @@ AbyssalDivingSuitBuff: {
 
 AbyssalDivingSuitPlates: {
 	DisplayName: Abyssal Diving Suit Plates
-	Description: 15% increased damage reduction
+	Description: "{0}% increased damage reduction"
 }
 
 AbyssalMadness: {
@@ -649,7 +671,16 @@ AbyssalMadness: {
 
 AdrenalineMode: {
 	DisplayName: Adrenaline Mode
-	Description: Total damage multiplied by 2.5x. Can be boosted by other items up to 3.1x
+	Description: Total damage multiplied by {0}x
+}
+
+AeolianEarthBuff: {
+	DisplayName: Aeolian Earth
+	Description:
+		'''
+		You are strengthened by primordial powers
+		Damage reduction increased by {0}%, damage increased by {1}%
+		'''
 }
 
 Afflicted: {
@@ -674,7 +705,7 @@ AquaticHeartBuff: {
 
 AquaticHeartWaterSpeed: {
 	DisplayName: Ocean's Blessing
-	Description: 15% increased max speed and acceleration
+	Description: "{0}% increased max speed and acceleration"
 }
 
 AvertorBonus: {
@@ -705,7 +736,7 @@ BrimflameFrenzyBuff: {
 
 BrutalCarnage: {
 	DisplayName: Brutal Carnage
-	Description: 20% increased melee damage
+	Description: "{0}% increased melee damage"
 }
 
 ChiBuff: {
@@ -720,7 +751,7 @@ ChiRegenBuff: {
 
 CoralSymbiosis: {
 	DisplayName: Coral Symbiosis
-	Description: Coral Spout charges up faster and deals 2 extra damage
+	Description: Coral Spout charges up faster and deals {0} extra damage
 }
 
 CosmicFreeze: {
@@ -745,7 +776,7 @@ EmpyreanWrath: {
 
 Encased: {
 	DisplayName: Encased
-	Description: Increased defense by 30 and damage reduction by 30%, but...
+	Description: Increased defense by {0} and damage reduction by {1}%, but...
 }
 
 GraxBoost: {
@@ -753,14 +784,19 @@ GraxBoost: {
 	Description: Your defenses and muscles are strong
 }
 
+GreenJellyRegen: {
+	DisplayName: Green Jelly Regen
+	Description: The regenerative goo empowers you, life regen increased by {0} HP/s
+}
+
 HallowedRuneDefense: {
 	DisplayName: Hallowed Defense
-	Description: Increased defense by 8 and damage reduction by 4%
+	Description: Increased defense by {0} and damage reduction by {1}%
 }
 
 HallowedRunePower: {
 	DisplayName: Hallowed Power
-	Description: 10% increased summon damage
+	Description: "{0}% increased summon damage"
 }
 
 HallowedRuneRegeneration: {
@@ -775,22 +811,22 @@ Haste: {
 
 IceShieldBuff: {
 	DisplayName: Ice Shield
-	Description: Absorbs 20% damage from the next hit you take, then shatters
+	Description: Absorbs {0}% damage from the next hit you take, then shatters
 }
 
 KamiBuff: {
 	DisplayName: Kami Injection
-	Description: 15% increased max movement speed, acceleration and damage
+	Description: "{0}% increased max movement speed, acceleration and damage"
 }
 
 Mushy: {
 	DisplayName: Mushy
-	Description: Increased defense by 6 and life regen by 1HP/s
+	Description: Increased defense by {0} and life regen by {1} HP/s
 }
 
 PhantomicEmpowerment: {
 	DisplayName: Phantomic Empowerment
-	Description: 10% increased summon damage
+	Description: "{0}% increased summon damage"
 }
 
 PhantomicRegen: {
@@ -802,9 +838,14 @@ PhantomicShield: {
 	DisplayName: Phantomic Shield
 	Description:
 		'''
-		Defense increased by 10 and damage reduction increased by 5%
+		Defense increased by {0} and damage reduction increased by {1}%
 		An ephemeral bulwark protects you
 		'''
+}
+
+PinkJellyRegen: {
+	DisplayName: Pink Jelly Regen
+	Description: The power of goo refreshes you, life regen increased by {0} HP/s
 }
 
 ProfanedCrystalBuff: {
@@ -841,7 +882,7 @@ ProfanedCrystalWhipBuff: {
 
 RageMode: {
 	DisplayName: Rage Mode
-	Description: Total damage multiplied by 1.35x
+	Description: Total damage multiplied by {0}x
 }
 
 ReaverRage: {
@@ -849,23 +890,32 @@ ReaverRage: {
 	Description:
 		'''
 		Rage of the earth
-		Defense increased by 5 and damage increased by 10%
+		Defense increased by {0} and damage increased by {1}%
+		'''
+}
+
+SandsWindBuff: {
+	DisplayName: Sand's Wind
+	Description:
+		'''
+		You are strengthened by the powers of sand
+		Defense increased by {0}, damage increased by {1}%
 		'''
 }
 
 SilvaRevival: {
 	DisplayName: Silva Immunity
-	Description: You are unkillable and immune to most debuffs
+	Description: Silva's blessing makes you invulnerable and immune to most debuffs
 }
 
 SpiritDefense: {
 	DisplayName: Spirit Defense
-	Description: Defense increased by 6 and damage reduction increased by 3%
+	Description: Defense increased by {0} and damage reduction increased by {1}%
 }
 
 SpiritPower: {
 	DisplayName: Spirit Power
-	Description: 10% increased summon damage
+	Description: "{0}% increased summon damage"
 }
 
 SpiritRegen: {
@@ -875,7 +925,7 @@ SpiritRegen: {
 
 TarragonCloak: {
 	DisplayName: Tarragon Cloak
-	Description: 50% reduced contact damage
+	Description: "{0}% reduced contact damage"
 }
 
 TarragonImmunity: {
@@ -886,6 +936,12 @@ TarragonImmunity: {
 TarraLifeRegen: {
 	DisplayName: Tarra Life
 	Description: Rapid healing
+}
+
+// Stat debuffs
+AbsorberAffliction: {
+	DisplayName: Absorber Affliction
+	Description: Damn nature, you scary!
 }
 
 AndromedaCripple: {
@@ -912,14 +968,14 @@ DoGExtremeGravity: {
 	DisplayName: Extreme Gravity
 	Description:
 		'''
-		25% decreased wing time
+		{0}% decreased wing time
 		Infinite flight is disabled
 		'''
 }
 
 Enraged: {
 	DisplayName: Enraged
-	Description: Total damage multiplied by 2.25x, but you take 1.25x damage
+	Description: Total damage multiplied by 1.5x, but you take 1.25x damage
 }
 
 Eutrophication: {
@@ -952,11 +1008,16 @@ GlacialState: {
 	Description: Cannot move
 }
 
+HadopelagicPressure: {
+	DisplayName: Hadopelagic Pressure
+	Description: Rapidly sinking to a watery grave
+}
+
 IcarusFolly: {
 	DisplayName: Icarus' Folly
 	Description:
 		'''
-		33% decreased wing time
+		{0}% decreased wing time
 		Infinite flight is disabled
 		'''
 }
@@ -983,7 +1044,7 @@ PearlAura: {
 
 ProfanedWeakness: {
 	DisplayName: Profaned Weakness
-	Description: You do less damage
+	Description: You take more damage
 }
 
 TemporalSadness: {
@@ -1016,13 +1077,19 @@ WitherDebuff: {
 	Description:
 		'''
 		Withered...
-		Defense decreased by 20
+		Defense decreased by {0}
 		'''
 }
 
+// Summons
 AbandonedSlimeBuff: {
 	DisplayName: Astral Jelly
 	Description: Back from the heavens just to protect you!
+}
+
+AmphibiansGuitarBuff: {
+	DisplayName: Amphibian's Guitars
+	Description: Worthless human...
 }
 
 AncientMineralSharkBuff: {
@@ -1195,6 +1262,11 @@ FieryDraconidBuff: {
 	Description: The fiery draconid will protect you
 }
 
+FlarebatBuff: {
+	DisplayName: Flarebat
+	Description: The construct of fire will protect you
+}
+
 FleshBallBuff: {
 	DisplayName: Flesh Ball
 	Description: Why is it following you?
@@ -1203,6 +1275,11 @@ FleshBallBuff: {
 FlowersOfMortalityBuff: {
 	DisplayName: Flowers of Mortality
 	Description: Celestial blossoms surround you
+}
+
+FrostbatBuff: {
+	DisplayName: Frostbat
+	Description: The construct of ice will protect you
 }
 
 FrostBlossomBuff: {
@@ -1273,6 +1350,11 @@ KalandraMirrorBuff: {
 KingofConstellationsBuff: {
 	DisplayName: Celestial Dragons
 	Description: The celestial dragons will protect you
+}
+
+LiliesOfFinalityBuff: {
+	DisplayName: Finality
+	Description: Remember our promise
 }
 
 LilPlaguebringerBuff: {
@@ -1391,6 +1473,11 @@ SarosPossessionBuff: {
 	Description: A radiant aura protects you
 }
 
+SeashineSwordBuff: {
+	DisplayName: Seashine Sword
+	Description: A beautiful dance of crystalline blades...
+}
+
 SeaSnailBuff: {
 	DisplayName: Sea Snail
 	Description: Meow?
@@ -1506,59 +1593,18 @@ WulfrumDroidBuff: {
 	Description: The wulfrum droid will protect you
 }
 
-PinkJellyRegen: {
-	DisplayName: Pink Jelly Regen
-	Description: The power of goo refreshes you, life regen increased by 2HP/s
-}
-
-GreenJellyRegen: {
-	DisplayName: Green Jelly Regen
-	Description: The regenerative goo empowers you, life regen increased by 2.5HP/s
-}
-
-AbsorberRegen: {
-	DisplayName: Regeneraga
-	Description:
-		'''
-		You are blessed by the culmimation of nature's powers
-		Life regen increased by 3HP/s, damage increased by 8%, damage reduction increased by 5%
-		'''
-}
-
-AbsorberAffliction: {
-	DisplayName: Absorber Affliction
-	Description: Damn nature, you scary!
-}
-
 YoungDukeBuff: {
 	DisplayName: Baby Boomer
 	Description: The mutated fishron will intoxicate your foes
 }
 
-LiliesOfFinalityBuff: {
-	DisplayName: Finality
-	Description: Remember our promise
+// Misc
+PopoBuff: {
+	DisplayName: Popo
+	Description: You are a snowman now!
 }
 
-AuricRebuke: {
-	DisplayName: Auric Rebuke
-	Description: Your cells are violently bouncing off each other
-}
-
-SandsWindBuff: {
-	DisplayName: Sand's Wind
-	Description:
-		'''
-		You are strengthened by the powers of sand
-		Defense increased by 10, damage increased by 12%
-		'''
-}
-
-AeolianEarthBuff: {
-	DisplayName: Aeolian Earth
-	Description:
-		'''
-		You are strengthened by primordial powers
-		Damage reduction increased by 8%, damage increased by 18%
-		'''
+PopoNoselessBuff: {
+	DisplayName: Noseless Popo
+	Description: Your nose has been stolen!
 }

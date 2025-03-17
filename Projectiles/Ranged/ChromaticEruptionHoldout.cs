@@ -13,10 +13,11 @@ namespace CalamityMod.Projectiles.Ranged
     public class ChromaticEruptionHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<ChromaticEruption>();
-        public override float MaxOffsetLengthFromArm => 15f;
+        public override float MaxOffsetLengthFromArm => 40f;
         public override float OffsetXUpwards => -10f;
-        public override float BaseOffsetY => -5f;
+        public override float BaseOffsetY => -12f;
         public override float OffsetYDownwards => 10f;
+        public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.45f;
 
         public ref float ShotCooldown => ref Projectile.ai[0];
         public ref float ShotsFired => ref Projectile.ai[1];

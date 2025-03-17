@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Tools
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Tools
             {
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool(3) ? 16 : 127);
             }
-            if (Main.rand.NextBool(5) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(5) && !Main.dedServ)
             {
                 int smoke = Gore.NewGore(player.GetSource_ItemUse(Item), new Vector2(hitbox.X, hitbox.Y), default, Main.rand.Next(375, 378), 0.75f);
                 Main.gore[smoke].behindTiles = true;

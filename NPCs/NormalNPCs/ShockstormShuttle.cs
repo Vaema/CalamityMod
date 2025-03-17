@@ -17,8 +17,8 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 38;
             NPC.defense = 15;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 150;
+            NPC.lifeMax = 190;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.5f;
@@ -376,7 +376,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -393,7 +393,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle2").Type, 1f);
@@ -415,7 +415,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.AddIf(() => NPC.downedGolemBoss, ItemID.MartianConduitPlating, 1, 10, 30);
             npcLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 2);
-            npcLoot.Add(ModContent.ItemType<TheTransformer>(), 10);
             npcLoot.Add(ModContent.ItemType<OracleHeadphones>(), (DateTime.Now.Day == 21 && DateTime.Now.Month == 8) ? 9 : 20);
             var postML = npcLoot.DefineConditionalDropSet(() => NPC.downedMoonlord);
             postML.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<ExodiumCluster>(), 1, 8, 12, 11, 16));

@@ -1,7 +1,12 @@
 ﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Core.Utils;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,14 +17,22 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SamsaraSlicer";
 
-        private bool initialized = false;
-        private int Lifetime = 180;
-        private int ReboundTime = 45;
+        public float ReboundVelocity => 20;
+        public float StealthReboundVelocity => 30;
+        public float StealthPauseTime => 55;
+        public int ReboundTime => 20;
+
+        public int SmallDiskDamage => 8;
+        public int SmallDiskStealthDamage => 17;
+
+        public bool initialized = false;
+
+        Vector2 oldVelocity;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -27,180 +40,240 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = Projectile.height = 46;
             Projectile.ignoreWater = true;
             Projectile.friendly = true;
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 30;
             Projectile.penetrate = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.aiStyle = -1;
+            Projectile.ai[0] = -200;
+            Projectile.ai[2] = -200;
+        }
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            width = 20;
+            height = 20;
+
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
         public override void AI()
         {
-            Initialize();
-            BoomerangAI();
-            StealthStrikeAI();
-            SpawnProjectilesNearEnemies();
-            LightingandDust();
-        }
+            Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.5f, 0.03f));
 
-        private void Initialize()
-        {
-            if (initialized)
-                return;
-
-            Lifetime = Projectile.Calamity().stealthStrike ? 360 : 180;
-            ReboundTime = Projectile.Calamity().stealthStrike ? 90 : 45;
-            Projectile.timeLeft = Lifetime;
-            initialized = true;
-        }
-
-        private void BoomerangAI()
-        {
-            // Boomerang rotation
-            Projectile.rotation += 0.4f * Projectile.direction;
-
-            // Boomerang sound
-            if (Projectile.soundDelay == 0)
+            if (!initialized)
             {
-                Projectile.soundDelay = 8;
-                SoundEngine.PlaySound(SoundID.Item7, Projectile.position);
+                Projectile.ai[2] = -200;
+                Projectile.ai[0] = -200;
+                initialized = true;
             }
 
-            // Returns after some number of frames in the air
-            if (Projectile.timeLeft < Lifetime - ReboundTime)
-                Projectile.ai[0] = 1f;
+            Player player = Main.player[Projectile.owner];
 
-            if (Projectile.ai[0] == 1f)
+            // Main movement
+
+            if (Projectile.ai[0] < 0)
             {
-                //Ignore tiles and fly faster
-                Projectile.tileCollide = false;
-                Projectile.extraUpdates = 1;
+                Projectile.ai[1]++;
 
-                Player player = Main.player[Projectile.owner];
-                float returnSpeed = 16f;
-                float acceleration = 1.4f;
-                Vector2 playerVec = player.Center - Projectile.Center;
-                float dist = playerVec.Length();
-
-                // Delete the projectile if it's excessively far away.
-                if (dist > 3000f)
-                    Projectile.Kill();
-
-                playerVec.Normalize();
-                playerVec *= returnSpeed;
-
-                // Home back in on the player.
-                if (Projectile.velocity.X < playerVec.X)
+                if (Projectile.ai[1] > ReboundTime)
                 {
-                    Projectile.velocity.X += acceleration;
-                    if (Projectile.velocity.X < 0f && playerVec.X > 0f)
-                        Projectile.velocity.X += acceleration;
-                }
-                else if (Projectile.velocity.X > playerVec.X)
-                {
-                    Projectile.velocity.X -= acceleration;
-                    if (Projectile.velocity.X > 0f && playerVec.X < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < playerVec.Y)
-                {
-                    Projectile.velocity.Y += acceleration;
-                    if (Projectile.velocity.Y < 0f && playerVec.Y > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > playerVec.Y)
-                {
-                    Projectile.velocity.Y -= acceleration;
-                    if (Projectile.velocity.Y > 0f && playerVec.Y < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
+                    Projectile.tileCollide = false;
 
-                // Delete the projectile if it touches its owner.
-                if (Main.myPlayer == Projectile.owner)
-                    if (Projectile.Hitbox.Intersects(player.Hitbox))
-                        Projectile.Kill();
-            }
-        }
+                    float lerp = (float)(Projectile.ai[1] - ReboundTime) * 0.01f;
 
-        private void StealthStrikeAI()
-        {
-            if (!Projectile.Calamity().stealthStrike)
-                return;
+                    if (Projectile.Calamity().stealthStrike)
+                        lerp = (float)(Projectile.ai[1] - ReboundTime) * 0.005f;
 
-            if (Projectile.timeLeft % 8f == 0f && Main.myPlayer == Projectile.owner)
-            {
-                int disk = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.damage / 4, Projectile.knockBack / 4f, Projectile.owner, Projectile.identity, Main.rand.NextFloat(0.02f, 0.1f));
-                Main.projectile[disk].timeLeft *= 2;
-                Main.projectile[disk].aiStyle = -1;
-            }
-        }
+                    Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.DirectionTo(player.Center) * (Projectile.Calamity().stealthStrike ? StealthReboundVelocity : ReboundVelocity), lerp);
 
-        private void SpawnProjectilesNearEnemies()
-        {
-            if (!Projectile.friendly)
-                return;
-
-            const float maxDistance = 300f;
-            bool homeIn = false;
-
-            foreach (NPC npc in Main.ActiveNPCs)
-            {
-                if (npc.CanBeChasedBy(Projectile, false))
-                {
-                    float extraDistance = npc.width / 2 + npc.height / 2;
-
-                    bool canHit = true;
-                    if (extraDistance < maxDistance)
-                        canHit = Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1);
-
-                    if (Vector2.Distance(npc.Center, Projectile.Center) < maxDistance + extraDistance && canHit)
+                    if (Projectile.Distance(player.Center) < Projectile.velocity.Length() * 1.4f)
                     {
-                        homeIn = true;
-                        break;
-                    }
-                }
-            }
-
-            if (homeIn)
-            {
-                if (Main.player[Projectile.owner].miscCounter % 50 == 0)
-                {
-                    int splitProj = ModContent.ProjectileType<SamsaraSlicerSmallDisk>();
-                    if (Projectile.owner == Main.myPlayer)
-                    {
-                        float spread = 60f * 0.0174f;
-                        double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 6f;
-                        for (int i = 0; i < 6; i++)
+                        for (int i = 0; i < Main.projectile.Length; i++)
                         {
-                            Vector2 velocity = ((MathHelper.TwoPi * i / 6f) - MathHelper.PiOver2).ToRotationVector2() * 6f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+                            Projectile proj = Main.projectile[i];
+
+                            if (proj.type == ModContent.ProjectileType<SamsaraSlicerSmallDisk>())
+                            {
+                                if ((proj.ModProjectile as SamsaraSlicerSmallDisk).Parent == Projectile)
+                                {
+                                    (Main.projectile[i].ModProjectile as SamsaraSlicerSmallDisk).Parent = null;
+                                }
+                            }
                         }
+
+                        Projectile.Kill();
                     }
                 }
             }
-        }
 
-        private void LightingandDust()
-        {
-            Lighting.AddLight(Projectile.Center, 0f, 0.75f, 0f);
-            if (!Main.rand.NextBool(5))
-                return;
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.velocity.X, Projectile.velocity.Y);
+            // Frame pause
+
+            if (Projectile.ai[0] > -150) Projectile.ai[0]--;
+
+            if (Projectile.ai[0] == 0)
+            {
+                Projectile.velocity = oldVelocity;
+
+                SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot.WithPitchOffset(1f));
+
+
+                if (Projectile.Calamity().stealthStrike)
+                {
+                    SoundEngine.PlaySound(SoundID.Item122.WithPitchOffset(1f), Projectile.Center);
+
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, oldVelocity * MathHelper.Lerp(2f, 1f, (float)i / 3f) / 4, Color.LimeGreen, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.6f, 1f), oldVelocity.ToRotation(), 0.02f, 0.05f * i, 30));
+                    }
+
+                    for (int i = -10; i <= 20; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, new Vector2(i * 2, 0).RotatedBy(Projectile.velocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= 2; i++)
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, new Vector2(i == 1 ? 2 : 6, 0).RotatedBy(Projectile.velocity.ToRotation()), Color.LimeGreen, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Projectile.velocity.ToRotation(), 0.1f, 0.5f - (i * 0.1f), 20));
+                }
+
+                for (int i = 0; i <= 5; i++)
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-10f, 10f)).RotatedBy(Projectile.velocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
+            }
+
+            if (Projectile.ai[0] <= 0 && Projectile.ai[0] > -4)
+            {
+                Projectile.extraUpdates = 1;
+            }
+            else
+            {
+                Projectile.extraUpdates = 0;
+            }
+
+            Vector2 vel = Projectile.velocity;
+            if (Projectile.ai[0] > 0)
+            {
+                vel = new Vector2(18);
+            }
+
+            if (Projectile.ai[2] > -150)
+            {
+                Projectile.ai[2]--;
+            }
+
+            if (Projectile.ai[2] > 0)
+            {
+                if (Projectile.ai[2] % (Projectile.Calamity().stealthStrike ? 3 : 5) == 0)
+                {
+                    SoundEngine.PlaySound(SoundID.Item23.WithPitchOffset(MathHelper.Lerp(1f, 0f, Projectile.ai[2] / 30)).WithVolumeScale(0.8f));
+                }
+
+                for (int i = 0; i <= 2; i++)
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center + new Vector2(25, 0).RotatedBy(oldVelocity.ToRotation()), new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-10f, 10f)).RotatedBy(oldVelocity.ToRotation()), "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool() ? new Color(1f, 0.8f, 0.1f) : Color.LimeGreen, new Vector2(Main.rand.NextFloat(0.4f, 1f), 1f)));
+            }
+            
+            if (Projectile.ai[2] > -150)
+            {
+                if (Projectile.Calamity().stealthStrike)
+                {
+                    float SpawnVel = 15;
+
+                    float g = Main.rand.NextFloat(360f);
+
+                    if (!Main.dedServ)
+                    {
+                        Projectile proj = Projectile.NewProjectileDirect(new EntitySource_Parent(Projectile), Projectile.Center, new Vector2(SpawnVel, 0).RotatedBy(MathHelper.ToRadians(g)),
+                        ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.Calamity().stealthStrike ? SmallDiskStealthDamage : SmallDiskDamage, 1f, Projectile.owner, Projectile.whoAmI);
+                        (proj.ModProjectile as SamsaraSlicerSmallDisk).Parent = Projectile;
+                    }
+                }
+            }
+
+            if (Projectile.ai[2] == 0)
+            {
+                Projectile.localNPCHitCooldown = 30;
+            }
+
+            Projectile.rotation += MathHelper.ToRadians(vel.Length() * 1.5f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+
+            float rand = 0;
+            if (Projectile.ai[2] > 0)
+            {
+                rand = 4;
+            }
+
+            Vector2 randVec = new Vector2(Main.rand.NextFloat(-rand, rand), 0).RotatedBy(oldVelocity.ToRotation());
+
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), Color.White, Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+
+            if (Projectile.ai[2] < 0)
+            {
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], new Color(0f, 0.6f, 0f, 0f), 2, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value);
+            }
+            else
+            {
+                //Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+
+                Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            }
             return false;
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.velocity != Vector2.Zero)
+            {
+                if (Projectile.ai[0] <= -200)
+                    oldVelocity = Projectile.velocity * 1.5f;
+                else
+                    oldVelocity = Projectile.velocity;
+            }
+            Projectile.ai[1] = ReboundTime - 10;
+            Projectile.velocity = Vector2.Zero;
+            Projectile.ai[0] = 5;
+
+            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
+
+            if (Projectile.ai[2] == -200)
+            {
+                float lag = 20;
+                if (Projectile.Calamity().stealthStrike) lag = StealthPauseTime;
+
+                Projectile.ai[0] = lag;
+                Projectile.ai[2] = lag;
+
+                Projectile.localNPCHitCooldown = (int)lag;
+
+                float g = Main.rand.NextFloat(360f);
+
+                g -= 15f;
+
+                float SpawnVel = 15;
+                if (Projectile.Calamity().stealthStrike)
+                    SpawnVel = 20;
+
+                if (!Main.dedServ)
+                {
+                    for (float i = g; i < g + 360f; i += Projectile.Calamity().stealthStrike ? 45f : 90f)
+                    {
+                        Projectile proj = Projectile.NewProjectileDirect(new EntitySource_Parent(Projectile), Projectile.Center, new Vector2(SpawnVel, 0).RotatedBy(MathHelper.ToRadians(i)),
+                            ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.Calamity().stealthStrike ? SmallDiskStealthDamage : SmallDiskDamage, 1f, Projectile.owner, Projectile.whoAmI);
+                        (proj.ModProjectile as SamsaraSlicerSmallDisk).Parent = Projectile;
+                        proj.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
+                    }
+                }
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Return to the player after striking an enemy. Stealth strikes don't return immediately.
-            if (!Projectile.Calamity().stealthStrike || Projectile.ai[1] > 3)
-                Projectile.ai[0] = 1f;
-            Projectile.ai[1]++;
         }
 
         // Make it bounce on tiles.
@@ -218,7 +291,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.velocity.Y = -oldVelocity.Y;
             }
-            Projectile.ai[0] = 1f;
+
             return false;
         }
     }

@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.CanFishInLava[Item.type] = true;
+            ItemID.Sets.CanFishInLava[Type] = true;
         }
 
         public override void SetDefaults()
@@ -31,6 +31,11 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<DevourerofCodsBobber>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
+        }
+
+        public override void HoldItem(Player player)
+        {
+            player.accFishingLine = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

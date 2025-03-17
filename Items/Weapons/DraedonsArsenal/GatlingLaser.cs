@@ -6,7 +6,6 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -58,12 +57,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 3);
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<GatlingLaserProj>(), damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
-        }
-
         public override Vector2? HoldoutOffset() => new Vector2(-20, 0);
 
         public override void AddRecipes()
@@ -71,8 +64,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(15).
                 AddIngredient<DubiousPlating>(15).
-                AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
+                AddIngredient<InfectedArmorPlating>(10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

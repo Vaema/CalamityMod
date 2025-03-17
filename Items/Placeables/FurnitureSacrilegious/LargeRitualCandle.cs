@@ -10,21 +10,13 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 50;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<LargeRitualCandleTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<LargeRitualCandleTile>());
+            Item.value = Item.sellPrice(copper: 60);
         }
 
         public override bool AltFunctionUse(Player player) => true;

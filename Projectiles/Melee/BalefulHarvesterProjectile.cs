@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -91,13 +92,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int j = 0; j < 2; j++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X + 4f, Projectile.position.Y + 4f), Projectile.width - 8, Projectile.height - 8, Main.rand.NextBool() ? 5 : 6, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 2f);
-                    Main.dust[dust].position -= Projectile.velocity * 2f;
-                    Main.dust[dust].noGravity = true;
-                    Dust expr_7A4A_cp_0_cp_0 = Main.dust[dust];
-                    expr_7A4A_cp_0_cp_0.velocity.X *= 0.3f;
-                    Dust expr_7A65_cp_0_cp_0 = Main.dust[dust];
-                    expr_7A65_cp_0_cp_0.velocity.Y *= 0.3f;
+                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X + 4f, Projectile.position.Y + 4f), Projectile.width - 8, Projectile.height - 8, Main.rand.NextBool() ? 5 : 6, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 2f);
+                    dust.position -= Projectile.velocity * 2f;
+                    dust.noGravity = true;
+                    dust.velocity *= 0.3f;
                 }
 
                 return;
@@ -106,23 +104,20 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Kill();
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(200, 200, 200, Main.rand.Next(0, 128));
-        }
+        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Main.rand.Next(0, 128));
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            for (int j = 0; j < 5; j++)
+            for (int j = 0; j < 3; j++)
             {
-                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.25f);
                 Main.dust[deathDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -130,12 +125,12 @@ namespace CalamityMod.Projectiles.Melee
                     Main.dust[deathDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int k = 0; k < 10; k++)
+            for (int k = 0; k < 5; k++)
             {
-                int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2.5f);
                 Main.dust[deathDust2].noGravity = true;
                 Main.dust[deathDust2].velocity *= 5f;
-                deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1.5f);
                 Main.dust[deathDust2].velocity *= 2f;
             }
         }

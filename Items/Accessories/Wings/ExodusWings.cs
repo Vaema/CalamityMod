@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Armor.Empyrean;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -11,30 +13,30 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class ExodusWings : ModItem, ILocalizedModType
+    public class ExodusWings : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
+        public override float BonusAscentWhileFalling => 0.85f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 3f;
+        public override float BaseAscent => 0.135f;
 
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 9f, 2.5f);
-        }
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 9f, 2.5f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (player.armor[0].type == ModContent.ItemType<EmpyreanMask>() && player.armor[1].type == ModContent.ItemType<EmpyreanCloak>() && player.armor[2].type == ModContent.ItemType<EmpyreanCuisses>())
             {
-                player.GetDamage<ThrowingDamageClass>() += 0.05f;
-                player.GetCritChance<ThrowingDamageClass>() += 5;
+                player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
             }
 
             if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
@@ -50,8 +52,10 @@ namespace CalamityMod.Items.Accessories.Wings
                 
                 if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
                 {
-                    Particle spark3 = new GlowOrbParticle(spawnPos, partVel, false, 19, partScale, Color.LightGreen, true, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark3);
+                    Dust dust = Dust.NewDustPerfect(spawnPos, ModContent.DustType<VoidDustInverted>(), partVel, 0, default, partScale * 2f);
+                    dust.noGravity = true;
+                    dust.color = Color.LightGreen;
+
                 }
                 if (Main.rand.NextBool())
                 {
@@ -60,23 +64,15 @@ namespace CalamityMod.Items.Accessories.Wings
 
                     if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
                     {
-                        Particle spark3 = new GlowOrbParticle(spawnPos2, partVel, false, 19, partScale * 0.7f, Color.LightGreen, true, false, false);
-                        GeneralParticleHandler.SpawnParticle(spark3);
+                        Dust dust = Dust.NewDustPerfect(spawnPos2, ModContent.DustType<VoidDustInverted>(), partVel, 0, default, partScale * 1.7f);
+                        dust.noGravity = true;
+                        dust.color = Color.LightGreen;
                     }
                 }
 
             }
             player.wingTimeMax = 180;
             player.noFallDmg = true;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.85f;
-            ascentWhenRising = 0.15f;
-            maxCanAscendMultiplier = 1f;
-            maxAscentMultiplier = 3f;
-            constantAscend = 0.135f;
         }
 
         public override void AddRecipes()

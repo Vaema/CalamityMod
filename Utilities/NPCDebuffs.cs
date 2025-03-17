@@ -35,6 +35,7 @@ using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -98,14 +99,10 @@ namespace CalamityMod
             // PART 2: Specific other cases that can't be neatly fit into the database
             //
 
-            // All bosses and several enemies are automatically immune to Pearl Aura.
-            if (CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss)
-                NPCID.Sets.SpecificDebuffImmunity[npc.type][ModContent.BuffType<PearlAura>()] = true;
-
             // Make all Cal NPCs immune to confused unless otherwise specified
             // Extra note: Clams are not in this list as they initially immune to Confused, but are no longer immune once aggro'd. This is set in their AI().
             bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(ModContent.GetInstance<CalamityMod>().Name);
-            if (!CalamityLists.confusionEnemyList.Contains(npc.type) && cal)
+            if (!ConfusionDebuffImmunitiesList.Includes(npc.type) && cal)
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 
             // Sets certain vanilla NPCs and all town NPCs to be immune to most debuffs.
@@ -144,9 +141,10 @@ namespace CalamityMod
         private static readonly int[] sunkenSeaEnemyImmunities = new int[2] { ModContent.BuffType<Eutrophication>(), ModContent.BuffType<PearlAura>() };
         private static readonly int[] abyssEnemyImmunities = new int[2] { ModContent.BuffType<CrushDepth>(), ModContent.BuffType<RiptideDebuff>() };
         private static readonly int[] cragEnemyImmunities = new int[3] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>() };
+        private static readonly int[] scalImmunities = new int[5] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<VulnerabilityHex>(), ModContent.BuffType<TrueVulnerabilityHex>() };
         private static readonly int[] astralEnemyImmunities = new int[2] { BuffID.Poisoned, ModContent.BuffType<AstralInfectionDebuff>() };
         private static readonly int[] plagueEnemyImmunities = new int[3] { BuffID.Poisoned, BuffID.Venom, ModContent.BuffType<Plague>() };
-        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), ModContent.BuffType<Nightwither>() };
+        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), BuffID.Daybreak };
         #endregion
 
         #region Load/Unload
@@ -164,6 +162,7 @@ namespace CalamityMod
             Tuple<GeneralImmunityStatus, int[]> sunkenSea = new(GeneralImmunityStatus.None, sunkenSeaEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> abyss = new(GeneralImmunityStatus.None, abyssEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> crags = new(GeneralImmunityStatus.None, cragEnemyImmunities);
+            Tuple<GeneralImmunityStatus, int[]> scal = new(GeneralImmunityStatus.None, scalImmunities);
             Tuple<GeneralImmunityStatus, int[]> astral = new(GeneralImmunityStatus.None, astralEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> plague = new(GeneralImmunityStatus.None, plagueEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> holy = new(GeneralImmunityStatus.None, holyEnemyImmunities);
@@ -252,6 +251,7 @@ namespace CalamityMod
 
                 { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
                 { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<WildBumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
 
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
@@ -269,7 +269,7 @@ namespace CalamityMod
                 { ModContent.NPCType<CosmicLantern>(), immuneToEverything },
                 { ModContent.NPCType<CosmicMine>(), immuneToEverything },
 
-                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<WhisperingDeath>() }) },
+                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<Voidfrost>(), ModContent.BuffType<WhisperingDeath>() }) },
                 { ModContent.NPCType<PolterPhantom>(), immuneToEverything },
                 { ModContent.NPCType<PhantomFuckYou>(), immuneToEverything },
                 { ModContent.NPCType<PolterghastHook>(), immuneToEverything },
@@ -292,11 +292,11 @@ namespace CalamityMod
                 { ModContent.NPCType<ThanatosBody2>(), immuneToEverything },
                 { ModContent.NPCType<ThanatosTail>(), immuneToEverything },
 
-                { ModContent.NPCType<SupremeCalamitas>(), crags },
-                { ModContent.NPCType<SupremeCatastrophe>(), crags },
-                { ModContent.NPCType<SupremeCataclysm>(), crags },
-                { ModContent.NPCType<SoulSeekerSupreme>(), crags },
-                { ModContent.NPCType<BrimstoneHeart>(), crags },
+                { ModContent.NPCType<SupremeCalamitas>(), scal },
+                { ModContent.NPCType<SupremeCatastrophe>(), scal },
+                { ModContent.NPCType<SupremeCataclysm>(), scal },
+                { ModContent.NPCType<SoulSeekerSupreme>(), scal },
+                { ModContent.NPCType<BrimstoneHeart>(), scal },
                 { ModContent.NPCType<SepulcherHead>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBody>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBodyEnergyBall>(), immuneToEverything },
@@ -332,17 +332,13 @@ namespace CalamityMod
                 { ModContent.NPCType<MicrobialCluster>(), sulphur },
                 { ModContent.NPCType<Trasher>(), sulphur },
 
-                { ModContent.NPCType<BlindedAngler>(), sunkenSea },
                 { ModContent.NPCType<Clam>(), sunkenSea },
                 { ModContent.NPCType<EutrophicRay>(), sunkenSea },
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
                 { ModContent.NPCType<GiantClam>(), sunkenSea },
                 { ModContent.NPCType<PrismBack>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent1>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent2>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent3>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent4>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent5>(), sunkenSea },
+                { ModContent.NPCType<SandProwler>(), sunkenSea },
+                { ModContent.NPCType<SandProwlerNested>(), sunkenSea },
 
                 { ModContent.NPCType<BabyCannonballJellyfish>(), abyss },
                 { ModContent.NPCType<CannonballJellyfish>(), abyss },
@@ -418,10 +414,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
-                { ModContent.NPCType<SeaUrchin>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
 
-                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<CloudElemental>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<CrimulanBlightSlime>(), slime },
                 { ModContent.NPCType<EbonianBlightSlime>(), slime },

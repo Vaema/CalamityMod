@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SarosPossession : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 8f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 56;
@@ -21,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<SarosAura>();
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.DD2_BetsyFlameBreath;

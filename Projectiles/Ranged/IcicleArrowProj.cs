@@ -75,8 +75,8 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.ExpandHitboxBy(50);
                     setFallingStats = true;
                 }
-                if (Projectile.Calamity().allProjectilesHome)
-                    Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
+                if (Projectile.Calamity().conditionalHomingRange > 0f)
+                    Projectile.Calamity().conditionalHomingRange = 0f; // Prevent the icicle effect from breaking with Arterial Assault
 
                 if (targetDist < 1400f)
                 {
@@ -101,8 +101,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
-            if (Projectile.Calamity().allProjectilesHome)
-                Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
+            if (Projectile.Calamity().conditionalHomingRange > 0f)
+                Projectile.Calamity().conditionalHomingRange = 0f; // Prevent the icicle effect from breaking with Arterial Assault
             if (!falling)
             {
                 Projectile.localAI[0] = 100;

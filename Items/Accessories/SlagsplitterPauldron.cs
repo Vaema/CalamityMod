@@ -1,6 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Accessories
     public class SlagsplitterPauldron : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-
+        public static int PauldronSlamDamage = 170;
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
             AddIngredient<ScorchedBone>(12).
-            AddIngredient<DemonicBoneAsh>(3).
+            AddIngredient<AncientBoneDust>(4).
             AddIngredient<EssenceofHavoc>(8).
             AddTile(TileID.Anvils).
             Register();

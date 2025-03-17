@@ -18,14 +18,15 @@ namespace CalamityMod.Projectiles.Ranged
         public bool PostDashShot => Projectile.ai[1] == 2f; // the higher velocity post dash shots
         public Color MainColor;
         public bool PostHit = false;
+        public int time = 0;
 
         public static readonly SoundStyle ShotImpact = new("CalamityMod/Sounds/Item/SplatshotImpact") { PitchVariance = 0.3f, Volume = 2.5f };
         public static readonly SoundStyle ShotImpactBig = new("CalamityMod/Sounds/Item/SplatshotBigImpact") { PitchVariance = 0.3f, Volume = 4f };
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -86,10 +87,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (!PostHit)
+            if (!PostHit && time > (PostDashShot ? 35 : 25))
             {
-                Projectile.velocity *= (DashShot ? 1f : PostDashShot ? 0.985f : 0.97f);
-                Projectile.velocity.Y += (DashShot ? 0f : PostDashShot ? 0.15f : 0.25f);
+                Projectile.velocity *= (DashShot ? 1f : 0.945f);
+                Projectile.velocity.Y += (DashShot ? 0f : 0.6f);
             }
             Color ColorUsed = GetColor(Projectile.ai[0]);
 
@@ -109,13 +110,18 @@ namespace CalamityMod.Projectiles.Ranged
                 float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
                 if (targetDist < 1400f)
                 {
-                    GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 15, 1.35f, MainColor, true, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    //GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 15, 1.35f, MainColor, true, false, false);
+                    //GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (targetDist < 1400f && Main.rand.NextBool())
                 {
-                    GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2f, 2f), -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 15, 1.35f, MainColor, true, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    //GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2f, 2f), -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 15, 1.35f, MainColor, true, false, false);
+                    //GeneralParticleHandler.SpawnParticle(spark);
+                }
+                if (targetDist < 1400)
+                {
+                    Particle spark2 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.01f, "CalamityMod/Particles/SmallBloom", false, 11, 0.15f, MainColor, new Vector2(0.7f, 1.1f), false, false, 0, false, false, 0.65f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
                 }
 
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, 192);
@@ -150,7 +156,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.noLight = true;
                 }
             }
-
+            time++;
         }
         public override bool? CanHitNPC(NPC target) => !PostHit ? null : false;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

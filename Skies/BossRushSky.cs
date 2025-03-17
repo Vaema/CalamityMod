@@ -33,14 +33,6 @@ namespace CalamityMod.Skies
                     SkyManager.Instance.Deactivate("CalamityMod:BossRush", new object[0]);
             }
 
-            if (useEffect != Filters.Scene["CalamityMod:BossRush"].IsActive())
-            {
-                if (useEffect)
-                    Filters.Scene.Activate("CalamityMod:BossRush");
-                else
-                    Filters.Scene["CalamityMod:BossRush"].Deactivate(new object[0]);
-            }
-
             return useEffect;
         }
 
@@ -67,7 +59,7 @@ namespace CalamityMod.Skies
         private float GetIntensity()
         {
             if (ShouldDrawRegularly || Main.LocalPlayer?.Calamity().monolithBossRushShader > 0)
-                return 1f;
+                return 0.57f;
 
             float fadeRatio = BossRushEvent.StartTimer / (float)BossRushEvent.StartEffectTotalTime;
             return Utils.GetLerpValue(0.57f, 1f, fadeRatio, true);

@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 vector = Projectile.Center - Main.screenPosition;
-            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle rectangle = asset.Frame(1, 4);
             Vector2 origin = rectangle.Size() / 2f;
             float num = Projectile.scale * 1.1f;

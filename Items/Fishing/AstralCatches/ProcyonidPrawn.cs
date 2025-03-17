@@ -10,15 +10,15 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 26;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 5);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 15);
             Item.rare = ItemRarityID.Blue;
         }
 

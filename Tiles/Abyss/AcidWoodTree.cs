@@ -1,7 +1,8 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs.AcidRain;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -113,6 +114,11 @@ namespace CalamityMod.Tiles.Abyss
                     type = ModContent.ItemType<CorrodedFossil>();
                 if (type != -1)
                     Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);
+            }
+            else if (Main.rand.NextBool(3))
+            {
+                int fruitType = Main.rand.NextBool() ? ModContent.ItemType<Jackfruit>() : ModContent.ItemType<Salak>();
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
             }
             return false;
         }

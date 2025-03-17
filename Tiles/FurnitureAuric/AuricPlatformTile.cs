@@ -45,6 +45,8 @@ namespace CalamityMod.Tiles.FurnitureAuric
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
             int xPos = tile.TileFrameX;
             int yPos = tile.TileFrameY;
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);

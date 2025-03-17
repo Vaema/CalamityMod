@@ -35,11 +35,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int i = 0; i < 2; i++)
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, (i == 0f).ToDirectionInt());
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, (i == 0f).ToDirectionInt());
 
             // Create a third, final whip that does not swing around at all and instead simply flies towards the mouse.
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
+            return true;
         }
     }
 }

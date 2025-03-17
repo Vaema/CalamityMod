@@ -19,13 +19,15 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float LanternSummonCost = 2f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 60;
             Item.damage = 127;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
@@ -55,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
 
                 int existingLamps = player.ownedProjectileCounts[type];
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                 {
                     Main.projectile[p].originalDamage = Item.damage;

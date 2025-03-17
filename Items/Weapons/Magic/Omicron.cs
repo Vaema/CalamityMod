@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 82;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 8;
-            Item.useTime = Item.useAnimation = 4;
+            Item.useAnimation = Item.useTime = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
@@ -53,13 +53,14 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             for (int i = 0; i < 2; i++)
             {
                 Projectile holdout2 = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<OmicronWingman>(), damage, knockback, player.whoAmI, 0, 0, i == 0 ? 1 : -1);
                 holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             }
 
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<OmicronHoldout>(), damage, knockback, player.whoAmI, 0, 0, 0);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<OmicronHoldout>(), damage, knockback, player.whoAmI);
             holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 
             return false;
@@ -69,8 +70,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<Genesis>().
                 AddIngredient<Wingman>().
-                AddIngredient<GalacticaSingularity>(5).
                 AddIngredient<CosmiliteBar>(10).
+                AddIngredient<GalacticaSingularity>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }

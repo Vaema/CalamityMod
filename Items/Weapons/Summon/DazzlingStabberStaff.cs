@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +15,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.width = 54;
-            Item.height = 52;
+            Item.width = 56;
+            Item.height = 60;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.DD2_DarkMageHealImpact;
@@ -23,36 +25,42 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 127;
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.shoot = ModContent.ProjectileType<DazzlingStabber>();
             Item.shootSpeed = 13f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
-
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/DazzlingStabberStaffGlow").Value);
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+                for (int i = 0; i < 3; i++)
+                {
+                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
+                    if (Main.projectile.IndexInRange(p))
+                        Main.projectile[p].originalDamage = Item.damage;
+                }
             }
-            float angleMax = MathHelper.ToRadians(45f);
-            if (CalamityUtils.CountProjectiles(type) == 1)
+            float angleMax = MathHelper.ToRadians(360f);
+            if (CalamityUtils.CountOwnedProjectiles(type, player.whoAmI) == 1)
                 angleMax = 0f;
             float index = 1f;
-            if (player.ownedProjectileCounts[Item.shoot] > 8)
+            if (player.ownedProjectileCounts[Item.shoot] > 30)
             {
-                angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 8) * 2.5f);
+                angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 30) * 2.5f);
             }
-            angleMax = angleMax > MathHelper.ToRadians(105f) ? MathHelper.ToRadians(105f) : angleMax; // More intuative than using a min function
+            angleMax = angleMax > MathHelper.ToRadians(360f) ? MathHelper.ToRadians(360f) : angleMax; // More intuitive than using a min function
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type == type && p.owner == player.whoAmI)
                 {
-                    p.ai[1] = (index / CalamityUtils.CountProjectiles(type)) * angleMax - angleMax / 2f;
+                    p.ai[1] = (index / CalamityUtils.CountOwnedProjectiles(type, player.whoAmI)) * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;
                 }

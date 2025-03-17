@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 mouse = Owner.Calamity().mouseWorld;
 
             Time++;
@@ -31,7 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Owner.PickAmmo(Owner.ActiveItem(), out _, out float speed, out int damage, out float knockback, out int usedItemAmmoId);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed * 1.5f, ModContent.ProjectileType<MineralMortarProjectile>(), damage, knockback, Projectile.owner, usedItemAmmoId);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed * 1.5f, ModContent.ProjectileType<MineralMortarProjectile>(), damage, knockback, Projectile.owner, usedItemAmmoId);
 
                 // Doesn't sync this to the server, it's just effects.
                 if (!Main.dedServ)
@@ -70,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             float rotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 origin = texture.Size() * 0.5f;

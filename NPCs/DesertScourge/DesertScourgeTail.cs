@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
+    [LongDistanceNetSync(SyncWith = typeof(DesertScourgeHead))]
     public class DesertScourgeTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DesertScourgeHead.DisplayName");
@@ -27,7 +28,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 9;
             NPC.DR_NERD(0.1f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1400000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
@@ -81,6 +82,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
+            NPC.canDisplayBuffs = Main.npc[(int)NPC.ai[1]].canDisplayBuffs;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -216,7 +218,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= 30f * NPC.scale && NPC.alpha <= 0;
+            return minDist <= 20f * NPC.scale && NPC.alpha <= 0;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -226,7 +228,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeTail").Type, NPC.scale);
 
                 for (int k = 0; k < 10; k++)

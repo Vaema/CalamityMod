@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Reflection.Metadata;
-using Microsoft.Xna.Framework.Graphics;
-using System.Diagnostics.Contracts;
-using Terraria.GameContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -38,6 +30,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 15;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
@@ -136,11 +129,8 @@ namespace CalamityMod.Projectiles.Melee
                 if (dist <= radius)
                 {
                     int damage = (int)(Projectile.damage * ExplosionDamageMultiplier);
-                    bool crit = Main.rand.Next(100) <= owner.GetCritChance<MeleeDamageClass>() + 4;
-                    target.StrikeNPC(target.CalculateHitInfo(damage, 0, crit, 0));
-
-                    if (Main.netMode != NetmodeID.SinglePlayer)
-                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, target.whoAmI, damage, 0f, 0f, crit ? 1 : 0, 0, 0);
+                    Projectile something = Projectile.NewProjectileDirect(owner.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, owner.whoAmI, target.whoAmI);
+                    something.DamageType = DamageClass.Melee;
                 }
             }
         }

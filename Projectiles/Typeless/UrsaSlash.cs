@@ -87,9 +87,9 @@ namespace CalamityMod.Projectiles.Typeless
                 if (visible)
                 {
                     SoundStyle sound = new("CalamityMod/Sounds/Item/AstralSlash", 3);
-                    SoundEngine.PlaySound(sound with { Volume = 0.65f }, Projectile.Center);
+                    SoundEngine.PlaySound(sound with { Volume = 0.45f }, Projectile.Center);
                     SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
-                    SoundEngine.PlaySound(sound2 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.4f, 0.5f) }, Projectile.Center);
+                    SoundEngine.PlaySound(sound2 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.4f, 0.5f) }, Projectile.Center);
                 }
             }
             visuals = false;

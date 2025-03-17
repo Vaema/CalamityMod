@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 114;
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<PowerfulRaven>();
             Item.shootSpeed = 13f;
 
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

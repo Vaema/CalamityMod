@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.FishingRods
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Fishing.FishingRods
     public class VerstaltiteFishingRod : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
+
+        public static float FishingPowerBiomeMult = 1.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FishingPowerBiomeMult.ToString());
+
         public override void SetDefaults()
         {
             Item.width = 24;

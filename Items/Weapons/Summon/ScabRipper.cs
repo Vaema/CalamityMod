@@ -10,13 +10,16 @@ namespace CalamityMod.Items.Weapons.Summon
     public class ScabRipper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => Item.staff[Type] = true;
+
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 70;
             Item.damage = 16;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
@@ -25,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item83;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BabyBloodCrawler>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
             // This doesn't do anything, it's just so the item is held like a staff.
@@ -36,10 +38,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

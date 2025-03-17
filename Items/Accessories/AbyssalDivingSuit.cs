@@ -10,10 +10,14 @@ namespace CalamityMod.Items.Accessories
     public class AbyssalDivingSuit : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static double PlatesAllDamageReduction = 0.15D;
+        public static double PlatesHitDecay = 0.03D;
+
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Add equip textures
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Head}", EquipType.Head, this);
@@ -30,7 +34,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
                 int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);

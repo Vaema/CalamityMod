@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 25f);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                     Projectile.Center,
                     velocity,
                     ModContent.ProjectileType<IceClasperSummonProjectile>(),
@@ -154,13 +154,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
-
+        public void SyncVariables() => Projectile.ForceNetUpdate(false);
         #endregion
 
         public override void OnSpawn(IEntitySource source)
@@ -185,11 +179,11 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => (State == AIState.Ram) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Ram;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
@@ -199,7 +193,7 @@ namespace CalamityMod.Projectiles.Summon
             AfterimageInterpolant = MathHelper.Clamp(AfterimageInterpolant, 0f, 1f);
             float AfterimageFade = MathHelper.Lerp(0f, 1f, AfterimageInterpolant);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

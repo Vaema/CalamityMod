@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -40,21 +40,16 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, NPCID.Plantera);
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, NPCID.Plantera);
-
+            CalamityUtils.SpawnBossUsingItem(player, NPCID.Plantera, SoundID.Roar);
             return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<VernalSoil>(20).
                 AddIngredient(ItemID.JungleSpores, 15).
-                AddIngredient<MurkyPaste>(3).
-                AddIngredient<TrapperBulb>().
+                AddIngredient<EssenceofSunlight>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

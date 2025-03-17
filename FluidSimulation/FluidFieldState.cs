@@ -26,7 +26,7 @@ namespace CalamityMod.FluidSimulation
 
         public FluidFieldState(int size, SurfaceFormat fieldContents = SurfaceFormat.Color)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Size = size;

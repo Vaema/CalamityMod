@@ -14,18 +14,6 @@ namespace CalamityMod.Items.Placeables.Walls
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicSandWallSafe>();
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 12;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 7;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createWall = ModContent.WallType<WallTiles.EutrophicSandWall>();
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.EutrophicSandWall>());
     }
 }

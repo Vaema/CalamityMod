@@ -78,9 +78,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.LargeRuby).
                 AddIngredient<MysteriousCircuitry>(15).
                 AddIngredient<DubiousPlating>(25).
-                AddIngredient<GalacticaSingularity>(5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
+                AddIngredient<GalacticaSingularity>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }

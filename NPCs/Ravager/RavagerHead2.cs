@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.Ravager
             bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
             if (fireProjectiles && Vector2.Distance(NPC.Center, player.Center) > 80f)
             {
-                int type = ModContent.ProjectileType<ScavengerLaser>();
+                int type = ModContent.ProjectileType<HomingLaserDart>();
                 int damage = NPC.GetProjectileDamage(type);
                 float projectileVelocity = death ? 8f : 6f;
 
@@ -198,7 +198,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerHead").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerHead2").Type, 1f);

@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -59,14 +59,15 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        // Deal bonus flat damage on hit.
-        // This is a flat addition to the source damage of the hit, meaning the following:
-        // - The bonus damage is pre-mitigation
+        // This bullet increases the base damage of its hits by 6.
+        // While this is a "flat" addition of a fixed value, it is NOT SourceDamage.Flat, so it is not actually "flat bonus damage".
+        // - The bonus base damage is pre-mitigation
+        // - Damage boosts and multipliers apply to the bonus base damage. THIS INCLUDES PLAYER STATS.
+        //   -> THIS IS INTENTIONAL because ammo item base damage scales with ranged damage anyway.
         // - The bonus damage transfers to on-hit effects, if any
-        // - It is applied in a different way than whip tag bonus damage, preventing interference
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage.Flat += HallowPointRound.BonusDamageOnHit;
+            modifiers.SourceDamage.Base += HallowPointRound.BonusDamageOnHit;
         }
 
         // On impact, make impact sparkle and play a sound.

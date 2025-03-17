@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             counter++;
             if (counter == 10)
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X * 0.8f, velocity.Y * 0.8f, ModContent.ProjectileType<SputterCometBig>(), (int)(damage * 1.5f), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity * 0.8f, ModContent.ProjectileType<SputterCometBig>(), (int)(damage * 1.5f), knockback, player.whoAmI);
             }
             if (counter >= 12)
                 counter = 0;

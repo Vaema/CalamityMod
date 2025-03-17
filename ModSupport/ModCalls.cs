@@ -7,6 +7,7 @@ using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;
@@ -670,6 +671,24 @@ namespace CalamityMod
                 p.Calamity().externalAbyssLight += add;
         }
 
+        public static void AddBreathLossMult(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalBreathLossMultBoost += add;
+        }
+
+        public static void AddBreathTick(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalBreathTickBoost += add;
+        }
+
+        public static void AddFlightTimeMult(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalFlightTimeMultBoost += add;
+        }
+
         public static void ToggleInfiniteFlight(Player p, bool enabled)
         {
             if (p != null)
@@ -692,17 +711,18 @@ namespace CalamityMod
                 p.Calamity().WearingPostMLSummonerSet = enabled;
         }
 
-        public static bool MakeColdImmune(Player p) => p is null ? false : (p.Calamity().externalColdImmunity = true);
-        public static bool MakeHeatImmune(Player p) => p is null ? false : (p.Calamity().externalHeatImmunity = true);
+        public static bool SetPlayerColdImmune(Player p, bool cold) => p is not null && (p.Calamity().externalColdImmunity = cold);
+        public static bool SetPlayerHeatImmune(Player p, bool heat) => p is not null && (p.Calamity().externalHeatImmunity = heat);
+        public static bool SetPlayerDefenseDamageImmune(Player p, bool dd) => p is not null && (p.Calamity().externalDefenseDamageImmunity = dd);
         #endregion
 
         #region NPC Damage Reduction
         // Sets the damage reduction for an NPC type
         public static float SetDamageReduction(int npcID, float dr)
         {
-            CalamityMod.DRValues.TryGetValue(npcID, out float oldDR);
-            CalamityMod.DRValues.Remove(npcID);
-            CalamityMod.DRValues.Add(npcID, dr);
+            CalamityGlobalNPC.DRValues.TryGetValue(npcID, out float oldDR);
+            CalamityGlobalNPC.DRValues.Remove(npcID);
+            CalamityGlobalNPC.DRValues.Add(npcID, dr);
             return oldDR;
         }
         // Sets a specific NPC's damage reduction
@@ -895,43 +915,43 @@ namespace CalamityMod
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
-            if (shouldBeListed && !CalamityLists.amalgamBuffList.Contains(type))
+            if (shouldBeListed && !AmalgamBuffList.Includes(type))
             {
-                CalamityLists.amalgamBuffList.Add(type);
+                AmalgamBuffList.List.Add(type);
                 return true;
             }
             else if (!shouldBeListed)
             {
-                return CalamityLists.amalgamBuffList.Remove(type);
+                return AmalgamBuffList.List.Remove(type);
             }
 
             return false;
         }
         public static bool SetPersistentBuffList(int type, bool isPersistent)
         {
-            if (isPersistent && !CalamityLists.persistentBuffList.Contains(type))
+            if (isPersistent && !PersistentBuffList.Includes(type))
             {
-                CalamityLists.persistentBuffList.Add(type);
+                PersistentBuffList.List.Add(type);
                 return true;
             }
             else if (!isPersistent)
             {
-                return CalamityLists.persistentBuffList.Remove(type);
+                return PersistentBuffList.List.Remove(type);
             }
 
             return false;
         }
 
-        public static bool IsOnAmalgamBuffList(int type) => CalamityLists.amalgamBuffList.Contains(type);
-        public static bool IsOnPersistentBuffList(int type) => CalamityLists.persistentBuffList.Contains(type);
+        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.Includes(type);
+        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.Includes(type);
         #endregion
 
         #region Venerated Locket Bans
         public static bool AddToVeneratedLocketBanlist(int type)
         {
-            if (!CalamityLists.VeneratedLocketBanlist.Contains(type))
+            if (!VeneratedLocketBanList.Includes(type))
             {
-                CalamityLists.VeneratedLocketBanlist.Add(type);
+                VeneratedLocketBanList.List.Add(type);
                 return true;
             }
             return false;
@@ -941,35 +961,35 @@ namespace CalamityMod
         #region Summoner Cross Class Nerf Disabling
         public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfMinions.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfMinionList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfMinions.Add(type);
+                DisabledSummonerNerfMinionList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfMinions.Remove(type);
+                return DisabledSummonerNerfMinionList.List.Remove(type);
             }
 
             return false;
         }
         public static bool SetSummonerNerfDisabledByItem(int type, bool disableNerf)
         {
-            if (disableNerf && !CalamityLists.DisabledSummonerNerfItems.Contains(type))
+            if (disableNerf && !DisabledSummonerNerfItemList.Includes(type))
             {
-                CalamityLists.DisabledSummonerNerfItems.Add(type);
+                DisabledSummonerNerfItemList.List.Add(type);
                 return true;
             }
             else if (!disableNerf)
             {
-                return CalamityLists.DisabledSummonerNerfItems.Remove(type);
+                return DisabledSummonerNerfItemList.List.Remove(type);
             }
 
             return false;
         }
 
-        public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityLists.DisabledSummonerNerfMinions.Contains(type);
-        public static bool GetSummonerNerfDisabledByItem(int type) => CalamityLists.DisabledSummonerNerfItems.Contains(type);
+        public static bool GetSummonerNerfDisabledByMinion(int type) => DisabledSummonerNerfMinionList.Includes(type);
+        public static bool GetSummonerNerfDisabledByItem(int type) => DisabledSummonerNerfItemList.Includes(type);
         #endregion
 
         #region Debuff Display support
@@ -1057,9 +1077,9 @@ namespace CalamityMod
         //This is to add minions to the hp scaling config
         public static bool AddToHPScaling(int type)
         {
-            if (!CalamityLists.bossHPScaleList.Contains(type))
+            if (!BossHPScalingList.List.Contains(type))
             {
-                CalamityLists.bossHPScaleList.Add(type);
+                BossHPScalingList.List.Add(type);
                 return true;
             }
             return false;
@@ -1222,7 +1242,6 @@ namespace CalamityMod
                         return null;
                     }
 
-
                 case "GetLight":
                 case "GetLightLevel":
                 case "GetLightStrength":
@@ -1250,6 +1269,51 @@ namespace CalamityMod
                     if (!isValidPlayerArg(args[1]))
                         return new ArgumentException("ERROR: The first argument to \"AddLightStrength\" must be a Player or an int.");
                     AddAbyssLightStrength(castPlayer(args[1]), light);
+                    return null;
+
+                case "BreathMult":
+                case "BreathLossMult":
+                case "AddBreathMult":
+                case "AddBreathLossMult":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and breath loss mult change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify breath loss mult change as a float.");
+                    if (!(args[2] is float breathLossMult))
+                        return new ArgumentException("ERROR: The second argument to \"AddBreathLossMult\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddBreathLossMult\" must be a Player or an int.");
+                    AddBreathLossMult(castPlayer(args[1]), breathLossMult);
+                    return null;
+
+                case "BreathTick":
+                case "AbyssBreathTick":
+                case "AddBreathTick":
+                case "AddAbyssBreathTick":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and Abyss breath tick change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify Abyss breath tick change as a float.");
+                    if (!(args[2] is float breathTick))
+                        return new ArgumentException("ERROR: The second argument to \"AddBreathTick\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddBreathTick\" must be a Player or an int.");
+                    AddBreathTick(castPlayer(args[1]), breathTick);
+                    return null;
+
+                case "FlightMult":
+                case "FlightTimeMult":
+                case "AddFlightMult":
+                case "AddFlightTimeMult":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and flight mult change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify flight mult change as a float.");
+                    if (!(args[2] is float flightMult))
+                        return new ArgumentException("ERROR: The second argument to \"AddFlightMult\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddFlightMult\" must be a Player or an int.");
+                    AddFlightTimeMult(castPlayer(args[1]), flightMult);
                     return null;
 
                 case "InfiniteFlight":
@@ -1864,6 +1928,18 @@ namespace CalamityMod
                         return new ArgumentException("ERROR: The first argument to \"SetFirePointBlank\" must be an Item or an int.");
                     return SetFirePointBlank(castItem(args[1]), firePointBlank);
 
+
+                case "GetPointBlankDuration":
+                case "GetProjectilePointBlank":
+                case "GetProjectilePointBlankDuration":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
+                        if (!isValidProjectileArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"GetPointBlankDuration\" must be a Projectile.");
+                        return GetPointBlankDuration(castProjectile(args[1]));
+                    }
+
                 case "SetPointBlankDuration":
                 case "SetProjectilePointBlank":
                 case "SetProjectilePointBlankDuration":
@@ -1881,17 +1957,6 @@ namespace CalamityMod
                         return null;
                     }
 
-                case "GetPointBlankDuration":
-                case "GetProjectilePointBlank":
-                case "GetProjectilePointBlankDuration":
-                    {
-                        if (args.Length < 2)
-                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
-                        if (!isValidProjectileArg(args[1]))
-                            return new ArgumentException("ERROR: The first argument to \"GetPointBlankDuration\" must be a Projectile.");
-                        return GetPointBlankDuration(castProjectile(args[1]));
-                    }
-
                 case "NoDodges":
                 case "DodgesDisabled":
                 case "GetDodgesDisabled":
@@ -1903,6 +1968,45 @@ namespace CalamityMod
                     if (args.Length < 2 || !(args[1] is bool disableDodges))
                         return new ArgumentNullException("ERROR: Must specify a bool.");
                     return DisableAllDodges(disableDodges);
+
+                case "SetPlayerColdImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to Death Mode cold effects as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to Death Mode cold effects as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerColdImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerColdImmune\" must be a Player or an int.");
+                    bool coldImmune = (bool)args[2];
+                    SetPlayerColdImmune(castPlayer(args[1]), coldImmune);
+                    return null;
+
+                case "SetPlayerHeatImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to Death Mode heat effects as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to Death Mode heat effects as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerHeatImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerHeatImmune\" must be a Player or an int.");
+                    bool heatImmune = (bool)args[2];
+                    SetPlayerHeatImmune(castPlayer(args[1]), heatImmune);
+                    return null;
+
+                case "SetPlayerDefenseDamageImmune":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and if the player should be immune to defense damage as a bool.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify if a player should be immune to defense damage as a bool.");
+                    if (!(args[2] is bool))
+                        return new ArgumentException("ERROR: The second argument to \"SetPlayerDefenseDamageImmune\" must be a bool.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"SetPlayerDefenseDamageImmune\" must be a Player or an int.");
+                    bool defenseDamageImmune = (bool)args[2];
+                    SetPlayerDefenseDamageImmune(castPlayer(args[1]), defenseDamageImmune);
+                    return null;
 
                 case "AcidRainActive":
                 case "IsAcidRainActive":
@@ -2180,7 +2284,7 @@ namespace CalamityMod
                 case "GetBossHealthBoost":
                 case "BossHealthMultiplier":
                 case "GetBossHealthMultiplier":
-                    return CalamityConfig.Instance.BossHealthBoost;
+                    return CalamityServerConfig.Instance.BossHealthBoost;
 
                 case "HasPermanentPowerup":
                 case "GetPermanentPowerup":

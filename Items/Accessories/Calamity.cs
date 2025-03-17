@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         // This is ONLY the direct DPS of having the cursor over the enemy, not the damage from the flames debuff.
         // The debuff is VulnerabilityHex, check that file for its DPS.
         public const int BaseDamage = 320;
-        public const int HitsPerSecond = 12;
+        public const int FramesPerHit = 5;
 
         public override void SetStaticDefaults()
         {
@@ -71,7 +71,7 @@ namespace CalamityMod.Items.Accessories
             if (Main.zenithWorld)
             {
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Calamity_GFB").Value;
-                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Main.itemAnimations[Item.type].GetFrame(texture), lightColor, 0f, Vector2.Zero, 1f, 0, 0);
+                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Main.itemAnimations[Type].GetFrame(texture), lightColor, 0f, Vector2.Zero, 1f, 0, 0);
                 return false;
             }
             else

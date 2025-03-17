@@ -77,8 +77,8 @@ namespace CalamityMod.NPCs.Yharon
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 7;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -111,7 +111,7 @@ namespace CalamityMod.NPCs.Yharon
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(10, 0, 0, 0);
+            NPC.value = Item.buyPrice(2, 50, 0, 0);
             NPC.boss = true;
             NPC.DR_NERD(normalDR);
 
@@ -197,8 +197,8 @@ namespace CalamityMod.NPCs.Yharon
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Stop rain
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
 
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
@@ -919,9 +919,8 @@ namespace CalamityMod.NPCs.Yharon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (player.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = player.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -936,7 +935,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }
@@ -1290,9 +1289,8 @@ namespace CalamityMod.NPCs.Yharon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (player.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = player.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -1307,7 +1305,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }
@@ -2034,9 +2032,8 @@ namespace CalamityMod.NPCs.Yharon
                                 }
 
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = targetData.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = targetData.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (targetData.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = targetData.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -2051,7 +2048,7 @@ namespace CalamityMod.NPCs.Yharon
                                 if (NPC.life < 1)
                                     NPC.life = 1;
 
-                                NPC.HealEffect(-damageAmt, true);
+                                NPC.DamageEffect(damageAmt);
                                 NPC.netUpdate = true;
                             }
                         }
@@ -2729,8 +2726,8 @@ namespace CalamityMod.NPCs.Yharon
             if (NPC.spriteDirection == 1)
                 spriteEffects = ai2 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[Type] / 2);
             Color color = drawColor;
             Color invincibleColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, 0);
             Color lerpEndColor = Color.White;
@@ -2773,7 +2770,7 @@ namespace CalamityMod.NPCs.Yharon
             else
                 color = drawColor;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += afterimageIncrement)
                 {
@@ -2782,7 +2779,7 @@ namespace CalamityMod.NPCs.Yharon
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -2822,7 +2819,7 @@ namespace CalamityMod.NPCs.Yharon
                 afterimageScale = 20f;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int k = 0; k < additionalAfterimageAmt; k++)
                 {
@@ -2831,14 +2828,14 @@ namespace CalamityMod.NPCs.Yharon
                     additionalAfterimageColor = NPC.GetAlpha(additionalAfterimageColor);
                     additionalAfterimageColor *= 1f - additionalAfterimageOpacity;
                     Vector2 additionalAfterimagePos = NPC.Center + (k / (float)additionalAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * additionalAfterimageOpacity - screenPos;
-                    additionalAfterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    additionalAfterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     additionalAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, additionalAfterimagePos, NPC.frame, additionalAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, drawLocation, NPC.frame, invincible ? invincibleColor : NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -2899,7 +2896,7 @@ namespace CalamityMod.NPCs.Yharon
                     blueGlowColor *= teleportGlowColorScaler;
                 }
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int l = 1; l < afterimageAmt; l += afterimageIncrement)
                     {
@@ -2907,7 +2904,7 @@ namespace CalamityMod.NPCs.Yharon
                         orangeAfterimageColor = Color.Lerp(orangeAfterimageColor, lerpEndColor, lerpInterpolateValue);
                         orangeAfterimageColor *= (afterimageAmt - l) / 15f;
                         Vector2 glowmaskAfterimagePos = NPC.oldPos[l] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        glowmaskAfterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        glowmaskAfterimagePos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         glowmaskAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture, glowmaskAfterimagePos, NPC.frame, orangeAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -2935,7 +2932,7 @@ namespace CalamityMod.NPCs.Yharon
                         additionalOrangeColor = NPC.GetAlpha(additionalOrangeColor);
                         additionalOrangeColor *= 1f - additionalAfterimageOpacity;
                         Vector2 additionalGlowmaskPos = NPC.Center + (m / (float)additionalAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * additionalAfterimageOpacity - screenPos;
-                        additionalGlowmaskPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        additionalGlowmaskPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         additionalGlowmaskPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture, additionalGlowmaskPos, NPC.frame, additionalOrangeColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -3040,7 +3037,7 @@ namespace CalamityMod.NPCs.Yharon
             if (BossRushEvent.BossRushActive)
                 return;
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedYharon);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Yharon has not been killed yet, notify players of Auric Ore
@@ -3266,7 +3263,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 // Turn into dust on death.
                 if (NPC.life <= 0)
-                    DeathAshParticle.CreateAshesFromNPC(NPC);
+                    DeathAshParticle.CreateAshesFromNPC(NPC, Vector2.Zero);
             }
         }
         #endregion

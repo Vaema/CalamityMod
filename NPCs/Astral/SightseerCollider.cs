@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
 
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/SightseerColliderGlow", AssetRequestMode.AsyncLoad);
@@ -42,11 +42,11 @@ namespace CalamityMod.NPCs.Astral
             NPC.damage = 38;
             NPC.defense = 16;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 310;
+            NPC.lifeMax = 390;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.58f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SightseerColliderBanner>();
@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 58;
                 NPC.defense = 26;
                 NPC.knockBackResist = 0.48f;
-                NPC.lifeMax = 460;
+                NPC.lifeMax = 585;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
@@ -120,7 +120,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 5; i++)
                     {
