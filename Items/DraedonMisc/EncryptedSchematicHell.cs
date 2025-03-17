@@ -52,7 +52,7 @@ namespace CalamityMod.Items.DraedonMisc
                     meleeDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<HeavyLaserRifle>();
+                    int rangedItem = ModContent.ItemType<ScattershotSkewer>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 2, rangedDisplay);

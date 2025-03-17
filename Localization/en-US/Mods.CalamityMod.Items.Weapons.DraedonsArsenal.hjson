@@ -59,16 +59,6 @@ GaussRifle: {
 		'''
 }
 
-HeavyLaserRifle: {
-	DisplayName: Heavy Laser Rifle
-	Tooltip:
-		'''
-		Fires an incredibly accurate pair of destructive laser beams
-		[c/1FFBFF:'Though Godseeker Knights are often brutish, not all prefer close quarters melee combat.]
-		[c/1FFBFF:As such, Yharim personally requested that I create heavy weaponry for them despite being few in number.']
-		'''
-}
-
 HydraulicVoltCrasher: {
 	DisplayName: Hydraulic Volt Crasher
 	Tooltip:
@@ -167,6 +157,19 @@ PulseTurretRemote: {
 		{$CommonItemTooltip.Sentry}
 		Summons a turret to fire explosive pulse blasts at your enemies
 		Only one pulse turret may exist at a time
+		'''
+}
+
+ScattershotSkewer: {
+	DisplayName: Scattershot Skewer
+	Tooltip:
+		'''
+		Fires a spread of lasers
+		Holding <left> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Using the charged attack has a short cooldown
+		Holding <right> will repeatedly fire uncharged shots
+		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
+		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
 		'''
 }
 
