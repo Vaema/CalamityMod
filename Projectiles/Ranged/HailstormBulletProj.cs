@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.localAI[0] == 0f)
             {
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10.5f;
                 startVelocity = Projectile.velocity;
                 rotDirection = Main.rand.NextBool();
                 Projectile.velocity *= Main.rand.NextFloat(0.97f, 1.03f);
@@ -90,17 +91,18 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int k = 0; k < points; k++)
                 {
                     Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f * rotRando);
-                    WaterFlavoredParticle subTrail = new WaterFlavoredParticle(Projectile.Center + velocity * 4.5f + addedPlacement, velocity * 7, false, 6, 0.65f, Color.SkyBlue);
-                    GeneralParticleHandler.SpawnParticle(subTrail);
+                    Particle ice = new CustomSpark(Projectile.Center + velocity * 4.5f + addedPlacement, velocity * 7, "CalamityMod/Particles/GlowBlade", false, 6, 0.025f, Color.SkyBlue * 0.9f, new Vector2(1.5f, 0.6f), true, true, shrinkSpeed: 0.9f, glowCenterScale: 0.8f, glowOpacity: 0.3f);
+                    GeneralParticleHandler.SpawnParticle(ice);
                 }
-                int onHitDamage = (int)(Projectile.damage * 0.5f);
-                Projectile flash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Projectile.owner, target.whoAmI);
-                flash.DamageType = Projectile.DamageType;
             }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            // This is about equivalent to the previous direct strike extra damage but can't also crit itself obviously
+            // Also it's not as impacted by defense, which is why it's a bit weaker, rather than being a full 1f
+            modifiers.CritDamage += 0.85f;
+
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.5f);
             if (Projectile.damage < 1)

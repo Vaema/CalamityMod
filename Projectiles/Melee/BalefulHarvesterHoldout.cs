@@ -42,12 +42,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
 
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
 
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;

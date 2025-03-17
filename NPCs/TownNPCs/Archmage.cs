@@ -25,7 +25,8 @@ using Terraria.Utilities;
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class DILF : ModNPC
+    [LegacyName("DILF")]
+    public class Archmage : ModNPC
     {
         public override void SetStaticDefaults()
         {
@@ -71,7 +72,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DILF")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Archmage")
             });
         }
 

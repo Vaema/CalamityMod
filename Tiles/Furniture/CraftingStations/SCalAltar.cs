@@ -120,7 +120,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
                 Main.LocalPlayer.ConsumeItem(ModContent.ItemType<CirrusVodka>(), true);
                 for (int f = 0; f < Main.maxNPCs; f++)
                 {
-                    if (Main.npc[f].type == ModContent.NPCType<FAP>() && Main.npc[f].active)
+                    if (Main.npc[f].type == ModContent.NPCType<Cirrus>() && Main.npc[f].active)
                     {
                         Main.npc[f].active = false;
                     }

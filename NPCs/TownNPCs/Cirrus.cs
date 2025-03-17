@@ -1,49 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.UI.CalamitasEnchants;
+using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;
 using Terraria.GameContent.UI;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
-using static Terraria.ModLoader.ModContent;
-using SCalBoss = CalamityMod.NPCs.SupremeCalamitas.SupremeCalamitas;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
-    public class WITCH : ModNPC
+    [LegacyName("FAP")]
+    public class Cirrus : ModNPC
     {
+        public static Asset<Texture2D> AltTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 27;
-            NPCID.Sets.ExtraFramesCount[Type] = 11;
-            NPCID.Sets.AttackFrameCount[Type] = 6;
-            NPCID.Sets.DangerDetectRange[Type] = 700;
-            NPCID.Sets.AttackType[Type] = 1;
-            NPCID.Sets.AttackTime[Type] = 30;
-            NPCID.Sets.AttackAverageChance[Type] = 5;
+            NPCID.Sets.ExtraFramesCount[Type] = 9;
+            NPCID.Sets.AttackFrameCount[Type] = 4;
+            NPCID.Sets.DangerDetectRange[Type] = 400;
+            NPCID.Sets.AttackType[Type] = 0;
+            NPCID.Sets.AttackTime[Type] = 60;
+            NPCID.Sets.AttackAverageChance[Type] = 15;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
+            // Happiness is so fucking dogshit, I swear to christ. - Fabsol
             NPC.Happiness
-                .SetBiomeAffection<ForestBiome>(AffectionLevel.Like)
-                .SetBiomeAffection<BrimstoneCragsBiome>(AffectionLevel.Dislike)
-                .SetNPCAffection(NPCID.Clothier, AffectionLevel.Like)
-                .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Dislike);
+                .SetBiomeAffection<HallowBiome>(AffectionLevel.Love)
+                .SetBiomeAffection<OceanBiome>(AffectionLevel.Like)
+                .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike)
+                .SetBiomeAffection<UndergroundBiome>(AffectionLevel.Hate)
+                .SetNPCAffection(NPCID.Stylist, AffectionLevel.Love)
+                .SetNPCAffection(NPCID.BestiaryGirl, AffectionLevel.Love)
+                .SetNPCAffection(NPCID.DyeTrader, AffectionLevel.Like)
+                .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Like)
+                .SetNPCAffection(NPCID.DD2Bartender, AffectionLevel.Dislike)
+                .SetNPCAffection(NPCID.TaxCollector, AffectionLevel.Dislike)
+                .SetNPCAffection(NPCID.GoblinTinkerer, AffectionLevel.Hate)
+                .SetNPCAffection(NPCID.Angler, AffectionLevel.Hate);
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
             };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -55,29 +77,21 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.height = 40;
             NPC.aiStyle = NPCAIStyleID.Passive;
             NPC.damage = 10;
-            NPC.gfxOffY = -2f;
-
-            // You should not be able to kill SCal under any typical circumstances.
-            NPC.lifeMax = 960000;
-
-            NPC.defense = 120;
+            NPC.defense = 15;
+            NPC.lifeMax = 20000;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath6;
-            NPC.knockBackResist = 0.8f;
+            NPC.knockBackResist = 0.5f;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WITCH")
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cirrus")
             });
         }
-
-        public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCalamitas && !NPC.AnyNPCs(NPCType<SCalBoss>());
-
-        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Calamitas") };
 
         public override void FindFrame(int frameHeight)
         {
@@ -632,75 +646,383 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.frame.Y = frameHeight;
         }
 
-        // The way this works is by having an RNG based on weights.
-        // With certain conditions (such as if a blood moon is happening) you can add possibilities
-        // to the RNG via dialogue.Add("text", weight);
-        // Text can always appear assuming the weight is greater than 0 and there's no if condition deciding whether it can.
-        // The higher the weight is, the more likely it is to be selected from all the choices.
-        // To give an example of this, assume you have two possibilities:
-        // "a" with a weight of 1, and "b" with a weight of 5. The chance of "a" being displayed would be
-        // 1/6, while "b" wold have a 5/6 chance of being displayed.
-        // If only one possibility exists it will be the only thing that is displayed, regardless of weight.
+        public override void AI()
+        {
+            if (!CalamityWorld.spawnedCirrus)
+                CalamityWorld.spawnedCirrus = true;
+        }
+
+        // I'm not sure what to do here, because she's always called Cirrus. - Fabsol
+        /*public override void ModifyTypeName(ref string typeName)
+        {
+            int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            bool wifeIsAround = wife != -1;
+            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+
+            if (beLessDrunk)
+                typeName = "Cirrus";
+        }*/
+
+        public override bool CanTownNPCSpawn(int numTownNPCs)
+        {
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas.SupremeCalamitas>()) && Main.zenithWorld)
+                return false;
+
+            if (CalamityWorld.spawnedCirrus)
+                return true;
+
+            foreach (Player player in Main.ActivePlayers)
+            {
+                bool hasVodka = player.InventoryHas(ModContent.ItemType<CirrusVodka>()) || player.PortableStorageHas(ModContent.ItemType<CirrusVodka>());
+                if (hasVodka)
+                    return Main.hardMode;
+                else
+                    return DownedBossSystem.downedCalamitasClone || NPC.downedPlantBoss;
+            }
+            return false;
+        }
+
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Cirrus") };
+
         public override string GetChat()
         {
-            WeightedRandom<string> dialogue = new WeightedRandom<string>();
+            Player player = Main.LocalPlayer;
+            if (Main.zenithWorld)
+            {
+                player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false);
+                SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
+            }
 
-            // Have a flat chance (1/4444) to simply ignore the below selection and say something humorous instead.
-            if (Main.rand.NextBool(4444))
-                return this.GetLocalizedValue("Chat.EasterEgg");
+            bool worldIsSafer = NPC.downedMoonlord;
+
+            if (CalamityUtils.AnyBossNPCS())
+            {
+                if (!worldIsSafer)
+                    return this.GetLocalizedValue("Chat.BossAlive");
+                else
+                    return this.GetLocalizedValue("Chat.BossAliveAlt");
+            }
 
             if (NPC.homeless)
                 return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
-            dialogue.Add(this.GetLocalizedValue("Chat.Normal5"));
+            int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            bool isHappy = Main.ShopHelper.GetShoppingSettings(player, NPC).PriceAdjustment < 1D;
+            bool wifeIsAround = wife != -1;
+            bool wifeIsHappy = wifeIsAround ? Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D : false;
+            bool beLessDrunk = wifeIsAround && worldIsSafer;
 
-            if (!Main.dayTime)
+            if (Main.bloodMoon)
             {
-                if (Main.bloodMoon)
+                if (Main.rand.NextBool(4))
                 {
-                    dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon1"), 5.15);
-                    dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon2"), 5.15);
+                    if (!beLessDrunk)
+                    {
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
+                        SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap1");
+                    }
+                    else
+                        return this.GetLocalizedValue("Chat.BloodMoonSlap2");
+                }
+                return this.GetLocalizedValue("Chat.BloodMoon" + Main.rand.Next(1, 3 + 1));
+            }
+
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
+
+            if (!beLessDrunk)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+
+                if (Main.zenithWorld)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            }
+            else
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal1Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal2Alt"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal3Alt"));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalization("Chat.Normal4Alt").Format(Main.npc[wife].GivenName));
+
+                dialogue.Add(this.GetLocalizedValue("Chat.NewOutfit"));
+            }
+
+            int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
+            if (tavernKeep != -1)
+            {
+                dialogue.Add(this.GetLocalization("Chat.Tavernkeep1").Format(Main.npc[tavernKeep].GivenName));
+                dialogue.Add(this.GetLocalization("Chat.Tavernkeep2").Format(Main.npc[tavernKeep].GivenName));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Tavernkeep3"));
+            }
+
+            int permadong = NPC.FindFirstNPC(ModContent.NPCType<Archmage>());
+            if (permadong != -1)
+                dialogue.Add(this.GetLocalization("Chat.Archmage").Format(Main.npc[permadong].GivenName));
+
+            int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
+            if (witch != -1)
+                dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
+
+            if (wifeIsAround)
+            {
+                if (worldIsSafer)
+                {
+                    if (wifeIsHappy && isHappy)
+                        dialogue.Add(this.GetLocalization("Chat.Stylist1Alt").Format(Main.npc[wife].GivenName));
+
+                    if (ChildSafety.Disabled)
+                    {
+                        if (!wifeIsHappy || !isHappy)
+                            dialogue.Add(this.GetLocalization("Chat.Stylist2Alt").Format(Main.npc[wife].GivenName));
+
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3Alt").Format(Main.npc[wife].GivenName));
+                    }
                 }
                 else
                 {
-                    dialogue.Add(this.GetLocalizedValue("Chat.Night1"), 2.8);
-                    dialogue.Add(this.GetLocalizedValue("Chat.Night2"), 2.8);
+                    dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
+                    if (ChildSafety.Disabled)
+                    {
+                        dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
+                        dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                    }
                 }
             }
 
-            int fab = NPC.FindFirstNPC(NPCType<FAP>());
-            if (fab != -1 && ChildSafety.Disabled)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[fab].GivenName), 1.45);
+            if (Main.dayTime)
+            {
+                if (!beLessDrunk)
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day1Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day3Alt"));
+                }
 
-            if (NPC.AnyNPCs(NPCType<SEAHOE>()))
-                dialogue.Add(this.GetLocalizedValue("Chat.SeaKing"), 1.45);
+                if (!isHappy)
+                {
+                    int annoyingChild = NPC.FindFirstNPC(NPCID.Angler);
+                    if (annoyingChild != -1)
+                        dialogue.Add(this.GetLocalization("Chat.Day4").Format(Main.npc[annoyingChild].GivenName));
+                }
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.Day4Alt"));
 
+                if (beLessDrunk)
+                {
+                    dialogue.Add(this.GetLocalization("Chat.DayStylist1").Format(Main.npc[wife].GivenName));
+                    dialogue.Add(this.GetLocalization("Chat.DayStylist2").Format(Main.npc[wife].GivenName));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.DayDrunk1"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.DayDrunk2"));
+                }
+            }
+            else
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
+
+                if (!isHappy)
+                {
+                    if (Main.zenithWorld)
+                        dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night2Alt"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night3Alt"));
+                }
+
+                dialogue.Add(this.GetLocalizedValue("Chat.Night4"));
+
+                if (wifeIsAround)
+                    dialogue.Add(this.GetLocalization("Chat.NightStylist").Format(Main.npc[wife].GivenName));
+            }
+
+            // She needs to be drunk to enjoy festive events, otherwise, she dislikes them. - Fabsol
             if (BirthdayParty.PartyIsUp)
-                dialogue.Add(this.GetLocalizedValue("Chat.Party"), 5.5);
+            {
+                if (!beLessDrunk)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Party"));
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.PartyAlt"));
+            }
+
+            // She loves her hair and freaks out if it's threatened. Also a reference to the wicked witch of the west. - Fabsol
+            if (AcidRainEvent.AcidRainEventIsOngoing)
+                dialogue.Add(this.GetLocalizedValue("Chat.AcidRain"));
+
+            // ayy lmao meme reference (this isn't 4th-wall breaking enough to be put in GFB-only imo). - Fabsol
+            if (Main.invasionType == InvasionID.MartianMadness)
+                dialogue.Add(this.GetLocalizedValue("Chat.Martians"));
+
+            // Reference to insane thoughts I had years ago. - Fabsol
+            if (DownedBossSystem.downedCryogen && ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalizedValue("Chat.CryogenDefeated"));
+
+            // Reference to the old Leviathan sprite. - Fabsol
+            if (DownedBossSystem.downedLeviathan)
+                dialogue.Add(this.GetLocalizedValue("Chat.LeviathanDefeated"));
+
+            // Risque tentacle implication... - Fabsol
+            if (NPC.downedMoonlord && ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated"));
+
+            // Reference to some crazy shit I thought up at one point. - Fabsol
+            if (DownedBossSystem.downedPolterghast)
+                dialogue.Add(this.GetLocalizedValue("Chat.PolterghastDefeated"));
+
+            // MGS2 meme line. - Fabsol
+            if (DownedBossSystem.downedDoG && Main.zenithWorld)
+                dialogue.Add(this.GetLocalizedValue("Chat.DoGDefeated"));
+
+            // Cirrus doesn't like the creature. - Fabsol
+            if (player.Calamity().chibii)
+            {
+                if (!isHappy)
+                    dialogue.Add(this.GetLocalizedValue("Chat.HasChibii"));
+                else
+                    dialogue.Add(this.GetLocalizedValue("Chat.HasChibiiAlt"));
+            }
+
+            // She likes fish people (including Amidias, but she has no comments for him yet). - Fabsol
+            if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled && isHappy)
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAnahitaTrans"));
+
+            if (player.Calamity().cirrusVodka)
+                dialogue.Add(this.GetLocalizedValue("Chat.HasVodka"));
+
+            // These are all a bit too risque for children to be seeing lol - Fabsol
+            if (player.HasItem(ModContent.ItemType<PrincessSpiritinaBottle>()) && ChildSafety.Disabled)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn3"));
+            }
 
             return dialogue;
         }
 
-        public override void SetChatButtons(ref string button, ref string button2) => button = this.GetLocalizedValue("EnchantButton");
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (Main.LocalPlayer.Calamity().trippy)
+                return false;
+
+            var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
+            return false;
+        }
+
+        public string Death()
+        {
+            int deaths = Main.LocalPlayer.numberOfDeathsPVE;
+
+            string text = this.GetLocalization("DeathCount").Format(deaths);
+
+            if (deaths > 10000)
+                text += " " + this.GetLocalizedValue("Death10000");
+            else if (deaths > 5000)
+                text += " " + this.GetLocalizedValue("Death5000");
+            else if (deaths > 2500)
+                text += " " + this.GetLocalizedValue("Death2500");
+            else if (deaths > 1000)
+                text += " " + this.GetLocalizedValue("Death1000");
+            else if (deaths > 500)
+                text += " " + this.GetLocalizedValue("Death500");
+            else if (deaths > 250)
+                text += " " + this.GetLocalizedValue("Death250");
+            else if (deaths > 100)
+                text += " " + this.GetLocalizedValue("Death100");
+
+            text += "\n\n" + this.GetLocalization("DonorShoutout").Format(DonatorsNameList.GetRandomDonors());
+
+            return text;
+        }
+
+        public override void SetChatButtons(ref string button, ref string button2)
+        {
+            button = Language.GetTextValue("LegacyInterface.28");
+            button2 = this.GetLocalizedValue("DeathCountButton");
+        }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
-                Main.playerInventory = true;
-                CalamitasEnchantUI.NPCIndex = NPC.whoAmI;
-                CalamitasEnchantUI.CurrentlyViewing = true;
-
-                if (!Main.LocalPlayer.Calamity().GivenBrimstoneLocus)
-                {
-                    Item.NewItem(NPC.GetSource_Loot(), NPC.Hitbox, ItemType<BrimstoneLocus>());
-                    Main.LocalPlayer.Calamity().GivenBrimstoneLocus = true;
-                }
+                shopName = "Shop";
             }
+            else
+            {
+                Main.npcChatText = Death();
+            }
+        }
+
+        public override void AddShops()
+        {
+            Mod musicMod = ExternalMods.musicMod;
+            musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
+            musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
+            musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
+            musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
+
+            NPCShop shop = new(Type);
+            shop.AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
+                .AddWithCustomValue(ModContent.ItemType<RedWine>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<Whiskey>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<Rum>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<Tequila>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<Fireball>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<CirrusVodka>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<Vodka>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<Screwdriver>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<WhiteWine>(), Item.buyPrice(gold: 4), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<EvergreenGin>(), Item.buyPrice(gold: 6), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<CaribbeanRum>(), Item.buyPrice(gold: 6), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<Margarita>(), Item.buyPrice(gold: 6), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<OldFashioned>(), Item.buyPrice(gold: 6), Condition.DownedPlantera)
+                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 10), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<Everclear>(), Item.buyPrice(gold: 8), CalamityConditions.DownedAstrumAureus)
+                .AddWithCustomValue(ModContent.ItemType<BloodyMary>(), Item.buyPrice(gold: 8), CalamityConditions.DownedAstrumAureus, Condition.BloodMoon)
+                .AddWithCustomValue(ModContent.ItemType<StarBeamRye>(), Item.buyPrice(gold: 8), CalamityConditions.DownedAstrumAureus, Condition.TimeNight)
+                .AddWithCustomValue(ModContent.ItemType<Moonshine>(), Item.buyPrice(gold: 10), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<MoscowMule>(), Item.buyPrice(gold: 10), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<CinnamonRoll>(), Item.buyPrice(gold: 10), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<TequilaSunrise>(), Item.buyPrice(gold: 10), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.BloodyMoscato, Item.buyPrice(gold: 1), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.BananaDaiquiri, Item.buyPrice(silver: 75), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.PeachSangria, Item.buyPrice(silver: 50), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.PinaColada, Item.buyPrice(gold: 1), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<WeightlessCandle>(), Item.buyPrice(2))
+                .AddWithCustomValue(ModContent.ItemType<VigorousCandle>(), Item.buyPrice(2))
+                .AddWithCustomValue(ModContent.ItemType<ResilientCandle>(), Item.buyPrice(2))
+                .AddWithCustomValue(ModContent.ItemType<SpitefulCandle>(), Item.buyPrice(2))
+                .AddWithCustomValue(ModContent.ItemType<OddMushroom>(), Item.buyPrice(1))
+                .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
+                .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
+                .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
+                .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods)
+                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnoughToSellPylons, Condition.InHallow)
+                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2023>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .AddWithCustomValue(ModContent.ItemType<CalamityCanvas2024>(), Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCID.Painter))
+                .Register();
         }
 
         // Make this Town NPC teleport to the Queen statue when triggered.
@@ -708,72 +1030,25 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
         {
-            damage = 300;
-            knockback = 10f;
+            damage = 60;
+            knockback = 2f;
         }
 
         public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
         {
-            cooldown = 10;
+            cooldown = 60;
             randExtraCooldown = 15;
         }
 
-        public override bool PreAI()
-        {
-            // Disappear if the SCal boss is active. She's supposed to be the boss.
-            // However, this doesn't happen in Boss Rush; the SCal there is a silent puppet created by Xeroc, not SCal herself.
-            if (NPC.AnyNPCs(NPCType<SCalBoss>()) && !BossRushEvent.BossRushActive)
-            {
-                NPC.active = false;
-                NPC.netUpdate = true;
-                return false;
-            }
-            return true;
-        }
-
-        //public override void TownNPCAttackMagic(ref float auraLightMultiplier)
-
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
         {
-            projType = ProjectileType<SeethingDischargeBrimstoneHellblast>();
+            projType = ModContent.ProjectileType<FabRay>();
             attackDelay = 1;
         }
 
         public override void TownNPCAttackProjSpeed(ref float multiplier, ref float gravityCorrection, ref float randomOffset)
         {
-            multiplier = 2f;
-        }
-
-        // Explode into red dust on death.
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            if (NPC.life <= 0)
-            {
-                NPC.position = NPC.Center;
-                NPC.width = NPC.height = 50;
-                NPC.position.X -= NPC.width / 2;
-                NPC.position.Y -= NPC.height / 2;
-                for (int i = 0; i < 5; i++)
-                {
-                    int brimstone = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
-                    Main.dust[brimstone].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[brimstone].scale = 0.5f;
-                        Main.dust[brimstone].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                    }
-                }
-
-                for (int i = 0; i < 10; i++)
-                {
-                    int fire = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
-                    Main.dust[fire].noGravity = true;
-                    Main.dust[fire].velocity *= 5f;
-
-                    fire = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
-                    Main.dust[fire].velocity *= 2f;
-                }
-            }
+            multiplier = 11.5f;
         }
     }
 }

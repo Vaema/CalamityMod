@@ -58,8 +58,8 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
                 ModContent.ItemType<RustyMedallion>()
             ));
 
-            // Pre-HM Abyss Weapons
-            itemLoot.Add(new OneFromOptionsDropRule(10, 1,
+            // Ancient Treasure Chest Loot @ 100%; Individually 10%
+            itemLoot.Add(new OneFromOptionsNotScaledWithLuckDropRule(1, 1,
                 ModContent.ItemType<BallOFugu>(),
                 ModContent.ItemType<Archerfish>(),
                 ModContent.ItemType<BlackAnurian>(),

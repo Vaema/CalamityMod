@@ -41,10 +41,10 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.velocity.Y > 0)
                 Projectile.velocity.X *= 0.99f;
 
-            if (Projectile.timeLeft > 60)
+            if (Projectile.timeLeft > 60 && Projectile.timeLeft % 2 == 0)
             {
                 Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.05f) * Main.rand.NextFloat(0.1f, 0.3f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, dustVel);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), dustVel);
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.4f, 0.5f);
                 dust.color = Color.Magenta;

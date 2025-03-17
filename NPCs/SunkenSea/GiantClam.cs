@@ -525,9 +525,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // Spawn Amidias if he isn't in the world
             // This doesn't check for Desert Scourge because Giant Clam only spawns post-Desert Scourge
-            int amidiasNPC = NPC.FindFirstNPC(ModContent.NPCType<SEAHOE>());
+            int amidiasNPC = NPC.FindFirstNPC(ModContent.NPCType<SeaKing>());
             if (amidiasNPC == -1 && Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SEAHOE>(), 0, 0f, 0f, 0f, 0f, 255);
+                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SeaKing>(), 0, 0f, 0f, 0f, 0f, 255);
 
             // Mark Giant Clam as dead
             DownedBossSystem.downedCLAM = true;

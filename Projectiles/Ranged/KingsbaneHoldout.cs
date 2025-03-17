@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage * 0.9f), Projectile.knockBack, Projectile.owner);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmall");
                     if (fullRevShots % 2 == 0)
-                        SoundEngine.PlaySound(fire with { Volume = 0.8f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
                     //SoundEngine.PlaySound(SoundID.Item40 with { PitchVariance = 0.4f }, Projectile.Center);
                     Owner.channel = true;
 
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
-                        SoundEngine.PlaySound(fire with { Volume = 0.6f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.4f }, Projectile.Center);
                         framesBetweenShots = 3;
                     }
                     if (framesBetweenShots > 0)

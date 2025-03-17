@@ -3845,6 +3845,11 @@ namespace CalamityMod.NPCs
 
             return calcDR;
         }
+
+        public bool IsArmored()
+        {
+            return unbreakableDR && DR > 0.9f;
+        }
         #endregion
 
         #region Boss Head Slot
@@ -3900,6 +3905,9 @@ namespace CalamityMod.NPCs
                 {
                     if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
                         Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
+
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && npc.type == NPCType<RavagerBody>() && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<WeakPetrification>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -6261,6 +6269,11 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
+
             // True melee resists
             if (DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
@@ -6285,6 +6298,11 @@ namespace CalamityMod.NPCs
             CalamityPlayer modPlayer = player.Calamity();
 
             MakeTownNPCsTakeMoreDamage(npc, projectile, Mod, ref modifiers);
+
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
 
             // Block natural falling stars from killing boss spawners randomly
             if ((projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000) && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
@@ -6479,7 +6497,25 @@ namespace CalamityMod.NPCs
             if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
+        #endregion
+        #region OnHitBy overrides
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
 
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
+        #endregion
+        #region Whip Tag 
         // Make whip tags multiplicative, by effectively reversing the process done to it
         private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {

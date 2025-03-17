@@ -431,7 +431,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<FAP>() }, DownedBossSystem.downedAstrumAureus);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)

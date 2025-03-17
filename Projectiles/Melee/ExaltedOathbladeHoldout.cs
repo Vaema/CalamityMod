@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             IgnoreActiveAnimation = true;
             DrawUnconditionally = true;
@@ -62,7 +62,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.knockBack = 0;
             Projectile.scale = 1.15f;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
