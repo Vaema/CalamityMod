@@ -16,10 +16,11 @@ namespace CalamityMod.Items.Weapons.Summon
         public float Knockback = 2f;
         public override void SetDefaults()
         {
-            Item.width = Item.height = 44;
+            Item.width = 44;
+            Item.height = 64;
             Item.damage = 10;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 32;
+            Item.useAnimation = Item.useTime = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = Knockback;
@@ -33,18 +34,18 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse != 2)
             {
                 Item.noUseGraphic = false;
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity = Vector2.Zero;
                 int SummonNumber = player.ownedProjectileCounts[type];
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0, 0, SummonNumber);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, 0, SummonNumber);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }
@@ -63,11 +64,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
             }
             return false;
-        }
-        public override void HoldItem(Player player)
-        {
-            //player.Calamity().rightClickListener = true;
-            //player.Calamity().mouseWorldListener = true;
         }
     }
 }

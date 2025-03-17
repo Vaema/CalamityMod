@@ -41,16 +41,16 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 86;
             Item.height = 104;
-            Item.damage = 466;
+            Item.damage = 460;
             Item.DamageType = DamageClass.Magic;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.shootSpeed = 7f;
             Item.mana = 22;
             Item.knockBack = 5f;

@@ -15,11 +15,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 34;
             Item.height = 50;
-            Item.damage = 63;
+            Item.damage = 15;
             Item.knockBack = 12;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -33,22 +33,15 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
-        public override float StealthDamageMultiplier => 0.3333f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            CalamityPlayer p = Main.player[Main.myPlayer].Calamity();
-            //If stealth is full, shoot a spread of 3 boomerangs with reduced range
-            if (p.StealthStrikeAvailable())
+            if (player.Calamity().StealthStrikeAvailable())
             {
-                int spread = 10;
-                for (int i = 0; i < 3; i++)
+                int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+                if (proj.WithinBounds(Main.maxProjectiles))
                 {
-                    Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread));
-                    int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI, 0f, 1f);
-                    if (proj.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[proj].Calamity().stealthStrike = true;
-                    spread -= 10;
+                    Main.projectile[proj].Calamity().stealthStrike = true;
+                    Main.projectile[proj].penetrate = 7;
                 }
                 return false;
             }

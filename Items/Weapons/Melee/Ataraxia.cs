@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
             // Center projectile
             int centerID = ModContent.ProjectileType<AtaraxiaMain>();
             int centerDamage = (damage / 2);
-            Projectile.NewProjectile(source, position, velocity, centerID, centerDamage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, centerID, centerDamage, knockback, player.whoAmI);
 
             // Side projectiles (these deal 75% damage)
             int sideID = ModContent.ProjectileType<AtaraxiaSide>();
@@ -91,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
             int trueMeleeID = ModContent.ProjectileType<AtaraxiaBoom>();
             int trueMeleeDamage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(0.7f * Item.damage);
             var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, targetPos, Vector2.Zero, trueMeleeID, trueMeleeDamage, Item.knockBack, player.whoAmI, 0.0f, 0.0f);
+            Projectile.NewProjectile(source, targetPos, Vector2.Zero, trueMeleeID, trueMeleeDamage, Item.knockBack, player.whoAmI);
             
         }
 
@@ -129,7 +129,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<AuricBar>(5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<AscendantSpiritEssence>(2).
-                AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -18,11 +18,12 @@ namespace CalamityMod.Items.LabFinders
             Item.height = 26;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 36;
+            Item.useAnimation = Item.useTime = 36;
             Item.shoot = ModContent.ProjectileType<YellowLabSeeker>();
             Item.Calamity().MaxCharge = 100;
             Item.Calamity().ChargePerUse = 10;
             Item.Calamity().UsesCharge = true;
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
 

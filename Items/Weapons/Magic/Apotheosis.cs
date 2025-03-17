@@ -18,10 +18,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 30;
             Item.height = 34;
-            Item.damage = 230;
+            Item.damage = 222;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 42;
-            Item.useTime = Item.useAnimation = 167;
+            Item.useAnimation = Item.useTime = 167;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTurn = false;
             Item.noMelee = true;
@@ -49,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<CosmicDischarge>().
                 AddIngredient<StaffoftheMechworm>(2).
                 AddIngredient<Excelsus>(2).
-                AddIngredient<AscendantSpiritEssence>(11).
-                AddIngredient<CosmiliteBar>(33).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CosmiliteBar>(33).
+                AddIngredient<AscendantSpiritEssence>(11).
                 AddTile<DraedonsForge>().
                 Register();
         }

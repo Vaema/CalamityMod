@@ -41,25 +41,25 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 88;
             Item.height = 108;
             Item.damage = 110;
-            Item.shoot = ModContent.ProjectileType<CalamarisLamentMinion>();
             Item.DamageType = DamageClass.Summon;
-
-            Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
-            Item.noMelee = true;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 10;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<CalamarisLamentMinion>();
+            Item.shootSpeed = 1f; // This does nothing, it's just here so it's able to act like a staff.
+            
             Item.UseSound = SoundID.Item85;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.autoReuse = true;
+            Item.noMelee = true;
 
-            // This does nothing, it's just here so it's able to act like a staff.
-            Item.shootSpeed = 1f;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, player.ClampedMouseWorld(), velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
 

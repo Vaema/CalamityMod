@@ -74,13 +74,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             mouseDistance = arrowSpeed / mouseDistance;
             mouseXDist *= mouseDistance;
             mouseYDist *= mouseDistance;
-            float speedX4 = mouseXDist;
-            float speedY5 = mouseYDist;
-            int shotArrow = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI);
-            Main.projectile[shotArrow].noDropItem = true;
-            Main.projectile[shotArrow].tileCollide = false;
-            CalamityGlobalProjectile cgp = Main.projectile[shotArrow].Calamity();
-            cgp.allProjectilesHome = true;
+            Vector2 arrowVel = new Vector2(mouseXDist, mouseYDist);
+
+            Projectile shotArrow = Projectile.NewProjectileDirect(source, realPlayerPos, arrowVel, type, damage, knockback, player.whoAmI);
+            shotArrow.noDropItem = true;
+            shotArrow.tileCollide = false;
+            shotArrow.Calamity().conditionalHomingRange = 300f;
             return false;
         }
 

@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             base.SetDefaults();
         }
 
-        public override void ExtraBehavior()
+        public override bool ExtraBehavior()
         {
             // Randomly play grass sounds idly if it is moving/spinning
             if ((CurrentFlailState == FlailState.Spinning || Projectile.velocity.Length() > 2f) && Projectile.soundDelay <= 0)
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 AuraScale = MathHelper.Clamp(AuraScale + 1f / MaxAuraTime, 0f, 1f);
 
                 if (AuraScale < 0.15f)
-                    return;
+                    return true;
 
                 // The dust machine
                 for (int i = 0; i < (int)(10 * AuraScale); i++)
@@ -78,6 +78,8 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             }
             else
                 AuraScale = MathHelper.Clamp(AuraScale - 3f / MaxAuraTime, 0f, 1f);
+
+            return true;
         }
 
         public override bool PreDraw(ref Color lightColor)

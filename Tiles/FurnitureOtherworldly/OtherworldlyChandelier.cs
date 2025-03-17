@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
     public class OtherworldlyChandelier : ModTile
     {
         public override void SetStaticDefaults() => this.SetUpChandelier(ModContent.ItemType<Items.Placeables.FurnitureOtherworldly.OtherworldlyChandelier>(), true);
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public override bool CreateDust(int i, int j, ref int type)
         {

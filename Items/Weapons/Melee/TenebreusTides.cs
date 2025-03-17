@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -46,8 +46,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<AmidiasTrident>().
                 AddIngredient<Atlantis>().
                 AddIngredient(ItemID.InfluxWaver).
-                AddIngredient<SeaPrism>(20).
-                AddIngredient<PlantyMush>(25).
                 AddIngredient<Lumenyl>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

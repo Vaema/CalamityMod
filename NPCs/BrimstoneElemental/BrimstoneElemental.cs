@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 12;
+            Main.npcFrameCount[Type] = 12;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -70,8 +70,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.width = 100;
             NPC.height = 150;
             NPC.defense = 15;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
-            NPC.LifeMaxNERB(41000, 49200, 780000);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
+            NPC.LifeMaxNERB(41000, 49200, 500000);
             NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -112,8 +112,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            NPC.chaseable = reader.ReadBoolean();
             currentMode = reader.ReadInt32();
+            NPC.chaseable = reader.ReadBoolean();
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
             NPC.localAI[3] = reader.ReadSingle();
@@ -203,10 +203,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     ModContent.ItemType<Brimlance>(),
                     ModContent.ItemType<SeethingDischarge>(),
-                    ModContent.ItemType<DormantBrimseeker>()
+                    ModContent.ItemType<DormantBrimseeker>(),
+                    ModContent.ItemType<Hellborn>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Hellborn>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);
@@ -246,8 +246,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 return;
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
-
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Wizard }, DownedBossSystem.downedBrimstoneElemental);
 
             // Mark brimmy as dead
             DownedBossSystem.downedBrimstoneElemental = true;
@@ -292,7 +290,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("BrimstoneGore1").Type, 1f);
@@ -311,10 +309,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 frameLocation = new Vector2((float)(npcTexture.Width / 2), (float)(npcTexture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D npcTexture = TextureAssets.Npc[Type].Value;
+            Vector2 frameLocation = new Vector2((float)(npcTexture.Width / 2), (float)(npcTexture.Height / Main.npcFrameCount[Type] / 2));
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)npcTexture.Width, (float)(npcTexture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)npcTexture.Width, (float)(npcTexture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += frameLocation * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             // Give brimmy an outline based on current elemental mode

@@ -40,7 +40,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
@@ -113,7 +114,7 @@ namespace CalamityMod.Projectiles.Summon
         public void DecideFrames()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
         }
 
         public void DoBehavior_HoverNearOwner(NPC potentialTarget)
@@ -378,7 +379,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -400,6 +401,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
 
-        public override bool? CanDamage() => CurrentState == ViriliAIState.ChargeAtEnemies ? null : false;
+        public override bool MinionContactDamage() => CurrentState == ViriliAIState.ChargeAtEnemies;
     }
 }

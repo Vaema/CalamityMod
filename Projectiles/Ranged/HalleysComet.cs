@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 450);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 450);
             SoundEngine.PlaySound(HalleysInferno.Hit, Projectile.Center);
 
             // Dust emission on hit

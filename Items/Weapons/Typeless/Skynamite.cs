@@ -16,16 +16,16 @@ namespace CalamityMod.Items.Weapons.Typeless
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Item.type] = true;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 8;
             Item.height = 28;
-            Item.useTime = Item.useAnimation = 40;
-            Item.maxStack = 9999;
+            Item.useAnimation = Item.useTime = 40;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 5f;
             Item.shoot = ModContent.ProjectileType<AeroExplosive>();

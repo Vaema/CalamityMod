@@ -17,13 +17,15 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const int PunchCooldownTime = 36;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
+
         public override void SetDefaults()
         {
             Item.width = 50;
             Item.height = 50;
             Item.damage = 450;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -44,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2)
             {
                 int existingFists = player.ownedProjectileCounts[type];
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                 {
                     Main.projectile[p].originalDamage = Item.damage;

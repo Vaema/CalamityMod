@@ -20,25 +20,23 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = 75;
-            Item.DamageType = RogueDamageClass.Instance;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
             Item.width = 26;
             Item.height = 44;
-            Item.useTime = 56;
-            Item.useAnimation = 56;
-            Item.autoReuse = true;
+            Item.damage = 75;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 56;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<WavePounderProjectile>();
+            Item.shootSpeed = 16f;
+
+            Item.UseSound = SoundID.Item1;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 0f;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.UseSound = SoundID.Item1;
-
-            Item.shootSpeed = 16f;
-            Item.shoot = ModContent.ProjectileType<WavePounderProjectile>();
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 190f;

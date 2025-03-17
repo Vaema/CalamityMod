@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
@@ -82,9 +82,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     }
                 }
 
-                else if (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()))
+                else if (player.HasItem(ItemType<WulfrumMetalScrap>()))
                 {
-                    player.ConsumeItem(ModContent.ItemType<WulfrumMetalScrap>());
+                    player.ConsumeItem(ItemType<WulfrumMetalScrap>());
                     //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right.
                     player.AddCooldown(WulfrumBastion.ID, BastionCooldown + BastionTime);
                     //Though do i need to sync that or is the player inventory auto synced?
@@ -234,7 +234,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     setBonus1.OverrideColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
                     tooltips.Insert(setBonusIndex + 1, setBonus1);
 
-                    int AmmoItem = ModContent.ItemType<WulfrumMetalScrap>();
+                    int AmmoItem = ItemType<WulfrumMetalScrap>();
                     string AmmoDisplay = $"[i:{AmmoItem}] {CalamityUtils.GetItemName(AmmoItem)}";
                     TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", CalamityUtils.GetTextFromModItem<WulfrumHat>("AbilityDescription").Format(AmmoDisplay));
                     setBonus2.OverrideColor = new Color(110, 192, 93);
@@ -274,7 +274,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
                 ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
@@ -318,7 +318,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
                 ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlot] = true;
@@ -361,7 +361,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (WulfrumHat.PowerModeEngaged(Player, out var cd) && Main.netMode != NetmodeID.Server)
+            if (WulfrumHat.PowerModeEngaged(Player, out var cd) && !Main.dedServ)
             {
                 SetBonusEndEffect(true);
                 if (!Player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped)
@@ -385,7 +385,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 if (cd.timeLeft < WulfrumHat.BastionCooldown)
                 {
                     cd.timeLeft = WulfrumHat.BastionCooldown - 1;
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                         SetBonusEndEffect(true);
                 }
             }

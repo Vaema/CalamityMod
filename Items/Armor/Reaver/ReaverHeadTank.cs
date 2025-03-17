@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Armor.Reaver
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         internal static string HealOrbEntitySourceContext => "SetBonus_Calamity_ReaverTank";
 
+        public static int ReaverRageDefenseBoost = 5;
+        public static float ReaverRageDamageBoost = 0.1f;
+
         //Defense and DR Helm
         public override void SetDefaults()
         {
@@ -45,7 +48,6 @@ namespace CalamityMod.Items.Armor.Reaver
             modPlayer.reaverDefense = true;
             modPlayer.wearingRogueArmor = true;
             player.setBonus = this.GetLocalizedValue("SetBonus");
-            // Reaver Rage provides 10% damage, 5 def, and 5% melee speed.
         }
 
         public override void UpdateEquip(Player player)
@@ -62,6 +64,7 @@ namespace CalamityMod.Items.Armor.Reaver
                 AddIngredient<PerennialBar>(7).
                 AddIngredient<LivingShard>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<ReaverHeadMobility>()).
                 Register();
         }
     }

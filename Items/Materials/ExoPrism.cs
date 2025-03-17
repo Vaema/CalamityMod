@@ -21,8 +21,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 32;
             Item.height = 52;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 60);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(gold: 7);
             Item.rare = ModContent.RarityType<Violet>();
         }
         public void DrawBackAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, float baseScale)
@@ -37,13 +37,13 @@ namespace CalamityMod.Items.Materials
             for (int i = 0; i < 4; i++)
             {
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 4f;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, velocity, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Type].Value, drawPosition, frame, drawColor, velocity, origin, scale, SpriteEffects.None, 0f);
             }
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Rectangle frame = TextureAssets.Item[Item.type].Value.Frame();
+            Rectangle frame = TextureAssets.Item[Type].Value.Frame();
             DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition + frame.Size() * 0.5f, frame, scale);
             return true;
         }

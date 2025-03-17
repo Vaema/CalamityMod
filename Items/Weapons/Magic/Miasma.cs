@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 40;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 16;
-            Item.useTime = Item.useAnimation = 27;
+            Item.useAnimation = Item.useTime = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;

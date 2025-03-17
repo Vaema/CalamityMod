@@ -4,6 +4,7 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -11,11 +12,16 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Azathoth : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 880f;
+        public static float Speed = 60f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Yoyo[Item.type] = true;
-            ItemID.Sets.GamepadExtraRange[Item.type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
+            ItemID.Sets.Yoyo[Type] = true;
+            ItemID.Sets.GamepadExtraRange[Type] = 15;
+            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
         }
 
         public override void SetDefaults()
@@ -48,8 +54,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Terrarian).
-                AddIngredient<CoreofCalamity>(2).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CoreofCalamity>(2).
                 AddTile<DraedonsForge>().
                 Register();
         }

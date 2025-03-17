@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -15,13 +15,15 @@ namespace CalamityMod.Items.Armor.Mollusk
     public class MolluskShellmet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+        public static int ShellfishDamage = 140;
+
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 18;
+            Item.defense = 15;
         }
 
         public override void UpdateEquip(Player player)
@@ -29,6 +31,7 @@ namespace CalamityMod.Items.Armor.Mollusk
             player.ignoreWater = true;
             player.GetDamage<GenericDamageClass>() += 0.05f;
             player.GetCritChance<GenericDamageClass>() += 4;
+            player.Calamity().molluskHelmet = true;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -39,10 +42,8 @@ namespace CalamityMod.Items.Armor.Mollusk
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = this.GetLocalizedValue("SetBonus");
-            var modPlayer = player.Calamity();
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            modPlayer.molluskSet = true;
-            player.maxMinions += 4;
+            player.endurance += 0.1f;
+            player.maxMinions += 4; // These are allocated for the Shellfish minions; there is no net change in minion slots.
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_ItemUse(Item);
@@ -52,12 +53,8 @@ namespace CalamityMod.Items.Armor.Mollusk
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Shellfish>()] < 2)
                 {
-                    // 08DEC2023: Ozzatron: Clams spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(140);
-                    // wait why does this not scale with summon damage
-
-                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), baseDamage, 0f, player.whoAmI);
-                    clam.originalDamage = baseDamage;
+                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), ShellfishDamage, 0f, player.whoAmI);
+                    clam.originalDamage = ShellfishDamage;
                 }
             }
             player.Calamity().wearingRogueArmor = true;
@@ -69,6 +66,7 @@ namespace CalamityMod.Items.Armor.Mollusk
                 AddIngredient<MolluskHusk>(6).
                 AddIngredient<SeaPrism>(15).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<MolluskShelleggings>()).
                 Register();
         }
     }

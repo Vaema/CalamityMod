@@ -17,10 +17,10 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 12;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 4, 5)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 4, 5)
             .WithOffset(-18f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Pets
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/EidolonSnail").Value;
 
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Pets
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/EidolonSnailGlow").Value;
 
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

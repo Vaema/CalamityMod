@@ -35,8 +35,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 50;
         }
 
         public override void SetDefaults()
@@ -85,10 +85,6 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(HeavenlyGale.LightningStrikeSound with { Volume = 0.3f }, Main.player[Projectile.owner].Center);
                 HasPlayedSound = true;
             }
-
-            // This projectile is forced to critically strike.
-            // This technically is a nerf, as it makes DSO's crits deal less damage.
-            Projectile.Calamity().forcedCrit = true;
 
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3());
             if (Projectile.frameCounter >= Projectile.extraUpdates * 2)
@@ -172,6 +168,10 @@ namespace CalamityMod.Projectiles.Ranged
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 18);
             return false;
         }
+
+        // This projectile is forced to critically strike.
+        // This technically is a nerf, as it makes DSO's crits deal less damage.
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SetCrit();
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 

@@ -58,9 +58,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 shotType = 1;
 
             if (shotType == 1)
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0.0f, 0.0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             else
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<Projectiles.Ranged.Voidragon>(), damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<Projectiles.Ranged.Voidragon>(), damage, knockback, player.whoAmI);
 
             shotType++;
 
@@ -80,7 +80,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Seadragon>().
-                AddIngredient(ItemID.SoulofFright, 30).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

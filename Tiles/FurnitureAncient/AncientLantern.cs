@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.FurnitureAncient
     public class AncientLantern : ModTile
     {
         public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientLantern>(), true);
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public override bool CreateDust(int i, int j, ref int type)
         {

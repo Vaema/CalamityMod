@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/SnowRuffian/SnowRuffianChestplate_Back", EquipType.Back, this);
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);

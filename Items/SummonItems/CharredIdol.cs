@@ -12,6 +12,7 @@ namespace CalamityMod.Items.SummonItems
     public class CharredIdol : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/BrimstoneSpawn");
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 10; // Mechanical Skull
@@ -41,12 +42,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<BrimstoneElemental>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<BrimstoneElemental>());
-
+            CalamityUtils.SpawnBossUsingItem<BrimstoneElemental>(player, UseSound);
             return true;
         }
 

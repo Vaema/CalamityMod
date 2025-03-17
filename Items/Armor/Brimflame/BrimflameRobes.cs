@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Brimflame
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Armor.Brimflame
                 AddIngredient<AshesofCalamity>(8).
                 AddIngredient<UnholyCore>(4).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<BrimflameBoots>()).
                 Register();
         }
     }

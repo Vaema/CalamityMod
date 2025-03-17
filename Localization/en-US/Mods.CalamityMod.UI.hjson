@@ -1,4 +1,6 @@
+// Vanilla UI edits
 SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
+WorldMaster: Game over man, game over! (Brutally hard boss changes, for the truly brave)
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -34,7 +36,7 @@ Revengeance: Revengeance
 RevMaster: Rev+Master
 RevLegend: Rev+Legend
 RevengeanceEnabled: Revengeance Mode is enabled
-RevengeanceShortInfo: "[c/F54254:The intended Calamity experience!]"
+RevengeanceShortInfo: "[c/F54254:The intended Calamity experience! Can only be enabled in Expert Mode!]"
 RevengeanceExpandedInfo:
 	'''
 	[c/B55362:Enables the] [c/85FFE9:Adrenaline] [c/B55362:mechanic. You gain Adrenaline while fighting bosses. Getting hit drops Adrenaline back to 0]
@@ -51,7 +53,7 @@ Death: Death
 DeathMaster: Death+Master
 DeathLegend: Death+Legend
 DeathEnabled: Death Mode is enabled
-DeathShortInfo: "[c/C82DF7:A tougher challenge for the more experienced, or for those that want a step up from Revengeance Mode]"
+DeathShortInfo: "[c/C82DF7:A far more difficult challenge than Revengeance Mode! Can only be enabled in Master Mode!]"
 DeathExpandedInfo:
 	'''
 	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs and increased damage]
@@ -80,22 +82,26 @@ ExtensionName: {
 // Cooldowns
 Cooldowns: {
 	AquaticHeartIceShield: Ice Shield Cooldown
+	ArsenalPower: Arsenal Cooldown
 	AscendEffect: Ascension Cooldown
 	BloodflareFrenzy: Blood Frenzy Cooldown
 	BloodflareRangedSet: Bloodflare Soul Cooldown
 	BrimflameFrenzy: Brimflame Frenzy Cooldown
 	ChaosState: Teleportation Cooldown
-	CounterScarf: Scarf Cooldown
 	DivineBless: Divine Bless Cooldown
 	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability
 	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
+	DSOCritCooldown: Extra Critical Strike Chance
 	ParryCooldown: Parry Ability Cooldown
-	EvasionScarf: Scarf Cooldown
 	FleshTotem: Contact Damage Halving Cooldown
 	GaelsRage: Gael's Greatsword Rage Cooldown
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
+	HellbornShots: Hellborn Shots
+	HolyProtection: Holy Protection
 	InkBomb: Ink Bomb Cooldown
+	KillModeActive: Kill Mode Active
+	KillModeCooldown: Kill Mode Cooldown
 	LifeSteal: Life Steal Cooldown
 	LionHeartShield: Energy Shell Cooldown
 	MasterChefShieldDurability: MJOLNIR Shield Level
@@ -110,11 +116,12 @@ Cooldowns: {
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
 	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
 	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
-	RelicOfResilience: Relic of Resilience Cooldown
+	RelicOfResilienceCooldown: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown
 	SandsmokeBombActive: Sandsmoke Bomb Duration
 	SandsmokeBombCooldown: Sandsmoke Bomb Cooldown
+	ScarfCooldown: Scarf Cooldown
 	SilvaRevive: Silva Revive Cooldown
 	SpeedBlasterBoost: Speed Blaster Boost
 	SpongeDurability: Sponge Barrier Durability
@@ -123,6 +130,7 @@ Cooldowns: {
 	TarragonCloak: Tarragon Cloak Cooldown
 	TarragonImmunity: Tarragon Immunity Cooldown
 	UniverseSplitter: Universe Splitter Cooldown
+	WarbanneroftheRighteousBuff: Warbanner Strength
 	WulfrumBastionActive: Power Armor Durability
 	WulfrumBastionCooldown: Wulfrum Bastion Cooldown
 	WulfrumRoverDriveDurability: Protective Matrix Durability
@@ -615,6 +623,7 @@ DraedonFacility: Other minor research projects
 Abyss: Disposing of Silva's remains
 SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
+AuricLandMines: Setting god killing traps
 // Hold Shift tooltip default
 HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more
 HoldShiftTooltipReplacementIndicator: Hold "Left Shift" for details

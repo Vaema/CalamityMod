@@ -522,7 +522,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
 
                         NPC.LunarApocalypseIsUp = false;
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0f, 0f, 0f, 0, 0, 0);
 
                         return false;

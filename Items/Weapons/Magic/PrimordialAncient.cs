@@ -5,14 +5,21 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
     public class PrimordialAncient : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public static float BuffDamageReductionBoost = 0.08f;
+        public static float BuffDamageBoost = 0.18f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDamageReductionBoost.ToPercent(), BuffDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -35,10 +42,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             bool MaxMana = player.statMana >= (player.statManaMax2 - ((int)(Item.mana * player.manaCost))) && !player.HasBuff(BuffID.ManaSickness);
-            for (int i = 0; i < 5; i++)
+            for (int i = -2; i <= 2; i++)
             {
-                Vector2 vel = velocity.RotatedByRandom(0.2f * i);
-                Projectile.NewProjectile(source, position, vel * Main.rand.NextFloat(0.8f, 1.2f), type, damage, knockback, player.whoAmI, 0f, i == 0 ? 1 : 0, MaxMana ? 1f : 0f);
+                Vector2 vel = velocity.RotatedBy(0.1f * i) * MathHelper.Lerp(3 - Math.Abs(i), 1, 0.7f);
+                Projectile dust = Projectile.NewProjectileDirect(source, position, vel, type, damage, knockback, player.whoAmI, 0f, i == 0 ? 1 : 0, MaxMana ? 1f : 0f);
+                dust.localAI[0] = i * 0.45f;
             }
 
             return false;
@@ -48,6 +56,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<PrimordialEarth>().
                 AddIngredient<CosmiliteBar>(8).
+                AddIngredient<EndothermicEnergy>(20).
                 AddTile(TileID.Bookcases).
                 Register();
         }

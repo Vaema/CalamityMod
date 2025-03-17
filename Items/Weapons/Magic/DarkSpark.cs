@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -25,28 +24,22 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 60;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();
+            Item.shootSpeed = 30f;
+
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item13;
+            Item.channel = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.knockBack = 0f;
+
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
-            Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();
-            Item.shootSpeed = 30f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DarkSparkPrism>(), damage, knockback, player.whoAmI, 0.0f, 0.0f);
-            return false;
-        }
 
         public override void AddRecipes()
         {

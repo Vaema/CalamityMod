@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -31,32 +30,24 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
             Item.damage = BaseDamage;
-            Item.knockBack = 0f;
-            Item.useTime = 55;
-            Item.useAnimation = 55;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 55;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
+            Item.shootSpeed = 5f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
-
-            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
-            Item.shootSpeed = 5f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
             modItem.ChargePerUse = 0.24f;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
-
-            return false;
-        }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value);

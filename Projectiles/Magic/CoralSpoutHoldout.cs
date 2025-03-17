@@ -59,6 +59,7 @@ namespace CalamityMod.Projectiles.Magic
                 Owner.heldProj = Projectile.whoAmI;
             }
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float pointingRotation = (Owner.Calamity().mouseWorld - Owner.MountedCenter).ToRotation();
             Projectile.Center = Owner.MountedCenter + pointingRotation.ToRotationVector2() * 40f;
 

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.damage = 16;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 34;
+            Item.useAnimation = Item.useTime = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
                 int droid = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);

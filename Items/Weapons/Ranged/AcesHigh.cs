@@ -5,7 +5,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -49,24 +48,21 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Revolver).
                 AddIngredient<ClaretCannon>().
-                AddIngredient<FantasyTalisman>(52).
+                AddIngredient<FantasyTalisman>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            int card = Utils.SelectRandom(Main.rand, new int[]
+            type = Utils.SelectRandom(Main.rand, new int[]
             {
                 ModContent.ProjectileType<CardHeart>(),
                 ModContent.ProjectileType<CardSpade>(),
                 ModContent.ProjectileType<CardDiamond>(),
                 ModContent.ProjectileType<CardClub>()
             });
-
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, card, damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
         }
     }
 }

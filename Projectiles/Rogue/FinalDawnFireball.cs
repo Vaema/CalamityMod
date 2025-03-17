@@ -3,6 +3,7 @@ using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -14,7 +15,8 @@ namespace CalamityMod.Projectiles.Rogue
         public const float InterpolationTime = 10;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -56,7 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                     Projectile.frame = 0;
             }
         }
@@ -69,8 +71,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D glowmask = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D glowmask = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(glowmask,
                                   Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY),

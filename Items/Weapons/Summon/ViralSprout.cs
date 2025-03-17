@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 56;
             Item.damage = 30;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 19;
+            Item.useAnimation = Item.useTime = 19;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
 

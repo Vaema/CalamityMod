@@ -4,11 +4,13 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Effects
 {
     // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class CalamityShaders
+    [Autoload(Side = ModSide.Client)]
+    public sealed class CalamityShaders : ModSystem
     {
         private const string ShaderPath = "Effects/";
         internal const string CalamityShaderPrefix = "CalamityMod:";
@@ -51,7 +53,7 @@ namespace CalamityMod.Effects
         // Scarlet Devil main spear glowing trail. BEWARE: Is reused by many other items!
         internal static Effect ScarletDevilShader;
 
-        // Yharon border suns (or flame pillars?) unsure. it's one or the other. maybe both
+        // Yharon border flame pillar trail.
         internal static Effect BordernadoFireShader;
 
         // Photon Ripper hardlight teeth trail shader
@@ -87,7 +89,7 @@ namespace CalamityMod.Effects
         // Clips a sprite along a fixed plane. Used by Stream Gouge to have half-spears come out of portals.
         internal static Effect IntersectionClipShader;
 
-        // Used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
+        // Was previously used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
         internal static Effect LocalLinearTransformationShader;
 
         // UNUSED -- Probably leftover from Dominic's experiments with applying shaders to primitives (arbitrary GPU-rendered triangles)
@@ -99,13 +101,13 @@ namespace CalamityMod.Effects
         // Exoblade's melee slash trails. Also used by Terratomere
         internal static Effect ExobladeSlashShader;
 
-        // Exoblade's projectile on-hit "aniume slash marks". Also used by Terratomere
+        // Exoblade's projectile on-hit "anime slash marks". Also used by Terratomere
         internal static Effect ExobladePierceShader;
 
-        // Used by Subsuming Vortex's various vortices. Draws the main vortices
+        // Used by Subsuming Vortex's various vortices. Draws the main vortices. BEWARE: Reused by Burning Sea's fireball.
         internal static Effect ExoVortexShader;
 
-        // Used by Subsuming Vortex's side vortices. Draws the swirling energy tendrils.
+        // Used by Subsuming Vortex's small vortices. Draws the trailing energy tendrils.
         internal static Effect SideStreakTrailShader;
 
         // Used by Heavenly Gale's hardlight arrows.
@@ -204,38 +206,8 @@ namespace CalamityMod.Effects
         internal static Effect TeslaTrailShader;
         #endregion
 
-        // Shorthand to register a loaded shader in Terraria's graphics engine
-        // All shaders registered this way are accessible under GameShaders.Misc
-        // They will use the prefix described above
-        private static void RegisterMiscShader(Effect shader, string passName, string registrationName)
+        public override void PostSetupContent()
         {
-            Ref<Effect> shaderPointer = new(shader);
-            MiscShaderData passParamRegistration = new(shaderPointer, passName);
-            GameShaders.Misc[$"{CalamityShaderPrefix}{registrationName}"] = passParamRegistration;
-        }
-
-        private static void RegisterSceneFilter(ScreenShaderData passReg, string registrationName, EffectPriority priority = EffectPriority.High)
-        {
-            string prefixedRegistrationName = $"{CalamityShaderPrefix}{registrationName}";
-            Filters.Scene[prefixedRegistrationName] = new Filter(passReg, priority);
-            Filters.Scene[prefixedRegistrationName].Load();
-        }
-
-        // Shorthand to register a loaded shader in Terraria's graphics engine
-        // All shaders registered this way are accessible under Filters.Scene
-        // They will use the prefix described above
-        private static void RegisterScreenShader(Effect shader, string passName, string registrationName, EffectPriority priority = EffectPriority.High)
-        {
-            Ref<Effect> shaderPointer = new(shader);
-            ScreenShaderData passParamRegistration = new(shaderPointer, passName);
-            RegisterSceneFilter(passParamRegistration, registrationName, priority);
-        }
-
-        public static void LoadShaders()
-        {
-            if (Main.dedServ)
-                return;
-
             AssetRepository calAss = CalamityMod.Instance.Assets;
 
             // Shorthand to load shaders immediately.
@@ -436,6 +408,33 @@ namespace CalamityMod.Effects
             TeslaTrailShader = LoadShader("TeslaTrail");
             RegisterMiscShader(TeslaTrailShader, "TrailPass", "TeslaTrail");
             #endregion
+        }
+
+        // Shorthand to register a loaded shader in Terraria's graphics engine
+        // All shaders registered this way are accessible under GameShaders.Misc
+        // They will use the prefix described above
+        private static void RegisterMiscShader(Effect shader, string passName, string registrationName)
+        {
+            Ref<Effect> shaderPointer = new(shader);
+            MiscShaderData passParamRegistration = new(shaderPointer, passName);
+            GameShaders.Misc[$"{CalamityShaderPrefix}{registrationName}"] = passParamRegistration;
+        }
+
+        private static void RegisterSceneFilter(ScreenShaderData passReg, string registrationName, EffectPriority priority = EffectPriority.High)
+        {
+            string prefixedRegistrationName = $"{CalamityShaderPrefix}{registrationName}";
+            Filters.Scene[prefixedRegistrationName] = new Filter(passReg, priority);
+            Filters.Scene[prefixedRegistrationName].Load();
+        }
+
+        // Shorthand to register a loaded shader in Terraria's graphics engine
+        // All shaders registered this way are accessible under Filters.Scene
+        // They will use the prefix described above
+        private static void RegisterScreenShader(Effect shader, string passName, string registrationName, EffectPriority priority = EffectPriority.High)
+        {
+            Ref<Effect> shaderPointer = new(shader);
+            ScreenShaderData passParamRegistration = new(shaderPointer, passName);
+            RegisterSceneFilter(passParamRegistration, registrationName, priority);
         }
     }
 }

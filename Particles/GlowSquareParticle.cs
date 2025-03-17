@@ -11,7 +11,6 @@ namespace CalamityMod.Particles
         public Color InitialColor;
         public bool AffectedByGravity;
         public float fadeOut = 1;
-        public bool imporant;
         public bool glowCenter;
         public float RotationUse;
         public override bool SetLifetime => true;
@@ -60,7 +59,7 @@ namespace CalamityMod.Particles
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
             if (glowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.White * fadeOut, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.5f, 0.5f), 0, 0f);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.White * fadeOut * 0.7f, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.9f, 0.9f), 0, 0f);
         }
     }
 }

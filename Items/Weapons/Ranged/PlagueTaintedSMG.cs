@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 50;
             Item.damage = 78;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 12;
+            Item.useAnimation = Item.useTime = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -65,8 +65,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 // Fire drones to the left and right.
                 for (int i = 0; i < 3; i++)
                 {
-                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(-Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask || player.Calamity().spiritOrigin ? 1f : 0f);
-                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask || player.Calamity().spiritOrigin ? 1f : 0f);
+                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(-Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
+                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
                 }
             }
             else

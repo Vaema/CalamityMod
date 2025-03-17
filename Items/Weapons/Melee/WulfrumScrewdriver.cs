@@ -44,12 +44,12 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             return base.Clone(item);
 
-            ModItem clone = base.Clone(item);
+            /*ModItem clone = base.Clone(item);
             if (clone is WulfrumScrewdriver a && item.ModItem is WulfrumScrewdriver a2 && a2.ScrewStored)
             {
                 a.ScrewStored = a2.ScrewStored;
             }
-            return clone;
+            return clone;*/
         }
 
         public override float UseSpeedMultiplier(Player player)
@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 14;
             Item.height = 50;
             Item.damage = 12;
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = DefaultTime + WulfrumScrewdriverProj.MaxTime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTime = DefaultTime + WulfrumScrewdriverProj.MaxTime;

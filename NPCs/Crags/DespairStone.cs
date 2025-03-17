@@ -3,8 +3,8 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.Particles;
 using CalamityMod.World;
@@ -32,11 +32,11 @@ namespace CalamityMod.NPCs.Crags
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 40;
-            NPC.width = 72;
-            NPC.height = 72;
+            NPC.width = 66;
+            NPC.height = 64;
             NPC.defense = 38;
             NPC.DR_NERD(0.35f);
-            NPC.lifeMax = 120;
+            NPC.lifeMax = 180;
             NPC.knockBackResist = 0.1f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit41;
@@ -186,7 +186,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DespairStone").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DespairStone2").Type, NPC.scale);

@@ -1,8 +1,10 @@
-﻿using CalamityMod.Items.Armor.Vanity;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
@@ -20,14 +22,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -60,14 +62,14 @@ namespace CalamityMod.Items.TreasureBags
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
-                ModContent.ItemType<StormDragoon>(),
-                ModContent.ItemType<TheStorm>()
+                ModContent.ItemType<SkytideDragoon>(),
+                ModContent.ItemType<TheStorm>(),
+                ModContent.ItemType<Volterion>()
             }));
-            itemLoot.Add(ModContent.ItemType<Thunderstorm>(), 10);
 
             // Equipment
+            itemLoot.Add(ModContent.ItemType<ArcFlashRing>());
             itemLoot.AddRevBagAccessories();
-            // Stay tuned for Definitely Not Charged Perforator Runald's Band As A Single Item
 
             // Vanity
             itemLoot.Add(ModContent.ItemType<StormWeaverMask>(), 7);

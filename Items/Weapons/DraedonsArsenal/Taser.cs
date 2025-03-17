@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Sounds;
 using Terraria;
@@ -20,21 +20,20 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 50;
             Item.height = 26;
-            Item.DamageType = DamageClass.Ranged;
             Item.damage = 16;
-            Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 28;
-            Item.autoReuse = true;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useAnimation = Item.useTime = 28;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<TaserHook>();
+            Item.shootSpeed = 25f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-
-            Item.shoot = ModContent.ProjectileType<TaserHook>();
-            Item.shootSpeed = 25f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;

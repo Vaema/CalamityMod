@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.alpha = 100;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 7;
+            Projectile.penetrate = 11;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
@@ -35,8 +35,8 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (Projectile.localAI[0] < 1f)
             {
-                Projectile.localAI[0] += 0.02f; // 50 frames to reach full size and max power
-                Projectile.scale += 0.02f;
+                Projectile.localAI[0] += 0.05f; // 20 frames to reach full size
+                Projectile.scale += 0.05f;
                 Projectile.width = (int)(36f * Projectile.scale);
                 Projectile.height = (int)(36f * Projectile.scale);
             }
@@ -63,8 +63,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= Projectile.localAI[0];
-
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.75f); // 25% damage nerf for every enemy hit
             if (Projectile.damage < 1)
@@ -74,7 +72,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
+            if (Projectile.numHits == 0)
+                Projectile.velocity *= 0.4f;
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

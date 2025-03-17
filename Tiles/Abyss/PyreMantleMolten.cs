@@ -7,21 +7,20 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
 {
-    public class PyreMantleMolten : ModTile
+    public class PyreMantleMolten : GlowMaskTile
     {
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-        internal static Texture2D GlowTexture;
 
-        public override void SetStaticDefaults()
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/PyreMantleMolten_Glowmask";
+
+        public override void SetupStatic()
         {
-            if (!Main.dedServ)
-                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/PyreMantleMolten_Glowmask", AssetRequestMode.ImmediateLoad).Value;
-
             Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -70,36 +69,15 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            if (GlowTexture is null)
-                return;
-
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j, new Color(200, 200, 200, 200));
-            Tile trackTile = Main.tile[i, j];
-            float glowbrightness = 1f;
-            float glowspeed = Main.GameUpdateCount * 0.01f;
-            glowbrightness *= (float)MathF.Sin(i / 60f + glowspeed);
-            drawColour *= glowbrightness;
-            double num6 = Main.time * 0.08;
-
-            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
-            glowbrightness += 0.3f;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.7f;
-            float lightspeed = Main.GameUpdateCount * 0.01f;
+            float lightspeed = (float)(Main.timeForVisualEffects * 0.01);
             brightness *= (float)MathF.Sin(i / 60f + lightspeed);
             brightness += 0.3f;
             r = 1f;
@@ -110,17 +88,12 @@ namespace CalamityMod.Tiles.Abyss
             b *= brightness;
         }
 
-        private Color GetDrawColour(int i, int j, Color colour)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            float glowbrightness = 1f;
+            float glowspeed = (float)(Main.timeForVisualEffects * 0.01);
+            glowbrightness *= MathF.Sin(i / 60f + glowspeed);
+            return Color.White * glowbrightness;
         }
     }
 }

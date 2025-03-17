@@ -21,8 +21,8 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 30;
             Item.height = 38;
-            Item.useTime = Item.useAnimation = 8;
-            Item.maxStack = 9999;
+            Item.useAnimation = Item.useTime = 8;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<WulfrumDiggingTurtleProjectile>();
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = Item.buyPrice(0, 0, 10, 0);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }
 
@@ -60,8 +60,7 @@ namespace CalamityMod.Items.Tools
 
                     p.ai[1] = 1f;
                     p.timeLeft = 1;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
 
                     explodedAny = true;
                 }

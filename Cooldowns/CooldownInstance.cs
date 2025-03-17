@@ -60,6 +60,17 @@ namespace CalamityMod.Cooldowns
             AssignHandler(cd);
         }
 
+        internal CooldownInstance(Player player, ushort netID, int duration, int timeLeft)
+        {
+            this.netID = netID;
+            this.player = player;
+            this.duration = duration;
+            this.timeLeft = timeLeft;
+
+            string id = CooldownRegistry.registry[netID].ID;
+            AssignHandler(CooldownRegistry.Get(id));
+        }
+
         /// <summary>
         /// Creates a cooldown instance from serialized binary data, used in netcode.
         /// </summary>

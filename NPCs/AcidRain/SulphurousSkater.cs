@@ -32,9 +32,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 5;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 6;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
 
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 5, 25);
+            NPC.value = Item.buyPrice(0, 0, 4, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -125,8 +125,7 @@ namespace CalamityMod.NPCs.AcidRain
                 if (closestBubble.Hitbox.Intersects(NPC.Hitbox))
                 {
                     Flying = true;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                     closestBubble.Kill();
                 }
             }
@@ -152,8 +151,7 @@ namespace CalamityMod.NPCs.AcidRain
                     NPC.velocity.Y -= jumpSpeed;
                     NPC.velocity.X = lungeForwardSpeed * (NPC.Center.X - destination.X < 0).ToDirectionInt();
                     NPC.spriteDirection = (NPC.Center.X - destination.X > 0).ToDirectionInt();
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
             }
             else
@@ -178,8 +176,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (NPC.WithinRange(Target.Center, Target.Size.Length()))
             {
                 Flying = false;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
         }
 
@@ -225,7 +222,7 @@ namespace CalamityMod.NPCs.AcidRain
                 {
                     NPC.frameCounter = 0;
                     NPC.frame.Y += frameHeight;
-                    if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                    if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                         NPC.frame.Y = frameHeight;
                 }
             }
@@ -248,7 +245,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulphurousSkaterGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulphurousSkaterGore2").Type, NPC.scale);

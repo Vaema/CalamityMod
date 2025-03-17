@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
             Color colorAtCenter = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16,
                 (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
-            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
+            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Type])
             {
                 colorAtCenter = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             if (Projectile.localAI[1] <= 0f && Projectile.owner == Main.myPlayer)
             {

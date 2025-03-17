@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
@@ -38,7 +39,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [AutoloadBossHead]
+    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
     public class Cryogen : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
@@ -65,16 +66,13 @@ namespace CalamityMod.NPCs.Cryogen
         public static int cryoIconIndex;
         public static int pyroIconIndex;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string cryoIconPath = "CalamityMod/NPCs/Cryogen/Cryogen_Phase1_Head_Boss";
             string pyroIconPath = "CalamityMod/NPCs/Cryogen/Pyrogen_Head_Boss";
-
-            CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
-            cryoIconIndex = ModContent.GetModBossHeadSlot(cryoIconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
-            pyroIconIndex = ModContent.GetModBossHeadSlot(pyroIconPath);
+            
+            cryoIconIndex = CalamityMod.Instance.AddBossHeadTexture(cryoIconPath, -1);
+            pyroIconIndex = CalamityMod.Instance.AddBossHeadTexture(pyroIconPath, -1);
         }
 
         public override void SetStaticDefaults()
@@ -104,7 +102,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<CryogenBossBar>();
             NPC.noGravity = true;
@@ -155,6 +153,7 @@ namespace CalamityMod.NPCs.Cryogen
             writer.Write(biomeEnrageTimer);
             writer.Write(teleportLocationX);
             writer.Write(NPC.dontTakeDamage);
+            writer.Write(NPC.localAI[1]);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -164,6 +163,7 @@ namespace CalamityMod.NPCs.Cryogen
             biomeEnrageTimer = reader.ReadInt32();
             teleportLocationX = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
+            NPC.localAI[1] = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -236,15 +236,18 @@ namespace CalamityMod.NPCs.Cryogen
             if ((int)NPC.ai[0] + 1 > currentPhase)
                 HandlePhaseTransition((int)NPC.ai[0] + 1);
 
-            if (NPC.ai[2] == 0f && NPC.localAI[1] == 0f && Main.netMode != NetmodeID.MultiplayerClient && (NPC.ai[0] < 3f || bossRush || (death && NPC.ai[0] > 3f))) //spawn shield for phase 0 1 2, not 3 4 5
+            if (NPC.ai[2] == 0f && NPC.localAI[1] == 0f)
             {
+                NPC.localAI[1] = 1f;
                 SoundEngine.PlaySound(ShieldRegenSound, NPC.Center);
-                int shieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CryogenShield>(), NPC.whoAmI);
-                NPC.ai[2] = shieldSpawn + 1;
-                NPC.localAI[1] = -1f;
-                NPC.netUpdate = true;
-                Main.npc[shieldSpawn].ai[0] = NPC.whoAmI;
-                Main.npc[shieldSpawn].netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    int shieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CryogenShield>(), NPC.whoAmI);
+                    NPC.ai[2] = shieldSpawn + 1;
+                    NPC.netUpdate = true;
+                    Main.npc[shieldSpawn].ai[0] = NPC.whoAmI;
+                    Main.npc[shieldSpawn].netUpdate = true;
+                }
             }
 
             int shieldTracker = (int)NPC.ai[2] - 1;
@@ -256,17 +259,12 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 NPC.dontTakeDamage = false;
                 NPC.ai[2] = 0f;
-
-                if (NPC.localAI[1] == -1f)
-                    NPC.localAI[1] = death ? 540f : expertMode ? 720f : 1080f;
-                if (NPC.localAI[1] > 0f)
-                    NPC.localAI[1] -= 1f;
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+            if (CalamityServerConfig.Instance.BossesStopWeather)
+                CalamityWorld.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             if (!player.active || player.dead)
             {
@@ -313,7 +311,7 @@ namespace CalamityMod.NPCs.Cryogen
                         if (!WorldGen.SolidTile(enemySpawnX, enemySpawnY))
                         {
                             int legendEnemySpawn = NPC.NewNPC(NPC.GetSource_FromAI(), enemySpawnX * 16 + 8, enemySpawnY * 16, spawnType);
-                            if (Main.netMode == NetmodeID.Server && legendEnemySpawn < Main.maxNPCs)
+                            if (Main.dedServ && legendEnemySpawn < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, legendEnemySpawn);
 
                             break;
@@ -428,6 +426,15 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.ai[0] = 1f;
                     NPC.localAI[0] = 0f;
                     NPC.netUpdate = true;
+
+                    SoundEngine.PlaySound(ShieldRegenSound, NPC.Center);
+                    if (NPC.ai[2] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int shieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CryogenShield>(), NPC.whoAmI);
+                        NPC.ai[2] = shieldSpawn + 1;
+                        Main.npc[shieldSpawn].ai[0] = NPC.whoAmI;
+                        Main.npc[shieldSpawn].netUpdate = true;
+                    }
                 }
             }
             else if (NPC.ai[0] == 1f)
@@ -617,6 +624,15 @@ namespace CalamityMod.NPCs.Cryogen
                     calamityGlobalNPC.newAI[0] = 0f;
                     calamityGlobalNPC.newAI[2] = 0f;
                     NPC.netUpdate = true;
+
+                    SoundEngine.PlaySound(ShieldRegenSound, NPC.Center);
+                    if (NPC.ai[2] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int shieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CryogenShield>(), NPC.whoAmI);
+                        NPC.ai[2] = shieldSpawn + 1;
+                        Main.npc[shieldSpawn].ai[0] = NPC.whoAmI;
+                        Main.npc[shieldSpawn].netUpdate = true;
+                    }
                 }
             }
             else if (NPC.ai[0] == 2f)
@@ -968,6 +984,18 @@ namespace CalamityMod.NPCs.Cryogen
                     calamityGlobalNPC.newAI[2] = 0f;
                     NPC.netUpdate = true;
 
+                    if (death)
+                    {
+                        SoundEngine.PlaySound(ShieldRegenSound, NPC.Center);
+                        if (NPC.ai[2] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int shieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CryogenShield>(), NPC.whoAmI);
+                            NPC.ai[2] = shieldSpawn + 1;
+                            Main.npc[shieldSpawn].ai[0] = NPC.whoAmI;
+                            Main.npc[shieldSpawn].netUpdate = true;
+                        }
+                    }
+
                     int chance = 100;
                     if (DateTime.Now.Month == 4 && DateTime.Now.Day == 1)
                         chance = 20;
@@ -1212,7 +1240,7 @@ namespace CalamityMod.NPCs.Cryogen
         {
             SoundStyle sound = Main.zenithWorld ? SoundID.NPCDeath14 : TransitionSound;
             SoundEngine.PlaySound(sound, NPC.Center);
-            if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+            if (!Main.dedServ && !Main.zenithWorld)
             {
                 int chipGoreAmount = newPhase >= 5 ? 3 : newPhase >= 3 ? 2 : 1;
                 for (int i = 1; i < chipGoreAmount; i++)
@@ -1271,7 +1299,7 @@ namespace CalamityMod.NPCs.Cryogen
                 FireDrawer = null;
 
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (currentPhase)
             {
                 case 2:
@@ -1290,7 +1318,7 @@ namespace CalamityMod.NPCs.Cryogen
                     texture = Phase6Texture.Value;
                     break;
                 default:
-                    texture = TextureAssets.Npc[NPC.type].Value;
+                    texture = TextureAssets.Npc[Type].Value;
                     break;
             }
 
@@ -1300,9 +1328,9 @@ namespace CalamityMod.NPCs.Cryogen
 
             NPC.DrawBackglow(Main.zenithWorld ? Color.Red : BackglowColor, 4f, spriteEffects, NPC.frame, screenPos);
 
-            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 origin = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 drawPos = NPC.Center - screenPos;
-            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color overlay = Main.zenithWorld ? Color.Red : drawColor;
             spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(overlay), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -1351,7 +1379,7 @@ namespace CalamityMod.NPCs.Cryogen
                     icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+                if (!Main.dedServ && !Main.zenithWorld)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     for (int i = 1; i < 4; i++)
@@ -1400,8 +1428,6 @@ namespace CalamityMod.NPCs.Cryogen
                 normalOnly.Add(ModContent.ItemType<FrostFlare>(), DropHelper.NormalWeaponDropRateFraction);
             }
 
-            npcLoot.Add(ItemID.FrozenKey, 3);
-
             // Trophy (always directly from boss, never in bag)
             npcLoot.Add(ModContent.ItemType<CryogenTrophy>(), 10);
 
@@ -1424,18 +1450,29 @@ namespace CalamityMod.NPCs.Cryogen
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Spawn Permafrost if he isn't in the world
-            int permafrostNPC = NPC.FindFirstNPC(ModContent.NPCType<DILF>());
+            int permafrostNPC = NPC.FindFirstNPC(ModContent.NPCType<Archmage>());
             if (permafrostNPC == -1 && !BossRushEvent.BossRushActive)
-                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<DILF>(), 0, 0f, 0f, 0f, 0f, 255);
+                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Archmage>(), 0, 0f, 0f, 0f, 0f, 255);
 
             // If Cryogen has not been killed, notify players about Cryonic Ore
             if (!DownedBossSystem.downedCryogen)
             {
                 string key = "Mods.CalamityMod.Status.Progression.IceOreText";
-                Color messageColor = Color.LightSkyBlue;
-                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, TileID.SnowBlock, TileID.IceBlock, TileID.CorruptIce, TileID.FleshIce, TileID.HallowedIce, ModContent.TileType<AstralSnow>(), ModContent.TileType<AstralIce>());
+                List<int> tileTypes = [
+                    TileID.SnowBlock,
+                    TileID.IceBlock,
+                    TileID.CorruptIce,
+                    TileID.FleshIce,
+                    TileID.HallowedIce,
+                    ModContent.TileType<AstralSnow>(),
+                    ModContent.TileType<AstralIce>()
+                ];
+                // In Drunk world, it can also generate in Jungle grass due to Jungle/Snow overlap
+                if (Main.drunkWorld)
+                    tileTypes.Add(TileID.JungleGrass);
+                CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,12 +12,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 {
     public abstract class BaseCustomUseStyleProjectile : ModProjectile
     {
-
+        public bool whenSpawned = true;
         public override void SetDefaults()
         {
+            // Width and height are set here so it can destroy cobwebs better lol
+            Projectile.width = (int)Math.Max(HitboxSize.X, 1);
+            Projectile.height = (int)Math.Max(HitboxSize.Y, 1);
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
+            Projectile.noEnchantmentVisuals = true;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -69,6 +68,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// If true, flips the sprite with a 45-degree sword tilt in mind.
         /// </summary>
         public bool FlipAsSword = false;
+
+        /// <summary>
+        /// If true, the sword will be active reguardless of the player being in an item use state.
+        /// </summary>
+        public bool IgnoreActiveAnimation = false;
 
         /// <summary>
         /// The offset in radians of the weapon's rotation from its current rotation.
@@ -149,6 +153,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual void ResetStyle() { }
 
         /// <summary>
+        /// Determines the behavior of the projectile when spawned. (but it is multiplayer synced)
+        /// </summary>
+        public virtual void WhenSpawned() { }
+        /// <summary>
         /// Determines the behavior of the projectile when the item is in use.
         /// </summary>
         public virtual void UseStyle() { }
@@ -166,9 +174,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            if (whenSpawned)
+            {
+                WhenSpawned();
+                whenSpawned = false;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
+                Projectile.netUpdate = true;
+            }
+
             bool ItemAnimationActive = Owner.ItemAnimationActive;
 
-            if (Owner.HeldItem.type != AssignedItemID)
+            if (Owner.HeldItem.type != AssignedItemID || Owner.dead)
             {
                 Projectile.Kill();
             }
@@ -176,7 +192,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.Calamity().mouseWorldListener = true;
             Owner.Calamity().rightClickListener = true;
 
-            if (ItemAnimationActive)
+            if (ItemAnimationActive || IgnoreActiveAnimation)
             {
                 Animation++;
 
@@ -252,6 +268,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             hitbox = new Rectangle((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
 
+            if (false) // Turn this on to show the hitbox, useful for testing if it's working how you want
+            {
+                Particle blastRing = new CustomPulse(hitbox.TopLeft(), Vector2.Zero, Color.Red, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+                Particle blastRing2 = new CustomPulse(hitbox.TopRight(), Vector2.Zero, Color.Gold, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+                GeneralParticleHandler.SpawnParticle(blastRing2);
+                Particle blastRing3 = new CustomPulse(hitbox.BottomLeft(), Vector2.Zero, Color.Green, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+                GeneralParticleHandler.SpawnParticle(blastRing3);
+                Particle blastRing4 = new CustomPulse(hitbox.BottomRight(), Vector2.Zero, Color.Cyan, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+                GeneralParticleHandler.SpawnParticle(blastRing4);
+            }
             base.ModifyDamageHitbox(ref hitbox);
         }
 

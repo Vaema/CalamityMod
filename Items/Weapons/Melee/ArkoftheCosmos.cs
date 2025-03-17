@@ -22,23 +22,24 @@ namespace CalamityMod.Items.Weapons.Melee
         public float Combo = 0f;
         public float Charge = 0f;
 
+        // Frame window for double right click to snip.
+        // The right click item activation takes 3 frames, so the frame window is frame 3 to frame 11.
+        public static int DoubleRightClickFrames = 11;
+        private int rmbFrames = 0;
+
         public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
         public static float MaxThrowReach = 760;
-        public static float snapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
+        public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
         public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
         public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
-
-        public static int DashIframes = 10;
-        public static float SlashBoltsDamageMultiplier = 0.2f;
         public static float SnapBoltsDamageMultiplier = 0.1f;
 
-        public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
-        public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
-        public static float blastFalloffStrenght = 0.75f; //Value between 0 and 1 that determines how much falloff increases affect the damage : Closer to 0 = damage falls off less intensely, closer to 1 : damage falls off way harder
+        public static float BlastDamageMultiplier = 2f; //Damage multiplier for the blast attack
+        public static float BlastBoltsDamageMultiplier = 0.2f;
 
-        public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during hte swirl attack
+        public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during the swirl attack
         public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -46,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -89,7 +90,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 28f;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = RarityType<Violet>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -101,35 +102,70 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             player.Calamity().mouseWorldListener = true;
 
+            if (rmbFrames > 0)
+                --rmbFrames;
+
             if (CanUseItem(player) && Combo != 4)
                 Item.channel = false;
 
             if (Combo == 4)
                 Item.channel = true;
         }
+
         public override bool CanUseItem(Player player)
         {
             return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ArkoftheCosmosSwungBlade>());
         }
 
+        // Right clicks for parries execute extremely fast (3 or less frames) and intentionally so.
+        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 5f : 1f;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                if (Charge > 0 && player.controlUp)
+                // If it has been less than N frames since the last alt function use, this is a double right click.
+                bool rightMouseDoubleClick = rmbFrames > 0;
+
+                // Check if a parry holdout is already present.
+                Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+
+                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0;
+                bool canExecuteParry = parrier is null && !canExecuteBlast;
+
+                // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
+                if (canExecuteBlast)
                 {
+                    // Fire the super blast, then set charge back to zero.
                     float angle = velocity.ToRotation();
-                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI, Charge);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
+                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
+
+                    // If the parry holdout has existed for very few frames and hasn't parried something, just delete it.
+                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames && parrier.ai[1] <= 0f)
+                    {
+                        parrier.active = false;
+                        parrier.netUpdate = true;
+                    }
                 }
 
-                else if (!Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == ProjectileType<ArkoftheAncientsParryHoldout>() || n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() || n.type == ProjectileType<ArkoftheElementsParryHoldout>() || n.type == ProjectileType<ArkoftheCosmosParryHoldout>())))
-                    Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
+                // If the blast cannot be executed, then the parry is executed, assuming no existing holdout is present.
+                else if (canExecuteParry)
+                {
+                    // Checks for parries from any Ark weapon, presumably to prevent some kind of abuse.
+                    bool anyArkParryExists = Main.projectile.Any(n =>
+                        n.active && n.owner == player.whoAmI && (
+                            n.type == ProjectileType<ArkoftheAncientsParryHoldout>() ||
+                            n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() ||
+                            n.type == ProjectileType<ArkoftheElementsParryHoldout>() ||
+                            n.type == ProjectileType<ArkoftheCosmosParryHoldout>()));
 
+                    if (!anyArkParryExists)
+                        Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
+                }
+
+                // Regardless of what transpires from the right click, set the double right click frames appropriately.
+                rmbFrames = DoubleRightClickFrames;
                 return false;
             }
 

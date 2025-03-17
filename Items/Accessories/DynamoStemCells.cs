@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public const int MiniSwamerCooldown = 180;
+        public static int MiniSwamerDamage = 1000;
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 5));
@@ -32,7 +33,6 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().dynamoStemCells = true;
-            player.Calamity().MiniSwarmers = true;
             player.GetDamage<RangedDamageClass>() += 0.1f;
             player.moveSpeed += 0.1f;
         }

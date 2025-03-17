@@ -46,8 +46,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = Speed;
         }
 
-        public override float StealthDamageMultiplier => 1.0f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
@@ -65,10 +63,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<GhoulishGouger>().
                 AddIngredient<MoltenAmputator>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<EndothermicEnergy>(40).
                 AddIngredient<PlagueCellCanister>(20).
                 AddIngredient(ItemID.Nanites, 400).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 60;
             Item.damage = 192;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 26;
+            Item.useAnimation = Item.useTime = 26;
             Item.knockBack = 6.5f;
             Item.useAmmo = AmmoID.Bullet;
             Item.shoot = ProjectileID.Bullet;
@@ -93,7 +93,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Disseminator>().
+                AddIngredient<ConferenceCall>().
                 AddIngredient(ItemID.StarCloak, 3).
                 AddIngredient<CosmiliteBar>(5).
                 AddIngredient<AscendantSpiritEssence>(4).

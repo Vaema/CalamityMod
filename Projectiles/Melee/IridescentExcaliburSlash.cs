@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 vector = Projectile.Center - Main.screenPosition;
-            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle rectangle = asset.Frame(1, 4);
             Vector2 origin = rectangle.Size() / 2f;
             float num = Projectile.scale * 1.1f;
@@ -230,7 +230,7 @@ namespace CalamityMod.Projectiles.Melee
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<IridescentExcaliburHeal>(), BalancingConstants.LifeStealRange);
@@ -245,7 +245,7 @@ namespace CalamityMod.Projectiles.Melee
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<IridescentExcaliburHeal>(), BalancingConstants.LifeStealRange);

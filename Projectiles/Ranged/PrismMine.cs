@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.extraUpdates = 1;
             Projectile.localNPCHitCooldown = 7;
             Projectile.timeLeft = 280;
         }
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D baseTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D baseTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>($"{Texture}Glowmask").Value;
             Texture2D laserTexture = ModContent.Request<Texture2D>($"CalamityMod/Projectiles/Ranged/PrismMineArc").Value;
 

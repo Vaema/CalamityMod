@@ -68,9 +68,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<RuinousSoul>(6).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
+                AddIngredient<RuinousSoul>(6).
                 AddTile<CosmicAnvil>().
                 Register();
         }

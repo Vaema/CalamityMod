@@ -1,6 +1,6 @@
 ﻿
 using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Astral;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;

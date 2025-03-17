@@ -31,8 +31,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = TrailLength;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = TrailLength;
         }
 
         public override void SetDefaults()
@@ -332,15 +332,15 @@ namespace CalamityMod.Projectiles.Melee
 
             Main.spriteBatch.ExitShaderRegion();
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             float scale = Projectile.scale;
             Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
             Vector2 origin = rectangle.Size() / 2f;
             Color alphaColor = Projectile.GetAlpha(lightColor);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 Vector2 centerOffset = Projectile.Size / 2f;
                 int totalAfterimages = TotalAfterimages;

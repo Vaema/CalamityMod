@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Materials
 
         public override void SetDefaults()
         {
-            Item.DefaultToPlaceableTile(ModContent.TileType<ChaoticBarPlaced>());
-            Item.value = Item.sellPrice(gold: 1, silver: 20);
+            Item.DefaultToPlaceableTile(ModContent.TileType<ScoriaBarPlaced>());
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;
         }
 

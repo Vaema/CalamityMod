@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.ExtraTextures
+{
+    [Autoload(Side = ModSide.Client)]
+    public class ExtraTextureRefs : ModSystem
+    {
+        // Destroyer glowmasks
+        public static Asset<Texture2D> DestroyerHeadGlowmask;
+        public static Asset<Texture2D> DestroyerBodyGlowmask;
+        public static Asset<Texture2D> DestroyerTailGlowmask;
+        public static Asset<Texture2D> ProbeGlowmask;
+
+        // Master Rev+ Skeletron Prime
+        public static Asset<Texture2D> ChadPrime;
+        public static Asset<Texture2D> ChadPrimeEyeGlowmask;
+
+        // WoF, These are not "exactly" the ExtraTextures. But 
+        public static Asset<Texture2D> WallOfFleshEyeGlowmask;
+        public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
+
+        // Flying Carpet Replacements
+        public static Asset<Texture2D> FlyingCarpetVanilla;
+        public static Asset<Texture2D> FlyingCarpetAuric;
+
+        // Lucky Buff icon replacements
+        public static Asset<Texture2D> LuckIconGreater;
+        public static Asset<Texture2D> LuckIconVanilla;
+        public static Asset<Texture2D> LuckIconLesser;
+
+        // Particles
+        public static Asset<Texture2D> CircularSmear;
+        public static Asset<Texture2D> CircularSmearFire1;
+        public static Asset<Texture2D> CircularSmearFire2;
+        public static Asset<Texture2D> CircularSmearFire3;
+
+        // Boss Heads
+        // I know it's not exactly a Texture2D but it belongs to ExtraTextures.
+        public static int BossHeadIndex_ChadPrime;
+
+        public override void Load()
+        {
+            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
+            BossHeadIndex_ChadPrime = CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
+        }
+
+
+        // TODO: - Every other ExtraTextures Reference could be move in here
+        public override void OnModLoad()
+        {
+            DestroyerHeadGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
+            DestroyerBodyGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
+            DestroyerTailGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
+
+            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
+
+            ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);
+            ChadPrimeEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrimeHeadGlow", AssetRequestMode.AsyncLoad);
+
+            WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
+            WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
+
+            FlyingCarpetVanilla = TextureAssets.FlyingCarpet;
+            FlyingCarpetAuric = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AuricCarpet", AssetRequestMode.AsyncLoad);
+
+            LuckIconGreater = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyGreater", AssetRequestMode.AsyncLoad);
+            LuckIconVanilla = TextureAssets.Buff[BuffID.Lucky];
+            LuckIconLesser = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyLesser", AssetRequestMode.AsyncLoad);
+
+            CircularSmear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmear", AssetRequestMode.AsyncLoad);
+            CircularSmearFire1 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire1", AssetRequestMode.AsyncLoad);
+            CircularSmearFire2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire2", AssetRequestMode.AsyncLoad);
+            CircularSmearFire3 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire3", AssetRequestMode.AsyncLoad);
+        }
+
+        public override void Unload()
+        {
+            if (!Main.dedServ)
+            {
+                TextureAssets.FlyingCarpet = FlyingCarpetVanilla;
+                TextureAssets.Buff[BuffID.Lucky] = LuckIconVanilla;
+            }
+        }
+    }
+}

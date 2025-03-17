@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 46;
             Item.damage = 66; // clueless
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -36,37 +36,13 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int i = Main.myPlayer;
-            float projSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = projSpeed;
-            }
-            else
-            {
-                mouseDistance = projSpeed / mouseDistance;
-            }
-            mouseXDist *= mouseDistance;
-            mouseYDist *= mouseDistance;
-            realPlayerPos.X = (float)Main.mouseX + Main.screenPosition.X;
-            realPlayerPos.Y = (float)Main.mouseY + Main.screenPosition.Y;
-            Vector2 spinningpoint = new Vector2(mouseXDist, mouseYDist);
-            spinningpoint = spinningpoint.RotatedBy(1.5707963705062866, default);
-            int p = Projectile.NewProjectile(source, realPlayerPos.X + spinningpoint.X, realPlayerPos.Y + spinningpoint.Y, spinningpoint.X, spinningpoint.Y, ModContent.ProjectileType<PinkButterfly>(), damage, knockback, i, 0f, 0f);
+            Vector2 clampedMouse = player.ClampedMouseWorld();
+            Vector2 mouseDirection = Vector2.Normalize(clampedMouse - player.Center) * Item.shootSpeed;
+
+            int p = Projectile.NewProjectile(source, clampedMouse, mouseDirection.RotatedBy(MathHelper.PiOver2), ModContent.ProjectileType<PinkButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
-            spinningpoint = spinningpoint.RotatedBy(-3.1415927410125732, default);
-            p = Projectile.NewProjectile(source, realPlayerPos.X + spinningpoint.X, realPlayerPos.Y + spinningpoint.Y, spinningpoint.X, spinningpoint.Y, ModContent.ProjectileType<PurpleButterfly>(), damage, knockback, i, 0f, 0f);
+            p = Projectile.NewProjectile(source, clampedMouse, mouseDirection.RotatedBy(-MathHelper.PiOver2), ModContent.ProjectileType<PurpleButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             return false;
@@ -75,10 +51,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Silk, 40).
-                AddIngredient(ItemID.Ectoplasm, 20).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.ButterflyDust, 2).
+                AddIngredient(ItemID.Silk, 40).
+                AddIngredient(ItemID.Ectoplasm, 20).
                 AddTile(TileID.Loom).
                 Register();
         }

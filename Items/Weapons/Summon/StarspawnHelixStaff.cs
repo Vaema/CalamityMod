@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<AstralProbeSummon>();
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (Main.projectile.IndexInRange(p))
                 {
                     Main.projectile[p].originalDamage = Item.damage;

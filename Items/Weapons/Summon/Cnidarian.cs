@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.channel = true;
             Item.noMelee = true;
 
-            Item.shoot = ModContent.ProjectileType<CnidarianJellyfishOnTheString>();
+            Item.shoot = ProjectileType<CnidarianJellyfishOnTheString>();
             Item.shootSpeed = 10f;
 
             Item.rare = ItemRarityID.Green;
@@ -78,6 +78,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public void SetPlayerArms(Player player)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Calculate the dirction in which the players arms should be pointing at.
             Vector2 playerToCursor = (player.Calamity().mouseWorld - player.Center).SafeNormalize(Vector2.UnitX);
             float armPointingDirection = (playerToCursor.ToRotation());
@@ -124,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D properSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/Cnidarian").Value;
+            Texture2D properSprite = Request<Texture2D>("CalamityMod/Items/Weapons/Summon/Cnidarian").Value;
 
             spriteBatch.DrawNewInventorySprite(properSprite, new Vector2(42f, 34), position, drawColor, origin, scale);
             return false;
@@ -132,7 +133,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Texture2D properSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/Cnidarian").Value;
+            Texture2D properSprite = Request<Texture2D>("CalamityMod/Items/Weapons/Summon/Cnidarian").Value;
 
             spriteBatch.Draw(properSprite, Item.position - Main.screenPosition, null, lightColor, rotation, properSprite.Size() / 2f, scale, 0, 0);
             return false;

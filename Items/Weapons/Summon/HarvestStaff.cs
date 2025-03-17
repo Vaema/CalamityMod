@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<HarvestStaffSentry>();
             Item.knockBack = 5f;
 
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.mana = 10;
             Item.width = 44;
             Item.height = 46;
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Summon
             player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
             YOffset -= 10;
             position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
-            Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
             return false;
         }

@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.TileEntities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -227,7 +228,7 @@ namespace CalamityMod.UI.DraedonSummoning
             int schematicType = 0;
 
             if (codebreakerTileEntity.HeldSchematicID > 0)
-                schematicType = CalamityLists.EncryptedSchematicIDRelationship[codebreakerTileEntity.HeldSchematicID];
+                schematicType = EncryptedSchematicIDRelationshipDict.Dict[codebreakerTileEntity.HeldSchematicID];
 
             if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
                 schematicIconTexture = ModContent.Request<Texture2D>("CalamityMod/Items/DraedonMisc/EncryptedSchematicPlanetoid").Value;
@@ -421,9 +422,16 @@ namespace CalamityMod.UI.DraedonSummoning
             {
                 // If the player's hand item is empty and the codebreaker has a schematic, grab it.
                 // This doesn't work if the Codebreaker is busy decrypting the schematic in question.
-                if (playerHandItem.IsAir && CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(codebreakerTileEntity.HeldSchematicID) && codebreakerTileEntity.DecryptionCountdown <= 0)
+
+                bool isAir = playerHandItem.IsAir;
+                bool countdownDone = codebreakerTileEntity.DecryptionCountdown <= 0;
+                bool hasValidSchematicID = EncryptedSchematicIDRelationshipDict.TryGet(codebreakerTileEntity.HeldSchematicID, out var schematicItemType);
+                bool hasHandHoldingValidSchematicItem = EncryptedSchematicIDRelationshipDict.TryGetKey(playerHandItem.type, out var handHoldSchematicID);
+                bool hasMouseHoldingValidSchematicItem = EncryptedSchematicIDRelationshipDict.TryGetKey(Main.mouseItem.type, out var mouseHoldSchematicID);
+
+                if (isAir && countdownDone && hasValidSchematicID)
                 {
-                    playerHandItem.SetDefaults(CalamityLists.EncryptedSchematicIDRelationship[codebreakerTileEntity.HeldSchematicID]);
+                    playerHandItem.SetDefaults(schematicItemType);
                     codebreakerTileEntity.HeldSchematicID = 0;
                     codebreakerTileEntity.DecryptionCountdown = 0;
                     codebreakerTileEntity.SyncContainedStuff();
@@ -433,9 +441,9 @@ namespace CalamityMod.UI.DraedonSummoning
                 }
 
                 // Otherwise, if the player has an encrypted schematic and the Codebreaker doesn't, insert it into the machine.
-                else if (CalamityLists.EncryptedSchematicIDRelationship.ContainsValue(playerHandItem.type) && codebreakerTileEntity.HeldSchematicID == 0)
+                else if (hasHandHoldingValidSchematicItem && hasMouseHoldingValidSchematicItem && codebreakerTileEntity.HeldSchematicID == 0)
                 {
-                    codebreakerTileEntity.HeldSchematicID = CalamityLists.EncryptedSchematicIDRelationship.First(i => i.Value == Main.mouseItem.type).Key;
+                    codebreakerTileEntity.HeldSchematicID = mouseHoldSchematicID;
                     playerHandItem.TurnToAir();
                     codebreakerTileEntity.SyncContainedStuff();
                     SoundEngine.PlaySound(SoundID.Grab);
@@ -444,15 +452,15 @@ namespace CalamityMod.UI.DraedonSummoning
                 }
 
                 // Lastly, if the player has an encrypted schematic but so does the Codebreaker, swap the two.
-                else if (CalamityLists.EncryptedSchematicIDRelationship.ContainsValue(playerHandItem.type) && codebreakerTileEntity.HeldSchematicID != 0)
+                else if (hasHandHoldingValidSchematicItem && hasValidSchematicID)
                 {
-                    int previouslyHeldSchematic = CalamityLists.EncryptedSchematicIDRelationship[codebreakerTileEntity.HeldSchematicID];
+                    int previouslyHeldSchematic = schematicItemType;
 
                     // If the schematics are the same, don't actually do anything, just play the sound as an illusion, to prevent having to send a packet.
                     SoundEngine.PlaySound(SoundID.Grab);
-                    if (playerHandItem.type != previouslyHeldSchematic)
+                    if (playerHandItem.type != previouslyHeldSchematic && hasMouseHoldingValidSchematicItem)
                     {
-                        codebreakerTileEntity.HeldSchematicID = CalamityLists.EncryptedSchematicIDRelationship.First(i => i.Value == Main.mouseItem.type).Key;
+                        codebreakerTileEntity.HeldSchematicID = mouseHoldSchematicID;
                         playerHandItem.SetDefaults(previouslyHeldSchematic);
                         codebreakerTileEntity.SyncContainedStuff();
                         AwaitingDecryptionTextClose = false;
@@ -652,12 +660,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = CalamityMod.Instance.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.CodebreakerSummonStuff);
-                        netMessage.Write(CalamityWorld.DraedonSummonCountdown);
-                        netMessage.WriteVector2(CalamityWorld.DraedonSummonPosition);
-                        netMessage.Write(CalamityWorld.DraedonMechdusa);
-                        netMessage.Send();
+                        CodebreakerSummonStuffPacket.Send();
                     }
                 }
             }

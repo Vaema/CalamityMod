@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Boss
         public const int TotalRitualTime = 270;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()

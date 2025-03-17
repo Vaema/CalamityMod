@@ -32,14 +32,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override float StealthDamageMultiplier => 1.8f;
         public override float StealthKnockbackMultiplier => 7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float spreadAngle = MathHelper.ToRadians(2.5f);
-            Vector2 direction = velocity;
-            Vector2 baseDirection = direction.RotatedBy(-spreadAngle * 2.5f);
+            Vector2 baseDirection = velocity.RotatedBy(-spreadAngle * 2.5f);
 
             for (int i = 0; i < 6; i++)
             {

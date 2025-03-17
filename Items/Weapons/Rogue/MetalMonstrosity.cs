@@ -21,10 +21,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Orange;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
 
-            Item.damage = 30;
-            Item.useAnimation = 40;
-            Item.useTime = 40;
-            Item.knockBack = 7f;
+            Item.damage = 28;
+            Item.useAnimation = Item.useTime = 45;
+            Item.knockBack = 12f;
             Item.shoot = ModContent.ProjectileType<MetalChunk>();
             Item.shootSpeed = 7f;
 
@@ -35,7 +34,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             int proj = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MetalChunk>(), damage, knockback, player.whoAmI);
             if (player.Calamity().StealthStrikeAvailable() && proj.WithinBounds(Main.maxProjectiles))
+            {
                 Main.projectile[proj].Calamity().stealthStrike = true;
+                Main.projectile[proj].penetrate = 3;
+            }
             return false;
         }
 

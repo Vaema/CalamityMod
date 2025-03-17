@@ -1,3 +1,4 @@
+AnahitaTelegraph.DisplayName: Anahita Telegraph
 ApolloChargeTelegraph.DisplayName: Apollo Charge Telegraph
 ApolloFireball.DisplayName: Volatile Plasma Blast
 ApolloRocket.DisplayName: High Explosive Plasma Rocket
@@ -40,6 +41,8 @@ CirrusBlaster.DisplayName: Cirrus Mushroom
 CirrusPhotonRipperPrismTooth.DisplayName: Cirrus Photon Ripper Tooth
 CirrusPhotonRipperProjectile.DisplayName: Cirrus Photon Ripper
 CirrusVolatileVodkaBottle.DisplayName: Volatile Vodka Bottle
+CrimulanSpike.DisplayName: Crimulan Spike
+CursedFire.DisplayName: Eye Fire
 DarkEnergyBall.DisplayName: Dark Energy
 DarkEnergyBall2.DisplayName: Dark Energy
 DarkOrb.DisplayName: Dark Orb
@@ -56,6 +59,7 @@ DoGDeathBoom.DisplayName: Cosmic Explosion
 DoGFire.DisplayName: Death Fire
 DoGP1EndPortal.DisplayName: Portal
 DoGTeleportRift.DisplayName: Rift
+DoGWingdings.DisplayName: Ramblings of Wing DoGster
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
 DyingSun.DisplayName: Dying Sun
 EssenceDust.DisplayName: Cosmic Dust
@@ -64,10 +68,12 @@ FlareBomb.DisplayName: Flare Bomb
 FlareDust.DisplayName: Flare Dust
 FlareDust2.DisplayName: Flare Bomb
 Flarenado.DisplayName: Flarenado
+FoveanatorEnergyBomb.DisplayName: Nebulous Energy Bomb
+FoveanatorLaser.DisplayName: Nebulous Laser
+FoveanatorFlamethrower.DisplayName: Nebulous Flames
 FrostMist.DisplayName: Frost Mist
 GooglyEye.DisplayName: Googly Eye
 GreatSandBlast.DisplayName: Great Sand Blast
-HealOrbProv.DisplayName: Heal
 HellfireExplosion.DisplayName: Brimstone Hellfire Explosion
 HiveBombGoliath.DisplayName: Hive Bomb
 HolyAura.DisplayName: Holy Aura
@@ -81,7 +87,7 @@ HolyFlare.DisplayName: Holy Flare
 HolyLight.DisplayName: Holy Light
 HolySpear.DisplayName: Holy Spear
 HomingGasBulb.DisplayName: Homing Gas Bulb
-HomingGasBulbSporeGas.DisplayName: Homing Gas Bulb Spore Gas
+HomingGasBulbSporeGas.DisplayName: Spore Bulb Gas
 IceBlast.DisplayName: Ice Blast
 IceBomb.DisplayName: Ice Bomb
 IceRain.DisplayName: Ice Rain
@@ -130,7 +136,7 @@ SandTooth.DisplayName: Sand Tooth
 SCalBrimstoneFireblast.DisplayName: Brimstone Fireblast
 SCalBrimstoneGigablast.DisplayName: Brimstone Gigablast
 SCalRitualDrama.DisplayName: Calamitous Ritual Drama
-ScavengerLaser.DisplayName: Homing Dart
+HomingLaserDart.DisplayName: Homing Dart
 ScavengerNuke.DisplayName: Homing Nuke
 ShadeNimbusHostile.DisplayName: Shade Nimbus
 ShaderainHostile.DisplayName: Shade Rain

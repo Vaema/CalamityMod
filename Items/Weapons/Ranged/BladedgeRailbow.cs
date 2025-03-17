@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        // TODO -- This is a List. It should be handled in the way the new Collections are handled.
         #region GFB Arrow Array
         public static int[] arrowArr =
         {
@@ -80,7 +81,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             ModContent.ProjectileType<TelluricGlareArrow>(),
             ModContent.ProjectileType<BallistaGreatArrow>(),
             ModContent.ProjectileType<TheMaelstromShark>(),
-            ModContent.ProjectileType<Bolt>(),
+            ModContent.ProjectileType<TheStormLightningShot>(),
             ModContent.ProjectileType<ToxicArrow>(),
             ModContent.ProjectileType<UltimaBolt>(),
             ModContent.ProjectileType<UltimaRay>(),

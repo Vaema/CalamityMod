@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<SandnadoMinion>();
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int sandnado = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                int sandnado = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(sandnado))
                     Main.projectile[sandnado].originalDamage = Item.damage;
             }

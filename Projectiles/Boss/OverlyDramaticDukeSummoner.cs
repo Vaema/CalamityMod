@@ -19,9 +19,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -91,13 +91,13 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 velocity = new Vector2(0f, -18f).RotatedByRandom(0.7f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top + new Vector2(Main.rand.NextFloat(-80f, 80f), 100f), velocity,
-                        ModContent.ProjectileType<OldDukeSummonDrop>(), 65, 2f);
+                        ModContent.ProjectileType<OldDukeSummonDrop>(), 0, 0f);
                 }
                 if (Projectile.ai[0] % 35f == 34f)
                 {
                     Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), -7f - Main.rand.NextFloat(4f, 12f)).RotatedByRandom(0.5f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top + new Vector2(Main.rand.NextFloat(-30f, 30f), 100f), velocity,
-                        ModContent.ProjectileType<OldDukeGore>(), 65, 2f);
+                        ModContent.ProjectileType<OldDukeGore>(), 0, 0f);
                 }
             }
 
@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Boss
                                 return;
                             }
 
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
                                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", new object[]
                                 {
@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Boss
             bottomY--;
             Vector2 bottomVector = new Vector2(centerAsTileCoords.X, bottomY) * 16f + new Vector2(8f);
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float yMax = 1600f * Projectile.scale;
             for (int y = 0; y < yMax; y += 30)
             {
@@ -201,16 +201,6 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override bool CanHitPlayer(Player target) => Projectile.ai[0] >= 90f;
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 240f * Projectile.scale, targetHitbox);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 420);
-        }
+        public override bool CanHitPlayer(Player target) => false;
     }
 }

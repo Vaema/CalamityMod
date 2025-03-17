@@ -14,18 +14,18 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 68;
-            Item.damage = 256;
+            Item.damage = 2156;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.mana = 40;
+            Item.useTime = 65;
+            Item.useAnimation = 65;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9f;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VenusianBolt>();
-            Item.shootSpeed = 19f;
+            Item.shootSpeed = 13f;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

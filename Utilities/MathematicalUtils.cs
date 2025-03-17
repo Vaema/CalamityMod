@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.Xml;
 using Microsoft.Xna.Framework;
+using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod
@@ -87,6 +90,8 @@ namespace CalamityMod
         /// <param name="a">The first point.</param>
         /// <param name="b">The second point.</param>
         public static float ManhattanDistance(this Vector2 a, Vector2 b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+
+        public static int ManhattanDistance(this Point a, Point b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
 
         /// <summary>
         /// Wraps an angle between -90 and 90 degrees. If an angle goes past this range it'll go back to the other end.
@@ -219,6 +224,43 @@ namespace CalamityMod
         /// </summary>
         /// <param name="x">The input value.</param>
         public static int DirectionalSign(this float x) => (x > 0f).ToDirectionInt();
+
+        public static List<Point> GetIntersectingPointsInLine(Point start, Point end)
+        {
+            List<Point> intersectingCells = [];
+
+            int dx = Math.Abs(end.X - start.X);
+            int dy = Math.Abs(end.Y - start.Y);
+            int sx = start.X < end.X ? 1 : -1;
+            int sy = start.Y < end.Y ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                // Add the current cell to the list
+                intersectingCells.Add(start);
+
+                // Check if we've reached the end point
+                if (start == end)
+                    break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    start.X += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    start.Y += sy;
+                }
+            }
+
+            return intersectingCells;
+        }
+
+        public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
 
         #region Easings
         /// <summary>

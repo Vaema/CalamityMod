@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace CalamityMod
@@ -20,5 +22,96 @@ namespace CalamityMod
 
             return (destination - entity.Center).SafeNormalize(fallback.Value);
         }
+
+        /// <summary>
+        /// Adds screenshake to the local player, using the given position and range to determine whether the player is able to see the screenshake.
+        /// </summary>
+        /// <param name="position">The center of the screenshake, where it is most intense.</param>
+        /// <param name="intensity">The maximum intensity of the screenshake.</param>
+        /// <param name="range">The distance from which the screenshake's power becomes zero.</param>
+        public static void AddScreenshakeAt(Vector2 position, float intensity, float range = 1000)
+        {
+            float dist = 1;
+            dist -= position.Distance(Main.LocalPlayer.Center) / range;
+
+            dist = Math.Max(dist, 0);
+
+            Main.LocalPlayer.GetModPlayer<CalamityPlayer>().GeneralScreenShakePower += (intensity * dist);
+        }
+
+        /// <summary>
+        /// Check if Entity is null or Inactive (!active)
+        /// </summary>
+        /// <param name="entity">Entity to check</param>
+        /// <returns>true if entity is null or inactive, otherwise false</returns>
+        public static bool IsNullOrInactive(this Entity entity)
+        {
+            if (entity is null) return true;
+            if (!entity.active) return true;
+
+            return false;
+        }
+
+        #region Fallback Method for IndexInRange
+        /// <summary>
+        /// Fallback method for Main.npc.IndexInRange which provide accurate range check (0 <= index < Main.maxNPCs)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxNPCs]</returns>
+        public static bool IndexInRange(this NPC[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxNPCs;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.player.IndexInRange which provide accurate range check (0 <= index < Main.maxPlayers)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxPlayers]</returns>
+        public static bool IndexInRange(this Player[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxPlayers;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.projectile.IndexInRange which provide accurate range check (0 <= index < Main.maxProjectiles)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxProjectiles]</returns>
+        public static bool IndexInRange(this Projectile[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxProjectiles;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.gore.IndexInRange which provide accurate range check (0 <= index < Main.maxGore)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxGore]</returns>
+        public static bool IndexInRange(this Gore[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxGore;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.npc.IndexInRange which provide accurate range check (0 <= index < Main.maxDust)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxDust]</returns>
+        public static bool IndexInRange(this Dust[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxDust;
+            return false;
+        }
+        #endregion
     }
 }

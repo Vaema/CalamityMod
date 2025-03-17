@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Handle frames.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             float maxOpacity = 1f;
 
@@ -61,12 +61,8 @@ namespace CalamityMod.Projectiles.Magic
             float flySpeed = 8f;
             float flyInertia = 54f;
 
-            Projectile.hostile = true;
-            Projectile.friendly = false;
             if (ProjectileOwner != null && (ProjectileOwner.ModProjectile<SpiritCongregation>().CurrentPower > 0.97f || Projectile.timeLeft < 95))
             {
-                Projectile.hostile = false;
-
                 radius += 36f;
 
                 target = ProjectileOwner;

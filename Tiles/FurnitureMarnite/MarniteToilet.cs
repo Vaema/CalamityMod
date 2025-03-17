@@ -16,8 +16,6 @@ namespace CalamityMod.Tiles.FurnitureMarnite
     {
         public override void SetStaticDefaults()
         {
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.FurnitureMarnite.MarniteToilet>());
-
             Main.tileFrameImportant[Type] = true;
             Main.tileWaterDeath[Type] = false;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
@@ -25,6 +23,7 @@ namespace CalamityMod.Tiles.FurnitureMarnite
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
             TileObjectData.addAlternate(1);

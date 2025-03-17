@@ -60,13 +60,5 @@ namespace CalamityMod.Projectiles.Boss
             }
             Projectile.Damage();
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
-        }
     }
 }

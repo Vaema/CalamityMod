@@ -17,13 +17,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
         {
             Item.width = 140;
             Item.height = 42;
-            Item.damage = 7077;
+            Item.damage = 7777;
             Item.knockBack = 15f;
             Item.shootSpeed = 30f;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -59,7 +59,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
 
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<NorfleetCannon>(), damage, knockback, player.whoAmI, 0, (cheater ? 1000 : 0), loadedShots);
-            
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
             holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 

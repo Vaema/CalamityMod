@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +22,7 @@ namespace CalamityMod.Items
             Item.rare = ItemRarityID.Pink;
 
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.useTime = Item.useAnimation = 2;
+            Item.useAnimation = Item.useTime = 2;
             Item.noMelee = true;
             Item.channel = true;
             Item.autoReuse = true;
@@ -40,10 +41,18 @@ namespace CalamityMod.Items
                 CalamityPlayer modPlayer = player.Calamity();
                 modPlayer.momentumCapacitorTime = TotalFadeTime;
                 modPlayer.momentumCapacitorBoost += Main.rand.NextFloat(0.5f, 3.5f) * MomentumChargePerFrame;
-                if (modPlayer.momentumCapacitorBoost >= MaxMomentumCharge)
+                if (modPlayer.momentumCapacitorBoost >= MaxMomentumCharge && !Main.zenithWorld)
                     modPlayer.momentumCapacitorBoost = MaxMomentumCharge;
             }
             return null;
         }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.zenithWorld)
+                Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
     }
 }

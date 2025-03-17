@@ -31,8 +31,10 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             Player owner = Main.player[proj.owner];
             Target = owner.Center.MinionHoming(EnemyDistanceDetection, owner);
 
+            var hasTarget = Target is not null;
+
             CheckMinionExistence(proj, owner);
-            DoAnimation(proj);
+            DoAnimation(proj, charging: hasTarget);
 
             proj.localNPCHitCooldown = 10;
             proj.friendly = true;
@@ -43,7 +45,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             proj.rotation = MathHelper.ToRadians(proj.velocity.X);
             proj.MinionAntiClump(0.5f);
 
-            if (Target is not null)
+            if (hasTarget)
             {
                 Vector2 dashDirection = proj.SafeDirectionTo(Target.Center);
 
@@ -96,7 +98,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             return false;
         }
 
-        public static bool DoRavenMinionDrawing(Projectile proj, ref Color lightColor)
+        public static void DoRavenMinionDrawing(Projectile proj, ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[proj.type].Value;
             Vector2 drawPosition = proj.Center - Main.screenPosition;
@@ -111,8 +113,6 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 CalamityUtils.DrawAfterimagesCentered(proj, 0, Color.MediumPurple with { A = 50 });
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, proj.GetAlpha(lightColor), proj.rotation, origin, proj.scale, effects);
-
-            return false;
         }
 
         #region AI Methods
@@ -129,23 +129,21 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 proj.timeLeft = 2;
         }
 
-        private static void DoAnimation(Projectile proj)
+        private static void DoAnimation(Projectile proj, bool charging)
         {
             proj.frameCounter++;
             if (proj.frameCounter >= 5)
             {
-                proj.frame = (proj.frame + 1) % Main.projFrames[proj.type];
+                var maxFrames = Main.projFrames[proj.type] / 2;
+                proj.frame = (proj.frame + 1) % maxFrames;
+
+                if (charging) proj.frame += maxFrames;
+
                 proj.frameCounter = 0;
             }
         }
 
-        private static void SyncVariables(Projectile proj)
-        {
-            proj.netUpdate = true;
-            if (proj.netSpam >= 10)
-                proj.netSpam = 9;
-        }
-
+        private static void SyncVariables(Projectile proj) => proj.ForceNetUpdate(false);
         #endregion
     }
 }

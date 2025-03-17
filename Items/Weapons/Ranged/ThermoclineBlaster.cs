@@ -113,8 +113,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.PhoenixBlaster).
-                AddIngredient<EssenceofEleum>(5).
                 AddIngredient<EssenceofHavoc>(5).
+                AddIngredient<EssenceofEleum>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

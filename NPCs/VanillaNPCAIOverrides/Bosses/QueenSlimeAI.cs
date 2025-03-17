@@ -16,7 +16,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             // Difficulty bools
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Percent life remaining
@@ -25,9 +24,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float slimeScale = 1f;
             bool teleported = false;
             bool phase2 = lifeRatio <= 0.5f;
-            bool phase3 = lifeRatio <= (masterMode ? 0.5f : 0.4f);
-            bool phase4 = lifeRatio <= (masterMode ? 0.5f : 0.2f);
-            bool phase5 = lifeRatio <= 0.25f && masterMode;
+            bool phase3 = lifeRatio <= (death ? 0.5f : 0.4f);
+            bool phase4 = lifeRatio <= (death ? 0.5f : 0.2f);
+            bool phase5 = lifeRatio <= 0.25f && death;
 
             // Spawn settings
             if (npc.localAI[0] == 0f)
@@ -60,7 +59,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Teleport
-            float teleportGateValue = masterMode ? 300f : 600f;
+            float teleportGateValue = death ? 300f : 600f;
             if (!Main.player[npc.target].dead && npc.timeLeft > 10 && !phase2 && npc.ai[3] >= teleportGateValue && npc.ai[0] == 0f && npc.velocity.Y == 0f)
             {
                 // Avoid cheap bullshit
@@ -315,7 +314,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Gore.NewGore(npc.GetSource_FromAI(), npc.Center + new Vector2(-40f, -npc.height / 2), npc.velocity, GoreID.QueenSlimeCrown);
 
                         // Spawn spread of projectiles in Master Mode
-                        if (masterMode)
+                        if (death)
                         {
                             int numGelProjectiles = 12;
                             if (Main.getGoodWorld)
@@ -445,7 +444,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[2] += 1f;
                         }
 
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X *= (death ? 1.4f : 1.2f);
 
                         npc.noTileCollide = true;
@@ -455,16 +454,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.target >= Main.maxPlayers)
                             break;
 
-                        float jumpVelocity = bossRush ? 9f : death ? (masterMode ? 7f : 5.5f) : (masterMode ? 6f : 4.5f);
+                        float jumpVelocity = bossRush ? 9f : death ? 7f : 4.5f;
                         if (Main.getGoodWorld)
                             jumpVelocity = 12f;
 
                         if ((npc.direction == 1 && npc.velocity.X < jumpVelocity) || (npc.direction == -1 && npc.velocity.X > 0f - jumpVelocity))
                         {
                             if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
-                                npc.velocity.X += (bossRush ? 1f : death ? (masterMode ? 0.45f : 0.35f) : (masterMode ? 0.4f : 0.3f)) * npc.direction;
+                                npc.velocity.X += (bossRush ? 1f : death ? 0.45f : 0.3f) * npc.direction;
                             else
-                                npc.velocity.X *= bossRush ? 0.8f : death ? (masterMode ? 0.85f : 0.9f) : (masterMode ? 0.88f : 0.91f);
+                                npc.velocity.X *= bossRush ? 0.8f : death ? 0.85f : 0.91f;
                         }
 
                         if (!Main.player[npc.target].dead)
@@ -515,7 +514,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Bottom, Vector2.Zero, type, damage, 0f, Main.myPlayer);
 
                                 // Line of explosions in Master Mode
-                                if (masterMode)
+                                if (death)
                                 {
                                     float expandDelay = 0f;
                                     int maxSmashes = death ? 22 : 16;
@@ -537,7 +536,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 // Eruption of crystals in phase 3
                                 if (npc.ai[0] == 6f && phase3)
                                 {
-                                    float projectileVelocity = masterMode ? (death ? 18f : 15f) : 12f;
+                                    float projectileVelocity = death ? 18f : 12f;
                                     type = ProjectileID.QueenSlimeMinionBlueSpike;
                                     damage = npc.GetProjectileDamage(type);
                                     Vector2 destination = (new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center).SafeNormalize(Vector2.UnitY);
@@ -638,7 +637,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     int projectileAmt = 2;
                                     int type = ProjectileID.QueenSlimeMinionBlueSpike;
                                     int damage = npc.GetProjectileDamage(type);
-                                    Vector2 velocityIncrease = masterMode ? (Vector2.UnitY * (death ? 4f : 2f)) : Vector2.Zero;
+                                    Vector2 velocityIncrease = death ? (Vector2.UnitY * 4f) : Vector2.Zero;
                                     for (int i = 0; i < projectileAmt; i++)
                                     {
                                         int totalProjectiles = 2;
@@ -691,7 +690,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.velocity = center - npc.Center;
                         npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
-                        npc.velocity *= bossRush ? 30f : death ? (masterMode ? 27.3f : 26f) : (masterMode ? 25.2f : 24f);
+                        npc.velocity *= bossRush ? 30f : death ? 27.3f : 24f;
                     }
                     else
                         npc.velocity.Y *= 0.95f;
@@ -845,7 +844,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Spawn small slimes
             // Don't spawn any slimes in final phase
-            if (npc.life <= 0 || (phase4 && !masterMode))
+            if (npc.life <= 0 || (phase4 && !death))
                 return false;
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -862,7 +861,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             float slimeSpawnHealthGateValue = CalamityWorld.LegendaryMode ? 0.01f : phase3 ? 0.04f : phase2 ? 0.03f : 0.025f;
-            if (masterMode)
+            if (death)
                 slimeSpawnHealthGateValue *= 0.5f;
 
             int slimeSpawnThreshold = (int)(npc.lifeMax * slimeSpawnHealthGateValue);
@@ -900,7 +899,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Main.npc[slimeScale2].velocity.Y = Main.rand.Next(-30, 1) * 0.1f;
             Main.npc[slimeScale2].ai[0] = -500 * Main.rand.Next(3);
             Main.npc[slimeScale2].ai[1] = 0f;
-            if (Main.netMode == NetmodeID.Server && slimeScale2 < Main.maxNPCs)
+            if (Main.dedServ && slimeScale2 < Main.maxNPCs)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeScale2);
 
             return false;
@@ -1634,7 +1633,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 Main.npc[num33].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                 Main.npc[num33].ai[0] = -500 * Main.rand.Next(3);
                 Main.npc[num33].ai[1] = 0f;
-                if (Main.netMode == NetmodeID.Server && num33 < Main.maxNPCs)
+                if (Main.dedServ && num33 < Main.maxNPCs)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num33);
             }
 
@@ -1645,15 +1644,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             // Difficulty bools
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode;
-            bool death = CalamityWorld.death;
+            bool death = CalamityWorld.death || bossRush;
 
             npc.noTileCollide = true;
             npc.noGravity = true;
 
-            float flyVelocity = bossRush ? 24f : death ? (masterMode ? 21f : 18f) : (masterMode ? 19f : 16f);
-            float flyAcceleration = bossRush ? 0.3f : death ? (masterMode ? 0.18f : 0.14f) : (masterMode ? 0.16f : 0.12f);
-            float flyDistanceY = masterMode ? 350f : 450f;
+            float flyVelocity = bossRush ? 24f : death ? 21f : 16f;
+            float flyAcceleration = bossRush ? 0.3f : death ? 0.18f : 0.12f;
+            float flyDistanceY = death ? 350f : 450f;
 
             Vector2 desiredVelocity = npc.Center;
 

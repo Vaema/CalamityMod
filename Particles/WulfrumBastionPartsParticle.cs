@@ -80,6 +80,7 @@ namespace CalamityMod.Particles
         {
             Rotation = MathHelper.Lerp(RotationOffset, 0f, (float)Math.Pow(LifetimeCompletionAdjusted, 0.8f));
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //The gun
             if (TimeOffset == 0.6f)
                 Rotation = (Owner.Calamity().mouseWorld - Owner.Center).ToRotation() + (Owner.direction < 0 ? MathHelper.Pi : 0f);

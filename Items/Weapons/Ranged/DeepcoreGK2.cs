@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.ArmorPenetration = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.noMelee = true;
-            Item.useTime = Item.useAnimation = 14;
+            Item.useAnimation = Item.useTime = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7f;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;

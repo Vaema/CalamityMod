@@ -13,6 +13,7 @@ using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.Astral
 {
@@ -24,10 +25,11 @@ namespace CalamityMod.NPCs.Astral
         {
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/GlomerlingGlow", AssetRequestMode.AsyncLoad);
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 8;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.PositiveNPCTypesExcludedFromDeathTally[Type] = true;
         }
 
         public override void SetDefaults()
@@ -37,17 +39,19 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             NPC.damage = 30;
             NPC.defense = 0;
-            NPC.lifeMax = 150;
+            NPC.lifeMax = 190;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            Banner = ModContent.NPCType<Astraglomerate>();
+            BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 50;
                 NPC.defense = 8;
                 NPC.knockBackResist = 0.4f;
-                NPC.lifeMax = 220;
+                NPC.lifeMax = 285;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

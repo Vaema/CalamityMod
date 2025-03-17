@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Boss
     public class UnstableEbonianGlob : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -28,9 +29,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            if (Projectile.velocity.Length() < 12f && (Main.expertMode || BossRushEvent.BossRushActive))
+            if (Projectile.velocity.Length() < 12f && (Main.expertMode || BossRushEvent.BossRushActive || Projectile.ai[0] == 1f))
             {
                 float velocityMult = BossRushEvent.BossRushActive ? 1.025f : CalamityWorld.death ? 1.015f : CalamityWorld.revenge ? 1.0125f : Main.expertMode ? 1.01f : 1.005f;
+
+                if (Projectile.ai[0] == 1f)
+                    velocityMult += 0.02f;
+
                 Projectile.velocity *= velocityMult;
             }
 
@@ -65,7 +70,7 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

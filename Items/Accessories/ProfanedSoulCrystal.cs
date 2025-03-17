@@ -33,30 +33,32 @@ namespace CalamityMod.Items.Accessories
         public const int maxPscAnimTime = 120;
 
         // Interface stuff.
+        public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
-
         public bool ShaderIsDyeable => false;
 
         public bool ShouldDrawDyeableShader
         {
             get
             {
-                bool result = false;
-                foreach (Player player in Main.ActivePlayers)
-                {
-                    if (player.outOfRange || player.dead)
-                        continue;
+                if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
+                    return false;
 
-                    CalamityPlayer modPlayer = player.Calamity();
+                if (OwnerPlayer < 0 || OwnerPlayer >= Main.maxPlayers)
+                    return false;
 
-                    // Do not render the shield if its visibility is off (or it does not exist)
-                    bool isVanityOnly = modPlayer.pSoulShieldVisible && !modPlayer.pSoulArtifact;
-                    bool shouldNotDraw = modPlayer.andromedaState >= AndromedaPlayerState.LargeRobot; //I am not dealing with drawing that :taxevasion:
-                    bool shieldExists = isVanityOnly || modPlayer.pSoulShieldDurability > 0;
-                    bool shouldntDraw = !modPlayer.pSoulShieldVisible || modPlayer.drawnAnyShieldThisFrame || shouldNotDraw || !shieldExists;
-                    result |= !shouldntDraw;
-                }
-                return result;
+                var player = Main.player[OwnerPlayer];
+                if (player is null)
+                    return false;
+
+                if (player.outOfRange || player.dead)
+                    return false;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer.drawingParameters.ProfanedShieldCharge <= 0.0f)
+                    return false;
+
+                return true;
             }
         }
 
@@ -68,7 +70,7 @@ namespace CalamityMod.Items.Accessories
             Empowered //psc but no other minions, healer guardian functionality, inherits all other functionality (except vanity) and goes even further beyond, any remaining attack changes are here
         }
 
-        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields();
+        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields(OwnerPlayer);
 
         internal static ProfanedSoulCrystalState GetPscStateFor(Player player, bool ignoreNoBuffs = false)
         {
@@ -155,7 +157,7 @@ namespace CalamityMod.Items.Accessories
          */
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransHead", EquipType.Head, this);
@@ -172,7 +174,7 @@ namespace CalamityMod.Items.Accessories
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -227,7 +229,7 @@ namespace CalamityMod.Items.Accessories
             }
             else
             {
-                string manaCost = (100 * Main.player[Main.myPlayer].manaCost).ToString("N0");
+                string manaCost = (100 * Main.LocalPlayer.manaCost).ToString("N0");
                 string full = this.GetLocalization("FullTooltip").Format(maxMinionRequirement, manaCost);
                 tooltips.FindAndReplace("[STATUS]", full);
             }
@@ -245,7 +247,8 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.profanedCrystalAnim = maxPscAnimTime;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PscTransformAnimation>(), 0, 0f, player.whoAmI);
             }
-
+            if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+                player.Calamity().profanedSoulRelicBuff = true;
 
             modPlayer.profanedCrystalHide = hideVisual || modPlayer.profanedCrystalAnim > 0;
             modPlayer.pSoulShieldVisible = !hideVisual;
@@ -289,6 +292,8 @@ namespace CalamityMod.Items.Accessories
                     player.Calamity().profanedSoulWeaponType = weaponType;
                     player.Calamity().profanedSoulWeaponUsage = 0;
                 }
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 correctedVelocity = Main.MouseWorld - player.Center;
                 correctedVelocity.Normalize();
                 bool empowered = player.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;
@@ -309,7 +314,6 @@ namespace CalamityMod.Items.Accessories
                                 int separation = (i * 4) - 8;
                                 int spearBaseDamage = 350;
                                 int spearDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(spearBaseDamage);
-                                spearDamage = player.ApplyArmorAccDamageBonusesTo(spearDamage);
 
                                 int proj = Projectile.NewProjectile(source, player.Center.X, player.Center.Y - separation, perturbedspeed.X, perturbedspeed.Y, ModContent.ProjectileType<ProfanedCrystalMeleeSpear>(), spearDamage, 1f, player.whoAmI, Main.rand.NextBool(player.Calamity().profanedSoulWeaponUsage == 4 ? 5 : 7) ? 1f : 0f);
                                 if (proj.WithinBounds(Main.maxProjectiles))
@@ -326,7 +330,6 @@ namespace CalamityMod.Items.Accessories
                         {
                             int spearBaseDamage = 250;
                             int spearDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(spearBaseDamage);
-                            spearDamage = player.ApplyArmorAccDamageBonusesTo(spearDamage);
 
                             int proj = Projectile.NewProjectile(source, player.Center, correctedVelocity * 14f, ModContent.ProjectileType<ProfanedCrystalMeleeSpear>(), spearDamage, 1f, player.whoAmI, Main.rand.NextBool(player.Calamity().profanedSoulWeaponUsage == 4 ? 5 : 7) ? 1f : 0f, 1f);
                             if (proj.WithinBounds(Main.maxProjectiles))
@@ -352,7 +355,6 @@ namespace CalamityMod.Items.Accessories
                         int projType = isSmallBoomer ? isThiccBoomer ? 1 : 2 : 3;
                         int boomBaseDamage = 200;
                         int boomDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(boomBaseDamage);
-                        boomDamage = player.ApplyArmorAccDamageBonusesTo(boomDamage);
 
                         switch (projType)
                         {
@@ -407,7 +409,6 @@ namespace CalamityMod.Items.Accessories
                             int sickPenalty = (int)(mageFireDamage * (0.05f * ((player.buffTime[player.FindBuffIndex(BuffID.ManaSickness)] + 60) / 60)));
                             mageFireDamage -= sickPenalty;
                         }
-                        mageFireDamage = player.ApplyArmorAccDamageBonusesTo(mageFireDamage);
 
                         int proj = Projectile.NewProjectile(source, player.position, correctedVelocity, ModContent.ProjectileType<ProfanedCrystalMageFireball>(), mageFireDamage, 1f, player.whoAmI, empowered ? 1f : 0f);
                         if (proj.WithinBounds(Main.maxProjectiles))
@@ -435,7 +436,6 @@ namespace CalamityMod.Items.Accessories
                             float angle = MathHelper.TwoPi / crystalCount * i;
                             int shardBaseDamage = 176;
                             int shardDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(shardBaseDamage);
-                            shardDamage = player.ApplyArmorAccDamageBonusesTo(shardDamage);
 
                             int proj = Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 12f, ModContent.ProjectileType<ProfanedCrystalRogueShard>(), shardDamage, 1f, player.whoAmI, 0f, 0f);
                             if (proj.WithinBounds(Main.maxProjectiles))
@@ -453,7 +453,6 @@ namespace CalamityMod.Items.Accessories
                         int totalShardProjectiles = empowered ? 360 / 5 : 360 / 10;
                         int shardBaseDamage = empowered ? 125 : 220;
                         int shardDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(shardBaseDamage);
-                        shardDamage = player.ApplyArmorAccDamageBonusesTo(shardDamage);
 
                         float interval = totalShardProjectiles / chains * (empowered ? 5f : 10f);
                         double patternInterval = Math.Floor(player.Calamity().profanedSoulWeaponUsage / interval);
@@ -493,7 +492,6 @@ namespace CalamityMod.Items.Accessories
                     {
                         int whipBaseDamage = 250;
                         int whipDamage = (int)player.GetTotalDamage<SummonMeleeSpeedDamageClass>().ApplyTo(whipBaseDamage);
-                        whipDamage = player.ApplyArmorAccDamageBonusesTo(whipDamage);
 
                         var buffed = player.HasBuff<ProfanedCrystalWhipBuff>();
                         correctedVelocity *= buffed ? 10f : 8f;
@@ -516,10 +514,11 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<ProfanedSoulArtifact>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<DivineGeode>(50).
                 AddIngredient<UnholyEssence>(100).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<ProfanedCrucible>().
+                AddDecraftCondition(CalamityConditions.DownedSupremeCalamitas, CalamityConditions.DownedExoMechs).
                 Register();
         }
     }

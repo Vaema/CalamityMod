@@ -39,7 +39,7 @@ namespace CalamityMod.Tiles.Crags.Tree
             AddMapEntry(new Color(38, 25, 27), CreateMapEntryName());
             DustType = 155;
             HitSound = SoundID.DD2_SkeletonHurt;
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedBone>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedBone>());
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -62,13 +62,6 @@ namespace CalamityMod.Tiles.Crags.Tree
 
         public static bool Spawn(int i, int j, int minSize = 5, int maxSize = 18, bool saplingExists = false)
         {
-            //if this tree grew from a sapling, then kill the sapling its growing from
-            if (saplingExists)
-            {
-                WorldGen.KillTile(i, j, false, false, true);
-                WorldGen.KillTile(i, j - 1, false, false, true);
-            }
-
             //set the minimum and maximum height the tree can grow to
             int height = Main.rand.Next(minSize, maxSize);
             for (int k = 1; k < height; ++k)
@@ -83,6 +76,20 @@ namespace CalamityMod.Tiles.Crags.Tree
             if (height < minSize)
             {
                 return false;
+            }
+
+            // something is blocking from growing the tree...
+            var sapplingType = ModContent.TileType<SpineSapling>();
+            if (!WorldGen.EmptyTileCheck(i - 2, i + 2, j - height, j, sapplingType))
+            {
+                return false;
+            }
+
+            //if this tree grew from a sapling, then kill the sapling its growing from
+            if (saplingExists)
+            {
+                WorldGen.KillTile(i, j, false, false, true);
+                WorldGen.KillTile(i, j - 1, false, false, true);
             }
 
             //make sure the block is valid for the tree to place on
@@ -153,6 +160,10 @@ namespace CalamityMod.Tiles.Crags.Tree
             if (!Framing.GetTileSafely(i, j + 1).HasTile)
             {
                 WorldGen.KillTile(i, j, false, false, false);
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, i, j);
+                }
             }
         }
 
@@ -165,14 +176,14 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int totalSeeds = Main.rand.Next(1, 3);
                 for (int numSeed = 0; numSeed < totalSeeds; numSeed++)
                 {
-                    yield return new Item(ModContent.ItemType<Items.Placeables.SpineSapling>());
+                    yield return new Item(ModContent.ItemType<Items.Placeables.Crags.SpineSapling>());
                 }
             }
 
             //chance to drop extra wood
             if (Main.rand.NextBool())
             {
-                yield return new Item(ModContent.ItemType<Items.Placeables.ScorchedBone>());
+                yield return new Item(ModContent.ItemType<Items.Placeables.Crags.ScorchedBone>());
             }
         }
 
@@ -282,6 +293,9 @@ namespace CalamityMod.Tiles.Crags.Tree
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             Tile tile = Framing.GetTileSafely(i, j);
             float xOff = (float)Math.Sin((j * 19) * 0.04f) * 1.2f;
 

@@ -13,11 +13,12 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Apathanull : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 51;
+            Item.damage = 54;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.useTime = 8;
@@ -34,12 +35,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 12f;
         }
 
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 12;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile proj = Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.7f), ModContent.ProjectileType<CosmicTentacle>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.7f), ModContent.ProjectileType<CosmicTentacle>(), damage, knockback, player.whoAmI);
             return false;
         }
 

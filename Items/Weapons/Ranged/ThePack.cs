@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<ThePackMissile>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ThePackMissile>(), damage, knockback, player.whoAmI);
             return false;
         }
 
@@ -51,9 +51,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Scorpio>().
                 AddIngredient(ItemID.MarbleBlock, 50).
-                AddIngredient<ArmoredShell>(4).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
+                AddIngredient<ArmoredShell>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

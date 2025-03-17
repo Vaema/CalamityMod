@@ -6,16 +6,15 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,52 +36,10 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
-        }
 
-        public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
-        {
-            // Guaranteed not null at this point
-            Tile tile = Main.tile[i, j];
-
-            // This function is only for Astral Cactus. If the tile isn't even cactus, forget about it.
-            if (type != TileID.Cactus)
-                return;
-
-            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
-            int frameX = tile.TileFrameX;
-            int frameY = tile.TileFrameY;
-
-            // Search down the cactus to find out whether the block it is planted in is Astral Sand.
-            int xTile = i;
-            if (frameX == 36) // Cactus segment which splits left
-                xTile--;
-            if (frameX == 54) // Cactus segment which splits right
-                xTile++;
-            if (frameX == 108) // Cactus segment which splits both directions
-                xTile += (frameY == 18) ? -1 : 1;
-
-            int yTile = j;
-            bool slidingDownCactus = Main.tile[xTile, yTile] != null && Main.tile[xTile, yTile].TileType == TileID.Cactus && Main.tile[xTile, yTile].HasTile;
-            while (!Main.tile[xTile, yTile].HasTile || !Main.tileSolid[Main.tile[xTile, yTile].TileType] || !slidingDownCactus)
-            {
-                if (Main.tile[xTile, yTile].TileType == TileID.Cactus && Main.tile[xTile, yTile].HasTile)
-                {
-                    slidingDownCactus = true;
-                }
-                yTile++;
-                // Cacti are assumed to be no more than 20 blocks tall.
-                if (yTile > i + 20)
-                    break;
-            }
-            bool astralCactus = Main.tile[xTile, yTile].TileType == (ushort)ModContent.TileType<AstralSand>();
-
-            // If it is actually astral cactus, then draw its glowmask.
-            if (astralCactus)
-            {
-                spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralCactusGlow").Value, new Vector2((float)(i * 16 - (int)Main.screenPosition.X), (float)(j * 16 - (int)Main.screenPosition.Y)) + zero, new Rectangle((int)frameX, (int)frameY, 16, 18), Color.White * 0.75f, 0f, default, 1f, SpriteEffects.None, 0f);
-            }
+            // Allow Queen Bee larvae to be protected by Guide to Environmental Protection
+            // Yes this naming is backwards. Do not blame me!
+            TileID.Sets.TileCutIgnore.IgnoreDontHurtNature[TileID.Larva] = true;
         }
 
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
@@ -284,7 +241,7 @@ namespace CalamityMod.Tiles
                     {
                         tile.Get<TileWallWireStateData>().HasTile = false;
                         WorldGen.KillTile(x, y, fail: false, effectOnly: false, noItem: true);
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.TrySendData(17, -1, -1, null, 20, x, y);
                     }
                 }
@@ -295,7 +252,7 @@ namespace CalamityMod.Tiles
                 {
                     Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                 }
-                else if (Main.netMode == NetmodeID.Server)
+                else if (Main.dedServ)
                 {
                     int proj = Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                     Main.projectile[proj].netUpdate = true;
@@ -342,25 +299,56 @@ namespace CalamityMod.Tiles
 
         public override void Drop(int i, int j, int type)/* tModPorter Suggestion: Use CanDrop to decide if items can drop, use this method to drop additional items. See documentation. */
         {
-            Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(i, j);
-            if (tileAtPosition.TileFrameX % 36 == 0 && tileAtPosition.TileFrameY % 36 == 0)
+            // Handle for Demon Altar Drops
+            // Drop:
+            // - Soul of Night (x4) (Only if Early Hardmode Progression Rework is on)
+            // - Evil Smasher (x1) (Every 12th altar)
+            if (type == TileID.DemonAltar && Main.hardMode)
             {
-                if (type == TileID.DemonAltar && Main.hardMode)
+                Vector2 spreadMinMax = new Vector2(-32.0f, 32.0f);
+
+                // Drop 4 Soul of Night
+                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 {
-                    Vector2 pos = new Vector2(i, j) * 16;
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
-                    {
-                        WorldGen.altarCount++;
-                        int quantity = 4;
-                        for (int k = 0; k < quantity; k += 1)
-                        {
-                            pos.X += Main.rand.NextFloat(-32f, 32f);
-                            pos.Y += Main.rand.NextFloat(-32f, 32f);
-                            Item.NewItem(new EntitySource_TileBreak(i, j), pos, ItemID.SoulofNight);
-                        }
-                    }
-                    if (WorldGen.altarCount % 12 == 0 && WorldGen.altarCount > 1)
-                        Item.NewItem(new EntitySource_TileBreak(i, j), pos, ModContent.ItemType<EvilSmasher>());
+                    DropItem(i, j, ItemID.SoulofNight, quantity: 4, asStack: false, spreadMinMax);
+                    WorldGen.altarCount++; // altarCount does not update automatically if ProgressionRework is enabled!
+                    AchievementsHelper.NotifyProgressionEvent(6); // Gives the Begone, Evil! achievement
+                }
+
+                // Drop Evil Smasher on every 12 alter smashed
+                if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
+                {
+                    DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
+                }
+            }
+            // Drop Golden Bombs at a 0.33% chance from Pots
+            if (type == TileID.Pots)
+            {
+                if (Main.rand.NextBool(300))
+                {
+                    DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
+                }
+            }
+        }
+
+        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default)
+        {
+            // Multiplayer Client should not spawn item themselves
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            Vector2 worldPos = new Vector2(i, j) * 16.0f;
+            if (asStack)
+            {
+                Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
+                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity);
+            }
+            else
+            {
+                for (int k = 0; k < quantity; k += 1)
+                {
+                    Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
+                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1);
                 }
             }
         }

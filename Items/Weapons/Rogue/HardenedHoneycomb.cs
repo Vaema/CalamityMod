@@ -20,15 +20,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 32;
             Item.damage = 19;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 300;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<Honeycomb>();
             Item.shootSpeed = 14f;
@@ -51,10 +49,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.Hive).
-                AddIngredient(ItemID.CrispyHoneyBlock).
-                AddIngredient(ItemID.BeeWax).
+            CreateRecipe().
+                AddIngredient(ItemID.Hive, 10).
+                AddIngredient(ItemID.BeeWax, 8).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1196,7 +1196,7 @@ namespace CalamityMod.World
         public static void GenerateChests(List<Vector2> scrapPilePositions)
         {
             GenerateTreasureChest();
-            CalamityUtils.SettleWater();
+            CalamityUtils.SettleWater(false);
             GenerateOpenAirChestChest();
             GenerateScrapPileChest(scrapPilePositions);
             GenerateDeepWaterChest();

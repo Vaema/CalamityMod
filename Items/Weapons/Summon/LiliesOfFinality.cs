@@ -37,6 +37,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         #endregion
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+
         public override void SetDefaults()
         {
             Item.damage = TheNumber;
@@ -45,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 5f;
 
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.width = 36;
             Item.height = 50;
             Item.noMelee = true;
@@ -59,8 +61,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.Calamity().mouseWorld, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectileDirect(source, player.Calamity().mouseWorld, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            Vector2 mouse = player.ClampedMouseWorld();
+            Projectile.NewProjectile(source, mouse, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, mouse, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
 
             if (Main.dedServ)
                 return false;
@@ -71,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 float angle = MathHelper.TwoPi / dustAmount * i;
                 Vector2 dustVelocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 6f);
                 Dust spawnDust = Dust.NewDustPerfect(
-                    Main.MouseWorld,
+                    mouse,
                     CommonDustID,
                     dustVelocity,
                     Scale: Main.rand.NextFloat(1.2f, 1.5f));

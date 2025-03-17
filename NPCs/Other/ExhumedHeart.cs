@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -45,8 +45,6 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 50000;
-
         public override void AI()
         {
             NPC.Opacity = Utils.GetLerpValue(0f, 25f, Time, true);
@@ -68,7 +66,7 @@ namespace CalamityMod.NPCs.Other
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[NPC.type] * frameHeight;
+            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[Type] * frameHeight;
         }
 
         public override Color? GetAlpha(Color drawColor)

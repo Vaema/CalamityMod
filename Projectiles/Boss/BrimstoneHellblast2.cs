@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -38,9 +38,9 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             // Cal Clone bullet hell projectiles accelerate after a certain time has passed
-            if (Projectile.ai[0] == 2f && Main.expertMode && Projectile.timeLeft < 1260)
+            if (Projectile.ai[0] == 2f && (Main.expertMode || BossRushEvent.BossRushActive) && Projectile.timeLeft < 1260)
             {
-                if (Projectile.velocity.Length() < (BossRushEvent.BossRushActive ? 15f : 10f))
+                if (Projectile.velocity.Length() < (BossRushEvent.BossRushActive ? 12.5f : 10f))
                     Projectile.velocity *= 1.005f;
             }
 
@@ -75,8 +75,8 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
 

@@ -1,6 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Astral;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.titanHeartSet = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.15f;
+            player.GetDamage<ThrowingDamageClass>() += 0.10f;
             modPlayer.rogueStealthMax += 1f;
             modPlayer.wearingRogueArmor = true;
             player.noKnockback = true;
@@ -49,6 +49,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
                 AddIngredient<AstralMonolith>(10).
                 AddIngredient<Materials.TitanHeart>().
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<TitanHeartMantle>()).
                 Register();
         }
     }

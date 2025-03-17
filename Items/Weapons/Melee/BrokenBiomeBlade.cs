@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -20,7 +22,7 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("BiomeBlade")]
-    public class BrokenBiomeBlade : ModItem, ILocalizedModType
+    public class BrokenBiomeBlade : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;
@@ -41,23 +43,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int ColdAttunement_BaseDamage = 40;
         public static float ColdAttunement_ThirdSwingBoost = 1.15f;
 
-        public static int HotAttunement_BaseDamage = 35;
-        public static int HotAttunement_FullChargeDamage = 60;
-        public static int HotAttunement_ShredIFrames = 6;
-        public static int HotAttunement_LocalIFrames = 40; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int HotAttunement_LocalIFramesCharged = 25;
+        public static int HotAttunement_BaseDamage = 42;
+        public static int HotAttunement_ShredPlayerIFrames = 6;
+        public static int HotAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 1f; //How much charge is lost per frame.
-
-        public static int TropicalAttunement_BaseDamage = 65;
-        public static float TropicalAttunement_ChainDamageReduction = 0.6f;
-        public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.2f; //It also crits, so be mindful of that
-        public static int TropicalAttunement_LocalIFrames = 60; //Be warned its got 2 extra updates so all the iframes should be divided in 3
         #endregion
-
-        public override void SetStaticDefaults()
-        {
-            //Theres potential for flavor text as well but im not a writer
-        }
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
@@ -66,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -138,7 +128,7 @@ namespace CalamityMod.Items.Weapons.Melee
             var clone = base.Clone(item);
 
             if (Main.mouseItem.type == ItemType<BrokenBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
 
             if (clone is BrokenBiomeBlade a && item.ModItem is BrokenBiomeBlade a2)
             {
@@ -169,8 +159,8 @@ namespace CalamityMod.Items.Weapons.Melee
             int attunement1 = tag.GetInt("mainAttunement");
             int attunement2 = tag.GetInt("secondaryAttunement");
 
-            mainAttunement = Attunement.attunementArray[attunement1 != -1 ? attunement1 : Attunement.attunementArray.Length - 1];
-            secondaryAttunement = Attunement.attunementArray[attunement2 != -1 ? attunement2 : Attunement.attunementArray.Length - 1];
+            mainAttunement = AttunementSystem.FindOrNull(attunement1);
+            secondaryAttunement = AttunementSystem.FindOrNull(attunement2);
 
             if (mainAttunement == secondaryAttunement)
                 secondaryAttunement = null;
@@ -180,14 +170,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : Attunement.attunementArray.Length - 1);
-            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : Attunement.attunementArray.Length - 1);
+            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : AttunementSystem.EmptyID);
+            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : AttunementSystem.EmptyID);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            mainAttunement = Attunement.attunementArray[reader.ReadInt32()];
-            secondaryAttunement = Attunement.attunementArray[reader.ReadInt32()];
+            mainAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
+            secondaryAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
         }
         #endregion
 
@@ -199,10 +189,24 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement != null)
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.Default, (float)AttunementID.Evil)];
+                mainAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)mainAttunement.id));
 
             if (secondaryAttunement != null)
-                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.Default, (float)AttunementID.Evil)];
+                secondaryAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)secondaryAttunement.id));
+
+            if (mainAttunement == secondaryAttunement)
+                secondaryAttunement = null;
+        }
+
+        private static int ClampAttunementRange(int input)
+        {
+            if (input < (int)AttunementID.Default)
+                return (int)AttunementID.Default;
+
+            if (input > (int)AttunementID.Evil)
+                return (int)AttunementID.Evil;
+
+            return input;
         }
 
         public override void HoldItem(Player player)
@@ -262,7 +266,6 @@ namespace CalamityMod.Items.Weapons.Melee
             bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
             return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<BitingEmbrace>() ||
-             n.type == ProjectileType<GrovetendersTouch>() ||
              n.type == ProjectileType<AridGrandeur>()));
         }
 
@@ -287,8 +290,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D itemTexture = TextureAssets.Item[Item.type].Value;
-            Rectangle itemFrame = (Main.itemAnimations[Item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[Item.type].GetFrame(itemTexture);
+            Texture2D itemTexture = TextureAssets.Item[Type].Value;
+            Rectangle itemFrame = (Main.itemAnimations[Type] == null) ? itemTexture.Frame() : Main.itemAnimations[Type].GetFrame(itemTexture);
 
             if (mainAttunement == null)
                 return true;

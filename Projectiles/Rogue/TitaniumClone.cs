@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Rogue
         private static float RotationIncrement = 0.22f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -35,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] > 30f)
             {
-                CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
+                CalamityUtils.HomeInOnNPC(Projectile, true, 320f, 12f, 20f);
             }
         }
 
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

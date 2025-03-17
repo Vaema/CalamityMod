@@ -121,8 +121,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         continue;
 
                     p.timeLeft = LungeCooldown;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
                 }
             }
 
@@ -138,7 +137,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExobladeGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExobladeGlow").Value);
         }
 
         public override void AddRecipes()

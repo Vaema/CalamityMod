@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,31 +11,33 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class WhiteWine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float MagicDamageBoost = 0.08f;
+        public static float DefenseLossPercent = 0.06f;
+        public static int RegenLoss = 2;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), DefenseLossPercent.ToPercent(), RegenLoss.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 30;
+            // Clear, yellow-green
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(242, 252, 177, 180),
+                new Color(250, 252, 215, 180),
+                new Color(228, 245, 181, 180)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.rare = ItemRarityID.LightPurple;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
+            Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(5), true);
             Item.healMana = 300;
-            Item.buffType = ModContent.BuffType<WhiteWineBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(300f);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 40);
+            Item.rare = ItemRarityID.LightPurple;
         }
 
-        public override bool? UseItem(Player player)
+        public override void OnConsumeItem(Player player)
         {
             if (PlayerInput.Triggers.JustPressed.QuickBuff)
             {
@@ -49,7 +53,6 @@ namespace CalamityMod.Items.Potions.Alcohol
                 }
             }
             player.AddBuff(Item.buffType, Item.buffTime);
-            return true;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.BottledHoney, 10).
                 AddIngredient(ItemID.BeeWax, 3).
-                AddIngredient<MurkyPaste>(3).
+                AddIngredient(ItemID.JungleSpores, 6).
                 AddTile(TileID.Anvils).
                 Register();
         }

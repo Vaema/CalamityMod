@@ -15,12 +15,12 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 60;
             Item.height = 60;
-            Item.damage = 1248;
+            Item.damage = 943;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 30;
-            Item.useTime = 12;
-            Item.useAnimation = 36;
-            Item.reuseDelay = 30;
+            Item.useTime = 10;
+            Item.useAnimation = 30;
+            Item.reuseDelay = 40;
             Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = CommonCalamitySounds.WyrmScreamSound;
             Item.autoReuse = true;
-            Item.shootSpeed = 14.5f;
+            Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<EidolicWailSoundwave>();
             Item.rare = ModContent.RarityType<PureGreen>();
         }

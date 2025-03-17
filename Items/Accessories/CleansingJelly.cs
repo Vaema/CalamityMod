@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Accessories
     public class CleansingJelly : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int AuraLifetime = 1800;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AuraLifetime.FramesToSeconds());
+
         public override void SetDefaults()
         {
             Item.width = 18;

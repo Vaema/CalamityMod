@@ -577,9 +577,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         {
                             MedusaHeadDustEffect(npc, time);
                         }
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
-                            Player player = Main.player[Main.myPlayer];
+                            Player player = Main.LocalPlayer;
                             if (!player.dead && player.active && player.FindBuffIndex(BuffID.Stoned) == -1)
                             {
                                 if (npc.Distance(player.Center) < medusaEffectDistance)
@@ -1346,7 +1346,7 @@ PrepareToShoot:
 
             if (npc.ai[3] < (float)aiGateValue && (Main.eclipse || !Main.dayTime || (double)npc.position.Y > Main.worldSurface * 16.0 || (Main.invasionType == InvasionID.GoblinArmy && (npcType == NPCID.Yeti || npcType == NPCID.ElfArcher)) || (Main.invasionType == InvasionID.GoblinArmy && (npcType == NPCID.GoblinPeon || npcType == NPCID.GoblinThief || npcType == NPCID.GoblinWarrior || npcType == NPCID.GoblinArcher || npcType == NPCID.GoblinSummoner)) || (npcType == NPCID.GoblinScout || (Main.invasionType == InvasionID.PirateInvasion && npcType >= 212 && npcType <= 216)) || (Main.invasionType == InvasionID.MartianMadness && (npcType == NPCID.BrainScrambler || npcType == NPCID.RayGunner || npcType == NPCID.MartianOfficer || npcType == NPCID.GrayGrunt || npcType == NPCID.MartianEngineer || npcType == NPCID.GigaZapper || npcType == NPCID.Scutlix || npcType == NPCID.MartianWalker)) || (npcType == NPCID.AngryBones || npcType == NPCID.AngryBonesBig || npcType == NPCID.AngryBonesBigMuscle || npcType == NPCID.AngryBonesBigHelmet || npcType == NPCID.CorruptBunny || npcType == NPCID.Crab || npcType == NPCID.ArmoredSkeleton || npcType == NPCID.Mummy || npcType == NPCID.DarkMummy || npcType == NPCID.LightMummy || npcType == NPCID.SkeletonArcher || npcType == NPCID.ChaosElemental || npcType == ModContent.NPCType<RenegadeWarlock>() || npcType == NPCID.CorruptPenguin || npcType == NPCID.FaceMonster || npcType == NPCID.SnowFlinx || npcType == NPCID.Lihzahrd || npcType == NPCID.LihzahrdCrawler || npcType == NPCID.IcyMerman || npcType == NPCID.CochinealBeetle || npcType == NPCID.CyanBeetle || npcType == NPCID.LacBeetle || npcType == NPCID.SeaSnail || npcType == NPCID.BloodCrawler || npcType == NPCID.IceGolem || npcType == NPCID.ZombieMushroom || npcType == NPCID.ZombieMushroomHat || npcType == NPCID.AnomuraFungus || npcType == NPCID.MushiLadybug || npcType == NPCID.SkeletonSniper || npcType == NPCID.TacticalSkeleton || npcType == NPCID.SkeletonCommando || npcType == NPCID.CultistArcherBlue || npcType == NPCID.CultistArcherWhite || npcType == NPCID.CrimsonBunny || npcType == NPCID.CrimsonPenguin || npcType == NPCID.NebulaSoldier || (npcType == NPCID.StardustSoldier && (npc.ai[1] >= 180f || npc.ai[1] < 90f))) || (npcType == NPCID.StardustSpiderBig || npcType == NPCID.VortexRifleman || npcType == NPCID.VortexSoldier || npcType == NPCID.VortexHornet || npcType == NPCID.VortexLarva || npcType == NPCID.WalkingAntlion || npcType == NPCID.SolarDrakomire || npcType == NPCID.SolarSolenian || (npcType >= 524 && npcType <= 527)) || npcType == NPCID.DesertLamiaLight || npcType == NPCID.DesertLamiaDark || npcType == NPCID.DesertScorpionWalk || npcType == NPCID.DesertBeast))
             {
-                if ((npcType == NPCID.Zombie || npcType == NPCID.ZombieXmas || npcType == NPCID.ZombieSweater || npcType == NPCID.Skeleton || (npcType >= NPCID.BoneThrowingSkeleton && npcType <= NPCID.BoneThrowingSkeleton4) || npcType == NPCID.AngryBones || npcType == NPCID.AngryBonesBig || npcType == NPCID.AngryBonesBigHelmet || npcType == NPCID.AngryBonesBigMuscle || npcType == NPCID.ArmoredSkeleton || npcType == NPCID.SkeletonArcher || npcType == NPCID.BaldZombie || npcType == NPCID.UndeadViking || npcType == NPCID.ZombieEskimo || npcType == NPCID.Frankenstein || npcType == NPCID.PincushionZombie || npcType == NPCID.SlimedZombie || npcType == NPCID.SwampZombie || npcType == NPCID.TwiggyZombie || npcType == NPCID.ArmoredViking || npcType == NPCID.FemaleZombie || npcType == NPCID.HeadacheSkeleton || npcType == NPCID.MisassembledSkeleton || npcType == NPCID.PantlessSkeleton || npcType == NPCID.ZombieRaincoat || npcType == NPCID.SkeletonSniper || npcType == NPCID.TacticalSkeleton || npcType == NPCID.SkeletonCommando || npcType == NPCID.ZombieSuperman || npcType == NPCID.ZombiePixie || npcType == NPCID.ZombieDoctor || npcType == NPCID.GreekSkeleton) && Main.rand.NextBool(1000))
+                if ((npcType == NPCID.Zombie || npcType == NPCID.ZombieXmas || npcType == NPCID.ZombieSweater || npcType == NPCID.Skeleton || (npcType >= NPCID.BoneThrowingSkeleton && npcType <= NPCID.BoneThrowingSkeleton4) || npcType == NPCID.AngryBones || npcType == NPCID.AngryBonesBig || npcType == NPCID.AngryBonesBigHelmet || npcType == NPCID.AngryBonesBigMuscle || npcType == NPCID.ArmoredSkeleton || npcType == NPCID.SkeletonArcher || npcType == NPCID.BaldZombie || npcType == NPCID.UndeadViking || npcType == NPCID.ZombieEskimo || npcType == NPCID.Frankenstein || npcType == NPCID.PincushionZombie || npcType == NPCID.SlimedZombie || npcType == NPCID.SwampZombie || npcType == NPCID.TwiggyZombie || npcType == NPCID.ArmoredViking || npcType == NPCID.FemaleZombie || npcType == NPCID.HeadacheSkeleton || npcType == NPCID.MisassembledSkeleton || npcType == NPCID.PantlessSkeleton || npcType == NPCID.ZombieRaincoat || npcType == NPCID.SkeletonSniper || npcType == NPCID.TacticalSkeleton || npcType == NPCID.SkeletonCommando || npcType == NPCID.ZombieSuperman || npcType == NPCID.ZombiePixie || npcType == NPCID.ZombieDoctor || npcType == NPCID.GreekSkeleton || npcType == ModContent.NPCType<BucketZombie>()) && Main.rand.NextBool(1000))
                 {
                     SoundEngine.PlaySound(SoundID.ZombieMoan, npc.Center);
                 }
@@ -1947,6 +1947,10 @@ PrepareToShoot:
                 {
                     velocityMax = 1.05f;
                 }
+                if (npcType == ModContent.NPCType<BucketZombie>())
+                {
+                    velocityMax = 0.85f;
+                }
                 if (npcType == NPCID.BloodZombie)
                 {
                     float playerDistance = (Main.player[npc.target].Center - npc.Center).Length();
@@ -1965,7 +1969,7 @@ PrepareToShoot:
                     }
                     velocityMax *= 0.8f;
                 }
-                if (npcType == NPCID.BloodZombie || npcType == NPCID.Zombie || npcType == NPCID.BaldZombie || npcType == NPCID.PincushionZombie || npcType == NPCID.SlimedZombie || npcType == NPCID.SwampZombie || npcType == NPCID.TwiggyZombie || npcType == NPCID.FemaleZombie || npcType == NPCID.ZombieRaincoat || npcType == NPCID.ZombieXmas || npcType == NPCID.ZombieSweater)
+                if (npcType == NPCID.BloodZombie || npcType == NPCID.Zombie || npcType == NPCID.BaldZombie || npcType == NPCID.PincushionZombie || npcType == NPCID.SlimedZombie || npcType == NPCID.SwampZombie || npcType == NPCID.TwiggyZombie || npcType == NPCID.FemaleZombie || npcType == NPCID.ZombieRaincoat || npcType == NPCID.ZombieXmas || npcType == NPCID.ZombieSweater || npcType == ModContent.NPCType<BucketZombie>())
                 {
                     velocityMax *= 1f + (1f - npc.scale);
                 }
@@ -3416,7 +3420,7 @@ PrepareToShoot:
                             if (npcType == NPCID.GoblinPeon)
                             {
                                 WorldGen.KillTile(x, y - 1, false, false, false);
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
                                     NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, (float)x, (float)(y - 1), 0f, 0, 0, 0);
                                 }
@@ -3431,7 +3435,7 @@ PrepareToShoot:
                                         npc.ai[3] = (float)aiGateValue;
                                         npc.netUpdate = true;
                                     }
-                                    if (Main.netMode == NetmodeID.Server & canOpenDoor)
+                                    if (Main.dedServ & canOpenDoor)
                                     {
                                         NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)x, (float)(y - 1), (float)npc.direction, 0, 0, 0);
                                     }
@@ -3444,7 +3448,7 @@ PrepareToShoot:
                                         npc.ai[3] = (float)aiGateValue;
                                         npc.netUpdate = true;
                                     }
-                                    if (Main.netMode == NetmodeID.Server & canOpenTallGate)
+                                    if (Main.dedServ & canOpenTallGate)
                                     {
                                         NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)x, (float)(y - 1), 0f, 0, 0, 0);
                                     }
@@ -4595,7 +4599,7 @@ PrepareToShoot:
                     }
                 }
 
-                if (!npc.active && Main.netMode == NetmodeID.Server)
+                if (!npc.active && Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                 }
@@ -5068,13 +5072,13 @@ PrepareToShoot:
                                     int differentSegment = (int)Main.npc[q].ai[0];
                                     Main.npc[q].active = false;
                                     npc.life = 0;
-                                    if (Main.netMode == NetmodeID.Server)
+                                    if (Main.dedServ)
                                     {
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, q, 0f, 0f, 0f, 0, 0, 0);
                                     }
                                     q = differentSegment;
                                 }
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                                 }
@@ -6158,16 +6162,17 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                    npc.ai[0] = 0f;
-
                 if (npc.type == NPCID.Harpy)
                 {
+                    float featherShootCutOffValue = CalamityWorld.revenge ? 90f : 60f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = featherShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= HarpyFeatherGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 30f == 0f && npc.ai[0] <= (CalamityWorld.revenge ? 90f : 60f))
+                    else if (npc.ai[0] % 30f == 0f && npc.ai[0] <= featherShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
@@ -6191,11 +6196,15 @@ PrepareToShoot:
 
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon)
                 {
+                    float scytheShootCutOffValue = CalamityWorld.revenge ? 80f : 60f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = scytheShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= DemonScytheGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= (CalamityWorld.revenge ? 80f : 60f))
+                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= scytheShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
@@ -6219,11 +6228,15 @@ PrepareToShoot:
 
                 if (npc.type == NPCID.RedDevil)
                 {
+                    float tridentShootCutOffValue = 80f;
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                        npc.ai[0] = tridentShootCutOffValue + 1f;
+
                     if (npc.ai[0] >= RedDevilTridentGateValue)
                     {
                         npc.ai[0] = 0f;
                     }
-                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= 80f)
+                    else if (npc.ai[0] % 20f == 0f && npc.ai[0] <= tridentShootCutOffValue)
                     {
                         npc.ai[0] += 1f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
@@ -7887,6 +7900,7 @@ PrepareToShoot:
                     npc.velocity.Y -= 6f;
                 }
             }
+
             else if (npc.type == NPCID.Tumbleweed && npc.velocity.Y == 0f && Math.Abs(npc.velocity.X) > 3f && ((npc.Center.X < Main.player[npc.target].Center.X && npc.velocity.X > 0f) || (npc.Center.X > Main.player[npc.target].Center.X && npc.velocity.X < 0f)))
             {
                 npc.velocity.Y -= 6f;
@@ -7943,7 +7957,11 @@ PrepareToShoot:
 
             if (!flag && (npc.velocity.Y == 0f || npc.wet || (npc.velocity.X <= 0f && npc.direction < 0) || (npc.velocity.X >= 0f && npc.direction > 0)))
             {
-                if (npc.type == NPCID.Wolf || npc.type == ModContent.NPCType<Rotdog>())
+                if (npc.type == ModContent.NPCType<Rotdog>())
+                {
+                    npc.velocity.X *= 0.99f;
+                }
+                if (npc.type == NPCID.Wolf)
                 {
                     if (npc.velocity.X > 0f && npc.direction < 0)
                     {
@@ -7958,11 +7976,11 @@ PrepareToShoot:
                 {
                     if (npc.velocity.X > 0f && npc.direction < 0)
                     {
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.2f;
                     }
                     if (npc.velocity.X < 0f && npc.direction > 0)
                     {
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.2f;
                     }
                     if (npc.direction > 0 && npc.velocity.X < 3f)
                     {
@@ -8640,7 +8658,7 @@ PrepareToShoot:
                                     dust.noGravity = true;
                                 }
 
-                                if (Main.netMode != NetmodeID.Server)
+                                if (!Main.dedServ)
                                 {
                                     for (int j = 0; j < 4; j++)
                                     {

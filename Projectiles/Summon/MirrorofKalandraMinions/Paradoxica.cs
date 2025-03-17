@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             hasTeleported = reader.ReadBoolean();
-            ChargeStartingPosition = reader.ReadPackedVector2();
+            ChargeStartingPosition = reader.ReadVector2();
         }
 
         public override void AI()
@@ -184,13 +184,13 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             float rotation = (Target is not null) ? Projectile.rotation : Projectile.rotation + MathHelper.PiOver4;
 
-            if (CalamityConfig.Instance.Afterimages && Target is not null)
+            if (CalamityClientConfig.Instance.Afterimages && Target is not null)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

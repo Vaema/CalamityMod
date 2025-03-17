@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 19;
+            Main.projFrames[Type] = 19;
         }
 
         public override void SetDefaults()
@@ -38,7 +38,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.ignoreWater = true;
-            Projectile.alpha = 255;
         }
 
         public override void AI()
@@ -94,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frameCounter = 0;
             }
             // Once the animation is finished, stop rolling, set the extra timer to 16 frames, and reset the sprite to frame 0
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 rolling = false;
                 rolltimer = 16;
@@ -215,7 +214,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Sounds
             // Crank & new casino
-            if (Projectile.frameCounter == 0 && Projectile.frame == 2 * (Main.projFrames[Projectile.type] / 19))
+            if (Projectile.frameCounter == 0 && Projectile.frame == 2 * (Main.projFrames[Type] / 19))
             {
                 SoundEngine.PlaySound(SoundID.Item108 with { Volume = SoundID.Item108.Volume * 0.9f }, Projectile.Center);
                 RouletteSoundSlot = SoundEngine.PlaySound(TheSevensStriker.RouletteSound, Projectile.Center);
@@ -235,7 +234,7 @@ namespace CalamityMod.Projectiles.Ranged
             player.heldProj = Projectile.whoAmI;
             player.itemTime = 2;
             player.itemAnimation = 2;
-            player.itemRotation = (float)Math.Atan2((double)(Projectile.velocity.Y * (float)Projectile.direction), (double)(Projectile.velocity.X * (float)Projectile.direction));
+            player.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
         }
 
         // Calculates which attack will occur based on coin.
@@ -320,8 +319,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 armPosition = player.RotatedRelativePoint(player.MountedCenter, true);
             armPosition += Projectile.velocity.SafeNormalize(player.direction * Vector2.UnitX) * 32f;
             armPosition.Y -= 20f;
-            Vector2 shootDirection = (Main.MouseWorld - Projectile.Center).SafeNormalize(-Vector2.UnitY);
-            Vector2 gunTip = armPosition + shootDirection * player.ActiveItem().scale * 90f;
+            Vector2 gunTip = armPosition + Projectile.velocity.SafeNormalize(player.direction * Vector2.UnitX) * player.ActiveItem().scale * 70f;
             for (int i = 0; i < projcount; ++i)
             {
                 Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-spreadfactor, spreadfactor, i / 7f)) * scaleFactor;
@@ -342,11 +340,12 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 drawOrigin = new Vector2(Owner.direction < 0 ? gun.Width - 33f : 33f, 33f);
             Vector2 drawOffset = Owner.MountedCenter + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
             drawOffset.Y -= 10;
-            int indframeheight = gun.Height / Main.projFrames[Projectile.type];
+            int indframeheight = gun.Height / Main.projFrames[Type];
             int currentframe = indframeheight * Projectile.frame;
             Rectangle frame = new Rectangle(0, currentframe, gun.Width, indframeheight);
 
-            Main.EntitySpriteDraw(gun, drawOffset, frame, lightColor, drawAngle, drawOrigin, Projectile.scale, flip, 0);
+            // This is full brightness but it's better than random flickering for whatever reason
+            Main.EntitySpriteDraw(gun, drawOffset, frame, Color.White, drawAngle, drawOrigin, Projectile.scale, flip, 0);
 
             return false;
         }
@@ -365,5 +364,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         // This gun does not deal melee damage, thanks.
         public override bool? CanDamage() => false;
+
+        // Has velocity but updates positions manually
+        public override bool ShouldUpdatePosition() => false;
     }
 }

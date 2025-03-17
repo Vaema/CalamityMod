@@ -1,8 +1,6 @@
 ﻿using System;
-using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -22,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 56;
             Item.height = 30;
             Item.scale = 0.85f;
-            Item.damage = 65;
+            Item.damage = 95;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 13;
             Item.useAnimation = 13;
@@ -104,7 +102,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ThermoclineBlaster>().
                 AddIngredient(ItemID.ShroomiteBar, 3).
                 AddIngredient(ItemID.FallenStar, 3). // 41 Arietis is a triple star system
-                AddIngredient<CoreofSunlight>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -114,7 +114,7 @@ namespace CalamityMod.Tiles.Abyss
 
                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                 WorldGen.RangeFrame(i - 2, trueStartingPositionY - treeHeight - 1, i + 2, trueStartingPositionY + 1);
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, (int)((double)trueStartingPositionY - (double)treeHeight * 0.5), treeHeight + 1, TileChangeType.None);
                 if (isPlayerNear)
                     WorldGen.TreeGrowFXCheck(i, j);

@@ -68,11 +68,13 @@ namespace CalamityMod.Tiles.DraedonStructures
             te?.Kill(left, top);
         }
 
+        // Used to highlight the tile with Dangersense.
+        public override bool IsTileDangerous(int i, int j, Player player) => true;
         // The turret tile draws a pulse turret on top of itself.
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];
-            if (t.TileFrameX != 36 || t.TileFrameY != 0)
+            if (t.TileFrameX != 36 || t.TileFrameY != 0 || t.IsTileActuallyInvisible())
                 return;
 
             TEHostilePlagueTurret te = CalamityUtils.FindTileEntity<TEHostilePlagueTurret>(i, j, Width, Height, SheetSquare);
@@ -80,6 +82,16 @@ namespace CalamityMod.Tiles.DraedonStructures
                 return;
             int drawDirection = te.Direction;
             Color drawColor = Lighting.GetColor(i, j);
+            // Make sure the tile entity is also highlighted by Dangersense.
+            if (Main.LocalPlayer.dangerSense)
+            {
+                if (drawColor.R < 255)
+                    drawColor.R = 255;
+                if (drawColor.G < 50)
+                    drawColor.G = 50;
+                if (drawColor.B < 50)
+                    drawColor.B = 50;
+            }
 
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/PlayerTurrets/PlagueTurretHead").Value;
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);

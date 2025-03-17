@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AbyssalAmulet>().
+                AddIngredient<SeaSpiritAmulet>().
                 AddIngredient<Lumenyl>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();

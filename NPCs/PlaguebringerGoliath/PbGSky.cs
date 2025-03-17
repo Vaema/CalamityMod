@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 float x = 0f;
                 if (this.PbGIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.PbGIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.PbGIndex].Center);
                 }
                 return (1f - Utils.SmoothStep(3000f, 6000f, x));
             }

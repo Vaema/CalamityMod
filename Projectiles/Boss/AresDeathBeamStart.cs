@@ -38,9 +38,8 @@ namespace CalamityMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             // Ares' eight-pointed-star (more on higher difficulties) laser beams
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
-            // This is its serious name
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -163,7 +162,7 @@ namespace CalamityMod.Projectiles.Boss
             // Determine frames.
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5f == 0f)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -177,10 +176,10 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.scale < 0.001f)
                 return false;
 
-            Color beamColor = LaserOverlayColor;
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Color beamColor = CalamityClientConfig.Instance.Photosensitivity ? Color.CornflowerBlue : LaserOverlayColor;
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,
@@ -215,7 +214,7 @@ namespace CalamityMod.Projectiles.Boss
                                      0);
                     incrementalBodyLength += laserOffset;
                     centerOnLaser += Projectile.velocity * laserOffset;
-                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Projectile.type];
+                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Type];
                     if (middleFrameArea.Y + middleFrameArea.Height > LaserMiddleTexture.Height)
                         middleFrameArea.Y = 0;
                 }

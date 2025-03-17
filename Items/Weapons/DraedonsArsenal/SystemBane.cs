@@ -61,8 +61,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(20).
                 AddIngredient<DubiousPlating>(10).
-                AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
+                AddIngredient<InfectedArmorPlating>(10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

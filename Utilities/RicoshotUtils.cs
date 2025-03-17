@@ -62,6 +62,8 @@ namespace CalamityMod
         {
             // As 0,0 in world coordinates is the top left of the world (+Y = down instead of up),
             // we have to flip the Y here to do valid trigonometry.
+            //
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 vectorToMouse = player.Calamity().mouseWorld - player.MountedCenter;
             vectorToMouse.Y *= -1f;
 
