@@ -9,20 +9,25 @@ namespace CalamityMod.Projectiles.Typeless
     public class ShadeNimbusRain : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        public override string Texture => "CalamityMod/Projectiles/Boss/ShaderainHostile";
 
         public override void SetDefaults()
         {
             Projectile.width = 4;
             Projectile.height = 40;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 180;
             Projectile.alpha = 50;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 8;
+            Projectile.idStaticNPCHitCooldown = 6;
+        }
+
+        public override void AI()
+        {
+            if (Projectile.Center.Y > Main.player[Projectile.owner].Center.Y)
+                Projectile.tileCollide = true;
         }
 
         public override void OnKill(int timeLeft)
@@ -38,6 +43,15 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override Color? GetAlpha(Color lightColor) => new Color(100, 255, 100, Projectile.alpha);
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo info, int damageDone) => target.AddBuff(ModContent.BuffType<BrainRot>(), 60);
+        public override void OnHitNPC(NPC target, NPC.HitInfo info, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 60);
+            if (Projectile.numHits > 0)
+            {
+                Projectile.damage = (int)(Projectile.damage * 0.75f);
+                if (Projectile.damage < 1)
+                    Projectile.damage = 1;
+            }
+        }
     }
 }

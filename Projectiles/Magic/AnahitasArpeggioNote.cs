@@ -2,6 +2,7 @@
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,17 +16,18 @@ namespace CalamityMod.Projectiles.Magic
 
         public ref float Timer => ref Projectile.ai[0];
         public ref float AIState => ref Projectile.ai[1];
-        public ref float NoteSequence => ref Projectile.localAI[1];
+        public ref float NoteSequence => ref Projectile.ai[2];
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
+        public float _randomReleaseRotationOffset;
 
         public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -42,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         public override void AI()
-        {
+        {            
             Timer++;
 
             // Slight size oscillation
@@ -67,7 +69,6 @@ namespace CalamityMod.Projectiles.Magic
             else
                 Lighting.AddLight(Projectile.Center, 0f, 0f, 1.25f);
 
-
             if (AIState == 0f) // Orbiting the player
             {
                 // Keeps the projectile alive for as long as the weapon is being channeled
@@ -78,12 +79,12 @@ namespace CalamityMod.Projectiles.Magic
                 float rotationSpeed = baseRotationSpeed * (60f / Owner.ActiveItem().useTime);
                 Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
 
-                // If the player stops using the weapon, switch to fade away mode
-                if (Owner.releaseUseItem)
+                // If the player stops using the weapon or does not have enough mana, switch to fade away mode
+                if (Owner.releaseUseItem || !Owner.CheckMana(Owner.HeldItem.mana))
                 {
-                    AnahitasArpeggio.MusicNoteAmt = 0;
-                    Owner.Calamity().arpeggioCooldown = 40;
+                    Owner.Calamity().arpeggioCooldown = 45;
                     AIState = 1f;
+                    Projectile.netUpdate = true;
                 }
             }
             else if (AIState == 1f) // Brief fade away
@@ -107,10 +108,11 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.alpha = 255;
 
                     float degreesAmt = Main.zenithWorld ? 51.428f : 60f;
-                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + Projectile.ai[2]);
+                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + _randomReleaseRotationOffset);
 
-                    Projectile.Center = Owner.Calamity().mouseWorld + musicNoteRotationOffset * 220f;
-                    playerDirection = Projectile.Center - Owner.Calamity().mouseWorld;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    Projectile.Center = mouse + musicNoteRotationOffset * 220f;
+                    playerDirection = Projectile.Center - mouse;
                     playerDirection.Normalize();
                     playerDirection *= -9.2f;
                     Projectile.velocity = playerDirection;
@@ -183,7 +185,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -196,5 +198,9 @@ namespace CalamityMod.Projectiles.Magic
             if (!SoundEngine.TryGetActiveSound(SingularSoundInstanceSystem.SoundSlot, out var activeSound))
                 SingularSoundInstanceSystem.PlaySingleInstance(AnahitasArpeggio.HitSound, 60, 60, Owner);
         }
+
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(_randomReleaseRotationOffset);
+
+        public override void ReceiveExtraAI(BinaryReader reader) => _randomReleaseRotationOffset = reader.ReadSingle();
     }
 }

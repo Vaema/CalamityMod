@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 namespace CalamityMod.Projectiles.Magic
 {
     public class PrimordialAncientProjectile : ModProjectile, ILocalizedModType
@@ -28,11 +24,10 @@ namespace CalamityMod.Projectiles.Magic
         public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 140;
@@ -47,7 +42,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 40 * Projectile.extraUpdates;
         }
-
         public override void AI()
         {
             if (time == 0)
@@ -63,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
                 curve = MathHelper.Lerp(curve, 0f, 0.035f);
                 Projectile.velocity *= Main.rand.NextFloat(0.985f, 0.995f);
                 if (Projectile.ai[1] != 1)
-                    Projectile.velocity = Projectile.velocity.RotatedBy(curve * rotDirection);
+                    Projectile.velocity = Projectile.velocity.RotatedBy(curve * Projectile.localAI[0]);
             }
 
             if (Projectile.ai[2] == 1)
@@ -108,7 +102,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -159,12 +153,12 @@ namespace CalamityMod.Projectiles.Magic
 
                     SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");
                     SoundEngine.PlaySound(explo with { Volume = 0.75f, Pitch = 0.35f }, Projectile.Center);
-                    mousePos = Main.MouseWorld;
+                    mousePos = Main.player[Projectile.owner].ClampedMouseWorld();
                     goToCursor = true;
                 }
                 if (goToCursor)
                 {
-                    mousePos = Main.MouseWorld;
+                    mousePos = Main.player[Projectile.owner].ClampedMouseWorld();
                     if (time == 355)
                     {
                         CenterX = Projectile.Center.X;
@@ -203,7 +197,7 @@ namespace CalamityMod.Projectiles.Magic
                 dust2.alpha = 100;
             }
 
-            Projectile.rotation += Main.rand.NextFloat(0.1f * Utils.GetLerpValue(-100, 360, time)) * (float)Projectile.direction * rotDirection;
+            Projectile.rotation += Main.rand.NextFloat(0.1f * Utils.GetLerpValue(-100, 360, time)) * (float)Projectile.direction * Projectile.localAI[0];
 
             time++;
         }
@@ -276,7 +270,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.7f, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.7f, 1);
             
             Texture2D rTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             float randSize = Main.rand.NextFloat(0.8f, 1.2f);

@@ -38,8 +38,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             if (player.Calamity().StealthStrikeAvailable() && player.ownedProjectileCounts[Item.shoot] < knifeLimit)
             {
-                damage = (int)(damage * 1.1f);
-
                 int knifeAmt = knifeCount;
                 if ((player.ownedProjectileCounts[Item.shoot] + knifeCount) >= knifeLimit)
                     knifeAmt = knifeLimit - player.ownedProjectileCounts[Item.shoot];

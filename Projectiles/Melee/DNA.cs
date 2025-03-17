@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 18;
-            Projectile.height = 54;
+            Projectile.width = 22;
+            Projectile.height = 72;
             Projectile.friendly = true;
             Projectile.alpha = 255;
             Projectile.tileCollide = false;
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
         // This is essential for Vilethorn-type projectiles, as velocity is a stored parameter and isn't supposed to actually move the projectile
         public override bool ShouldUpdatePosition() => false;
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override void OnKill(int timeLeft)
         {

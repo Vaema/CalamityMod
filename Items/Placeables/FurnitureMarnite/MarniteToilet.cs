@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Tiles.FurnitureMarnite;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,17 +10,8 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 28;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = 0;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureMarnite.MarniteToilet>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureMarnite.MarniteToilet>());
+            Item.value = Item.sellPrice(copper: 30);
         }
 
         public override void AddRecipes()

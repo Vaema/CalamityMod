@@ -73,21 +73,6 @@ CoreofCalamity: {
 	Tooltip: ""
 }
 
-CoreofEleum: {
-	DisplayName: Core of Eleum
-	Tooltip: ""
-}
-
-CoreofHavoc: {
-	DisplayName: Core of Havoc
-	Tooltip: ""
-}
-
-CoreofSunlight: {
-	DisplayName: Core of Sunlight
-	Tooltip: ""
-}
-
 CorrodedFossil: {
 	DisplayName: Corroded Fossil
 	Tooltip: It's very sturdy
@@ -111,11 +96,6 @@ DarkPlasma: {
 DarksunFragment: {
 	DisplayName: Darksun Fragment
 	Tooltip: An impacted crystal suffused with opposing celestial energies
-}
-
-DemonicBoneAsh: {
-	DisplayName: Demonic Bone Ash
-	Tooltip: ""
 }
 
 DepthCells: {
@@ -222,11 +202,6 @@ MolluskHusk: {
 	Tooltip: The remains of a mollusk
 }
 
-MurkyPaste: {
-	DisplayName: Murky Paste
-	Tooltip: ""
-}
-
 MysteriousCircuitry: {
 	DisplayName: Mysterious Circuitry
 	Tooltip: ""
@@ -325,11 +300,6 @@ SuspiciousScrap: {
 TitanHeart: {
 	DisplayName: Titan Heart
 	Tooltip: Can be offered up at the Astral Beacon
-}
-
-TrapperBulb: {
-	DisplayName: Trapper Bulb
-	Tooltip: ""
 }
 
 TwistingNether: {

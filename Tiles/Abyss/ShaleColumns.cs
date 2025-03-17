@@ -52,7 +52,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
         }
 

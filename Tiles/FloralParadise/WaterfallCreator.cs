@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void NearbyEffects(int i, int j, bool closer)
         {
             Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
-            if (Main.netMode == NetmodeID.Server || !Main.rand.NextBool() || Main.gamePaused || tile.LiquidAmount > 0)
+            if (Main.dedServ || !Main.rand.NextBool() || Main.gamePaused || tile.LiquidAmount > 0)
                 return;
 
             for (int k = 0; k < 16; k++)

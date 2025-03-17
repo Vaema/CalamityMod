@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync(SyncWith = typeof(OarfishHead))]
     public class OarfishBody : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.OarfishHead.DisplayName");
@@ -146,7 +147,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OarfishBody").Type, 1f);
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.Serialization;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
@@ -6,6 +7,7 @@ using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
 using Terraria;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace CalamityMod
@@ -25,6 +27,36 @@ namespace CalamityMod
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
+        internal static void SaveConfig()
+        {
+            // There is no current way to manually save a mod configuration file in tModLoader.
+            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
+            try
+            {
+                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
+                if (saveMethodInfo is not null)
+                    saveMethodInfo.Invoke(null, [Instance]);
+                else
+                    CalamityMod.Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
+            }
+            catch
+            {
+                CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
+            }
+        }
+
+        #region Multi-Threading Settings
+        [Header("Multithreading")]
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [SliderColor(224, 165, 56, 128)]
+        [Range(0f, 2f)]
+        [DefaultValue(0f)]
+        [Increment(1f)]
+        [DrawTicks]
+        public float SunkenSeaMultiThreading { get; set; } 
+        #endregion
+
         #region Graphics Changes
         [Header("Graphics")]
 
@@ -33,8 +65,12 @@ namespace CalamityMod
         public bool Afterimages { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool Photosensitivity { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool NewVanillaTextures { get; set; }
+        public bool EnableVanillaTextureEdits { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
@@ -54,6 +90,13 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool StealthInvisibility { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [SliderColor(224, 165, 56, 128)]
+        [DefaultValue(1.0f)]
+        [Range(0.0f, 1.0f)]
+        public float EnergyShieldOpacity { get; set; }
+
         #endregion
 
         #region UI Changes
@@ -283,10 +326,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool PotionSelling { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(false)]
         public bool TownNPCsSpawnAtNight { get; set; }
 
         private const int MinTownNPCSpawnMultiplier = 1;
@@ -339,10 +378,6 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FasterRopeClimbSpeed { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool HigherJumpHeight { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

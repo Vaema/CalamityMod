@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), 240);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f }, GunTipPosition);
 
             int SawLevel = (Time / ChargeupTime >= 1f).ToInt() + (Time / ChargeupTime >= 0.25f).ToInt();

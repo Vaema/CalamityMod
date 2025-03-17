@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
 
-            if (Projectile.timeLeft > TimeLeft - AccelerationTime)
+            if (Projectile.timeLeft > TimeLeft - AccelerationTime && Projectile.ai[2] == 0f)
                 Projectile.velocity *= Acceleration;
 
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))
@@ -127,8 +127,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
-            int framing = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
+            int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Vector2 sc = Vector2.One;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, sc, texture);
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.owner == Main.myPlayer)
             {
-                int totalProjectiles = !ProvUtils.DayAI() ? 8 : 6;
+                int totalProjectiles = !ProvUtils.StandardAI() ? 8 : 6;
                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                     totalProjectiles *= 2;
 

@@ -70,9 +70,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             Lighting.AddLight((int)((npc.position.X + (npc.width / 2)) / 16f), (int)((npc.position.Y + (npc.height / 2)) / 16f), redLight, greenLight, 0f);
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             // Adjust stats
             int setDamage = npc.defDamage;
@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.Calamity().canBreakPlayerDefense = false;
 
                 // Play exhausted sound
-                if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < 2800f)
+                if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < 2800f)
                     SoundEngine.PlaySound(OldDuke.OldDuke.HuffSound with { Volume = OldDuke.OldDuke.HuffSound.Volume * 1.25f }, Main.LocalPlayer.Center);
 
                 if (Main.zenithWorld)
@@ -255,7 +255,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (Main.remixWorld)
             {
                 enrage = !bossRush &&
-                    (player.position.Y < Main.UnderworldLayer * 0.8f || player.position.Y > Main.UnderworldLayer ||
+                    (player.position.Y < Main.UnderworldLayer * 16 * 0.8f || player.position.Y > Main.UnderworldLayer * 16 ||
                     (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
             }
 

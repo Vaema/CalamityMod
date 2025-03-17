@@ -19,8 +19,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -59,8 +59,8 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity);
 
-            // Night AI or Guardian Healer
-            if (!ProvUtils.DayAI() || healerGuardianAlive)
+            // Enraged AI or Guardian Healer
+            if (!ProvUtils.StandardAI() || healerGuardianAlive)
                 Projectile.extraUpdates = 1;
 
             if (Projectile.timeLeft < 300)
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.velocity.Y *= 1.06f;
-                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Day)) ? 3.5f : 3f;
+                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Normal)) ? 3.5f : 3f;
                 if (Projectile.velocity.Y > fallSpeed)
                     Projectile.velocity.Y = fallSpeed;
             }

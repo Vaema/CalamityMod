@@ -44,9 +44,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -193,11 +193,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // If it changed for some reason, fire a net update. This update cannot be blocked by netSpam.
             if (previousDirection != Projectile.direction)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam > 59)
-                    Projectile.netSpam = 59;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         private static bool TargetInSafeBoundaries(NPC target) => target?.Center.Between(WorldTopLeft(), WorldBottomRight()) ?? true;
@@ -396,7 +392,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

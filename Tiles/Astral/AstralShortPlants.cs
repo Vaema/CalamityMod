@@ -22,6 +22,7 @@ namespace CalamityMod.Tiles.Astral
             Main.tileFrameImportant[Type] = true;
             TileID.Sets.ReplaceTileBreakUp[Type] = true;
             TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileID.Sets.IgnoredByGrowingSaplings[Type] = true;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             DustType = ModContent.DustType<AstralBasic>();
@@ -79,9 +80,6 @@ namespace CalamityMod.Tiles.Astral
             {
                 if (nearestPlayer.ActiveItem().type == ItemID.Sickle)
                     yield return new Item(ItemID.Hay, Main.rand.Next(1, 2 + 1));
-
-                if (Main.rand.NextBool(20))
-                    yield return new Item(ModContent.ItemType<Items.Placeables.AstralGrassSeeds>());
             }
         }
 

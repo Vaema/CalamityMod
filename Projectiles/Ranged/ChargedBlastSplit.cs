@@ -22,8 +22,8 @@ namespace CalamityMod.Projectiles.Ranged
         public float homeSpeed;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -76,10 +76,11 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.timeLeft <= 500 && Svant && goToMouse && Projectile.timeLeft % Projectile.extraUpdates == 0)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 mouseSpot = (player.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * homeSpeed;
                 Projectile.velocity.X = MathHelper.Lerp(Projectile.velocity.X, mouseSpot.X, 0.085f);
                 Projectile.velocity.Y = MathHelper.Lerp(Projectile.velocity.Y, mouseSpot.Y, 0.085f);
-                if (Vector2.Distance(Projectile.Center, player.Calamity().mouseWorld) < 80)
+                if (Vector2.Distance(Projectile.Center, player.ClampedMouseWorld()) < 80)
                 {
                     Projectile.timeLeft = 300;
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * homeSpeed / 2;
@@ -116,7 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (baseColor == Color.White)
                 return false;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom").Value;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], (baseColor * 0.7f) with { A = 0 }, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], (baseColor * 0.7f) with { A = 0 }, 1, texture);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, baseColor with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

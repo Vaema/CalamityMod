@@ -20,12 +20,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
-            bool masterModeSurprise = lifeRatio >= 0.9f && masterMode;
-            bool phase2 = lifeRatio < (masterMode ? 0.6f : 0.7f);
-            bool phase3 = lifeRatio < (masterMode ? 0.3f : 0.4f);
-            bool phase4 = lifeRatio < (masterMode ? 0.1f : 0.2f);
+            bool masterModeSurprise = lifeRatio >= 0.9f && death;
+            bool phase2 = lifeRatio < (death ? 0.6f : 0.7f);
+            bool phase3 = lifeRatio < (death ? 0.3f : 0.4f);
+            bool phase4 = lifeRatio < (death ? 0.1f : 0.2f);
             bool phase2AI = npc.ai[0] > 4f;
             bool phase3AI = npc.ai[0] > 9f;
             bool charging = npc.ai[3] < 10f;
@@ -180,7 +179,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (masterMode)
+            if (death)
             {
                 idlePhaseTimer -= 6;
                 idlePhaseAcceleration *= 1.2f;
@@ -202,7 +201,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     calamityGlobalNPC.newAI[0] = 0f;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || masterMode) ? 1 : 0);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || death) ? 1 : 0);
 
                     npc.netUpdate = true;
                 }
@@ -426,7 +425,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[2] = 0f;
                         if (enrage)
                             npc.ai[2] = sharknadoPhaseTimer - 40;
-                        else if (masterMode)
+                        else if (death)
                             npc.ai[2] = sharknadoPhaseTimer - 60;
                     }
 
@@ -805,7 +804,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == sharknadoPhaseTimer - 30)
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || masterMode) ? 1 : 0);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || death) ? 1 : 0);
 
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= sharknadoPhaseTimer)
@@ -1024,7 +1023,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Spawn bubbles during charge in Master Mode (these bubbles have special behavior that makes them float upward, doing no damage, before returning to their normal behavior)
-                if (masterMode && phase4)
+                if (death && phase4)
                 {
                     if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
                     {

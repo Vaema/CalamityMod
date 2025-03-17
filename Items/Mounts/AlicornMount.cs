@@ -17,51 +17,53 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 234;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<AlicornBuff>();
-            MountData.heightBoost = 35;
-            MountData.fallDamage = 0f;
+
+            // Horizontal movement
             MountData.runSpeed = 5.6f;
             MountData.dashSpeed = 17.6f;
-            MountData.flightTimeMax = 9999;
-            MountData.fatigueMax = 0;
-            MountData.jumpHeight = 12;
-            MountData.acceleration = 0.4f;
-            MountData.jumpSpeed = 9.21f;
             MountData.swimSpeed = 4f;
-            MountData.blockExtraJumps = false;
+            MountData.acceleration = 0.4f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.fatigueMax = int.MaxValue;
+            MountData.flightTimeMax = int.MaxValue;
+            MountData.jumpSpeed = 9.21f;
+
+            // Frames and offsets
             MountData.totalFrames = 15;
-            MountData.constantJump = false;
-            int baseYOffset = 26;
+            MountData.heightBoost = 34;
+            int baseYOffset = 30;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
                 array[l] = baseYOffset;
-            }
+
             array[1] = array[3] = array[5] = array[7] = array[12] = baseYOffset - 2;
             MountData.playerYOffsets = array;
-            MountData.xOffset = -4;
+            MountData.playerHeadOffset = 36;
             MountData.bodyFrame = 3;
-            MountData.yOffset = 5; //-8
-            MountData.playerHeadOffset = 36; //30
+            MountData.xOffset = -4;
+            MountData.yOffset = 6;
             MountData.standingFrameCount = 1;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
-            MountData.runningFrameCount = 8; //7
-            MountData.runningFrameDelay = 42; //36
-            MountData.runningFrameStart = 1; //9
-            MountData.flyingFrameCount = 6; //0
-            MountData.flyingFrameDelay = 4; //0
-            MountData.flyingFrameStart = 9; //0
-            MountData.inAirFrameCount = 1; //1
-            MountData.inAirFrameDelay = 12; //12
-            MountData.inAirFrameStart = 10; //10
-            MountData.idleFrameCount = 1; //4
-            MountData.idleFrameDelay = 12; //12
+            MountData.runningFrameCount = 8;
+            MountData.runningFrameDelay = 42;
+            MountData.runningFrameStart = 1;
+            MountData.flyingFrameCount = 6;
+            MountData.flyingFrameDelay = 4;
+            MountData.flyingFrameStart = 9;
+            MountData.inAirFrameCount = 1;
+            MountData.inAirFrameDelay = 12;
+            MountData.inAirFrameStart = 10;
+            MountData.idleFrameCount = 1;
+            MountData.idleFrameDelay = 12;
             MountData.idleFrameStart = 5;
             MountData.idleFrameLoop = true;
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/AlicornMountExtra");
                 MountData.textureWidth = MountData.backTexture.Width();
@@ -73,7 +75,7 @@ namespace CalamityMod.Items.Mounts
         {
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (npc.type == ModContent.NPCType<FAP>())
+                if (npc.type == ModContent.NPCType<Cirrus>())
                 {
                     npc.active = false;
                     npc.netUpdate = true;
@@ -98,10 +100,10 @@ namespace CalamityMod.Items.Mounts
             // Spawn Cirrus if no other players are on the Alicorn mount.
             if (!anyPlayerOnFabMount)
             {
-                if (!NPC.AnyNPCs(ModContent.NPCType<FAP>()))
+                if (!NPC.AnyNPCs(ModContent.NPCType<Cirrus>()))
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(NPC.GetSource_TownSpawn(), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<FAP>());
+                        NPC.NewNPC(NPC.GetSource_TownSpawn(), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<Cirrus>());
                 }
             }
         }
@@ -109,7 +111,7 @@ namespace CalamityMod.Items.Mounts
         public override void UpdateEffects(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.fabsolVodka)
+            if (modPlayer.cirrusVodka)
                 player.GetDamage<GenericDamageClass>() += 0.1f;
 
             if (player.velocity.Length() > 9f)

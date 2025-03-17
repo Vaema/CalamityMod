@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,14 +28,16 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= 3f)
-            {
+            if (Projectile.ai[0] >= 5f)
                 Projectile.tileCollide = true;
-            }
+
             Projectile.rotation += Projectile.velocity.X * 0.02f;
-            Projectile.velocity.Y = Projectile.velocity.Y + 0.085f;
-            Projectile.velocity.X = Projectile.velocity.X * 0.99f;
+            Projectile.velocity.X *= 0.99f;
+            Projectile.velocity.Y += 0.085f;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
         public override void OnKill(int timeLeft)
         {

@@ -32,11 +32,11 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 32;
             Item.height = 32;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = UseSound;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = UseSound;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 48);
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -74,7 +74,6 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             CreateRecipe().
                 AddIngredient(ItemID.LifeFruit, 5).
-                AddIngredient(ItemID.FragmentSolar, 15).
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<AscendantSpiritEssence>().
                 AddTile<CosmicAnvil>().

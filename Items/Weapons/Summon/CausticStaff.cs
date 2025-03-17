@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }
@@ -46,10 +46,9 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddRecipeGroup("AnyEvilFlask", 5).
-                AddIngredient(ItemID.Deathweed, 2).
-                AddIngredient(ItemID.SoulofNight, 10).
                 AddRecipeGroup("AnyEvilBar", 10).
+                AddRecipeGroup("CursedFlameIchor", 10).
+                AddIngredient(ItemID.SoulofNight, 10).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

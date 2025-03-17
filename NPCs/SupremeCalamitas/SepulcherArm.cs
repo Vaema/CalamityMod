@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor_Unused)
         {
-            Texture2D armTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D armTexture = TextureAssets.Npc[Type].Value;
             Texture2D foreArmTexture = ForearmTexture.Value;
             Texture2D handTexture = HandTexture.Value;
 
@@ -207,7 +207,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 forearmGoreSpawnPosition = Limbs[0].Center + Main.rand.NextVector2Circular(6f, 6f);
                     Vector2 armGoreSpawnPosition = Limbs[1].Center + Main.rand.NextVector2Circular(6f, 6f);

@@ -8,6 +8,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
@@ -20,6 +21,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f };
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.1f };
+
+        public static int ArmorPenetration = 3;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
 
         public static float MinSpreadDistance = 460f;
         public static float MaxSpreadDistance = 60f;
@@ -36,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 23;
             Item.height = 8;
             Item.damage = 11;
-            Item.ArmorPenetration = 3;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 55;
             Item.useAnimation = 55;
@@ -95,6 +99,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
             float damageMult = MathHelper.Lerp(1f, MaxDamageFalloff, Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance));
             damage = (int)(damage * damageMult);
@@ -105,6 +110,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.Calamity().GeneralScreenShakePower < 3f)
                 player.Calamity().GeneralScreenShakePower = 3f;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
             float spreadDistance = Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance);
             float spread = MathHelper.Lerp(MaxSpread, MinSpread, spreadDistance);

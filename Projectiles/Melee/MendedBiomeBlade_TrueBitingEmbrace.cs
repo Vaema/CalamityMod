@@ -82,11 +82,10 @@ namespace CalamityMod.Projectiles.Melee
             {
                 case 0:
                 case 1:
-                    bladeLength = 150 * Projectile.scale;
+                    bladeLength = 160f * Projectile.scale;
                     break;
                 case 2:
-                    bladeLength = 225f; //In awe e
-                    bladeLength *= Projectile.scale;
+                    bladeLength = 225f * Projectile.scale;
                     displace = direction * ThrustDisplaceRatio() * 60f;
                     break;
 
@@ -124,13 +123,13 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                 }
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -149,10 +148,10 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = Owner.Center + (direction * ThrustDisplaceRatio() * 60);
 
                 Projectile.frameCounter++;
-                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Projectile.type])
+                if (Projectile.frameCounter % 5 == 0 && Projectile.frame + 1 < Main.projFrames[Type])
                     Projectile.frame++;
 
-                if (Main.rand.NextBool() && Owner.whoAmI == Main.myPlayer)
+                if (Timer % 2 == 0 && Owner.whoAmI == Main.myPlayer)
                 {
                     Projectile mist = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + direction * 40 + Main.rand.NextVector2Circular(30f, 30f), Vector2.Zero, ProjectileType<BitingEmbraceMist>(), (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_MistDamageReduction), 0f, Owner.whoAmI);
                     mist.velocity = (mist.Center - Owner.Center) * 0.2f + Owner.velocity;
@@ -162,13 +161,22 @@ namespace CalamityMod.Projectiles.Melee
 
             else
             {
-                if (Main.rand.NextFloat(0f, 1f) > 0.75f && Owner.whoAmI == Main.myPlayer)
+                if (Timer % 2 == 0 && Owner.whoAmI == Main.myPlayer)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + direction * 40, rotation.ToRotationVector2() * 5, ProjectileType<BitingEmbraceMist>(), (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_MistDamageReduction), 0f, Owner.whoAmI);
 
                     Vector2 particlePosition = Owner.Center + (rotation.ToRotationVector2() * 100f * Projectile.scale);
-                    Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
-                    GeneralParticleHandler.SpawnParticle(snowflake);
+                    if (Main.rand.NextBool())
+                    {
+                        Particle snowflake = new SnowflakeSparkle(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);
+                        GeneralParticleHandler.SpawnParticle(snowflake);
+                    }
+                    else
+                    {
+                        float scale = Main.rand.NextFloat(0.5f, 1.8f);
+                        Particle star = new CritSpark(particlePosition, rotation.ToRotationVector2() * 3f, Color.White, Color.Indigo, scale, 30, 0.5f, scale * 2f);
+                        GeneralParticleHandler.SpawnParticle(star);
+                    }
                 }
             }
 

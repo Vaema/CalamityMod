@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
@@ -8,9 +9,18 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class CrimsonEffigy : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        public override void SetStaticDefaults() => ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ModContent.ItemType<CorruptionEffigy>(), 1);
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
+        public static float DamageBoost = 0.15f;
+        public static int DefenseBoost = 10;
+        public static float MaxHealthLossPercent = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseBoost, MaxHealthLossPercent.ToPercent());
+
+        public override void SetDefaults()
+        {
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
+        }
 
         public override void AddRecipes()
         {

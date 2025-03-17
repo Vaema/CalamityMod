@@ -1,10 +1,17 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,9 +19,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class KingSlimeJewelEmerald : ModNPC
     {
-        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
+        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald";
 
-        private const int ChargePhaseGateValue = 90;
+        private const int ChargePhaseGateValue = 120;
         private const int ChargeGateValue = 60;
         private const int ChargeGateValue_Death = 40;
         private const float LightTelegraphDuration = 30f;
@@ -30,8 +37,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.GetNPCDamage();
-            NPC.width = 22;
-            NPC.height = 22;
+            NPC.width = 32;
+            NPC.height = 32;
             NPC.defense = 15;
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 240;
@@ -49,7 +56,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
                 NPC.life = 0;
-                NPC.HitEffect();
+                OnKill();
                 NPC.active = false;
                 NPC.netUpdate = true;
                 return;
@@ -113,14 +120,19 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.ai[0] = 2f;
                     NPC.ai[1] = 0f;
-
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
                 else if (NPC.ai[0] == 2f)
                 {
                     // Set damage
                     NPC.damage = NPC.defDamage;
+
+                    NPC.rotation += MathHelper.ToRadians(Math.Sign(NPC.velocity.X) * 15);
+
+                    CustomSprite spriteParticle = new CustomSprite(NPC.Center - NPC.velocity, NPC.velocity * 0.8f, 10, "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald", 1.2f, Color.DarkGreen.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)));
+                    spriteParticle.Rotation = NPC.rotation;
+
+                    GeneralParticleHandler.SpawnParticle(spriteParticle);
 
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue))
@@ -216,18 +228,43 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
-        public override Color? GetAlpha(Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Color initialColor = new Color(100, 175, 100);
-            Color newColor = initialColor;
-            Color finalColor = new Color(150, 255, 150);
-            float colorTelegraphGateValue = (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue) - LightTelegraphDuration;
-            if (NPC.ai[1] > colorTelegraphGateValue)
-                newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[1] - colorTelegraphGateValue) / LightTelegraphDuration);
-            newColor.A = (byte)(255 * NPC.Opacity);
+            Color col = Color.DarkOliveGreen;
+            Color flashCol = Color.Lime;
 
-            return newColor;
+            float alph = 0f;
+
+            float colorTelegraphGateValue =  (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue) - LightTelegraphDuration;
+
+            if (NPC.ai[0] > colorTelegraphGateValue)
+                alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
+
+            Main.EntitySpriteDraw(tex.Value, NPC.Center - screenPos, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex2.Value, NPC.Center - screenPos, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
+
+            return false;
         }
+
+        public override void OnKill()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.DarkSeaGreen));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Lime));
+            }
+
+            float start = Main.rand.NextFloat(MathHelper.TwoPi);
+            for (int i = 0; i < 3; i++)
+                GeneralParticleHandler.SpawnParticle(new CustomSprite(NPC.Center, new Vector2(0, -2).RotatedByRandom(start + MathHelper.ToRadians(20f)).RotatedBy(MathHelper.ToRadians(i * 125)), 120, "CalamityMod/Particles/KingSlimeEmeraldShards", 1f, new Color(255, 255, 255), Main.rand.NextFloat(0.2f, 0.6f), frameCount: 3, frame: i));
+
+            SoundEngine.PlaySound(KingSlimeJewelRuby.ShatterSound, NPC.Center);
+        }
+
+        public override Color? GetAlpha(Color drawColor) => Color.White;
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {

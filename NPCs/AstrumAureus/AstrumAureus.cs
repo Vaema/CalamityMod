@@ -60,8 +60,8 @@ namespace CalamityMod.NPCs.AstrumAureus
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -95,12 +95,12 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.width = 374;
             NPC.height = 374;
             NPC.defense = 40;
-            NPC.DR_NERD(0.5f);
-            NPC.LifeMaxNERB(100000, 120000, 740000); // 30 seconds in boss rush
+            NPC.DR_NERD(0.4f);
+            NPC.LifeMaxNERB(120000, 140000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 60, 0, 0);
+            NPC.value = Item.buyPrice(0, 25, 0, 0);
             NPC.boss = true;
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
@@ -251,15 +251,15 @@ namespace CalamityMod.NPCs.AstrumAureus
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
             bool slimePhaseHP = lifeRatio <= 0.1f || (lifeRatio > 0.6f && lifeRatio <= 0.7f);
 
-            Texture2D NPCTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D GlowMaskTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D NPCTexture = TextureAssets.Npc[Type].Value;
+            Texture2D GlowMaskTexture = TextureAssets.Npc[Type].Value;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             if (NPC.ai[0] == 0f || (slimePhaseHP && Main.zenithWorld))
             {
-                NPCTexture = TextureAssets.Npc[NPC.type].Value;
+                NPCTexture = TextureAssets.Npc[Type].Value;
                 GlowMaskTexture = Texture_Glow.Value;
             }
             else if (NPC.ai[0] == 1f) //nothing special done here
@@ -275,7 +275,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             {
                 if (NPC.velocity.Y == 0f && NPC.ai[1] >= 0f && NPC.ai[0] == 3f) //idle before jump
                 {
-                    NPCTexture = TextureAssets.Npc[NPC.type].Value; //idle frames
+                    NPCTexture = TextureAssets.Npc[Type].Value; //idle frames
                     GlowMaskTexture = Texture_Glow.Value;
                 }
                 else if (NPC.velocity.Y <= 0f || NPC.ai[1] < 0f) //jump frames if flying upward or if about to jump
@@ -293,7 +293,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             {
                 if (NPC.velocity.Y == 0f) //idle before teleport
                 {
-                    NPCTexture = TextureAssets.Npc[NPC.type].Value; //idle frames
+                    NPCTexture = TextureAssets.Npc[Type].Value; //idle frames
                     GlowMaskTexture = Texture_Glow.Value;
                 }
                 else //in-air frames
@@ -303,8 +303,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                 }
             }
 
-            int frameCount = Main.npcFrameCount[NPC.type];
-            Vector2 originalDrawSize = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / frameCount / 2);
+            int frameCount = Main.npcFrameCount[Type];
+            Vector2 originalDrawSize = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / frameCount / 2);
             Rectangle frame = NPC.frame;
             float scale = NPC.scale;
             float rotation = NPC.rotation;
@@ -431,7 +431,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Wizard, ModContent.NPCType<FAP>() }, DownedBossSystem.downedAstrumAureus);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)
@@ -490,7 +490,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     aureusDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                     Main.dust[aureusDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("Aureus1").Type, 1f);

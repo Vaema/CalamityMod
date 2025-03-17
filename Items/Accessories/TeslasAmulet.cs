@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,13 +12,13 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 14));
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 32;
+            Item.width = 34;
             Item.height = 32;
             Item.rare = ItemRarityID.Orange;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
                 AddIngredient<AerialiteBar>(8).
                 AddIngredient<SeaPrism>(8).
                 AddIngredient<StormlionMandible>(4).

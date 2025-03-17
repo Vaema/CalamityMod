@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -68,12 +69,9 @@ namespace CalamityMod.Projectiles.Typeless
             BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
 
             CalamityNetcode.SyncWorld();
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.BossRushStage);
-                netMessage.Write(BossRushEvent.BossRushStage);
-                netMessage.Send();
+                BossRushStagePacket.Send();
             }
         }
     }

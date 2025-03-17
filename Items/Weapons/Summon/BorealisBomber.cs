@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, Main.myPlayer);

@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
+    [LongDistanceNetSync(SyncWith = typeof(DesertNuisanceHead))]
     public class DesertNuisanceTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DesertNuisanceHead.DisplayName");
@@ -184,7 +185,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeNuisanceTail").Type, NPC.scale);
 
                 for (int k = 0; k < 10; k++)

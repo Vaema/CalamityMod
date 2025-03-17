@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
 
         public override void SetDefaults()
@@ -61,9 +61,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Starfleet>().
                 AddIngredient<BarracudaGun>().
-                AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<ExodiumCluster>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }

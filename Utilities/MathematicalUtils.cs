@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using Microsoft.Xna.Framework;
+using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod
@@ -223,6 +225,43 @@ namespace CalamityMod
         /// <param name="x">The input value.</param>
         public static int DirectionalSign(this float x) => (x > 0f).ToDirectionInt();
 
+        public static List<Point> GetIntersectingPointsInLine(Point start, Point end)
+        {
+            List<Point> intersectingCells = [];
+
+            int dx = Math.Abs(end.X - start.X);
+            int dy = Math.Abs(end.Y - start.Y);
+            int sx = start.X < end.X ? 1 : -1;
+            int sy = start.Y < end.Y ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                // Add the current cell to the list
+                intersectingCells.Add(start);
+
+                // Check if we've reached the end point
+                if (start == end)
+                    break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    start.X += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    start.Y += sy;
+                }
+            }
+
+            return intersectingCells;
+        }
+
+        public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
+
         #region Easings
         /// <summary>
         /// Gets a value from 0 to 1 and returns an eased value.
@@ -359,161 +398,6 @@ namespace CalamityMod
                 break;
             }
             return ratio;
-        }
-
-        #endregion
-
-        #region A* Search Algorithm
-
-        public class Node(Point position, Node parent = null)
-        {
-            public Point Position { get; set; } = position;
-
-            /// <summary>
-            /// Cost from start to the current node.
-            /// </summary>
-            public int Cost { get; set; }
-
-            /// <summary>
-            /// Heuristic cost from the current node to the goal.
-            /// </summary>
-            public int HeuristicCost { get; set; }
-
-            public int TotalCost => Cost + HeuristicCost;
-
-            public Node Parent { get; set; } = parent;
-
-            public override bool Equals(object obj) => obj is Node node && Position == node.Position;
-
-            public override int GetHashCode() => Position.X.GetHashCode() ^ Position.Y.GetHashCode();
-        }
-
-        public class AStar(List<Point> grid, Point start, Point goal)
-        {
-            private List<Point> grid = grid;
-            private Node goal = new(goal);
-            private List<Node> openList = new() { new(start) };
-            private HashSet<Node> closedList = new();
-
-            public static List<Vector2> GetPath(List<Point> grid, Point start, Point goal)
-            {
-                var pathfinding = new AStar(grid, start, goal);
-                return pathfinding.FindPath();
-            }
-
-            public static List<Vector2> GetPath(List<Point> grid, Vector2 start, Vector2 goal)
-            {
-                var pathfinding = new AStar(grid, start.ToTileCoordinates(), goal.ToTileCoordinates());
-                return pathfinding.FindPath();
-            }
-
-            private List<Vector2> FindPath()
-            {
-                while (openList.Count > 0)
-                {
-                    var currentNode = openList.OrderBy(node => node.TotalCost).First();
-
-                    if (currentNode.Equals(goal))
-                        return ReconstructPath(currentNode);
-
-                    openList.Remove(currentNode);
-                    closedList.Add(currentNode);
-
-                    foreach (var neighbor in GetNeighbors(currentNode))
-                    {
-                        // Ignore the neighbor which is already evaluated.
-                        if (closedList.Contains(neighbor))
-                            continue;
-
-                        int tentativeScore = currentNode.Cost + currentNode.Position.ManhattanDistance(neighbor.Position);
-
-                        // Discover a new node.
-                        if (!openList.Contains(neighbor))
-                            openList.Add(neighbor);
-
-                        // This is not a better path.
-                        else if (tentativeScore >= neighbor.Cost)
-                            continue;
-
-                        neighbor.Parent = currentNode;
-                        neighbor.Cost = tentativeScore;
-                        neighbor.HeuristicCost = neighbor.Position.ManhattanDistance(goal.Position);
-                    }
-                }
-
-                return null;
-            }
-
-            private List<Vector2> ReconstructPath(Node node)
-            {
-                var path = new List<Vector2>();
-                while (node != null)
-                {
-                    path.Add(node.Position.ToWorldCoordinates());
-                    node = node.Parent;
-                }
-                path.Reverse();
-                return path;
-            }
-
-            private List<Node> GetNeighbors(Node node)
-            {
-                var neighbors = new List<Node>();
-
-                foreach (var direction in Directions)
-                {
-                    Point newPoint = new(node.Position.X + (int)direction.X, node.Position.Y + (int)direction.Y);
-
-                    if (!Main.tile[newPoint].IsTileSolid() && grid.Contains(newPoint))
-                        neighbors.Add(new Node(newPoint, node));
-                }
-
-                return neighbors;
-            }
-
-            public static List<Point> MakeGenericGrid(Vector2 position, float size, Func<Point, bool> adjacentTileValidation = null)
-            {
-                adjacentTileValidation ??= GenericAdjacentTileValidation;
-                
-                List<Point> grid = new();
-
-                Point topLeftCorner = ToSafeTileCoordinates(position + new Vector2(-size, -size));
-                Point bottomRightCorner = ToSafeTileCoordinates(position + new Vector2(size, size));
-
-                for (int coordY = topLeftCorner.Y; coordY <= bottomRightCorner.Y; coordY++)
-                {
-                    for (int coordX = topLeftCorner.X; coordX <= bottomRightCorner.X; coordX++)
-                    {
-                        Point point = new(coordX, coordY);
-
-                        if (Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount != 255 || !adjacentTileValidation.Invoke(point))
-                            continue;
-
-                        grid.Add(point);
-                    }
-                }
-
-                return grid;
-            }
-
-            private static bool GenericAdjacentTileValidation(Point point)
-            {
-                Vector2[] adjacents = new Vector2[12]
-                {
-                Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY,
-                new(1f, 1f), new(1f, -1f), new(-1f, -1f), new(-1f, 1f),
-                Vector2.UnitX * 2f, -Vector2.UnitX * 2f, Vector2.UnitY * 2f, -Vector2.UnitY * 2f
-                };
-
-                foreach (var adjacent in adjacents)
-                {
-                    Point adjacentPoint = new(point.X + (int)adjacent.X, point.Y + (int)adjacent.Y);
-                    if (Main.tile[adjacentPoint].IsTileSolid())
-                        return false;
-                }
-
-                return true;
-            }
         }
 
         #endregion

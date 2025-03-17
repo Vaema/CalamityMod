@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 26;
             Item.height = 34;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 50, 0);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Orange;
 
             Item.MakeUsableWithChlorophyteExtractinator();

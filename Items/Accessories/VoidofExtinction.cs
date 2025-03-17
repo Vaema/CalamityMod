@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Accessories
         public const int FireProjectiles = 2;
         public const float FireAngleSpread = 120;
         public int FireCountdown = 0;
+        public static int VoidExploDamage = 150;
 
         public override void SetDefaults()
         {
@@ -29,8 +30,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<Abaddon>().
-                AddIngredient<CoreofHavoc>().
                 AddIngredient<ScoriaBar>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

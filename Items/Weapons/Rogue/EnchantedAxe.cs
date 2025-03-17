@@ -14,12 +14,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 40;
             Item.height = 36;
-            Item.damage = 20;
+            Item.damage = 19;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 19;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -47,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<IronFrancisca>(100).
+                AddIngredient<IronFrancisca>().
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient<PearlShard>(10).
                 AddIngredient(ItemID.Bone, 30).
@@ -55,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 Register();
 
             CreateRecipe().
-                AddIngredient<LeadTomahawk>(100).
+                AddIngredient<LeadTomahawk>().
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient<PearlShard>(10).
                 AddIngredient(ItemID.Bone, 30).

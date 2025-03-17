@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
             Color beamColor = GetBeamColor(polarity);
             ProduceBeamDust(beamColor);
             // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                 // A universal time-based sinusoid which updates extremely rapidly. GlobalTimeWrappedHourly is 0 to 3600, measured in seconds.
@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

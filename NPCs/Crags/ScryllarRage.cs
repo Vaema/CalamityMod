@@ -116,7 +116,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)
@@ -257,17 +257,6 @@ namespace CalamityMod.NPCs.Crags
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
         }
 
-        public override void OnKill()
-        {
-            // Increase the kill count of Scryllars for the Bestiary
-            if (NPC.GetWereThereAnyInteractions())
-            {
-                NPC nPC = new NPC();
-                nPC.SetDefaults(ModContent.NPCType<Scryllar>());
-                Main.BestiaryTracker.Kills.RegisterKill(nPC);
-            }
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
@@ -280,7 +269,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScryllarRage").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScryllarRage2").Type, NPC.scale);

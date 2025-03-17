@@ -7,6 +7,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -14,7 +15,9 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -128,21 +131,23 @@ namespace CalamityMod.ILEditing
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
-        #region Remove Feral Bite Random Debuffs
-        private static void RemoveFeralBiteRandomDebuffs(ILContext il)
+        #region Remove Expert Brain of Cthulhu Random Debuffs
+        private static void RemoveExpertBrainRandomDebuffs(ILContext il)
         {
+            // Remove Expert+ Brain of Cthulhu and Creeper random debuffs on hit.
             var cursor = new ILCursor(il);
 
-            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
+            // Go to the check for Expert Mode.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Main>("get_expertMode")))
             {
-                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
+                LogFailure("Remove Expert Brain Random Debuffs", "Could not locate the Expert Mode check.");
                 return;
             }
 
-            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0f);
+            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
+            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
         }
         #endregion
 
@@ -252,9 +257,49 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove Flail Throw Velocity Being Affected By Player Velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+        #endregion
+
         #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
         // TODO -- Finish this
         #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
+
+        #region Prevent UFO Mount from Dismounting in Water
+        private static void PreventUFODismountInWater(ILContext il)
+        {
+            // Prevent the Cosmic Car Key's UFO mount from dismounting when the player is in water.
+            var cursor = new ILCursor(il);
+
+            // Unfortunately, the code responsible for this is 4000 lines into Player.Update, meaning that reaching it is far from simple.
+            // The following method was the easiest way I could find to reach it:
+            // Move to the third call of Mount.Dismount.
+            for (int i = 0; i < 3; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallvirt<Mount>("Dismount")))
+                {
+                    LogFailure("Prevent UFO Dismounting in Water", "Could not reach the Dismount instruction.");
+                    return;
+                }
+            }
+            // Move the cursor backwards to place it right after the instruction which loads Main.myPlayer onto the stack.
+            if (!cursor.TryGotoPrev(MoveType.After, i => i.MatchLdsfld<Main>("myPlayer")))
+            {
+                LogFailure("Prevent UFO Dismounting in Water", "Could not locate the myPlayer check.");
+                return;
+            }
+
+            // Remove the instruction and replace it with the integer limit. The next instruction checks if this value is equal to Player.whoAmI.
+            // Player.whoAmI will never be the integer limit, so the check will always fail and the UFO will not dismount.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
+        }
+        #endregion Prevent UFO Mount from Dismounting in Water
 
         #region Color Blighted Gel
         private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
@@ -578,7 +623,7 @@ namespace CalamityMod.ILEditing
 
                 case 17:
                     item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    item.SetDefaults(ItemID.LavaFishingHook);
                     rewardItems.Add(item);
                     break;
 
@@ -602,7 +647,7 @@ namespace CalamityMod.ILEditing
 
                 case 21:
                     item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
                     rewardItems.Add(item);
                     break;
 
@@ -786,7 +831,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Honey Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 17)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 21)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
@@ -842,7 +887,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Lavaproof Fishing Hook
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 21)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 17)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.LavaFishingHook);
@@ -1004,11 +1049,30 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
-        #region Celestial Sigil Non-Linearity Change
-        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        #region Vanilla Non-Linearity Fixes
+        private static void RemovePowerCellPlanteraLock(ILContext il)
+        {
+            // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<NPC>("downedPlantBoss")))
+            {
+                LogFailure("Remove Power Cell Plantera Lock", "Could not locate the downed Plantera bool.");
+                return;
+            }
+
+            // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
+            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_I4_1);
+        }
+
+        private static bool RemoveUseLocks(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+            if (sItem.type == ItemID.SolarTablet)
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }
@@ -1033,8 +1097,68 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove NPC.damage Condition from Radar
+        private static void RemoveDamageConditionFromRadar(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            Func<Instruction, bool>[] searchFor =
+            [
+                (x => x.MatchLdfld<NPC>(nameof(NPC.damage))),
+                (x => x.MatchLdcI4(out var comp) && comp == 0),
+                (x => x.MatchBle(out _)) //ble.s
+            ];
+
+            if (!cursor.TryGotoNext(MoveType.After, searchFor))
+            {
+                LogFailure("Radar Condition", "Unable to locate condition for NPC.damage > 0");
+                return;
+            }
+
+            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            cursor.Prev.OpCode = OpCodes.Nop;
+
+            // After that we pop NPC.damage and 0 from stack
+            cursor.EmitPop();
+            cursor.EmitPop();
+        }
+        #endregion
+
+        #region Multiple NPC Happiness support for Cirrus
+        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        {
+            FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
+            NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
+
+            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            {
+                MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                FieldInfo happinessField = typeof(ShopHelper).GetField("_currentPriceAdjustment", BindingFlags.Instance | BindingFlags.NonPublic);
+                float currentPriceAdjustment = (float)happinessField.GetValue(self);
+
+                if (affectionLevel != 0 && Enum.IsDefined(affectionLevel))
+                {
+                    // Add a suffix to the localization key which specifies the NPC's name
+                    addReportField.Invoke(self, [ $"{affectionLevel}NPC_" + NPCID.Search.GetName(npcType),  new
+                    {
+                        NPCName = NPC.GetFullnameByID(npcType)
+                    }, 0]);
+                    currentPriceAdjustment *= NPCHappiness.AffectionLevelToPriceMultiplier[affectionLevel];
+                    happinessField.SetValue(self, currentPriceAdjustment);
+                }
+            }
+            else
+            {
+                orig(self, npcType, affectionLevel);
+            }
+        }
+        #endregion
+
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property
+        [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]
         private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);

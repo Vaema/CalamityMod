@@ -43,6 +43,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<LivingDew>().
                 AddIngredient<RadiantOoze>().
                 AddIngredient<LifeAlloy>(3).
+                AddIngredient(ItemID.FragmentSolar, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

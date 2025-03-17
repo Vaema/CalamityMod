@@ -32,16 +32,13 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
         public static Asset<Texture2D> GlowTexture;
 
-        internal static void LoadHeadIcons()
+        public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/ExoMechs/Apollo/ApolloHead";
             string phase2IconPath = "CalamityMod/NPCs/ExoMechs/Apollo/ApolloPhase2Head";
-
-            CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
-            phase1IconIndex = ModContent.GetModBossHeadSlot(phase1IconPath);
-
-            CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
-            phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
+            
+            phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
+            phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
         public enum Phase
@@ -126,8 +123,8 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 15;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = 15;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -158,7 +155,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(15, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
@@ -854,8 +851,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                     // Do nothing while immune
                     AIState = (float)Phase.Normal;
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoPrimeLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
+                    if ((!exoWormAlive || exoWormLifeRatio < 0.7f || !exoPrimeAlive || exoPrimeLifeRatio < 0.7f) && !otherMechIsBerserk)
                     {
                         // Set Artemis variables
                         if (exoMechTwinRedAlive)
@@ -1166,8 +1164,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
                         NPC.velocity = Vector2.Normalize(chargeLocations[(int)calamityGlobalNPC.newAI[2] + 1] - chargeLocations[(int)calamityGlobalNPC.newAI[2]]) * chargeVelocity;
                         NPC.localAI[2] = 1f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam -= 5;
+                        NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
                         if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge))) // I'm not that evil (you aren't, but I am - Fab)
@@ -1519,7 +1516,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
             int numAfterimages = ChargeComboFlash > 0f ? 0 : 5;
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 origin = NPC.Size * 0.5f;
             Vector2 center = NPC.Center - screenPos;
@@ -1753,7 +1750,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Apollo1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Apollo2").Type, 1f);

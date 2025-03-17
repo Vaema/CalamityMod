@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 16;
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -92,7 +92,7 @@ namespace CalamityMod.NPCs.Abyss
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
                 NPC.defense = 15;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)
                     {
@@ -310,7 +310,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DevilfishAlt").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DevilfishAlt2").Type, 1f);

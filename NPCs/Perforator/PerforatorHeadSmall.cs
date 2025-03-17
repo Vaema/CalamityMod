@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class PerforatorHeadSmall : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
@@ -34,7 +36,6 @@ namespace CalamityMod.NPCs.Perforator
             {
                 Scale = 0.8f,
                 PortraitScale = 0.8f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/PerforatorSmall_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 60
             };
@@ -490,14 +491,17 @@ namespace CalamityMod.NPCs.Perforator
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PerforatorBodySmall>()].Value, 5, 22, 0.6f, new Vector2(-20, -20), 4, 10);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
 
             Vector2 glowmaskDrawLocation = NPC.Center - screenPos;
             glowmaskDrawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
@@ -529,7 +533,7 @@ namespace CalamityMod.NPCs.Perforator
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SmallPerf").Type, NPC.scale);
                 }

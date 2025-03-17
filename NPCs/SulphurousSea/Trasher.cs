@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1,
@@ -346,7 +346,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             }
             if (spawnInfo.Player.Calamity().ZoneSulphur || (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water))
             {
-                return 0.1f;
+                return 0.05f;
             }
             return 0f;
         }
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Trasher").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Trasher2").Type, 1f);

@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Environment
         public ref float Direction => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.CanDistortWater[Projectile.type] = false;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.CanDistortWater[Type] = false;
         }
 
         public override void SetDefaults()
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Environment
             Projectile.hide = Projectile.Opacity < 0.2f;
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
                 Projectile.localAI[0] = 1f;
             }
 

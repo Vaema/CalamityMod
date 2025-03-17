@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
@@ -29,7 +30,7 @@ namespace CalamityMod.NPCs.GreatSandShark
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -57,8 +58,8 @@ namespace CalamityMod.NPCs.GreatSandShark
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 5, 0, 0);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.behindTiles = true;
             NPC.netAlways = true;
             NPC.DeathSound = DeathSound;
@@ -118,7 +119,7 @@ namespace CalamityMod.NPCs.GreatSandShark
 
             if (!Terraria.GameContent.Events.Sandstorm.Happening)
             {
-                CalamityUtils.StartSandstorm();
+                CalamityWorld.StartSandstorm();
                 CalamityNetcode.SyncWorld();
             }
 
@@ -582,7 +583,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                 NPC.spriteDirection = -NPC.direction;
             }
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -601,8 +602,8 @@ namespace CalamityMod.NPCs.GreatSandShark
                 mainAfterimageColor = Color.Silver;
                 extraAfterimageColor = Color.Orange;
             }
-            Texture2D texture2D3 = TextureAssets.Npc[NPC.type].Value;
-            int currentFrame = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+            Texture2D texture2D3 = TextureAssets.Npc[Type].Value;
+            int currentFrame = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
             int y3 = currentFrame * (int)NPC.frameCounter;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, currentFrame);
             Vector2 halfRectSize = rectangle.Size() / 2f;
@@ -624,7 +625,7 @@ IL_6899:
                 {
                     afterimagesRemaining = (float)(1 - afterimageCounter);
                 }
-                alphaAfterimageColor *= afterimagesRemaining / ((float)NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f);
+                alphaAfterimageColor *= afterimagesRemaining / ((float)NPCID.Sets.TrailCacheLength[Type] * 1.5f);
                 Vector2 afterimagePos = NPC.oldPos[afterimageCounter];
                 float afterimageRotation = NPC.rotation;
                 Main.spriteBatch.Draw(texture2D3, afterimagePos + NPC.Size / 2f - screenPos + new Vector2(0, NPC.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), alphaAfterimageColor, afterimageRotation + NPC.rotation * 0f * (float)(afterimageCounter - 1) * -(float)spriteEffects.HasFlag(SpriteEffects.FlipHorizontally).ToDirectionInt(), halfRectSize, NPC.scale, spriteEffects, 0f);
@@ -676,9 +677,6 @@ IL_6899:
         {
             npcLoot.Add(ItemID.AncientBattleArmorMaterial);
 
-            // Great Sand Shark drops the Desert Key
-            npcLoot.Add(ItemID.DungeonDesertKey, 3);
-
             // 1 Grand Scale guaranteed; on Expert, 33% chance of getting a second one
             npcLoot.Add(ModContent.ItemType<GrandScale>());
             npcLoot.AddIf(() => Main.expertMode, ModContent.ItemType<GrandScale>(), 3);
@@ -709,7 +707,7 @@ IL_6899:
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
     }
 }

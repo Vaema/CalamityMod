@@ -37,9 +37,10 @@ namespace CalamityMod.Projectiles.Magic
         public const float HomingAcceleration = 0.4f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -63,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 4 == 3)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
             NPC potentialTarget = Projectile.Center.ClosestNPCAt(2300f, true, true);
             if (Time < SwerveTime)
@@ -138,10 +139,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.oldPos[0] = Projectile.position + Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
 
-            Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(rocketTexture,
                              Projectile.Center - Main.screenPosition,
-                             rocketTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             rocketTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              GetRocketColor(),
                              Projectile.rotation,
                              rocketTexture.Size() * 0.5f,

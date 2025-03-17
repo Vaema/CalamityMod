@@ -1,13 +1,9 @@
 AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
+AmuletEnergy.DisplayName: Sea Spirit
 ArcZap.DisplayName: Arc Zap
-ArtifactOfResilienceShard1.DisplayName: Artifact Shard
-ArtifactOfResilienceShard2.DisplayName: Artifact Shard
-ArtifactOfResilienceShard3.DisplayName: Artifact Shard
-ArtifactOfResilienceShard4.DisplayName: Artifact Shard
-ArtifactOfResilienceShard5.DisplayName: Artifact Shard
-ArtifactOfResilienceShard6.DisplayName: Artifact Shard
+ArtifactOfResilienceShards.DisplayName: Artifact Shard
 AscendantAura.DisplayName: Ascendant Aura
 AstralFallingSand.DisplayName: Astral Falling Sand
 AstralSandBallFalling.DisplayName: Astral Sand
@@ -15,7 +11,10 @@ AstralSandBallGun.DisplayName: Astral Sand
 AstralSpray.DisplayName: Astral Spray
 AstralStar.DisplayName: Star
 AuricLandMineExplosion.DisplayName: Auric Land Mine Explosion
+BabyCannonballProjectile.DisplayName: Baby Cannonball Projectile
+BasicBurst.DisplayName: Nondescript Damaging Explosion
 BasicPlagueBee.DisplayName: Basic Plague Bee
+BlackGlassBandProjectile.DisplayName: Obsidian Strike
 BlazingStarHeal.DisplayName: Blazing Star Heal
 BlazingStarThatDoesNotHeal.DisplayName: Blazing Star That Does Not Heal
 BlazingSun.DisplayName: Blazing Sun
@@ -53,9 +52,14 @@ EmpyreanMarble.DisplayName: Empyrean Marble
 EmpyreanStellarDetritus.DisplayName: Empyrean Stellar Detritus
 EnergyShell.DisplayName: Energy Shell
 EutrophicSandBallGun.DisplayName: Eutrophic Sand
+ExoTankHoverThrust.DisplayName: Exo Thrust
+ExoTankLaser.DisplayName: Mini Exo Pulse Laser
+ExoTankMissile.DisplayName: Miracle Missile
+ExoTankMuzzleFlash.DisplayName: Mini Exo Flash
 FeralDoubleBobber.DisplayName: Feral Bobber
 FlameLickedBarrage.DisplayName: Flame Licked Barrage
 FlameLickedHellblast.DisplayName: Flame Licked Hellblast
+FlashBolt.DisplayName: The Reminder
 FuckYou.DisplayName: Explosion
 FungalClumpMinion.DisplayName: Fungal Clump
 GemTechArmorGem.DisplayName: Trireme's Gem
@@ -68,6 +72,7 @@ GreenLabSeeker.DisplayName: Seeking Mechanism
 HeronBobber.DisplayName: Heron Bobber
 HideOfAstrumDeusExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
+HolyStarDamage.DisplayName: Holy Star
 HydrothermalSmoke.DisplayName: Smoke
 HydrothermicFlare.DisplayName: Hydrothermic Flare
 HydrothermicFlareRogue.DisplayName: Hydrothermic Flare
@@ -75,8 +80,11 @@ HydrothermicSphere.DisplayName: Hydrothermic Sphere
 JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
-LunicBeam.DisplayName: Beam
-MagnusBeam.DisplayName: Beam
+LunicBeam.DisplayName: Lunic Seeker
+Luxor.DisplayName: Luxor
+LuxorsGiftClassless.DisplayName: Luxor's Classless
+MagnusBeam.DisplayName: Magnus Seeker
+MagnusBoom.DisplayName: Nebula Blast
 MythrilFlare.DisplayName: Mythril Flare
 NanoFlare.DisplayName: Nano Flare
 Nanotech.DisplayName: Nanoblade
@@ -93,9 +101,12 @@ PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
+PuddleSplash.DisplayName: Puddle Splash
 ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
+RelicGuard.DisplayName: Relic Guard
+RetaliationProjectile.DisplayName: Retaliation Shard
 RiftReelerBobber.DisplayName: Chaotic Bobber
 SandCloakVeil.DisplayName: Dust Veil
 SandExplosion.DisplayName: Sand
@@ -105,8 +116,6 @@ SerpentsBiteHook.DisplayName: Serpent's Bite
 ShadeNimbus.DisplayName: Shade Nimbus
 ShadeNimbusRain.DisplayName: Shade Rain
 ShadeNimbusSpawner.DisplayName: Dank Creeper
-ShadowflameExplosion.DisplayName: Shadowflame Explosion
-ShadowflameExplosionBig.DisplayName: Shadowflame Explosion
 SkyFlareFriendly.DisplayName: Flare
 SlimeStream.DisplayName: Slime Stream
 SlurperBobber.DisplayName: Slurper Bobber
@@ -120,11 +129,16 @@ SulphuricAcidBubbleFriendly.DisplayName: Acid Bubble
 SulphurousSandBallGun.DisplayName: Sulphurous Sand
 TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
+TatteredFairyDust.DisplayName: Tattered Fairy Dust
 TeslaAura.DisplayName: Tesla's Electricity
 TitanHeartBoom.DisplayName: Titan Heart Boom
+TransformerAura.DisplayName: Transformer Aura
+TransformerBlob.DisplayName: Transformer Shard
 UrsaSlash.DisplayName: Ursa Slash
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VoidFieldGenerator.DisplayName: Void Field Generator
+WarbannerDamage.DisplayName: The Unmatched Power of the Sun
+WarbannerLight.DisplayName: Warbanner Light
 WaterConvertor.DisplayName: Water Convertor
 WhiteLabSeeker.DisplayName: Seeking Mechanism
 WulfrumBobber.DisplayName: Wulfrum Bobber
@@ -133,3 +147,5 @@ WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
+VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
+XykDeathAnim.DisplayName: Xyk Death Animation

@@ -105,10 +105,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
         }
 
@@ -134,7 +135,7 @@ namespace CalamityMod.Projectiles.Summon
         #region Syncing
         public override void SendExtraAI(BinaryWriter writer)
         {
-            if (Arms is null || Arms[0] is null)
+            if (Arms is null || Arms.Count == 0 || Arms[0] is null)
                 Initialize();
 
             writer.Write(IdleTimer);
@@ -154,7 +155,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            if (Arms is null || Arms[0] is null)
+            if (Arms is null || Arms.Count == 0 || Arms[0] is null)
                 Initialize();
 
             IdleTimer = reader.ReadInt32();

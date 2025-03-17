@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.NPCs.Other;
@@ -73,7 +74,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bohldohr").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bohldohr2").Type, 1f);
@@ -99,6 +100,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.LihzahrdBrick, 1, 10, 26);
+            npcLoot.Add(ModContent.ItemType<Stohne>(), 1, 10, 26);
             npcLoot.Add(ItemID.LunarTabletFragment, 7, 10, 26);
             npcLoot.Add(ItemID.LihzahrdPowerCell, 50);
             npcLoot.AddIf(() => DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && Main.zenithWorld, ModContent.ItemType<NO>(), 2, ui: false);

@@ -32,8 +32,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -98,7 +98,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.netUpdate = true;
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                Projectile.Center = Owner.MountedCenter + Projectile.velocity * 12f;
+                Projectile.Center = Owner.MountedCenter + (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 12;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                 startDamage = Projectile.damage;
                 Projectile.spriteDirection = Projectile.direction;

@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         SoundEngine.PlaySound(ArtAttack.UseSound, Owner.Center);
                         Vector2 initialStarVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Main.MouseWorld, initialStarVelocity, attackType, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), initialStarVelocity, attackType, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         Projectile.ai[0] = -24f;
                     }
                     else
@@ -76,10 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             aimOffset = Vector2.Lerp(aimOffset, Vector2.Normalize(Projectile.velocity), AimResponsiveness).SafeNormalize(Vector2.UnitY) * 30f;
 
             if (aimOffset != Projectile.velocity)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
             Projectile.velocity = aimOffset;
         }
 

@@ -17,6 +17,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -69,10 +70,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Inflict Extreme Gravity to nearby players
             if (revenge)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                        Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                        Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                 }
             }
 
@@ -214,20 +215,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 Main.npc[headOneID].Calamity().newAI[0] = 1f;
                                 Main.npc[headOneID].velocity = Vector2.Normalize(player.Center - Main.npc[headOneID].Center) * 16f;
                                 Main.npc[headOneID].timeLeft *= 20;
-                                Main.npc[headOneID].netSpam = 0;
-                                Main.npc[headOneID].netUpdate = true;
+                                Main.npc[headOneID].ForceNetUpdate();
 
                                 // On server, immediately send the correct extra AI of this head to clients.
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
-                                    var netMessage = mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                    netMessage.Write((byte)headOneID);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[0]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[1]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[2]);
-                                    netMessage.Write(Main.npc[headOneID].Calamity().newAI[3]);
-                                    netMessage.Send();
+                                    SyncCalamityNPCAIArrayPacket.Send(Main.npc[headOneID]);
                                 }
 
                                 // Make sure the second split worm is also contiguous.
@@ -237,20 +230,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 Main.npc[headTwoID].Calamity().newAI[3] = Main.getGoodWorld ? 300f : 600f;
                                 Main.npc[headTwoID].velocity = Vector2.Normalize(player.Center - Main.npc[headTwoID].Center) * 16f;
                                 Main.npc[headTwoID].timeLeft *= 20;
-                                Main.npc[headTwoID].netSpam = 0;
-                                Main.npc[headTwoID].netUpdate = true;
+                                Main.npc[headTwoID].ForceNetUpdate();
 
                                 // On server, immediately send the correct extra AI of this head to clients.
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                 {
-                                    var netMessage = mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                    netMessage.Write((byte)headTwoID);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[0]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[1]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[2]);
-                                    netMessage.Write(Main.npc[headTwoID].Calamity().newAI[3]);
-                                    netMessage.Send();
+                                    SyncCalamityNPCAIArrayPacket.Send(Main.npc[headTwoID]);
                                 }
                             }
 
@@ -340,12 +325,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.HitEffect(0, 10.0);
                     npc.checkDead();
                     npc.active = false;
-
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -380,16 +360,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             Main.npc[lol].Calamity().newAI[0] = Main.npc[Previous].Calamity().newAI[0];
                             Main.npc[lol].Calamity().newAI[3] = Main.npc[Previous].Calamity().newAI[3];
 
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
-                                var netMessage = mod.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.SyncCalamityNPCAIArray);
-                                netMessage.Write((byte)lol);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[0]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[1]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[2]);
-                                netMessage.Write(Main.npc[lol].Calamity().newAI[3]);
-                                netMessage.Send();
+                                SyncCalamityNPCAIArrayPacket.Send(Main.npc[lol]);
                             }
 
                             Main.npc[lol].ai[2] = npc.whoAmI;
@@ -517,12 +490,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (Main.npc[i].type == headType || Main.npc[i].type == bodyType || Main.npc[i].type == tailType)
                             {
                                 Main.npc[i].active = false;
-
-                                Main.npc[i].netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (Main.npc[i].netSpam >= 10)
-                                    Main.npc[i].netSpam = 9;
+                                Main.npc[i].ForceNetUpdate(false);
                             }
                         }
                     }
@@ -726,38 +694,20 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (shouldFly)
                 {
                     if (npc.localAI[0] != 1f)
-                    {
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
-                    }
+                        npc.ForceNetUpdate(false);
 
                     npc.localAI[0] = 1f;
                 }
                 else
                 {
                     if (npc.localAI[0] != 0f)
-                    {
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
-                    }
+                        npc.ForceNetUpdate(false);
 
                     npc.localAI[0] = 0f;
                 }
 
                 if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
-                {
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-                }
+                    npc.ForceNetUpdate(false);
 
                 npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) + MathHelper.PiOver2;
             }

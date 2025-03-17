@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -25,8 +26,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -155,7 +156,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            if (((Projectile.Calamity().stealthStrike && Projectile.numHits > 2) || !Projectile.Calamity().stealthStrike) && Returning != 1f)
+            if (Projectile.numHits > 2)
             {
                 Projectile.velocity *= 0.3f;
                 Returning = 1f;
@@ -189,6 +190,26 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.velocity *= 0.3f;
                     Returning = 1f;
                     return;
+                }
+
+                if (Projectile.Calamity().stealthStrike && Returning != 1f)
+                {
+                    if (Projectile.owner == Main.myPlayer)
+                    {
+                        for (int s = 0; s < 3; s++)
+                        {
+                            Vector2 velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                            while (velocity.X == 0f && velocity.Y == 0f)
+                            {
+                                velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                            }
+                            velocity.Normalize();
+                            velocity *= (float)Main.rand.Next(70, 101) * 0.1f;
+                            int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BonebreakerFragment1>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack * 0.5f, Projectile.owner, Main.rand.Next(0, 4), 0f);
+                            if (proj.WithinBounds(Main.maxProjectiles))
+                                Main.projectile[proj].DamageType = RogueDamageClass.Instance;
+                        }
+                    }
                 }
 
                 Bouncing = 1f;

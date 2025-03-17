@@ -52,19 +52,20 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
-            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<HeliumFlashHoldout>(), damage, knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<HeliumFlashHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
         public override void AddRecipes()
         {
-            Recipe r = CreateRecipe();
-            r.AddIngredient<VenusianTrident>();
-            r.AddIngredient<ForbiddenSun>();
-            r.AddIngredient(ItemID.FragmentSolar, 10);
-            r.AddIngredient(ItemID.FragmentNebula, 5);
-            r.AddIngredient<AuricBar>(5);
-            r.AddTile<CosmicAnvil>();
-            r.Register();
+            CreateRecipe().
+                AddIngredient<VenusianTrident>().
+                AddIngredient<ForbiddenSun>().
+                AddIngredient<AuricBar>(5).
+                AddIngredient(ItemID.FragmentSolar, 10).
+                AddIngredient(ItemID.FragmentNebula, 5).
+                AddTile<CosmicAnvil>().
+                Register();
         }
     }
 }

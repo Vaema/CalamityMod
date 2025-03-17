@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,18 +17,8 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 24;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 30, 0);
-            Item.makeNPC = (short)ModContent.NPCType<PolypPanasea>();
+            Item.DefaultToCapturedCritter(ModContent.NPCType<PolypPanasea>());
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
         }
 
@@ -74,15 +65,7 @@ namespace CalamityMod.Items.Critters
                     }
                     else
                     {
-                        var netMessage = item.ModItem.Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.PlaceAltCritter);
-                        netMessage.Write(player.whoAmI);
-                        netMessage.Write(mouseX);
-                        netMessage.Write(mouseY);
-                        netMessage.Write(item.makeNPC);
-                        netMessage.Write(item.type);
-                        netMessage.Write(colorType);
-                        netMessage.Send();
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
                     }
                 }
             }

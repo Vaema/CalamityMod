@@ -68,6 +68,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<TarragonHeadMagic>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaSpaceHelmet>()).
                 Register();
         }
     }

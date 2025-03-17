@@ -14,8 +14,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon
 
             int cap = 3;
             float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
             modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
 
             // Bypass a portion of the target's DR
@@ -93,7 +94,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (CalamityClientConfig.Instance.Afterimages)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             }
             return true;
         }

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 2893;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 45;
-            Item.useTime = Item.useAnimation = 16;
+            Item.useAnimation = Item.useTime = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -41,7 +41,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
-            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
             return false;
         }
     }

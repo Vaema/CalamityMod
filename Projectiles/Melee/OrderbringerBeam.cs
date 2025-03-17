@@ -13,14 +13,13 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/OrderbringerBeam";
-        private int whiteLightTimer = 5;
         public int time = 0;
         public Color mainColor = Color.White;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -57,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(mainColor, Color.White, 0.3f) with { A = 0 }, 1, null, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(mainColor, Color.White, 0.3f) with { A = 0 }, 1, null, true, true);
             return false;
         }
 

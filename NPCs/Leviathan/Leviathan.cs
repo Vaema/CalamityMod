@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 3;
+            Main.npcFrameCount[Type] = 3;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
                 AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
@@ -64,13 +64,13 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 900;
             NPC.height = 450;
             NPC.defense = 40;
-            NPC.DR_NERD(0.35f);
+            NPC.DR_NERD(0.3f);
             NPC.LifeMaxNERB(60000, 72000, 600000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
-            NPC.value = Item.buyPrice(0, 60, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 50, 0);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.noTileCollide = true;
@@ -595,9 +595,13 @@ namespace CalamityMod.NPCs.Leviathan
                             return;
                         }
 
+                        // Used to scale lineup speed and acceleration
+                        if (NPC.ai[2] < 300f)
+                            NPC.ai[2]++;
+
                         // Velocity calculations
-                        float chargeSpeed = revenge ? 7.5f : 6.5f;
-                        float chargeAcceleration = revenge ? 0.12f : 0.11f;
+                        float chargeSpeed = (revenge ? 7.5f : 6.5f) + (NPC.ai[2] * 0.0083f);
+                        float chargeAcceleration = (revenge ? 0.12f : 0.11f) + (NPC.ai[2] * 0.001f);
                         chargeSpeed += 2f * enrageScale;
                         chargeAcceleration += 0.04f * enrageScale;
 
@@ -643,10 +647,7 @@ namespace CalamityMod.NPCs.Leviathan
                         NPC.direction = playerLocation2 < 0 ? 1 : -1;
                         NPC.spriteDirection = NPC.direction;
 
-                        NPC.netUpdate = true;
-
-                        if (NPC.netSpam > 10)
-                            NPC.netSpam = 10;
+                        NPC.ForceNetUpdate(false);
                     }
                     else
                     {
@@ -695,10 +696,7 @@ namespace CalamityMod.NPCs.Leviathan
                             NPC.TargetClosest();
                         }
 
-                        NPC.netUpdate = true;
-
-                        if (NPC.netSpam > 10)
-                            NPC.netSpam = 10;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
             }
@@ -801,7 +799,7 @@ namespace CalamityMod.NPCs.Leviathan
                     bloody2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloody2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("LeviGore").Type, NPC.scale);
@@ -831,8 +829,8 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (!DownedBossSystem.downedLeviathan)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.LocalPlayer.Center);
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }
@@ -870,7 +868,7 @@ namespace CalamityMod.NPCs.Leviathan
                     ModContent.ItemType<AnahitasArpeggio>(),
                     ModContent.ItemType<Atlantis>(),
                     ModContent.ItemType<GastricBelcherStaff>(),
-                    ModContent.ItemType<BrackishFlask>(),
+                    ModContent.ItemType<Whitewater>(),
                     ModContent.ItemType<LeviathanTeeth>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
@@ -878,7 +876,7 @@ namespace CalamityMod.NPCs.Leviathan
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<LeviathanMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<AnahitaMask>(), 7);
-                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
+                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
@@ -916,20 +914,17 @@ namespace CalamityMod.NPCs.Leviathan
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = AttackTexture.Value;
             if (NPC.ai[0] == 1f || NPC.Calamity().newAI[3] < 180f)
             {
-                texture = TextureAssets.Npc[NPC.type].Value;
+                texture = TextureAssets.Npc[Type].Value;
             }
             SpriteEffects spriteEffects = SpriteEffects.FlipHorizontally;
             float xOffset = -50f;

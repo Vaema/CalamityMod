@@ -10,18 +10,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class RotBall : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.damage = 24;
+            Item.damage = 20;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -29,8 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 1000;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<RotBallProjectile>();
             Item.shootSpeed = 16f;
@@ -57,10 +50,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.DemoniteBar).
-                AddIngredient<RottenMatter>().
-                AddIngredient(ItemID.RottenChunk).
+            CreateRecipe().
+                AddIngredient(ItemID.DemoniteBar, 4).
+                AddIngredient<RottenMatter>(12).
+                AddIngredient(ItemID.RottenChunk, 4).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

@@ -11,7 +11,7 @@ AldebaranAlewife: {
 
 ArcturusAstroidean: {
 	DisplayName: Arcturus Astroidean
-	Tooltip: Increases fishing power if used in the Astral Infection or Sulphurous Sea
+	Tooltip: Increases fishing power by {0}x when in the Astral Infection or Sulphurous Sea
 }
 
 AstralCrate: {
@@ -44,7 +44,7 @@ UrsaSergeant: {
 	Tooltip:
 		'''
 		Attacks maul enemies with astral claw swipes
-		Taking damage reduces the cooldown, but inflicts you with Astral Infection
+		Taking damage reduces the cooldown, but inflicts you with {$Buffs.AstralInfectionDebuff.DisplayName}
 		Enemy kills also reduce the cooldown
 		Swipes will be translucent and silent if visibility is disabled
 		'''
@@ -55,16 +55,17 @@ Bloodfin: {
 	DisplayName: Bloodfin
 	Tooltip:
 		'''
-		Grants a buff that grants +2.5 HP/s life regen
-		This buff directly restores HP if below 75% health
-		10 second duration
+		Grants a buff that massively boosts natural life regen and grants +{0} HP/s life regen
+		This increases to +{1} HP/s while suffering from damage over time debuffs
+		This buff also directly restores HP every {2} seconds if below {3}% health
+		{$CommonItemTooltip.SecondDuration@4}
 		'The wonders of angiogenesis'
 		'''
 }
 
 Brimlish: {
 	DisplayName: Brimlish
-	QuestDescription: When you defeated the Brimstone Elemental, her children fell in the lava as a result of the aftermath. Rumors say they mutated a fish, and I'd love if you fetched one for my new lava-filled fish tank.
+	QuestDescription: Did you really defeat that big fire lady? Well, I heard that her children fled into the lava, and one of them mutated into a fish! I'm not burning my hands though, so you catch it and bring it to me for my lava-filled tank!
 }
 
 BrimstoneCrate: {
@@ -108,7 +109,7 @@ DragoonDrizzlefish: {
 
 Havocfish: {
 	DisplayName: Havocfish
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofHavoc] essence
 }
 
 Shadowfish: {
@@ -123,7 +124,7 @@ SlagCrate: {
 
 Slurpfish: {
 	DisplayName: Slurpfish
-	QuestDescription: Y'know, it'd be an absolute calamity if I sent you to the ancient ruins in the depths of hell to catch a fish. And I plan to do just that. Now scram! The fish isn't going to catch itself.
+	QuestDescription: Hey {0}, wouldn't it be absolutely calamitous if I sent you to those ruins in the depths of hell? Well, I heard of a scary fish that can slurp the souls out of people! I want to keep my soul, so scram! The fish isn't going to catch itself!
 }
 
 // Sunken Sea Catches
@@ -134,7 +135,7 @@ EutrophicCrate: {
 
 EutrophicSandfish: {
 	DisplayName: Eutrophic Sandfish
-	QuestDescription: You ever get to see what would happen if a lizard that lived in the desert scurried too deep underground? I did, and they sure are cool! But it's way too slippery for me to get my hands on it now. You go and get it so I can keep it as a pet!
+	QuestDescription: You ever wondered what would happen if a lizard that lived in the desert wandered too deep into those old Ilmeran areas? Well I know, and it looks super cool! But it's way too slippery for me to get my hands on, so you go and get it so I can keep it as a pet!
 }
 
 GreenwaveLoach: {
@@ -163,26 +164,41 @@ RustedJingleBell: {
 
 SerpentsBite: {
 	DisplayName: Serpent's Bite
-	Tooltip:
-		'''
-		Reach: 28.125
-		Launch Velocity: 18
-		Reelback Velocity: 14
-		Pull Velocity: 12
-		'''
+	Tooltip: "{$Common.GrappleStats}"
 }
 
 Serpentuna: {
 	DisplayName: Serpentuna
-	QuestDescription: Sea serpents are pretty but not as pretty as the look on someone's face when they find one in their chair. I need you to fetch me the props for my next big scare, and the deadline is tomorrow.
+	QuestDescription: I'm tired of always losing my allowance to those serpents in the Ilmeran water! I wanna fish up all the baby serpents, and I need YOUR help to do it! ...What? No, I'm not trying to steal money from others...
 }
 
 SparklingEmpress: {
 	DisplayName: Sparkling Empress
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
-		Fires a concentrated laser to annihilate your foes
-		Defeated enemies explode into prism shards
+		Fires a stream of erratic magic
+		After firing for long enough, the fish will shine
+		Ceasing use of the fish while it shines will restore some of your mana and life
+		'An beautiful fish that seems to feed on mana'
+		'''
+	TooltipGFB:
+		'''
+		Fires a stream of erratic magic
+		After firing for long enough, the fish will shine
+		Ceasing use of the fish while it shines will restore some of your mana and life
+		'Hello there, you seem to be an unfamiliar face around here.
+		Perhaps you are surprised a fish like me is able to speak?
+		No need for worry, I have no intention of any foul play.
+		I only hope to find a delectable meal of pure mana on this fine day!
+		You have a supply of mana, yes?
+		Would you perchance be so kind as to share a bit with this small fish?
+		If it is not to your liking do not worry, for I have a compromise to make you.
+		It should be simple enough, you provide me, the fish, with your mana.
+		But, in turn I shall provide you plentiful offensive power through my art of fish magic.
+		Is this an applicable compromise?
+		Good!
+		Then let us set out and see the world beyond as I enjoy a fine feast!'
 		'''
 }
 
@@ -193,7 +209,7 @@ SunkenSailfish: {
 
 SurfClam: {
 	DisplayName: Surf Clam
-	QuestDescription: Did you know that clams are a delicacy? Rumor has it that a big colony lives beneath the Desert. Just talking about them makes me hungry. I need you to fetch one for me, so I can practice my culinary skills and curb my hunger.
+	QuestDescription: Rumor has it that a massive swarm of clams has taken over that sea under the desert! Clams are a delicacy, so just hearing that makes me hungry! Will you help me curb my hunger? Of course you will! Just make sure my clam and you make it back in one piece!
 }
 
 // Other Catches
@@ -208,32 +224,32 @@ EnchantedStarfish: {
 
 FishofEleum: {
 	DisplayName: Fish of Eleum
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofEleum] essence
 }
 
 FishofFlight: {
 	DisplayName: Fish of Flight
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofFlight] souls
 }
 
 FishofLight: {
 	DisplayName: Fish of Light
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofLight] souls
 }
 
 FishofNight: {
 	DisplayName: Fish of Night
-	Tooltip: Press <right> to extract souls
+	Tooltip: Press <right> to extract [i:SoulofNight] souls
 }
 
 GlimmeringGemfish: {
 	DisplayName: Glimmering Gemfish
-	Tooltip: Press <right> to extract gems
+	Tooltip: Press <right> to extract [ITEMS] gems
 }
 
 Gorecodile: {
 	DisplayName: Gorecodile
-	Tooltip: Press <right> to extract blood orbs
+	Tooltip: Press <right> to extract [i:CalamityMod/BloodOrb] blood orbs
 }
 
 HydrothermalCrate: {
@@ -252,7 +268,7 @@ Spadefish: {
 
 StuffedFish: {
 	DisplayName: Stuffed Fish
-	Tooltip: Press <right> to extract herbs and seeds
+	Tooltip: Press <right> to extract [HERBS] herbs and [SEEDS] seeds
 }
 
 SulphurousCrate: {
@@ -262,7 +278,7 @@ SulphurousCrate: {
 
 SunbeamFish: {
 	DisplayName: Sunbeam Fish
-	Tooltip: Press <right> to extract essence
+	Tooltip: Press <right> to extract [i:CalamityMod/EssenceofSunlight] essence
 }
 
 // Fishing Rods
@@ -288,7 +304,7 @@ HeronRod: {
 	DisplayName: Heron Rod
 	Tooltip:
 		'''
-		Increased fishing power in space
+		Increases fishing power by {0}x when in space
 		'A silent head and beak lanced down and plucked it out by the head,
 		and the beak swallowed the little fish while its tail waved frantically.'
 		'''
@@ -337,7 +353,7 @@ VerstaltiteFishingRod: {
 	DisplayName: Verstaltite Fishing Rod
 	Tooltip:
 		'''
-		Increased fishing power when in the tundra
+		Increases fishing power by {0}x when in the tundra
 		The ancient alloy's prismatic qualities are perfect for attracting fish
 		'''
 }

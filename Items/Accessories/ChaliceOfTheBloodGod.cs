@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
@@ -50,6 +51,12 @@ namespace CalamityMod.Items.Accessories
 
             player.pStone = true;
             player.lifeRegen += 4;
+
+            //All of Blood Pact's immunities + Laceration
+            player.buffImmune[BuffID.Bleeding] = true;
+            player.buffImmune[ModContent.BuffType<BurningBlood>()] = true;
+            player.buffImmune[ModContent.BuffType<HeavyBleeding>()] = true;
+            player.buffImmune[ModContent.BuffType<Laceration>()] = true;
 
             // This applies the +25% health boost and the bleedout buffer effect.
             // Health boost intentionally stacks with Blood Pact.

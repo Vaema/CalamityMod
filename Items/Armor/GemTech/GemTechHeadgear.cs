@@ -162,6 +162,7 @@ namespace CalamityMod.Items.Armor.GemTech
                 AddIngredient<GalacticaSingularity>(3).
                 AddIngredient<CoreofCalamity>(2).
                 AddTile<DraedonsForge>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<GemTechBodyArmor>()).
                 Register();
         }
     }

@@ -18,8 +18,9 @@ namespace CalamityMod.Projectiles.Melee
         public Color mainColor;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -81,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
             Color drawColor = Color.Lerp(mainColor, Color.White, 0.2f) with { A = 0 };
             float drawRotation = Projectile.rotation;
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], drawColor * 0.5f, 1, texture, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor * 0.5f, 1, texture, true, true);
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
             return false;
         }

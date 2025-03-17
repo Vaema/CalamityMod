@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -21,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float ShootTimer => ref Projectile.ai[0];
         public ref float ForcedLifespan => ref Projectile.ai[1];
         public Color sparkColor;
+        public Color sparkColorSmooth;
         public int Time = 0;
         public ref int PhotoTimer => ref Main.player[Projectile.owner].Calamity().PhotoTimer;
         public SlotId PhotoUseSound;
@@ -53,6 +55,19 @@ namespace CalamityMod.Projectiles.Ranged
                 2 => Color.Orange,
                 _ => Color.LawnGreen,
             };
+
+            List<Color> eColors = new List<Color>()
+            {
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColorSmooth = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (Owner.Calamity().mouseRight)
             {
@@ -152,7 +167,7 @@ namespace CalamityMod.Projectiles.Ranged
                         2 => Color.Orange,
                         _ => Color.LawnGreen,
                     };
-                    SquishyLightParticle exoEnergy = new(position, (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1.6f), 0.9f, sparkColor, 60);
+                    SquishyLightParticle exoEnergy = new(position, (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1.6f), 0.9f, sparkColorSmooth, 60);
                     GeneralParticleHandler.SpawnParticle(exoEnergy);
                 }
                 SoundEngine.PlaySound(DeadSunsWind.ShootSound with { Volume = 1.9f }, Owner.MountedCenter);
@@ -161,16 +176,16 @@ namespace CalamityMod.Projectiles.Ranged
             Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust.noGravity = true;
             dust.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
-            dust.color = sparkColor;
+            dust.color = sparkColorSmooth;
             Dust dust2 = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust2.noGravity = true;
             dust2.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
-            dust2.color = sparkColor;
+            dust2.color = sparkColorSmooth;
             if (Main.rand.NextBool())
             {
-                MediumMistParticle smoke = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 15).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.5f, 2.1f), sparkColor, Color.White, Main.rand.NextFloat(1.8f, 2.9f) - PhotoTimer * 0.026f, 160, Main.rand.NextFloat(-3f, 3f));
+                MediumMistParticle smoke = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 15).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.5f, 2.1f), sparkColorSmooth, Color.White, Main.rand.NextFloat(1.8f, 2.9f) - PhotoTimer * 0.026f, 160, Main.rand.NextFloat(-3f, 3f));
                 GeneralParticleHandler.SpawnParticle(smoke);
-                MediumMistParticle smoke2 = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 18).RotatedByRandom(0.05f) * Main.rand.NextFloat(1.8f, 3.1f), sparkColor, Color.White, Main.rand.NextFloat(0.8f, 1.9f) - PhotoTimer * 0.02f, 160, Main.rand.NextFloat(-3f, 3f));
+                MediumMistParticle smoke2 = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 18).RotatedByRandom(0.05f) * Main.rand.NextFloat(1.8f, 3.1f), sparkColorSmooth, Color.White, Main.rand.NextFloat(0.8f, 1.9f) - PhotoTimer * 0.02f, 160, Main.rand.NextFloat(-3f, 3f));
                 GeneralParticleHandler.SpawnParticle(smoke2);
             }
 
@@ -234,14 +249,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Photoviscerator itself
+
                 float interpolant = Utils.GetLerpValue(5f, 90f, Projectile.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 28f;
@@ -273,7 +287,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(85f, 33f);
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

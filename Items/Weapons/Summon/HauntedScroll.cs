@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 30f);
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.SoulofLight, 5).
                 AddIngredient(ItemID.SoulofNight, 5).
                 AddIngredient(ItemID.FoodPlatter, 3).

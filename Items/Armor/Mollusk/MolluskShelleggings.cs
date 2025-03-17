@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,14 +16,14 @@ namespace CalamityMod.Items.Armor.Mollusk
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 15;
+            Item.defense = 12;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.12f;
+            player.GetDamage<GenericDamageClass>() += 0.06f;
             player.GetCritChance<GenericDamageClass>() += 4;
-            player.moveSpeed -= 0.07f;
+            player.Calamity().molluskLegs = true;
         }
 
         public override void AddRecipes()

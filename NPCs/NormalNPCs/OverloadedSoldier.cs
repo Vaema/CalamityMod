@@ -18,7 +18,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
+            Main.npcFrameCount[Type] = 14;
         }
 
         public override void SetDefaults()
@@ -300,7 +300,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenDoor)
+                                if (Main.dedServ & canOpenDoor)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
@@ -313,7 +313,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenTallGate)
+                                if (Main.dedServ & canOpenTallGate)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)doorCheckX, (float)(doorCheckY - 1), 0f, 0, 0, 0);
                                 }

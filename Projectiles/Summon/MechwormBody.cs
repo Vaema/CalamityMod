@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -128,11 +128,7 @@ namespace CalamityMod.Projectiles.Summon
             // If the head is set to net update every body segment will also update.
             // This update cannot be blocked by netSpam.
             if (head.netUpdate)
-            {
-                projectile.netUpdate = true;
-                if (projectile.netSpam > 59)
-                    projectile.netSpam = 59;
-            }
+                projectile.ForceNetUpdate(false);
 
             projectile.extraUpdates = head.extraUpdates;
 
@@ -193,7 +189,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Main.EntitySpriteDraw(tex, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;

@@ -20,6 +20,8 @@ namespace CalamityMod.Projectiles.Melee
         public int randTimer;
         public int dustType1 = 104;
         public int dustType2 = 29;
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -50,20 +52,20 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.velocity.Y += 0.4f;
                 Projectile.velocity.X *= 0.97f;
             }
-            if (Time % 2 == 0)
+            if (Time % 3 == 0)
             {
                 Color smokeColor = Color.MediumBlue;
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), smokeColor, 30, Main.rand.NextFloat(0.45f, 0.6f), 0.3f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.6f, 0.8f), smokeColor, 30, Main.rand.NextFloat(0.35f, 0.5f), 0.3f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
             {
                 Vector2 dustPos = Projectile.Center;
                 int dustType = Main.rand.NextBool(3) ? dustType1 : dustType2;
                 Dust dust = Dust.NewDustPerfect(dustPos, dustType);
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.95f, 1.7f);
-                dust.velocity = new Vector2(0.5f, 0.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.1f);
+                dust.velocity = Projectile.velocity + new Vector2(0.5f, 0.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.1f);
             }
         }
 

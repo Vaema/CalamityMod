@@ -21,12 +21,12 @@ namespace CalamityMod.Items.Ammo
             Item.DamageType = DamageClass.Ranged;
             Item.consumable = true;
             Item.knockBack = 2.5f;
-            Item.value = Item.buyPrice(0, 0, 0, 80);
+            Item.value = Item.buyPrice(copper: 80); // Sold by Archmage
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<IcicleArrowProj>();
             Item.shootSpeed = 0.2f;
             Item.ammo = AmmoID.Arrow;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
     }
 }

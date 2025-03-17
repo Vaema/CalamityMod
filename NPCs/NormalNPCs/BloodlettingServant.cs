@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight(NPC.Center, 0.8f, 0f, 0f);
+            Lighting.AddLight(NPC.Center, 0.3f, 0.3f, 0.3f);
 
             NPC.TargetClosest();
             Player target = Main.player[NPC.target];
@@ -101,8 +101,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.ai[3] > projectileShootGateValue * 0.5f)
                         NPC.ai[3] = projectileShootGateValue * 0.5f;
 
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
 
                 if (NPC.ai[1] < ChargeDuration + 1f)
@@ -115,8 +114,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.ai[0] = 0f;
                         NPC.ai[1] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                 }
             }
@@ -125,12 +123,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (lookAt.X > 0f)
                 {
                     NPC.spriteDirection = 1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X);
+                    NPC.rotation = lookAt.ToRotation();
                 }
                 if (lookAt.X < 0f)
                 {
                     NPC.spriteDirection = -1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X) + MathHelper.Pi;
+                    NPC.rotation = lookAt.ToRotation() + MathHelper.Pi;
                 }
             }
 
@@ -142,10 +140,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     NPC.ai[0] += 1f;
                     if (NPC.ai[0] == ChargeGateValue)
-                    {
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
-                    }
+                        NPC.ForceNetUpdate();
                 }
             }
             else
@@ -177,8 +172,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Main.projectile[proj].timeLeft = 600;
                     }
 
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
 
                 float pushVelocity = 0.2f * enrageScale;
@@ -251,7 +245,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.ai[0] >= ChargeTelegraphGateValue)
             {
-                Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
+                Texture2D npcTexture = TextureAssets.Npc[Type].Value;
                 Color originalColor = NPC.GetAlpha(drawColor);
                 Color newColor = new Color(192, 0, 0, 255 - NPC.alpha);
                 Vector2 drawPosition = NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY);
@@ -275,7 +269,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         afterimageColor = NPC.GetAlpha(afterimageColor);
                         afterimageColor *= (afterimageAmount - j) / 15f;
                         Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         afterimagePos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(npcTexture, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                     }
@@ -291,6 +285,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
+            if (Main.dedServ)
+                return;
+
             if (NPC.life > 0)
             {
                 for (int i = 0; i < hit.Damage / (double)NPC.lifeMax * 100; i++)

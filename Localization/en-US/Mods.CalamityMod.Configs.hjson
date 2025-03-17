@@ -7,6 +7,7 @@ CalamityClientConfig: {
 		UI: UI Changes
 		MeterPositions: Meter Positions
 		MusicEvents: In-Game Music Events
+		Multithreading: Multi-Threading
 	}
 
 	AdrenalineMeterPosX: {
@@ -91,6 +92,24 @@ CalamityClientConfig: {
 		Tooltip: Plays Calamity Mod OST - "Scourge of the Universe (Eulogy for the Ego)", after the Devourer of Gods has been defeated.
 	}
 
+	EnableVanillaTextureEdits: {
+		Label: "[i:Paintbrush] Enable Vanilla Texture Edits"
+		Tooltip:
+			'''
+			Enables slight edits to vanilla boss textures to improve attack telegraphs.
+			Disable this for compatibility with texture packs.
+			'''
+	}
+
+	EnergyShieldOpacity: {
+		Label: "[i:CalamityMod/TheSponge] Energy Shield Opacity"
+		Tooltip:
+			'''
+			Set the opacity of energy shields rendered over the player.
+			Setting this to 0 disables energy shield visuals entirely.
+			'''
+	}
+
 	FasterFallHotkey: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:
@@ -153,15 +172,6 @@ CalamityClientConfig: {
 			'''
 	}
 
-	NewVanillaTextures: {
-		Label: "[i:Paintbrush] New Vanilla Textures"
-		Tooltip:
-			'''
-			Enable or disable new vanilla textures.
-			Disable this for compatibility with texture packs.
-			'''
-	}
-
 	ParticleLimit: {
 		Label: "[i:FragmentStardust] Max Particle Limit"
 		Tooltip:
@@ -170,6 +180,16 @@ CalamityClientConfig: {
 			Particles are separate from dust and gores.
 			Turn down to improve performance.
 			[c/F05A5A:Turning this below 1000 may cause some things to not display correctly.]
+			'''
+	}
+
+	Photosensitivity: {
+		Label: "[i:DiscoBall] Photosensitivity Mode"
+		Tooltip:
+			'''
+			Reduces or disables the brightness and/or flashiness of certain visual effects.
+			Also disables all screenshake effects.
+			Highly recommended if you are photosensitive.
 			'''
 	}
 
@@ -302,7 +322,7 @@ CalamityClientConfig: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
 			'''
-			Adds the vanilla debuffs Potion Sickness and Chaos State to the Cooldown Rack.
+			Adds the vanilla effects Potion Sickness, Chaos State, and Holy Protection to the Cooldown Rack.
 			The debuffs will still appear in the buffs array, but this may help make them more visible.
 			'''
 	}
@@ -315,6 +335,21 @@ CalamityClientConfig: {
 	WikiStatusMessage: {
 		Label: "[i:Book] Wiki Status Message"
 		Tooltip: Enable or disable the status message promoting the Official Calamity Wiki that plays on world entry.
+	}
+
+	MultiThreadingType: {
+		Label: Sunken Sea Multi-Threading Option
+		Tooltip:
+			'''
+			Option 0 will disable worldgen multi-threading.
+			Option 1 will enable ReLogic's multi-threading.
+			Option 2 will enable custom multi-threading.
+			'''
+	}
+
+	SunkenSeaMultiThreading: {
+		Label: Sunken Sea Multi Threading
+		Tooltip: ""
 	}
 }
 
@@ -429,15 +464,6 @@ CalamityServerConfig: {
 			'''
 	}
 
-	HigherJumpHeight: {
-		Label: "[i:ShinyRedBalloon] Increase Base Jump Height"
-		Tooltip:
-			'''
-			Increases the player's base jump height by 10% so that they can jump 7 tiles.
-			Calamity is balanced around this setting being enabled.
-			'''
-	}
-
 	NerfExpertDebuffs: {
 		Label: "[i:AnkhCharm] Remove Increased Debuff Duration"
 		Tooltip:
@@ -458,15 +484,6 @@ CalamityServerConfig: {
 			'''
 			Removes randomness from the Goblin Tinkerer's reforges for both weapons and accessories.
 			Disable this if using mods that change reforging on their own to prevent conflicts.
-			'''
-	}
-
-	PotionSelling: {
-		Label: "[i:SpelunkerPotion] Town NPC Potion Selling"
-		Tooltip:
-			'''
-			Allows town NPCs to sell various potions.
-			Certain potions are sold after specific bosses have been defeated.
 			'''
 	}
 

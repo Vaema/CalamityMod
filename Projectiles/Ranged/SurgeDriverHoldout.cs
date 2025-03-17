@@ -65,6 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             projectileType = ModContent.ProjectileType<PrismaticEnergyBlast>();
 
             knockback = Owner.GetWeaponKnockback(heldItem, knockback);
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Main.MouseWorld - Projectile.Center).SafeNormalize(-Vector2.UnitY);
             Vector2 shootVelocity = shootDirection * shootSpeed;
 

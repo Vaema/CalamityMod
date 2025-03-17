@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.Systems;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Tiles.Merges
+{
+    public sealed class CloudMerge : TileBlendTexture
+    {
+        public override int TileType => TileID.Cloud;
+    }
+}

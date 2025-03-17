@@ -52,12 +52,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 800f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 60f / UpdatesPerFrame;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = TheOracle.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = TheOracle.Speed / UpdatesPerFrame;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     cloneOffset = cloneOffset.RotatedBy(counter * 0.06f);
                     if (Owner.controlUseItem)
                     {
-                        Projectile.Center = Main.MouseWorld + cloneOffset;
+                        Projectile.Center = Main.player[Projectile.owner].ClampedMouseWorld() + cloneOffset;
                         Projectile.velocity = Vector2.Zero;
                     }
                 }
@@ -210,7 +210,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

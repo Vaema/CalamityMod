@@ -18,6 +18,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
+            TileID.Sets.MultiTileSway[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
             TileObjectData.newTile.LavaDeath = false;
@@ -37,6 +38,6 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             AddMapEntry(new Color(43, 19, 42), Language.GetText("MapObject.Banner"));
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
     }
 }

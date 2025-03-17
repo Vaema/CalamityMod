@@ -30,11 +30,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             //dust and framing
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
 
             var psc = Owner.Calamity().profanedCrystal;
             if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
@@ -282,7 +282,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (SpawnedFromPSC && !ForcedVanity)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

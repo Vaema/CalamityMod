@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
 
         public override void SetDefaults()
         {
-            Projectile.Size = new Vector2(22);
+            Projectile.width = Projectile.height = 44;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -39,15 +39,15 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
 
         public override void SetVisualOffsets()
         {
-            const int HalfSpriteWidth = 44 / 2;
-            const int HalfSpriteHeight = 44 / 2;
+            const int HalfSpriteWidth = 37;
+            const int HalfSpriteHeight = 47;
 
             int HalfProjWidth = Projectile.width / 2;
-            int HalfProjHeight = Projectile.height / 2;
+            int QuarterProjHeight = Projectile.height / 4;
 
             DrawOriginOffsetX = 0;
             DrawOffsetX = -(HalfSpriteWidth - HalfProjWidth);
-            DrawOriginOffsetY = -(HalfSpriteHeight - HalfProjHeight);
+            DrawOriginOffsetY = -(HalfSpriteHeight - QuarterProjHeight);
         }
 
         public override void ExtraBehavior()

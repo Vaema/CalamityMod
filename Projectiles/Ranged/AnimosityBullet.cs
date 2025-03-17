@@ -19,8 +19,8 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust2.scale = Main.rand.NextFloat(0.5f, 1.1f);
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath55 with { Pitch = -0.7f }, Projectile.Center);
             //DesertProwelerSkullParticle was a placeholder, but honestly it fits too well
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Crimson * 0.45f, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Crimson * 0.45f, 1);
             return true;
         }
     }

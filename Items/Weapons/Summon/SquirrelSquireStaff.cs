@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -45,8 +46,28 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
-            Projectile.NewProjectileDirect(source, new(XPosition, YPosition - YOffset), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            // Find the base farthest position
+            Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
+
+            // Push the squirrel away from collision in all directions if applicable
+            while (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) 
+            {
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X += 1f;
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y += 1f;
+            }
+
+            Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
             return false;
         }
@@ -54,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.Acorn).
                 AddTile(TileID.WorkBenches).
                 Register();

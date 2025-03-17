@@ -32,8 +32,8 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -98,9 +98,9 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 return false;
 
             Color beamColor = LaserOverlayColor;
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                                      0);
                     incrementalBodyLength += laserOffset;
                     centerOnLaser += Projectile.velocity * laserOffset;
-                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Projectile.type];
+                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Type];
                     if (middleFrameArea.Y + middleFrameArea.Height > LaserMiddleTexture.Height)
                         middleFrameArea.Y = 0;
                 }

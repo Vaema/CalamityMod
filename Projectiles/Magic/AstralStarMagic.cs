@@ -19,8 +19,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[idx].position = Projectile.Center + velocity * 6f;
             }
 
-            if (Main.rand.NextBool(24) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(24) && !Main.dedServ)
             {
                 int idx = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.1f, 16, 1f);
                 Main.gore[idx].velocity *= 0.66f;
@@ -107,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150);
             }
 
-            if (Main.rand.NextBool(10) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(10) && !Main.dedServ)
                 Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, Projectile.velocity * 0.1f, Main.rand.Next(16, 18), 1f);
 
             if (Projectile.ai[0] == 1f)
@@ -121,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.DrawStarTrail(Color.Coral, Color.White);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -175,7 +176,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[idx].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                     Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity * 0.05f, Main.rand.Next(16, 18), 1f);

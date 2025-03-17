@@ -129,7 +129,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<AuricBar>(5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<AscendantSpiritEssence>(2).
-                AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

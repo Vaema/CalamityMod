@@ -17,7 +17,6 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
     {
         public override void SetStaticDefaults()
         {
-            RegisterItemDrop(ModContent.ItemType<MonolithOfTheAccursed>());
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
@@ -33,6 +32,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             TileObjectData.newTile.Origin = new Point16(0, 1);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.LavaDeath = false;
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 3;
             TileObjectData.addTile(Type);
 
             TileID.Sets.HasOutlines[Type] = true;
@@ -99,6 +100,9 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
                     }
                 }
             }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
         }
 
         public override bool RightClick(int i, int j)
@@ -135,7 +139,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
         // For drawing the floating icon
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].TileFrameX < 36)
+            if (Main.tile[i, j].TileFrameX < 36 || Main.tile[i, j].IsTileActuallyInvisible())
                 return;
 
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/MonolithOfTheAccursedTile_IconRight").Value;

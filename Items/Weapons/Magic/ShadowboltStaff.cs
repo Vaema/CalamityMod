@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.ShadowbeamStaff).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient<RuinousSoul>(2).
+                AddIngredient<ArmoredShell>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

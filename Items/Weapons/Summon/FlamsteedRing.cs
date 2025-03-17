@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/CalPlayer/DrawLayers/AndromedaWithout_Head", EquipType.Head, name: "HeadlessEquipTexture");
             }
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "HeadlessEquipTexture", EquipType.Head);
                 ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
@@ -198,8 +198,8 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<Excelsus>().
                 AddIngredient<CosmicViperEngine>().
                 AddIngredient(ItemID.WingsVortex).
-                AddIngredient<CosmiliteBar>(40).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CosmiliteBar>(40).
                 AddTile<DraedonsForge>().
                 Register();
         }

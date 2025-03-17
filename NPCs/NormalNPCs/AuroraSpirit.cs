@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -12,7 +13,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = -1,
@@ -37,6 +38,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath15;
             NPC.coldDamage = true;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<AuroraSpiritBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
@@ -60,9 +63,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             int currentFrame = 1;
             if (!Main.dedServ)
             {
-                if (TextureAssets.Npc[NPC.type].Value == null)
+                if (TextureAssets.Npc[Type].Value == null)
                     return;
-                currentFrame = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+                currentFrame = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
             }
 
             if (!NPC.IsABestiaryIconDummy)
@@ -84,7 +87,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.frame.Y += currentFrame;
                 NPC.frameCounter = 0;
             }
-            if (NPC.frame.Y / currentFrame >= Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y / currentFrame >= Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 
@@ -124,7 +127,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("CryoSpirit").Type, 1f);
                 }

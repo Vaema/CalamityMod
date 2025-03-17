@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/RobesOfCalamity_Legs", EquipType.Legs, this);
             }

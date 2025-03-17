@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Timer => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 60000;
             Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
             Projectile.hide = true;
@@ -78,8 +79,9 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Vector2 projLocation = Owner.Center;
-                    float mouseDist = Vector2.Distance(Main.MouseWorld, projLocation);
-                    Vector2 mouseDiff = Main.MouseWorld - projLocation;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    float mouseDist = Vector2.Distance(mouse, projLocation);
+                    Vector2 mouseDiff = mouse - projLocation;
                     if (mouseDist > 128f)
                     {
                         mouseDiff.Normalize();
@@ -89,6 +91,8 @@ namespace CalamityMod.Projectiles.Magic
 
                     Vector2 orbAttemptedVelocity = Vector2.Zero.MoveTowards(projLocation - Projectile.Center, 25f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, orbAttemptedVelocity, 0.08f);
+
+                    Projectile.netUpdate = true;
                 }
 
                 // Slowly increase in size as the fireball is charged up.
@@ -168,6 +172,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawScale = Projectile.Size / TheodoreJNoise.Size() * 1.25f;
             float rotation = Main.GlobalTimeWrappedHourly * 4.2f;
 
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(0.6f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Big fucking fireball

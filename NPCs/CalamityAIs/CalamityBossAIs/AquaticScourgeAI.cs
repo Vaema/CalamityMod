@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     // Kiss my motherfucking ass you piece of shit game
                     npc.timeLeft *= 20;
                     npc.npcSlots = 16f;
-                    CalamityMod.bossKillTimes.TryGetValue(npc.type, out int revKillTime);
+                    CalamityGlobalNPC.BossKillTimes.TryGetValue(npc.type, out int revKillTime);
                     calamityGlobalNPC.KillTime = revKillTime;
                     calamityGlobalNPC.newAI[0] = 1f;
                     nonHostile = false;

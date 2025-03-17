@@ -26,17 +26,17 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float SquishY => ref NPC.localAI[1];
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 13;
+            Main.npcFrameCount[Type] = 13;
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 20;
+            NPC.damage = 10;
             NPC.width = 20;
             NPC.height = 58;
             NPC.defense = 5;
-            NPC.lifeMax = 350;
+            NPC.lifeMax = 150;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);

@@ -127,28 +127,28 @@ namespace CalamityMod.Projectiles.Boss
             // Increment timer
             Projectile.localAI[0] += 1f;
 
-            // At day, fires every 300 frames but lasts 1500-3600 frames.
-            // At night, fires every 30 framges but lasts 210 frames.
-            // In GFB, fires at night rate for the first 210 frames, then at day rate for the next 1500.
-            bool dayAI = ProvUtils.DayAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
+            // Normally, fires every 300 frames but lasts 1500-3600 frames.
+            // When enraged, fires every 30 frames but lasts 210 frames.
+            // In GFB, fires at enraged rate for the first 210 frames, then at standard rate for the next 1500.
+            bool standardAI = ProvUtils.StandardAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
 
-            if (Projectile.localAI[0] >= (dayAI ? 300f : 30f))
+            if (Projectile.localAI[0] >= (standardAI ? 300f : 30f))
             {
-                // Spawn shards every 30 frames at night or at 300 frames during day
-                if (Projectile.localAI[0] % 30f == 0f || dayAI)
+                // Spawn shards every 30 frames while enraged or at 300 frames normally
+                if (Projectile.localAI[0] % 30f == 0f || standardAI)
                 {
                     SoundEngine.PlaySound(SoundID.Item109, Projectile.Center);
                     Projectile.netUpdate = true;
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int totalProjectiles = dayAI ? 15 : (Projectile.localAI[0] % 60f == 0f ? 15 : 10);
-                        float speedX = dayAI ? -21f : -15f;
+                        int totalProjectiles = standardAI ? 15 : (Projectile.localAI[0] % 60f == 0f ? 15 : 10);
+                        float speedX = standardAI ? -21f : -15f;
                         float speedAdjustment = Math.Abs(speedX * 2f / (totalProjectiles - 1));
                         float speedY = -3f;
                         for (int i = 0; i < totalProjectiles; i++)
                         {
-                            float x4 = dayAI ? Main.rgbToHsl(new Color(255, 200, Main.DiscoB)).X : Main.rgbToHsl(new Color(Main.DiscoR, 200, 255)).X;
-                            float randomSpread = dayAI ? 0f : Main.rand.Next(-150, 151) * 0.01f * (1f - lifeRatio);
+                            float x4 = standardAI ? Main.rgbToHsl(new Color(255, 200, Main.DiscoB)).X : Main.rgbToHsl(new Color(Main.DiscoR, 200, 255)).X;
+                            float randomSpread = standardAI ? 0f : Main.rand.Next(-150, 151) * 0.01f * (1f - lifeRatio);
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX + speedAdjustment * i + randomSpread, speedY, ModContent.ProjectileType<ProvidenceCrystalShard>(), Projectile.damage, Projectile.knockBack, Main.myPlayer, x4, Projectile.whoAmI);
                         }
                         CrystalExplosion();
@@ -171,8 +171,8 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
                 Vector2 drawArea = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-                Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-                Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+                Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
                 Color colorAlpha = Projectile.GetAlpha(colorArea);
                 Vector2 halfRect = textureRect.Size() / 2f;
                 float scaleFactor = (float)Math.Cos(MathHelper.TwoPi * (Projectile.localAI[0] / 60f)) + 3f + 3f;

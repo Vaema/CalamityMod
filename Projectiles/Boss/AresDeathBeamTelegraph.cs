@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             // Telegraph for Ares' eight-pointed-star laser beams
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()

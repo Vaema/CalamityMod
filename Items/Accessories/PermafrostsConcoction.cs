@@ -8,7 +8,10 @@ namespace CalamityMod.Items.Accessories
     {
         // Boosted by Cross Necklace.
         internal static readonly int EncasedIFrames = 90;
-        
+
+        public static int EncasedDefenseBoost = 30;
+        public static double EncasedAllDamageReduction = 0.3D;
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {

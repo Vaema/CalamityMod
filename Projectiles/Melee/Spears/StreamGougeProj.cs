@@ -81,8 +81,9 @@ namespace CalamityMod.Projectiles.Melee.Spears
             // Create portals near the mouse once charged.
             if (Main.myPlayer == Projectile.owner && Time >= StreamGouge.SpinTime + StreamGouge.SpearFireTime && Time % 9f == 8f)
             {
-                Vector2 portalSpawnPosition = Main.MouseWorld + Main.rand.NextVector2Unit() * Main.rand.NextFloat(50f, 140f);
-                Vector2 spearVelocity = (Main.MouseWorld - portalSpawnPosition).SafeNormalize(Vector2.UnitY);
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                Vector2 portalSpawnPosition = mouse + Main.rand.NextVector2Unit() * Main.rand.NextFloat(50f, 140f);
+                Vector2 spearVelocity = (mouse - portalSpawnPosition).SafeNormalize(Vector2.UnitY);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), portalSpawnPosition, spearVelocity, ModContent.ProjectileType<StreamGougePortal>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
 
@@ -146,7 +147,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             bool portalIsInteractable = portalOpacity >= 1f;
             Vector2 portalDrawPosition = Owner.Center + InitialDirection.ToRotationVector2() * 130f - Main.screenPosition;
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (portalIsInteractable)
             {
                 Main.spriteBatch.EnterShaderRegion();

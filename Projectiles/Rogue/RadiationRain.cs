@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
             Projectile.ArmorPenetration = 30;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (targetedNPC != null)
                     Projectile.velocity = (targetedNPC.Center - Projectile.Center + targetedNPC.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 8;
                 else
-                    Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
+                    Projectile.velocity = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
             }
 
             if (targetDist < 1400 && time > 5)
@@ -100,13 +101,20 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             if (Projectile.ai[2] > 0 && time == 30)
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Projectile.velocity, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Projectile.velocity, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
 
             time++;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.9f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 60, targetHitbox);
     }

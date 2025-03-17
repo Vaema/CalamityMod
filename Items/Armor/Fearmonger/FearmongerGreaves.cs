@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Armor.Fearmonger
             CreateRecipe().
                 AddIngredient(ItemID.SpookyLeggings).
                 AddIngredient<CosmiliteBar>(10).
-                AddIngredient(ItemID.SoulofFright, 10).
                 AddIngredient<AscendantSpiritEssence>(2).
+                AddIngredient(ItemID.SoulofFright, 10).
                 AddTile<CosmicAnvil>().
                 Register();
         }

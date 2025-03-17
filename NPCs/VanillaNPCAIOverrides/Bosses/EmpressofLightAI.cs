@@ -18,7 +18,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Difficulty bools.
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Rotation
@@ -30,8 +29,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining.
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            float phase2LifeRatio = masterMode ? 0.7f : 0.6f;
-            float phase3LifeRatio = masterMode ? 0.3f : 0.15f;
+            float phase2LifeRatio = death ? 0.7f : 0.6f;
+            float phase3LifeRatio = death ? 0.3f : 0.15f;
             bool phase2 = npc.AI_120_HallowBoss_IsInPhase2();
             bool phase3 = lifeRatio <= phase3LifeRatio;
 
@@ -450,7 +449,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] += 1f;
-                    extraPhaseTime = (dayTimeEnrage ? (masterMode ? 30f : 36f) : (masterMode ? 60f : 72f)) + 30f * lessTimeSpentPerPhaseMultiplier;
+                    extraPhaseTime = (dayTimeEnrage ? (death ? 30f : 36f) : (death ? 60f : 72f)) + 30f * lessTimeSpentPerPhaseMultiplier;
                     if (npc.ai[1] >= 60f + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
@@ -494,7 +493,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] == 0f)
                         SoundEngine.PlaySound(SoundID.Item162, npc.Center);
 
-                    float lanceGateValue = masterMode ? 75f : 100f;
+                    float lanceGateValue = death ? 75f : 100f;
 
                     if (npc.ai[1] >= 6f && npc.ai[1] < 54f)
                     {
@@ -514,7 +513,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (int i = 0; i < lanceAmount; i++)
                         {
                             int lanceFrequency = (int)(npc.ai[1] / (dayTimeEnrage ? 2f : 3f));
-                            lanceRotation += (masterMode ? 5 : 4) * i;
+                            lanceRotation += (death ? 5 : 4) * i;
                             Vector2 lanceDirection = Vector2.UnitX.RotatedBy((float)Math.PI / (lanceRotation * 2) + lanceFrequency * ((float)Math.PI / lanceRotation));
                             if (calamityGlobalNPC.newAI[3] == 0f)
                                 lanceDirection.X += (lanceDirection.X > 0f) ? 0.5f : -0.5f;
@@ -651,7 +650,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (phase3)
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), everlastingRainbowSpawn + spinningpoint.RotatedBy(-MathHelper.PiOver2) * 30f, spinningpoint * (masterMode ? 3f : 2f) * initialVelocity, projectileType2, projectileDamage2, 0f, Main.myPlayer, npc.target, projRotationMultiplier);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), everlastingRainbowSpawn + spinningpoint.RotatedBy(-MathHelper.PiOver2) * 30f, spinningpoint * (death ? 3f : 2f) * initialVelocity, projectileType2, projectileDamage2, 0f, Main.myPlayer, npc.target, projRotationMultiplier);
                                 }
                             }
 
@@ -710,7 +709,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] += 1f;
-                    extraPhaseTime = (dayTimeEnrage ? (masterMode ? 105f : 110f) : (masterMode ? 140f : 150f)) + 30f * lessTimeSpentPerPhaseMultiplier; // 112.5 is too little
+                    extraPhaseTime = (dayTimeEnrage ? (death ? 105f : 110f) : (death ? 140f : 150f)) + 30f * lessTimeSpentPerPhaseMultiplier; // 112.5 is too little
                     if (npc.ai[1] >= totalSunDancePhaseTime + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
@@ -745,8 +744,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         SoundEngine.PlaySound(SoundID.Item162, npc.Center);
 
-                        float totalProjectiles = masterMode ? 18f : 15f;
-                        float lanceSpacing = masterMode ? 150f : 175f;
+                        float totalProjectiles = death ? 18f : 15f;
+                        float lanceSpacing = death ? 150f : 175f;
                         float lanceWallSize = totalProjectiles * lanceSpacing;
 
                         Vector2 lanceSpawnOffset = targetData9.Center;
@@ -758,7 +757,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float lanceWallSizeMult = 1.4f;
                             totalProjectiles += 5f;
                             lanceSpacing += 50f;
-                            lanceWallSize *= (masterMode ? 0.75f : 0.5f);
+                            lanceWallSize *= (death ? 0.75f : 0.5f);
                             float direction = 1f;
 
                             int randomLanceWallType;
@@ -1021,7 +1020,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] == 0f)
                         SoundEngine.PlaySound(SoundID.Item162, npc.Center);
 
-                    float lanceGateValue2 = masterMode ? 75f : 100f;
+                    float lanceGateValue2 = death ? 75f : 100f;
 
                     if (npc.ai[1] >= 6f && npc.ai[1] < 54f)
                     {
@@ -1145,7 +1144,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
                         int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
 
-                        Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((masterMode ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
+                        Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((death ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
@@ -1180,7 +1179,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.ai[1] += 1f;
                     extraPhaseTime = (dayTimeEnrage ? 36f : 72f) + 30f * lessTimeSpentPerPhaseMultiplier;
-                    if (npc.ai[1] >= (masterMode ? 105f : 120f) + extraPhaseTime)
+                    if (npc.ai[1] >= (death ? 105f : 120f) + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;

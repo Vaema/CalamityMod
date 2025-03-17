@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 18;
             Item.height = 20;
-            Item.damage = 230;
+            Item.damage = 130;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -97,9 +97,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.VampireKnives).
                 AddIngredient<MonstrousKnives>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddTile<CosmicAnvil>().
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

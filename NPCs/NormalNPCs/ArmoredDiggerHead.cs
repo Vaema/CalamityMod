@@ -5,15 +5,17 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [LongDistanceNetSync]
     public class ArmoredDiggerHead : ModNPC
     {
         bool TailSpawned = false;
@@ -22,7 +24,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/ArmoredDigger_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
@@ -467,7 +468,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ArmoredDiggerHead").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ArmoredDiggerHead2").Type, 1f);
@@ -487,11 +488,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<DemonicBoneAsh>(), 1, 2, 4);
             npcLoot.Add(ModContent.ItemType<MysteriousCircuitry>(), 1, 4, 8);
             npcLoot.Add(ModContent.ItemType<DubiousPlating>(), 1, 4, 8);
-            npcLoot.AddIf(() => Main.zenithWorld, ModContent.ItemType<UnholyEssence>(), 1, 3, 6);
-            npcLoot.AddIf(() => Main.zenithWorld, ModContent.ItemType<SanctifiedSpark>(), 10);
+            npcLoot.AddIf(() => Main.zenithWorld, ModContent.ItemType<UnholyEssence>(), 1, 3, 6, ui: false);
+            npcLoot.AddIf(() => Main.zenithWorld, ModContent.ItemType<SanctifiedSpark>(), 10, ui: false);
         }
 
         public override void ModifyTypeName(ref string typeName)
@@ -510,6 +510,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return lightColor * NPC.Opacity;
             }
             else return null;
+        }
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<ArmoredDiggerBody>()].Value, 4, 26, 0.6f, new Vector2(10, -10), 4, 16);
+            }
+            return true;
         }
     }
 }

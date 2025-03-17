@@ -70,7 +70,7 @@ namespace CalamityMod.Tiles.PlayerTurrets
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];
-            if (t.TileFrameX != 36 || t.TileFrameY != 0)
+            if (t.TileFrameX != 36 || t.TileFrameY != 0 || t.IsTileActuallyInvisible())
                 return;
 
             TEPlayerOnyxTurret te = CalamityUtils.FindTileEntity<TEPlayerOnyxTurret>(i, j, Width, Height, SheetSquare);

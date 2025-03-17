@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Tools
             Item.UseSound = null;
             Item.noMelee = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 10);
             usesLeft = maxUses;
             timeBeforeBlast = breakTime;
         }
@@ -102,7 +102,7 @@ namespace CalamityMod.Items.Tools
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < shrapnelCount; i++)
                     {

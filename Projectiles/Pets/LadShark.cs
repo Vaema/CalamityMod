@@ -13,9 +13,9 @@ namespace CalamityMod.Projectiles.Pets
         public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            Main.projPet[Projectile.type] = true;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 0, 1)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 0, 1)
             .WithOffset(-12f, -12f).WithSpriteDirection(-1);
         }
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Pets
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         int heartCount = Main.rand.Next(20, 31);
                         for (int i = 0; i < heartCount; i++)

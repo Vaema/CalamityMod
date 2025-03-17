@@ -15,16 +15,7 @@ namespace CalamityMod.Items.Placeables.Ores
 
         public override void SetDefaults()
         {
-            Item.width = 22;
-            Item.height = 22;
-            Item.createTile = ModContent.TileType<Tiles.Ores.AstralOre>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AstralOre>());
             Item.value = Item.sellPrice(silver: 36);
             Item.rare = ItemRarityID.Cyan;
         }

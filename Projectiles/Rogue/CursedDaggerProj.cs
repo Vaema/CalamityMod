@@ -28,10 +28,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (Collision.SolidCollision(Projectile.Center, 3, 3))
+                Projectile.Kill();
+
             if (Main.rand.NextBool(Projectile.Calamity().stealthStrike ? 3 : 7))
             {
                 Dust dust = Main.dust[Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.X * -3f, Projectile.velocity.Y * -3f, 0, default, Projectile.Calamity().stealthStrike ? Main.rand.NextFloat(2.5f, 3.2f) : 1.5f)];
@@ -66,13 +70,13 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.Calamity().stealthStrike)
             {
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, Projectile.position);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CursedDaggerBlastHitbox>(), (int)(Projectile.damage), Projectile.knockBack * 2, Projectile.owner, 0, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CursedDaggerBlastHitbox>(), (int)(Projectile.damage), Projectile.knockBack * 2, Projectile.owner, 0, 0f);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

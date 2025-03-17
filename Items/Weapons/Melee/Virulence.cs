@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.width = 48;
-            Item.height = 62;
+            Item.width = 74;
+            Item.height = 90;
             Item.damage = 100;
             Item.knockBack = 5.5f;
             Item.useAnimation = Item.useTime = 15;

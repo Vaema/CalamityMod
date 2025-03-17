@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,13 +28,17 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
+            Item.shoot = ModContent.ProjectileType<UltimusCleaverDust>(); // Dummy argument to ensure it doesn't get set to true melee
         }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => false;
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 360);
             int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-            player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
+            Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+            blast.DamageType = Item.DamageType;
             float firstDustScale = 1.7f;
             float secondDustScale = 0.8f;
             float thirdDustScale = 2f;

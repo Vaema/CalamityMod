@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.Pylons
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CragsPylonTile>());
 
-            Item.value = Item.buyPrice(0, 10, 0, 0);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Blue;
         }
     }

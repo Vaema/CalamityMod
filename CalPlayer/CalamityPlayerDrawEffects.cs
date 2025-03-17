@@ -4,8 +4,10 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -27,7 +29,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Remove shoe drawing effects if special legs are meant to be drawn.
-            if (CalamityLists.legOverrideList.Contains(Player.legs))
+            if (LegOverrideList.Includes(Player.legs))
             {
                 PlayerDrawLayers.Shoes.Hide();
             }
@@ -131,10 +133,10 @@ namespace CalamityMod.CalPlayer
                 {
                     if (Main.rand.NextBool())
                     {
-                        int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Vortex, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust);
+                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Vortex, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.5f;
+                        drawInfo.DustCache.Add(dust.dustIndex);
                     }
                 }
             }
@@ -146,10 +148,10 @@ namespace CalamityMod.CalPlayer
                 {
                     if (Main.rand.NextBool())
                     {
-                        int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust);
+                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.5f;
+                        drawInfo.DustCache.Add(dust.dustIndex);
                     }
                 }
             }
@@ -166,10 +168,10 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Main.rand.NextBool())
                         {
-                            int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
-                            Main.dust[dust].noGravity = true;
-                            Main.dust[dust].velocity *= 0.5f;
-                            drawInfo.DustCache.Add(dust);
+                            Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
+                            dust.noGravity = true;
+                            dust.velocity *= 0.5f;
+                            drawInfo.DustCache.Add(dust.dustIndex);
                         }
                     }
                 }
@@ -230,6 +232,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
                 Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
 
+            if (calamityPlayer.demonicFlames && drawInfo.shadow == 0f)
+                DemonicFlames.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 
@@ -251,13 +256,22 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 
+            if (calamityPlayer.heavybleeding && drawInfo.shadow == 0f)
+                HeavyBleeding.DrawEffects(drawInfo);
+
             // Holy Flames, Holy Inferno and Banishing Fire share the same visual effects
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
 
+            if (calamityPlayer.hPressure && drawInfo.shadow == 0f)
+                HadopelagicPressure.DrawEffects(drawInfo);
+
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
             else if (calamityPlayer.icarusFolly && drawInfo.shadow == 0f)
                 IcarusFolly.DrawEffects(drawInfo);
+
+            if (calamityPlayer.laceration && drawInfo.shadow == 0f)
+                Laceration.DrawEffects(drawInfo);
 
             if (calamityPlayer.miracleBlight && drawInfo.shadow == 0f)
                 MiracleBlight.DrawEffects(drawInfo);
@@ -268,9 +282,6 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
-
-            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
-                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
@@ -299,6 +310,9 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
                 VermillionFlux.DrawEffects(drawInfo);
+
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);
@@ -332,11 +346,11 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.rand.NextBool(3))
                 {
-                    int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(8) ? 296 : 5, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.25f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.3f;
-                    Main.dust[dust].velocity.Y -= 0.5f;
-                    drawInfo.DustCache.Add(dust);
+                    Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(8) ? 296 : 5, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.25f);
+                    dust.noGravity = true;
+                    dust.velocity *= 1.3f;
+                    dust.velocity.Y -= 0.5f;
+                    drawInfo.DustCache.Add(dust.dustIndex);
                 }
                 if (Main.rand.NextBool(16))
                 {
@@ -364,7 +378,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && Main.netMode != NetmodeID.Server && drawInfo.shadow == 0f)
+            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && !Main.dedServ && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -461,7 +475,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.ItemType<Shadethrower>(),
                     ModContent.ItemType<BloodBoiler>(),
                     ModContent.ItemType<PristineFury>(),
-                    ModContent.ItemType<AuroraBlazer>()
+                    ModContent.ItemType<AuroraBlazer>(),
+                    ModContent.ItemType<PurgeGuzzler>()
                 };
                 List<Texture2D> tankTextures = new List<Texture2D>()
                 {
@@ -480,7 +495,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_Shadethrower").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_BloodBoiler").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PristineFury").Value,
-                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value,
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PurgeGuzzler").Value
                 };
                 if (tankItems.Contains(item.type) || drawPlayer.Calamity().plaguebringerCarapace)
                 {

@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
         int invistimer = 0;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
+            Main.projFrames[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
             //AI exclusive to when it isn't sticking
             if (Projectile.ai[0] == 0)
             {
-                if (Projectile.frame >= Main.projFrames[Projectile.type] / 2)
+                if (Projectile.frame >= Main.projFrames[Type] / 2)
                 {
                     Projectile.frame = 0;
                 }
@@ -79,9 +79,9 @@ namespace CalamityMod.Projectiles.Magic
             //If it IS sticking
             else
             {
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                 {
-                    Projectile.frame = Main.projFrames[Projectile.type] / 2;
+                    Projectile.frame = Main.projFrames[Type] / 2;
                 }
             }
         }
@@ -99,8 +99,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int textureheight = tex.Height / Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int textureheight = tex.Height / Main.projFrames[Type];
             int y = textureheight * Projectile.frame;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y, tex.Width, textureheight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(tex.Width, tex.Height / 16f), Projectile.scale, SpriteEffects.None, 0);
             return false;

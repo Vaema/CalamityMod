@@ -1,15 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -62,6 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[2] > 0 && time == 0)
             {
                 closestTarget = Projectile.Center.ClosestNPCAt(2000);
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 storedVelocity = ((closestTarget == null ? Owner.Calamity().mouseWorld : closestTarget.Center) - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 Projectile.alpha = 255;
                 Projectile.velocity = Vector2.Zero;
@@ -131,11 +128,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
                     {
-                        Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 16)
-                            Projectile.velocity += moveTotarget * 0.85f;
-                        else
-                            Projectile.velocity *= 0.8f;
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.95f, 16, 0.96f);
                     }
                 }
             }
@@ -149,11 +142,11 @@ namespace CalamityMod.Projectiles.Rogue
 
                     Projectile.Center = placementCenter;
 
-                    if (Main.rand.NextBool())
+                    if (Main.rand.NextBool(4))
                     {
-                        int dustStyle = Main.rand.NextBool() ? 66 : 263;
+                        int dustStyle = ModContent.DustType<VoidDustInverted>();
                         Dust dust = Dust.NewDustPerfect(portalSpot, dustStyle, Projectile.velocity);
-                        dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                        dust.scale = Main.rand.NextFloat(0.6f, 1.1f);
                         dust.velocity = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) * Utils.GetLerpValue(180, 0, stuckTimer);
                         dust.noGravity = true;
                         dust.color = Color.LightGreen;
@@ -206,6 +199,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                     Projectile.Center = portalSpot;
 
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (closestTarget == null)
                         Projectile.velocity = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -16;
                     else
@@ -213,10 +207,11 @@ namespace CalamityMod.Projectiles.Rogue
 
                     for (int i = 0; i <= 12; i++)
                     {
-                        int dustStyle = Main.rand.NextBool() ? 66 : 263;
+                        float variance = Main.rand.NextFloat(-0.6f, 0.6f);
+                        int dustStyle = ModContent.DustType<VoidDustInverted>();
                         Dust dust2 = Dust.NewDustPerfect(Projectile.Center, dustStyle, Projectile.velocity);
-                        dust2.scale = Main.rand.NextFloat(0.5f, 1.1f);
-                        dust2.velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+                        dust2.scale = Main.rand.NextFloat(1.5f, 1.7f) - Math.Abs(variance);
+                        dust2.velocity = Projectile.velocity.RotatedBy(variance) * Main.rand.NextFloat(0.3f, 1f) * (1 - Math.Abs(variance));
                         dust2.noGravity = true;
                         dust2.color = Color.LightGreen;
                     }
@@ -247,9 +242,9 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int k = 0; k < 8; k++)
                 {
                     Vector2 partPos = Projectile.Center + storedVelocity.SafeNormalize(Vector2.UnitX) * 68;
-                    Color colorType = Main.rand.NextBool() ? Color.LightGreen : Color.Black;
-                    Particle spark3 = new GlowOrbParticle(partPos, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), false, 19, Main.rand.NextFloat(0.6f, 1f), colorType, colorType == Color.Black ? false : true, false, colorType == Color.Black ? false : true);
-                    GeneralParticleHandler.SpawnParticle(spark3);
+                    Dust dust = Dust.NewDustPerfect(partPos, ModContent.DustType<VoidDustInverted>(), new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(1.4f, 1.75f));
+                    dust.noGravity = true;
+                    dust.color = Color.LightGreen;
                 }
 
             }
@@ -260,7 +255,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
+                Projectile.damage = (int)(Projectile.damage * 0.83f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
 
@@ -321,6 +316,8 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Main.EntitySpriteDraw(portal.Value, portalDrawPos, null, Color.Black * (1 - fading * 0.3f), 0, portal.Size() * 0.5f, 1.8f * portalFading, SpriteEffects.None);
                 Main.EntitySpriteDraw(portal.Value, portalDrawPos, null, Color.LightGreen with { A = 0 } * (1 - fading), 0, portal.Size() * 0.5f, 1.1f * portalFading, SpriteEffects.None);
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 expectedVel = ((closestTarget == null ? Owner.Calamity().mouseWorld : closestTarget.Center) - portalSpot).SafeNormalize(Vector2.UnitX);
                 if (true)
                 {
@@ -335,11 +332,10 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (!canStick || stuckInTarget)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 7; i++)
                 {
-                    Color auraColor = Color.Lerp(Color.LightGreen, Color.White, Utils.GetLerpValue(0, 4, i)) * (1 - fading);
-                    Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
-                    rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f) * 0.5f + (!canStick ? 1.5f : 0));
+                    Color auraColor = Color.LightGreen * (1 - fading);
+                    Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f).ToRotationVector2() * 3;
                     Main.EntitySpriteDraw(tex2.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset, null, (auraColor * alpha) with { A = 0 }, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, storedVelocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
                 }
             }

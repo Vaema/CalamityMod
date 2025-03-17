@@ -1,6 +1,8 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Astral
 {
-    public class AstralTree : ModTree
+    public class AstralTree : GlowMaskTree
     {
         public override void SetStaticDefaults()
         {
@@ -32,7 +34,24 @@ namespace CalamityMod.Tiles.Astral
             SpecialGroupMaximumSaturationValue = 1f
         };
 
+        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree");
+        public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTreeGlow");
+        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Branches");
+        public override Asset<Texture2D> GetBranchGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_BranchesGlow");
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Tops");
+        public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_TopsGlow");
+
+        public override Color GetGlowColor(int i, int j)
+        {
+            float brightness = 1f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.012f;
+            brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness = MathHelper.Clamp(brightness, 0.0f, 1.0f);
+            return Color.White * MathHelper.Lerp(0.1f, 1.0f, brightness);
+        }
 
         public override void SetTreeFoliageSettings(Tile tile, ref int xoffset, ref int treeFrame, ref int floorY, ref int topTextureFrameWidth, ref int topTextureFrameHeight)
         {
@@ -40,9 +59,7 @@ namespace CalamityMod.Tiles.Astral
             //treeFrame = (i + j * j) % 3;
         }
 
-        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Branches");
-        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree");
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 
         public override int SaplingGrowthType(ref int style)
@@ -119,6 +136,11 @@ namespace CalamityMod.Tiles.Astral
                 if (!Main.dayTime && Main.rand.NextBool())
                     type = ItemID.FallenStar;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);
+            }
+            else if (Main.rand.NextBool(3))
+            {
+                int fruitType = Main.rand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>();
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
             }
             return false;
         }

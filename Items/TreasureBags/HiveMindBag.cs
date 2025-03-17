@@ -24,15 +24,15 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
-            ItemID.Sets.PreHardmodeLikeBossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
+            ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Shadethrower>(),
                 ModContent.ItemType<ShaderainStaff>(),
                 ModContent.ItemType<DankStaff>(),
-                new WeightedItemStack(ModContent.ItemType<RotBall>(), 1f, 50, 75),
+                ModContent.ItemType<RotBall>(),
             }));
 
             // Equipment

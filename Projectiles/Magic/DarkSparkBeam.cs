@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
                 DelegateMethods.v3_1 = color.ToVector3() * 0.3f;
                 Vector2 size = new Vector2(Projectile.velocity.Length() * Projectile.localAI[1], Projectile.width * Projectile.scale);
                 float shaderLength = Projectile.velocity.ToRotation();
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     ((WaterShaderData)Filters.Scene["WaterDistortion"].GetShader()).QueueRipple(Projectile.position + new Vector2(size.X * 0.5f, 0f).RotatedBy(shaderLength), color, size, RippleShape.Square, shaderLength);
 
                 Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.localAI[1], Projectile.width * Projectile.scale, DelegateMethods.CastLight);
@@ -173,7 +173,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float drawArea = Projectile.localAI[1];
             Projectile projectile2 = Main.projectile[(int)Projectile.ai[1]];
             Color color = GetBeamColor((int)projectile2.ai[0], (int)Projectile.ai[0]);

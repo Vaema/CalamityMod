@@ -11,6 +11,8 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureVoid;
@@ -67,7 +69,13 @@ namespace CalamityMod.World
                         tile.LiquidAmount = byte.MaxValue;
                     }
 
-                    bool canConvert = tile.HasTile && tile.TileType < TileID.Count && tile.TileType != ModContent.TileType<SulphurousSandstone>();
+                    bool canConvert = false;
+                    if (tile.HasTile)
+                    {
+                        bool vanillaTile = tile.TileType < TileID.Count;
+                        bool validModdedTile = tile.TileType != ModContent.TileType<SulphurousSandstone>() && AbyssValidTileReplacementList.Includes(tile.TileType);
+                        canConvert = vanillaTile || validModdedTile;
+                    }
 
                     //normally i would organize each layer of blocks by the order of how they are placed in the abyss
                     //but i cannot be bothered, and when i do it, it keeps messing up or making certain parts like transitions not gen right
@@ -1177,18 +1185,27 @@ namespace CalamityMod.World
 
         /// <summary>
         /// Unlocks all abyss chests, automatically synced across the server.
-        /// Only run initally on the server.
+        /// It SHOULD only run initally on the server.
         /// </summary>
         public static void UnlockAllAbyssChests()
         {
-            UnlockChests = true;
-
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
-                var netMessage = CalamityMod.Instance.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.UnlockAbyssChests);
-                netMessage.Send();
+                UnlockAbyssChestsPacket.Send();
+                DoUnlockAllAbyssChests();
             }
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                DoUnlockAllAbyssChests();
+            }
+        }
+
+        /// <summary>
+        /// Actually Unlocks all abyss chests, This is NOT synced between clients. Call <see cref="Abyss.UnlockAllAbyssChests"/> instead unless you know what you doing.
+        /// </summary>
+        internal static void DoUnlockAllAbyssChests()
+        {
+            UnlockChests = true;
 
             for (int c = 0; c < Main.maxChests; c++)
             {

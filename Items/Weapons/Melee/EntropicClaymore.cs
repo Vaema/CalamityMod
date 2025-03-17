@@ -1,9 +1,9 @@
-﻿using System;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using Steamworks;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 130;
             Item.height = 130;
-            Item.damage = 96;
+            Item.damage = 110;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -38,21 +38,23 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 12f;
         }
 
-        public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
+        /*public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
-            //int hitX = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).X;
-            //int hitY = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).Y;
-            //hitbox = new Rectangle(hitX, hitY, Item.width / 3, Item.height / 3);
+            int hitX = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).X;
+            int hitY = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).Y;
+            hitbox = new Rectangle(hitX, hitY, Item.width / 3, Item.height / 3);
 
-            //Particle spark2 = new GlowOrbParticle(new Vector2(hitX, hitY), Vector2.Zero, false, 5, 1, Color.Red);
-            //GeneralParticleHandler.SpawnParticle(spark2);
-        }
+            Particle spark2 = new GlowOrbParticle(new Vector2(hitX, hitY), Vector2.Zero, false, 5, 1, Color.Red);
+            GeneralParticleHandler.SpawnParticle(spark2);
+        }*/
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 5; i++)
             {
-                Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.7f, 1.1f), type, damage / 2, knockback * 0.5f, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.7f, 1.1f), type, damage / 2, knockback * 0.5f, player.whoAmI);
             }
             return false;
         }

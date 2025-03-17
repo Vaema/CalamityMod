@@ -35,8 +35,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
                         drawRot += 0.75f * Projectile.direction * MathHelper.Clamp(fade, 0.3f, 1f);
 
                         Lighting.AddLight(Projectile.Center, Color.Lerp(Color.OrangeRed, Color.White, 0.6f).ToVector3() * fade * 0.7f);
-                        if (!hasPlayedSound)
+                        if (!hasPlayedSound && Main.myPlayer == Projectile.owner)
                         {
                             SoundStyle spin = new("CalamityMod/Sounds/Item/SpinningWoosh");
                             SoundSlot = SoundEngine.PlaySound(spin with { Volume = 0.01f, Pitch = -0.1f, IsLooped = true }, Projectile.Center);
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (cooldownTimer > 1)
             {
-                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot)
+                if (!Owner.Calamity().mouseRight && cooldownTimer < Owner.itemAnimationMax * 1.7f && !failedShot && !Main.mouseLeftRelease)
                     Projectile.ai[2] = 0;
                 if (cooldownTimer <= 18 && !hasPlayedReloadSound)
                 {
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.08f;
+            modifiers.SourceDamage *= 0.1f;
             if (Owner.Calamity().hellbornShots < 8)
             {
                 Owner.Calamity().hellbornShots++;

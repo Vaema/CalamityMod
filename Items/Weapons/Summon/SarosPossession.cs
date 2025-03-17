@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SarosPossession : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 8f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 56;

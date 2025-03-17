@@ -244,6 +244,7 @@ SandTornado.DisplayName: Tornado
 SarosAura.DisplayName: Saros Aura
 SarosMicrosun.DisplayName: Saros Microsun
 SarosSunfire.DisplayName: Saros Sunfire
+SeashineSwordProj.DisplayName: Seashine Sword
 SeekerSummonProj.DisplayName: Soul Seeker
 SepulcherMinion.DisplayName: Sepulcher
 Shellfish.DisplayName: Shellfish
@@ -330,3 +331,7 @@ WulfrumDroid.DisplayName: Wulfrum Droid
 WulfrumEnergyBurst.DisplayName: Wulfrum Bolt
 WulfrumFusionBolt.DisplayName: Fusion Bolt
 YharonMinionFireball.DisplayName: Dragon Fireball
+FlarebatMinion.DisplayName: Flarebat
+FrostbatMinion.DisplayName: Frostbat
+AmphibiansGuitarMinion.DisplayName: Amphibian's Guitars
+AmphibiansGuitarProjectile.DisplayName: Note

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.DraedonMisc
         {
             Item.width = 26;
             Item.height = 44;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = Item.useTime = 15;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.DraedonMisc
 
             if (Main.myPlayer == player.whoAmI && player.WithinRange(Main.MouseWorld, checkDistance) && tile.HasTile && tile.TileType == ModContent.TileType<CodebreakerTile>())
             {
-                SoundEngine.PlaySound(InstallSound, Main.player[Main.myPlayer].Center);
+                SoundEngine.PlaySound(InstallSound, Main.LocalPlayer.Center);
 
                 TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(placeTileCoords.X, placeTileCoords.Y, CodebreakerTile.Width, CodebreakerTile.Height, CodebreakerTile.SheetSquare);
                 if (codebreakerTileEntity is null || codebreakerTileEntity.ContainsCoolingCell || codebreakerTileEntity.DecryptionCountdown > 0)
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CoreofEleum>(6).
+                AddIngredient<EssenceofEleum>(6).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();

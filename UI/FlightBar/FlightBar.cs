@@ -12,8 +12,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public class FlightBar
+    [Autoload(Side = ModSide.Client)]
+    public sealed class FlightBar : ModSystem
     {
         // These values were handpicked on a 1080p screen by Amber. Please disregard the bizarre precision.
         internal const float DefaultFlightPosX = 40.9375f;
@@ -63,7 +63,7 @@ namespace CalamityMod.UI
             return result;
         }
 
-        internal static void Load()
+        public override void OnModLoad()
         {
             borderTexture = ModContent.Request<Texture2D>("CalamityMod/UI/FlightBar/FlightBarBorder", AssetRequestMode.ImmediateLoad).Value;
             flightBarAnimTexture = ModContent.Request<Texture2D>("CalamityMod/UI/FlightBar/FlightBarAnim", AssetRequestMode.ImmediateLoad).Value;
@@ -74,7 +74,7 @@ namespace CalamityMod.UI
             Reset();
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             Reset();
             borderTexture = flightBarAnimTexture = barTexture = disabledBarTexture = infiniteBarTexture = limitedBarTexture = null;
@@ -125,7 +125,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 return;
             }
 
@@ -175,7 +175,7 @@ namespace CalamityMod.UI
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityMod.SaveConfig(CalamityClientConfig.Instance);
+                    CalamityClientConfig.SaveConfig();
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace CalamityMod.UI
                 FlightAnimTimer++;
                 if (FlightAnimTimer >= FlightAnimFrameDelay)
                 {
-                    if (FlightAnimFrame >= FlightAnimFrames)
+                    if (FlightAnimFrame >= FlightAnimFrames - 1) // Must be # of frames - 1 or else there is 1 frame of normal border before it cuts to infinite border
                     {
                         FlightAnimFrame = -1;
                         FlightAnimTimer = 0;
@@ -237,8 +237,7 @@ namespace CalamityMod.UI
                 Vector2 origin = new Vector2(correctBorder.Width * 0.5f, (correctBorder.Height / FlightAnimFrames) * 0.5f);
                 float xOffset = (correctBorder.Width - flightBarAnimTexture.Width) / 2f;
                 int frameHeight = (flightBarAnimTexture.Height / FlightAnimFrames) - 1;
-                float yOffset = FlightAnimFrame == 0 ? 0 : ((correctBorder.Height / FlightAnimFrame) - frameHeight) / 2f;
-                Vector2 sizeDiffOffset = new Vector2(xOffset, yOffset);
+                Vector2 sizeDiffOffset = new Vector2(xOffset, -37f);
                 Rectangle animCropRect = new Rectangle(0, (frameHeight + 1) * FlightAnimFrame, flightBarAnimTexture.Width, frameHeight);
                 spriteBatch.Draw(flightBarAnimTexture, screenPos + sizeDiffOffset, animCropRect, Color.White, 0f, origin * Main.UIScale, uiScale, SpriteEffects.None, 0);
             }

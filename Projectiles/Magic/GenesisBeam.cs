@@ -104,8 +104,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         public void OnHitEffects()

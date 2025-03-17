@@ -20,8 +20,8 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.Abyss
                 return;
             }
             NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -127,7 +127,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.AddIf(DropHelper.PostLevi(), ModContent.ItemType<Lumenyl>(), 2);
+            DropHelper.NormalVsExpertQuantity(ModContent.ItemType<MysteriousCircuitry>(), 2, 1, 2, 2, 3);
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -142,7 +144,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Laserfish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Laserfish2").Type, 1f);

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -30,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 
-            Item.damage = 2250;
+            Item.damage = 2300;
             Item.knockBack = 6f;
             Item.useAnimation = Item.useTime = 300;
             Item.reuseDelay = 60;
@@ -70,8 +71,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<IcicleStaff>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CryonicBar>(18).
-                AddTile(TileID.IceMachine).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

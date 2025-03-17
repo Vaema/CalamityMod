@@ -15,6 +15,7 @@ namespace CalamityMod.Utilities
         {
             player.Calamity().mouseWorldListener = true;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 mW = player.Calamity().mouseWorld;
 
             float value1 = player.direction * -90;
@@ -36,6 +37,7 @@ namespace CalamityMod.Utilities
         {
             player.Calamity().mouseWorldListener = true;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 mW = player.Calamity().mouseWorld;
 
             float value1 = player.direction * -90;

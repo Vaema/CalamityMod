@@ -18,7 +18,6 @@ namespace CalamityMod.Particles
         private bool Big;
         private bool EmitsLight;
         private Vector2 Gravity;
-        private int Time = 0;
 
         public NanoParticle(Vector2 position, Vector2 velocity, Color color, float scale, int lifeTime, bool bigSize = false, bool emitsLight = false, bool AddativeBlend = true, Vector2? gravity = null)
         {

@@ -74,8 +74,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -143,12 +143,12 @@ namespace CalamityMod.Projectiles.Melee
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the result is capped separately
                 if (Thrown)
                     ThrowReach = MathHelper.Clamp((Owner.Center - Owner.Calamity().mouseWorld).Length(), ThrowReachMin, ThrowReachMax);
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (!Thrown)
@@ -308,7 +308,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 drawOrigin = new Vector2(Combo == 1 ? sword.Width / 2f : flipped ? sword.Width : 0f, sword.Height);
             Vector2 drawOffset = Owner.Center + drawAngle.ToRotationVector2() * 10f - Main.screenPosition;
 
-            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {
@@ -362,7 +362,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 backScissorDrawPosition = Owner.Center + drawAngle.ToRotationVector2() * 10f + functionalDrawAngle.ToRotationVector2() * 70f * Projectile.scale - Main.screenPosition; //Lined up with the hole in the front blade
             float backScissorRotation = drawRotation + (Combo == 1 ? (!flipped ? MathHelper.PiOver4 * 0.75f : MathHelper.PiOver4 * -0.75f) : 0f);
 
-            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {

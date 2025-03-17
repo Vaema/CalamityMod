@@ -18,17 +18,13 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
         //
         public override void SetStaticDefaults()
         {
-            // 12AUG2023: Ozzatron: I had to touch this code
-            // It was absolutely necessary to allow for right-facing Eutrophic Shelves to drop following the TML 1.4.4 change:
-            // https://github.com/tModLoader/tModLoader/pull/3420
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.EutrophicShelf>());
-
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
             // Remove the bottom anchor entirely, this thing hangs from the wall.
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 1);

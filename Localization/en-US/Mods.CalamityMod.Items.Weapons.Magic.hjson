@@ -106,7 +106,13 @@ ArtAttack: {
 
 AsteroidStaff: {
 	DisplayName: Asteroid Staff
-	Tooltip: Summons asteroids from the sky
+	Tooltip: "[GFB]"
+	TooltipNormal: Summons asteroids from the sky
+	TooltipGFB:
+		'''
+		Core Keeper Chaos Staff
+		bottom text
+		'''
 }
 
 AstralachneaStaff: {
@@ -213,7 +219,7 @@ CoralSpout: {
 
 CosmicRainbow: {
 	DisplayName: Cosmic Rainbow
-	Tooltip: Launches a barrage of rainbows
+	Tooltip: Launches a barrage of rainbows and homing sparkles
 }
 
 Cryophobia: {
@@ -276,7 +282,7 @@ EidolicWail: {
 	DisplayName: Eidolic Wail
 	Tooltip:
 		'''
-		Fires a string of bouncing sound waves that become stronger as they travel
+		Fires a string of bouncing sound waves that slow down on enemy hits
 		RIP headphone users
 		'''
 }
@@ -338,7 +344,11 @@ FatesReveal: {
 
 FlareBolt: {
 	DisplayName: Flare Bolt
-	Tooltip: Casts a slow-moving ball of flame
+	Tooltip:
+		'''
+		Casts a ball of flame
+		Balls of flame collapse into a swirling backdraft which pulls in enemies
+		'''
 }
 
 ForbiddenSun: {
@@ -348,12 +358,22 @@ ForbiddenSun: {
 
 FrigidflashBolt: {
 	DisplayName: Frigidflash Bolt
-	Tooltip: Casts a slow-moving ball of flash-freezing magma
+	Tooltip:
+		'''
+		Casts a fast ball of flash-freezing magma that bounces off tiles
+		When hitting a tile, a flarefrost burst is produced
+		Press <right> to cast an empowered ball that creates a collapsing flarefrost vortex which explodes
+		'''
 }
 
 FrostBolt: {
 	DisplayName: Frost Bolt
-	Tooltip: Casts a slow-moving ball of frost
+	Tooltip:
+		'''
+		Casts a ball of frost that bounces off tiles
+		When hitting a tile, a small frost burst is produced
+		Frost projectiles will fall to the ground after enough time has passed
+		'''
 }
 
 Genesis: {
@@ -630,8 +650,8 @@ PlasmaRifle: {
 	DisplayName: Plasma Rifle
 	Tooltip:
 		'''
-		Fires a plasma blast that explodes
-		Press <right> to rapidly fire plasma bolts
+		Fires an explosive plasma blast with pinpoint accuracy
+		Press <right> to rapidly fire non-explosive blasts
 		'''
 }
 
@@ -655,8 +675,8 @@ PrimordialAncient: {
 	Tooltip:
 		'''
 		Casts five primordial sand blasts that converge at your cursor after a moment and create a giant explosion
-		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Aeolian Earth Buff
-		The Aeolian Earth Buff increases your damage reduction by 8% and damage by 18%
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.AeolianEarthBuff.DisplayName} buff
+		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}% and damage by {1}%
 		'''
 }
 
@@ -665,14 +685,18 @@ PrimordialEarth: {
 	Tooltip:
 		'''
 		Casts two enchanted blasts of sand that coverge with each other and explode
-		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
-		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
+		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0} and damage by {1}%
 		'''
 }
 
 PurgeGuzzler: {
 	DisplayName: Purge Guzzler
-	Tooltip: Emits three beams of holy energy in a tight spread
+	Tooltip:
+		'''
+		Fires a barrage of holy rays that converge into two massive sweeping beams
+		'Baptism by holy fire'
+		'''
 }
 
 RainbowPartyCannon: {
@@ -743,7 +767,7 @@ Serpentine: {
 	Tooltip:
 		'''
 		Casts a serpent that follows the mouse cursor
-		Ignores 15 points of enemy Defense
+		{$Common.ArmorPenetration}
 		'''
 }
 
@@ -772,8 +796,18 @@ SHPC: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Fires plasma orbs that linger and emit massive explosions
-		Press <right> to fire powerful energy beams
+		Consumes Souls as ammo
+		Fires orbs of unstable, concentrated soulpower that linger after ejection
+		Orbs create a large explosion and emit seeking souls after collapse
+		Orbs have varying effects depending on Soul type used
+		Press Right Click to discharge all soulpower in the weapon as weak energy beams
+		'''
+	LegendaryText:
+		'''
+		'Though soul-powered machines were a near failure, potential remained in souls as a form of fuel.
+		To avoid my last experiments' main flaw, the Soul-Harnessing Plasma Cannon was designed to expel souls as projectiles before they exert control over the weapon.
+		Each soul type appears to react differently to the base plasma. Yet, lacking volunteers, obtaining potential ammunition is currently too difficult to undergo further testing.
+		A shame, for a weapon that could have practically unlimited ammunition in the battlefield. Perhaps some day, its potential can be truly tested.'
 		'''
 	TooltipGFB: It scales again :)
 }
@@ -873,7 +907,7 @@ ThePrince: {
 	DisplayName: The Prince
 	Tooltip:
 		'''
-		Casts a holy fireball that explodes into 6 flames
+		Casts a holy fireball that explodes into six homing flames
 		'So you're telling me that the prince exploded, and then turned into a flower?'
 		-Dain, the sailor druid
 		'''
@@ -896,15 +930,6 @@ ThornBlossom: {
 		Casts a beaming flower that explodes into homing petals alongside a deadly thorn
 		Costs 3 HP to fire
 		'Every rose has its thorn'
-		'''
-}
-
-Thunderstorm: {
-	DisplayName: Thunderstorm
-	Tooltip:
-		'''
-		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky
-		'Make it rain'
 		'''
 }
 
@@ -996,9 +1021,18 @@ VoltaicClimax: {
 	Tooltip: Conjures a ring of supercharged magnet spheres around the cursor
 }
 
+Volterion: {
+	DisplayName: Volterion
+	Tooltip:
+		'''
+		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
+		Each ball lightning emits two additional lightning bolts before exploding
+		'''
+}
+
 Waywasher: {
 	DisplayName: Waywasher
-	Tooltip: Casts a deluge of inaccurate water bolts
+	Tooltip: Casts two large swirling waves
 }
 
 Wingman: {
@@ -1018,11 +1052,6 @@ WintersFury: {
 		Fires a stream of ice orbs and a barrage of ice shards towards the cursor
 		'The pages are freezing to the touch'
 		'''
-}
-
-WrathoftheAncients: {
-	DisplayName: Wrath of the Ancients
-	Tooltip: Summons an energy pulse at the cursor to periodically summon homing spirits
 }
 
 WulfrumProsthesis: {

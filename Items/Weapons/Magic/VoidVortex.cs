@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int numOrbs = 12;
-            Vector2 clickPos = Main.MouseWorld;
+            Vector2 clickPos = player.ClampedMouseWorld();
             float orbDistance = 90f;
             float orbSpeed = 4f;
 

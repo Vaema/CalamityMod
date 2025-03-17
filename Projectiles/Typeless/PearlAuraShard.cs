@@ -9,23 +9,24 @@ namespace CalamityMod.Projectiles.Typeless
     public class PearlAuraShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 14;
             Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 220;
+            Projectile.timeLeft = 150;
             Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            if (Projectile.timeLeft < 210)
+            if (Projectile.timeLeft < 140)
                 CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 10f, 20f);
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.2f / 255f);
-            Projectile.rotation += Projectile.velocity.X * 1.25f;
+            Projectile.rotation = Projectile.velocity.ToRotation() - (MathHelper.PiOver2 * Projectile.spriteDirection);
             for (int i = 0; i < 4; i++)
             {
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 0.6f);

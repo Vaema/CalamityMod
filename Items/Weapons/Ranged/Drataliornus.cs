@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -103,9 +103,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BlossomFlux>().
-                AddIngredient<EffulgentFeather>(12).
-                AddIngredient<YharonSoulFragment>(4).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<YharonSoulFragment>(4).
+                AddIngredient<EffulgentFeather>(12).
                 AddTile<CosmicAnvil>().
                 Register();
         }

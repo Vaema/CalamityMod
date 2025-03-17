@@ -14,9 +14,9 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0.5f;
+            Projectile.minionSlots = 1f;
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -67,7 +67,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
             Lighting.AddLight(Projectile.Center, 0.3f, 0.2f, 0.3f);
-            float attackRange = 1200f;
             bool isMinion = Projectile.type == ModContent.ProjectileType<PinkButterfly>();
             player.AddBuff(ModContent.BuffType<ResurrectionButterflyBuff>(), 3600);
             if (isMinion)
@@ -82,43 +81,47 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
             Projectile.MinionAntiClump();
-            bool returnbool = false;
-            if (returnbool)
-            {
-                return;
-            }
+
             Vector2 projPos = Projectile.position;
             bool canAttack = false;
+            float attackRange = 1200f;
             int targetIndex = -1;
             if (player.HasMinionAttackTargetNPC)
             {
                 NPC npc = Main.npc[player.MinionAttackTargetNPC];
-                if ((npc.CanBeChasedBy(Projectile, false) || npc.type == NPCID.DukeFishron) && npc.active)
+                if (npc.CanBeChasedBy(Projectile, false))
                 {
                     float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
-                    if (!canAttack && targetDist < attackRange)
-                    {
-                        projPos = npc.Center;
-                        canAttack = true;
+                    if (targetDist < attackRange)
                         targetIndex = npc.whoAmI;
-                    }
+                }
+                if (targetIndex != -1)
+                {
+                    canAttack = true;
+                    projPos = npc.Center;
                 }
             }
             if (!canAttack)
             {
                 foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    if (nPC2.CanBeChasedBy(Projectile, false) || nPC2.type == NPCID.DukeFishron)
+                    if (!nPC2.CanBeChasedBy(Projectile))
+                        continue;
+
+                    float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
+                    if (targetDist < attackRange)
                     {
-                        float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
-                        if (!canAttack && targetDist < attackRange)
-                        {
-                            attackRange = targetDist;
-                            projPos = nPC2.Center;
-                            canAttack = true;
-                            targetIndex = nPC2.whoAmI;
-                        }
+                        attackRange = targetDist;
+                        targetIndex = nPC2.whoAmI;
+
+                        if (nPC2.type == NPCID.DukeFishron)
+                            break;
                     }
+                }
+                if (targetIndex != -1)
+                {
+                    canAttack = true;
+                    projPos = Main.npc[targetIndex].Center;
                 }
             }
             float separationAnxietyDist = 1500f;
@@ -193,10 +196,10 @@ namespace CalamityMod.Projectiles.Summon
 
             // Projectile fire timer
             if (Projectile.ai[1] > 0f)
-                Projectile.ai[1] += (float)Main.rand.Next(1, 2 + 1);
+                Projectile.ai[1] += Main.rand.Next(1, 2 + 1);
 
             // Reset timer
-            if (Projectile.ai[1] > 240f)
+            if (Projectile.ai[1] > 180f)
             {
                 Projectile.ai[1] = 0f;
                 Projectile.netUpdate = true;
@@ -236,8 +239,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, spriteEffects, 0);
             return false;

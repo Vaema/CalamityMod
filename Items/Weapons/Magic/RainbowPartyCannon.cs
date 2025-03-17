@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 52;
             Item.height = 30;
-            Item.damage = 225;
+            Item.damage = 175;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 25;
             Item.crit += 4;
@@ -57,13 +57,12 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ConfettiCannon).
                 AddIngredient<CosmicRainbow>().
                 AddIngredient(ItemID.Celeb2).
-                AddIngredient(ItemID.FlaskofParty, 5).
+                AddIngredient(ItemID.ConfettiCannon).
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient(ItemID.SoulofLight, 25).
                 AddIngredient(ItemID.Confetti, 50).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

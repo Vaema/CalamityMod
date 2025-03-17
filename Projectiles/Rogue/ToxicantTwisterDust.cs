@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public NPC targetedNPC;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -25,12 +26,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
+            Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 180;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
@@ -46,10 +47,10 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation += 0.2f;
 
             targetedNPC = (Projectile.ai[1] > 90) ? Projectile.Center.ClosestNPCAt(1200) : null;
-            float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft);
+            float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft) * 0.5f;
             if (targetedNPC == null)
             {
-                Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
+                Vector2 position = (Owner.ClampedMouseWorld() + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 8)
                     Projectile.velocity += moveToMouse * (0.7f);
@@ -58,12 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                Vector2 position = targetedNPC.Center;
-                Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 13 * moveSpeed)
-                    Projectile.velocity += moveToMouse * moveSpeed;
-                else
-                    Projectile.velocity *= 0.9f;
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, moveSpeed, 13, 0.98f);
                 if (Projectile.ai[1] % 2 == 0)
                     Projectile.timeLeft++; // Lasts longer if it has a target
             }
@@ -72,6 +68,10 @@ namespace CalamityMod.Projectiles.Rogue
             
             Projectile.ai[1]++;
         }
+
+        public override bool? CanHitNPC(NPC target) => target == targetedNPC ? null : false;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 2; i++)
@@ -80,18 +80,5 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.noGravity = true;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-            return true;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
-            if (target == targetedNPC)
-                Projectile.Kill();
-        }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
     }
 }

@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Potions
 
         public override void UseItemFrame(Player player)
         {
-            int time = CalamityUtils.SecondsToFrames(1980f); // 33 minutes
+            int time = CalamityUtils.MinutesToFrames(33);
             if (player.itemAnimation == 180)
             {
                 player.AddBuff(BuffID.WellFed3, time);

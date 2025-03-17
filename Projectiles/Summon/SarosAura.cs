@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
                 AttackTarget(potentialTarget);
 
             // Stay near the target and spin around.
-            Projectile.Center = Owner.Center - Vector2.UnitY * 16f;
+            Projectile.Center = Owner.Center - Vector2.UnitY * (16f -  Owner.gfxOffY);
             // The projectile spins right at a constant speed.
             Projectile.rotation += MathHelper.ToRadians(1.5f);
 

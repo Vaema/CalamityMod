@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,13 +33,9 @@ namespace CalamityMod.Items
                 player.Calamity().noStupidNaturalARSpawns = false;
             else
                 player.Calamity().noStupidNaturalARSpawns = true;
-            Item.NetStateChanged();
             state = player.Calamity().noStupidNaturalARSpawns;
 
-            bool favorited = Item.favorited;
-            Item.SetDefaults(ModContent.ItemType<BrokenWaterFilter>());
-            Item.stack++;
-            Item.favorited = favorited;
+            Item.RestoreConsumedItemByRightClick();
         }
 
         /*
@@ -90,15 +85,6 @@ namespace CalamityMod.Items
             else
                 text = GetTextValue("Items.Misc.SpawnBlockersOff");
             tooltips.FindAndReplace("[STATE]", text);
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("IronBar", 10).
-                AddIngredient<SulphuricScale>().
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

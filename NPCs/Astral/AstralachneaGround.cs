@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
 
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaGroundGlow", AssetRequestMode.AsyncLoad);
@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 630;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.38f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.timeLeft = NPC.activeTime * 2;
             AnimationType = NPCID.WallCreeper;
             Banner = ModContent.NPCType<AstralachneaWall>();
@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 6; i++)
                     {

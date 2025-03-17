@@ -7,6 +7,12 @@ namespace CalamityMod.Items.Accessories
     public class HallowedRune : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 3;
+        public static int DefenseBoost = 8;
+        public static float DamageReductionBoost = 0.04f;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetDefaults()
         {
             Item.width = 26;
