@@ -31,6 +31,8 @@ PulsePistolShot.DisplayName: Pulse Bolt
 PulseRifleShot.DisplayName: Pulse Bolt
 PulseTurret.DisplayName: Pulse Turret
 PulseTurretShot.DisplayName: Pulse Bolt
+ScattershotLance.DisplayName: Laser Lance
+ScattershotLaser.DisplayName: Scattershot Laser
 SnakeEyesSummon.DisplayName: Snake Eyes
 SnakeEyesProjectile.DisplayName: Inescapable Bolt
 StarSwallowerAcid.DisplayName: Acid

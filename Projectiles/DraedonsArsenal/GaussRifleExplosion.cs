@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -9,41 +10,37 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public float Time
-        {
-            get => Projectile.ai[0];
-            set => Projectile.ai[0] = value;
-        }
-
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 500;
+            Projectile.width = Projectile.height = 200;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
+            Projectile.timeLeft = 12;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 20;
+            Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            Time++;
-            if (!Main.dedServ)
+            for (int i = 0; i < Main.maxNPCs; i++)
             {
-                for (int i = 0; i < 50; i++)
+                NPC target = Main.npc[i];
+                if (target.CanBeMoved(true) && target.CanBeChasedBy(Projectile, false))
                 {
-                    float angle = i / 30f * MathHelper.TwoPi;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 261);
-                    dust.velocity = angle.ToRotationVector2();
-                    dust.velocity = dust.velocity.RotatedByRandom(0.4f);
-                    dust.velocity = dust.velocity.RotatedBy(Time / 60f * MathHelper.ToRadians(720f));
-                    dust.velocity *= Main.rand.NextFloat(20f, 50f);
-                    dust.scale = Main.rand.NextFloat(1.2f, 1.6f);
-                    dust.noGravity = true;
+                    if (target != null && !CalamityPlayer.areThereAnyDamnBosses)
+                    {
+                        if (Vector2.Distance(target.Center, Projectile.Center) > 5 && Vector2.Distance(target.Center, Projectile.Center) < 500)
+                        {
+                            target.velocity += target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.4f;
+                            target.Center += target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.8f;
+                        }
+                    }
                 }
             }
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
     }
 }
