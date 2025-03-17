@@ -1,12 +1,12 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -164,7 +164,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.localNPCHitCooldown > 7 && target == Main.npc[ElectrocutionTarget])
             Projectile.localNPCHitCooldown -= 1;
             hookColor = Color.Cyan;
-            target.AddBuff(BuffID.Electrified, 120);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
 
             if (AIState == TaserAIState.Firing)
             {

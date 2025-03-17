@@ -91,7 +91,6 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
-using System.Security.Cryptography.X509Certificates;
 
 namespace CalamityMod.NPCs
 {

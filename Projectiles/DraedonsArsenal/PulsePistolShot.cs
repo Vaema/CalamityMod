@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             bool onKill = target.life <= 0;
             
-            // Set some values to get ready foir it to home again for its next hit
+            // Set some values to get ready for it to home again for its next hit
             lastTarget = target;
             distance = 3000;
             Projectile.localAI[0] = 60;

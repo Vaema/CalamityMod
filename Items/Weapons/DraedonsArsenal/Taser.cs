@@ -49,12 +49,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override Vector2? HoldoutOffset() => new Vector2(5f, 0f);
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
-        public override void UseItemFrame(Player player)
-        {
-            //float rotation = (player.Center - Item.).ToRotation() * player.gravDir + MathHelper.PiOver2;
-
-            //player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
-        }
         public override void AddRecipes()
         {
             CreateRecipe().
