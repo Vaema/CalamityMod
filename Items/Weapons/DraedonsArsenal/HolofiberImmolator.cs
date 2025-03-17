@@ -6,6 +6,7 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +17,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class HolofiberImmolator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
+        public static readonly SoundStyle PlasmaSound = new("CalamityMod/Sounds/Item/PlasmaSmall");
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();

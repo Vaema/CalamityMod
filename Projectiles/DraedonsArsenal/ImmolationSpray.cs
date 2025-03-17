@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -60,8 +61,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            SoundStyle sound = new("CalamityMod/Sounds/Item/PlasmaSmall");
-            SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+            SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.8f);

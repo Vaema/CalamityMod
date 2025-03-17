@@ -14,6 +14,9 @@ GaussFlux.DisplayName: Gauss Flux
 GaussPistolShot.DisplayName: Gauss Shot
 GaussRifleBlast.DisplayName: Gauss Blast
 GaussRifleExplosion.DisplayName: Gauss Explosion
+ImmolationArrow.DisplayName: Immolation Arrow
+ImmolationBurst.DisplayName: Immolation Burst
+ImmolationSpray.DisplayName: Immolation Spray
 LaserRifleShot.DisplayName: Laser Rifle
 MassivePlasmaExplosion.DisplayName: Plasma Explosion
 MountedScannerLaser.DisplayName: Deathray
@@ -70,6 +73,3 @@ PlagueShot.DisplayName: Plague Shot
 PlagueShotBuffer.DisplayName: Plague Shot
 WaterShot.DisplayName: Water Shot
 WaterShotBuffer.DisplayName: Water Shot
-ImmolationArrow.DisplayName: Immolation Arrow
-ImmolationBurst.DisplayName: Immolation Burst
-ImmolationSpray.DisplayName: Immolation Spray
