@@ -34,7 +34,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Phases based on life percentage
@@ -52,22 +51,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool spawnBlueCrystal = lifeRatio < 0.3f;
 
             // Check if the crystals are alive
-            bool crystalAlive = true;
+            bool redCrystalAlive = true;
             bool blueCrystalAlive = false;
             bool greenCrystalAlive = true;
 
             if (spawnGreenCrystal)
             {
-                if (masterMode)
+                if (death)
                     greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelEmerald>());
             }
 
             if (phase3)
-                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
+                redCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
 
             if (spawnBlueCrystal)
             {
-                if (masterMode)
+                if (death)
                     blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>());
             }
 
@@ -83,8 +82,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Dust color when the blue crystal is alive
             Color dustColor = Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f);
 
-            // Master Mode Crystal spawning
-            if (masterMode)
+            // Death Mode Crystal spawning
+            if (death)
             {
                 if (spawnGreenCrystal && npc.Calamity().newAI[0] == 0f)
                 {
@@ -242,7 +241,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Faster fall
             if (npc.velocity.Y > 0f)
             {
-                float fallSpeedBonus = (bossRush ? 0.1f : death ? 0.05f : 0f) + (!crystalAlive ? 0.1f : 0f) + (masterMode ? 0.1f : 0f);
+                float fallSpeedBonus = (bossRush ? 0.2f : death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
@@ -285,7 +284,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Get closer to activating teleport
             if (npc.ai[2] < teleportGateValue)
             {
-                if (!Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0) || Math.Abs(npc.Top.Y - Main.player[npc.target].Bottom.Y) > (masterMode ? 160f : 320f))
+                if (!Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0) || Math.Abs(npc.Top.Y - Main.player[npc.target].Bottom.Y) > (death ? 160f : 320f))
                     npc.ai[2] += death ? 3f : 2f;
                 else
                     npc.ai[2] += 1f;
@@ -300,8 +299,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleporting = true;
                 npc.aiAction = 1;
                 
-                float teleportRate = crystalAlive ? 1f : 2f;
-                if (masterMode)
+                float teleportRate = redCrystalAlive ? 1f : 2f;
+                if (death)
                     teleportRate *= 2f;
 
                 npc.ai[0] += teleportRate;
@@ -350,8 +349,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleporting = true;
                 npc.aiAction = 0;
 
-                float teleportRate = crystalAlive ? 1f : 2f;
-                if (masterMode)
+                float teleportRate = redCrystalAlive ? 1f : 2f;
+                if (death)
                     teleportRate *= 2f;
 
                 if (npc.ai[0] == 0f)
@@ -487,7 +486,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.velocity.Y *= 0.6f;
                         }
 
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X *= 1.4f;
 
                         if (bossRush)
@@ -503,8 +502,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Change jump velocity
             else if (npc.target < Main.maxPlayers)
             {
-                float jumpVelocityLimit = crystalAlive ? 3f : 4.5f;
-                if (masterMode)
+                float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
+                if (death)
                     jumpVelocityLimit += 3f;
                 if (Main.getGoodWorld)
                     jumpVelocityLimit = 8f;
@@ -514,13 +513,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
                     {
                         npc.velocity.X += (bossRush ? 0.4f : death ? 0.25f : 0.2f) * npc.direction;
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X += 0.3f * npc.direction;
                     }
                     else
                     {
                         npc.velocity.X *= bossRush ? 0.9f : death ? 0.92f : 0.93f;
-                        if (masterMode)
+                        if (death)
                             npc.velocity.X *= 0.9f;
                     }
                 }
@@ -613,7 +612,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (((Main.raining && Main.hardMode) || bossRush) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
-                        if (masterMode)
+                        if (death)
                         {
                             switch (Main.rand.Next(3))
                             {
