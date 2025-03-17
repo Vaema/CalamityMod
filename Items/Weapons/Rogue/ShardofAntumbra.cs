@@ -11,16 +11,11 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("XerocPitchfork")]
     public class ShardofAntumbra : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 97;
+            Item.damage = 111;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 17;
@@ -36,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.7f;
+        public override float StealthDamageMultiplier => 0.5f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

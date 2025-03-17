@@ -18,18 +18,18 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.25f };
         // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future, but for now this is good enough
 
-        public float SniperDmgMult = 8f;
+        public float SniperDmgMult = 9f;
         public float SniperCritMult = Main.zenithWorld ? 7f : 1.35f;
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
 
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 45;
+            Item.damage = 46;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 70;
             Item.height = 18;
@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             string tooltip = Main.zenithWorld ? this.GetLocalizedValue("TooltipGFB") : this.GetLocalizedValue("TooltipNormal");
-            list.FindAndReplace("[GFB]", tooltip);
+            list.FindAndReplace("[GFB]", Lang.SupportGlyphs(tooltip));
             //Distortion wind do whisper one truth...
         }
 
@@ -177,7 +177,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
             }
             //shell
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
                 Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);

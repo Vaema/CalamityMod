@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -19,9 +20,6 @@ namespace CalamityMod.Projectiles.Melee
         public Vector2 DashStart;
         public Vector2 DashEnd;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -43,8 +41,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
-                sword.OnHitProc = true;
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword)
+            {
+                if (Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
+                    sword.OnHitProc = true;
+            }
 
             Particle bloom = new StrongBloom(target.Center, target.velocity, Color.Crimson * 0.5f, 1f, 30);
             GeneralParticleHandler.SpawnParticle(bloom);
@@ -59,8 +60,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Owner.moonLeech)
                 return;
 
-            Owner.statLife += OmegaBiomeBlade.SuperPogoAttunementSlashLifesteal;
-            Owner.HealEffect(OmegaBiomeBlade.SuperPogoAttunementSlashLifesteal);
+            Owner.HealPlayer(OmegaBiomeBlade.SuperPogoAttunementSliceLifesteal);
         }
 
         public override bool PreDraw(ref Color lightColor) //OMw to reuse way too much code from the entangling vines

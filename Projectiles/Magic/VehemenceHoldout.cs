@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.rotation = Projectile.AngleTo(Main.MouseWorld);
             Projectile.velocity = Projectile.rotation.ToRotationVector2();
 
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Magic
             Item heldItem = Owner.ActiveItem();
             Vector2 shootVelocity = Projectile.velocity * heldItem.shootSpeed;
             int damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<Vehemence>(), damage, heldItem.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<VehemenceBolt>(), damage, heldItem.knockBack, Projectile.owner);
         }
 
         private void CreateChargeDust()

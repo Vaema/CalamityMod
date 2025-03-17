@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Atom splitting is cool and all, but actual thermonuclear meltdown levels of DPS is unacceptable.
         // DO NOT increase this unless you are ABSOLUTELY SURE you know what will happen.
         public static float NormalSplitMultiplier = 0.7f;
-        public static float StealthSplitMultiplier = 0.23f;
+        public static float StealthSplitMultiplier = 0.3f;
 
         public ref float HitTargetIndex => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
@@ -124,7 +124,8 @@ namespace CalamityMod.Projectiles.Rogue
             spawnPosition.X += Main.rand.NextFloatDirection() * target.width * 0.45f;
             int damage = (int)(Projectile.damage * StealthSplitMultiplier);
             Vector2 shootVelocity = Vector2.UnitY * (target.Center.Y - spawnPosition.Y > 0f).ToDirectionInt() * Main.rand.NextFloat(14f, 16.5f);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<TheAtomSplitterDuplicate>(), damage, Projectile.knockBack, Projectile.owner, 0f, 24f);
+            int extra = Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<TheAtomSplitterDuplicate>(), damage, Projectile.knockBack, Projectile.owner, 0f, 24f);
+            Main.projectile[extra].extraUpdates = 2;
         }
 
         public void ReleaseHitDust(Vector2 spawnPosition)
@@ -174,7 +175,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Main.npc.IndexInRange((int)HitTargetIndex))
             {
                 HitTargetIndex = target.whoAmI;
-                Projectile.timeLeft = Projectile.Calamity().stealthStrike ? 100 : 60;
+                Projectile.timeLeft = 60;
                 Projectile.netUpdate = true;
             }
         }

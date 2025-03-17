@@ -23,9 +23,10 @@ namespace CalamityMod.Projectiles.Typeless
         public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
+            Main.projFrames[Type] = 12;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -146,7 +147,7 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Time == 90f)
                     SoundEngine.PlaySound(SoundID.DD2_WyvernDiveDown, Projectile.Center);
 
-                Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                Projectile.frame = Main.projFrames[Type] - 1;
 
                 // Fly away if no valid target was found.
                 if (target is null)
@@ -241,7 +242,7 @@ namespace CalamityMod.Projectiles.Typeless
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SuicideBomberDemonGlowmaskFriendly").Value;
                 orbTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SuicideBomberDemonOrbFriendly").Value;
             }
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -18,7 +18,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 10, 0) : Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.knockBackResist = 0.05f;
             Banner = NPC.type;
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam2").Type, 1f);

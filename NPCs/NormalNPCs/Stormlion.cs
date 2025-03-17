@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/StormlionDeath");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 33;
             NPC.height = 31;
             NPC.defense = 8;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 100;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
             NPC.value = Item.buyPrice(0, 0, 2, 0);
@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion2").Type, NPC.scale);

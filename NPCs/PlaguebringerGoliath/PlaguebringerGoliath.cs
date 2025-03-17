@@ -62,8 +62,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(0, 75, 0, 0);
+            NPC.value = Item.buyPrice(0, 30, 0, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit4;
@@ -346,12 +346,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
                     NPC.TargetClosest();
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
                 }
@@ -387,12 +385,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
 
@@ -456,9 +452,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                         if (NPC.spriteDirection != 1)
                             NPC.rotation += (float)Math.PI;
 
-                        NPC.netUpdate = true;
-                        NPC.netSpam -= 5;
-
+                        NPC.ForceNetUpdate();
                         SoundEngine.PlaySound(DashSound, NPC.Center);
 
                         return;
@@ -510,9 +504,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                     NPC.direction = playerLocation < 0 ? 1 : -1;
                     NPC.spriteDirection = NPC.direction;
-
-                    NPC.netUpdate = true;
-                    NPC.netSpam -= 5;
+                    NPC.ForceNetUpdate();
                 }
 
                 // Slow down after charge
@@ -644,12 +636,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = (phase3 || bossRush) ? 5f : 1f;
                     NPC.ai[1] = 0f;
                     calamityGlobalNPC.newAI[0] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
 
@@ -732,12 +722,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;
                     NPC.ai[2] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
                 }
@@ -821,12 +809,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;
                     NPC.ai[2] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
                 }
@@ -913,12 +899,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 3f;
                     NPC.ai[2] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
                 }
@@ -944,12 +928,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = -1f;
                     NPC.ai[2] = 0f;
-                    NPC.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
                     // A phase switch sync is a critical operation that must be synced.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
 
                     SoundEngine.PlaySound(AttackSwitchSound, NPC.Center);
 
@@ -1206,7 +1188,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 7; i++)
                         Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PlaguebringerGoliathGore" + i).Type, NPC.scale);
@@ -1241,7 +1223,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D glowTexture = Texture_Glow.Value;
             if (curTex != (charging ? 2 : 1))
             {
@@ -1267,7 +1249,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             Vector2 posOffset = new Vector2(charging ? 175 : 125, 0);
             int chargeAfterimageAmount = 10;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
@@ -1292,7 +1274,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             Color redLerpColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
@@ -1363,7 +1345,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 int[] weapons = new int[]
                 {
                     ModContent.ItemType<Virulence>(),
-                    ModContent.ItemType<DiseasedPike>(),
                     ModContent.ItemType<TheHive>(),
                     ModContent.ItemType<BlightSpewer>(),
                     ModContent.ItemType<PlagueStaff>(),

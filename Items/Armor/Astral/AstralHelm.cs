@@ -34,16 +34,17 @@ namespace CalamityMod.Items.Armor.Astral
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.astralStarRain = true;
-            player.moveSpeed += 0.05f;
-            player.GetDamage<GenericDamageClass>() += 0.35f;
+            modPlayer.omniscience = true;
+            player.GetDamage<GenericDamageClass>() += 0.1f;
             player.maxMinions += 3;
-            player.GetCritChance<GenericDamageClass>() += 25;
+            player.GetCritChance<GenericDamageClass>() += 10;
             player.Calamity().wearingRogueArmor = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.dangerSense = true;
+            player.GetDamage<GenericDamageClass>() += 0.05f;
+            player.GetCritChance<GenericDamageClass>() += 10;
         }
 
         public override void AddRecipes()
@@ -52,6 +53,7 @@ namespace CalamityMod.Items.Armor.Astral
                 AddIngredient<AstralBar>(8).
                 AddIngredient(ItemID.MeteoriteBar, 6).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AstralBreastplate>()).
                 Register();
         }
     }

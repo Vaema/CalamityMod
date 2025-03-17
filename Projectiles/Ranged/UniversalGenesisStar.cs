@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.penetrate = 5;
             Projectile.timeLeft = 180;
+            Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
             Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.01f * Projectile.direction;
-            if (Main.rand.NextBool(48) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(48) && !Main.dedServ)
             {
                 int idx = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.2f, 16, 1f);
                 Main.gore[idx].velocity *= 0.66f;
@@ -53,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
             }
-            if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(20) && !Main.dedServ)
             {
                 Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
             }
@@ -67,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.DrawStarTrail(Color.Blue, Color.White);
 
             //Draw the actual projectile
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -87,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Main.dust[idx].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {

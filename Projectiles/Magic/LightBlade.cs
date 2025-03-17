@@ -23,8 +23,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = NumAfterimages;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = NumAfterimages;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -151,7 +152,7 @@ namespace CalamityMod.Projectiles.Magic
             Point projTile = Projectile.Center.ToTileCoordinates();
             Color localLight = Lighting.GetColor(projTile.X, projTile.Y);
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle rect = new Rectangle(38 * Projectile.frame, 0, 38, 38);
             Vector2 halfSpriteSize = rect.Size() / 2f;
 

@@ -8,7 +8,6 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -26,8 +25,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 27;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 27;
         }
 
         public override void SetDefaults()
@@ -125,6 +125,7 @@ namespace CalamityMod.Projectiles.Magic
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveTrailColor, PrimitiveOffsetFunction, shader: GameShaders.Misc["CalamityMod:SideStreakTrail"]), 51);
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
 
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(1f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Draw the vortex, along with some afterimages.

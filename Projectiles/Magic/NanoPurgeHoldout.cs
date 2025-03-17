@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,8 @@ namespace CalamityMod.Projectiles.Magic
         private ref float ChargeTowardsNextShot => ref Projectile.ai[1];
 
         public override void SetStaticDefaults() => Main.projFrames[Type] = 4;
+
+        public float postShotFade = 0;
 
         public override void KillHoldoutLogic()
         {
@@ -63,11 +66,12 @@ namespace CalamityMod.Projectiles.Magic
                 ChargeTowardsNextShot -= itemUseTime;
 
                 // Update the animation.
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
                 bool manaCostPaid = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
                 if (manaCostPaid)
                 {
+                    postShotFade = 1;
                     SoundEngine.PlaySound(SoundID.Item91, Projectile.Center);
 
                     int projID = ModContent.ProjectileType<NanoPurgeLaser>();
@@ -89,11 +93,12 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             ExtraBackArmRotation = Utils.Remap(Vector2.Dot(-Vector2.UnitY, Projectile.velocity.SafeNormalize(-Vector2.UnitY)), 0f, 1f, MathHelper.PiOver4, 0f);
+            postShotFade *= 0.86f;
         }
 
         private void SpawnFiringDust(Vector2 GunTipPosition, Vector2 laserVelocity)
         {
-            int dustID = 107;
+            int dustID = ModContent.DustType<LightDust>();
             int dustRadius = 5;
             int dustDiameter = 2 * dustRadius;
             Vector2 dustCorner = GunTipPosition - Vector2.One * dustRadius;
@@ -103,7 +108,8 @@ namespace CalamityMod.Projectiles.Magic
                 Dust d = Dust.NewDustDirect(dustCorner, dustDiameter, dustDiameter, dustID, dustVel.X, dustVel.Y);
                 d.velocity *= 0.125f;
                 d.noGravity = true;
-                d.scale = 1.4f;
+                d.scale = 0.9f;
+                d.color = Color.Lime;
             }
         }
 
@@ -116,7 +122,8 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 vel = Projectile.velocity * 10;
+            Vector2 drawPosition = (Projectile.Center - Main.screenPosition) - vel * postShotFade;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) + MathHelper.PiOver2;
             Vector2 rotationPoint = frame.Size() * 0.5f;

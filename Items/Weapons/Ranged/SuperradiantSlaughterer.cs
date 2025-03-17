@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -49,13 +49,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
         {
             Item.width = 84;
             Item.height = 46;
-            Item.damage = 76;
+            Item.damage = 88;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
@@ -100,6 +100,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(Item.damage);
                 float kb = player.GetTotalKnockback<MeleeDamageClass>().ApplyTo(Item.knockBack);
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, player.SafeDirectionTo(player.Calamity().mouseWorld), Item.shoot, damage * 2, kb, player.whoAmI, ai1: 2f);
             }
         }
@@ -122,7 +124,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<SpeedBlaster>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentVortex, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

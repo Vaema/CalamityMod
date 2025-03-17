@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Violence";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()
@@ -70,12 +70,12 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            if (Projectile.WithinRange(Main.MouseWorld, Projectile.velocity.Length() * 0.7f))
-                Projectile.Center = Main.MouseWorld;
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Projectile.WithinRange(mouse, Projectile.velocity.Length() * 0.7f))
+                Projectile.Center = mouse;
             else
-                Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(Main.MouseWorld) * 19f) / 4f;
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+                Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(mouse) * 19f) / 4f;
+            Projectile.ForceNetUpdate();
         }
 
         internal void ReturnToOwner()
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Play a splatter and impact sound.
                 SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
@@ -199,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
 
-            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
             // and thus causes it to be consistently added over and over, which is not intended behavior.

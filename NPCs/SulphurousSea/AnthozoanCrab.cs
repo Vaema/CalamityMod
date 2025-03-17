@@ -20,8 +20,8 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            Main.npcFrameCount[Type] = 16;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -38,9 +38,9 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
-            NPC.lifeMax = 900;
+            NPC.lifeMax = 1130;
             NPC.aiStyle = AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.knockBackResist = 0.04f;
@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AnthozoanCrabGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AnthozoanCrabGore2").Type, NPC.scale);

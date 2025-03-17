@@ -3,7 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.World;
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 16;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 5f
@@ -51,10 +51,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 136;
             NPC.height = 62;
             NPC.defense = 999999;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.Abyss
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
                 NPC.defense = 15;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)
                     {
@@ -318,7 +318,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
-            postLevi.Add(ModContent.ItemType<Lumenyl>(), 2);
             npcLoot.AddIf(() => NPC.downedGolemBoss, ModContent.ItemType<ScoriaOre>(), 1, 3, 9);
             npcLoot.Add(ModContent.ItemType<PyreMantle>(), 1, 10, 20);
         }
@@ -337,7 +336,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Devilfish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Devilfish2").Type, 1f);

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.Crags;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.Pink;
-            Item.value = Item.sellPrice(0, 0, 75, 0);
+            Item.value = Item.sellPrice(silver: 20);
         }
 
         public override void AddRecipes()

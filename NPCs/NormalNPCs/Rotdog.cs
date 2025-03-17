@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
+            Main.npcFrameCount[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -22,10 +22,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 46;
             NPC.height = 30;
             NPC.defense = 4;
-            NPC.lifeMax = 60;
+            NPC.lifeMax = 75;
             NPC.knockBackResist = 0.3f;
             AIType = NPCID.Wolf;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath5;
             Banner = NPC.type;
@@ -124,7 +124,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Rotdog1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Rotdog2").Type, 1f);

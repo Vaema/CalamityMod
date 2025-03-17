@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.Abyss
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 10;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -30,11 +30,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 30;
             NPC.height = 33;
             NPC.defense = 5;
-            NPC.lifeMax = 90;
+            NPC.lifeMax = 115;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 0, 80);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -183,7 +183,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

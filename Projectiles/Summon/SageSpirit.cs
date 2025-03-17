@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Summon
         internal const int ShootRate = 40;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5 == 4)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         internal void ResetOwnerFlyValues()
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Vector2 destination = Owner.Center + Vector2.UnitX * Owner.width * 1.6f * Owner.direction;
 
-            int totalSageSpirits = Owner.ownedProjectileCounts[Projectile.type];
+            int totalSageSpirits = Owner.ownedProjectileCounts[Type];
             destination += (SageSpiritIndex * MathHelper.TwoPi / totalSageSpirits).ToRotationVector2() * 70f;
             if (PlayerFlyTime >= 1f)
             {
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             AttackTimer++;
 
-            int totalSageSpirits = Owner.ownedProjectileCounts[Projectile.type];
+            int totalSageSpirits = Owner.ownedProjectileCounts[Type];
             Vector2 destinationOffsetFactor = Vector2.Max(target.Size, new Vector2(160f)) * new Vector2(0.3f, 0.2f);
             Vector2 destination = target.Center + (AttackTimer / 12f).ToRotationVector2() * destinationOffsetFactor;
             destination += (SageSpiritIndex * MathHelper.TwoPi / totalSageSpirits).ToRotationVector2() * 130f;

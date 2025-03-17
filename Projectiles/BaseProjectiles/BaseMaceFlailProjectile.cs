@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -210,6 +210,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			Projectile.ownerHitCheck = true;
 			if (Projectile.owner == Main.myPlayer)
 			{
+				// 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
 				Vector2 toMouse = Owner.MountedCenter.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX * Owner.direction);
 				Owner.ChangeDir((toMouse.X > 0f).ToDirectionInt());
 				if (!Owner.channel)
@@ -217,7 +218,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 					CurrentFlailState = FlailState.LaunchingForward;
 					StateTimer = 0f;
 					Projectile.Center = Owner.MountedCenter;
-					Projectile.velocity = toMouse * launchSpeed + Owner.velocity;
+					Projectile.velocity = toMouse * launchSpeed;
 					Projectile.netUpdate = true;
 					Projectile.ResetLocalNPCHitImmunity();
 					Projectile.localNPCHitCooldown = LaunchIFrames * Projectile.MaxUpdates;
@@ -327,9 +328,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
 		/// <summary>
 		/// Reserved for extra AI that is always ran regardless of state. Does nothing by default.<br/>
-		/// Example cases include shooting projectiles in a similar manner to Flower Pow.
+		/// Example cases include shooting projectiles in a similar manner to Flower Pow.<br/>
+		/// Return false to entirely override base flail behaviour.
 		/// </summary>
-		public virtual void ExtraBehavior() { }
+		public virtual bool ExtraBehavior() => true;
 
 		/// <summary>
 		/// Handles simple chain drawing. Can be overridden for cases such as chains with multiple frames/variants.
@@ -421,31 +423,32 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 					break;
 			}
 
-			ExtraBehavior();
-
-			Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
-
-			// Non-symmetric rotation (symmetric is just in this if condition here)
-			if (CurrentFlailState == FlailState.Ricochet || CurrentFlailState == FlailState.Dropping)
+			if (ExtraBehavior())
 			{
-				if (Projectile.velocity.Length() > 1f)
-					Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + Projectile.velocity.X * 0.1f;
+				Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
+
+				// Non-symmetric rotation (symmetric is just in this if condition here)
+				if (CurrentFlailState == FlailState.Ricochet || CurrentFlailState == FlailState.Dropping)
+				{
+					if (Projectile.velocity.Length() > 1f)
+						Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + Projectile.velocity.X * 0.1f;
+					else
+						Projectile.rotation += Projectile.velocity.X * 0.1f;
+				}
 				else
-					Projectile.rotation += Projectile.velocity.X * 0.1f;
-			}
-			else
-			{
-				Vector2 vectorTowardsPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
-				Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.ToRadians(270f);
-			}
+				{
+					Vector2 vectorTowardsPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
+					Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.ToRadians(270f);
+				}
 
-			Projectile.timeLeft = 2;
-			Owner.heldProj = Projectile.whoAmI;
-			Owner.SetDummyItemTime(2);
-			Owner.itemRotation = Projectile.DirectionFrom(Owner.MountedCenter).ToRotation();
-			if (Projectile.Center.X < Owner.MountedCenter.X)
-				Owner.itemRotation += MathHelper.Pi;
-			Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+				Projectile.timeLeft = 2;
+				Owner.heldProj = Projectile.whoAmI;
+				Owner.SetDummyItemTime(2);
+				Owner.itemRotation = Projectile.DirectionFrom(Owner.MountedCenter).ToRotation();
+				if (Projectile.Center.X < Owner.MountedCenter.X)
+					Owner.itemRotation += MathHelper.Pi;
+				Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+			}
 		}
 
 		public override bool OnTileCollide(Vector2 oldVelocity)
@@ -544,7 +547,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			// By default, maces have afterimages when launched.
 			// This can still be disabled via config or set individually by the projectile.
 			// (Does not use utils due to set trail length conditions)
-			if (CurrentFlailState == FlailState.LaunchingForward && CalamityConfig.Instance.Afterimages && AfterimageLength > 0)
+			if (CurrentFlailState == FlailState.LaunchingForward && CalamityClientConfig.Instance.Afterimages && AfterimageLength > 0)
 			{
 				Texture2D maceTex = TextureAssets.Projectile[Type].Value;
 				Vector2 drawOrigin = new Vector2(maceTex.Width * 0.5f, maceTex.Height * 0.5f);

@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 orig(self);
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<MarniteArchitectToga>();
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<MarniteArchitectToga>();
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<MarniteArchitectHeadgear>() && player.armor[1].type == ItemType<MarniteArchitectToga>();
         public bool IsPartOfSet(Item item) => item.type == ItemType<MarniteArchitectHeadgear>() ||
                 item.type == ItemType<MarniteArchitectToga>();
@@ -138,14 +138,14 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/MarniteArchitect/MarniteArchitectToga_Legs", EquipType.Legs, this);
         }
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
         }
 
@@ -205,7 +205,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void PostUpdateMiscEffects()
         {
-            if (!setEquipped && Player.mount.Type == ModContent.MountType<MarniteLift>() && Player.mount.Active)
+            if (!setEquipped && Player.mount.Type == MountType<MarniteLift>() && Player.mount.Active)
                 Player.mount.Dismount(Player);
 
             if (mounted)
@@ -366,9 +366,9 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             MountData.playerHeadOffset = 4;
 
             //Sprites
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
-                MountData.frontTextureGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Armor/MarniteArchitect/MarniteLiftFire");
+                MountData.frontTextureGlow = Request<Texture2D>("CalamityMod/Items/Armor/MarniteArchitect/MarniteLiftFire");
             }
         }
 

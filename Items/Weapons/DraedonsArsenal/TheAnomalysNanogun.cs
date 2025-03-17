@@ -31,12 +31,13 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.height = 44;
             Item.damage = 1675;
             Item.knockBack = 4.5f;
-            Item.useTime = Item.useAnimation = AnomalysNanogunHoldout.PlasmaFireTimer;
+            Item.useAnimation = Item.useTime = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<AnomalysNanogunHoldout>();
             Item.UseSound = null;
+            Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();

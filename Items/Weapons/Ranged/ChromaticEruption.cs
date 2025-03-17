@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,8 +20,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.width = 64;
-            Item.height = 34;
+            Item.width = 166;
+            Item.height = 60;
             Item.damage = 94;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 6;
@@ -50,9 +51,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ChromaticEruptionHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
         }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/ChromaticEruptionGlow").Value);
 
         public override void AddRecipes()
         {
@@ -60,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<WildfireBloom>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentVortex, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

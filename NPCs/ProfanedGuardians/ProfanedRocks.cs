@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 6; i++)
@@ -326,7 +326,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
 
             if (!NPC.dontTakeDamage)
-                NPC.DrawBackglow(Color.Orange, 4f, SpriteEffects.None, frame, screenPos, texture);
+                NPC.DrawBackglow(Color.Orange.MultiplyRGBA(new Color(255, 255, 255, 0)), 4f, SpriteEffects.None, frame, screenPos, texture);
 
             spriteBatch.Draw(texture, drawPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0f);
 
@@ -375,7 +375,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int npcType = (int)NPC.ai[2];
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedRocksGore" + npcType.ToString()).Type, NPC.scale);

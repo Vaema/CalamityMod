@@ -55,11 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Multiplayer syncing every second.
             if (Projectile.timeLeft % 60 == 0)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam >= 10)
-                    Projectile.netSpam = 9;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -172,14 +168,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             float rotation = Projectile.rotation + MathHelper.PiOver2;
             Vector2 origin = texture.Size() * 0.5f;
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, ColorTrailFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 50);
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < 3; i++)
                 {

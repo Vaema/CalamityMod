@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public static int Lifetime = 950;
@@ -89,13 +89,9 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
         }
-
-        public override void OnKill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.rand.NextBool())
-            {
-                Item.NewItem(Projectile.GetSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<WulfrumKnife>());
-            }
+            SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -119,7 +115,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float opacitey = StealthEffectOpacity;
 
             if (Projectile.Calamity().stealthStrike)

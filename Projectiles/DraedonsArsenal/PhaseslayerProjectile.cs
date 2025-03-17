@@ -63,8 +63,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 13;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 13;
         }
 
         public override void SetDefaults()
@@ -132,6 +132,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 bool hasCharge = modItem.Charge > 0f;
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the effect is capped separately
                     // The distance ratio ranges from 0 (your mouse is directly on the player) to 1 (your mouse is at the max range considered, or any further distance).
                     float mouseDistance = Projectile.Distance(Main.MouseWorld);
                     float distRatio = Utils.GetLerpValue(0f, MaximumMouseRange, mouseDistance, true);
@@ -144,10 +145,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     // Also flag for netcode sync if applicable (this is the only way the sword can rotate in multiplayer).
                     float newRotation = Projectile.rotation.AngleLerp(player.AngleTo(Main.MouseWorld), aimResponsiveness);
                     if (Projectile.rotation != newRotation)
-                    {
-                        Projectile.netUpdate = true;
-                        Projectile.netSpam = 0; // You cannot stop Phaseslayer from sending packets.
-                    }
+                        Projectile.ForceNetUpdate(); // You cannot stop Phaseslayer from sending packets.
                     Projectile.rotation = newRotation;
                 }
 
@@ -296,7 +294,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBlade").Value;
-            Texture2D hiltTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D hiltTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (IsSmall)
                 bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBladeSmall").Value;
 

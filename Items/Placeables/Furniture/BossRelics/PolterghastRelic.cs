@@ -14,10 +14,9 @@ namespace CalamityMod.Items.Placeables.Furniture.BossRelics
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.BossRelics.PolterghastRelic>(), 0);
             Item.width = 30;
             Item.height = 40;
-            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Master;
             Item.master = true; // This makes sure that "Master" displays in the tooltip, as the rarity only changes the item name color
-            Item.value = Item.buyPrice(0, 5);
+            Item.value = Item.sellPrice(gold: 1);
         }
     }
 }

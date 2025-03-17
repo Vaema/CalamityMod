@@ -59,6 +59,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
                 AddIngredient<CosmiliteBar>(7).
                 AddIngredient<AscendantSpiritEssence>(2).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<GodSlayerChestplate>()).
                 Register();
         }
     }

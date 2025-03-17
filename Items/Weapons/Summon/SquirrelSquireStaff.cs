@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,48 +11,71 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SquirrelSquireStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public static float ProjectileVelocity = 20f;
+        public static int TimeBeforeFalling = 30;
+        public static float DistanceToMortarShoot = 240f;
+        public static int ProjectileTimeAlive = 180;
+        public static float ProjectileGravity = 0.5f;
+        public static int ProjectileAoERadiusSize = 24;
+
+        public override void SetStaticDefaults() => Item.staff[Type] = true;
+
         public override void SetDefaults()
         {
-            Item.width = 52;
-            Item.height = 52;
             Item.damage = 8;
-            Item.mana = 10;
-            Item.useTime = Item.useAnimation = 35;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
+            Item.DamageType = DamageClass.Summon;
+            Item.shoot = ModContent.ProjectileType<SquirrelSquireMinion>();
             Item.knockBack = 0.5f;
+
+            Item.useAnimation = Item.useTime = 15;
+            Item.mana = 10;
+            Item.width = 46;
+            Item.height = 52;
+            Item.noMelee = true;
+            Item.sentry = true;
+            Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item44;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<SquirrelSquireMinion>();
-            Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Summon;
-            Item.sentry = true;
+
+            // This doesn't do anything relevant, it's just so it can be held like a staff.
+            Item.shootSpeed = 1f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
-                YOffset += 6;
-                position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
-                int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 30f);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+            // Find the base farthest position
+            Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
 
-                player.UpdateMaxTurrets();
-                //projectile.ai[1] is attack cooldown.  Setting it here prevents immediate attacks
+            // Push the squirrel away from collision in all directions if applicable
+            while (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) 
+            {
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
+                    initialSpawn.X += 1f;
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y -= 1f;
+                // Be sure to not infinite loop
+                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
+                    initialSpawn.Y += 1f;
             }
+
+            Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            player.UpdateMaxTurrets();
             return false;
         }
 
-        //in case you lose it and want another for some bizzare reason
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.Acorn).
                 AddTile(TileID.WorkBenches).
                 Register();

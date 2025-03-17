@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 50;
+            Projectile.timeLeft = 20;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -52,25 +52,10 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 20; i++)
             {
-                int projType = Main.rand.Next(0, 3);
-                int inkType;
-                switch (projType)
-                {
-                    case 0:
-                        inkType = ModContent.ProjectileType<InkCloud>();
-                        break;
-                    case 1:
-                        inkType = ModContent.ProjectileType<InkCloud2>();
-                        break;
-                    default:
-                        inkType = ModContent.ProjectileType<InkCloud3>();
-                        break;
-                }
                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
-                damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
-                int inkID = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), inkType, damage, 7, Projectile.owner);
-                Main.projectile[inkID].timeLeft += Main.rand.Next(-20, 25);
+                int inkID = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<InkCloud>(), damage, 7, Projectile.owner, Main.rand.Next(3) + 1);
+                Main.projectile[inkID].timeLeft += Main.rand.Next(-15, 15 + 1);
             }
             Projectile.Kill();
         }

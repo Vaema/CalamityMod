@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[Type] = 11;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 78;
             NPC.height = 78;
             NPC.defense = 50;
-            NPC.lifeMax = 5600;
+            NPC.lifeMax = 7000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

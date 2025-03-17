@@ -15,8 +15,8 @@ namespace CalamityMod.NPCs.SulphurousSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 42;
             NPC.height = 32;
             NPC.defense = 15;
-            NPC.lifeMax = 40;
+            NPC.lifeMax = 50;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 0, 80);
@@ -133,7 +133,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             else
             {
                 NPC.frameCounter += 0.15f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -166,7 +166,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Sulflounder").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Sulflounder2").Type, 1f);

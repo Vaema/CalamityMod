@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,11 +21,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             if (!Main.dedServ)
             {
                 ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment", AssetRequestMode.AsyncLoad);
             }
+            NPCID.Sets.PositiveNPCTypesExcludedFromDeathTally[Type] = true; // You can't kill this thing but just in case anyway
         }
 
         public override void SetDefaults()
@@ -42,6 +44,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.dontTakeDamage = true;
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
+            Banner = ModContent.NPCType<ProfanedEnergyBody>();
+            BannerItem = ModContent.ItemType<ProfanedEnergyBanner>();
         }
 
         public override void AI()
@@ -193,7 +197,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }

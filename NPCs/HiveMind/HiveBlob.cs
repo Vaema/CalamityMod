@@ -20,8 +20,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void SetStaticDefaults()
         {
-            this.HideFromBestiary();
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
@@ -48,6 +47,16 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCorruption,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HiveBlob")
+            });
         }
 
         public override void AI()
@@ -210,8 +219,8 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 vector2 = NPC.Center - screenPos;
             vector2 -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;

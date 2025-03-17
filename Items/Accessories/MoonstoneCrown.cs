@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Accessories
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
                 ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;

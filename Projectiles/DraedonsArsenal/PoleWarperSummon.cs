@@ -1,7 +1,9 @@
 ﻿using System;
 using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -23,10 +25,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -173,7 +175,23 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, 1, lightColor, 2);
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Color drawColor = Projectile.GetAlpha(lightColor);
+
+            if (CalamityClientConfig.Instance.Afterimages)
+            {
+                for (int i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    if (i % 2 == 0)
+                        continue;
+
+                    Color trailColor = Color.Lerp(drawColor, Color.Transparent, i / (float)Projectile.oldPos.Length) * 0.67f;
+                    Vector2 trailPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    Main.EntitySpriteDraw(tex, trailPos, null, trailColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+                }
+            }
+
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

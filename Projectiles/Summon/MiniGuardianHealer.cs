@@ -27,11 +27,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public bool isEmpowered => Main.player[Projectile.owner].Calamity().pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
@@ -314,9 +314,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 spawnPosition = player.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
                     Vector2 dustVelocity = (player.Center - spawnPosition) * 0.085f + owner.velocity;
 
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-
-                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(pscState));
+                    Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(!Main.dayTime));
                     dust.velocity = dustVelocity;
                     dust.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
                     dust.color = Color.Lerp(Color.LightCoral, Color.White, Projectile.ai[2] / 120 * Main.rand.NextFloat(0.65f, 1f));
@@ -331,7 +329,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (SpawnedFromPSC && !ForcedVanity && Owner.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

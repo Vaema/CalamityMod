@@ -30,6 +30,8 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ascendantInsignia = true;
             player.empressBrooch = true;
+            player.moveSpeed += 0.05f;
+            player.jumpSpeedBoost += 0.25f;
         }
 
         public override void AddRecipes()
@@ -37,8 +39,8 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.EmpressFlightBooster).
                 AddIngredient<EffulgentFeather>(5).
+                AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.SoulofFlight, 10).
-                AddIngredient<RuinousSoul>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

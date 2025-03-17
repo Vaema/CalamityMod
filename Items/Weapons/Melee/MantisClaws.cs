@@ -25,20 +25,19 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 20;
             Item.damage = 111;
             Item.DamageType = DamageClass.Melee;
-            Item.useStyle = ItemUseStyleID.HiddenAnimation;
-            Item.noUseGraphic = true;
-            Item.useAnimation = 25;
-            Item.noMelee = true;
-            Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 25;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<MantisClawHoldout>();
+
+            Item.useStyle = ItemUseStyleID.HiddenAnimation;
             Item.autoReuse = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override bool AltFunctionUse(Player player) => true;
     }
 }

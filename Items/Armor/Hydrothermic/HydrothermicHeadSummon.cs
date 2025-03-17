@@ -14,6 +14,8 @@ namespace CalamityMod.Items.Armor.Hydrothermic
     public class HydrothermicHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+        public static int VentDamage = 190;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -49,13 +51,11 @@ namespace CalamityMod.Items.Armor.Hydrothermic
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<HydrothermicVent>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Hydrothermic Vents spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(190);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(VentDamage);
 
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<HydrothermicVent>(), damage, 0f, Main.myPlayer, 38f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = VentDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.4f;
@@ -74,8 +74,9 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         {
             CreateRecipe().
                 AddIngredient<ScoriaBar>(7).
-                AddIngredient<CoreofHavoc>().
+                AddIngredient<EssenceofHavoc>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HydrothermicHeadRogue>()).
                 Register();
         }
     }

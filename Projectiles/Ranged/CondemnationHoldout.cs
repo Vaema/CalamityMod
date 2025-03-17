@@ -46,6 +46,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            // Does not run if the player stops channeling
+            if (Owner.CantUseHoldout())
+                return;
+
             // Frame 1 effects: Record how fast the Condemnation item being used is, to determine how fast to load arrows.
             if (FramesToLoadNextArrow == 0f)
             {
@@ -77,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SpawnArrowLoadedDust();
                     CurrentChargingFrames = 0f;
                     ++ArrowsLoaded;
-                    --FramesToLoadNextArrow;
+                    FramesToLoadNextArrow = MathHelper.Clamp(FramesToLoadNextArrow--, 1f, HeldItem.useAnimation);
 
                     // Play a sound for additional notification that an arrow has been loaded.
                     var loadSound = SoundEngine.PlaySound(SoundID.Item108 with { Volume = SoundID.Item108.Volume * 0.3f });

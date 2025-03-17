@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.GreatSandShark;
-using CalamityMod.World;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -41,22 +39,17 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<GreatSandShark>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<GreatSandShark>());
-
+            CalamityUtils.SpawnBossUsingItem<GreatSandShark>(player, SoundID.Roar);
             return true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[BIOME]", Main.zenithWorld ? CalamityUtils.GetTextValue("Biomes.AstralDesert") : Language.GetTextValue("Bestiary_Biomes.Desert"));
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[BIOME]", Main.zenithWorld ? CalamityUtils.GetTextValue("Biomes.AstralDesert.TownNPCDialogueName") : Language.GetTextValue("Bestiary_Biomes.Desert"));
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.AncientBattleArmorMaterial, 3).
-                AddIngredient<CoreofSunlight>().
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

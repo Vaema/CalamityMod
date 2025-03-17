@@ -13,11 +13,14 @@ namespace CalamityMod.Items.Weapons.Summon
     public class Sirius : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 6f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 62;
             Item.damage = 600;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.mana = 10;
             Item.knockBack = 10f;
             Item.shoot = ModContent.ProjectileType<SiriusMinion>();

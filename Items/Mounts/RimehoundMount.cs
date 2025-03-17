@@ -15,46 +15,50 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 192;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<RimehoundBuff>();
-            MountData.heightBoost = 36; //8
-            MountData.fallDamage = 0.3f;
-            MountData.runSpeed = 6.5f;
-            MountData.flightTimeMax = 0;
-            MountData.jumpHeight = 16;
-            MountData.acceleration = 0.21f;
-            MountData.jumpSpeed = 7f;
+
+            // Horizontal movement
+            MountData.runSpeed = 7.5f;
             MountData.swimSpeed = 3f;
+            MountData.acceleration = 0.24f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.jumpHeight = 16;
+            MountData.jumpSpeed = 7f;
+
+            // Frames and offsets
             MountData.totalFrames = 13;
+            MountData.heightBoost = 32;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
-                array[l] = 28;
-            }
-            array[1] = 26;
-            array[4] = 26;
-            array[7] = 26;
-            array[10] = 26;
+                array[l] = 30;
+
+            array[1] = 28;
+            array[4] = 28;
+            array[7] = 28;
+            array[10] = 28;
             MountData.playerYOffsets = array;
-            MountData.xOffset = -6;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = 15; //done
             MountData.playerHeadOffset = 38;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = -6;
+            MountData.yOffset = 13; //done
             MountData.standingFrameCount = 6;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
             MountData.runningFrameCount = MountData.standingFrameCount;
-            MountData.runningFrameDelay = 36; //36
+            MountData.runningFrameDelay = 36;
             MountData.runningFrameStart = MountData.standingFrameCount;
             MountData.inAirFrameCount = 1;
             MountData.inAirFrameDelay = MountData.standingFrameDelay;
             MountData.inAirFrameStart = MountData.standingFrameDelay;
-            MountData.idleFrameCount = MountData.standingFrameCount; //done
-            MountData.idleFrameDelay = MountData.standingFrameDelay; //done
+            MountData.idleFrameCount = MountData.standingFrameCount;
+            MountData.idleFrameDelay = MountData.standingFrameDelay;
             MountData.idleFrameStart = MountData.standingFrameStart;
             MountData.idleFrameLoop = true;
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.textureWidth = MountData.backTexture.Width();
                 MountData.textureHeight = MountData.backTexture.Height();

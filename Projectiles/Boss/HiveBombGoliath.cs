@@ -17,9 +17,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -48,9 +48,8 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frameCounter = 0;
             }
             if (Projectile.frame > 3)
-            {
                 Projectile.frame = 0;
-            }
+
             if (Math.Abs(Projectile.velocity.X) >= 3f || Math.Abs(Projectile.velocity.Y) >= 3f)
             {
                 float randDustXVel = 0f;
@@ -81,21 +80,22 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[smoke].noGravity = true;
                 Main.dust[smoke].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
             }
+
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.DrawBackglow(PlaguebringerGoliath.BackglowColor, 4f);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
 
             Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HiveBombGoliathGlow").Value;
-            Vector2 textureArea = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Projectile.type] / 2);
+            Vector2 textureArea = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Type] / 2);
             Vector2 drawArea = Projectile.Center - Main.screenPosition;
-            drawArea -= new Vector2(glow.Width, glow.Height / Main.projFrames[Projectile.type]) / 2f;
+            drawArea -= new Vector2(glow.Width, glow.Height / Main.projFrames[Type]) / 2f;
             drawArea += textureArea + new Vector2(0f, Projectile.gfxOffY);
             Color whiteColor = Color.White;
-            int height = glow.Height / Main.projFrames[Projectile.type];
+            int height = glow.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Main.spriteBatch.Draw(glow, drawArea, new Rectangle(0, drawStart, glow.Width, height), whiteColor, Projectile.rotation, textureArea, Projectile.scale, SpriteEffects.None, 0);
 
@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[plagued2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

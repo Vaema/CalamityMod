@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MelterAmp>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, ModContent.ProjectileType<MelterAmp>(), damage, knockback, player.whoAmI);
                 return false;
             }
             else

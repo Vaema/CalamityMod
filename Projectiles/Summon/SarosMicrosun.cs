@@ -14,9 +14,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -53,12 +53,12 @@ namespace CalamityMod.Projectiles.Summon
         public void DoAnimation()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
         }
 
         public override bool PreDraw(ref Color lightColor) // Makes the afterimages of the disk.
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

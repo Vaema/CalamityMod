@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.DraedonStructures.HostilePlagueTurret>());
 
-            Item.value = Item.buyPrice(0, 20, 0, 0);
+            Item.value = Item.sellPrice(gold: 4);
             Item.rare = ItemRarityID.Yellow;
         }
     }

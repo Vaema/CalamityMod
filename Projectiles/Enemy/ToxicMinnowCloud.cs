@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Enemy
         public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Enemy
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 

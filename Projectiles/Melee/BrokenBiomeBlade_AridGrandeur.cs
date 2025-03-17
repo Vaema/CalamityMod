@@ -41,10 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = BrokenBiomeBlade.HotAttunement_LocalIFrames;
         }
 
-        public override bool? CanDamage()
-        {
-            return Projectile.timeLeft <= 2; //Prevent spam click abuse
-        }
+        public override bool? CanDamage() => Projectile.timeLeft <= 2; // Prevent spam click abuse
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -59,9 +56,9 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (CanPogo && Main.myPlayer == Owner.whoAmI)
             {
-                Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * pogoStrenght; //Bounce
+                Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * pogoStrenght;
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
-                PogoCooldown = 30; //Cooldown
+                PogoCooldown = 30;
                 SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Projectile.position);
 
                 Vector2 hitPosition = Owner.Center + (direction * 84 * Projectile.scale);
@@ -92,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!initialized) //Initialization. Here its litterally just playing a sound tho lmfao
+            if (!initialized) // Play a sound on initialization
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 initialized = true;
@@ -111,25 +108,23 @@ namespace CalamityMod.Projectiles.Melee
 
             Lighting.AddLight(Projectile.Center, new Vector3(1f, 0.56f, 0.56f) * ShredRatio);
 
-            //Manage position and rotation
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            // Manage position and rotation
             direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             direction.Normalize();
             Projectile.rotation = direction.ToRotation();
             Projectile.Center = Owner.Center + (direction * 60);
 
-            //Scaling based on shred
-            Projectile.localNPCHitCooldown = BrokenBiomeBlade.HotAttunement_LocalIFrames - (int)(MathHelper.Lerp(0, BrokenBiomeBlade.HotAttunement_LocalIFrames - BrokenBiomeBlade.HotAttunement_LocalIFramesCharged, ShredRatio)); //Increase the hit frequency
-            Projectile.scale = 1f + (ShredRatio * 1f); //SWAGGER
-
+            // Size scales based on shred
+            Projectile.scale = 1.33f + (ShredRatio * 1f);
 
             if (Collision.SolidCollision(Owner.Center + (direction * 84 * Projectile.scale) - Vector2.One * 5f, 10, 10))
             {
                 Pogo();
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
-            //Make the owner look like theyre holding the sword bla bla
+            // Make the owner look like they're holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign(direction.X));
             Owner.itemRotation = direction.ToRotation();
@@ -147,27 +142,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
         }
 
-        //Since the iframes vary, adjust the damage to be consistent no matter the iframes. The true scaling happens between the BaseDamage and the FulLChargeDamage
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            float maxMultiplier = BrokenBiomeBlade.HotAttunement_FullChargeDamage / (float)BrokenBiomeBlade.HotAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)BrokenBiomeBlade.HotAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float maxMultiplier = BrokenBiomeBlade.HotAttunement_FullChargeDamage / (float)BrokenBiomeBlade.HotAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)BrokenBiomeBlade.HotAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
 
@@ -175,17 +149,17 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Main.myPlayer != Owner.whoAmI)
                 return;
-            // get lifted up
+            // Get lifted up
             if (PogoCooldown <= 0)
             {
-                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); //Sizzle
-                Shred += 62; //Augment the shredspeed
+                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); // Sizzle
+                Shred += 62; // Augment the shred speed
                 if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
+                    Owner.velocity.Y = -2f; // Get "stuck" into the enemy partly
 
                 // 17APR2024: Ozzatron: Broken Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
                 // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
-                Owner.GiveUniversalIFrames(BrokenBiomeBlade.HotAttunement_ShredIFrames);
+                Owner.GiveUniversalIFrames(BrokenBiomeBlade.HotAttunement_ShredPlayerIFrames);
 
                 PogoCooldown = 20;
             }
@@ -211,17 +185,17 @@ namespace CalamityMod.Projectiles.Melee
 
             Main.EntitySpriteDraw(handle, drawOffset, null, lightColor, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
 
-            //Turn on additive blending
+            // Turn on additive blending
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            //Update the parameters
+            // Update the parameters
             drawOrigin = new Vector2(0f, blade.Height);
             drawOffset = Owner.Center + (drawAngle.ToRotationVector2() * 32f * Projectile.scale) - Main.screenPosition;
 
             Main.EntitySpriteDraw(blade, drawOffset, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.9f, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
 
 
-            for (int i = 0; i < bladeAmount; i++) //Draw extra copies
+            for (int i = 0; i < bladeAmount; i++) // Draw extra copies
             {
                 blade = Request<Texture2D>("CalamityMod/Projectiles/Melee/BrokenBiomeBlade_AridGrandeurExtra").Value;
 
@@ -233,13 +207,13 @@ namespace CalamityMod.Projectiles.Melee
                 drawOrigin = new Vector2(0f, blade.Height);
 
 
-                Vector2 drawOffsetStraight = Owner.Center + direction * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 7) * 10 - Main.screenPosition; //How far from the player
-                Vector2 drawDisplacementAngle = direction.RotatedBy(MathHelper.PiOver2) * circleCompletion.ToRotationVector2().Y * (20 + 40 * ShredRatio); //How far perpendicularly
+                Vector2 drawOffsetStraight = Owner.Center + direction * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 7) * 10 - Main.screenPosition; // How far from the player
+                Vector2 drawDisplacementAngle = direction.RotatedBy(MathHelper.PiOver2) * circleCompletion.ToRotationVector2().Y * (20 + 40 * ShredRatio); // How far perpendicularly
 
                 Main.EntitySpriteDraw(blade, drawOffsetStraight + drawDisplacementAngle, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.8f, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
             }
 
-            //Back to normal
+            // Back to normal
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 

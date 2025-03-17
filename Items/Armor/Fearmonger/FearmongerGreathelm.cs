@@ -58,11 +58,12 @@ namespace CalamityMod.Items.Armor.Fearmonger
                 BuffID.Frostburn,
                 BuffID.CursedInferno,
                 BuffID.ShadowFlame, //doesn't do anything
-                BuffID.Daybreak, //doesn't do anything
+                ModContent.BuffType<Daybroken>(),
                 BuffID.Burning,
                 ModContent.BuffType<Shadowflame>(),
                 ModContent.BuffType<BrimstoneFlames>(),
                 ModContent.BuffType<HolyFlames>(),
+                ModContent.BuffType<Voidfrost>(),
                 ModContent.BuffType<GodSlayerInferno>(),
                 BuffID.Chilled,
                 BuffID.Frozen,
@@ -80,8 +81,8 @@ namespace CalamityMod.Items.Armor.Fearmonger
             CreateRecipe().
                 AddIngredient(ItemID.SpookyHelmet).
                 AddIngredient<CosmiliteBar>(8).
-                AddIngredient(ItemID.SoulofFright, 8).
                 AddIngredient<AscendantSpiritEssence>(2).
+                AddIngredient(ItemID.SoulofFright, 8).
                 AddTile<CosmicAnvil>().
                 Register();
         }

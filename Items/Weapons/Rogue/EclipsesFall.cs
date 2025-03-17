@@ -33,8 +33,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
-        public override float StealthDamageMultiplier => 1.05f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
@@ -52,9 +50,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<NightsGaze>().
-                AddIngredient<CoreofSunlight>(12).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<SolarVeil>(12).
                 AddTile<CosmicAnvil>().
                 Register();
         }

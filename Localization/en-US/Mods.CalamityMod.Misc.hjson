@@ -33,6 +33,14 @@ PlanetoidSchematicRecipeCondition: Place a schematic from the lab in the large p
 JungleSchematicRecipeCondition: Place a schematic from the lab deep within the jungle in your inventory at least once
 UnderworldSchematicRecipeCondition: Place a schematic from the lab near the edges of the underworld in your inventory at least once
 IceSchematicRecipeCondition: Place a schematic from the lab within the frozen caverns in your inventory at least once
+// Schematic Knowledge tooltips
+SchematicKnowledgeTooltip: You don't have sufficient knowledge to create this yet
+SchematicKnowledgeTooltip2: A specific schematic must be deciphered first
+Tier1KnowledgeTooltip: The Sunken Sea schematic must be deciphered first
+Tier2KnowledgeTooltip: The Planetoid schematic must be deciphered first
+Tier3KnowledgeTooltip: The Jungle schematic must be deciphered first
+Tier4KnowledgeTooltip: The Underworld schematic must be deciphered first
+Tier5KnowledgeTooltip: The Ice biome schematic must be deciphered first
 // Other CombatText uses and Item Messages
 ShiftToExpand: Hold SHIFT to see an expanded description
 LearnedSchematic: You learned how to create new things!
@@ -40,7 +48,10 @@ CragmawVibeCheck: Vibe check.
 AutocannonHot: OUCH! HOT!
 NoComputer: No decryption computer installed
 ArkParry: Parry!
+BurningSeaBurn: It burns...
 LightsWarning: I've gotta give you a flashing lights warning on this one
+NotSafe: Y O U  A R E  N O T  S A F E
+HecBoop: boop!
 ClockworkTick: Tick
 ClockworkTock: Tock
 SevensJackpot: Jackpot!!!
@@ -63,5 +74,16 @@ Polaris2: You give Polaris a small treat
 Polaris3: You tell Polaris she's a good girl
 Polaris4: You let Polaris cuddle your arm
 Polaris5: You pet Polaris
+Empress1: A fine day for mana consumption.
+Empress2: That's quite enough mana...
+Empress3: OH GREAT HEAVENS!
+Empress4: A
 // Point Blank
 PointBlank: Does extra damage to enemies shot at point-blank range
+// Charge
+Charge: Current Charge: {0}%
+//GFB Rogue Keys
+GFBRogueUppercase: Rogue
+GFBRougeUppercase: Rouge
+GFBRogueLowercase: rogue
+GFBRougeLowercase: rouge

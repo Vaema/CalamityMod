@@ -140,6 +140,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = AnimationFrames;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = TrailingMode;
             ProjectileID.Sets.TrailCacheLength[Type] = TrailCacheLength;

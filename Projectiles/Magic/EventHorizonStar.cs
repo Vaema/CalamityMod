@@ -16,8 +16,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -25,9 +26,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.tileCollide = false;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 25;
             Projectile.timeLeft = 300;
             Projectile.alpha = 180;
         }
@@ -122,18 +125,22 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<EventHorizonBlackhole>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack * 0.5f, Projectile.owner, 0f, 0f);
+            if (Projectile.localAI[0] >= 100)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<EventHorizonBlackhole>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack * 0.5f, Projectile.owner, 0f, 0f);
+                Projectile.Kill();
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), new Color(255, 255, 255, 127), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
         }
     }

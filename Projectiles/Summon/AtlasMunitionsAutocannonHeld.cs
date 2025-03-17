@@ -243,10 +243,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Notify other clients and the server if the cannon's firing state has changed. This sync cannot be blocked by the net spam threshold.
             if (wasFiring != IsFiring)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
         }
 
         public void ShootProjectiles()
@@ -282,6 +279,7 @@ namespace CalamityMod.Projectiles.Summon
             // Update the cannon direction.
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Atlas cannon
                 float interpolant = Utils.GetLerpValue(16f, 56f, Projectile.Distance(Main.MouseWorld), true) * Utils.GetLerpValue(3f, 10f, MathHelper.Distance(Main.MouseWorld.X, Owner.Center.X), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant).SafeNormalize(Vector2.UnitX * Owner.direction);
@@ -289,10 +287,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
                 Projectile.spriteDirection = Projectile.direction;
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Vector2 cannonEndOffset = Projectile.velocity * 26f + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.spriteDirection) * 2f;

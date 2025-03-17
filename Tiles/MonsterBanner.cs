@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.Abyss;
+﻿using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
@@ -29,6 +30,7 @@ namespace CalamityMod.Tiles
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = true;
+            TileID.Sets.MultiTileSway[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
@@ -62,7 +64,7 @@ namespace CalamityMod.Tiles
             }
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public static int GetBannerNPC(int style)
         {
@@ -99,9 +101,15 @@ namespace CalamityMod.Tiles
                 case 9:
                     npc = NPCType<MantisShrimp>();
                     break;
-                case 12:
-                    npc = NPCType<SeaUrchin>();
+                case 10:
+                    npc = NPCType<AuroraSpirit>();
                     break;
+                case 11:
+                    npc = NPCType<WildBumblefuck>(); // There's also the boss variant but I dont think we want banners to affect them?
+                    break;
+                /*case 12:
+                    npc = NPCType<Unused>(); - Formerly Sea Urchin
+                    break*/
                 case 13:
                     npc = NPCType<BoxJellyfish>();
                     break;
@@ -216,11 +224,17 @@ namespace CalamityMod.Tiles
                 case 50:
                     npc = NPCType<ProfanedEnergyBody>();
                     break;
+                case 51:
+                    npc = NPCType<Shroomble>();
+                    break;
                 case 52:
                     npc = NPCType<WulfrumDrone>();
                     break;
                 case 53:
                     npc = NPCType<Rotdog>();
+                    break;
+                case 54:
+                    npc = NPCType<CladCrab>();
                     break;
                 case 55:
                     npc = NPCType<CalamityEye>();
@@ -232,7 +246,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<ShockstormShuttle>();
                     break;
                 case 58:
-                    npc = NPCType<ThiccWaifu>();
+                    npc = NPCType<CloudElemental>();
                     break;
                 case 59:
                     npc = NPCType<Rimehound>();
@@ -249,6 +263,12 @@ namespace CalamityMod.Tiles
                 case 63:
                     npc = NPCType<Cnidrion>();
                     break;
+                /*case 64:
+                    npc = NPCType<Unused>(); - Formerly Sand Tortoise
+                    break*/
+                /*case 65:
+                    npc = NPCType<Unused>(); - Formerly Great Sand Shark
+                    break*/
                 case 66:
                     npc = NPCType<CrawlerAmethyst>();
                     break;
@@ -273,6 +293,12 @@ namespace CalamityMod.Tiles
                 case 73:
                     npc = NPCType<CrawlerCrystal>();
                     break;
+                /*case 74:
+                    npc = NPCType<Unused>(); - Formerly Sun Bat
+                    break*/
+                /*case 75:
+                    npc = NPCType<Unused>(); - Formerly Cosmic Elemental
+                    break*/
                 case 76:
                     npc = NPCType<Horse>();
                     break;
@@ -303,6 +329,9 @@ namespace CalamityMod.Tiles
                 case 85:
                     npc = NPCType<OverloadedSoldier>();
                     break;
+                /*case 86:
+                    npc = NPCType<Unused>(); - Formerly Phantom Debris
+                    break*/
                 case 87:
                     npc = NPCType<Bohldohr>();
                     break;
@@ -354,15 +383,18 @@ namespace CalamityMod.Tiles
                 case 103:
                     npc = NPCType<SeaFloaty>();
                     break;
-                case 104:
-                    npc = NPCType<BlindedAngler>();
-                    break;
+                /*case 104:
+                    npc = NPCType<Unused>(); - Formerly Blinded Angler
+                    break*/
                 case 105:
                     npc = NPCType<SeaMinnow>();
                     break;
                 case 106:
-                    npc = NPCType<SeaSerpent1>();
+                    npc = NPCType<SandProwlerNested>();
                     break;
+                /*case 107:
+                    npc = NPCType<Unused>(); - Formerly Giant Clam
+                    break*/
                 case 108:
                     npc = NPCType<Piggy>();
                     break;
@@ -381,6 +413,9 @@ namespace CalamityMod.Tiles
                 case 113:
                     npc = NPCType<Skyfin>();
                     break;
+                /*case 114:
+                    npc = NPCType<Unused>(); - Formerly Water Leech
+                    break*/
                 case 115:
                     npc = NPCType<AcidEel>();
                     break;
@@ -422,6 +457,12 @@ namespace CalamityMod.Tiles
                     break;
                 case 128:
                     npc = NPCType<BabyCannonballJellyfish>();
+                    break;
+                case 129:
+                    npc = NPCType<Sharkoon>();
+                    break;
+                case 130:
+                    npc = NPCType<Probesnout>();
                     break;
                 default:
                     break;

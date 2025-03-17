@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 mouseYDist *= mouseDistance;
                 float speedX4 = mouseXDist + (float)Main.rand.Next(-40, 41) * 0.02f;
                 float speedY5 = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

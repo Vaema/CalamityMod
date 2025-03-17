@@ -49,5 +49,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WaterConvertor>(), 0, 0f, Projectile.owner, 4f);
             }
         }
+
+        public override bool? CanCutTiles() => false;
     }
 }

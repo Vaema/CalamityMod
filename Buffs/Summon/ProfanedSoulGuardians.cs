@@ -26,7 +26,7 @@ namespace CalamityMod.Buffs.Summon
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().profanedCrystal && !player.Calamity().profanedCrystalBuffs)
                 tip = this.GetLocalizedValue("VanityDescription");
         }

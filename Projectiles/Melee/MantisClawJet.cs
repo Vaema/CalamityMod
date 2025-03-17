@@ -30,8 +30,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 40;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 40;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -50,16 +50,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1] = 40;
         }
 
-        int dir = 1;
-
         public override void OnSpawn(IEntitySource source)
         {
             Projectile.ai[1] = 40;
-        }
-
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
-
         }
 
         public override void AI()

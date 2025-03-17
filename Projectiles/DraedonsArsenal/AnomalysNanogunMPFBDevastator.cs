@@ -52,12 +52,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             // Animate the projectile
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Type];
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             int yPos = texture.Height / Main.projFrames[Type] * Projectile.frame;
             Main.EntitySpriteDraw(texture,
                 Projectile.position - Main.screenPosition,

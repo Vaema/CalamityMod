@@ -42,13 +42,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             int shardDamage = (int)(2.5f * damage);
             float shardKB = 2f * knockback;
             Vector2 offset = new Vector2(Main.rand.Next(-25, 26) * 0.05f, Main.rand.Next(-25, 26) * 0.05f);
-            Projectile shard = Projectile.NewProjectileDirect(source, position, velocity + offset, ProjectileID.BlackBolt, shardDamage, shardKB, player.whoAmI, 0f, 0f);
+            Projectile shard = Projectile.NewProjectileDirect(source, position, velocity + offset, ProjectileID.BlackBolt, shardDamage, shardKB, player.whoAmI);
             shard.timeLeft = (int)(shard.timeLeft * 1.25f);
 
             for (int i = 0; i < 4; i++)
             {
                 offset = new Vector2(Main.rand.Next(-45, 46) * 0.05f, Main.rand.Next(-45, 46) * 0.05f);
-                Projectile.NewProjectile(source, position, velocity + offset, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity + offset, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

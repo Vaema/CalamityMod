@@ -6,13 +6,14 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class BloomSlime : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -23,7 +24,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 30;
             NPC.defense = 25;
-            NPC.lifeMax = 1000;
+            NPC.lifeMax = 1500;
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.CorruptSlime;
             NPC.value = Item.buyPrice(0, 0, 25, 0);

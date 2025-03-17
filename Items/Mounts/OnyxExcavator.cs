@@ -19,27 +19,31 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 109;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<OnyxExcavatorBuff>();
-            MountData.heightBoost = 10;
-            MountData.fallDamage = 0f;
-            MountData.runSpeed = 8f;
-            MountData.flightTimeMax = 0;
-            MountData.jumpHeight = 5;
-            MountData.acceleration = 0.2f;
-            MountData.jumpSpeed = 3f;
+
+            // Horizontal movement
+            MountData.runSpeed = 5.5f;
             MountData.swimSpeed = 0.5f;
+            MountData.acceleration = 0.2f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.jumpHeight = 5;
+            MountData.jumpSpeed = 3f;
+
+            // Frames and offsets
             MountData.totalFrames = 6;
+            MountData.heightBoost = 10;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
                 array[l] = 6;
-            }
+
             array[1] = 4;
             array[5] = 4;
             MountData.playerYOffsets = array;
-            MountData.xOffset = 10;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = -1; //done
             MountData.playerHeadOffset = 10;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = 10;
+            MountData.yOffset = -1; //done
             MountData.standingFrameCount = 1;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
@@ -56,7 +60,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra");
                 MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra2");

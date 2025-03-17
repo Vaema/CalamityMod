@@ -11,7 +11,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -22,10 +22,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 60;
             NPC.height = 42;
             NPC.defense = 8;
-            NPC.lifeMax = 130;
+            NPC.lifeMax = 165;
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.RainbowSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.alpha = 105;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

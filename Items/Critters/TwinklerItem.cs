@@ -15,20 +15,9 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 24;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 40, 0);
-            //item.CloneDefaults(2004); //Lightning Bug item
+            Item.DefaultToCapturedCritter(ModContent.NPCType<Twinkler>());
             Item.bait = 40;
-            Item.makeNPC = (short)ModContent.NPCType<Twinkler>();
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
         }
     }

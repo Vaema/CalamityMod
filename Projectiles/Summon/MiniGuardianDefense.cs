@@ -30,11 +30,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             //dust and framing
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
 
             var psc = Owner.Calamity().profanedCrystal;
             if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 dustPos = new Vector2(Owner.Center.X + Main.rand.NextFloat(-10, 10), Owner.Center.Y + Main.rand.NextFloat(-10, 10));
                     Vector2 velocity = (Owner.Center - dustPos).SafeNormalize(Vector2.Zero);
                     velocity *= (Main.dayTime || !SpawnedFromPSC) ? 3f : 6.9f;
-                    var dust = Dust.NewDustPerfect(Owner.Center, ProvUtils.GetDustID((float)((Main.dayTime || !SpawnedFromPSC) ? Providence.BossMode.Day : Providence.BossMode.Night)), velocity, 0, default(Color), 2f);
+                    var dust = Dust.NewDustPerfect(Owner.Center, ProvUtils.GetDustID(!Main.dayTime && SpawnedFromPSC), velocity, 0, default(Color), 2f);
                     if (!Main.dayTime && SpawnedFromPSC)
                         dust.noGravity = true;
                 }
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Summon
                             if (!Main.rand.NextBool(3))
                                 continue;
 
-                            Dust dust = Dust.NewDustDirect(Owner.position, Owner.width, Owner.height, ProvUtils.GetDustID((float)((Main.dayTime || !SpawnedFromPSC) ? Providence.BossMode.Day : Providence.BossMode.Night)));
+                            Dust dust = Dust.NewDustDirect(Owner.position, Owner.width, Owner.height, ProvUtils.GetDustID(!Main.dayTime && SpawnedFromPSC));
                             dust.velocity = Main.rand.NextVector2Circular(3.5f, 3.5f);
                             dust.velocity.Y -= Main.rand.NextFloat(1f, 3f);
                             dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
@@ -282,7 +282,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (SpawnedFromPSC && !ForcedVanity)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Daedalus
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Daedalus/DaedalusBreastplate_Waist", EquipType.Waist, this);

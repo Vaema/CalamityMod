@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 48;
             Item.damage = 25;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 3f;
@@ -39,10 +39,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity.X = 0;
                 velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 30f);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 30f);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
                 //projectile.ai[1] is attack cooldown.  Setting it here prevents immediate attacks
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.SoulofLight, 5).
                 AddIngredient(ItemID.SoulofNight, 5).
                 AddIngredient(ItemID.FoodPlatter, 3).

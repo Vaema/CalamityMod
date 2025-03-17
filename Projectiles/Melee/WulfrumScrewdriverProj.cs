@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = TrueMeleeDamageClass.Instance;
             Projectile.width = 14;
             Projectile.height = 50;
             Projectile.tileCollide = false;
@@ -70,6 +70,7 @@ namespace CalamityMod.Projectiles.Melee
             if (EndLag == 0) //Initialization
             {
                 EndLag = (float)Math.Max(Owner.ActiveItem().useTime - MaxTime, 1);
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 TrueDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).ToRotation(); //Store this for the screw hit
                 Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4 * 0.15f);
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -212,7 +213,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             if (SmearTex == null)
                 SmearTex = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumLongThrust");

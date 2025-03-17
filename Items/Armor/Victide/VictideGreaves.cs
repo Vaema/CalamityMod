@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.Victide
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
                 ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlot] = true;

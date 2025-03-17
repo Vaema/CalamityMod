@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.PygmyNecklace).
                 AddIngredient(ItemID.SummonerEmblem).
                 AddIngredient(ItemID.HolyWater, 30).
-                AddIngredient<CoreofSunlight>(5).
+                AddIngredient<EssenceofSunlight>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

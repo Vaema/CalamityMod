@@ -11,7 +11,6 @@ namespace CalamityMod.Particles
         public Color InitialColor;
         public bool AffectedByGravity;
         public float fadeOut = 1;
-        public bool imporant;
         public bool glowCenter;
         public float RotationUse;
         public override bool SetLifetime => true;

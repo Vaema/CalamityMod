@@ -119,6 +119,7 @@ namespace CalamityMod.Projectiles.Ranged
             // The center of the player, taking into account if they have a mount or not.
             Vector2 ownerPosition = Owner.MountedCenter;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The vector between the player and the mouse.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - ownerPosition;
 
@@ -194,7 +195,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 firingVelocity = shootDirection.RotatedByRandom((0.2f * i) + 0.02f) * 5f * Main.rand.NextFloat(0.7f, 1.3f);
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<NorfleetComet>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, i, PUNISHMENTMODE ? 1 : 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<NorfleetComet>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, i, PUNISHMENTMODE ? 1 : 0);
                 }
 
                 NetUpdate();
@@ -321,12 +322,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        private void NetUpdate()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
+        private void NetUpdate() => Projectile.ForceNetUpdate(false);
 
         public override void OnSpawn(IEntitySource source)
         {

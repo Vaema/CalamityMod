@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 19;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 14;
-            Item.useTime = Item.useAnimation = 36;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 10f;
@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<FrostBolt>().
+                AddIngredient(ItemID.IceBlock, 30).
                 AddIngredient(ItemID.Feather, 3).
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient(ItemID.Cloud, 10).

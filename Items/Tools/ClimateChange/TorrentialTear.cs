@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.World;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -31,16 +32,19 @@ namespace CalamityMod.Items.Tools.ClimateChange
 
         public override bool? UseItem(Player player)
         {
+            // Only SinglePlayer and Server need to sync those parameters
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return true;
+
             if (!Main.raining)
             {
-                CalamityUtils.StartRain(true);
+                CalamityWorld.StartRain(adjustSeverity: true, worldSync: true);
             }
             else
             {
-                Main.raining = false;
+                CalamityWorld.StopRain(clearWeather: false, worldSync: true);
             }
 
-            CalamityNetcode.SyncWorld();
             return true;
         }
 

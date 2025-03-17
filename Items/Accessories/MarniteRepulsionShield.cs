@@ -15,7 +15,7 @@ using static CalamityMod.CalamityUtils;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Back)]
-    //Its not like its a renamed version of the bayonet, but i put this here more as a way to "refund" the item, so it doesnt end up rotting as an unloaded item.
+    //It's not like it's a renamed version of the bayonet, but I put this here more as a way to "refund" the item, so it doesnt end up rotting as an unloaded item.
     [LegacyName("MarniteBayonet")]
     public class MarniteRepulsionShield : ModItem, ILocalizedModType
     {
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Blue;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
-            Item.defense = 2;
+            Item.defense = 4;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -37,12 +37,11 @@ namespace CalamityMod.Items.Accessories
 
             if (player.whoAmI == Main.myPlayer)
             {
-                int baseDamage = player.ApplyArmorAccDamageBonusesTo(5);
                 var source = player.GetSource_Accessory(Item);
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<MarniteRepulsionHitbox>()] < 1)
                 {
-                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), baseDamage, 10f, Main.myPlayer);
-                    hitbox.originalDamage = baseDamage;
+                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), 5, 12f, Main.myPlayer);
+                    hitbox.originalDamage = 5;
                 }
             }
         }
@@ -91,6 +90,7 @@ namespace CalamityMod.Items.Accessories
             Projectile.penetrate = -1;
             Projectile.timeLeft = 700;
             Projectile.tileCollide = false;
+            Projectile.ArmorPenetration = 20;
             Projectile.netImportant = true;
         }
 

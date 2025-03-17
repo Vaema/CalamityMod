@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
+using CalamityMod.Packets;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,8 +24,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-            Main.npcCatchable[NPC.type] = true;
+            Main.npcFrameCount[Type] = 9;
+            Main.npcCatchable[Type] = true;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 16;
@@ -166,11 +167,7 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                netMessage.Write(NPC.whoAmI);
-                netMessage.Write(phase);
-                netMessage.Send();
+                SyncAndroombaAIPacket.Send(this, phase: phase);
             }
         }
 
@@ -184,7 +181,7 @@ namespace CalamityMod.NPCs.TownNPCs
             npc.ai[0] = phase;
             npc.ai[1] = 0;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 
@@ -197,7 +194,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             npc.ai[3] = solutionType;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 
@@ -259,7 +256,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
             Texture2D glowmask = FaceTextures[0].Value;
             // If the solution is from Calamity or vanilla, set the glowmask to grab the appropriate texture from the texture array
             if (NPC.ai[3] <= 8)

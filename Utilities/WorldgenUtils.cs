@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
@@ -38,6 +39,24 @@ namespace CalamityMod
                         WorldGen.OreRunner(tilesX, tilesY, WorldGen.genRand.Next(strengthMin, strengthMax), WorldGen.genRand.Next(3, 8), (ushort)type);
                 }
             }
+        }
+
+        /// <summary>
+        /// Generates clusters of ore across the world based on various requirements and with various strengths/frequencies.
+        /// This overload takes a list of tile IDs instead of an array.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="frequency"></param>
+        /// <param name="verticalStartFactor"></param>
+        /// <param name="verticalEndFactor"></param>
+        /// <param name="strengthMin"></param>
+        /// <param name="strengthMax"></param>
+        /// <param name="convertibleTiles"></param>
+        public static void SpawnOre(int type, double frequency, float verticalStartFactor, float verticalEndFactor, int strengthMin, int strengthMax, List<int> convertibleTiles)
+        {
+            int[] convertedArray = new int[convertibleTiles.Count];
+            convertibleTiles.CopyTo(convertedArray);
+            SpawnOre(type, frequency, verticalStartFactor, verticalEndFactor, strengthMin, strengthMax, convertedArray);
         }
 
         /// <summary>
@@ -116,10 +135,19 @@ namespace CalamityMod
         /// <summary>
         /// Settles all liquids in the world.
         /// </summary>
-        public static void SettleWater()
+        public static void SettleWater(bool convertToLava = true)
         {
             Liquid.worldGenTilesIgnoreWater(true);
-            Liquid.QuickWater(3);
+            if (convertToLava)
+                Liquid.QuickWater(3);
+            else
+            {
+                int storedWaterLine = GenVars.waterLine;
+                GenVars.waterLine = Main.maxTilesY;
+                Liquid.QuickWater(3);
+                GenVars.waterLine = storedWaterLine;
+            }
+            
             WorldGen.WaterCheck();
 
             Liquid.quickSettle = true;
@@ -207,7 +235,11 @@ namespace CalamityMod
             paddedArea.Inflate(padding, padding);
 
             // If Fargo's Mutant Mod is loaded, add to their Indestructible Rectangle list, which prevents structures from being trashed by Fargo's terrain tools.
-            Mod fargos = CalamityMod.Instance.fargos;
+            Mod fargos = ExternalMods.fargos;
+            paddedArea.X *= 16;
+            paddedArea.Y *= 16;
+            paddedArea.Width *= 16;
+            paddedArea.Height *= 16;
             fargos?.Call("AddIndestructibleRectangle", paddedArea);
         }
     }

@@ -30,15 +30,15 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color color = Color.Goldenrod;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Color.Gold * 0.2f, Projectile.rotation, origin, Projectile.scale * 1.6f, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(texture, drawPosition, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.ExitShaderRegion();
 
             return false;
         }

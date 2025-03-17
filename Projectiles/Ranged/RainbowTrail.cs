@@ -6,7 +6,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class RainbowTrail : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/RainbowFront";
+        public override string Texture => "Terraria/Images/Projectile_251";
 
         public override void SetDefaults()
         {

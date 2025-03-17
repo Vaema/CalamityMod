@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = Item.height = 44;
             Item.damage = 40;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
+                position = player.ClampedMouseWorld();
                 velocity = Vector2.Zero;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))

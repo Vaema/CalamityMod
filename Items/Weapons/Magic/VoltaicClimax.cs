@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int numOrbs = 9;
-            Vector2 clickPos = Main.MouseWorld;
+            Vector2 clickPos = player.ClampedMouseWorld();
             float orbSpeed = 14f;
             Vector2 vel = Main.rand.NextVector2CircularEdge(orbSpeed, orbSpeed);
             for (int i = 0; i < numOrbs; i++)
@@ -60,6 +60,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<MagneticMeltdown>().
+                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddTile<CosmicAnvil>().
                 Register();

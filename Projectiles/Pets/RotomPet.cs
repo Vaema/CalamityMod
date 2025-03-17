@@ -26,10 +26,10 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-10f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Pets
         public override bool PreDraw(ref Color lightColor)
         {
             Drawing(lightColor,
-                Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
+                Terraria.GameContent.TextureAssets.Projectile[Type].Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomDex").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomWash").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomHeat").Value,
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Pets
                     break;
             }
 
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -60,8 +60,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Razorpine).
                 AddIngredient(ItemID.LeafBlower).
-                AddIngredient<UelibloomBar>(7).
-                AddIngredient<DarkPlasma>().
+                AddIngredient<UelibloomBar>(5).
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

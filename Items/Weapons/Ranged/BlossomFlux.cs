@@ -7,12 +7,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class BlossomFlux : ModItem, ILocalizedModType
+    public class BlossomFlux : LegendaryItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override Color? TooltipExtensionColor => new Color(109, 161, 84);
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -63,11 +64,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<SporeBomb>(), (int)(damage * 3.15f), knockback * 60f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SporeBomb>(), (int)(damage * 3.15f), knockback * 60f, player.whoAmI);
             }
             else
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<LeafArrow>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LeafArrow>(), damage, knockback, player.whoAmI);
             }
             return false;
         }

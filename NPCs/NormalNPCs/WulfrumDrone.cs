@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -70,12 +70,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 4;
-            NPC.lifeMax = 21;
+            NPC.lifeMax = 27;
             NPC.knockBackResist = 0.35f;
-            NPC.value = Item.buyPrice(0, 0, 1, 20);
+            NPC.value = Item.buyPrice(0, 0, 0, 80);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumDroneBanner>();
@@ -108,16 +108,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             Player player = Main.player[NPC.target];
 
             bool farFromPlayer = NPC.Distance(player.Center) > 960f;
-            bool obstacleInFrontOfPlayer = Main.remixWorld ? false : !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
 
-            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || farFromPlayer || obstacleInFrontOfPlayer || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || farFromPlayer || player.dead || !player.active)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
                 farFromPlayer = NPC.Distance(player.Center) > 960f;
-                obstacleInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
                 // Fly away if there is no living target, or the closest target is too far away.
-                if (player.dead || !player.active || farFromPlayer || obstacleInFrontOfPlayer)
+                if (player.dead || !player.active || farFromPlayer)
                 {
                     if (FlyAwayTimer > 420)
                     {
@@ -222,9 +220,9 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[NPC.type] / 2);
+            int frame = (int)(NPC.frameCounter / 5) % (Main.npcFrameCount[Type] / 2);
             if (Supercharged)
-                frame += Main.npcFrameCount[NPC.type] / 2;
+                frame += Main.npcFrameCount[Type] / 2;
 
             NPC.frame.Y = frame * frameHeight;
         }

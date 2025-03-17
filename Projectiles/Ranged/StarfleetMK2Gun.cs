@@ -102,7 +102,6 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             ModContent.ProjectileType<PlasmaBlast>(),
                             ModContent.ProjectileType<AstralStar>(),
-                            ModContent.ProjectileType<GalacticaComet>(),
                             ProjectileID.StarCannonStar,
                             ProjectileID.Starfury
                         });

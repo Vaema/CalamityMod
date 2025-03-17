@@ -8,6 +8,7 @@ namespace CalamityMod.Projectiles.Summon
     public class IceClasperSummonProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public override string Texture => "CalamityMod/Projectiles/Melee/DarkIceZero";
 
         public override void SetStaticDefaults()
         {

@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
 {
+    // Despite what it may seem with its name, this dye is intended to be based on Cryogen, not the Cryonic set
     public class CryonicDye : BaseDye
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CryonicDyeShader"), "DyePass").
@@ -21,7 +22,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.Pink;
-            Item.value = Item.sellPrice(0, 0, 75, 0);
+            Item.value = Item.sellPrice(silver: 75);
         }
 
         public override void AddRecipes()

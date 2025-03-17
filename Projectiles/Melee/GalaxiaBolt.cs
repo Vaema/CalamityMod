@@ -15,14 +15,17 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
 
         public ref float Hue => ref Projectile.ai[0];
-        public ref float HomingStrenght => ref Projectile.ai[1];
+        public ref float HomingStrength => ref Projectile.ai[1];
+        public ref float ShouldDelayHoming => ref Projectile.ai[2];
+        public bool StrongerHoming = false;
 
         Particle Head;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -55,10 +58,10 @@ namespace CalamityMod.Projectiles.Melee
             if (target == null)
                 target = Projectile.Center.ClosestNPCAt(812f, true);
 
-            else if (CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2) //Home in
+            else if ((CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2 || StrongerHoming) && (ShouldDelayHoming != 1f || Projectile.timeLeft < 60)) //Home in
             {
                 float idealDirection = Projectile.AngleTo(target.Center);
-                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrenght);
+                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrength);
                 Projectile.velocity = updatedDirection.ToRotationVector2() * Projectile.velocity.Length() * 0.995f;
             }
 
@@ -80,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

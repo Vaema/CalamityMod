@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Magic
         public int time = 0;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 14;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
             float drawRotation = Projectile.rotation;
             Vector2 rotationPoint = texture.Size() * 0.5f;
 
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(Color.Cyan, Color.White, 0.7f) * 0.6f, 1);
+            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(Color.Cyan, Color.White, 0.7f) * 0.6f, 1);
             Main.EntitySpriteDraw(texture, drawPosition, null, mainColor with { A = 0 }, drawRotation, rotationPoint, new Vector2(0.5f, 1.4f) * 0.025f * Projectile.scale, SpriteEffects.None);
             Main.EntitySpriteDraw(texture, drawPosition, null, Color.White with { A = 0 }, drawRotation, rotationPoint, new Vector2(0.5f, 1.4f) * 0.02f * Projectile.scale, SpriteEffects.None);
             return false;

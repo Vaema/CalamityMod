@@ -39,6 +39,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useTurn = false;
             Item.knockBack = 7f;
 
+            Item.noMelee = true;
             Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -60,6 +61,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile blade = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             blade.rotation = blade.AngleTo(Main.MouseWorld);
             blade.netUpdate = true;
             return false;

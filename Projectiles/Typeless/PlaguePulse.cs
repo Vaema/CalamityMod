@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Typeless
         public ref float time => ref Projectile.ai[0];
         public ref float radius => ref Projectile.ai[1];
         public float maxRadius = 300;
-        public int startDamage;
+        public bool visible;
         public override void SetDefaults()
         {
             Projectile.width = 96;
@@ -36,23 +36,22 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            if (time == 0)
-                startDamage = Projectile.damage;
-
             Player player = Main.player[Projectile.owner];
+            visible = player.Calamity().toxicHeartVisuals;
             if (Projectile.ai[2] == 0)
                 Projectile.Center = player.MountedCenter;
             if (Projectile.ai[2] == 1)
             {
-                maxRadius = 200;
+                maxRadius = Main.rand.Next(150, 250 + 1);
+                Projectile.extraUpdates = 2;
             }
 
-            if (Main.rand.NextBool(5))
+            if (Main.rand.NextBool(5) && visible)
             {
                 DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(radius, radius), Vector2.Zero, (Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green) * 0.6f, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.23f), 0f, 20);
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(3) && visible)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -70,10 +69,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.85f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.4f;
+            int hitsToMinMult = 6;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -83,15 +82,33 @@ namespace CalamityMod.Projectiles.Typeless
             if ((target.life <= 0 && target.realLife == -1))
             {
                 player.Heal(10);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), (int)(startDamage * 0.8f), 0f, Projectile.owner, 0, 0, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), (int)(Projectile.damage * 0.9f), 0f, Projectile.owner, 0, Projectile.ai[1] + 1, 1);
+            }
+            if (target.CanBeMoved()) // Always push targets away from the player
+            {
+                Vector2 pushVelocity = Utils.DirectionTo(player.Center, target.Center) * 5;
+                target.velocity = pushVelocity;
             }
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
 
-            Texture2D rexture = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResHollowCircleHardEdge").Value;
-            Main.EntitySpriteDraw(rexture, Projectile.Center - Main.screenPosition, null, (Color.Green * Utils.Remap(time, 30, 60, 0.35f, 0, true)) with { A = 0 }, Projectile.rotation, rexture.Size() * 0.5f, (Utils.Remap(time, 0, 60, 1, 6, true) / 21) * (maxRadius == 300 ? 1 : 0.7f), SpriteEffects.None, 0);
+            Texture2D rexture = ModContent.Request<Texture2D>("CalamityMod/Particles/SoftRoundExplosion").Value;
+            Texture2D fexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Color color = (Color.Green * Utils.Remap(time, 30, 60, 0.35f, 0, true)) with { A = 0 } * (visible ? 1f : 0.25f);
+            float scale = (Utils.Remap(time, 0, 60, 1, 6, true) / 21) * (maxRadius == 300 ? 1 : 0.7f);
+            Vector2 pos = Projectile.Center - Main.screenPosition;
+            Main.EntitySpriteDraw(rexture, pos, null, color, Projectile.rotation - Main.GlobalTimeWrappedHourly * 1.5f, rexture.Size() * 0.5f, scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rexture, pos, null, color, Projectile.rotation + Main.GlobalTimeWrappedHourly * 3, rexture.Size() * 0.5f, scale * 0.95f, SpriteEffects.None, 0);
+            if (Projectile.ai[2] == 1)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    float pulseScale = (scale * 6 + 0.11f) - i * 0.022f;
+                    Main.EntitySpriteDraw(fexture, pos, null, color, Projectile.rotation, fexture.Size() * 0.5f, pulseScale, SpriteEffects.None, 0);
+                }
+            }
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);

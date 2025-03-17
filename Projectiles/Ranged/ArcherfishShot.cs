@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -59,6 +60,15 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Wet, 240);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Wet, 120);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.Wet, 120);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        }
     }
 }

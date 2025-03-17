@@ -57,8 +57,7 @@ namespace CalamityMod.Projectiles.Typeless
                         continue;
 
                     int healQuantity = (int)owner.GetBestClassDamage().ApplyTo(ChlorophyteArmorSetChange.AmountToHealPerPulse);
-                    player.statLife += healQuantity;
-                    player.HealEffect(healQuantity);
+                    player.HealPlayer(healQuantity);
                     player.Calamity().ChlorophyteHealDelay = ChlorophyteArmorSetChange.DelayBetweenHeals;
                 }
             }
@@ -73,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color drawColor = Projectile.GetAlpha(lightColor) * 0.4f;
             for (int i = 0; i < 8; i++)
             {

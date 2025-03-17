@@ -13,26 +13,26 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 58;
             Item.height = 56;
-            Item.damage = 280;
+            Item.damage = 190;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
-            Item.useTime = 14;
-            Item.useAnimation = 14;
+            Item.mana = 10;
+            Item.useTime = 12;
+            Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 8f;
+            Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item72;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Shadowbolt>();
-            Item.shootSpeed = 6f;
+            Item.shootSpeed = 5f;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.ShadowbeamStaff).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient<RuinousSoul>(2).
+                AddIngredient<ArmoredShell>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

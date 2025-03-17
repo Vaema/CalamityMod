@@ -4,7 +4,8 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.Items;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -34,8 +35,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 10;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -117,7 +118,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.12f + NPC.velocity.Length() / 120f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -246,20 +247,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            // Enrage at nighttime
-            bool enraged = false;
-            if (!Main.dayTime && !Main.remixWorld)
-            {
-                enraged = true;
-                NPC.Calamity().CurrentlyEnraged = true;
-            }
-
             bool phase1 = healerAlive;
 
             NPC.chaseable = !phase1;
 
             // Phase durations
-            float commanderGuardPhase2Duration = (bossRush || enraged) ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+            float commanderGuardPhase2Duration = bossRush ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
             float timeBeforeRocksRespawnInPhase2 = 90f;
             float throwRocksGateValue = 60f;
 
@@ -268,7 +261,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             // Charge variables
             float chargeVelocityMult = 0.25f;
-            float maxChargeVelocity = (bossRush || enraged) ? 25f : death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
+            float maxChargeVelocity = bossRush ? 25f : death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
             if (Main.getGoodWorld)
                 maxChargeVelocity *= 1.15f;
 
@@ -388,7 +381,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 }
             }
 
-            float moveVelocity = (bossRush || enraged) ? 24f : death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
+            float moveVelocity = bossRush ? 24f : death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
             if (Main.getGoodWorld)
                 moveVelocity *= 1.25f;
             if (healerAlive)
@@ -438,7 +431,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 // Lay a holy bomb every once in a while in phase 1 and while not doing the laser attack
                 if (!commanderUsingLaser)
                 {
-                    float projectileShootGateValue = (bossRush || enraged) ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+                    float projectileShootGateValue = bossRush ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= projectileShootGateValue)
                     {
@@ -508,7 +501,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     float shootMoltenBlastsGateValue = commanderGuardPhase2Duration / moltenBlastsDivisor;
                     if (NPC.ai[1] % shootMoltenBlastsGateValue == 0f && !commanderGoingLowOrHighInPhase2)
                     {
-                        float moltenBlastVelocity = (bossRush || enraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                        float moltenBlastVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                         int projTimeLeft = (int)(2400f / moltenBlastVelocity);
                         Vector2 velocity = Vector2.Normalize(player.Center - shootFrom) * moltenBlastVelocity;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -517,7 +510,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             int damage = NPC.GetProjectileDamage(type);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
                                 Main.projectile[proj].timeLeft = projTimeLeft;
                             }
                         }
@@ -615,7 +608,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 NPC.spriteDirection = Math.Sign(NPC.velocity.X);
 
                 NPC.ai[1] += 1f;
-                float phaseGateValue = (bossRush || enraged) ? 120f : death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
+                float phaseGateValue = bossRush ? 120f : death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
                 if (NPC.ai[1] >= phaseGateValue)
                 {
                     NPC.ai[0] = 3f;
@@ -636,7 +629,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         // Accelerate
                         if (NPC.velocity.Length() < maxChargeVelocity)
                         {
-                            float velocityMult = (bossRush || enraged) ? 1.04f : death ? 1.036667f : revenge ? 1.035f : expertMode ? 1.033333f : 1.03f;
+                            float velocityMult = bossRush ? 1.04f : death ? 1.036667f : revenge ? 1.035f : expertMode ? 1.033333f : 1.03f;
                             NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                             if (NPC.velocity.Length() > maxChargeVelocity)
                             {
@@ -645,11 +638,26 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
                         }
                     }
-                    else
+                    else if (NPC.localAI[2] == 1f)
                     {
                         // Charge towards target
-                        float inertia = (bossRush || enraged) ? 57f : death ? 63f : revenge ? 66f : expertMode ? 69f : 75f;
+                        float inertia = bossRush ? 57f : death ? 63f : revenge ? 66f : expertMode ? 69f : 75f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
+
+                        // Stop charging towards the player when within a certain distance
+                        if (NPC.Distance(player.Center) < 160f * NPC.scale)
+                            NPC.localAI[2] = 2f;
+                    }
+                    else
+                    {
+                        // Slow down
+                        if (NPC.Distance(player.Center) >= 240f * NPC.scale || NPC.localAI[2] == 3f)
+                        {
+                            if (NPC.localAI[2] != 3f)
+                                NPC.localAI[2] = 3f;
+
+                            NPC.velocity *= 0.98f;
+                        }
                     }
 
                     // Lay holy bombs while charging
@@ -729,14 +737,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.spriteDirection == 1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
-                Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
+                Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
                 Vector2 drawPos = NPC.Center - screenPos;
-                Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+                Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
                 int afterimageAmt = 5;
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -748,24 +756,19 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             afterimageColor = colorOverride.Value;
 
                         Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                         spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
                 }
 
                 Vector2 drawLocation = drawPos;
-                drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                 drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, colorOverride ?? NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
                 texture2D15 = Texture_Glow.Value;
                 Color timeBasedGlowColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-                if (NPC.Calamity().CurrentlyEnraged)
-                {
-                    texture2D15 = TextureNight_Glow.Value;
-                    timeBasedGlowColor = Color.Lerp(Color.White, Color.Cyan, 0.75f);
-                }
                 if (Main.zenithWorld)
                 {
                     texture2D15 = TextureNight_Glow.Value;
@@ -774,7 +777,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (colorOverride != null)
                     timeBasedGlowColor = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
@@ -786,13 +789,15 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             timeBasedAfterimageColor = colorOverride.Value;
 
                         Vector2 timeBasedAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        timeBasedAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        timeBasedAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         timeBasedAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                         spriteBatch.Draw(texture2D15, timeBasedAfterimagePos, NPC.frame, timeBasedAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedGlowColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                NPC.DrawBackglow(Main.zenithWorld ? Main.DiscoColor : new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetColorBasedOnEnrage(false, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects
@@ -860,14 +865,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 Vector2 shieldDrawPos = NPC.Center - screenPos;
                 shieldDrawPos -= new Vector2(shieldTexture.Width, shieldTexture.Height) * NPC.scale / 2f;
                 shieldDrawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                float minHue = NPC.Calamity().CurrentlyEnraged ? 0.4f : 0.06f;
+                float minHue = 0.06f;
                 float maxHue = minHue + 0.12f;
                 float opacityScaleDuringShieldDespawn = (TimeForShieldDespawn - NPC.localAI[1]) / TimeForShieldDespawn;
                 float scaleDuringShieldDespawnScale = 1.8f;
                 float scaleDuringShieldDespawn = (1f - opacityScaleDuringShieldDespawn) * scaleDuringShieldDespawnScale;
                 float colorScale = MathHelper.Lerp(0f, shieldOpacity, opacityScaleDuringShieldDespawn);
-                Color color = Main.hslToRgb(MathHelper.Lerp(NPC.Calamity().CurrentlyEnraged ? minHue : maxHue - minHue, maxHue, ((float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi) + 1f) * 0.5f), 1f, 0.5f) * colorScale;
-                Color color2 = Main.hslToRgb(MathHelper.Lerp(minHue, NPC.Calamity().CurrentlyEnraged ? maxHue : maxHue - minHue, ((float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.Pi * 3f) + 1f) * 0.5f), 1f, 0.5f) * colorScale;
+                Color color = Main.hslToRgb(MathHelper.Lerp(maxHue - minHue, maxHue, ((float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi) + 1f) * 0.5f), 1f, 0.5f) * colorScale;
+                Color color2 = Main.hslToRgb(MathHelper.Lerp(minHue, maxHue - minHue, ((float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.Pi * 3f) + 1f) * 0.5f), 1f, 0.5f) * colorScale;
                 color2.A = 0;
                 color *= 0.6f;
                 color2 *= 0.6f;
@@ -894,19 +899,21 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 shieldEffect.Parameters["shieldColor"].SetValue(color.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+
+                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale2 * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale2 * scaleMult * 0.95f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale * scaleMult * 0.95f, SpriteEffects.None, 0f);
 
-                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-                // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
-                Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
-                Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                {
+                    // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
+                    Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+                    Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                });
             }
 
             return false;
@@ -967,7 +974,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossT").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossT2").Type, 1f);

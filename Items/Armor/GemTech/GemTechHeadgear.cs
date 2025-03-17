@@ -61,13 +61,13 @@ namespace CalamityMod.Items.Armor.GemTech
             Item.height = 32;
             Item.defense = 14;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
         {
-            return body.type == ModContent.ItemType<GemTechBodyArmor>() && legs.type == ModContent.ItemType<GemTechSchynbaulds>();
+            return body.type == ItemType<GemTechBodyArmor>() && legs.type == ItemType<GemTechSchynbaulds>();
         }
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<GemTechHeadgear>() && player.armor[1].type == ItemType<GemTechBodyArmor>() && player.armor[2].type == ItemType<GemTechSchynbaulds>();
 
@@ -162,6 +162,7 @@ namespace CalamityMod.Items.Armor.GemTech
                 AddIngredient<GalacticaSingularity>(3).
                 AddIngredient<CoreofCalamity>(2).
                 AddTile<DraedonsForge>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<GemTechBodyArmor>()).
                 Register();
         }
     }

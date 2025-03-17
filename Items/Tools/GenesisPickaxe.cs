@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -65,30 +66,6 @@ namespace CalamityMod.Items.Tools
 
             swingRotation = Utils.Remap(time, 0, player.itemAnimationMax, 0, 2.88f * swordDirection);
 
-            if (Main.rand.NextBool(4))
-            {
-                Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f) * 2;
-                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, 278);
-                dust.scale = Main.rand.NextFloat(0.5f, 0.75f);
-                dust.velocity = dustVel * 0.1f;
-                dust.color = Color.LightGreen;
-                dust.noGravity = true;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f) * 2;
-
-                float partScale = Main.rand.NextFloat(0.6f, 1.2f);
-                Vector2 partVel = dustVel * Main.rand.NextFloat(0.1f, 0.3f);
-                Particle spark3 = new GlowOrbParticle(player.Center + dustVel * 7, partVel, false, 18, partScale, Color.Black, false, false, false);
-                GeneralParticleHandler.SpawnParticle(spark3);
-                for (int i = 0; i < 2; i++)
-                {
-                    Particle spark2 = new GlowOrbParticle(player.Center + dustVel * 7, partVel, false, 18, partScale * 0.5f, Color.LightGreen, true, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-            }
-
             Vector2 dustVel2 = new Vector2(5 * swordDirection, -5).RotatedBy(swingRotation - 1.7f * swordDirection);
 
             float partScale2 = Main.rand.NextFloat(0.5f, 0.8f);
@@ -96,6 +73,12 @@ namespace CalamityMod.Items.Tools
 
             Particle smoke = new HeavySmokeParticle(player.Center + dustVel2 * 12 + Main.rand.NextVector2Circular(8, 8), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, Color.Black, 13, partScale2, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false);
             GeneralParticleHandler.SpawnParticle(smoke);
+            if (Main.rand.NextBool())
+            {
+                Dust dust = Dust.NewDustPerfect(player.Center + dustVel2 * 12 + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<VoidDustInverted>(), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection), 0, default, Main.rand.NextFloat(0.9f, 1.25f));
+                dust.noGravity = true;
+                dust.color = Color.LightGreen;
+            }
 
             time++;
         }

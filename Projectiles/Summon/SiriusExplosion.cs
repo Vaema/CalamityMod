@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -139,8 +139,8 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRectangle = rectangular.Size() / 2f;
             Color projColor = Main.hslToRgb(0.5f, 1f, Projectile.ai[0]).MultiplyRGBA(new Color(255, 255, 255, 0));
@@ -231,6 +231,6 @@ namespace CalamityMod.Projectiles.Summon
             return new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 0);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
     }
 }

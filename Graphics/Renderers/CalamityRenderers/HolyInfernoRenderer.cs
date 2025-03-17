@@ -45,7 +45,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (!npc.HasValidTarget)
                 return;
 
-            var target = Main.player[Main.myPlayer];
+            var target = Main.LocalPlayer;
             var holyInfernoIntensity = target.Calamity().holyInfernoFadeIntensity;
             var prov = Provi;
             if (prov == null)

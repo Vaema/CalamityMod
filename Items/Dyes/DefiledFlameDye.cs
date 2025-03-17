@@ -19,8 +19,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.LightRed;
-            //Light red is 12 gold, and this is purchased with 10 gold, this would make it sell for 6 gold, still far more expensive than vanilla dyes
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice/2;
+            Item.value = Item.buyPrice(gold: 7, silver: 50); // Sold by Dye Trader
         }
     }
 }

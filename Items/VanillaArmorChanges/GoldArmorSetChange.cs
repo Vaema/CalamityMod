@@ -17,13 +17,13 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Gold";
 
-        public const float HeadDamage = 0.06f;
+        public const float HeadDamage = 0.05f;
         public const float ChestDR = 0.05f;
         public const float LegsMoveSpeed = 0.1f;
         public const float GoldDropChanceFromEnemies = 0.02f;
         public const int GoldFromBosses = 3;
         public const float SetBonusCritPerGoldCoin = 0.1f; // 10 gold coins = +1% crit chance
-        public const float MaximumCritBonus = 9f;
+        public const float MaximumCritBonus = 7f;
 
         public override void ApplyHeadPieceEffect(Player player) => player.GetDamage<GenericDamageClass>() += HeadDamage;
 

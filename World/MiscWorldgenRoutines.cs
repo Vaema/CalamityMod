@@ -10,6 +10,7 @@ using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAncient;
+using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
@@ -139,41 +140,6 @@ namespace CalamityMod.World
                 PutItemInChest(ref chest, WorldGen.genRand.Next(potions), 1, 2, WorldGen.genRand.NextBool());
                 PutItemInChest(ref chest, ItemID.RecallPotion, 1, 2, WorldGen.genRand.NextBool());
                 PutItemInChest(ref chest, ItemID.GoldCoin, 1, 2);
-            }
-        }
-        #endregion
-
-        #region Place Rox Shrine
-        public static void PlaceRoxShrine()
-        {
-            while (!CalamityWorld.roxShrinePlaced)
-            {
-                CalamityWorld.roxShrinePlaced = true;
-                for (int x = 0; x < Main.maxTilesX; x++)
-                {
-                    for (int y = 0; y < Main.maxTilesY; y++)
-                    {
-                        if (Main.tile[x, y] != null && Main.tile[x, y].TileType == TileID.LargePiles)
-                        {
-                            if ((Main.tile[x, y].TileFrameX == 18 && Main.tile[x, y].TileFrameY == 0) || (Main.tile[x, y].TileFrameX == 45 && Main.tile[x, y].TileFrameY == 0))
-                            {
-                                if (WorldGen.genRand.NextBool(3))
-                                {
-                                    for (int dx = -1; dx < 2; dx++)
-                                    {
-                                        for (int dy = -1; dy < 2; dy++)
-                                            Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = false;
-                                    }
-
-                                    WorldGen.PlaceTile(x, y + 1, ModContent.TileType<RoxTile>());
-                                    return;
-                                }
-                                else
-                                    CalamityWorld.roxShrinePlaced = false;
-                            }
-                        }
-                    }
-                }
             }
         }
         #endregion
@@ -485,6 +451,38 @@ namespace CalamityMod.World
                             }
                         }
                     }
+                }
+            }
+        }
+        #endregion
+
+        #region Auric Land Mines
+        public static void GenerateAuricLandMines()
+        {
+            int landMineID = ModContent.TileType<AuricLandMineTile>();
+            int landMineChance = Main.zenithWorld ? 150 : 300;
+            float maxDepth = Main.maxTilesY * (Main.zenithWorld ? 0.75f : 0.5f); // depth increased in gfb due to the evil columns that extend further downward
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = 0; y < maxDepth; y++)
+                {
+                    Tile t = CalamityUtils.ParanoidTileRetrieval(x, y);
+                    Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
+                    if (t != null)
+                    {
+                        if (above != null)
+                        {
+                            // Yharim killed the gods with auric land mines obviously
+                            if ((t.TileType == TileID.Ebonstone || t.TileType == TileID.Crimstone) && !above.HasTile)
+                            {
+                                if (WorldGen.genRand.NextBool(landMineChance))
+                                {
+                                    WorldGen.SlopeTile(x, y);
+                                    WorldGen.PlaceTile(x, y - 1, landMineID);
+                                }
+                            }
+                        }
+                    }                    
                 }
             }
         }

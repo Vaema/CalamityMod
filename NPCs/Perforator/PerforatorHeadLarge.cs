@@ -17,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync]
     public class PerforatorHeadLarge : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
@@ -34,7 +35,6 @@ namespace CalamityMod.NPCs.Perforator
             {
                 Scale = 0.75f,
                 PortraitScale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/PerforatorLarge_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
@@ -532,14 +532,17 @@ namespace CalamityMod.NPCs.Perforator
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PerforatorBodyLarge>()].Value, PerforatorBodyLarge.AltTexture.Value, 3, 40, 0.3f, Vector2.Zero, 3, 10);
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
@@ -571,7 +574,7 @@ namespace CalamityMod.NPCs.Perforator
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("LargePerf").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("LargePerf2").Type, NPC.scale);

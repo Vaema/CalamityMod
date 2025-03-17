@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
             // Slight gravity, equivalent to Plasma Grenade.
-            Projectile.velocity.Y += 0.09f;
+            Projectile.velocity.Y += 0.075f;
         }
 
         // Instead of dying instantly on collision, fly straight up for a moment.
@@ -85,33 +85,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 1040;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             if (Projectile.owner == Main.myPlayer)
-            {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChickenExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-            }
+
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            for (int i = 0; i < 40; i++)
-            {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
-                Main.dust[d].velocity *= 3f;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[d].scale = 0.5f;
-                    Main.dust[d].fadeIn = 1f + Main.rand.NextFloat();
-                }
-            }
-            for (int i = 0; i < 70; i++)
-            {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].velocity *= 5f;
-                d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
-                Main.dust[d].velocity *= 2f;
-            }
         }
     }
 }

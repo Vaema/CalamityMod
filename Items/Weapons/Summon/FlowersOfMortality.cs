@@ -11,6 +11,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FlowersOfMortality : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 36;
@@ -18,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 72;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -36,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CalamityUtils.KillShootProjectiles(false, type, player);
             for (int i = 0; i < 5; i++)
             {
-                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
                 blossom.ai[0] = MathHelper.TwoPi * i / 5f;
                 blossom.rotation = blossom.ai[0];
                 blossom.originalDamage = Item.damage;
@@ -49,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<WitherBlossomsStaff>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentStardust, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

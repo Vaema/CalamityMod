@@ -12,18 +12,8 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 34;
-            Item.damage = 0;
-            Item.useTime = Item.useAnimation = 20;
-            Item.shoot = ModContent.ProjectileType<PineapplePetProj>();
-            Item.buffType = ModContent.BuffType<PineappleBuff>();
-
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.UseSound = SoundID.Item2;
-
-            Item.value = Item.buyPrice(gold: 4);
+            Item.DefaultToVanitypet(ModContent.ProjectileType<PineapplePetProj>(), ModContent.BuffType<PineappleBuff>());
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
         }

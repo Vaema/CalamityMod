@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
+            Main.npcFrameCount[Type] = 14;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = 0
@@ -45,9 +45,9 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             NPC.defense = 6;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 340;
+            NPC.lifeMax = 430;
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<MantisBanner>();
@@ -56,7 +56,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 85;
                 NPC.defense = 16;
                 NPC.knockBackResist = 0.1f;
-                NPC.lifeMax = 510;
+                NPC.lifeMax = 645;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.Astral
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 1, 2, 1, 3));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AstralScythe>(), 7);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AstralScythe>(), 10);
         }
     }
 }

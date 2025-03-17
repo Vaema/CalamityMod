@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
+            Item.noMelee = true;
             Item.noUseGraphic = true;
 
             Item.UseSound = SoundID.Item1;

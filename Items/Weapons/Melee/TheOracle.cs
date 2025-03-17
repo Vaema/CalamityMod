@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -17,11 +18,15 @@ namespace CalamityMod.Items.Weapons.Melee
         public const int AuraBaseDamage = 68;
         public const int AuraMaxDamage = 150;
 
+        public static float Reach = 800f;
+        public static float Speed = 60f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Yoyo[Item.type] = true;
-            ItemID.Sets.GamepadExtraRange[Item.type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
+            ItemID.Sets.Yoyo[Type] = true;
+            ItemID.Sets.GamepadExtraRange[Type] = 15;
+            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
         }
 
         public override void SetDefaults()

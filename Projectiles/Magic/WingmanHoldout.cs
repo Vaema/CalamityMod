@@ -126,6 +126,7 @@ namespace CalamityMod.Projectiles.Magic
             // The center of the player, taking into account if they have a mount or not.
             Vector2 ownerPosition = Owner.MountedCenter;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The vector between the player and the mouse.
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - ownerPosition;
 
@@ -141,8 +142,7 @@ namespace CalamityMod.Projectiles.Magic
             time++;
             Projectile.soundDelay--;
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         private void ManageHoldout(Vector2 ownerToMouse)
@@ -181,6 +181,7 @@ namespace CalamityMod.Projectiles.Magic
 
         private void Shoot(bool isGrenade)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
 
             // The position of the tip of the gun.
@@ -191,13 +192,13 @@ namespace CalamityMod.Projectiles.Magic
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DeadSunExplosion");
                 SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = -0.4f, PitchVariance = 0.2f }, Projectile.Center);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, (firingVelocity * 1.3f) * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 6), Projectile.knockBack * 5, Projectile.owner, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, (firingVelocity * 1.3f) * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 6), Projectile.knockBack * 5, Projectile.owner, 0);
             }
             else
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/MagnaCannonShot");
                 SoundEngine.PlaySound(fire with { Volume = 0.25f, Pitch = 1f, PitchVariance = 0.35f }, Projectile.Center);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * Utils.GetLerpValue(80, 10, FiringTime, true), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * Utils.GetLerpValue(80, 10, FiringTime, true), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
             }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
@@ -270,7 +271,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.spriteDirection == -1 ? MovingUp : !MovingUp)
                 flipSprite |= SpriteEffects.FlipVertically;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(StaticEffectsColor, Color.White, 0.5f) * 0.2f, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(StaticEffectsColor, Color.White, 0.5f) * 0.2f, 1, texture);
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
             return false;

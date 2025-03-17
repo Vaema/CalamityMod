@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.SunkenSea;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,16 +12,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 26;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.EutrophicShelf>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.EutrophicShelf>());
+            Item.value = Item.sellPrice(silver: 50); // This is too easy to craft to sell for 2 gold
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

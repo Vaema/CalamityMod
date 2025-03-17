@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -64,9 +64,8 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
-                int shockwaveDamage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(100f);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), shockwaveDamage, 10f, Projectile.owner, 0, 0);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
             }
         }
 
@@ -77,9 +76,8 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
-                int shockwaveDamage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(100f);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), shockwaveDamage, 10f, Projectile.owner, 0, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
             }
         }
 
@@ -93,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

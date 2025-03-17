@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Fishing.SunkenSeaCatches;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,14 +12,15 @@ namespace CalamityMod.Projectiles.Typeless
     public class SerpentsBiteHook : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        public const float PullSpeed = 12f;
-        public const float ReelbackSpeed = 14f;
-        public const float LaunchSpeed = 18f;
-        public const float GrappleRangInTiles = 28.125f;
-        public override void SetDefaults()
-        {
-            Projectile.CloneDefaults(ProjectileID.GemHookAmethyst);
-        }
+
+        public static Asset<Texture2D> Chain;
+        public override void Load() => Chain = Request<Texture2D>("CalamityMod/Projectiles/Typeless/SerpentsBiteChain");
+
+        public override void SetDefaults() => Projectile.CloneDefaults(ProjectileID.GemHookAmethyst);
+
+        public override float GrappleRange() => SerpentsBite.Reach * 16f;
+        public override void GrappleRetreatSpeed(Player player, ref float speed) => speed = SerpentsBite.ReelbackSpeed;
+        public override void GrapplePullSpeed(Player player, ref float speed) => speed = SerpentsBite.PullSpeed;
 
         // Use this hook for hooks that can have multiple hooks mid-flight: Dual Hook, Web Slinger, Fish Hook, Static Hook, Lunar Hook
         public override bool? CanUseGrapple(Player player)
@@ -36,31 +39,9 @@ namespace CalamityMod.Projectiles.Typeless
             }
             return true;
         }
+        public override void NumGrappleHooks(Player player, ref int numHooks) => numHooks = 2;
 
-        // Amethyst Hook is 300, Static Hook is 600, 16f = 1 tile
-        public override float GrappleRange() => GrappleRangInTiles * 16f;
-
-        public override void NumGrappleHooks(Player player, ref int numHooks)
-        {
-            numHooks = 2;
-        }
-
-        // default is 11, Lunar is 24
-        public override void GrappleRetreatSpeed(Player player, ref float speed)
-        {
-            speed = ReelbackSpeed;
-        }
-
-        public override void GrapplePullSpeed(Player player, ref float speed)
-        {
-            speed = PullSpeed;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawHook(Projectile, Request<Texture2D>("CalamityMod/Projectiles/Typeless/SerpentsBiteChain").Value);
-            return true;
-        }
+        public override bool PreDraw(ref Color lightColor) => Projectile.DrawHook(Chain.Value);
 
         public override void AI()
         {

@@ -230,7 +230,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             int damageAmt = npc.lifeMax / 200;
                             npc.life -= damageAmt;
-                            npc.HealEffect(-damageAmt, true);
+                            npc.DamageEffect(damageAmt);
                         }
 
                         if (npc.life <= ((npc.lifeMax / 200) * 5) && !npc.ModNPC<CeaselessVoid.CeaselessVoid>().playedbuildsound)
@@ -391,7 +391,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Destroy all Dark Energies if their total HP is below 20%
                 int darkEnergyMaxHP = bossRush ? DarkEnergy.MaxBossRushHP : DarkEnergy.MaxHP;
                 //These are still needed so that CV Dark energy despawn works properly
-                double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+                double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 darkEnergyMaxHP += (int)(darkEnergyMaxHP * HPBoost);
 
                 int totalDarkEnergiesSpawned = darkEnergyAmt * 3 + 2;

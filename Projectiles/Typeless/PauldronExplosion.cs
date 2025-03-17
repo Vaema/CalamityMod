@@ -30,24 +30,24 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 240);
 
-            Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.OrangeRed, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.8f, 1.1f), 20);
-            GeneralParticleHandler.SpawnParticle(pulse);
-            Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.DarkOrange, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.6f, 0.9f), 20);
-            GeneralParticleHandler.SpawnParticle(pulse2);
+            //Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.OrangeRed, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.8f, 1.1f), 20);
+            //GeneralParticleHandler.SpawnParticle(pulse);
+            //Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.DarkOrange, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.6f, 0.9f), 20);
+            //GeneralParticleHandler.SpawnParticle(pulse2);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
         public override bool? CanDamage() => base.CanDamage();
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.HitDirectionOverride = Math.Sign(Owner.direction);
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 15, true);
         }
 
         public override bool? CanCutTiles() => false;

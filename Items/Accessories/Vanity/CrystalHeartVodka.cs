@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Fabsol_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Fabsol_Body", EquipType.Body, this);
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.height = 30;
             Item.accessory = true;
             
-            // Same as Fabsol's Vodka, due to the obtainment method being shimmering Fabsol's Vodka.
-            Item.value = Item.buyPrice(0, 2, 60, 0);
+            // Same as Cirrus' Vodka, due to the obtainment method being shimmering Cirrus' Vodka.
+            Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
 
             Item.vanity = true;

@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/SightseerSpitterGlow", AssetRequestMode.AsyncLoad);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -44,11 +44,11 @@ namespace CalamityMod.NPCs.Astral
             NPC.damage = 50;
             NPC.defense = 20;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 430;
+            NPC.lifeMax = 540;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SightseerSpitterBanner>();
@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 85;
                 NPC.defense = 30;
                 NPC.knockBackResist = 0.7f;
-                NPC.lifeMax = 640;
+                NPC.lifeMax = 810;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
@@ -148,7 +148,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -195,7 +195,6 @@ namespace CalamityMod.NPCs.Astral
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.ProjectileNPC[Type] = true;
         }
 
@@ -251,12 +250,11 @@ namespace CalamityMod.NPCs.Astral
         {
             if (modifiers.GetDamage(NPC.damage, 0f, 0f) > 0)
             {
-                if (target.HasNPCBannerBuff(ModContent.NPCType<SightseerSpitter>()))
+                int parent = ModContent.NPCType<SightseerSpitter>();
+                if (target.HasNPCBannerBuff(parent))
                 {
-                    if (Main.expertMode)
-                        modifiers.IncomingDamageMultiplier *= 0.5f;
-                    else
-                        modifiers.IncomingDamageMultiplier *= 0.75f;
+		        	ItemID.BannerEffect effect = ItemID.Sets.BannerStrength[Item.BannerToItem(parent)];
+        			modifiers.IncomingDamageMultiplier *= (Main.expertMode ? effect.ExpertDamageReceived : effect.NormalDamageReceived);
                 }
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)

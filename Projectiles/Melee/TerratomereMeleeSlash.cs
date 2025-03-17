@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Opacity = Utils.GetLerpValue(0f, 26f, Projectile.timeLeft, true);
             Projectile.velocity *= 0.91f;
             Projectile.scale *= 1.01f;
@@ -61,6 +62,6 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
     }
 }
