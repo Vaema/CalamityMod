@@ -736,6 +736,10 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
+        public bool aFossil = false;
+        public bool aPowder = false;
+        public bool fallingBlockProtection = false;
+        public bool trapProtection = false;
         public bool alluringBait = false;
         public bool enchantedPearl = false;
         public bool fishingStation = false;
@@ -2143,6 +2147,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            aFossil = false;
+            aPowder = false;
+            fallingBlockProtection = false;
+            trapProtection = false;
             alluringBait = false;
             enchantedPearl = false;
             fishingStation = false;
