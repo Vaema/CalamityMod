@@ -1017,7 +1017,7 @@ namespace CalamityMod.CalPlayer
                 (proj.type == ProjectileID.MiniBoulder) || (proj.type == ProjectileID.MoonBoulder) || (proj.type == ProjectileID.SpearTrap) || 
                 (proj.type == ProjectileID.SpikyBallTrap) || (proj.type == ProjectileID.GeyserTrap) || (proj.type == ProjectileID.FlamethrowerTrap) ||
                 (proj.type == ProjectileID.RollingCactus) || (proj.type == ProjectileID.RollingCactusSpike) || (proj.type == ProjectileID.Explosives) ||
-                (proj.type == ProjectileID.TNTBarrel) || (proj.type == ProjectileID.Landmine) || (proj.type == ModContent.ProjectileType<AuricLandMineExplosion>()) || (proj.type == 188); // Fun fact: flamethrower traps fire proj 188, NOT ProjectileID.FlamethrowerTrap :)
+                (proj.type == ProjectileID.TNTBarrel) || (proj.type == ProjectileID.Landmine) || (proj.type == ModContent.ProjectileType<AuricLandMineExplosion>()) || (proj.type == ProjectileID.FlamesTrap); // Fun fact: flamethrower traps fire proj 188, NOT ProjectileID.FlamethrowerTrap :)
             if (Player.Calamity().trapProtection && isReducedTrap)
                 modifiers.SourceDamage *= 0.35f;
 
