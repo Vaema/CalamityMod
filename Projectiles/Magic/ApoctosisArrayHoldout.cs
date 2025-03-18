@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
                     else
                     {
                         SoundEngine.PlaySound(SoundID.MaxMana with { Pitch = -0.5f }, Projectile.Center);
-                        shootingTimer = -20;
+                        shootingTimer = -40;
                     }
                 }
                 else // Charging mode
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Magic
             float manaPercent = ((float)Owner.statMana / (float)Owner.statManaMax2);
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
             Vector2 firingVelocity = (shootDirection * 4);
-            float damageBoost = Math.Max((manaPower * 40) * (manaPower >= 1 ? 1.3f : 1f), 1);
+            float damageBoost = Math.Max((manaPower * 55) * (manaPower >= 1 ? 1.3f : 1f), 1);
 
             if (big)
             {
@@ -226,12 +226,13 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/ImpalerLaunch");
-                SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.6f }, Projectile.Center);
+                for (int i = 0; i < (manaPower >= 1 ? 2 : 1); i++)
+                    SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = -0.7f, MaxInstances = 2 }, Projectile.Center);
                 
-                SoundStyle fire2 = new("CalamityMod/Sounds/Item/MagnaCannonShot");
-                SoundEngine.PlaySound(fire2 with { Volume = 0.8f, Pitch = (manaPower >= 1 ? 0.5f : 0.4f) }, Projectile.Center);
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/PulseRifleFire");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.75f, Pitch = (manaPower >= 1 ? 0.7f : 0.5f) }, Projectile.Center);
 
-                Owner.Calamity().GeneralScreenShakePower = 13f * manaPower;
+                Owner.Calamity().GeneralScreenShakePower = 12f * manaPower;
                 float projSpeedMult = (manaPower + 0.4f) * (manaPower >= 1 ? 3f : 2f);
 
                 float variance = Main.rand.NextFloat(-0.8f, 0.8f);
@@ -240,15 +241,18 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, vel, ModContent.ProjectileType<ApoctosisBlast>(), (int)(Projectile.damage * damageBoost), Projectile.knockBack * 4, Projectile.owner, 0, 0, 5);
                 
                 OffsetLengthFromArm -= 24f * manaPower;
-                Owner.velocity -= Projectile.velocity * 12f * manaPower;
+                Owner.velocity -= Projectile.velocity * 14f * manaPower;
+                Projectile.rotation += 0.5f * Projectile.direction;
 
                 for (int i = 0; i < Math.Max(3, 30 * manaPower); i++)
                 {
                     Particle sparks = new SparkParticle(GunTipPosition, Projectile.velocity.RotatedByRandom(0.7f) * Main.rand.NextFloat(7, 25), false, 35, Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextBool() ? Color.Lerp(effectsColor, Color.White, 0.5f) : effectsColor);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
-                Particle pulse3 = new CustomSpark(GunTipPosition, shootDirection * 9, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 17, 0.06f, effectsColor, new Vector2(2f, 0.7f), shrinkSpeed: 0.1f);
+                Particle pulse3 = new CustomSpark(GunTipPosition, shootDirection * 7, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 23, 0.085f * manaPower, effectsColor, new Vector2(2f, 0.7f), shrinkSpeed: 0.1f);
                 GeneralParticleHandler.SpawnParticle(pulse3);
+                Particle pulse4 = new CustomSpark(GunTipPosition, shootDirection * 13, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 18, 0.06f * manaPower, effectsColor, new Vector2(2f, 0.7f), shrinkSpeed: 0.1f);
+                GeneralParticleHandler.SpawnParticle(pulse4);
             }
             else
             {

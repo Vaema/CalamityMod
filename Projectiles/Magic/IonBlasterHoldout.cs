@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
                     else
                     {
                         SoundEngine.PlaySound(SoundID.MaxMana with { Pitch = -0.5f }, Projectile.Center);
-                        shootingTimer = -20;
+                        shootingTimer = -40;
                     }
                 }
                 else // Charging mode

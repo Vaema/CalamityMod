@@ -13,12 +13,10 @@ namespace CalamityMod.Projectiles.Magic
         public ref float time => ref Projectile.ai[0];
         public bool chargeShot => Projectile.ai[2] == 5;
         public bool onSpawn = true;
-        public Vector2 storedVel;
-        public int stopTime = 0;
         public float sine = 0;
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 14;
+            Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 7;
@@ -80,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             Player Owner = Main.player[Projectile.owner];
-            if (time == 0)
+            if (time <= 1)
             {
                 float _ = float.NaN;
                 return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Owner.Center, Projectile.width, ref _);
