@@ -521,11 +521,6 @@ LashesofChaos: {
 		'''
 }
 
-Lazhar: {
-	DisplayName: Lazhar
-	Tooltip: Fires a highly volatile concentrated solar beam
-}
-
 LightGodsBrilliance: {
 	DisplayName: Light God's Brilliance
 	Tooltip: Casts small, homing light beads along with explosive light balls
