@@ -259,14 +259,14 @@ namespace CalamityMod.Balancing
             // 70% resist to Stardust Dragon Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 
-            // 65% resist to Atlantis (Atlantis gaming!).
-            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<AtlantisSpear>()))));
-
             // 55% resist to Flak Kraken.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.45f, ProjectileType<FlakKrakenProjectile>()))));
 
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(ResistTrueMelee(0.5f))));
+
+            // 50% resist to Atlantis (Atlantis gaming!).
+            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AtlantisSpear>()))));
 
             // 50% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AuroraFire>()))));

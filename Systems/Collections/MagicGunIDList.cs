@@ -28,7 +28,6 @@ namespace CalamityMod.Systems.Collections
                 ItemType<GaussPistol>(),
                 ItemType<Genesis>(),
                 ItemType<IonBlaster>(),
-                ItemType<Lazhar>(),
                 ItemType<NanoPurge>(),
                 ItemType<PlasmaCaster>(),
                 ItemType<PlasmaRifle>(),

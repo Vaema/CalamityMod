@@ -338,6 +338,15 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+
+        // Laser Burn Type (1 = applied damage added and dealt in a single hit, 2 = flat damage + extra flat damage from stacks, 0 = innactive)
+        public int laserBurnType = 0;
+        public int laserBurnDamage = 0; // Only used if laser burn type is 1
+        public const int laserBurnTime = 300;
+        public int laserBurnTimer = 0;
+        public int laserBurnStacks = 0;
+        public bool laserBurnMarked = false;
+
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
         /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
@@ -5784,6 +5793,9 @@ namespace CalamityMod.NPCs
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
+            if (laserBurnTimer > 0)
+                laserBurnTimer--;
+
             if (veriumDoomTimer == 0 && veriumDoomMarked)
             {
                 for (int d = 0; d < 14 + veriumDoomStacks; d++)
@@ -5816,6 +5828,41 @@ namespace CalamityMod.NPCs
                     spark.penetrate = 3;
                 }
             }
+
+            if (laserBurnTimer <= 0 && laserBurnMarked && laserBurnType > 0)
+            {
+                if (laserBurnType == 1) // Applied damage
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), laserBurnDamage, 0, Main.myPlayer, npc.whoAmI);
+                if (laserBurnType == 2) // Flat damage + stacks
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 70 + (20 * laserBurnStacks), 0, Main.myPlayer, npc.whoAmI);
+
+                for (int d = 0; d < (int)(6 + laserBurnStacks * 0.35f); d++)
+                {
+                    float partScale = Main.rand.NextFloat(0.7f, 1f);
+                    Vector2 partVel = (new Vector2(15, 15) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle sparks = new SparkParticle(npc.Center, partVel, false, 30, i == 0 ? partScale : partScale * 0.4f, i == 0 ? Color.Red : Color.White);
+                        GeneralParticleHandler.SpawnParticle(sparks);
+                    }
+
+                    Dust dust = Dust.NewDustPerfect(npc.Center, 278);
+                    dust.velocity = (new Vector2(10, 10) * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) + new Vector2(0, -1);
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
+                    dust.noGravity = false;
+                    dust.color = Color.Red;
+                }
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, PitchVariance = 0.15f }, npc.Center);
+                laserBurnMarked = false;
+                laserBurnStacks = 0;
+                laserBurnTimer = 0;
+                laserBurnDamage = 0;
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
@@ -7334,6 +7381,23 @@ namespace CalamityMod.NPCs
                     Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
                     Particle markedSparkle = new CustomPulse(randPosition, Vector2.Zero, Color.Lerp(new Color(103, 230, 240), new Color(255, 110, 220), 1 - veriumRatio), "CalamityMod/Particles/Sparkle", Vector2.One, Main.rand.NextFloat(-0.75f, 0.75f), 0.9f, 1.1f, 35);
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
+                }
+            }
+
+            if (laserBurnTimer > 0)
+            {
+                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
+                if (laserBurnTimer % particleChance == 0)
+                {
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+                    Particle markedParticle = new GlowOrbParticle(randPosition, Vector2.Zero, false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.45f) + (laserBurnStacks * 0.045f), Color.Red);
+                    GeneralParticleHandler.SpawnParticle(markedParticle);
+                }
+                if (laserBurnType == 0)
+                {
+                    Main.NewText("No Burn Type Set", Color.OrangeRed);
+                    laserBurnMarked = false;
+                    laserBurnTimer = 0;
                 }
             }
 
