@@ -572,11 +572,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.life + slimeSpawnThreshold < npc.ai[3])
                 {
                     npc.ai[3] = npc.life;
-                    int slimeAmt = Main.rand.Next(1, 3);
+                    int slimeAmt = death ? 1 : Main.rand.Next(1, 3);
                     for (int i = 0; i < slimeAmt; i++)
                     {
-                        float minLowerLimit = death ? 5f : 0f;
-                        float maxLowerLimit = death ? 7f : 2f;
+                        float minLowerLimit = 0f;
+                        float maxLowerLimit = 2f;
                         int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 5f, 1f - lifeRatio2);
                         int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 7f, 1f - lifeRatio2);
 
