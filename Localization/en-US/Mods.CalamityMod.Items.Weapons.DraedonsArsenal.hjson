@@ -139,7 +139,12 @@ PulseDragon: {
 
 PulsePistol: {
 	DisplayName: Pulse Pistol
-	Tooltip: Fires a pulse orb that tracks nearby targets and will not decrease its pierce when killing enemies
+	Tooltip:
+		'''
+		Fires a pulse orb that tracks nearby targets
+		After hitting an enemy, the pulse orb will split in two
+		Pulse orb pierce will not decrease when killing enemies
+		'''
 }
 
 PulseRifle: {
@@ -212,8 +217,8 @@ Taser: {
 	DisplayName: Taser
 	Tooltip:
 		'''
-		Shoots a hook that attaches to enemies and electrocutes them before returning
-		A slow, simple electric weapon, meant only for low ranking guards
+		Shoots a hook that attaches to enemies and rapidly electrocutes them before returning
+		After electrocuting an enemy enough, the hook will create a large electric burst on it
 		'''
 }
 
@@ -241,7 +246,9 @@ TrackingDisk: {
 	Tooltip:
 		'''
 		Releases a flying disk that fires lasers at nearby enemies
-		This disk gains acceleration as it returns to the player
+		Lasers do not directly damage enemies, but instead apply a stacking laser burn effect
+		Once hit by enough lasers or sufficient time has passed, laser burn will deal direct damage
+		The disk gains acceleration as it returns to the player
 		Stealth strikes fire lasers at a faster rate and distance, and can fire at multiple different targets
 		'''
 }
