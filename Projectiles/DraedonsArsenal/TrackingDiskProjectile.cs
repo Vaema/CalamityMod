@@ -49,6 +49,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 2;
+            Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -59,6 +60,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Player player = Main.player[Projectile.owner];
 
             Time++;
+
+            if (Time == 5)
+                Projectile.tileCollide = true;
+
             if (!ReturningToPlayer)
             {
                 if (Time >= 55f)
