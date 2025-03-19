@@ -4092,7 +4092,7 @@ namespace CalamityMod.CalPlayer
                     }
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
-                    if (Player.velocity.Y < 0f || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
+                    if ((Player.gravDir == 1 && Player.velocity.Y < 0f) || (Player.gravDir == -1 && Player.velocity.Y > 1f) || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
