@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.alpha = 255;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 600;
             Projectile.alpha = 120;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

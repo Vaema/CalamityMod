@@ -43,6 +43,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 10;
             Projectile.timeLeft = 60 * Projectile.extraUpdates;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             // Readjust the velocity magnitude the moment this projectile is created
             // to make velocity setting outside the scope of this projectile less irritating

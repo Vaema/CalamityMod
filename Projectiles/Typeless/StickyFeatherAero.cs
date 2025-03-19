@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.aiStyle = ProjAIStyleID.Nail;
             AIType = ProjectileID.NailFriendly;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
