@@ -20,7 +20,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
-    public class ThiccWaifu : ModNPC
+    public class CloudElemental : ModNPC
     {
         public enum AttackState
         {
@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Events.Rain,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ThiccWaifu")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CloudElemental")
             });
         }
 

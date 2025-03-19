@@ -30,6 +30,8 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ascendantInsignia = true;
             player.empressBrooch = true;
+            player.moveSpeed += 0.05f;
+            player.jumpSpeedBoost += 0.25f;
         }
 
         public override void AddRecipes()

@@ -276,7 +276,7 @@ namespace CalamityMod.UI
                 NPCType<PerforatorHeadLarge>(),
 
                 // Hardmode Modded.
-                NPCType<ThiccWaifu>(),
+                NPCType<CloudElemental>(),
                 NPCType<Horse>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),

@@ -995,13 +995,31 @@ namespace CalamityMod.CalPlayer
                     modifiers.SourceDamage *= 0.65f;
 
                 // 80 in normal, 100 in expert, 150 in master
-                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.PoisonDartTrap)
+                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.FlamesTrap || proj.type == ProjectileID.PoisonDartTrap)
                     modifiers.SourceDamage *= 0.625f;
 
                 // 120 in normal, 144 in expert, 216 in master
                 else if (proj.type == ProjectileID.SpearTrap)
                     modifiers.SourceDamage *= 0.6f;
             }
+
+            bool isFallingBlock = (proj.type == ProjectileID.SandBallFalling) || (proj.type == ProjectileID.SiltBall) || (proj.type == ProjectileID.AshBallFalling) ||
+                (proj.type == ProjectileID.CrimsandBallFalling) || (proj.type == ProjectileID.EbonsandBallFalling) || (proj.type == ProjectileID.PearlSandBallFalling) ||
+                (proj.type == ProjectileID.ShellPileFalling) || (proj.type == ProjectileID.SlushBall) || (proj.type == ModContent.ProjectileType<AstralSandBallFalling>());
+            if (Player.Calamity().fallingBlockProtection && isFallingBlock)
+                modifiers.Cancel();
+
+            bool isIgnoredTrap = (proj.type == ProjectileID.PoisonDartTrap) || (proj.type == ProjectileID.VenomDartTrap) || (proj.type == ProjectileID.PoisonDart);
+            if (Player.Calamity().trapProtection && isIgnoredTrap)
+                modifiers.Cancel();
+
+            bool isReducedTrap = (proj.type == ProjectileID.Boulder) || (proj.type == ProjectileID.BouncyBoulder) || (proj.type == ProjectileID.LifeCrystalBoulder) ||
+                (proj.type == ProjectileID.MiniBoulder) || (proj.type == ProjectileID.MoonBoulder) || (proj.type == ProjectileID.SpearTrap) || 
+                (proj.type == ProjectileID.SpikyBallTrap) || (proj.type == ProjectileID.GeyserTrap) || (proj.type == ProjectileID.FlamethrowerTrap) ||
+                (proj.type == ProjectileID.RollingCactus) || (proj.type == ProjectileID.RollingCactusSpike) || (proj.type == ProjectileID.Explosives) ||
+                (proj.type == ProjectileID.TNTBarrel) || (proj.type == ProjectileID.Landmine) || (proj.type == ModContent.ProjectileType<AuricLandMineExplosion>()) || (proj.type == ProjectileID.FlamesTrap); // Fun fact: flamethrower traps fire proj 188, NOT ProjectileID.FlamethrowerTrap :)
+            if (Player.Calamity().trapProtection && isReducedTrap)
+                modifiers.SourceDamage *= 0.35f;
 
             // Reduce damage dealt by rainbow trails depending on how faded they are.
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
@@ -1877,6 +1895,23 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(ParryCooldown.ID, 60 * 20, false, "flamelickedshell");
                     FlameLickedShell.handleParry(Player);
                 }
+            }
+            else if (shieldOfTheOceanParry >= 12)
+            {
+                if (!Player.HasCooldown(ParryCooldown.ID))
+                {
+                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                    int shieldParryIFrames = Player.ComputeParryIFrames();
+                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
+
+                    shieldOfTheOceanEmpoweredParry = true;
+                    modifiers.FinalDamage *= 0.4f; // 60% DR
+                    modifiers.DisableSound();
+                }
+
+                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
+                ShieldoftheOcean.ActivateParry(Player);
             }
         }
 

@@ -21,7 +21,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Causes it to split far more in death mode
@@ -70,17 +69,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phases
 
             // Cursed Flame phase
-            bool phase2 = lifeRatio < 0.8f || masterMode;
+            bool phase2 = lifeRatio < 0.8f || death;
 
             // Boost velocity by 20% phase
-            bool phase3 = lifeRatio < 0.4f || masterMode;
+            bool phase3 = lifeRatio < 0.4f || death;
 
             // Boost velocity by 50% phase
-            bool phase4 = lifeRatio < (masterMode ? 0.5f : 0.2f);
+            bool phase4 = lifeRatio < (death ? 0.5f : 0.2f);
 
             // Go fucking crazy in Master Mode
-            bool phase5 = lifeRatio < 0.1f && masterMode;
-            bool phase6 = lifeRatio < 0.05f && masterMode;
+            bool phase5 = lifeRatio < 0.1f && death;
+            bool phase6 = lifeRatio < 0.05f && death;
 
             // Fire projectiles
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -93,7 +92,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else
                         npc.localAI[1] -= 1f;
 
-                    int vileSpitGateValue = (int)MathHelper.Lerp(masterMode ? 45f : 90f, 900f, lifeRatio);
+                    int vileSpitGateValue = (int)MathHelper.Lerp(death ? 45f : 90f, 900f, lifeRatio);
                     if (Main.getGoodWorld)
                         vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
 
@@ -123,7 +122,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (phase2)
                     {
                         if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                            calamityGlobalNPC.newAI[0] += ((npc.justHit && masterMode && calamityGlobalNPC.newAI[0] < 30f) ? 10f : 1f);
+                            calamityGlobalNPC.newAI[0] += ((npc.justHit && death && calamityGlobalNPC.newAI[0] < 30f) ? 10f : 1f);
                         else
                             calamityGlobalNPC.newAI[0] -= 1f;
 
@@ -190,10 +189,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.type == NPCID.EaterofWorldsHead)
                     {
                         // Amount of segments to spawn.
-                        int segmentSpawnAmount = (int)(masterMode ? (totalSegments / TotalMasterModeWorms) : totalSegments);
+                        int segmentSpawnAmount = (int)(death ? (totalSegments / TotalMasterModeWorms) : totalSegments);
 
                         // Spawn additional worms of reduced length in Master Mode.
-                        if (masterMode)
+                        if (death)
                         {
                             Vector2 additionalWormSpawnLocation = new Vector2(spawnX, spawnY);
                             int randomXLimit = 80;
@@ -345,12 +344,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!inTiles && npc.type == NPCID.EaterofWorldsHead)
             {
                 Rectangle rectangle = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
-                int noFlyZone = death ? 800 : 900;
+                int noFlyZone = death ? (800 - (phase5 ? 400 : 200)) : 900;
                 noFlyZone -= (int)(enrageScale * 200f);
-
-                if (masterMode)
-                    noFlyZone -= phase5 ? 400 : 200;
-
                 if (noFlyZone < 100)
                     noFlyZone = 100;
 
@@ -401,7 +396,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 segmentAcceleration += 0.04f * (enrageScale + 1f);
             }
 
-            if (masterMode)
+            if (death)
             {
                 segmentVelocity += (npc.justHit ? 8f : 2f);
                 segmentAcceleration += (npc.justHit ? 0.16f : 0.04f);
@@ -472,7 +467,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (!inTiles)
                 {
                     npc.velocity.Y += death ? 0.1375f : 0.11f;
-                    if (masterMode && npc.velocity.Y > 0f)
+                    if (death && npc.velocity.Y > 0f)
                         npc.velocity.Y += 0.07f;
 
                     if (npc.velocity.Y > segmentVelocity)

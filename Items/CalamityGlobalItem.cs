@@ -10,6 +10,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
@@ -478,25 +479,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.harpyWingBoost && (modPlayer.harpyRing || modPlayer.angelTreads))
-            {
-                if (Main.rand.NextBool(5) && modPlayer.wingProjectileCooldown == 0 && !item.channel)
-                {
-                    modPlayer.wingProjectileCooldown = 20;
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        float spreadX = velocity.X + Main.rand.NextFloat(-0.75f, 0.75f);
-                        float spreadY = velocity.Y + Main.rand.NextFloat(-0.75f, 0.75f);
-                        int feather = Projectile.NewProjectile(playerSource, position, new Vector2(spreadX, spreadY) * 1.25f, ModContent.ProjectileType<TradewindsProjectile>(), (int)(damage * 0.3), 2f, player.whoAmI);
-                        if (feather.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[feather].usesLocalNPCImmunity = true;
-                            Main.projectile[feather].localNPCHitCooldown = 10;
-                            Main.projectile[feather].DamageType = DamageClass.Generic;
-                        }
-                    }
-                }
-            }
             return true;
         }
         #endregion
@@ -564,13 +546,18 @@ namespace CalamityMod.Items
         #region Pickup Item Changes
         public override bool OnPickup(Item item, Player player)
         {
-            if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane)
+            if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane) // On heart pickup
             {
                 bool boostedHeart = player.Calamity().photosynthesis;
                 if (boostedHeart)
                 {
                     player.HealPlayer(PhotosynthesisPotion.IncreasedHeartHeal);
                 }
+            }
+            if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum) // On star pickup
+            {
+                if (player.ActiveItem().type == ModContent.ItemType<IonBlaster>() || player.ActiveItem().type == ModContent.ItemType<ApoctosisArray>())
+                    return false;
             }
             return true;
         }
@@ -1290,7 +1277,7 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.MoonStone)
             {
-                if (!Main.dayTime)
+                if (!Main.dayTime || Main.eclipse)
                     player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
@@ -1331,7 +1318,6 @@ namespace CalamityMod.Items
             }
             else if (item.type == ItemID.HarpyWings)
             {
-                modPlayer.harpyWingBoost = true;
                 player.moveSpeed += 0.1f;
                 player.noFallDmg = true;
             }
@@ -1573,7 +1559,7 @@ namespace CalamityMod.Items
 
             // Draw all particles.
             float currentPower = 0f;
-            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (calamitasNPCIndex != -1)
                 currentPower = Utils.GetLerpValue(11750f, 1000f, Main.LocalPlayer.Distance(Main.npc[calamitasNPCIndex].Center), true);
 
@@ -1637,7 +1623,7 @@ namespace CalamityMod.Items
         {
             storedPrefix = -1;
             // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(ModContent.NPCType<THIEF>()))
+            if (NPC.AnyNPCs(ModContent.NPCType<Bandit>()))
             {
                 // Calculate the item's reforge cost.
                 int value = item.value;

@@ -5,6 +5,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -13,62 +14,53 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    [LegacyName("LaserRifle")]
-    public class HeavyLaserRifle : ModItem, ILocalizedModType
+    [LegacyName("HeavyLaserRifle")]
+    public class ScattershotSkewer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/LaserRifleFire");
 
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 84;
-            Item.height = 28;
+            Item.width = 64;
+            Item.height = 36;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 210;
+            Item.damage = 196;
             Item.knockBack = 4f;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.useTime = 45;
+            Item.useAnimation = 35;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = FireSound;
             Item.noMelee = true;
+            Item.channel = true;
+            Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
 
-            Item.shoot = ModContent.ProjectileType<LaserRifleShot>();
+            Item.shoot = ModContent.ProjectileType<ScattershotSkewerHoldout>();
             Item.shootSpeed = 5f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 190f;
-            modItem.ChargePerUse = 0.125f;
+            modItem.ChargePerUse = 0.001f; // Charge depletion is done in the holdout, but it needs a small fee to prevent usage at 0%
         }
-
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/ScattershotSkewerGlow").Value);
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (velocity.Length() > 5f)
-            {
-                velocity.Normalize();
-                velocity *= 5f;
-            }
-            for (int i = 0; i < 2; i++)
-            {
-                float SpeedX = velocity.X + Main.rand.Next(-1, 2) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-1, 2) * 0.05f;
-                Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), ModContent.ProjectileType<LaserRifleShot>(), damage, knockback, player.whoAmI, i, 0f);
-            }
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ScattershotSkewerHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 4);
-
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-20, 0);
-        }
 
         public override void AddRecipes()
         {

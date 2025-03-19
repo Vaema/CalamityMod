@@ -28,7 +28,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<ArmoredDiggerHead>(),
                 NPCType<ArmoredDiggerBody>(),
                 NPCType<ArmoredDiggerTail>(),
-                NPCType<ThiccWaifu>(),
+                NPCType<CloudElemental>(),
                 NPCType<Horse>(),
                 NPCType<PlaguebringerMiniboss>(),
                 NPCID.Pumpking,

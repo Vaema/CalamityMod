@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Gradient, RebalanceYoyo(-1f, 384f, 36f, 1, 12) },
 
                 // original: 12s lifetime | 275px range | 15px/f top speed | 0 extra updates
-                { ProjectileID.HelFire, RebalanceYoyo(-1f, 368f, 42f, 2, 12) },
+                { ProjectileID.HelFire, RebalanceYoyo(-1f, 352f, 42f, 2, 12) },
 
                 // original: 11s lifetime | 225px range | 14px/f top speed | 0 extra updates
                 { ProjectileID.HiveFive, RebalanceYoyo(24f, 320f, 20f, 0, 15) },

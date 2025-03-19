@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
                 int hitsToMinMult = 5;
                 int debuff1 = ModContent.BuffType<RiptideDebuff>();
                 int debuffTime = 180;
-                if (Projectile.localAI[0] >= 0) // On kill but exclude small bubbles and bubbled that died in a fuse
+                if (Projectile.localAI[0] >= 0 && Main.myPlayer == Projectile.owner) // On kill but exclude small bubbles and bubbled that died in a fuse
                 {
                     Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                     blast.localAI[0] = debuff1;
