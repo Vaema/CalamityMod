@@ -31,6 +31,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 2;
         }
 
+        // On-spawn, the strikes are Rogue class for damage inheritance reasons.
+        // Once they exist, they immediately swap to classless, as they are intentionally similar to Direct Strikes and shouldn't proc effects.
+        public override bool PreAI()
+        {
+            Projectile.DamageType = DamageClass.Generic;
+            return true;
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ProduceImpactParticles(target);
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ProduceImpactParticles(target);
 
