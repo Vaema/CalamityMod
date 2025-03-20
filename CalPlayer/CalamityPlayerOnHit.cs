@@ -1282,8 +1282,13 @@ namespace CalamityMod.CalPlayer
 
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
+                float healPower = 10 * Utils.GetLerpValue(300, 0, gladiatorTimer, true);
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                if (healPower >= 1)
+                {
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                    gladiatorTimer = 300;
+                }
             }
 
             if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
@@ -1450,8 +1455,13 @@ namespace CalamityMod.CalPlayer
 
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
+                float healPower = 10 * Utils.GetLerpValue(300, 0, gladiatorTimer, true);
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                if (healPower >= 1)
+                {
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                    gladiatorTimer = 300;
+                }
             }
 
             if (reaverDefense)

@@ -65,6 +65,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             if (Fired)
             {

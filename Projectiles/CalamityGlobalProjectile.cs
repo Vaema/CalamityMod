@@ -526,7 +526,7 @@ namespace CalamityMod.Projectiles
                         homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? (((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -1246,16 +1246,16 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.HallowBossRainbowStreak && projectile.hostile)
             {
-                bool revMasterMode = (Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive;
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 bool spreadOut = false;
                 bool homeIn = false;
                 float spreadOutCutoffTime = EmpressRainbowStreakSpreadOutCutoff;
-                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
+                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (death ? 55f : 65f) : (death ? 70f : 80f);
                 float spreadDeceleration = 0.97f;
-                float minAcceleration = revMasterMode ? 0.075f : 0.05f;
-                float maxAcceleration = revMasterMode ? 0.15f : 0.1f;
-                float homingVelocity = revMasterMode ? 36f : 30f;
+                float minAcceleration = death ? 0.075f : 0.05f;
+                float maxAcceleration = death ? 0.15f : 0.1f;
+                float homingVelocity = death ? 36f : 30f;
                 float maxVelocity = homingVelocity * 1.5f;
                 float accelerationToMaxVelocity = 1.01f;
 
@@ -4220,6 +4220,26 @@ namespace CalamityMod.Projectiles
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
         {
             modifiers.FinalDamage.Flat -= flatDR;
+        }
+        #endregion
+
+        #region On Hit NPC
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Implementation of shared static iframes.
+            // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
+            if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
+                return;
+
+            // Get the set of shared static iframe projectile types.
+            // If it's empty, then do nothing.
+            IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
+            if (sharedWithProjectiles.Count <= 0)
+                return;
+
+            // Apply the appropriate shared static iframes to all projectile types with which it is shared.
+            foreach (int projType in sharedWithProjectiles)
+                Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
         }
         #endregion
 

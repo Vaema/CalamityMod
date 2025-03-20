@@ -1143,7 +1143,7 @@ namespace CalamityMod
             Mod dialogueMod = ExternalMods.dialogueTweak;
             if (dialogueMod != null)
             {
-                dialogueMod.Call("ReplaceShopButtonIcon", NPCType<WITCH>(), "Head");
+                dialogueMod.Call("ReplaceShopButtonIcon", NPCType<BrimstoneWitch>(), "Head");
             }
         }
         #endregion

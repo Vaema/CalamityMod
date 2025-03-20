@@ -338,6 +338,15 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+
+        // Laser Burn Type (1 = applied damage added and dealt in a single hit, 2 = flat damage + extra flat damage from stacks, 0 = innactive)
+        public int laserBurnType = 0;
+        public int laserBurnDamage = 0; // Only used if laser burn type is 1
+        public const int laserBurnTime = 300;
+        public int laserBurnTimer = 0;
+        public int laserBurnStacks = 0;
+        public bool laserBurnMarked = false;
+
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
         /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
@@ -2872,9 +2881,9 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Rev+ Master Mode
+                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = Main.masterMode && CalamityWorld.revenge;
+                    npc.dontTakeDamage = CalamityWorld.death;
                     break;
 
                 default:
@@ -3845,6 +3854,11 @@ namespace CalamityMod.NPCs
 
             return calcDR;
         }
+
+        public bool IsArmored()
+        {
+            return unbreakableDR && DR > 0.9f;
+        }
         #endregion
 
         #region Boss Head Slot
@@ -3900,6 +3914,9 @@ namespace CalamityMod.NPCs
                 {
                     if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
                         Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
+
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && npc.type == NPCType<RavagerBody>() && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<WeakPetrification>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -4040,7 +4057,7 @@ namespace CalamityMod.NPCs
                     return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
             }
 
-            if (Main.masterMode && CalamityWorld.revenge)
+            if (CalamityWorld.death)
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
@@ -5776,6 +5793,9 @@ namespace CalamityMod.NPCs
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
+            if (laserBurnTimer > 0)
+                laserBurnTimer--;
+
             if (veriumDoomTimer == 0 && veriumDoomMarked)
             {
                 for (int d = 0; d < 14 + veriumDoomStacks; d++)
@@ -5808,6 +5828,41 @@ namespace CalamityMod.NPCs
                     spark.penetrate = 3;
                 }
             }
+
+            if (laserBurnTimer <= 0 && laserBurnMarked && laserBurnType > 0)
+            {
+                if (laserBurnType == 1) // Applied damage
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), laserBurnDamage, 0, Main.myPlayer, npc.whoAmI);
+                if (laserBurnType == 2) // Flat damage + stacks
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 70 + (20 * laserBurnStacks), 0, Main.myPlayer, npc.whoAmI);
+
+                for (int d = 0; d < (int)(6 + laserBurnStacks * 0.35f); d++)
+                {
+                    float partScale = Main.rand.NextFloat(0.7f, 1f);
+                    Vector2 partVel = (new Vector2(15, 15) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle sparks = new SparkParticle(npc.Center, partVel, false, 30, i == 0 ? partScale : partScale * 0.4f, i == 0 ? Color.Red : Color.White);
+                        GeneralParticleHandler.SpawnParticle(sparks);
+                    }
+
+                    Dust dust = Dust.NewDustPerfect(npc.Center, 278);
+                    dust.velocity = (new Vector2(10, 10) * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) + new Vector2(0, -1);
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
+                    dust.noGravity = false;
+                    dust.color = Color.Red;
+                }
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, PitchVariance = 0.15f }, npc.Center);
+                laserBurnMarked = false;
+                laserBurnStacks = 0;
+                laserBurnTimer = 0;
+                laserBurnDamage = 0;
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
@@ -6261,6 +6316,11 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
+
             // True melee resists
             if (DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
@@ -6285,6 +6345,11 @@ namespace CalamityMod.NPCs
             CalamityPlayer modPlayer = player.Calamity();
 
             MakeTownNPCsTakeMoreDamage(npc, projectile, Mod, ref modifiers);
+
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
 
             // Block natural falling stars from killing boss spawners randomly
             if ((projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000) && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
@@ -6479,7 +6544,25 @@ namespace CalamityMod.NPCs
             if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
+        #endregion
+        #region OnHitBy overrides
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
 
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
+        #endregion
+        #region Whip Tag 
         // Make whip tags multiplicative, by effectively reversing the process done to it
         private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
@@ -7301,6 +7384,23 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            if (laserBurnTimer > 0)
+            {
+                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
+                if (laserBurnTimer % particleChance == 0)
+                {
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+                    Particle markedParticle = new GlowOrbParticle(randPosition, Vector2.Zero, false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.45f) + (laserBurnStacks * 0.045f), Color.Red);
+                    GeneralParticleHandler.SpawnParticle(markedParticle);
+                }
+                if (laserBurnType == 0)
+                {
+                    Main.NewText("No Burn Type Set", Color.OrangeRed);
+                    laserBurnMarked = false;
+                    laserBurnTimer = 0;
+                }
+            }
+
             if (voidfrost > 0)
                 Voidfrost.DrawEffects(npc, ref drawColor);
 
@@ -7402,7 +7502,7 @@ namespace CalamityMod.NPCs
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
-            if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
+            if (npc.type == NPCID.KingSlime && CalamityWorld.death)
                 return NPC.AnyNPCs(NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
@@ -8384,7 +8484,7 @@ namespace CalamityMod.NPCs
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                 {
-                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
+                    Texture2D npcTexture = (death && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
                     npc.frame.Y = (int)newAI[3];
@@ -8447,7 +8547,7 @@ namespace CalamityMod.NPCs
                     spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                     Color eyesColor = new Color(200, 200, 200, 0);
-                    if (masterMode && revenge)
+                    if (death)
                     {
                         int alpha = 192;
                         eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
@@ -8540,7 +8640,7 @@ namespace CalamityMod.NPCs
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
-            if ((CalamityWorld.revenge && Main.masterMode) || BossRushEvent.BossRushActive)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.Creeper)
                 {

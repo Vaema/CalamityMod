@@ -7,6 +7,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -14,7 +15,9 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -1118,6 +1121,38 @@ namespace CalamityMod.ILEditing
             // After that we pop NPC.damage and 0 from stack
             cursor.EmitPop();
             cursor.EmitPop();
+        }
+        #endregion
+
+        #region Multiple NPC Happiness support for Cirrus
+        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        {
+            FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
+            NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
+
+            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            {
+                MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                FieldInfo happinessField = typeof(ShopHelper).GetField("_currentPriceAdjustment", BindingFlags.Instance | BindingFlags.NonPublic);
+                float currentPriceAdjustment = (float)happinessField.GetValue(self);
+
+                if (affectionLevel != 0 && Enum.IsDefined(affectionLevel))
+                {
+                    // Add a suffix to the localization key which specifies the NPC's name
+                    addReportField.Invoke(self, [ $"{affectionLevel}NPC_" + NPCID.Search.GetName(npcType),  new
+                    {
+                        NPCName = NPC.GetFullnameByID(npcType)
+                    }, 0]);
+                    currentPriceAdjustment *= NPCHappiness.AffectionLevelToPriceMultiplier[affectionLevel];
+                    happinessField.SetValue(self, currentPriceAdjustment);
+                }
+            }
+            else
+            {
+                orig(self, npcType, affectionLevel);
+            }
         }
         #endregion
 

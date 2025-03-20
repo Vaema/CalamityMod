@@ -153,16 +153,17 @@ namespace CalamityMod.UI.ResourceSets
                     int deadPixels = (int)Math.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
                     var bleedPixels = Math.Round(bleed * pixelsPerLife);
 
-                    Color[] textureData = new Color[width * 12]; 
+                    Color[] textureData = new Color[width * 12];
 
-
+                    // doze 19MAR2025 - I don't know if I could optimize this any further without switching to shaders.
+                    // I don't expect performance issues, but at some point might be worth adding a config to disable the indicator in case of lag or accessibility concerns 
                     for (int i = 0; i < textureData.Length; i++)
                     {
-                        var bleedCol = new Color(0, 0, 0, 0);
-                        if ((i % width < bleedPixels + deadPixels) && !(i % width < deadPixels))
+                        var i_MOD_width = i % width; //minor optimization, calculated here once instead of twice in the loop.
+                        var bleedCol = Color.Transparent;
+                        if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
                         {
                             bleedCol = barTextureData[((i % 12)+(i/width)*12)];
-                            //bleedCol = new Color(0f, 0.3f, 0.75f, 0.5f);
                         }
                         textureData[i] = bleedCol;
 
