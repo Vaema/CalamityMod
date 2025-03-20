@@ -1099,6 +1099,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1308,13 +1309,19 @@ namespace CalamityMod.CalPlayer
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    int heal = (int)Math.Round(damage * ((raiderCritLifespan > 0) ? 0.015 : 0.010));
+                    int heal = (int)Math.Round(damage * (Main.zenithWorld ? 0.01 : 0.008));
                     if (proj.Calamity().stealthStrike)
+                    {
                         heal /= 2; //stealth strikes heal half due to generally dealing far more dmg
+
+                        if (Main.zenithWorld)
+                            heal *= -2; // IT YEARNS FOR MORE BLOOD
+                    }
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
-                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(1f, heal))
+                    // Heals more if the ability is active
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile((raiderCritLifespan > 0) ? 1.5f : 1f, heal))
                         CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
                 }
 
