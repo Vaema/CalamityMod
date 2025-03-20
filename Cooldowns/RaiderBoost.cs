@@ -10,8 +10,7 @@ namespace CalamityMod.Cooldowns
         public override bool ShouldDisplay => true;
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
 
-        //public override string Texture => "CalamityMod/Cooldowns/" + skinTexture;
-        public override string Texture => "CalamityMod/Accessories/" + skinTexture; // placeholdermaxing
+        public override string Texture => "CalamityMod/Cooldowns/" + skinTexture; //Has placeholder icon atm
         public override Color OutlineColor => outlineColor;
         public override Color CooldownStartColor => Color.Lerp(cooldownColorStart, cooldownColorEnd, 1 - instance.Completion);
         public override Color CooldownEndColor => Color.Lerp(cooldownColorStart, cooldownColorEnd, 1 - instance.Completion);

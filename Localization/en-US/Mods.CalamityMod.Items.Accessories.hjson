@@ -1965,7 +1965,7 @@ VampiricTalisman: {
 		Stealth strikes inflict heavy bleeding for 5 seconds and armor crunch for 2.5 seconds
 		'Possessing the talisman makes you yearn for blood'
 		'''
-    YearningForBlood: THIS ENDLESS HUNGER WON'T END
+	YearningForBlood: THIS ENDLESS HUNGER WON'T END
 }
 
 VeneratedLocket: {
