@@ -1387,7 +1387,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 10 seconds
+	Tooltip: Stealth strikes grant 15% critical strike chance to non-stealth strikes for 10 seconds
 }
 
 RampartofDeities: {

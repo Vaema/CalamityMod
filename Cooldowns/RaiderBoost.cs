@@ -27,14 +27,14 @@ namespace CalamityMod.Cooldowns
             switch (skin)
             {
                 case "Bloodfeast":
-                    skinTexture = "VampiricTalisman";
+                    skinTexture = "RaiderBoost"; //Placeholder
                     outlineColor = new Color(143, 27, 27);
                     cooldownColorStart = new Color(133, 5, 5);
                     cooldownColorEnd = new Color(255, 0, 0);
                     break;
 
                 default:
-                    skinTexture = "RaidersTalisman";
+                    skinTexture = "RaiderBoost"; //Placeholder
                     outlineColor = new Color(122, 97, 77);
                     cooldownColorStart = new Color(168, 122, 86);
                     cooldownColorEnd = new Color(74, 60, 49);
