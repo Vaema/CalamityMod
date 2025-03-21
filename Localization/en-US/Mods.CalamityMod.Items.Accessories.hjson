@@ -1007,12 +1007,12 @@ InterstellarStompers: {
 IronBoots: {
 	DisplayName: Iron Boots
 	Tooltip:
-'''
-Hold DOWN to increase your maximum fall speed, even in water
-Upon hitting the ground, a shockwave is created at your feet 
-The shockwave scales in both damage and size the longer you fall for
-Negates fall damage
-'''
+		'''
+		Hold DOWN to increase your maximum fall speed, even in water
+		Upon hitting the ground, a shockwave is created at your feet 
+		The shockwave scales in both damage and size the longer you fall for
+		Negates fall damage
+		'''
 }
 
 JellyChargedBattery: {
