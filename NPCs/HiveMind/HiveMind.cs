@@ -358,11 +358,11 @@ namespace CalamityMod.NPCs.HiveMind
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            int maxSpawns = death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+            int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
                 int type = NPCID.EaterofSouls;
-                int choice = -1;
+                int choice = masterMode ? 1 : -1;
                 do
                 {
                     choice++;
@@ -372,18 +372,21 @@ namespace CalamityMod.NPCs.HiveMind
                         case 1:
                             type = NPCID.EaterofSouls;
                             break;
+
                         case 2:
                             type = NPCID.DevourerHead;
                             break;
+
                         case 3:
                         case 4:
                             type = ModContent.NPCType<DankCreeper>();
                             break;
+
                         default:
                             break;
                     }
                 }
-                while (NPC.AnyNPCs(type) && choice < 5);
+                while (NPC.CountNPCS(type) < 2 && choice < 5);
 
                 if (choice < 5)
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + Main.rand.Next(NPC.width), (int)NPC.position.Y + Main.rand.Next(NPC.height), type);
