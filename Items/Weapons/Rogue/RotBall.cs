@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].usesLocalNPCImmunity = true;
                 }
                 return false;
             }

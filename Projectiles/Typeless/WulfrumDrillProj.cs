@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ownerHitCheck = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Projectile.scale = 0.93f;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition() => false;

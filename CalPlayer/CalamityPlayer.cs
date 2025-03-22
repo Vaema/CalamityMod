@@ -736,6 +736,10 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
+        public bool aFossil = false;
+        public bool aPowder = false;
+        public bool fallingBlockProtection = false;
+        public bool trapProtection = false;
         public bool alluringBait = false;
         public bool enchantedPearl = false;
         public bool fishingStation = false;
@@ -911,6 +915,7 @@ namespace CalamityMod.CalPlayer
         public bool baroclaw = false;
         public bool HasIncreasedDashFirstFrame = false;
         public bool IsFirstDashFrame = true;
+        public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -2143,6 +2148,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            aFossil = false;
+            aPowder = false;
+            fallingBlockProtection = false;
+            trapProtection = false;
             alluringBait = false;
             enchantedPearl = false;
             fishingStation = false;
@@ -3279,7 +3288,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero
-            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != Player.oldVelocity.Y) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
+            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
             {
                 gSabatonHotkeyHoldTime++;
                 if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime % 3f == 0)
@@ -4084,7 +4093,7 @@ namespace CalamityMod.CalPlayer
                     }
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
-                    if (Player.velocity.Y < 0f || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
+                    if ((Player.gravDir == 1 && Player.velocity.Y < 0f) || (Player.gravDir == -1 && Player.velocity.Y > 1f) || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
@@ -4103,7 +4112,7 @@ namespace CalamityMod.CalPlayer
                         Player.controlJump = false;
 
                         // Check if player hit some form of solid resistance (the ground)
-                        if (Player.oldVelocity.Y == Player.velocity.Y)
+                        if (0 == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
                             //Spawn explosion. ai[0] is used for transferring the recorded falling time
@@ -4458,6 +4467,8 @@ namespace CalamityMod.CalPlayer
                     ModDashMovement();
             }
             #endregion
+            
+            Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }
         #endregion
 

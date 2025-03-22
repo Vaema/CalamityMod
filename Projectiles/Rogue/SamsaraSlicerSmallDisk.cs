@@ -105,11 +105,6 @@ namespace CalamityMod.Projectiles.Rogue
             Parent = Main.projectile[(int)Projectile.ai[0]];
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            target.immune[Projectile.owner] = 0;
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             for (int i = 1; i < Projectile.oldPos.Length; i++)

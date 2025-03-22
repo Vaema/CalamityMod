@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 180;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
