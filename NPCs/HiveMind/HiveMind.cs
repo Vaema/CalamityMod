@@ -66,6 +66,8 @@ namespace CalamityMod.NPCs.HiveMind
         private int lungeDelay = 90; // # of ticks long hive mind spends sliding to a stop before lunging
         private int lungeTime = 33;
         private int lungeFade = 15; // Divide 255 by this for duration of hive mind spin before slowing for lunge
+        private int lungeAmount = 1;
+        private int lungesPerformed = 0;
         private double lungeRots = 0.2; // Number of revolutions made while spinning/fading in for lunge
         private bool dashStarted = false;
         private int vileSpitFireRate = 24; // Fire rate for Expert-exclusive Vile Spits during phase 1 teleports
@@ -177,6 +179,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (death)
             {
                 lungeRots = 0.4;
+                lungeAmount = 3;
                 minimumDriftTime = 60;
                 reelbackFade = 6;
                 lungeTime = 23;
@@ -256,6 +259,7 @@ namespace CalamityMod.NPCs.HiveMind
             writer.Write(rotation);
             writer.Write(previousState);
             writer.Write(reelCount);
+            writer.Write(lungesPerformed);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -276,6 +280,7 @@ namespace CalamityMod.NPCs.HiveMind
             rotation = reader.ReadDouble();
             previousState = reader.ReadInt32();
             reelCount = reader.ReadInt32();
+            lungesPerformed = reader.ReadInt32();
         }
 
         public override void FindFrame(int _)
@@ -848,13 +853,16 @@ namespace CalamityMod.NPCs.HiveMind
 
                     phase2timer--;
 
-                    // Use an attack sooner if being hit
-                    if (NPC.justHit && masterMode)
-                        phase2timer -= 4;
+                    if (masterMode)
+                    {
+                        // Use an attack sooner if being hit
+                        if (NPC.justHit)
+                            phase2timer -= 4;
 
-                    // Use an attack sooner if target is close
-                    if (NPC.Distance(player.Center) < 160f)
-                        phase2timer -= 2;
+                        // Use an attack sooner if target is close
+                        if (NPC.Distance(player.Center) < 160f)
+                            phase2timer -= 2;
+                    }
 
                     if (phase2timer <= -180) // No stalling drift mode forever
                     {
@@ -928,7 +936,7 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
-                        if (revenge && lifeRatio < 0.53f)
+                        if (revenge && lifeRatio < 0.53f && lungesPerformed == 0)
                         {
                             state = nextState;
                             nextState = 0;
@@ -968,7 +976,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
 
                         rotation += rotationIncrement * rotationDirection;
-                        phase2timer = lungeDelay;
+                        phase2timer = lungesPerformed > 0 ? (lungeDelay / (lungesPerformed + 1)) : lungeDelay;
 
                         NPC.alpha -= lungeFade;
                         if (NPC.alpha < 0)
@@ -1169,8 +1177,17 @@ namespace CalamityMod.NPCs.HiveMind
                     phase2timer++;
                     if (phase2timer == decelerationTime)
                     {
-                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
-                        state = 0;
+                        lungesPerformed++;
+                        if (lungesPerformed < lungeAmount)
+                        {
+                            state = 2;
+                        }
+                        else
+                        {
+                            phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                            lungesPerformed = 0;
+                            state = 0;
+                        }
                         NPC.ForceNetUpdate();
                     }
 
