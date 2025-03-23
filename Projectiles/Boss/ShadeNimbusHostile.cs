@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.hostile = true;
-            Projectile.timeLeft = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 600 : 360;
+            Projectile.timeLeft = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 480 : 360;
             Projectile.penetrate = -1;
         }
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 540f : 300f))
+            if (Projectile.ai[1] >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 420f : 300f))
             {
                 Projectile.alpha += 5;
                 if (Projectile.alpha > 255)
