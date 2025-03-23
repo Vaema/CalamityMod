@@ -63,6 +63,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[arm].target = npc.target;
                         Main.npc[arm].netUpdate = true;
                         Main.npc[arm].ai[3] = 150f;
+
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            Main.NewText(Language.GetTextValue("Announcement.HasAwoken", Main.npc[head].TypeName), 175, 75);
+                        else if (Main.dedServ)
+                            ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[head].GetTypeNetName()), new Color(175, 75, 255));
                     }
                     else
                     {
