@@ -1409,7 +1409,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (!tentaclesPresent[i])
                         {
-                            int damage = (int)Player.GetBestClassDamage().ApplyTo(390);
+                            int damage = (int)Player.GetBestClassDamage().ApplyTo(350);
 
                             var source = Player.GetSource_FromThis(OmegaBlueHelmet.TentacleEntitySourceContext);
                             Vector2 vel = new Vector2(Main.rand.Next(-13, 14), Main.rand.Next(-13, 14)) * 0.25f;
@@ -1420,10 +1420,10 @@ namespace CalamityMod.CalPlayer
 
                 float damageUp = 0.1f;
                 int critUp = 10;
-                if (omegaBlueHentai)
+                if (omegaBlueAbyssalMadness)
                 {
-                    damageUp *= 2f;
-                    critUp *= 2;
+                    damageUp += 0.1f;
+                    critUp += 10;
                 }
                 Player.GetDamage<GenericDamageClass>() += damageUp;
                 Player.GetCritChance<GenericDamageClass>() += critUp;
