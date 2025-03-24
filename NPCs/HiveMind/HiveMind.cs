@@ -1091,7 +1091,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
 
                             phase2timer++;
-                            if (phase2timer == (int)arcTime / 6)
+                            if (phase2timer == (int)(arcTime / 6f))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
@@ -1130,7 +1130,7 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y -= teleportRadius;
-                            NPC.position.X += teleportRadius * (rainDashesPerformed == 0 ? rotationDirection : -rotationDirection);
+                            NPC.position.X += (death ? (teleportRadius * 1.5f) : teleportRadius) * (rainDashesPerformed == 0 ? rotationDirection : -rotationDirection);
                         }
 
                         NPC.alpha -= masterMode ? 10 : 5;
@@ -1158,7 +1158,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.damage = NPC.defDamage;
 
                             phase2timer++;
-                            if (phase2timer == (int)arcTime / 20)
+                            if (phase2timer == (int)(arcTime / (death ? 15f : 20f)))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
