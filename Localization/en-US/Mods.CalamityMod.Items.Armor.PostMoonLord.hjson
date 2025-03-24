@@ -383,11 +383,11 @@ OmegaBlueHelmet: {
 		'''
 	SetBonus:
 		'''
-		Increases armor penetration by 15
 		10% increased damage and critical strike chance and +2 max minions
 		Short-ranged tentacles heal you by sucking enemy life
 		Press {0} to activate abyssal madness for 5 seconds
-		Abyssal madness increases damage, critical strike chance, and tentacle aggression/range
+		Abyssal madness increases damage and critical strike chance by 10%
+		It also increases tentacle aggression and range, and allows them to critically strike
 		This effect has a 25 second cooldown
 		'''
 }

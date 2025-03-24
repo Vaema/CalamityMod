@@ -1161,7 +1161,7 @@ namespace CalamityMod.CalPlayer
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
         public bool omegaBlueSet = false;
-        public bool omegaBlueHentai = false;
+        public bool omegaBlueAbyssalMadness = false;
         /// <summary> Aerospec armor's summoner set bonus minion. </summary>
         public bool valkyrie = false;
         /// <summary> Statigel armor's summoner set bonus minion. </summary>
@@ -2110,7 +2110,7 @@ namespace CalamityMod.CalPlayer
 
             omegaBlueChestplate = false;
             omegaBlueSet = false;
-            omegaBlueHentai = false;
+            omegaBlueAbyssalMadness = false;
 
             molluskHelmet = false;
             molluskChest = false;
