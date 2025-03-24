@@ -307,7 +307,7 @@ GodSlayerChestplate: {
 		'''
 		+60 max life
 		Enemies take damage when they hit you
-		11% increased damage and 6% increased critical strike chance
+		11% increased damage and 8% increased critical strike chance
 		'''
 	CommonSetBonus:
 		'''
@@ -359,8 +359,8 @@ GodSlayerLeggings: {
 	DisplayName: God Slayer Leggings
 	Tooltip:
 		'''
-		5% increased movement speed
-		10% increased damage and critical strike chance
+		10% increased movement speed
+		11% increased damage and critical strike chance
 		'''
 }
 
@@ -445,7 +445,7 @@ SilvaArmor: {
 	Tooltip:
 		'''
 		+80 max life
-		12% increased damage and 8% increased critical strike chance
+		11% increased damage and 8% increased critical strike chance
 		'''
 	CommonSetBonus:
 		'''
@@ -481,7 +481,7 @@ SilvaLeggings: {
 	Tooltip:
 		'''
 		10% increased movement speed
-		12% increased damage and critical strike chance
+		11% increased damage and critical strike chance
 		'''
 }
 
