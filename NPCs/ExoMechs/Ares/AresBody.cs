@@ -125,6 +125,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         // Variable used to stop the arm spawning loop
         private bool armsSpawned = false;
 
+        // Variable used to prevent the fight from softlocking if one mech enters berserk before spawning the others
+        public bool berserkEarlyBugFix = false;
+
         // Exo Mechdusa stuff
         public bool exoMechdusa = false;
         public int neurontimer = 0;
@@ -442,6 +445,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoWormAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechWorm].ModNPC as ThanatosHead).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -452,6 +458,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoTwinsAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].ModNPC as Apollo.Apollo).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -674,6 +683,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Artemis.Artemis>());
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Apollo.Apollo>());
                             }
+
+                            // If the mech somehow got low enough to enter berserk phase here, trigger the bug fix variable
+                            if (lifeRatio < 0.4f)
+                                berserkEarlyBugFix = true;
                         }
                     }
                     else
@@ -751,8 +764,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case (int)SecondaryPhase.PassiveAndImmune:
 
                     // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
-                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
-                    if (((!exoWormAlive || exoWormLifeRatio < 0.7f) || (!exoTwinsAlive || exoTwinsLifeRatio < 0.7f)) && !otherMechIsBerserk)
+                    // CIT 24MAR2025: Actually fixed the early berserk softlock without affecting the normal fight
+                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f || berserkEarlyBugFix) && !otherMechIsBerserk)
                     {
                         // Tells Ares to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
