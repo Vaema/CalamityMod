@@ -774,9 +774,9 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (dynamoStemCells && MiniSwamerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
-                MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+                MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
 
                 Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);

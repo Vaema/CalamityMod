@@ -300,6 +300,7 @@ namespace CalamityMod.CalPlayer
         public int GalaxyHammer = 0;
         /// <summary> Variable used to apply Ontological Despoiler's nerfs when continuously using a single firing mode. </summary>
         public bool despoilerNerf = false;
+        /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
@@ -312,7 +313,7 @@ namespace CalamityMod.CalPlayer
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
         /// The player's alcohol level. Increased by 1 for each alcohol the player has drank, 2 for Everclear.<br/>
-        /// Is this value is greater than 3, the player is inflicted with Alcohol Poisoning.
+        /// If this value is greater than 3, the player is inflicted with Alcohol Poisoning.
         /// </summary>
         public int alcoholPoisonLevel = 0;
         public int dashTimeMod;
@@ -361,7 +362,7 @@ namespace CalamityMod.CalPlayer
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
         public int RustyMedallionCooldown = 0;
-        public int MiniSwamerCooldown = 0;
+        public int MiniSwarmerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
         public NPC unstableSelectedTarget;
@@ -890,7 +891,7 @@ namespace CalamityMod.CalPlayer
         public bool anechoicPlating = false;
         /// <summary> Used for increasing light level in the Abyss. </summary>
         public bool jellyfishNecklace = false;
-        /// <summary> Calamity's Fairy Boots effect; makes fairies spawn around you which give stats. </summary>
+        /// <summary> Calamity's Fairy Boots effect; makes fairies spawn around the player which give stats. </summary>
         public bool fairyBoots = false;
         /// <summary> Calamity's Flame Waker Boots effect; multiplies heat debuff damage and makes attacks inflict On Fire. </summary>
         public bool flameWakerBoots = false;
@@ -1012,7 +1013,7 @@ namespace CalamityMod.CalPlayer
         public int phantomicHeartRegen = 0;
         public bool silvaWings = false;
         public int silvaWingsLifeRegenTimer = 0;
-        /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Harpy Wings, Tattered Fairy Wings, and Festive Wings. </summary>
+        /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool noStupidNaturalARSpawns = false;
@@ -1034,7 +1035,7 @@ namespace CalamityMod.CalPlayer
 
         #region Armor Set
         public int ArmorSetBonusKeyHeldTimer;
-        /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if you avoid damage for 2 seconds. </summary>
+        /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if the player avoids damage for 2 seconds. </summary>
         public bool silverMedkit = false;
         public int silverMedkitTimer = 0;
         /// <summary> Calamity's Gold armor set bonus; makes enemies drop Gold Coins. </summary>
@@ -1049,7 +1050,7 @@ namespace CalamityMod.CalPlayer
         public int tornadoCooldown = 0;
         /// <summary> Calamity's Snow armor set bonus; reduces cold enemy damage and increases cold debuff damage. </summary>
         public bool eskimoSet = false;
-        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash. </summary>
+        /// <summary> Calamity's Rain armor set bonus; increases jump speed and makes jumps create a damaging splash. </summary>
         public bool rainSet = false;
         /// <summary> Calamity's Meteor armor set bonus; makes all magic guns cost 33% mana instead of Space Gun costing 0 mana. </summary>
         public bool meteorSet = false;
@@ -1400,7 +1401,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Sun Spirit Staff. </summary>
         public bool SP = false;
         public bool dCreeper = false;
-        public bool bClot = false;
         public bool eAxe = false;
         public bool endoCooper = false;
         /// <summary> Vengeful Sun Staff. </summary>
@@ -2555,7 +2555,6 @@ namespace CalamityMod.CalPlayer
             aquaticStar = false;
             SP = false;
             dCreeper = false;
-            bClot = false;
             eAxe = false;
             endoCooper = false;
             apexShark = false;

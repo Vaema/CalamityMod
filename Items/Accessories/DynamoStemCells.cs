@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
     public class DynamoStemCells : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public const int MiniSwamerCooldown = 180;
+        public const int MiniSwarmerCooldown = 180;
         public static int MiniSwamerDamage = 1000;
         public override void SetStaticDefaults()
         {
