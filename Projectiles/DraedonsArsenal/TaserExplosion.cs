@@ -8,7 +8,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public float radius = 100;
+        public float radius = 200;
         public override void SetDefaults()
         {
             Projectile.width = 200;
@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 2;
+            Projectile.timeLeft = 10;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -26,16 +26,20 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<StaticDischarge>(), 300);
 
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.8f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.2f;
+            int hitsToMinMult = 7;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+
+            Player Owner = Main.player[Projectile.owner];
+
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center);
+            target.MoveNPC(launchVel, 12, true);
         }
 
         public override void AI()
         {
-            if (Projectile.ai[0] == 0)
-                radius = 200;
+            
         }
 
         public override bool PreDraw(ref Color lightColor)

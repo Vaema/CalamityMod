@@ -87,23 +87,23 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     if (Main.rand.NextBool(3) && canStick)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : Effects.ArsenalEffects.ArsenalPlamaDust, -Projectile.velocity);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
                         dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
                         dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
                         dust.noGravity = true;
-                        dust.color = Effects.ArsenalEffects.ArsenalPlamaColor;
+                        dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                     }
                     
                     if (targetDist < 1400f)
                     {
-                        Particle spark = new SparkParticle(Projectile.Center, -Projectile.velocity, false, 13, 1.3f, Effects.ArsenalEffects.ArsenalPlamaColor * 0.7f);
+                        Particle spark = new SparkParticle(Projectile.Center, -Projectile.velocity, false, 13, 1.3f, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.7f);
                         GeneralParticleHandler.SpawnParticle(spark);
 
                         if (Main.rand.NextBool(6))
                         {
                             Vector2 placement = Projectile.Center + Main.rand.NextVector2Circular(12, 12);
                             float speed = Main.rand.NextFloat(0.2f, 0.7f);
-                            Particle spark2 = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 7, Main.rand.NextFloat(0.4f, 0.7f), Effects.ArsenalEffects.ArsenalPlamaColor);
+                            Particle spark2 = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 7, Main.rand.NextFloat(0.4f, 0.7f), Effects.ArsenalEffects.ArsenalPlasmaColor);
                             GeneralParticleHandler.SpawnParticle(spark2);
                         }
                     }
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 if (Main.rand.NextBool(8))
                 { 
                     float speed = Main.rand.NextFloat(0.2f, 1.5f);
-                    Particle spark = new SparkParticle(Projectile.Center, -storedVelocity * speed, false, 23, 0.7f * speed, Effects.ArsenalEffects.ArsenalPlamaColor * 0.7f);
+                    Particle spark = new SparkParticle(Projectile.Center, -storedVelocity * speed, false, 23, 0.7f * speed, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (Main.rand.NextBool())
@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
                     dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
                     dust.noGravity = true;
-                    dust.color = Effects.ArsenalEffects.ArsenalPlamaColor;
+                    dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                 }
             }
             time++;
@@ -185,12 +185,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.velocity = Vector2.Zero;
                 for (int i = 0; i < 12; i++)
                 {
-                    int dustStyle = Effects.ArsenalEffects.ArsenalPlamaDust;
+                    int dustStyle = Effects.ArsenalEffects.ArsenalPlasmaDust;
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + storedVelocity.SafeNormalize(Vector2.UnitX) * 38 + Main.rand.NextVector2Circular(12, 12), dustStyle, Projectile.velocity);
                     dust.scale = Main.rand.NextFloat(0.7f, 1.3f);
                     dust.velocity = storedVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.4f, 1.5f);
                     dust.noGravity = false;
-                    dust.color = Effects.ArsenalEffects.ArsenalPlamaColor;
+                    dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                     dust.fadeIn = 1.5f;
                 }
                 SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorPreExplode");
@@ -204,20 +204,20 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float explosionDamage = (stuckInGround ? 2.3f : 0.5f);
             Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ImmolationBurst>(), (int)(Projectile.damage * explosionDamage), Projectile.knockBack * 2, Projectile.owner, 0, stuckInGround ? 1 : 0);
             blast.scale = (stuckInGround ? 2 : 1);
-            Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlamaColor * 0.75f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.2f * bonus, 26);
+            Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.75f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.2f * bonus, 26);
             GeneralParticleHandler.SpawnParticle(bolt2);
 
-            Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlamaColor * 0.75f, "CalamityMod/Particles/WaterFoam", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.77f * bonus, 16);
+            Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.75f, "CalamityMod/Particles/WaterFoam", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.77f * bonus, 16);
             GeneralParticleHandler.SpawnParticle(bolt3);
 
             for (int i = 0; i < (int)(15 * bonus); i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : stuckInGround ? ModContent.DustType<SquashDust>() : Effects.ArsenalEffects.ArsenalPlamaDust, -Projectile.velocity);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : stuckInGround ? ModContent.DustType<SquashDust>() : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
                 dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.9f, 1.8f);
                 dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
                 dust.noGravity = false;
-                dust.color = Effects.ArsenalEffects.ArsenalPlamaColor;
-                if (dust.type == Effects.ArsenalEffects.ArsenalPlamaDust)
+                dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
+                if (dust.type == Effects.ArsenalEffects.ArsenalPlasmaDust)
                     dust.fadeIn = 2f;
             }
 
@@ -233,17 +233,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/ImmolationArrow");
 
             if (!stuckInGround && !stuckInTarget && false)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Effects.ArsenalEffects.ArsenalPlamaColor with { A = 0 }, 1, tex.Value);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 }, 1, tex.Value);
 
             float randSize = Main.rand.NextFloat(0.8f, 1.1f);
             for (int i = 0; i < 20; i++)
             {
                 Vector2 scale = Projectile.scale * new Vector2(0.5f, 1) * 1.5f * randSize;
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 3;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, Effects.ArsenalEffects.ArsenalPlamaColor with { A = 0 } * 0.2f, Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * 0.2f, Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
             }
             Vector2 scale2 = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;
-            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlamaColor with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, scale2, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, scale2, SpriteEffects.None);
             if (stuckInTarget || stuckInGround)
             {
                 Vector2 scale = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;

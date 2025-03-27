@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Dusts
 {
-    public class SquashDust : ModDust
+    public class DiamondDust : ModDust
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void OnSpawn(Dust dust)
@@ -15,15 +15,15 @@ namespace CalamityMod.Dusts
 
         public override bool Update(Dust dust)
         {
-            float fadeSpeed = (dust.fadeIn + 1);
             dust.rotation = dust.velocity.ToRotation() + MathHelper.PiOver2;
+
             dust.velocity *= 0.96f;
             if (dust.noGravity)
-                dust.scale -= 0.045f * fadeSpeed;
+                dust.scale -= 0.045f;
             else
             {
-                dust.scale -= 0.03f * fadeSpeed;
-                dust.velocity.Y += Main.rand.NextFloat(0.1f, 0.35f) * fadeSpeed;
+                dust.scale -= 0.03f;
+                dust.velocity.Y += Main.rand.NextFloat(0.1f, 0.35f);
             }
 
             float light = MathHelper.Clamp(dust.scale * 0.8f, 0f, 1f);
@@ -34,25 +34,28 @@ namespace CalamityMod.Dusts
                 dust.active = false;
 
             dust.position += dust.velocity;
+            dust.fadeIn++; // Fade in is used for the time strech instead
 
             return false;
         }
         public override bool PreDraw(Dust dust)
         {
             Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-            Texture2D solidCenter = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
 
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated").Value;
 
-            Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f));
+            // dust.fadeIn is used to determine how intense the squash is, 1 is no squash, 0 is normal squash
+            float squashLerp = Utils.GetLerpValue(10, 25, dust.fadeIn, true);
+            Vector2 squash = new Vector2(MathHelper.Lerp(1, 0.3f, squashLerp), MathHelper.Lerp(1, 7f, squashLerp));
 
             // Glow Orb
             Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.2f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0);
             if (!dust.noLight)
             {
-                Main.EntitySpriteDraw(solidCenter, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, solidCenter.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
+                for (int i = 0; i < 2; i++)
+                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.4f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha) * (i == 0 ? 1f : 0.7f), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.08f * (i == 0 ? 0.7f : 1), SpriteEffects.None, 0);
             }
             return false;
         }
