@@ -277,24 +277,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 6f;
-
-                float angle1 = MathHelper.ToRadians(2f);
-                for (int i = 0; i < 2; i++)
+                // Holdout velocity weirdly can be a bit finnicky here. apparently.
+                Vector2 shootVelocity = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.UnitY) * 6f;
+                for (int i = 0; i < 6; i++)
                 {
-                    Vector2 corVel1 = shootVelocity.RotatedBy(angle1 * 1.25f) * 0.8f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, corVel1, ModContent.ProjectileType<ScattershotLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
-                    Vector2 corVel2 = shootVelocity.RotatedBy(angle1 * 0.75f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 10, corVel2, ModContent.ProjectileType<ScattershotLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0.65f);
-                    angle1 *= -1;
-                }
-
-                float angle2 = MathHelper.ToRadians(5f);
-                for (int i = 0; i < 2; i++)
-                {
-                    Vector2 corVel3 = shootVelocity.RotatedBy(angle2) * 0.9f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 4, corVel3, ModContent.ProjectileType<ScattershotLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0.8f);
-                    angle2 *= -1;
+                    float offset = MathHelper.ToRadians(MathHelper.Lerp(-5f, 5f, i / 5f));
+                    float timeFactor = MathHelper.Lerp(1.0875f, 0.65f, MathF.Abs(2.5f - i) / 2.5f);
+                    Vector2 spreadVelocity = shootVelocity.RotatedBy(offset) * (i % 3 == 1 ? 0.8f : MathF.Abs(2.5f - i) > 2f ? 0.9f : 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, spreadVelocity, ModContent.ProjectileType<ScattershotLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, timeFactor);
                 }
 
                 for (int i = 0; i < 9; i++)
