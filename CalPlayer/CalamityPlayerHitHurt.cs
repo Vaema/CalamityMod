@@ -200,7 +200,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item68, Player.Center);
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
-                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2750);
+                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2000);
 
                 int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
                 if (eclipse.WithinBounds(Main.maxProjectiles))
@@ -450,6 +450,10 @@ namespace CalamityMod.CalPlayer
                 if (rTide)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Riptide" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
+                }
+                if (hPressure)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HadopelagicPressure" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
                 if (bFlames || weakBrimstoneFlames || demonicFlames)
                 {
@@ -991,13 +995,27 @@ namespace CalamityMod.CalPlayer
                     modifiers.SourceDamage *= 0.65f;
 
                 // 80 in normal, 100 in expert, 150 in master
-                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.PoisonDartTrap)
+                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.FlamesTrap || proj.type == ProjectileID.PoisonDartTrap)
                     modifiers.SourceDamage *= 0.625f;
 
                 // 120 in normal, 144 in expert, 216 in master
                 else if (proj.type == ProjectileID.SpearTrap)
                     modifiers.SourceDamage *= 0.6f;
             }
+
+            bool isFallingBlock = (proj.type == ProjectileID.SandBallFalling) || (proj.type == ProjectileID.SiltBall) || (proj.type == ProjectileID.AshBallFalling) ||
+                (proj.type == ProjectileID.CrimsandBallFalling) || (proj.type == ProjectileID.EbonsandBallFalling) || (proj.type == ProjectileID.PearlSandBallFalling) ||
+                (proj.type == ProjectileID.ShellPileFalling) || (proj.type == ProjectileID.SlushBall) || (proj.type == ModContent.ProjectileType<AstralSandBallFalling>());
+            if (Player.Calamity().fallingBlockProtection && isFallingBlock)
+                modifiers.Cancel();
+
+            bool isIgnoredTrap = (proj.type == ProjectileID.PoisonDartTrap) || (proj.type == ProjectileID.VenomDartTrap) || (proj.type == ProjectileID.PoisonDart);
+            if (Player.Calamity().trapProtection && isIgnoredTrap)
+                modifiers.Cancel();
+
+            bool isReducedTrap = (proj.trap || proj.type == ProjectileID.RollingCactusSpike || proj.type == ProjectileID.Landmine) && !isIgnoredTrap;
+            if (Player.Calamity().trapProtection && isReducedTrap)
+                modifiers.SourceDamage *= 0.35f;
 
             // Reduce damage dealt by rainbow trails depending on how faded they are.
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
@@ -1285,7 +1303,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
-                    if (aSpark)
+                    if (ilSpark)
                         Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
             }
@@ -1874,6 +1892,23 @@ namespace CalamityMod.CalPlayer
                     FlameLickedShell.handleParry(Player);
                 }
             }
+            else if (shieldOfTheOceanParry >= 12)
+            {
+                if (!Player.HasCooldown(ParryCooldown.ID))
+                {
+                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                    int shieldParryIFrames = Player.ComputeParryIFrames();
+                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
+
+                    shieldOfTheOceanEmpoweredParry = true;
+                    modifiers.FinalDamage *= 0.4f; // 60% DR
+                    modifiers.DisableSound();
+                }
+
+                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
+                ShieldoftheOcean.ActivateParry(Player);
+            }
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
@@ -2336,7 +2371,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
                 }
 
-                if (gShell) //5 seconds of no dash reduction and reduced defense
+                if (gShell) //3 seconds of no dash reduction and reduced defense
                 {
                     if (giantShellPostHit == 0)
                     {
@@ -2353,10 +2388,10 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.5f, 1.2f);
                         }
                     }
-                    giantShellPostHit = 300;
+                    giantShellPostHit = 180;
                 }
 
-                if (tortShell) //5 seconds of no dash reduction and reduced defense
+                if (tortShell) //3 seconds of no dash reduction and reduced defense
                 {
                     if (tortShellPostHit == 0)
                     {
@@ -2373,7 +2408,7 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.6f, 2.2f);
                         }
                     }
-                    tortShellPostHit = 300;
+                    tortShellPostHit = 180;
                 }
 
                 if (abyssalDivingSuitPlates && hurtInfo.Damage > 50)
@@ -2620,7 +2655,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                if (aSpark)
+                if (ilSpark)
                 {
                     SoundEngine.PlaySound(SoundID.Item93, Player.Center);
 
@@ -2639,11 +2674,11 @@ namespace CalamityMod.CalPlayer
                 }
                 if (rBrain)
                 {
-                    if (!CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()))
+                    if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()) || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbusSpawner>())))
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 35 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;

@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.Abyss;
+﻿using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
@@ -245,7 +246,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<ShockstormShuttle>();
                     break;
                 case 58:
-                    npc = NPCType<ThiccWaifu>();
+                    npc = NPCType<CloudElemental>();
                     break;
                 case 59:
                     npc = NPCType<Rimehound>();
@@ -456,6 +457,12 @@ namespace CalamityMod.Tiles
                     break;
                 case 128:
                     npc = NPCType<BabyCannonballJellyfish>();
+                    break;
+                case 129:
+                    npc = NPCType<Sharkoon>();
+                    break;
+                case 130:
+                    npc = NPCType<Probesnout>();
                     break;
                 default:
                     break;

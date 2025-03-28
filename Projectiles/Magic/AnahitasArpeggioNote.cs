@@ -79,8 +79,8 @@ namespace CalamityMod.Projectiles.Magic
                 float rotationSpeed = baseRotationSpeed * (60f / Owner.ActiveItem().useTime);
                 Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
 
-                // If the player stops using the weapon, switch to fade away mode
-                if (Owner.releaseUseItem)
+                // If the player stops using the weapon or does not have enough mana, switch to fade away mode
+                if (Owner.releaseUseItem || !Owner.CheckMana(Owner.HeldItem.mana))
                 {
                     Owner.Calamity().arpeggioCooldown = 45;
                     AIState = 1f;

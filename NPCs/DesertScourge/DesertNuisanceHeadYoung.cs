@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 NPC.localAI[1] = 1f;
                 Rectangle rectangle = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                int directChaseDistance = revenge ? 500 : 1000;
+                int directChaseDistance = death ? 400 : revenge ? 500 : 1000;
                 bool shouldDirectlyChase = true;
                 if (NPC.position.Y > Main.player[NPC.target].position.Y)
                 {
@@ -596,8 +596,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     NPC.frame.Y = 0;
                 }
             }
@@ -622,8 +621,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -638,8 +636,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 else
                 {
                     NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
             }
         }
@@ -655,8 +652,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 target.AddBuff(BuffID.Bleeding, 180);
                 NPC.ai[3] = 1f;
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 

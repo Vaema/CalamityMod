@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -28,7 +29,8 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetDefaults()
         {
-            NPC.aiStyle = NPCAIStyleID.AncientVision;
+            NPC.lavaImmune = true;
+            NPC.aiStyle = -1;
             NPC.damage = 33;
             NPC.width = 40;
             NPC.height = 40;
@@ -38,6 +40,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
+            NPC.noGravity = true;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<HeatSpiritBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -94,6 +97,8 @@ namespace CalamityMod.NPCs.Crags
         public override void AI()
         {
             Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.5f, 0f, 0.05f);
+
+            CalamityGlobalNPC.DoFlyingAI(NPC, (CalamityWorld.death ? 12.8f : CalamityWorld.revenge ? 8.8f : 7.8f), (CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.05f : 0.04f), 350f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

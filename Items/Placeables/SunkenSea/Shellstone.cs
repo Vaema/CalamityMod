@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Items.Placeables.Walls;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.SunkenSea
@@ -13,5 +14,15 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         }
 
         public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Shellstone>());
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<ShellstoneWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
+                Register();
+        }
+
     }
 }

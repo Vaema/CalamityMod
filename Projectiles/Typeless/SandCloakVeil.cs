@@ -47,6 +47,11 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.timeLeft == 1)
                 BuffedPlayer.Calamity().getSandCloakAccelBoost = false;
 
+            // Make the sand veil slowly follow its owner
+            float ownerDist = Vector2.Distance(Projectile.Center, Owner.Center);
+            if (ownerDist > Radius * 0.2f)
+                Projectile.Center += Vector2.Normalize(Owner.Center - Projectile.Center) * (ownerDist > Radius * 0.5f ? 2.5f : 1.25f);
+
             // Kill the sand veil early if the owner dashes
             if (Owner.dashDelay == -1 && Projectile.timeLeft < Duration - 45)
             {
@@ -98,5 +103,6 @@ namespace CalamityMod.Projectiles.Typeless
         // CIT 14FEB2025: Replaced old manual knockback code with setting HitDirectionOverride
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Radius, targetHitbox);
+        public override bool? CanCutTiles() => false;
     }
 }

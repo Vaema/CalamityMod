@@ -1,10 +1,12 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,7 +17,7 @@ namespace CalamityMod.Items.SummonItems
     public class NaiadsWarhorn : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
-        public static readonly SoundStyle HornSound = new("CalamityMod/Sounds/Item/LeviathanHornSound");
+        public static readonly SoundStyle HornSound = new("CalamityMod/Sounds/Item/LeviathanHornSound") { Volume = 0.55f };
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Truffle Worm
@@ -64,8 +66,8 @@ namespace CalamityMod.Items.SummonItems
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AbyssGravel>(30).
-                AddIngredient<PlantyMush>(15).
+                AddIngredient<Driftwood>(10).
+                AddIngredient<AbyssGravel>(15).
                 AddIngredient<Lumenyl>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();

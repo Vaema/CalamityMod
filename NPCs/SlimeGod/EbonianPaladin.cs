@@ -319,17 +319,17 @@ namespace CalamityMod.NPCs.SlimeGod
             else if (NPC.ai[0] == 3f)
             {
                 // Distance required to charge
-                float minChargeSafeDistance = 400f;
+                float minChargeSafeDistance = 550f;
 
                 // Charge variables
-                float chargeVelocityMult = 0.125f;
-                float maxChargeVelocity = (bossRush || enraged) ? 24f : death ? 21f : revenge ? 19.5f : expertMode ? 18f : 15f;
+                float chargeVelocityMult = 0.1f;
+                float maxChargeVelocity = (bossRush || enraged) ? 21f : death ? 18f : revenge ? 16.5f : expertMode ? 15f : 12f;
                 if (Main.getGoodWorld)
                     maxChargeVelocity *= 1.15f;
                 if (CalamityWorld.LegendaryMode && revenge)
                     maxChargeVelocity *= 2f;
 
-                float inertia = (bossRush || enraged) ? 50f : death ? 55f : revenge ? 57f : expertMode ? 60f : 65f;
+                float inertia = (bossRush || enraged) ? 100f : death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;
                 if (lifeRatio < 0.75f)
                     inertia *= 0.8f;
                 if (Main.getGoodWorld)
@@ -388,7 +388,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             // Accelerate
                             if (NPC.velocity.Length() < maxChargeVelocity)
                             {
-                                float velocityMult = (bossRush || enraged) ? 1.045f : death ? 1.039f : revenge ? 1.036f : expertMode ? 1.033f : 1.03f;
+                                float velocityMult = (bossRush || enraged) ? 1.15f : death ? 1.13f : revenge ? 1.12f : expertMode ? 1.11f : 1.1f;
                                 NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                                 if (NPC.velocity.Length() > maxChargeVelocity)
                                 {
@@ -399,7 +399,6 @@ namespace CalamityMod.NPCs.SlimeGod
                         }
                         else if (NPC.localAI[2] == 1f)
                         {
-                            inertia *= 2f;
                             NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
 
                             // Stop charging towards the player when within a certain distance

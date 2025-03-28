@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.height = 30;
             Item.accessory = true;
             
-            // Same as Fabsol's Vodka, due to the obtainment method being shimmering Fabsol's Vodka.
+            // Same as Cirrus' Vodka, due to the obtainment method being shimmering Cirrus' Vodka.
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
 

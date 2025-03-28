@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.aiStyle = ProjAIStyleID.Nail;
             AIType = ProjectileID.NailFriendly;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 1;
         }
 
         public override void AI()
@@ -35,10 +37,6 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 1;
-        }
 
         public override void OnKill(int timeLeft)
         {

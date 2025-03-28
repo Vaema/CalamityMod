@@ -16,7 +16,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Prefixes;
 using CalamityMod.World;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -1057,12 +1056,20 @@ namespace CalamityMod.Items
             // Huntress armor
             if (item.type == ItemID.HuntressJerkin)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressJerkin"));
+            if (item.type == ItemID.HuntressPants)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressPants"));
 
             // Apprentice armor
+            if (item.type == ItemID.ApprenticeHat)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
+            if (item.type == ItemID.ApprenticeRobe)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeRobe"));
             if (item.type == ItemID.ApprenticeTrousers)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
             // Valhalla Knight armor
+            if (item.type == ItemID.SquireAltHead)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltHead"));
             if (item.type == ItemID.SquireAltShirt)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
             if (item.type == ItemID.SquireAltPants)
@@ -1072,15 +1079,24 @@ namespace CalamityMod.Items
             if (item.type == ItemID.MonkAltHead)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltHead"));
             if (item.type == ItemID.MonkAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltShirt"));
+            {
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltShirt0"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkAltShirt1"));
+            }
             if (item.type == ItemID.MonkAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltPants"));
 
             // Red Riding armor
             if (item.type == ItemID.HuntressAltShirt)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltShirt"));
+            if (item.type == ItemID.HuntressAltPants)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltPants"));
 
             // Dark Artist armor
+            if (item.type == ItemID.ApprenticeAltHead)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ApprenticeAltHead"));
+            if (item.type == ItemID.ApprenticeAltShirt)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltShirt"));
             if (item.type == ItemID.ApprenticeAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltPants"));
             #endregion

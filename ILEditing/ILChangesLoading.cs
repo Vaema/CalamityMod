@@ -147,6 +147,7 @@ namespace CalamityMod.ILEditing
             IL_Projectile.Damage += VanillaBossResistChanges;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
+            IL_Player.UpdateArmorSets += SolarWingsDashChange;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
@@ -176,7 +177,6 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
             IL_UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
-            IL_UIWorldCreation.AddWorldDifficultyOptions += SwapMasterModeDescriptionKey;
             Terraria.IO.On_WorldFile.ClearTempTiles += ClearModdedTempTiles;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
@@ -205,6 +205,7 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
+            On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

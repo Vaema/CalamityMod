@@ -346,7 +346,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             }
             if (spawnInfo.Player.Calamity().ZoneSulphur || (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water))
             {
-                return 0.1f;
+                return 0.05f;
             }
             return 0f;
         }

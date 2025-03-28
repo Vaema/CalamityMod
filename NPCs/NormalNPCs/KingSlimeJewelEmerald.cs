@@ -120,9 +120,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.ai[0] = 2f;
                     NPC.ai[1] = 0f;
-
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
                 else if (NPC.ai[0] == 2f)
                 {

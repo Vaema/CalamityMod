@@ -100,10 +100,7 @@ namespace CalamityMod.Projectiles.Magic
             // Sync if the direction is different from the old one.
             // Spam caps are ignored due to the frequency of this happening.
             if (newAimDirection != Projectile.velocity)
-            {
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
-            }
+                Projectile.ForceNetUpdate();
 
             Projectile.velocity = newAimDirection;
         }

@@ -34,6 +34,7 @@ AbyssalDivingSuit: {
 		Provides a moderate amount of light and reduces breath loss in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
 		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
+		Grants resistance to the increased breath loss caused by Hadopelagic Pressure
 		'''
 }
 
@@ -113,19 +114,13 @@ AmbrosialAmpoule: {
 		'''
 }
 
-AmidiasSpark: {
-	DisplayName: Amidias' Spark
-	Tooltip:
-		'''
-		Attacks inflict Static Discharge while underwater
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
-		'''
-}
-
 AncientFossil: {
 	DisplayName: Ancient Fossil
-	Tooltip: Increases mining speed by 10%
+	Tooltip:
+		'''
+		Increases mining speed by 10%
+		Provides immunity to damage from falling blocks
+		'''
 }
 
 AnechoicPlating: {
@@ -211,8 +206,10 @@ ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
 		'''
-		Increases mining speed by 15%
-		5% increased damage reduction and +10 defense while underground or in the underworld
+		Increases mining speed by 30%
+		Provides immunity to damage from falling blocks and dart traps
+		65% resistance to all damage from traps
+		Does not stack with downgrades
 		'''
 }
 
@@ -220,7 +217,7 @@ AscendantInsignia: {
 	DisplayName: Ascendant Insignia
 	Tooltip:
 		'''
-		Increases wing flight time by 50%, movement and jump speed by 10%, and acceleration by 1.5x
+		Increases wing flight time by 50%, movement and jump speed by 15%, and acceleration by 1.5x
 		Pressing [KEY] grants you the power of ascension, providing infinite flight time for 4 seconds
 		Ascension has a 40 second cooldown
 		'''
@@ -284,6 +281,15 @@ Baroclaw: {
 		'''
 		10% increased damage and 5% increased damage reduction
 		Attackers take high damage and are inflicted with Armor Crunch and Crush Depth
+		'''
+}
+
+BlackGlassBand: {
+	DisplayName: Black Glass Band
+	Tooltip:
+		'''
+		Enemy hits create an obsidian blast that always critically strikes
+		This effect has a 7 second cooldown, but is halved if the blast kills an enemy
 		'''
 }
 
@@ -542,7 +548,12 @@ DarkSunRing: {
 
 DeadshotBrooch: {
 	DisplayName: Deadshot Brooch
-	Tooltip: 10% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
+	Tooltip:
+		'''
+		12% increased ranged damage, 7% increased ranged critical strike chance and 20% reduced ammo usage
+		Pressing [KEY] will automatically swap the order of ammos in your ammo slots
+		The ammo type swapped depends on the ammo of the weapon you are holding
+		'''
 }
 
 DeepDiver: {
@@ -701,7 +712,7 @@ EnchantedPearl: {
 		'''
 		Increases fishing power by 10
 		Increases chance to catch crates and loot-containing fish by 15%
-		Crate catches emit pearls and are 25% more likely to be higher quality
+		Crate catches are 25% more likely to be higher quality, accompanied by visual pearls
 		'''
 }
 
@@ -831,7 +842,7 @@ GiantShell: {
 	Tooltip:
 		'''
 		10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense for 5 seconds
+		Taking a hit restores dash velocity and reduces defense for 3 seconds
 		'''
 }
 
@@ -841,7 +852,7 @@ GiantTortoiseShell: {
 		'''
 		Grants immunity to knockback
 		5% increased damage reduction and 10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense and damage reduction for 5 seconds
+		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
 		'''
 }
 
@@ -850,7 +861,7 @@ GladiatorsLocket: {
 	Tooltip:
 		'''
 		Enemies drop a healing orb on kill
-		Gain an increase to your damage and movement speed the lower your health is, up to 20%
+		Gain an increase to your damage and movement speed the lower your health is, up to 20% at 50% life or below
 		'''
 }
 
@@ -945,6 +956,16 @@ HowlsHeart: {
 		'''
 }
 
+IlmerisSpark: {
+	DisplayName: Ilmeris' Spark
+	Tooltip:
+		'''
+		Attacks inflict Static Discharge while underwater
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
+		'''
+}
+
 InfectedJewel: {
 	DisplayName: Infected Jewel
 	Tooltip:
@@ -985,7 +1006,13 @@ InterstellarStompers: {
 
 IronBoots: {
 	DisplayName: Iron Boots
-	Tooltip: Allows you to sink faster through liquids
+	Tooltip:
+		'''
+		Hold DOWN to increase your maximum fall speed, even in water
+		Upon hitting the ground, a shockwave is created at your feet 
+		The shockwave scales in both damage and size the longer you fall for
+		Negates fall damage
+		'''
 }
 
 JellyChargedBattery: {
@@ -1054,8 +1081,10 @@ LuxorsGift: {
 	DisplayName: Luxor's Gift
 	Tooltip:
 		'''
-		Weapons fire unique projectiles based on their damage type
-		Some weapons are unable to receive this bonus
+		Summons a scarab launcher that follows you closely
+		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to
+		Held item class is not updated when holding a tool
+		When not in use, the scarab will condense itself into a small orb of light
 		'''
 }
 
@@ -1275,7 +1304,8 @@ PlanebreakersPouch: {
 		'''
 		15% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
 		Grants a 20% chance to not consume arrows
-		Greatly increases all ranged projectile velocity
+		Pressing [KEY] will automatically swap the ammos in your ammo slots
+		The ammo type swapped depends on the ammo of the weapon you are holding
 		'''
 }
 
@@ -1384,7 +1414,7 @@ ReaperToothNecklace: {
 	DisplayName: Reaper Tooth Necklace
 	Tooltip:
 		'''
-		15% increased damage
+		20% increased damage
 		Increases armor penetration by 15
 		'A grisly trophy from the ultimate predator'
 		'''
@@ -1464,7 +1494,7 @@ SandCloak: {
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
 		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		While inside the veil, you gain 10 defense and 1.75x acceleration
+		The veil slowly follows you, and any player inside it gains 10 defense and 1.75x acceleration
 		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
@@ -1548,8 +1578,12 @@ ShieldoftheOcean: {
 	DisplayName: Shield of the Ocean
 	Tooltip:
 		'''
-		Increased defense by 5 when submerged in liquid
-		10% increased movement speed and +1 HP/s life regen while wearing Victide armor
+		Pressing [KEY] will activate a parry, encasing you in a bubble
+		Being hit shortly after encasement will pop the bubble, granting 60% DR for that hit
+		Upon popping, nearby enemies are violently launched away from you, and will be damaged if they collide with tiles
+		Enemies which cannot be launched instead directly take large damage
+		After popping, the damage reducing effect goes on a 20 second cooldown
+		Damage parried whilst on cooldown will not be reduced, and will not deal collision damage to launched enemies
 		'''
 }
 
@@ -1810,7 +1844,7 @@ TheBee: {
 		When at full HP, your damage is increased based on your damage reduction
 		Damage taken at full HP is halved
 		Any energy shields must be fully charged for this effect to apply
-		This has a 10 second cooldown
+		This has a 6 second cooldown
 		'''
 }
 
@@ -1985,7 +2019,7 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Damage is increased by 20% when close to enemies, but decreased by 60% when none are nearby
+		Damage is increased by 20% when close to enemies, but decreased by 40% when none are nearby
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
@@ -2065,7 +2099,7 @@ GhostBracelet: {
 
 GoldenBomb: {
 	DisplayName: Golden Bomb
-	Tooltip: "'El Pene betraying the human body to become an item of Terraria Calamity Mod'"
+	Tooltip: "'I AM THE BOMB'"
 }
 
 HapuFruit: {

@@ -120,6 +120,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
+            ApplyDoTDebuff(hPressure, 40, purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
@@ -408,10 +409,10 @@ namespace CalamityMod.CalPlayer
                     int healFrameCadence = 12;
 
                     // Healing slows down after 5 seconds (300 frames) debuffed. For every 15 frames thereafter the cadence slows
-                    // There is no upper limit to how slow it can get and it can take a very long time to reset to normal
+                    // The upper limit to how slow it can get is after 15 seconds (900 frames)
                     int punishmentFrames = PurityHealSlowdownFrames - 300;
-                    //lowest punishment is three full seconds between the one health heal
-                    if (healFrameCadence < 180)
+                    //lowest punishment is a little under a second between the one health heal
+                    if (healFrameCadence < 52)
                         healFrameCadence += (punishmentFrames < 0) ? 0 : punishmentFrames / 15;
 
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
@@ -425,7 +426,8 @@ namespace CalamityMod.CalPlayer
                         jewelBonusDefense = intendedPurityDefense;
 
                     // Count up total frames spent healing for slowdown.
-                    ++PurityHealSlowdownFrames;
+                    if (PurityHealSlowdownFrames < 900)
+                        ++PurityHealSlowdownFrames;
                 }
 
                 // If the defense should be ticking down to some lower value, do that.

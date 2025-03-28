@@ -153,8 +153,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.localNPCHitCooldown = (int)(Projectile.localNPCHitCooldown / 4f);
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (!Thrown)

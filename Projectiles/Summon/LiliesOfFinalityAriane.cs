@@ -177,8 +177,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Timer++;
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
 
             // If on a dedicated server, don't bother running the visuals and sounds to save resources.
             if (Main.dedServ)

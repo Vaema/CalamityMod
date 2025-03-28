@@ -60,8 +60,7 @@ namespace CalamityMod.Items.Tools
 
                     p.ai[1] = 1f;
                     p.timeLeft = 1;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
 
                     explodedAny = true;
                 }

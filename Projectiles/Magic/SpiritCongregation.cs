@@ -113,10 +113,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Sync velocity if it changed from what it was before.
                 if (previousVelocity != Projectile.velocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation();

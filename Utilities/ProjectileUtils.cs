@@ -18,6 +18,12 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        #region Projectile Identification/Counting Utilities
+        public static T ModProjectile<T>(this Projectile projectile) where T : ModProjectile
+        {
+            return projectile.ModProjectile as T;
+        }
+
         public static bool AnyProjectiles(int projectileID)
         {
             // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
@@ -34,22 +40,9 @@ namespace CalamityMod
         }
 
         public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
+        public static int CountOwnedProjectiles(int projectileID, int ownerID) => Main.projectile.Count(proj => proj.active && proj.type == projectileID && proj.owner == ownerID);
 
         public static int CountHookProj() => Main.projectile.Count(proj => Main.projHook[proj.type] && proj.ai[0] == 2f && proj.active && proj.owner == Main.myPlayer);
-
-        public static bool FinalExtraUpdate(this Projectile proj) => proj.numUpdates == -1;
-
-        public static bool IsTrueMelee(this Projectile proj)
-        {
-            if (proj is null || !proj.active)
-                return false;
-            return proj.CountsAsClass<TrueMeleeDamageClass>() || proj.CountsAsClass<TrueMeleeNoSpeedDamageClass>();
-        }
-
-        public static T ModProjectile<T>(this Projectile projectile) where T : ModProjectile
-        {
-            return projectile.ModProjectile as T;
-        }
 
         public static Projectile FindProjectileByIdentity(int identity, int ownerIndex)
         {
@@ -66,6 +59,41 @@ namespace CalamityMod
             }
             return null;
         }
+
+        public static int FindFirstProjectile(int Type)
+        {
+            int index = -1;
+            for (int x = 0; x < Main.maxProjectiles; x++)
+            {
+                Projectile proj = Main.projectile[x];
+                if (proj.active && proj.type == Type)
+                {
+                    index = x;
+                    break;
+                }
+            }
+            return index;
+        }
+
+        public static void OnlyOneSentry(Player player, int Type)
+        {
+            int existingTurrets = player.ownedProjectileCounts[Type];
+            if (existingTurrets > 0)
+            {
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == Type &&
+                        p.owner == player.whoAmI)
+                    {
+                        p.Kill();
+                        existingTurrets--;
+                        if (existingTurrets <= 0)
+                            break;
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Projectile AI Utilities
         public static void ExpandHitboxBy(this Projectile projectile, int width, int height)
@@ -559,97 +587,7 @@ namespace CalamityMod
         }
         #endregion
 
-        public static int FindFirstProjectile(int Type)
-        {
-            int index = -1;
-            for (int x = 0; x < Main.maxProjectiles; x++)
-            {
-                Projectile proj = Main.projectile[x];
-                if (proj.active && proj.type == Type)
-                {
-                    index = x;
-                    break;
-                }
-            }
-            return index;
-        }
-
-        public static void OnlyOneSentry(Player player, int Type)
-        {
-            int existingTurrets = player.ownedProjectileCounts[Type];
-            if (existingTurrets > 0)
-            {
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == Type &&
-                        p.owner == player.whoAmI)
-                    {
-                        p.Kill();
-                        existingTurrets--;
-                        if (existingTurrets <= 0)
-                            break;
-                    }
-                }
-            }
-        }
-
-        public static int DamageSoftCap(double dmgInput, int cap)
-        {
-            // If the incoming damage is less than the cap, don't do anything.
-            if (dmgInput < cap)
-                return (int)dmgInput;
-
-            // Ratio of how far over the cap you are.
-            // This is a value from 1.0 upwards to theoretically infinity.
-            double overpoweredRatio = dmgInput / cap;
-
-            // Formula which reduces how "overpowered" you are to a reasonable level.
-            double cappedRatio = Math.Pow(overpoweredRatio, 0.5) / 1.25 + 0.2;
-
-            // Take the reduced ratio and multiply the cap by it to get the final capped damage.
-            return (int)(cap * cappedRatio);
-        }
-
-        public static Vector2 RandomVelocity(float directionMult, float speedLowerLimit, float speedCap, float speedMult = 0.1f)
-        {
-            Vector2 velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
-            //Rerolling to avoid dividing by zero
-            while (velocity.X == 0f && velocity.Y == 0f)
-            {
-                velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
-            }
-            velocity.Normalize();
-            velocity *= Main.rand.NextFloat(speedLowerLimit, speedCap) * speedMult;
-            return velocity;
-        }
-
-        public static void MinionAntiClump(this Projectile projectile, float pushForce = 0.05f)
-        {
-            for (int k = 0; k < Main.maxProjectiles; k++)
-            {
-                Projectile otherProj = Main.projectile[k];
-                // Short circuits to make the loop as fast as possible
-                if (!otherProj.active || otherProj.owner != projectile.owner || !otherProj.minion || k == projectile.whoAmI)
-                    continue;
-
-                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away.
-                bool sameProjType = otherProj.type == projectile.type;
-                float taxicabDist = Math.Abs(projectile.position.X - otherProj.position.X) + Math.Abs(projectile.position.Y - otherProj.position.Y);
-                if (sameProjType && taxicabDist < projectile.width)
-                {
-                    if (projectile.position.X < otherProj.position.X)
-                        projectile.velocity.X -= pushForce;
-                    else
-                        projectile.velocity.X += pushForce;
-
-                    if (projectile.position.Y < otherProj.position.Y)
-                        projectile.velocity.Y -= pushForce;
-                    else
-                        projectile.velocity.Y += pushForce;
-                }
-            }
-        }
-
+        #region Projectile Drawing Utilities
         public static bool DrawBeam(this Projectile projectile, float length, float spacer, Color lightColor, Texture2D texture = null, bool curve = false)
         {
             if (texture is null)
@@ -785,6 +723,53 @@ namespace CalamityMod
 
                 Main.EntitySpriteDraw(aura, drawStartInner, auraRec, innerColor * colorMult, auraRotation, auraOrigin, 0.3f + scaleMult * 0.5f, SpriteEffects.None, 0);
             }
+        }
+        #endregion
+
+        public static bool FinalExtraUpdate(this Projectile proj) => proj.numUpdates == -1;
+
+        public static bool IsTrueMelee(this Projectile proj)
+        {
+            if (proj is null || !proj.active)
+                return false;
+            return proj.CountsAsClass<TrueMeleeDamageClass>() || proj.CountsAsClass<TrueMeleeNoSpeedDamageClass>();
+        }
+
+        public static int DamageSoftCap(double dmgInput, int cap)
+        {
+            // If the incoming damage is less than the cap, don't do anything.
+            if (dmgInput < cap)
+                return (int)dmgInput;
+
+            // Ratio of how far over the cap you are.
+            // This is a value from 1.0 upwards to theoretically infinity.
+            double overpoweredRatio = dmgInput / cap;
+
+            // Formula which reduces how "overpowered" you are to a reasonable level.
+            double cappedRatio = Math.Pow(overpoweredRatio, 0.5) / 1.25 + 0.2;
+
+            // Take the reduced ratio and multiply the cap by it to get the final capped damage.
+            return (int)(cap * cappedRatio);
+        }
+
+        public static Vector2 RandomVelocity(float directionMult, float speedLowerLimit, float speedCap, float speedMult = 0.1f)
+        {
+            Vector2 velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            //Rerolling to avoid dividing by zero
+            while (velocity.X == 0f && velocity.Y == 0f)
+            {
+                velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            }
+            velocity.Normalize();
+            velocity *= Main.rand.NextFloat(speedLowerLimit, speedCap) * speedMult;
+            return velocity;
+        }
+
+        public static void ForceNetUpdate(this Projectile proj, bool ignoreCurrentNetSpam = true)
+        {
+            proj.netUpdate = true;
+            if (proj.netSpam >= 10 || ignoreCurrentNetSpam)
+                proj.netSpam = 0;
         }
 
         private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()

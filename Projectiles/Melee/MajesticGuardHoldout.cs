@@ -41,12 +41,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Majestic Guard has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
@@ -186,7 +185,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Custom/DefenseDamage");
             SoundEngine.PlaySound(fire2 with { Volume = 0.55f, Pitch = 0.4f }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(5 - Projectile.numHits * 3, 1, 5));
+            int heal = (int)(MathHelper.Clamp(7 - Projectile.numHits * 5, 1, 7));
             if (Projectile.numHits < 5)
             {
                 Owner.HealPlayer(heal);

@@ -323,10 +323,10 @@ namespace CalamityMod.Tiles
                     DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
                 }
             }
-            // Drop Golden Bombs at a 0.5% chance from Pots
+            // Drop Golden Bombs at a 0.33% chance from Pots
             if (type == TileID.Pots)
             {
-                if (Main.rand.NextBool(200))
+                if (Main.rand.NextBool(300))
                 {
                     DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
                 }

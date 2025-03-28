@@ -1256,6 +1256,7 @@ namespace CalamityMod.Systems
             r.AddIngredient<PiggyItem>();
             r.AddTile(TileID.Hellforge);
             r.Register();
+            r.DisableDecraft();
 
             r = Recipe.Create(ItemID.BowlofSoup);
             r.AddIngredient(ItemID.Mushroom);

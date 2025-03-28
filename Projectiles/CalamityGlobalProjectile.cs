@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -40,6 +41,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
@@ -94,7 +96,15 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public int supercritHits = 0;
 
-        // TODO -- In the TML 1.4.4 port, there is a much better way to set NPC strike events to be forced crits.
+        /// <summary>
+        /// Bonus damage on critical strikes expressed as a ratio. <br />
+        /// 0f = 200% crit damage, vanilla standard.<br />
+        /// 1f = 300% crit damage.<br /><br />
+        /// This applies independently of supercrits and will stack additively with them.
+        /// </summary>
+        public float bonusCritDamage = 0f;
+
+        // 08MAR2025: This remains so that "delayed forced crits" can still be set. This is used for Marksman Ricoshots.
         /// <summary> Set to true to force a projectile to critically strike. </summary>
         public bool forcedCrit = false;
 
@@ -193,7 +203,7 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public float pointBlankShotDistanceTravelled = 0f;
         /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
-        public const int DefaultPointBlankDuration = 18; // 18 frames
+        public const int DefaultPointBlankDuration = 18;
         /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
         public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
@@ -302,7 +312,8 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
         }
-
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
         #endregion On Spawn
 
         #region Set Defaults
@@ -515,7 +526,7 @@ namespace CalamityMod.Projectiles
                         homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? (((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -1235,16 +1246,16 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.HallowBossRainbowStreak && projectile.hostile)
             {
-                bool revMasterMode = (Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive;
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 bool spreadOut = false;
                 bool homeIn = false;
                 float spreadOutCutoffTime = EmpressRainbowStreakSpreadOutCutoff;
-                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
+                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (death ? 55f : 65f) : (death ? 70f : 80f);
                 float spreadDeceleration = 0.97f;
-                float minAcceleration = revMasterMode ? 0.075f : 0.05f;
-                float maxAcceleration = revMasterMode ? 0.15f : 0.1f;
-                float homingVelocity = revMasterMode ? 36f : 30f;
+                float minAcceleration = death ? 0.075f : 0.05f;
+                float maxAcceleration = death ? 0.15f : 0.1f;
+                float homingVelocity = death ? 36f : 30f;
                 float maxVelocity = homingVelocity * 1.5f;
                 float accelerationToMaxVelocity = 1.01f;
 
@@ -4207,6 +4218,26 @@ namespace CalamityMod.Projectiles
         }
         #endregion
 
+        #region On Hit NPC
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Implementation of shared static iframes.
+            // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
+            if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
+                return;
+
+            // Get the set of shared static iframe projectile types.
+            // If it's empty, then do nothing.
+            IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
+            if (sharedWithProjectiles.Count <= 0)
+                return;
+
+            // Apply the appropriate shared static iframes to all projectile types with which it is shared.
+            foreach (int projType in sharedWithProjectiles)
+                Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+        }
+        #endregion
+
         #region Can Damage + Can Hit
         public override bool? CanDamage(Projectile projectile)
         {
@@ -4629,7 +4660,7 @@ namespace CalamityMod.Projectiles
         public override bool PreKill(Projectile projectile, int timeLeft)
         {
             bool masterRevSkeletronPrimeBomb = projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && (Main.masterMode || BossRushEvent.BossRushActive);
-            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death) && projectile.wet;
+            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death);
             bool revGolemInferno = projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f;
 
             if (revQueenBeeBeeHive)
@@ -4743,11 +4774,12 @@ namespace CalamityMod.Projectiles
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int beeAmt = Main.rand.Next(2, 6);
-                        int availableAmountOfNPCsToSpawnUpToSlot = NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
-                        for (int i = 0; i < availableAmountOfNPCsToSpawnUpToSlot; i++)
+                        int beeAmt = Main.rand.Next(2, 5 + 1);
+                        int totalBeesAlive = NPC.CountNPCS(NPCID.Bee) + NPC.CountNPCS(NPCID.BeeSmall);
+                        int finalBeeAmtToSpawn = NPC.AnyNPCs(NPCID.QueenBee) ? Math.Min(beeAmt, (Main.masterMode ? 9 : 15) - totalBeesAlive) : NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
+                        for (int i = 0; i < finalBeeAmtToSpawn; i++)
                         {
-                            int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
+                            int beeType = Main.rand.NextBool() ? NPCID.Bee : NPCID.BeeSmall;
                             if (Main.zenithWorld)
                             {
                                 beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();

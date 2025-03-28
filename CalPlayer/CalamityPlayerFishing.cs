@@ -323,7 +323,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (attempt.legendary)
                 {
-                    ModContent.ItemType<AlluringBait>();
+                    itemDrop = ModContent.ItemType<AlluringBait>();
                 }
                 else if (attempt.common && Main.rand.NextBool())
                     itemDrop = ModContent.ItemType<PlantyMush>();

@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
             }
         }
@@ -76,8 +76,8 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
             }
         }
 

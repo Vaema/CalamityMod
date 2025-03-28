@@ -4,7 +4,7 @@ AcesHigh: {
 		'''
 		Fires a string of cards with varying effects based on card type
 		Hearts grant lifesteal 
-		Spades pierce and ignore immunity frames
+		Spades pierce enemies
 		Diamonds violently explode 
 		Clubs split into three
 		'''
@@ -467,9 +467,8 @@ FetidEmesis: {
 		'''
 		Fires an accelerating stream of bullets until the barrel overheats
 		When the barrel overheats, a spread of fetid chunks is vomited out
-		Holding <right> while firing will hold in the chunks
-		If held in for long enough, more chunks will be fired
 		After firing, the gun must cool back down before it can be used again
+		Pressing <right> while firing will instantly launch the chunks
 		75% chance to save ammo
 		'''
 }
@@ -1157,9 +1156,10 @@ SomaPrime: {
 	Tooltip:
 		'''
 		This weapon can supercrit if its crit chance is over 100%
-		All bullets fired inflict Shred, a stacking bleed debuff
-		Shred deals 150 DPS per stack and scales with your ranged stats
-		Damage ticks of Shred can also critically strike or supercrit
+		All bullets fired have a 5% chance to inflict Shred, a stacking bleed debuff
+		Critical strikes deal 3x damage instead of 2x by default and have a 30% chance to inflict Shred
+		Shred deals 600 DPS per stack and scales with your ranged stats
+		Damage ticks of Shred can critically strike for 3x damage and can supercrit
 		Replaces musket balls with enhanced High Velocity Bullets
 		80% chance to save ammo
 		'''

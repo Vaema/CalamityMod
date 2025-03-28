@@ -50,7 +50,7 @@ namespace CalamityMod.Particles
             if (FadeIn)
                 Scale = 0f;
 
-            Variant = Main.rand.Next(6);
+            Variant = Main.rand.Next(3);
         }
 
         public override void Update()

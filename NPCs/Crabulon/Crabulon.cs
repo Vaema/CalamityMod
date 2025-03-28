@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void AI()
         {
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0f, 0.3f, 0.7f);
+            Lighting.AddLight(NPC.Center, 0f, 0.3f, 0.7f);
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
@@ -144,6 +144,7 @@ namespace CalamityMod.NPCs.Crabulon
             // Phases
             bool phase2 = lifeRatio < 0.66f && expertMode;
             bool phase3 = lifeRatio < 0.33f && expertMode;
+            bool phase4 = lifeRatio < 0.15f && masterMode;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -209,8 +210,8 @@ namespace CalamityMod.NPCs.Crabulon
 
             if (NPC.ai[0] < 2f)
             {
-                int mushBombAmt = phase3 ? 6 : phase2 ? 3 : 1;
-                float fireRate = phase3 ? 4f : phase2 ? 2f : 1f;
+                int mushBombAmt = phase4 ? 12 : phase3 ? 6 : phase2 ? 3 : 1;
+                float fireRate = phase4 ? 6f : phase3 ? 4f : phase2 ? 2f : 1f;
                 NPC.localAI[3] += fireRate;
                 if (NPC.ai[3] == 0f)
                 {
@@ -228,24 +229,15 @@ namespace CalamityMod.NPCs.Crabulon
                     if (NPC.ai[3] >= mushBombAmt)
                         NPC.ai[3] = 0f;
 
-                    float mushBombSpeed = phase3 ? 14f : phase2 ? 12f : 10f;
+                    float mushBombSpeed = phase4 ? 16f : phase3 ? 14f : phase2 ? 12f : 10f;
                     int type = ModContent.ProjectileType<MushBomb>();
                     SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Vector2 mushBombDirection = NPC.Center;
-                        float playerXDist = player.position.X + player.width * 0.5f - mushBombDirection.X;
-                        float playerYDist = player.position.Y + player.height * 0.5f - mushBombDirection.Y;
-                        float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-                        playerDistance = mushBombSpeed / playerDistance;
-                        playerXDist *= playerDistance;
-                        playerYDist *= playerDistance;
-                        mushBombDirection.X += playerXDist;
-                        mushBombDirection.Y += playerYDist;
                         float yVelocity = death ? 1f : expertMode ? 2.5f : 5f;
-                        Vector2 mushBombVelocity = new Vector2(playerXDist, playerYDist - yVelocity);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), mushBombDirection, mushBombVelocity, type, NPC.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, player.Center.Y);
+                        Vector2 projectileVelocity = (Vector2.Normalize(player.Center - NPC.Center) * mushBombSpeed) - Vector2.UnitY * yVelocity;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, NPC.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, player.Center.Y);
                     }
                 }
             }
@@ -262,12 +254,11 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 1f;
                 if (phase3)
                     NPC.ai[1] += 2f;
-                if (NPC.justHit)
-                    NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
-                float idleTime = death ? 30f : expertMode ? 60f : 120f;
+                // Gets tired easily in final phase. - Fabsol
+                float idleTime = phase4 ? 480f : death ? 30f : expertMode ? 60f : 120f;
                 if (NPC.ai[1] >= idleTime)
                 {
                     NPC.TargetClosest();
@@ -288,6 +279,8 @@ namespace CalamityMod.NPCs.Crabulon
                     walkingVelocity += 0.5f;
                 if (phase3)
                     walkingVelocity += 1f;
+                if (phase4)
+                    walkingVelocity += 1.5f;
                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                     walkingVelocity *= 2f;
 
@@ -411,6 +404,8 @@ namespace CalamityMod.NPCs.Crabulon
                             NPC.ai[1] += !revenge ? 2f : 1f;
                         if (phase3)
                             NPC.ai[1] += !revenge ? 2f : 1f;
+                        if (phase4)
+                            NPC.ai[1] += 1f;
                     }
 
                     float jumpGateValue = (bossRush ? 15f : expertMode ? 60f : 120f) / (enrageScale + 1f);
@@ -433,22 +428,49 @@ namespace CalamityMod.NPCs.Crabulon
                             float velocityXAdjustment = velocityX;
                             float velocityYAdjustment = velocityY / 3f;
 
-                            switch ((int)NPC.ai[3])
+                            if (lifeRatio < 0.5f && death)
                             {
-                                case 0: // Normal
-                                    break;
-                                case 1: // High
-                                    velocityY += velocityYAdjustment;
-                                    break;
-                                case 2: // Low
-                                    velocityY -= velocityYAdjustment;
-                                    break;
-                                case 3: // Long and low
-                                    velocityX += velocityXAdjustment;
-                                    velocityY -= velocityYAdjustment;
-                                    break;
-                                default:
-                                    break;
+                                // Crab smash
+                                switch ((int)NPC.ai[3])
+                                {
+                                    case 0: // Normal
+                                        velocityX += velocityXAdjustment * 0.5f;
+                                        velocityY -= velocityYAdjustment;
+                                        break;
+                                    case 1: // High
+                                        velocityX += velocityXAdjustment * 0.5f;
+                                        break;
+                                    case 2: // Low
+                                        velocityX += velocityXAdjustment * 0.5f;
+                                        velocityY -= velocityYAdjustment * 2f;
+                                        break;
+                                    case 3: // Long and low
+                                        velocityX += velocityXAdjustment * 1.5f;
+                                        velocityY -= velocityYAdjustment * 2f;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch ((int)NPC.ai[3])
+                                {
+                                    case 0: // Normal
+                                        break;
+                                    case 1: // High
+                                        velocityY += velocityYAdjustment;
+                                        break;
+                                    case 2: // Low
+                                        velocityY -= velocityYAdjustment;
+                                        break;
+                                    case 3: // Long and low
+                                        velocityX += velocityXAdjustment;
+                                        velocityY -= velocityYAdjustment;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
 
                             if (distanceBelowTarget > 0f)
@@ -505,7 +527,9 @@ namespace CalamityMod.NPCs.Crabulon
                             Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                             destination.Normalize();
                             destination *= projectileVelocity;
-                            int numProj = bossRush ? 48 : CalamityWorld.death ? 30 : 20;
+
+                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                            int numProj = bossRush ? 48 : phase4 ? 21 : CalamityWorld.death ? (phase3 ? 14 : 28) : 20;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -528,7 +552,9 @@ namespace CalamityMod.NPCs.Crabulon
                                 Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                                 destination.Normalize();
                                 destination *= projectileVelocity;
-                                int numProj = bossRush ? 30 : CalamityWorld.death ? 18 : 12;
+
+                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                                int numProj = bossRush ? 30 : phase4 ? 12 : (phase3 && death) ? 8 : 12;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
                                 {
@@ -611,7 +637,7 @@ namespace CalamityMod.NPCs.Crabulon
                         float slowDownMultiplier = death ? 0.84f : expertMode ? 0.92f : 0.96f;
                         NPC.velocity.X *= slowDownMultiplier;
 
-                        float fallSpeedIncrease = death ? 0.24f : expertMode ? 0.12f : 0.06f;
+                        float fallSpeedIncrease = phase4 ? 0.36f : death ? 0.24f : expertMode ? 0.12f : 0.06f;
                         NPC.velocity.Y += fallSpeedIncrease;
                     }
                     else
@@ -622,16 +648,53 @@ namespace CalamityMod.NPCs.Crabulon
                         else if (NPC.direction > 0)
                             NPC.velocity.X += velocityX;
 
-                        float topXSpeed = (death ? 5.5f : expertMode ? 4f : 2.5f) + enrageScale;
-                        if (phase2)
-                            topXSpeed += 1f;
-                        if (phase3)
-                            topXSpeed += 1f;
+                        float maxVelocityXIncrease = death ? 6f : 4f;
+                        float maxVelocityX = 6f + (expertMode ? (maxVelocityXIncrease * (1f - lifeRatio)) : 0f);
 
-                        if (NPC.velocity.X < -topXSpeed)
-                            NPC.velocity.X = -topXSpeed;
-                        if (NPC.velocity.X > topXSpeed)
-                            NPC.velocity.X = topXSpeed;
+                        if (revenge)
+                        {
+                            float velocityXAdjustment = maxVelocityX;
+
+                            if (lifeRatio < 0.5f && death)
+                            {
+                                // Mega velocity
+                                switch ((int)NPC.ai[3])
+                                {
+                                    case 0: // Normal
+                                    case 1: // High
+                                    case 2: // Low
+                                        maxVelocityX += velocityXAdjustment * 0.5f;
+                                        break;
+
+                                    case 3: // Long and low
+                                        maxVelocityX += velocityXAdjustment * 1.5f;
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch ((int)NPC.ai[3])
+                                {
+                                    case 0: // Normal
+                                    case 1: // High
+                                    case 2: // Low
+                                        break;
+
+                                    case 3: // Long and low
+                                        maxVelocityX += velocityXAdjustment;
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+
+                        if (Math.Abs(NPC.velocity.X) > maxVelocityX)
+                            NPC.velocity.X = NPC.velocity.X < 0f ? -maxVelocityX : maxVelocityX;
                     }
                 }
             }

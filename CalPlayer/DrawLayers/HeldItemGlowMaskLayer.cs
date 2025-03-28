@@ -84,6 +84,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/PrismaticBreakerGlow").Value;
             else if (itemType == ModContent.ItemType<PulseRifle>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value;
+            else if (itemType == ModContent.ItemType<GaussRifle>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/GaussRifleGlow").Value;
             else if (itemType == ModContent.ItemType<SoulPiercer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SoulPiercerGlow").Value;
             else if (itemType == ModContent.ItemType<StarburstShiv>())

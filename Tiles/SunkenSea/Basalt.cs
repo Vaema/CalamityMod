@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             AddMapEntry(new Color(58, 55, 70));
 
-            MinPick = 100;
+            MinPick = 110;
 
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");

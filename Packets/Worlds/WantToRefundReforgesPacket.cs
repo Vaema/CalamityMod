@@ -29,7 +29,7 @@ namespace CalamityMod.Packets
             if (!Main.dedServ)
                 return;
 
-            int banditIdx = NPC.FindFirstNPC(ModContent.NPCType<THIEF>());
+            int banditIdx = NPC.FindFirstNPC(ModContent.NPCType<Bandit>());
             if (banditIdx == -1)
                 return;
 
@@ -37,7 +37,7 @@ namespace CalamityMod.Packets
             if (bandit == null || !bandit.active)
                 return;
 
-            THIEF.DoRefund(bandit);
+            Bandit.DoRefund(bandit);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Healing
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public int target = -1;
+        public ref float heal => ref Projectile.ai[0];
 
         public override void SetStaticDefaults()
         {
@@ -39,6 +40,7 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void AI()
         {
+            Projectile.scale = MathHelper.Lerp((heal / 8), 1, 0.65f);
             float maxDistance = 150f;
             if (target < 0)
             {
@@ -76,8 +78,7 @@ namespace CalamityMod.Projectiles.Healing
             float playerDist = playerVector.Length();
             if (playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
-                int heal = 10;
-                player.HealPlayer(heal, HealTextType.Local);
+                player.HealPlayer((int)heal, HealTextType.Local);
 
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/OrbHeal", 5) { Volume = 0.15f }, Projectile.Center);
 
@@ -108,8 +109,8 @@ namespace CalamityMod.Projectiles.Healing
                     intensity *= Projectile.timeLeft / 60f;
                 }
                 // Become smaller the futher along the old positions we are.
-                Vector2 outerScale = new Vector2(1f) * intensity;
-                Vector2 innerScale = new Vector2(1f) * intensity * 0.7f;
+                Vector2 outerScale = new Vector2(1f) * Projectile.scale * intensity;
+                Vector2 innerScale = new Vector2(1f) * Projectile.scale * intensity * 0.7f;
                 outerColor *= intensity;
                 innerColor *= intensity;
                 Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * 0.25f, SpriteEffects.None, 0);

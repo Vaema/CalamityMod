@@ -5,6 +5,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.PlaceableTurrets;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.UI;
@@ -48,12 +49,17 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
+                    int aureusItem = ModContent.ItemType<AstralChunk>();
+                    TooltipLine aureusDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{aureusItem}] {CalamityUtils.GetItemName(aureusItem)}");
+                    aureusDisplay.OverrideColor = new Color(149, 169, 182);
+                    list.Insert(insertIndex + 1, aureusDisplay);
+
                     int meleeItem = ModContent.ItemType<HydraulicVoltCrasher>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(31, 242, 245);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<MatterModulator>();
+                    int rangedItem = ModContent.ItemType<HolofiberImmolator>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 2, rangedDisplay);

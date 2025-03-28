@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 74;
-            Item.damage = 90;
+            Item.damage = 44;
             Item.useAnimation = Item.useTime = 50;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<BladecrestOathsword>().
                 AddIngredient<OldLordClaymore>().
-                AddRecipeGroup("AnyMythrilBar", 5).
+                AddIngredient<UnholyCore>(5).
                 AddIngredient<EssenceofHavoc>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();

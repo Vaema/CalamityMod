@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Critters
         public override void SetDefaults()
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<PolypPanasea>());
-            Item.value = Item.sellPrice(silver: 10); // Reminder to change this :)
+            Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.Green;
         }
     }

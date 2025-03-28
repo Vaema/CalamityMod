@@ -99,7 +99,11 @@ namespace CalamityMod.Projectiles.Melee
                 dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
         }
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (targeted != null && target != targeted)
+                modifiers.SourceDamage *= 0.3f;
+        }
         public override bool? CanHitNPC(NPC target)
         {
             if (Projectile.ai[0] <= 42f)

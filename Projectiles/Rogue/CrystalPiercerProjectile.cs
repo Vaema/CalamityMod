@@ -26,7 +26,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 600;
             AIType = ProjectileID.BoneJavelin;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

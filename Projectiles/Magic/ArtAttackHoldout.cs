@@ -76,10 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             aimOffset = Vector2.Lerp(aimOffset, Vector2.Normalize(Projectile.velocity), AimResponsiveness).SafeNormalize(Vector2.UnitY) * 30f;
 
             if (aimOffset != Projectile.velocity)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
             Projectile.velocity = aimOffset;
         }
 

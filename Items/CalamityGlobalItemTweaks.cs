@@ -6,6 +6,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -107,6 +108,7 @@ namespace CalamityMod.Items
                 { ItemID.EmpressBlade, Do(AutoReuse, DamageExact(60), UseExact(20)) }, // Terraprisma
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
+                { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
                 { ItemID.Excalibur, Do(TrueMelee, DamageExact(220), UseExact(24)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) },
@@ -321,6 +323,12 @@ namespace CalamityMod.Items
                 { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
                 { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
                 { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) },
+                { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
+                { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
+                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
+                { ItemID.SquireGreaves, Do(DefenseDelta(-2)) },
+                { ItemID.SquirePlating, Do(DefenseDelta(-4)) },
                 #endregion
 
                 #region CATEGORY 3: Tool Balancing
@@ -1425,6 +1433,11 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<PolarisParrotfish>()] = ModContent.ItemType<GacruxianMollusk>();
             shimmerTransmute[ModContent.ItemType<GacruxianMollusk>()] = ModContent.ItemType<UrsaSergeant>();
             shimmerTransmute[ModContent.ItemType<UrsaSergeant>()] = ModContent.ItemType<PolarisParrotfish>();
+
+            //Profaned Guardian Drop Swap
+            shimmerTransmute[ModContent.ItemType<RelicOfDeliverance>()] = ModContent.ItemType<RelicOfResilience>();
+            shimmerTransmute[ModContent.ItemType<RelicOfResilience>()] = ModContent.ItemType<RelicOfConvergence>();
+            shimmerTransmute[ModContent.ItemType<RelicOfConvergence>()] = ModContent.ItemType<RelicOfDeliverance>();
 
             //Calamity Permanent Upgrades
             shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();

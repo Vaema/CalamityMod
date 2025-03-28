@@ -57,8 +57,11 @@ namespace CalamityMod.Projectiles.Melee
 
             if (time > 65)
             {
-                Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.4f, "CalamityMod/Particles/GlowSpark2", false, (int)MathHelper.Clamp(9 * sizeVariance, 3, 9), MathHelper.Clamp(0.03f * sizeVariance, 0.01f, 0.03f), Color.Black * 0.6f, new Vector2(1.2f, 0.5f), false, shrinkSpeed: 1.1f);
-                GeneralParticleHandler.SpawnParticle(spark2);
+                if (Main.myPlayer == Projectile.owner)
+                { 
+                    Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.4f, "CalamityMod/Particles/GlowSpark2", false, (int)MathHelper.Clamp(9 * sizeVariance, 3, 9), MathHelper.Clamp(0.03f * sizeVariance, 0.01f, 0.03f), Color.Black * 0.6f, new Vector2(1.2f, 0.5f), false, shrinkSpeed: 1.1f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
 
                 if (Main.rand.NextBool(8))
                 {
@@ -109,6 +112,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.numHits == 0)
             {
+                Projectile.netUpdate = true;
                 SoundStyle sound = new("CalamityMod/Sounds/Item/MeldBurn");
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
             }

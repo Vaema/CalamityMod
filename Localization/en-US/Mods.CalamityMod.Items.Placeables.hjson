@@ -3565,8 +3565,8 @@ Runestone: {
 	Tooltip: ""
 }
 
-Dunesand: {
-	DisplayName: Dunesand
+RuneSand: {
+	DisplayName: Runesand
 	Tooltip: ""
 }
 
@@ -4186,12 +4186,15 @@ MiniAgedFloodlightItem: {
 	Tooltip: ""
 }
 
-BranchCoral: {
-	DisplayName: Branch Coral
+ProbesnoutBanner.DisplayName: Probesnout Banner
+SharkoonBanner.DisplayName: Sharkoon Banner
+
+LimestoneWall: {
+	DisplayName: Limestone Wall
 	Tooltip: ""
 }
 
-EutrophicGlassWall: {
-	DisplayName: Eutrophic Glass Wall
+RunestoneWall: {
+	DisplayName: Runestone Wall
 	Tooltip: ""
 }

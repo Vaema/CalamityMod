@@ -82,8 +82,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.rand.NextBool(5))
             {
                 Projectile.velocity = Projectile.velocity.RotatedByRandom(0.9f);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
         }
 

@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             float finalHitMult = 1; // If it is the last hit of a stealth strike, this is increased.
 
-            if (Projectile.Calamity().stealthStrike && !doneHitting) // Stealth strike bounce code, TODO: port this over to Pulse Rifle/Pusle Pistol because this is just a more functional version of theirs.
+            if (Projectile.Calamity().stealthStrike && !doneHitting) // Stealth strike bounce code
             {
                 NPC chosenTarget = null;
                 float distance = 2500;

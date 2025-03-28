@@ -470,9 +470,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             NPC.SimpleFlyMovement(desiredVelocity, baseAcceleration);
                             float velocityX = flyLeft ? deathrayPhaseVelocity : -deathrayPhaseVelocity;
                             NPC.velocity = horizontalLaserSweep ? new Vector2(velocityX, NPC.velocity.Y) : new Vector2(NPC.velocity.X, deathrayPhaseVelocity * 0.75f);
-
-                            NPC.netUpdate = true;
-                            NPC.netSpam -= 5;
+                            NPC.ForceNetUpdate();
 
                             // Fire deathray
                             if (calamityGlobalNPC.newAI[2] == deathrayTelegraphDuration)

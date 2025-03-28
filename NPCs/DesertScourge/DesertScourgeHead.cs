@@ -303,7 +303,22 @@ namespace CalamityMod.NPCs.DesertScourge
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40), Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+                            {
+                                Vector2 sandSplashSpawnPos = new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos, Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+
+                                if (death)
+                                {
+                                    int type = ModContent.ProjectileType<DesertScourgeSpit>();
+                                    int damage = NPC.GetProjectileDamage(type);
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
+                                        Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -343,7 +358,22 @@ namespace CalamityMod.NPCs.DesertScourge
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40), Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+                            {
+                                Vector2 sandSplashSpawnPos = new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos, Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+
+                                if (death)
+                                {
+                                    int type = ModContent.ProjectileType<DesertScourgeSpit>();
+                                    int damage = NPC.GetProjectileDamage(type);
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
+                                        Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -479,7 +509,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 NPC.localAI[1] = 1f;
                 Rectangle rectangle = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                int directChaseDistance = expertMode ? 800 : 1000;
+                int directChaseDistance = death ? 600 : expertMode ? 800 : 1000;
                 if (enrageScale > 0f)
                     directChaseDistance = 100;
 
@@ -871,8 +901,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     NPC.frame.Y = 0;
                 }
             }
@@ -897,8 +926,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -913,8 +941,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 else
                 {
                     NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
             }
         }
@@ -1054,8 +1081,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 target.AddBuff(BuffID.Bleeding, 600);
                 NPC.ai[3] = 1f;
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 
