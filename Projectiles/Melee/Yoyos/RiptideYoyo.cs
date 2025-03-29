@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], 2f, 0.075f);
+            Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], 2f, 0.09f);
         }
 
         public override bool PreDraw(ref Color lightColor)

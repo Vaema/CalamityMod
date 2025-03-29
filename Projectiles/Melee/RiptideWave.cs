@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.rotation += MathHelper.Lerp(0.3f, 0f, Projectile.timeLeft / (float)Lifetime) * RotationDirection;
 
-            float MaxSize = 126f * Projectile.ai[1];
+            float MaxSize = 135f * Projectile.ai[1];
 
             // Stay on top of the yoyo.
             if (Main.projectile[(int)Projectile.ai[0]].active)
@@ -53,7 +53,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-
             Texture2D waveTex = ModContent.Request<Texture2D>("CalamityMod/Particles/SeaFoam").Value;
             Rectangle frame = waveTex.Frame(1, 3, 0, (int)Projectile.ai[2]);
             Color Col = Color.Lerp(Color.DarkSlateBlue, Color.DeepSkyBlue, Projectile.ai[1]);
