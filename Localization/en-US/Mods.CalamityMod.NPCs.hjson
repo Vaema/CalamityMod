@@ -265,6 +265,7 @@ AlphaSeaMinnow.DisplayName: Alpha Sea Minnow
 AlphaSeaMinnowGold.DisplayName: Gold Alpha Sea Minnow
 MinnowPrime: Minnow Prime
 BabyGhostBell.DisplayName: Baby Ghost Bell
+CarrionSwallower.DisplayName: Carrion Swallower
 Clam.DisplayName: Clam
 EutrophicRay.DisplayName: Eutrophic Ray
 FesteringRemains.DisplayName: Festering Remains
@@ -290,6 +291,7 @@ SandProwlerNested.DisplayName: Sand Prowler
 SeaFloaty.DisplayName: Sea Floaty
 SeaMinnow.DisplayName: Sea Minnow
 SeaMinnowGold.DisplayName: Gold Sea Minnow
+Searslug.DisplayName: Searslug
 Sharkoon.DisplayName: Sharkoon
 BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
@@ -661,5 +663,3 @@ SeaKing: {
 		Princess_LovesNPC: "{NPCName} always smiles when I'm nearby, I like being around him just for that!"
 	}
 }
-
-Searslug.DisplayName: Searslug
