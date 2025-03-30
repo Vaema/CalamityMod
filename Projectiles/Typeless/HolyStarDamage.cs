@@ -167,9 +167,12 @@ namespace CalamityMod.Projectiles.Typeless
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                // Sub projectiles spawning sub explosions... yea it needs armor pen
-                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
-                explo.ArmorPenetration = 30;
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    // Sub projectiles spawning sub explosions... yea it needs armor pen
+                    Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
+                    explo.ArmorPenetration = 30;
+                }
             }
         }
         public override bool? CanDamage() => time > 15 ? null : false;
