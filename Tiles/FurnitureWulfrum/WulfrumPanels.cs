@@ -9,11 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
-    public class WulfrumPlating : ModTile
+    public class WulfrumPanels : ModTile
     {
         public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-        private const short subsheetWidth = 324;
-        private const short subsheetHeight = 90;
 
         public override void SetStaticDefaults()
         {
@@ -25,7 +23,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeDecorativeTiles(Type);
 
             HitSound = MinePlatingSound;
-            AddMapEntry(new Color(155, 171, 117));
+            AddMapEntry(new Color(89, 113, 91));
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -37,14 +35,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
-
-        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
-        {
-            int xPos = i % 2;
-            int yPos = j % 2;
-            frameXOffset = xPos * subsheetWidth;
-            frameYOffset = yPos * subsheetHeight;
         }
     }
 }
