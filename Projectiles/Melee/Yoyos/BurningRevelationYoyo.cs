@@ -18,14 +18,14 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<BurningRevelation>();
         public const int MaxUpdates = 3;
-        public int timer = 0;
         public bool canDamage = true;
         public bool firing = false;
         public NPC targeted;
         public float fade = 0;
         public int hitCooldown = 0;
 
-        public ref float yoyoPower => ref Projectile.ai[2];
+        public int timer = 0;
+        public int yoyoPower = 0;
         public int yoyoPowerMax = 1000;
 
         public bool cloneYoyo = false;
@@ -120,14 +120,16 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 }
                 */
 
-                if (timer <= 0)
+                if (timer > 0)
                 {
-                    firing = false;
-                    canDamage = true;
-                    yoyoPower = 0;
-                }
-                else
                     timer--;
+                    if (timer <= 0)
+                    {
+                        firing = false;
+                        canDamage = true;
+                        yoyoPower = 0;
+                    }
+                }
             }
             else
             {
