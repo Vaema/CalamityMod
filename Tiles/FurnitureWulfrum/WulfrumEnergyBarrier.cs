@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeDecorativeTiles(Type);
 
             DustType = 108;
-            AddMapEntry(new Color(110, 192, 93));
+            AddMapEntry(new Color(194, 255, 67));
             HitSound = SoundID.Shatter;
             MinPick = 55;
         }
@@ -43,9 +43,9 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Color value = Color.Lerp(lime, green, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(lime, green, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
 
-            r = (value.R + value1.R) / 900f;
-            g = (value.G + value1.G) / 900f;
-            b = (value.B + value1.B) / 900f;
+            r = (value.R + value1.R) / 800f;
+            g = (value.G + value1.G) / 800f;
+            b = (value.B + value1.B) / 800f;
             r *= brightness;
             g *= brightness;
             b *= brightness;
