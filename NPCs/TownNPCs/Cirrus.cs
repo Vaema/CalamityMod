@@ -32,6 +32,7 @@ namespace CalamityMod.NPCs.TownNPCs
     public class Cirrus : ModNPC
     {
         public static Asset<Texture2D> AltTexture;
+        public static Asset<Texture2D> WorkoutTexture;
 
         public override void SetStaticDefaults()
         {
@@ -65,6 +66,7 @@ namespace CalamityMod.NPCs.TownNPCs
             if (!Main.dedServ)
             {
                 AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+                WorkoutTexture = ModContent.Request<Texture2D>(Texture + "_Workout", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -95,6 +97,13 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
+            int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            bool wifeIsAround = wife != -1;
+            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+            bool workoutOutfit = Main.dayTime && beLessDrunk;
+            if (workoutOutfit)
+                frameHeight = WorkoutTexture.Height() / Main.npcFrameCount[Type];
+            
             int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[Type] : 0);
             if (NPC.velocity.Y == 0f)
             {
@@ -711,6 +720,7 @@ namespace CalamityMod.NPCs.TownNPCs
             bool wifeIsAround = wife != -1;
             bool wifeIsHappy = wifeIsAround ? Main.ShopHelper.GetShoppingSettings(player, Main.npc[wife]).PriceAdjustment < 1D : false;
             bool beLessDrunk = wifeIsAround && worldIsSafer;
+            bool workoutOutfit = Main.dayTime && beLessDrunk;
 
             if (Main.bloodMoon)
             {
@@ -750,7 +760,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (ChildSafety.Disabled)
                     dialogue.Add(this.GetLocalization("Chat.Normal4Alt").Format(Main.npc[wife].GivenName));
 
-                dialogue.Add(this.GetLocalizedValue("Chat.NewOutfit"));
+                if (workoutOutfit)
+                    dialogue.Add(this.GetLocalizedValue("Chat.NewOutfit"));
             }
 
             int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
@@ -924,8 +935,17 @@ namespace CalamityMod.NPCs.TownNPCs
             if (Main.LocalPlayer.Calamity().trippy)
                 return false;
 
+            int wife = NPC.FindFirstNPC(NPCID.Stylist);
+            bool wifeIsAround = wife != -1;
+            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+            bool workoutOutfit = Main.dayTime && beLessDrunk;
             var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
+
+            Rectangle frame = NPC.frame;
+            if (workoutOutfit && !BirthdayParty.PartyIsUp)
+                frame = new Rectangle(0, NPC.frame.Y, WorkoutTexture.Width(), WorkoutTexture.Height() / Main.npcFrameCount[Type]);
+
+            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : workoutOutfit ? WorkoutTexture.Value : TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, workoutOutfit ? 3f : 6f), frame, drawColor, NPC.rotation, frame.Size() / 2, NPC.scale, something, 0);
             return false;
         }
 
