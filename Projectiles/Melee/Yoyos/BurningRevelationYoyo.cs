@@ -90,17 +90,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (firing)
             {
                 if (targeted == null || targeted.life <= 0)
-                    targeted = Projectile.Center.ClosestNPCAt(600);
+                    targeted = Projectile.Center.ClosestNPCAt(800f);
 
                 if (timer % (cloneYoyo ? 20 : 10) == 0) // Fire Holy Stars
                 {
                     int stardamage = (int)(Projectile.damage * 0.12f);
 
                     Vector2 vel = new Vector2(0, 10).RotatedBy(timer * 0.025f * (cloneYoyo ? -1 : 1));
-                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
+                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar.extraUpdates = 1;
                     damageStar.scale = 0.6f;
-                    Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
+                    Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar2.extraUpdates = 1;
                     damageStar2.scale = 0.6f;
 
