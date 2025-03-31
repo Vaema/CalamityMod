@@ -85,6 +85,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "PokerFace",
             "Poroboros",
             "Raesh",
+            "Sagittariod",
             "Shade",
             "SharZz",
             "Shayy",
