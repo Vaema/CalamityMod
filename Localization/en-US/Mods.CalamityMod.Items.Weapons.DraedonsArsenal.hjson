@@ -221,6 +221,7 @@ Taser: {
 		Press <right> to shoot a hook that attaches to enemies and rapidly electrocutes them
 		After electrocuting an enemy enough, the hook will create a shock explosion before returning to you
 		Successful hook attacks have a short cooldown that is applied unless the hook kills an enemy
+		{$Common.ArmorPenetration}
 		'''
 }
 
