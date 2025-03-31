@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
@@ -16,15 +15,14 @@ namespace CalamityMod.Dusts
 
         public override bool Update(Dust dust)
         {
-            float fadeSpeed = (dust.fadeIn + 1);
             dust.rotation = dust.velocity.ToRotation() + MathHelper.PiOver2;
-            dust.velocity *= 0.96f * fadeSpeed;
+            dust.velocity *= 0.96f;
             if (dust.noGravity)
-                dust.scale -= 0.045f * fadeSpeed;
+                dust.scale -= 0.045f;
             else
             {
-                dust.scale -= 0.03f * fadeSpeed;
-                dust.velocity.Y += Main.rand.NextFloat(0.1f, 0.35f) * fadeSpeed;
+                dust.scale -= 0.03f;
+                dust.velocity.Y += Main.rand.NextFloat(0.1f, 0.35f);
             }
 
             float light = MathHelper.Clamp(dust.scale * 0.8f, 0f, 1f);
@@ -44,7 +42,8 @@ namespace CalamityMod.Dusts
 
             Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
 
-            Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f));
+            // dust.fadeIn is used to determine how intense the squash is, 1 is no squash, 0 is normal squash
+            Vector2 squash = Vector2.Lerp(new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f)), Vector2.One, dust.fadeIn);
 
             // Glow Orb
             Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);

@@ -19,8 +19,10 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            Main.tileBrick[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
+            CalamityUtils.MergeDecorativeTiles(Type);
 
             HitSound = MinePlatingSound;
             AddMapEntry(new Color(155, 171, 117));

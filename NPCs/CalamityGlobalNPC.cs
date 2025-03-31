@@ -339,13 +339,16 @@ namespace CalamityMod.NPCs
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
 
-        // Laser Burn Type (1 = applied damage added and dealt in a single hit, 2 = flat damage + extra flat damage from stacks, 0 = innactive)
+        public bool laserBurnMarked = false;
+        /// <summary>
+        /// The type of laser burn that this NPC is inflicted with.<br/>
+        /// When set to 1, applies all accrued damage in a single hit. When set to 2, deals constant flat damage + extra flat damage from stacks.
+        /// </summary>
         public int laserBurnType = 0;
         public int laserBurnDamage = 0; // Only used if laser burn type is 1
         public const int laserBurnTime = 300;
         public int laserBurnTimer = 0;
         public int laserBurnStacks = 0;
-        public bool laserBurnMarked = false;
 
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
@@ -383,7 +386,7 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
-        /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
+        /// <summary> If greater than 0, this NPC has been "shocked" by Ilmeris' Spark's on hurt effect. </summary>
         public int shocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;

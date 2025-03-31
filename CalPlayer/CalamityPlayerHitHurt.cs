@@ -814,7 +814,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (trinketOfChiBuff)
-                contactDamageReduction += 0.04;
+                contactDamageReduction += 0.08;
 
             // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
             // To prevent abuse, this effect does not work if there are any bosses alive.
@@ -1013,11 +1013,7 @@ namespace CalamityMod.CalPlayer
             if (Player.Calamity().trapProtection && isIgnoredTrap)
                 modifiers.Cancel();
 
-            bool isReducedTrap = (proj.type == ProjectileID.Boulder) || (proj.type == ProjectileID.BouncyBoulder) || (proj.type == ProjectileID.LifeCrystalBoulder) ||
-                (proj.type == ProjectileID.MiniBoulder) || (proj.type == ProjectileID.MoonBoulder) || (proj.type == ProjectileID.SpearTrap) || 
-                (proj.type == ProjectileID.SpikyBallTrap) || (proj.type == ProjectileID.GeyserTrap) || (proj.type == ProjectileID.FlamethrowerTrap) ||
-                (proj.type == ProjectileID.RollingCactus) || (proj.type == ProjectileID.RollingCactusSpike) || (proj.type == ProjectileID.Explosives) ||
-                (proj.type == ProjectileID.TNTBarrel) || (proj.type == ProjectileID.Landmine) || (proj.type == ModContent.ProjectileType<AuricLandMineExplosion>()) || (proj.type == ProjectileID.FlamesTrap); // Fun fact: flamethrower traps fire proj 188, NOT ProjectileID.FlamethrowerTrap :)
+            bool isReducedTrap = (proj.trap || proj.type == ProjectileID.RollingCactusSpike || proj.type == ProjectileID.Landmine) && !isIgnoredTrap;
             if (Player.Calamity().trapProtection && isReducedTrap)
                 modifiers.SourceDamage *= 0.35f;
 
@@ -1067,7 +1063,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (trinketOfChiBuff)
-                projectileDamageReduction += 0.04;
+                projectileDamageReduction += 0.08;
 
             // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
             // To prevent abuse, this effect does not work if there are any bosses alive.

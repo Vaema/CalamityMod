@@ -1,8 +1,8 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.NPCs;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.NPCs;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {

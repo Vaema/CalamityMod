@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
@@ -18,7 +17,7 @@ namespace CalamityMod.Dusts
         {
             float fadeSpeed = (dust.fadeIn + 1);
             dust.rotation = dust.velocity.ToRotation() + MathHelper.PiOver2;
-            dust.velocity *= 0.96f * fadeSpeed;
+            dust.velocity *= 0.96f;
             if (dust.noGravity)
                 dust.scale -= 0.045f * fadeSpeed;
             else
