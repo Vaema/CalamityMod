@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
@@ -16,6 +17,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class Taser : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(10);
         public static readonly SoundStyle Fire = new("CalamityMod/Sounds/Item/TaserLaunch") { Volume = 0.6f };
         public override void SetStaticDefaults()
         {
