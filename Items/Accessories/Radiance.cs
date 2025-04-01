@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -11,7 +12,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("AstralArcanum", "Purity")]
-    public class Radiance : ModItem, ILocalizedModType
+    public class Radiance : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
@@ -46,6 +47,17 @@ namespace CalamityMod.Items.Accessories
             // Add light if the other accessories aren't equipped and visibility is turned on
             if (!(modPlayer.rOoze || modPlayer.aAmpoule) && !hideVisual)
                 Lighting.AddLight(player.Center, new Vector3(1.32f, 1.32f, 1.82f));
+        }
+
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            var player = Main.LocalPlayer;
+            if (player != null)
+            {
+                list.FindAndReplace("[REGEN]", (player.Calamity().purityRegen + player.Calamity().alwaysHoneyRegenAmount).ToString("0.##"));
+                list.FindAndReplace("[DEFENSE]", player.Calamity().jewelBonusDefense.ToString());
+            }
         }
 
         public override void AddRecipes()

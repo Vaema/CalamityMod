@@ -7701,10 +7701,10 @@ namespace CalamityMod.NPCs
                     float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
 
                     // The height of a single frame of the npc
-                    float npcHeight = (float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
+                    float npcHeight = (npc.height * npc.scale)/2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
 
                     // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
-                    float drawPosY = npcHeight + npc.gfxOffY + 16f;
+                    float drawPosY = npcHeight + npc.gfxOffY + 32f;
 
                     // Iterate through the buff texture list
                     for (int i = 0; i < currentDebuffs.Count; i++)
