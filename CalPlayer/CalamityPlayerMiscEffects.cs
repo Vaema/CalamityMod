@@ -3707,8 +3707,7 @@ namespace CalamityMod.CalPlayer
 
             if (vexation)
             {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.GetDamage<GenericDamageClass>() += 0.2f;
+                    Player.GetDamage<GenericDamageClass>() += 0.3f* (1 - Player.statLife / (float)Player.statLifeMax2);
             }
 
             if (ataxiaBlaze)
