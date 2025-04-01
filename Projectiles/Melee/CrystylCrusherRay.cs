@@ -244,7 +244,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.owner == Main.myPlayer)
             {
                 Vector2 destroyVector = Projectile.Center + Projectile.velocity * (Distance - MOVE_DISTANCE);
-                int threeMod = 3;
+                int threeMod = 12;
                 int mineXLeft = (int)(destroyVector.X / 16f - threeMod);
                 int mineXRight = (int)(destroyVector.X / 16f + threeMod);
                 int mineXUp = (int)(destroyVector.Y / 16f - threeMod);
