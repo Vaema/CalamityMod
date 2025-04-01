@@ -392,10 +392,10 @@ namespace CalamityMod.CalPlayer
             // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and purity
             if (rOoze || aAmpoule || purity)
             {
-                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
+                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 6 hp/s
-                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
-                Player.lifeRegen += (int)lifeRegenToGive;
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(4f, 12f, missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
+                Player.lifeRegen += lifeRegenToGive; 
             }
 
             if (purity)
