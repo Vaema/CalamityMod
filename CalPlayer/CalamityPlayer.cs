@@ -807,6 +807,7 @@ namespace CalamityMod.CalPlayer
         public bool tortShell = false;
         public bool absorber = false;
         public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
@@ -823,6 +824,9 @@ namespace CalamityMod.CalPlayer
         public float pulseRate = 1;
         public bool aAmpoule = false;
         public bool rOoze = false;
+        public float radiantOozeRegen = 0;
+        public float ambrosialAmpouleRegen = 0;
+        public float purityRegen = 0;
         public bool fBarrier = false;
         public bool aBrain = false;
         public bool amalgam = false;
@@ -2172,11 +2176,15 @@ namespace CalamityMod.CalPlayer
             tortShell = false;
             absorber = false;
             alwaysHoneyRegen = false;
+            alwaysHoneyRegenAmount = 0;
             honeyTurboRegen = false;
             honeyDewHalveDebuffs = false;
             livingDewHalveDebuffs = false;
             aAmpoule = false;
             rOoze = false;
+            radiantOozeRegen = 0;
+            ambrosialAmpouleRegen = 0;
+            purityRegen = 0;
             fBarrier = false;
             aBrain = false;
             amalgam = false;

@@ -106,9 +106,9 @@ AmbrosialAmpoule: {
 	Tooltip:
 		'''
 		+50 max life
-		Grants +1 HP/s life regen
-		Grants +2 to +6 HP/s life regen based on missing health
+		Grants +3 to +7 HP/s life regen based on missing health
 		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
+		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
 		'''
@@ -1371,15 +1371,21 @@ Radiance: {
 	Tooltip:
 		'''
 		+70 max life
-		Increases life regen based on missing health
-		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
-		Each additional debuff grants 8 defense, which slowly decays while not debuffed
-		Standing still grants +2 HP/s life regen
-		Grants 20 defense and stronger regeneration while afflicted with any debuff
-		The healing eventually slows down if debuffed for an extended period of time
-		Weaker DoT debuffs are harmless and halves the duration of most other debuffs
+		Provides greatly improved life regen, increasing with lost health
+		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
+		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
 		You emit shining blue light if visibility is enabled
 		'A once putrid crystal, now glimmering with immaculate purity'
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/CDF69C:Grants +3 to +7 HP/s life regen based on missing health]
+		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
+		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
+		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
+		[c/CDF69C:+20 defense and faster natural regen recovery while afflicted with any debuff]
+		[c/CDF69C:Each additional debuff grants 8 defense, which slowly decays while not debuffed]
+		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
 
@@ -1388,6 +1394,7 @@ RadiantOoze: {
 	Tooltip:
 		'''
 		Grants +2 to +6 HP/s life regen based on missing health
+		Current boost: +[REGEN] HP/s
 		You emit yellow light if visibility is enabled
 		'''
 }

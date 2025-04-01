@@ -310,6 +310,7 @@ namespace CalamityMod.CalPlayer
                 // Exact copy of vanilla Honey behavior, but does not stack with actually standing in Honey
                 if (!Player.honey)
                 {
+                    alwaysHoneyRegenAmount += 1;
                     Player.lifeRegen += 2;
                     Player.lifeRegenTime += 1;
 
@@ -317,6 +318,7 @@ namespace CalamityMod.CalPlayer
                     // However, this can't bring regen into the positives.
                     if (Player.lifeRegen < 0)
                     {
+                        alwaysHoneyRegenAmount += Math.Min(1f, 0 - Player.lifeRegen/2f);
                         Player.lifeRegen += 2;
                         if (Player.lifeRegen > 0)
                             Player.lifeRegen = 0;
@@ -396,6 +398,9 @@ namespace CalamityMod.CalPlayer
                 //Ambrosial Ampule and ooze give between 2 and 6 hp/s
                 int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(4f, 12f, missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
+                radiantOozeRegen += lifeRegenToGive / 2f;
+                ambrosialAmpouleRegen += lifeRegenToGive / 2f;
+                purityRegen += lifeRegenToGive / 2f;
             }
 
             if (purity)
@@ -428,6 +433,7 @@ namespace CalamityMod.CalPlayer
                     // Count up total frames spent healing for slowdown.
                     if (PurityHealSlowdownFrames < 900)
                         ++PurityHealSlowdownFrames;
+                    purityRegen += (60 / (float)healFrameCadence);
                 }
 
                 // If the defense should be ticking down to some lower value, do that.
@@ -771,6 +777,8 @@ namespace CalamityMod.CalPlayer
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
+                    purityRegen += turboRegenPower/2f;
+                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower/2f;
                 }
 
             }
