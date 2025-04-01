@@ -72,9 +72,9 @@ namespace CalamityMod.Projectiles.Typeless
                         Projectile.timeLeft++;
                     CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted ?? Projectile.Center.ClosestNPCAt(800f), true, 0.5f, 12, 0.975f);
                 }
-                if (Projectile.scale < 1)
-                    Projectile.scale += 0.0035f;
-                if (Projectile.scale >= 1 && !reachedMaxDamage)
+                if (Projectile.scale < 1.15)
+                    Projectile.scale += 0.004f;
+                if (Projectile.scale >= 1.15 && !reachedMaxDamage)
                 {
                     Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.3f, 8);
                     GeneralParticleHandler.SpawnParticle(orb2);
