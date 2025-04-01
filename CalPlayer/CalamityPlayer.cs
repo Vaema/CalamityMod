@@ -785,6 +785,9 @@ namespace CalamityMod.CalPlayer
         public bool eTalisman = false;
         /// <summary> Counter variable used for spawning Statis' Void Sash's scythes when dashing. </summary>
         public int statisTimer = 0;
+        public bool statisNinjaBelt = false;
+        public bool voidSashVisuals = true;
+        public bool statisVoidSash = false;
         public bool nucleogenesis = false;
         public bool nuclearFuelRod = false;
         public bool nebulousCore = false;
@@ -804,6 +807,7 @@ namespace CalamityMod.CalPlayer
         public bool rampartOfDeities = false;
         public bool gShell = false;
         public bool lAmbergris = false;
+        public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
         public bool alwaysHoneyRegen = false;
@@ -931,7 +935,8 @@ namespace CalamityMod.CalPlayer
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
-        public bool Pauldron = false;
+        public bool sPauldron = false;
+        public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
@@ -2195,6 +2200,8 @@ namespace CalamityMod.CalPlayer
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
+            statisNinjaBelt = false;
+            statisVoidSash = false;
             alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
@@ -2240,7 +2247,7 @@ namespace CalamityMod.CalPlayer
             shieldOfTheOcean = false;
             normalityRelocator = false;
             flameLickedShell = false;
-            Pauldron = false;
+            sPauldron = false;
             XykVisualsBlue = false;
             XykVisualsOrange = false;
             manaOverloader = false;
@@ -4405,6 +4412,8 @@ namespace CalamityMod.CalPlayer
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
+                    (statisNinjaBelt ? 0.6f : 0f) +
+                    (statisVoidSash ? 0.85f : 0f) +
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
