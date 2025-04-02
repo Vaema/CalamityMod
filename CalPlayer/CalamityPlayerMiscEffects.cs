@@ -308,7 +308,7 @@ namespace CalamityMod.CalPlayer
                 if (dashStart)
                 {
                     Player.velocity.X *= 3f; // +200% dash speed
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage + 300);
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                 }
 
