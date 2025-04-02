@@ -20,7 +20,11 @@ AuricTeslaCuisses: {
 AuricTeslaHoodedFacemask: {
 	DisplayName: Auric Tesla Hooded Facemask
 	Tooltip: 30% increased ranged damage and critical strike chance
-	SetBonus: Ranged Tarragon, Bloodflare and God Slayer armor effects
+	SetBonus: 
+        '''
+        Ranged Tarragon, Bloodflare and God Slayer armor effects
+		Hold SHIFT to view these set bonus details and Press SHIFT repeatedly to cycle through them
+        '''
 	SetBonus1:
 		'''
 		Inherited Tarragon Set Bonus:
@@ -59,8 +63,9 @@ AuricTeslaPlumedHelm: {
 		'''
 	SetBonus:
 		'''
-		Rogue Tarragon, Bloodflare and God Slayer armor effects
 		+130 maximum stealth
+		Rogue Tarragon, Bloodflare and God Slayer armor effects
+		Hold SHIFT to view these set bonus details and Press SHIFT repeatedly to cycle through them
 		'''
 	SetBonus1:
 		'''
@@ -103,9 +108,10 @@ AuricTeslaRoyalHelm: {
 		'''
 	SetBonus:
 		'''
-		Melee Tarragon, Bloodflare and God Slayer effects
 		Enemies are more likely to target you
 		28% increased melee speed
+		Melee Tarragon, Bloodflare and God Slayer effects
+		Hold SHIFT to view these set bonus details and Press SHIFT repeatedly to cycle through them
 		'''
 	SetBonus1:
 		'''
@@ -148,6 +154,7 @@ AuricTeslaSpaceHelmet: {
 		Max run speed and acceleration boosted by 5%
 		+6 max minions and 75% increased summon damage
 		Summoner Tarragon, Bloodflare and Silva armor effects
+		Hold SHIFT to view these set bonus details and Press SHIFT repeatedly to cycle through them
 		'''
 	SetBonus1:
 		'''
