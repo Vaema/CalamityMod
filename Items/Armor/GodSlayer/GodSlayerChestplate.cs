@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
             player.thorns += 0.5f;
             player.statLifeMax2 += 60;
             player.GetDamage<GenericDamageClass>() += 0.11f;
-            player.GetCritChance<GenericDamageClass>() += 6;
+            player.GetCritChance<GenericDamageClass>() += 8;
         }
 
         public override void AddRecipes()

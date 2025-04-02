@@ -289,7 +289,7 @@ namespace CalamityMod.NPCs.AcidRain
 
                     // Register ground collision from the slam.
                     // Once it has been hit a nuke explosion projectile is created on the ground, along with homing nuclear drops.
-                    if ((NPC.Bottom.Y > Target.Bottom.Y && Collision.SolidCollision(NPC.BottomLeft, NPC.width, 1)) || AttackTimer > 180f)
+                    if ((NPC.Bottom.Y > Target.Bottom.Y && Collision.SolidCollision(NPC.BottomLeft, NPC.width, 1) || Collision.WetCollision(NPC.BottomLeft, NPC.width, 1)) || AttackTimer > 180f)
                     {
                         NPC.velocity = Vector2.Zero;
 

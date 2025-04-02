@@ -338,6 +338,18 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+
+        public bool laserBurnMarked = false;
+        /// <summary>
+        /// The type of laser burn that this NPC is inflicted with.<br/>
+        /// When set to 1, applies all accrued damage in a single hit. When set to 2, deals constant flat damage + extra flat damage from stacks.
+        /// </summary>
+        public int laserBurnType = 0;
+        public int laserBurnDamage = 0; // Only used if laser burn type is 1
+        public const int laserBurnTime = 300;
+        public int laserBurnTimer = 0;
+        public int laserBurnStacks = 0;
+
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
         /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
@@ -374,7 +386,7 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
-        /// <summary> If greater than 0, this NPC has been "shocked" by Amidias' Spark's on hurt effect. </summary>
+        /// <summary> If greater than 0, this NPC has been "shocked" by Ilmeris' Spark's on hurt effect. </summary>
         public int shocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
@@ -2872,9 +2884,9 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Rev+ Master Mode
+                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = Main.masterMode && CalamityWorld.revenge;
+                    npc.dontTakeDamage = CalamityWorld.death;
                     break;
 
                 default:
@@ -4048,7 +4060,7 @@ namespace CalamityMod.NPCs
                     return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
             }
 
-            if (Main.masterMode && CalamityWorld.revenge)
+            if (CalamityWorld.death)
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
@@ -5784,6 +5796,9 @@ namespace CalamityMod.NPCs
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
+            if (laserBurnTimer > 0)
+                laserBurnTimer--;
+
             if (veriumDoomTimer == 0 && veriumDoomMarked)
             {
                 for (int d = 0; d < 14 + veriumDoomStacks; d++)
@@ -5816,6 +5831,41 @@ namespace CalamityMod.NPCs
                     spark.penetrate = 3;
                 }
             }
+
+            if (laserBurnTimer <= 0 && laserBurnMarked && laserBurnType > 0)
+            {
+                if (laserBurnType == 1) // Applied damage
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), laserBurnDamage, 0, Main.myPlayer, npc.whoAmI);
+                if (laserBurnType == 2) // Flat damage + stacks
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 70 + (20 * laserBurnStacks), 0, Main.myPlayer, npc.whoAmI);
+
+                for (int d = 0; d < (int)(6 + laserBurnStacks * 0.35f); d++)
+                {
+                    float partScale = Main.rand.NextFloat(0.7f, 1f);
+                    Vector2 partVel = (new Vector2(15, 15) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle sparks = new SparkParticle(npc.Center, partVel, false, 30, i == 0 ? partScale : partScale * 0.4f, i == 0 ? Color.Red : Color.White);
+                        GeneralParticleHandler.SpawnParticle(sparks);
+                    }
+
+                    Dust dust = Dust.NewDustPerfect(npc.Center, 278);
+                    dust.velocity = (new Vector2(10, 10) * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) + new Vector2(0, -1);
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
+                    dust.noGravity = false;
+                    dust.color = Color.Red;
+                }
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, PitchVariance = 0.15f }, npc.Center);
+                laserBurnMarked = false;
+                laserBurnStacks = 0;
+                laserBurnTimer = 0;
+                laserBurnDamage = 0;
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
@@ -7337,6 +7387,23 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            if (laserBurnTimer > 0)
+            {
+                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
+                if (laserBurnTimer % particleChance == 0)
+                {
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+                    Particle markedParticle = new GlowOrbParticle(randPosition, Vector2.Zero, false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.45f) + (laserBurnStacks * 0.045f), Color.Red);
+                    GeneralParticleHandler.SpawnParticle(markedParticle);
+                }
+                if (laserBurnType == 0)
+                {
+                    Main.NewText("No Burn Type Set", Color.OrangeRed);
+                    laserBurnMarked = false;
+                    laserBurnTimer = 0;
+                }
+            }
+
             if (voidfrost > 0)
                 Voidfrost.DrawEffects(npc, ref drawColor);
 
@@ -7438,7 +7505,7 @@ namespace CalamityMod.NPCs
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
-            if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
+            if (npc.type == NPCID.KingSlime && CalamityWorld.death)
                 return NPC.AnyNPCs(NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
@@ -7634,10 +7701,10 @@ namespace CalamityMod.NPCs
                     float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
 
                     // The height of a single frame of the npc
-                    float npcHeight = (float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
+                    float npcHeight = (npc.height * npc.scale)/2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
 
                     // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
-                    float drawPosY = npcHeight + npc.gfxOffY + 16f;
+                    float drawPosY = npcHeight + npc.gfxOffY + 32f;
 
                     // Iterate through the buff texture list
                     for (int i = 0; i < currentDebuffs.Count; i++)
@@ -8420,7 +8487,7 @@ namespace CalamityMod.NPCs
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                 {
-                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
+                    Texture2D npcTexture = (death && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
                     npc.frame.Y = (int)newAI[3];
@@ -8483,7 +8550,7 @@ namespace CalamityMod.NPCs
                     spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                     Color eyesColor = new Color(200, 200, 200, 0);
-                    if (masterMode && revenge)
+                    if (death)
                     {
                         int alpha = 192;
                         eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
@@ -8576,7 +8643,7 @@ namespace CalamityMod.NPCs
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
-            if ((CalamityWorld.revenge && Main.masterMode) || BossRushEvent.BossRushActive)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.Creeper)
                 {
@@ -9791,6 +9858,35 @@ namespace CalamityMod.NPCs
             }
             result += " " + CalamityUtils.GetTextValue("UI.DebuffSystem.To") + " " + name;
             return result;
+        }
+        #endregion
+
+        #region Type Name Changes
+        public override void ModifyTypeName(NPC npc, ref string typeName)
+        {
+            if ((Main.masterMode && CalamityWorld.death) || BossRushEvent.BossRushActive)
+            {
+                if (npc.type == NPCID.SkeletronPrime)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.SkeletronOmega.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeSaw)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaSaw.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeLaser)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaLaser.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeVice)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaVice.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeCannon)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaCannon.DisplayName");
+                }
+            }
         }
         #endregion
     }

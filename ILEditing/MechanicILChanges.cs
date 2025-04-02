@@ -1868,7 +1868,7 @@ namespace CalamityMod.ILEditing
         #region Revengeance Master Mode Twins Shenanigans
         public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
         {
-            if (Main.masterMode && CalamityWorld.revenge && type == NPCID.Retinazer)
+            if (CalamityWorld.death && type == NPCID.Retinazer)
             {
                 int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
                 if (retinazerIndex == 200)
@@ -1896,7 +1896,7 @@ namespace CalamityMod.ILEditing
 
         public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
         {
-            if (Main.masterMode && CalamityWorld.revenge && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
+            if (CalamityWorld.death && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
             {
                 self.value = 0f;
                 self.boss = false;
@@ -1911,7 +1911,7 @@ namespace CalamityMod.ILEditing
         public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
         {
             bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
-            if (Main.masterMode && CalamityWorld.revenge && correctNPCType)
+            if (CalamityWorld.death && correctNPCType)
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                     Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);

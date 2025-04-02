@@ -774,9 +774,9 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (dynamoStemCells && MiniSwamerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
-                MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+                MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
 
                 Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
@@ -1256,12 +1256,7 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                if ((Player.armor[0].type == ItemType<ReaverHeadTank>() || Player.armor[0].type == ItemType<ReaverHeadExplore>() ||
-                    Player.armor[0].type == ItemType<ReaverHeadMobility>()) && Player.armor[1].type == ItemType<ReaverScaleMail>() &&
-                    Player.armor[2].type == ItemType<ReaverCuisses>())
-                {
                     target.AddBuff(BuffID.Venom, 120, false);
-                }
             }
         }
         #endregion

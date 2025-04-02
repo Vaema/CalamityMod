@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = (int)MaxTime;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
