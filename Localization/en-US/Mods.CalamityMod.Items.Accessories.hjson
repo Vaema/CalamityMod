@@ -1513,7 +1513,7 @@ SandSharkToothNecklace: {
 	Tooltip:
 		'''
 		Increases armor penetration by 10
-		6% increased damage
+		10% increased damage
 		'''
 }
 
