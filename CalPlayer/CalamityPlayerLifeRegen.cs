@@ -617,10 +617,8 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            // Remember this is for 5 seconds after triggering a reflect with a long cooldown
             if (evolutionLifeRegenCounter > 0)
             {
-                Player.lifeRegen += 12;
                 if (Player.lifeRegenTime < 3600f)
                     Player.lifeRegenTime = 3600f;
             }

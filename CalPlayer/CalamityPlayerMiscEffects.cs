@@ -3588,11 +3588,11 @@ namespace CalamityMod.CalPlayer
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
             if (molluskChest)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
             if (molluskLegs)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {
