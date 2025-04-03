@@ -94,15 +94,15 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
                 if (timer % (cloneYoyo ? 20 : 10) == 0) // Fire Holy Stars
                 {
-                    int stardamage = (int)(Projectile.damage * 0.12f);
+                    int stardamage = (int)(Projectile.damage * 0.24f);
 
                     Vector2 vel = new Vector2(0, 10).RotatedBy(timer * 0.025f * (cloneYoyo ? -1 : 1));
                     Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar.extraUpdates = 1;
-                    damageStar.scale = 0.6f;
+                    damageStar.scale = 0.5f;
                     Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar2.extraUpdates = 1;
-                    damageStar2.scale = 0.6f;
+                    damageStar2.scale = 0.5f;
 
                     SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, PitchVariance = 0.2f }, Projectile.Center);

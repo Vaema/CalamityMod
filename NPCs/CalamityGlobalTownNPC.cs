@@ -69,6 +69,7 @@ namespace CalamityMod.NPCs
             "Dazren",
             "Johnny Test", // <@!589966747977777197> (konorango)
             "Bling Bling Boy", // <@!522970788203069442> (phallguy)
+            "RICE", // <@!400107830889152524> (rice_xd.)
         };
         private static readonly string[] ArmsDealerNames =
         {

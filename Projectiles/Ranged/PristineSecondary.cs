@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     // Xyk: "This is probably too much lol"
                     // Yeah I'd say 7x base damage is a bit much
-                    Projectile.damage *= 4;
+                    Projectile.damage *= (int) 5.5;
                     FogColor = Color.Lerp(Color.OrangeRed, Color.Goldenrod, Main.rand.NextFloat());
 
                     SoundStyle ignite = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");

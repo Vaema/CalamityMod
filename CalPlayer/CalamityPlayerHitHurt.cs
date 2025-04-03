@@ -940,7 +940,7 @@ namespace CalamityMod.CalPlayer
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.Cancel();
-                        evolutionLifeRegenCounter = 300;
+                        evolutionLifeRegenCounter = 600;
                         projTypeJustHitBy = proj.type;
 
                         int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.EvolutionReflectCooldownMin, BalancingConstants.EvolutionReflectCooldownMax, cooldownDurationScalar);
@@ -1052,7 +1052,7 @@ namespace CalamityMod.CalPlayer
             if (evolution)
             {
                 if (proj.type == projTypeJustHitBy)
-                    projectileDamageReduction += 0.2;
+                    projectileDamageReduction += 0.25;
             }
 
             if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)

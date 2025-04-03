@@ -1256,12 +1256,7 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                if ((Player.armor[0].type == ItemType<ReaverHeadTank>() || Player.armor[0].type == ItemType<ReaverHeadExplore>() ||
-                    Player.armor[0].type == ItemType<ReaverHeadMobility>()) && Player.armor[1].type == ItemType<ReaverScaleMail>() &&
-                    Player.armor[2].type == ItemType<ReaverCuisses>())
-                {
                     target.AddBuff(BuffID.Venom, 120, false);
-                }
             }
         }
         #endregion

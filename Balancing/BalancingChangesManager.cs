@@ -300,6 +300,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Galactus Blade.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.5f, ProjectileType<GalacticaComet>())));
 
+            // 40% resist to Pristine Fury's alt fire.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<PristineSecondary>())));
+
             // 40% resist to Stellar Torus Staff.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<StellarTorusBeam>())));
             #endregion
