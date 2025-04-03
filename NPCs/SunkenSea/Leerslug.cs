@@ -35,6 +35,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float Timer => ref NPC.ai[1];
 
+        /// <summary>
+        /// Handles the visual scale for the slug
+        /// </summary>
         public Vector2 squish = new Vector2();
         public Player Target => Main.player[NPC.target];
 
@@ -64,6 +67,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -98,31 +105,38 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 case (int)PhaseType.Idle:
                     {
+                        // Flip direction and slow down if it's still moving from a previous cycle
                         if (Timer == 0 && Main.rand.NextBool())
                         {
                             NPC.direction *= -1;
                             NPC.velocity.X *= 0.9f;
                         }
+                        // Move horizontally in short bursts
                         else if (Timer >= Main.rand.Next(30, 90) && NPC.velocity.Y == 0 && Math.Abs(NPC.velocity.X) < 1 && NPC.ai[2] == 0)
                         {
                             NPC.ai[2] = 1;
                             NPC.velocity.X = Main.rand.NextFloat(2, 4) * Main.rand.NextBool().ToDirectionInt();
                         }
 
+                        // Increment the timer before the burst ends
                         if (NPC.ai[2] == 1)
                         {
                             NPC.ai[3]++;
                         }
+                        // Slowdown after a burst
                         else if (NPC.ai[2] == 2 && NPC.velocity.Y == 0)
                         {
                             NPC.velocity.X *= 0.9f;
                             NPC.ai[3]++;
                         }
 
+                        // Handle movement states
                         if (NPC.ai[3] > Main.rand.Next(20, 40))
                         {
+                            // If the slug is moving, enter slowdown
                             if (NPC.ai[2] == 1)
                                 NPC.ai[2] = 2;
+                            // If the slug is in slowdown, reset
                             else if (NPC.ai[2] == 2)
                                 ChangePhase((int)PhaseType.Idle);
                             NPC.ai[3] = 0;
@@ -130,6 +144,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                         NPC.direction = NPC.velocity.X.DirectionalSign();
 
+                        // Aggro
                         if (Target.active && Target.Distance(NPC.Center) < 400 && NPC.HasSight(Target.Center))
                         {
                             ChangePhase((int)PhaseType.Rawr);
@@ -141,6 +156,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         int roar = 40;
                         int startAI = 70;
                         NPC.velocity.X *= 0.9f;
+                        // Roar in place with a lil jump
                         if (Timer == roar)
                         {
                             SoundEngine.PlaySound(SoundID.Zombie7 with { Pitch = 0.7f }, NPC.Center);
@@ -156,11 +172,13 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)PhaseType.Jumps:
                     {
+                        // Do a few hops towards the player
                         int maxJumps = 3;
                         if (NPC.ai[2] >= maxJumps - 1 && NPC.velocity.Y == 0)
                         {
                             ChangePhase((int)PhaseType.Dash);
                         }
+                        // Jump
                         if (NPC.velocity.Y == 0)
                         {
                             NPC.velocity.Y = -5;
@@ -172,20 +190,24 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)PhaseType.Dash:
                     {
+                        // Squash and stretch to telegraph the dash
                         int squash = 30;
                         int stretch = 10;
                         Vector2 squashAmt = new Vector2(0.6f, 1.5f);
                         RawrAnimation(squash, stretch, squashAmt);
+                        // Slow down before dashing
                         if (Timer < squash + 10)
                         {
                             NPC.velocity.X *= 0.95f;
                             NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
                         }
+                        // Dash
                         else if (Timer == squash + 10)
                         {
                             NPC.velocity.X = NPC.DirectionTo(Target.Center).X.DirectionalSign() * 6;
                             SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot, NPC.Center);
                         }
+                        // Leave behind some hot mist particles
                         else
                         {
                             if (Timer % 2 == 0)
@@ -209,15 +231,18 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             int squash = squashDuration;
             int stretch = squash + stretchDuration;
+            // rawrxd
             if (Timer == squash)
             {
                 SoundEngine.PlaySound(SoundID.Zombie7 with { Pitch = 0.7f }, NPC.Center);
             }
+            // Squash
             if (Timer < squash)
             {
                 squish.X = MathHelper.Lerp(1, squashAmt.X, Utils.GetLerpValue(0, squash, Timer, true));
                 squish.Y = MathHelper.Lerp(1, squashAmt.Y, Utils.GetLerpValue(0, squash, Timer, true));
             }
+            // Stretch
             else if (Timer >= squash && Timer < stretch)
             {
                 squish.X = MathHelper.Lerp(squashAmt.X, 1, Utils.GetLerpValue(squash, stretch, Timer, true));
@@ -233,6 +258,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[2] = 0;
             if (resetai3)
                 NPC.ai[3] = 0;
+            NPC.netUpdate = true;
         }
 
         public override void FindFrame(int frameHeight)

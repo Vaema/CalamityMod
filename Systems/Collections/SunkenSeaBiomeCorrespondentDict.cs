@@ -24,6 +24,7 @@ namespace CalamityMod.Systems.Collections
                 { SunkenSeaBiomeFlags.PolypForest, (spawnInfo => spawnInfo.Player.Calamity().ZonePolypForest, GetInstance<PolypForestBiome>().Type) },
                 { SunkenSeaBiomeFlags.GleamingBurrows, (spawnInfo => spawnInfo.Player.Calamity().ZoneGleamingBurrows, GetInstance<GleamingBurrowsBiome>().Type) },
                 { SunkenSeaBiomeFlags.BasaltGully, (spawnInfo => spawnInfo.Player.Calamity().ZoneBasaltGully, GetInstance<BasaltGullyBiome>().Type) },
+                { SunkenSeaBiomeFlags.ClamDen, (spawnInfo => spawnInfo.Player.Calamity().ZoneClamDen, GetInstance<ClamDenBiome>().Type) },
             };
         }
 

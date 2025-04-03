@@ -42,6 +42,9 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
