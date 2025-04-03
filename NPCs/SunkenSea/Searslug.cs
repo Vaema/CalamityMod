@@ -16,12 +16,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using CalamityMod.Particles;
 using CalamityMod.Graphics.Metaballs;
+using ReLogic.Content;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class Searslug : ModNPC
     {
         public bool Skinwalker => NPC.Calamity()?.newAI[0] == 1;
+        public static Asset<Texture2D> glowTexture;
+
+        public override void Load() => glowTexture = ModContent.Request<Texture2D>(Texture + "Glow");
 
         public override void SetStaticDefaults()
         {
@@ -108,6 +112,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             Dust dust = Dust.NewDustPerfect(position, DustID.Torch, velocity, 0, default, Main.rand.NextFloat(1f, 1.6f));
                             dust.noGravity = true;
                         }
+                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Leerslug>());
                         NPC.HitEffect();
                         NPC.active = false;
                     }
@@ -151,12 +156,16 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
             Vector2 pos = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY - (Vector2.UnitY * 10).RotatedBy(NPC.rotation);
+            float colorMult = 1f;
             // Shake if a skinwalker
             if (Skinwalker)
             {
                 pos += Main.rand.NextVector2Unit() * Main.rand.NextFloat(-1f, 1f);
+                colorMult = 0.8f;
             }
             spriteBatch.Draw(tex, pos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
+
+            spriteBatch.Draw(glowTexture.Value, pos, NPC.frame, Color.White * colorMult, NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
             return false;
         }
 
