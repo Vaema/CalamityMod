@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.velocity.X *= xVelocityMultiplier;
                 if (Math.Abs(Projectile.velocity.X) > xVelocityLimit)
-                    Projectile.velocity.X = xVelocityLimit;
+                    Projectile.velocity.X = Math.Sign(Projectile.velocity.X) * xVelocityLimit;
             }
         }
 
