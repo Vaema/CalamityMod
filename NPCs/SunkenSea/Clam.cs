@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -121,16 +123,21 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(NPC.localAI[0]);
+            writer.Write(NPC.localAI[1]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.localAI[0] = reader.ReadSingle();
+            NPC.localAI[1] = reader.ReadSingle();
         }
 
         public override void OnSpawn(IEntitySource source)
         {
             NPC.TargetClosest();
+
+            NPC.direction = Main.rand.NextBool().ToDirectionInt();
+            NPC.localAI[1] = Main.rand.Next(0, 4);
 
             if (Target.Calamity().ZoneClamDen)
                 Personality = (int)PersonalityTypes.Den;
@@ -142,6 +149,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            // Rotation at its peak
+            float maxRotation = MathHelper.ToRadians(60);
             NPC.TargetClosest(false);
             // Always be mad during Clamity
             if (Main.player[NPC.target].Calamity().clamity)
@@ -191,12 +200,44 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)PhaseType.Attacking:
                     {
                         Timer++;
+                        if (NPC.velocity.Y == 0)
+                        {
+                            NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
+                            NPC.velocity.X = 0;
+                            NPC.ai[2]++;
+                            if (NPC.ai[2] > Main.rand.Next(30, 60))
+                            {
+                                NPC.velocity.Y = -4;
+                                NPC.velocity.X = NPC.direction * 6;
+                                NPC.ai[2] = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (NPC.velocity.Y < 0)
+                            {
+                                ShellRotation += 0.065f;
+                                if (ShellRotation > maxRotation)
+                                    ShellRotation = maxRotation;
+                            }
+                            NPC.velocity.X *= 0.99f;
+                        }
+
+                        if (NPC.position.Distance(NPC.oldPosition) < 8 && NPC.velocity.Y >= 0)
+                        {
+                            ShellRotation -= 0.065f;
+                            if (ShellRotation < 0)
+                                ShellRotation = 0;
+                        }
+
+
                         // Squirt
-                        if (Timer > 0)
+                        if (Timer > Main.rand.Next(220, 260) && NPC.HasSight(Target.Center) && ShellRotation == 0)
                         {
                             ChangePhase((int)PhaseType.Squirt);
                             NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
                         }
+                        NPC.StepUpBlocks();
                     }
                     break;
                 case (int)PhaseType.Squirt:
@@ -225,8 +266,6 @@ namespace CalamityMod.NPCs.SunkenSea
                         float endClose = startClose + 5;
                         // When to go to the next attack
                         float reset = endClose + 60;
-                        // Rotation at its peak
-                        float maxRotation = MathHelper.ToRadians(80);
 
                         // Direction the player is relative to the clam
                         int playerPosition = NPC.DirectionTo(Target.Center).X.DirectionalSign();
@@ -234,32 +273,29 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Shell animation
                         if (Timer >= startOpen && Timer <= endOpen)
                         {
-                            ShellRotation = (float)Utils.AngleLerp(0, maxRotation * -NPC.spriteDirection, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startOpen, endOpen, Timer, true), 0));
+                            ShellRotation = (float)Utils.AngleLerp(0, maxRotation, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startOpen, endOpen, Timer, true), 0));
                         }
                         else if (Timer >= startClose && Timer <= endClose)
                         {
-                            ShellRotation = (float)Utils.AngleLerp(maxRotation * -NPC.spriteDirection, 0, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startClose, endClose, Timer, true), 0));
+                            ShellRotation = (float)Utils.AngleLerp(maxRotation, 0, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startClose, endClose, Timer, true), 0));
                         }
 
                         // Fire the projectile
                         if (Timer == (endClose - 5))
                         {
+                            Vector2 velocity = NPC.SafeDirectionTo(Target.Center, Vector2.UnitY) * 5;
+
+                            // If the player is on the other side of the clam, flip the jet so that it doesn't fire backwards
+                            if (playerPosition != NPC.direction)
+                                velocity.X *= -1;
+
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 velocity = NPC.SafeDirectionTo(Target.Center, Vector2.UnitY) * 5;
-
-                                // If the player is on the other side of the clam, flip the jet so that it doesn't fire backwards
-                                if (playerPosition != NPC.direction)
-                                    velocity.X *= -1;
-
-                                int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<MantisClawJet>(), NPC.damage, 1);
-                                Main.projectile[p].friendly = false;
-                                Main.projectile[p].hostile = true;
-                                Main.projectile[p].DamageType = DamageClass.Default;
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage, 1);
                             }
                             for (int i = 0; i < 9; i++)
                             {
-                                GenericBubbleParticle waterFlavored = new GenericBubbleParticle(NPC.Center, Main.rand.NextFloat(16, 22) * NPC.DirectionTo(Target.Center).RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-45, 45))), Main.rand.NextFloat(0.3f, 0.5f), Main.rand.NextFloat(-4, 4), 5);
+                                GenericBubbleParticle waterFlavored = new GenericBubbleParticle(NPC.Center, Main.rand.NextFloat(16, 22) * velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-45, 45))), Main.rand.NextFloat(0.3f, 0.5f), Main.rand.NextFloat(-4, 4), 5);
                                 waterFlavored.AffectedByLight = true;
                                 GeneralParticleHandler.SpawnParticle(waterFlavored);
                             }
@@ -441,6 +477,24 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
+            Texture2D jaw = bottomJawTex.Value;
+
+            switch (NPC.localAI[1])
+            {
+                case 1:
+                    {
+                        tex = algaeTex.Value;
+                        jaw = bottomJawTexAlgae.Value;
+                    }
+                    break;
+                case 2:
+                    {
+                        tex = coralTex.Value;
+                        jaw = bottomJawTexCoral.Value;
+                    }
+                    break;
+            }
+
             Vector2 drawOffset = Vector2.UnitY * 8;
             Vector2 topDrawOffset = drawOffset + new Vector2(NPC.spriteDirection * -22, -3);
             bool facingRight = NPC.spriteDirection == 1;
@@ -449,10 +503,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 topDrawOffset.X += 6;
             }
             Vector2 backOffset = topDrawOffset;
+            float trueShellRotation = ShellRotation * -NPC.spriteDirection;
             if (ShellRotation == 0)
                 spriteBatch.Draw(backTex.Value, NPC.Center - screenPos + backOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(facingRight ? 0 : tex.Width, tex.Height), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            spriteBatch.Draw(tex, NPC.Center - screenPos + topDrawOffset, null, NPC.GetAlpha(drawColor), ShellRotation, new Vector2(facingRight ? 0 : tex.Width, tex.Height), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            spriteBatch.Draw(bottomJawTex.Value, NPC.Center - screenPos + drawOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            spriteBatch.Draw(tex, NPC.Center - screenPos + topDrawOffset, null, NPC.GetAlpha(drawColor), trueShellRotation, new Vector2(facingRight ? 0 : tex.Width, tex.Height), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            spriteBatch.Draw(jaw, NPC.Center - screenPos + drawOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
             return false;
         }
     }
