@@ -10,14 +10,24 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
+using CalamityMod.Enums;
+using System.Collections.Generic;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public abstract class Pearlpod : ModNPC
+    public abstract class Pearlpod : SunkenSeaNPC
     {
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>();
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows | SunkenSeaBiomeFlags.ClamDen;
+
         public abstract int PearlType { get; }
         public abstract float SpawnRate { get; }
         public abstract int ItemType { get; }
+
+        public NPC clam => NPC.Calamity().newAI[2] == 0 ? null : Main.npc[(int)NPC.Calamity().newAI[2] - 1];
 
         public override void SetDefaults()
         {
@@ -107,6 +117,101 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ProduceGoldCritterDust();
             }
+            bool predatorAvailable = CurrentPredator != null || CurrentPlayer != null;
+
+            if (!predatorAvailable || !IsClamValid())
+            {
+                if (predatorAvailable)
+                    LookForClam();
+                NPC.Calamity().newAI[3] = 0;
+                NPC.Opacity = 1;
+                NPC.dontTakeDamage = false;
+            }
+            else
+            {
+                if (!IsClamValid())
+                {
+                    LookForClam();
+                }
+                else
+                {
+                    if (NPC.Calamity().newAI[3] != 2)
+                    {
+                        NPC.velocity.X = NPC.DirectionTo(clam.Center).X.DirectionalSign() * 3;
+                        NPC.direction = NPC.velocity.X.DirectionalSign();
+                        if (NPC.velocity.Y <= 0)
+                            NPC.velocity.Y++;
+                        NPC.StepUpBlocks();
+
+                        if (NPC.Distance(clam.Center) < 40)
+                        {
+                            NPC.Calamity().newAI[3] = 2;
+                        }
+                    }
+                    else if (NPC.Calamity().newAI[3] == 2)
+                    {
+                        NPC.Opacity = 0;
+                        NPC.Center = clam.Center;
+                        NPC.dontTakeDamage = true;
+                    }
+                }
+            }
+        }
+
+        public bool IsClamValid()
+        {
+            if (clam == null || !clam.active || clam.life < 0 || clam.type != ModContent.NPCType<Clam>() || clam.Calamity().newAI[0] <= 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void LookForClam()
+        {
+            if (NPC.AnyNPCs(ModContent.NPCType<Clam>()))
+            {
+                NPC nearestClam = null;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    float dist = Vector2.Distance(NPC.Center, n.Center);
+                    if (dist < 600f && NPC.HasSight(n.Center) && n.type == ModContent.NPCType<Clam>() && n.Calamity().newAI[0] <= 0)
+                    {
+                        if (nearestClam == null || NPC.Distance(nearestClam.Center) < dist)
+                        {
+                            n.Calamity().newAI[0] = NPC.whoAmI + 1;
+                            n.ai[0] = (int)Clam.PhaseType.Pod;
+                            NPC.Calamity().newAI[2] = n.whoAmI + 1;
+                        }
+                    }
+                }
+            }
+            if (clam != null)
+            {
+                clam.Calamity().newAI[0] = NPC.whoAmI + 1;
+            }
+        }
+
+        protected override void OnPlayerDetection(Player player)
+        {
+            NPC.Calamity().newAI[3] = 1;
+            LookForClam();
+        }
+
+        protected override void OnPreyDetection(NPC prey)
+        {
+            NPC.Calamity().newAI[3] = 1;
+            LookForClam();
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return base.NPCSearchFilter(n) || n == CurrentPredator && Vector2.DistanceSquared(NPC.Center, n.Center) < 900f * 900f;
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 600f * 600f;
         }
 
         public override void FindFrame(int frameHeight)
@@ -188,28 +293,9 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override void SetDefaults()
         {
-            NPC.aiStyle = NPCAIStyleID.Snail;
-            NPC.damage = 0;
-            NPC.width = 24;
-            NPC.height = 24;
-            NPC.defense = 0;
-            NPC.lifeMax = 20;
-            NPC.knockBackResist = 0f;
+            base.SetDefaults();
             NPC.value = Item.buyPrice(0, 0, 5, 0);
-            NPC.lavaImmune = false;
-            NPC.noGravity = false;
-            NPC.noTileCollide = false;
-            NPC.HitSound = SoundID.NPCHit38;
-            NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.GravityIgnoresLiquid = true;
-            AIType = NPCID.Snail;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PearlpodBanner>();
             NPC.catchItem = ItemType;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToSickness = true;
-            NPC.Calamity().VulnerableToElectricity = true;
-            NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
             NPC.rarity = 3;
         }

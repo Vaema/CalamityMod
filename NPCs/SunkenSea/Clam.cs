@@ -33,7 +33,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Idle = 0,
             Attacking = 1,
-            Squirt = 2
+            Squirt = 2,
+            Pod = 3
         }
 
         public Player Target => Main.player[NPC.target];
@@ -162,6 +163,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)PhaseType.Idle:
                     {
                         NPC.velocity.X *= 0.9f;
+                        if (ShellRotation > 0)
+                        {
+                            ShellRotation -= 0.2f;
+                            if (ShellRotation < 0)
+                                ShellRotation = 0;
+                        }
                         switch (Personality)
                         {
                             // Aggro immediately
@@ -308,6 +315,31 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (Timer >= reset)
                         {
                             ChangePhase((int)PhaseType.Attacking);
+                        }
+                    }
+                break;
+                case (int)PhaseType.Pod:
+                    {
+                        NPC pod = Main.npc[(int)NPC.Calamity().newAI[0] - 1];
+                        if (pod == null || !pod.active || pod.life < 0 || pod.ModNPC == null || pod.ModNPC is not Pearlpod)
+                        {
+                            NPC.Calamity().newAI[0] = 0;
+                            ChangePhase((int)PhaseType.Idle);
+                        }
+                        else
+                        {
+                            if (pod.Distance(NPC.Center) > 40)
+                            {
+                                ShellRotation += 0.05f;
+                                if (ShellRotation > maxRotation)
+                                    ShellRotation = maxRotation;
+                            }
+                            else
+                            {
+                                ShellRotation -= 0.2f;
+                                if (ShellRotation < -0.2f)
+                                    ShellRotation = -0.2f;
+                            }
                         }
                     }
                 break;
