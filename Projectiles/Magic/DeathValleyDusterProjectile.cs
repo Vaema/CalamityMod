@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 240);
+                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 600);
 
                             int Dusts = 12;
                             float radians = MathHelper.TwoPi / Dusts;

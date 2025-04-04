@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 540);
+                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 840);
 
                             int Dusts = 8;
                             float radians = MathHelper.TwoPi / Dusts;
