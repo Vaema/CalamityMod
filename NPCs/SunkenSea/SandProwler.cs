@@ -51,7 +51,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float BlinkTimer => ref NPC.localAI[2];
         protected override List<int> PreyIDs => new List<int>()
         {
-            ModContent.NPCType<PolypPanasea>()
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<PrismaticGuppy>(),
         };
 
         protected override List<int> PredatorIDs => new List<int>()

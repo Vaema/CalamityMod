@@ -158,14 +158,15 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.catchItem = ModContent.ItemType<PolypPanaseaTurquoiseItem>();
                     break;
                 case (int)FishColor.Gold:
-                    {
-                        NPC.catchItem = ModContent.ItemType<PolypPanaseaGoldItem>();
-                        NPC.rarity = 3;
-                    }
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaGoldItem>();
                     break;
                 case (int)FishColor.Radiant:
                     NPC.catchItem = ModContent.ItemType<PolypPanaseaRadiantItem>();
                     break;
+            }
+            if (Variant == (int)FishColor.Gold || Variant == (int)FishColor.Radiant)
+            {
+                NPC.rarity = 3;
             }
         }
 
