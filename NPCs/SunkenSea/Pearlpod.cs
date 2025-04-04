@@ -266,7 +266,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <returns></returns>
         public bool IsClamValid()
         {
-            if (clam == null || !clam.active || clam.life < 0 || clam.type != ModContent.NPCType<Clam>() || clam.localAI[2] <= 0)
+            if (clam == null || !clam.active || clam.life < 0 || clam.type != ModContent.NPCType<Clam>() || clam.localAI[2] <= 0 || (clam.ai[0] > 0 && clam.ai[0] < 3))
             {
                 return false;
             }
@@ -286,7 +286,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     float dist = Vector2.Distance(NPC.Center, n.Center);
                     // Find the nearest clam in a 200px radius which the pearlpod is able to see and doesn't already have a pearlpod going after it
-                    if (dist < 200f && NPC.HasSight(n.Center) && n.type == ModContent.NPCType<Clam>() && n.localAI[2] <= 0)
+                    if (dist < 200f && NPC.HasSight(n.Center) && n.type == ModContent.NPCType<Clam>() && n.localAI[2] <= 0 && n.ai[0] == 0)
                     {
                         // if no clam has been attached yet and this is the nearest clam, mark it as a candidate
                         if (nearestClam == null || NPC.Distance(nearestClam.Center) < dist)
