@@ -36,6 +36,8 @@ namespace CalamityMod.NPCs.SunkenSea
             Angel = 2
         }
 
+        public ref float CurrentPhase => ref NPC.ai[0];
+
         public ref float CurrentColor => ref NPC.ai[1];
 
         public ref float CurrentShape => ref NPC.ai[2];
