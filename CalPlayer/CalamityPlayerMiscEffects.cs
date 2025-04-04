@@ -1963,8 +1963,13 @@ namespace CalamityMod.CalPlayer
                 if (vortexBoosterStealthDelay == 1)
                     Player.vortexStealthActive = true;
             }
-            if (statisTimer > 0 && Player.dashDelay >= 0)
-                statisTimer = 0;
+            if (statisPenaltyTimer > 0)
+                statisPenaltyTimer--;
+            if (statisPenaltyTimer == 0 && statisAnticheese > 0)
+            {
+                statisAnticheese--;
+                statisPenaltyTimer = statisTimerMax;
+            }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
             if (sulphurBubbleCooldown > 0)

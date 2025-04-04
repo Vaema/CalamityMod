@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -14,11 +15,25 @@ namespace CalamityMod.CalPlayer.Dashes
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
         public override bool IsOmnidirectional => false;
         public int Time = 0;
+        public int lastDashDir = 0;
 
         public override float CalculateDashSpeed(Player player) => (50f * player.moveSpeed);
 
         public override void OnDashEffects(Player player)
         {
+            if (Math.Sign(player.velocity.X) == lastDashDir && lastDashDir != 0)
+            {
+                player.Calamity().statisPenaltyTimer = player.Calamity().statisTimerMax;
+                if (player.Calamity().statisAnticheese < 6)
+                    player.Calamity().statisAnticheese++;
+            }
+            else
+                player.Calamity().statisAnticheese = 0;
+            if (player.Calamity().statisAnticheese > 1)
+                player.velocity.X *= Utils.Remap(player.Calamity().statisAnticheese, 1, 6, 0.9f, 0.3f, true);
+            lastDashDir = Math.Sign(player.velocity.X);
+            lastDashDir = Math.Sign(player.velocity.X);
+
             Time = 0;
             for (int i = 0; i < 15; i++)
             {

@@ -21,14 +21,26 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override bool IsOmnidirectional => false;
         public int Time = 0;
-        public bool AngleSwap = true;
         public Vector2 aimVel;
         public bool strongVisuals = true;
+        public int lastDashDir = 0;
 
         public override float CalculateDashSpeed(Player player) => (75f * player.moveSpeed);
 
         public override void OnDashEffects(Player player)
         {
+            if (Math.Sign(player.velocity.X) == lastDashDir && lastDashDir != 0)
+            {
+                player.Calamity().statisPenaltyTimer = player.Calamity().statisTimerMax;
+                if (player.Calamity().statisAnticheese < 6)
+                    player.Calamity().statisAnticheese++;
+            }
+            else
+                player.Calamity().statisAnticheese = 0;
+            if (player.Calamity().statisAnticheese > 1)
+                player.velocity.X *= Utils.Remap(player.Calamity().statisAnticheese, 1, 6, 0.9f, 0.3f, true);
+            lastDashDir = Math.Sign(player.velocity.X);
+
             strongVisuals = player.Calamity().voidSashVisuals;
             Time = 0;
             aimVel = player.velocity;
@@ -96,25 +108,6 @@ namespace CalamityMod.CalPlayer.Dashes
                     SignusMetaball.SpawnParticle(fxPlace, fxVelocity * Main.rand.NextFloat(5, 8), 50f * Main.rand.NextFloat(0.7f, 1f), 8, new Vector2(0.8f, 1.2f), 0.18f, 0);
                 }
             }
-
-            // Periodically release scythes.
-            player.Calamity().statisTimer++;
-            if (Main.myPlayer == player.whoAmI && player.Calamity().statisTimer % 2 == 0 && false)
-            {
-                int scytheDamage = (int)player.GetBestClassDamage().ApplyTo(250);
-
-                int scythe = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, player.velocity.RotatedBy(player.direction * (AngleSwap ? 30 : -30), default) * 0.1f - player.velocity / 2f, ModContent.ProjectileType<CosmicScythe>(), scytheDamage, 5f, player.whoAmI); ;
-                if (scythe.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[scythe].DamageType = DamageClass.Generic;
-                    Main.projectile[scythe].usesIDStaticNPCImmunity = true;
-                    Main.projectile[scythe].idStaticNPCHitCooldown = 10;
-                }
-
-                AngleSwap = !AngleSwap;
-
-            }
-
             player.velocity.X *= 0.912f;
         }
     }
