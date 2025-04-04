@@ -125,12 +125,14 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
+            writer.Write(NPC.localAI[2]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
+            NPC.localAI[2] = reader.ReadSingle();
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -168,6 +170,14 @@ namespace CalamityMod.NPCs.SunkenSea
                             ShellRotation -= 0.2f;
                             if (ShellRotation < 0)
                                 ShellRotation = 0;
+                        }
+                        else if (ShellRotation < 0)
+                        {
+                            ShellRotation += 0.03f;
+                            if (ShellRotation > 0)
+                            {
+                                ShellRotation = 0;
+                            }
                         }
                         switch (Personality)
                         {
@@ -320,20 +330,26 @@ namespace CalamityMod.NPCs.SunkenSea
                 break;
                 case (int)PhaseType.Pod:
                     {
-                        NPC pod = Main.npc[(int)NPC.Calamity().newAI[0] - 1];
+                        NPC pod = Main.npc[(int)NPC.localAI[2] - 1];
+                        // If the Pearlpod is invalid, go back to idling
                         if (pod == null || !pod.active || pod.life < 0 || pod.ModNPC == null || pod.ModNPC is not Pearlpod)
                         {
-                            NPC.Calamity().newAI[0] = 0;
+                            NPC.localAI[2] = 0;
                             ChangePhase((int)PhaseType.Idle);
                         }
                         else
                         {
-                            if (pod.Distance(NPC.Center) > 40)
+                            // Face towards the Pearlpod while it's still out
+                            if (pod.Opacity == 1)
+                                NPC.direction = NPC.DirectionTo(pod.Center).X.DirectionalSign();
+                            // Start closing when the Pearlpod is nearby
+                            if (pod.Distance(NPC.Center) > 30)
                             {
                                 ShellRotation += 0.05f;
                                 if (ShellRotation > maxRotation)
                                     ShellRotation = maxRotation;
                             }
+                            // Otherwise open up!
                             else
                             {
                                 ShellRotation -= 0.2f;
@@ -345,82 +361,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 break;
             }
             NPC.spriteDirection = NPC.direction;
-            /*if (!statChange)
-            {
-                NPC.defense = Main.hardMode ? 15 : 6;
-                NPC.damage = NPC.defDamage;
-                statChange = true;
-            }
-            if (NPC.ai[0] == 0f)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    if (NPC.velocity.X != 0f || NPC.velocity.Y < 0f || (double)NPC.velocity.Y > 0.9)
-                    {
-                        NPC.ai[0] = 1f;
-                        NPC.netUpdate = true;
-                        return;
-                    }
-                    NPC.ai[0] = 1f;
-                    NPC.netUpdate = true;
-                    return;
-                }
-            }
-            else if (NPC.velocity.Y == 0f)
-            {
-                NPC.ai[2] += 1f;
-                int decelerationTimer = 20;
-                if (NPC.ai[1] == 0f)
-                {
-                    decelerationTimer = 12;
-                }
-                if (NPC.ai[2] < (float)decelerationTimer)
-                {
-                    NPC.velocity.X *= 0.9f;
-                    return;
-                }
-                NPC.ai[2] = 0f;
-                NPC.TargetClosest(true);
-                if (NPC.direction == 0)
-                {
-                    NPC.direction = -1;
-                }
-                NPC.spriteDirection = -NPC.direction;
-                NPC.ai[1] += 1f;
-                NPC.ai[3] += 1f;
-                if (NPC.ai[3] >= 4f)
-                {
-                    NPC.ai[3] = 0f;
-                    if (NPC.ai[1] == 2f)
-                    {
-                        float multiplierX = (float)Main.rand.Next(3, 7);
-                        NPC.velocity.X = (float)NPC.direction * multiplierX;
-                        NPC.velocity.Y = -8f;
-                        NPC.ai[1] = 0f;
-                    }
-                    else
-                    {
-                        float multiplierX = (float)Main.rand.Next(5, 9);
-                        NPC.velocity.X = (float)NPC.direction * multiplierX;
-                        NPC.velocity.Y = -4f;
-                    }
-                }
-                NPC.netUpdate = true;
-                return;
-            }
-            else
-            {
-                if (NPC.direction == 1 && NPC.velocity.X < 1f)
-                {
-                    NPC.velocity.X = NPC.velocity.X + 0.1f;
-                    return;
-                }
-                if (NPC.direction == -1 && NPC.velocity.X > -1f)
-                {
-                    NPC.velocity.X = NPC.velocity.X - 0.1f;
-                    return;
-                }
-            }*/
         }
 
         public void ChangePhase(int phaseNum, bool resetai2 = true)
