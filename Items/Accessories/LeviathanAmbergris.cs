@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
     public class LeviathanAmbergris : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public static int ambergrisDashDamage = 350;
+        public static int ambergrisDashDamage = 650;
         public override void SetDefaults()
         {
             Item.width = 20;

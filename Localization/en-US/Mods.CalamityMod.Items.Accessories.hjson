@@ -1513,7 +1513,7 @@ SandSharkToothNecklace: {
 	Tooltip:
 		'''
 		Increases armor penetration by 10
-		6% increased damage
+		10% increased damage
 		'''
 }
 
@@ -1890,8 +1890,8 @@ TheEvolution: {
 		'''
 		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
 		{$Common.ReflectInformation}
-		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
-		Getting hit by the same enemy projectile type during cooldown will resist its damage by 20%
+		Reflecting a projectile grants maximum natural life regen for 10 seconds
+		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
 
