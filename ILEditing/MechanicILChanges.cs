@@ -23,6 +23,8 @@ using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
+using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
@@ -1075,7 +1077,7 @@ namespace CalamityMod.ILEditing
             });
         }
         #endregion
-        
+
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
@@ -1198,7 +1200,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitBrtrue(target);
         }
         #endregion
-        
+
         #region Lava Replacing
         private void LavaBubbleReplacer(ILContext il)
         {
@@ -1216,17 +1218,17 @@ namespace CalamityMod.ILEditing
             }
             cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
-        
+
         private void LavaDropletReplacer(ILContext il)
-		{
-			ILCursor cursor = new ILCursor(il);
-			if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg(out _), i => i.MatchLdcI4(374), i => i.MatchBneUn(out _), i => i.MatchLdcI4(716)))
+        {
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg(out _), i => i.MatchLdcI4(374), i => i.MatchBneUn(out _), i => i.MatchLdcI4(716)))
             {
                 LogFailure("Ambient lava droplet replacer", "Could not locate the lava droplet newgore parameters");
                 return;
             }
-			cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
-		}
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
+        }
 
         private void SplashEntityLava(ILContext il)
         {
@@ -2287,7 +2289,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::X");
                 return;
             }
-            
+
             if (!cursor.Next.MatchStloc(out var xLocaIdx))
             {
                 LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::X");
@@ -2484,6 +2486,96 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #endregion
+
+        #region Sunken Sea critter variants
+        public static void ReleaseCritterVariant(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
+        {
+            int mouseX = Main.mouseX + (int)Main.screenPosition.X;
+            int mouseY = Main.mouseY + (int)Main.screenPosition.Y;
+            int tileX = mouseX / 16;
+            int tileY = mouseY / 16;
+            if (item.makeNPC == ModContent.NPCType<BabyGhostBell>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)BabyGhostBell.JellyColor.Blue;
+                    if (item.type == ModContent.ItemType<BabyGhostBellGreenItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellRedItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Red;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellGoldItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<PolypPanasea>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PolypPanasea.FishColor.Red;
+                    if (item.type == ModContent.ItemType<PolypPanaseaGreenItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaTurquoiseItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Turquoise;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaPurpleItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Purple;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaRadiantItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else
+            {
+                orig(player, item);
+            }
+        }
         #endregion
     }
 }

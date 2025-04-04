@@ -92,6 +92,7 @@ namespace CalamityMod.ILEditing
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
+            On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
