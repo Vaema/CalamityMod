@@ -722,19 +722,24 @@ namespace CalamityMod.NPCs.Crabulon
                         NPC.velocity = center - NPC.Center;
                         NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
                         NPC.velocity *= bossRush ? 24f : death ? 21f : 18f;
-                        NPC.netUpdate = true;
+
+                        float jumpVelocityMin = -12f;
+                        if (NPC.velocity.Y > jumpVelocityMin)
+                            NPC.velocity.Y = jumpVelocityMin;
+
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
                         float mushroomFireRate = death ? 20f : 10f;
                         if (NPC.ai[1] % mushroomFireRate == 0f)
                         {
-                            int type = ModContent.ProjectileType<MushBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
+                                int type = ModContent.ProjectileType<MushBomb>();
+                                int damage = NPC.GetProjectileDamage(type);
                                 float yVelocity = death ? 3f : 2f;
                                 if (death)
                                 {
@@ -753,7 +758,7 @@ namespace CalamityMod.NPCs.Crabulon
                         }
 
                         // Impact and create lines of mushrooms that spread out along the ground (similar to an old Providence attack)
-                        if (NPC.Bottom.Y >= NPC.ai[3] - NPC.height)
+                        if (NPC.Bottom.Y >= NPC.ai[3] - NPC.height && NPC.velocity.Y >= 0f)
                         {
                             SoundEngine.PlaySound(SlamSound, NPC.Center);
 
@@ -869,11 +874,11 @@ namespace CalamityMod.NPCs.Crabulon
                             int maxColumns = 5;
                             int mushroomsPerColumn = 8;
                             Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(210f, 8f);
-                            Vector2 initialVelocity = Vector2.UnitY * 16f;
+                            Vector2 initialVelocity = Vector2.UnitY * 24f;
                             for (int i = 0; i < maxColumns; i++)
                             {
                                 // 0 = 0.5, 1 = 0.25, 2 = 0, 3 = 0.25, 4 = 0.5
-                                initialVelocity -= Vector2.UnitY * 8f * Math.Abs(0.5f - (i / (maxColumns - 1)));
+                                initialVelocity -= Vector2.UnitY * 8f * Math.Abs(0.5f - (i / (float)(maxColumns - 1)));
 
                                 for (int j = 0; j < mushroomsPerColumn; j++)
                                 {
