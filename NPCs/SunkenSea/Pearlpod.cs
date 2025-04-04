@@ -227,6 +227,9 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (predatorAvailable && !IsClamValid())
                     LookForClam();
+            }
+            if (CurrentPhase != (int)PhaseType.Hiding)
+            {
                 if (NPC.Opacity < 1)
                 {
                     NPC.Opacity += 0.3f;
