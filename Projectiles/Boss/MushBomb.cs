@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Boss
                     }
                 }
             }
-            else
+            else if (Main.rand.NextBool())
             {
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 0.8f);
                 Main.dust[dust].noGravity = true;
@@ -110,15 +110,10 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int i = 0; i < 4; i++)
+            
+            for (int i = 0; i < 3; i++)
             {
-                int shroomDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1.5f);
+                int shroomDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1f);
                 Main.dust[shroomDust].velocity *= 1.5f;
                 if (Main.rand.NextBool())
                 {
@@ -126,9 +121,10 @@ namespace CalamityMod.Projectiles.Boss
                     Main.dust[shroomDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int j = 0; j < 12; j++)
+
+            for (int j = 0; j < 9; j++)
             {
-                int shroomDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 2f);
+                int shroomDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1.5f);
                 Main.dust[shroomDust2].noGravity = true;
                 Main.dust[shroomDust2].velocity *= 2f;
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1.5f);

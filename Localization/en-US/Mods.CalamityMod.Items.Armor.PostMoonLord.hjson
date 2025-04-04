@@ -20,11 +20,11 @@ AuricTeslaCuisses: {
 AuricTeslaHoodedFacemask: {
 	DisplayName: Auric Tesla Hooded Facemask
 	Tooltip: 30% increased ranged damage and critical strike chance
-	SetBonus: 
-        '''
-        Ranged Tarragon, Bloodflare and God Slayer armor effects
+	SetBonus:
+		'''
+		Ranged Tarragon, Bloodflare and God Slayer armor effects
 		Hold SHIFT to view these set bonus details and Press SHIFT repeatedly to cycle through them
-        '''
+		'''
 	SetBonus1:
 		'''
 		Inherited Tarragon Set Bonus:
