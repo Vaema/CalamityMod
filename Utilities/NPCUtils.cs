@@ -12,6 +12,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
@@ -965,6 +966,58 @@ namespace CalamityMod
         }
 
         public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
+
+
+        /// <summary>
+        /// Attempts to find a tile of a given type within a given radius
+        /// </summary>
+        /// <param name="npc">The NPC to center it on</param>
+        /// <param name="tileType">The tile type to check for</param>
+        /// <param name="radius">The radius of the check area in pixels</param>
+        /// <param name="usesSunkenSeaValidity">Whether or not SunkenSeaTileValidity should be used</param>
+        /// <returns>The position of the tile, or null if unsuccessful</returns>
+        public static Vector2? NPCTileDetection(NPC npc, int tileType, float radius, bool usesSunkenSeaValidity = false)
+        {
+            Vector2? tileFoundPosition = null;
+            int? tileIndexFound = null;
+            for (int i = 0; i < 360 && tileFoundPosition == null; i += 15)
+            {
+                var points = GetIntersectingPointsInLine(npc.Center, npc.Center - Vector2.UnitY.RotatedBy(MathHelper.ToRadians(i)) * radius);
+                for (int j = points.Count - 1; j >= 0; j--)
+                {
+                    if (Main.tile[points[j]].TileType == tileType)
+                    {
+                        tileIndexFound = j;
+                        break;
+                    }
+                }
+
+                if (tileIndexFound == null)
+                    continue;
+
+                for (int k = tileIndexFound.Value; k >= 0; k--)
+                {
+                    Vector2 worldPos = points[k].ToWorldCoordinates();
+                    bool seaWaterCheck = true;
+                    if (usesSunkenSeaValidity)
+                    {
+                        seaWaterCheck = SunkenSeaNPC.SunkenSeaTileValidity(npc, points[k]);
+                    }
+                    if (npc.HasSight(worldPos) && seaWaterCheck)
+                    {
+                        tileFoundPosition = worldPos;
+                        break;
+                    }
+                }
+
+                tileIndexFound = null;
+            }
+
+            if (tileFoundPosition.HasValue)
+                return tileFoundPosition.Value;
+
+            return null;
+        }
 
         #region Boss Spawning
         /// <summary>

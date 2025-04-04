@@ -182,9 +182,20 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
         protected bool SunkenSeaTileValidity(Point point)
         {
+            return SunkenSeaTileValidity(NPC, point);
+        }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for an NPC, considering water level and entity size.
+        /// </summary>
+        /// <param name="npc">The npc to use for the check.</param>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        public static bool SunkenSeaTileValidity(NPC npc, Point point)
+        {
             Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
-            return NPC.Hitbox.Contains(actualFuckingPoint) 
-                || !NPC.GetIntersectingHitboxPoints(
+            return npc.Hitbox.Contains(actualFuckingPoint)
+                || !npc.GetIntersectingHitboxPoints(
                     actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
         }
     }
