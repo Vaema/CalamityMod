@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<IonBlaster>().
-                AddIngredient(ItemID.FragmentSolar, 6).
+                AddIngredient(ItemID.FragmentSolar, 12).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
