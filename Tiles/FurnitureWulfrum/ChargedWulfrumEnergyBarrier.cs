@@ -28,7 +28,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             DustType = 108;
             AddMapEntry(new Color(112, 244, 244));
             HitSound = SoundID.Shatter;
-            MinPick = 55;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
