@@ -1204,11 +1204,39 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
+            #region Prismatic Guppy
+
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppy>();
+            r.AddIngredient<PrismaticGuppyItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<PrismaticGuppyGreenItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<PrismaticGuppyPinkItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<PrismaticGuppyGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.SeafoodDinner);
+            r.AddIngredient<PrismaticGuppyRadiantItem>(); // Consistency would be 2, but considering you need only 1 for Golden Delight, I'm leaving this at 1
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            #endregion
 
             r = Recipe.Create(ItemID.Sashimi);
             r.AddIngredient<CragBullhead>();

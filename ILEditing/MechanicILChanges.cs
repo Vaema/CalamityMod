@@ -2571,6 +2571,43 @@ namespace CalamityMod.ILEditing
                     }
                 }
             }
+            else if (item.makeNPC == ModContent.NPCType<PrismaticGuppy>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PrismaticGuppy.FishColor.Blue;
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGreenItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyPinkItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Pink;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyRadiantItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGoldItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Gold;
+                    }
+
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
             else
             {
                 orig(player, item);

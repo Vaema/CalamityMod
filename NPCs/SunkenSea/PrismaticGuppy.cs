@@ -22,8 +22,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public enum FishColor
         {
             Blue = 0,
-            Pink = 1,
-            Green = 2,
+            Green = 1,
+            Pink = 2,
             Gold = 3,
             Radiant = 4
         }
@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public enum FishShape
         {
             Normal = 0,
-            Cow = 1,
+            Cube = 1,
             Angel = 2
         }
 
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public bool Leader => NPC.ai[3] == 1;
 
         // Each shape has a different frame count
-        public int FrameCount => CurrentShape == (int)FishShape.Angel ? 5 : CurrentShape == (int)FishShape.Cow ? 4 : 6;
+        public int FrameCount => CurrentShape == (int)FishShape.Angel ? 5 : CurrentShape == (int)FishShape.Cube ? 4 : 6;
 
         public Entity avoidedEntity;
 
@@ -158,13 +158,22 @@ namespace CalamityMod.NPCs.SunkenSea
                 Acceleration = 0.5f,
                 MaxSpeed = 4f,
             };
+            CurrentShape = Main.rand.Next(0, 3);
             // Guppies released by the player do not randomize when spawned
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
             {
                 return;
             }
-            CurrentColor = Main.rand.Next(0, 3);
-            CurrentShape = Main.rand.Next(0, 3);
+            // Red/Green in reefs, Green/Blue elsewhere
+            if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
+            {
+                CurrentColor = Main.rand.Next(1, 3);
+            }
+            else
+            {
+                CurrentColor = Main.rand.Next(0, 2);
+            }
+            NPC.TargetClosest();
             // 1 in 30 chance for a rare fish variant (rfv)
             if (Main.rand.NextBool(30))
             {
@@ -172,63 +181,29 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.rarity = 3;
             }
             // Decide item..........................
-            switch ((CurrentColor, CurrentShape))
+            switch (CurrentColor)
             {
-                case ((int)FishColor.Pink, (int)FishShape.Angel):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                case (int)FishColor.Pink:
+                    NPC.catchItem = ModContent.ItemType<PrismaticGuppyPinkItem>();
                     break;
-                case ((int)FishColor.Pink, (int)FishShape.Cow):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                case (int)FishColor.Green:
+                    NPC.catchItem = ModContent.ItemType<PrismaticGuppyGreenItem>();
                     break;
-                case ((int)FishColor.Pink, (int)FishShape.Normal):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                case (int)FishColor.Blue:
+                    NPC.catchItem = ModContent.ItemType<PrismaticGuppyBlueItem>();
                     break;
-
-                case ((int)FishColor.Green, (int)FishShape.Angel):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                case (int)FishColor.Gold:
+                    NPC.catchItem = ModContent.ItemType<PrismaticGuppyGoldItem>();
                     break;
-                case ((int)FishColor.Green, (int)FishShape.Cow):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Green, (int)FishShape.Normal):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-
-                case ((int)FishColor.Blue, (int)FishShape.Angel):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Blue, (int)FishShape.Cow):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Blue, (int)FishShape.Normal):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-
-                case ((int)FishColor.Gold, (int)FishShape.Angel):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Gold, (int)FishShape.Cow):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Gold, (int)FishShape.Normal):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-
-                case ((int)FishColor.Radiant, (int)FishShape.Angel):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Radiant, (int)FishShape.Cow):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
-                    break;
-                case ((int)FishColor.Radiant, (int)FishShape.Normal):
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                case (int)FishColor.Radiant:
+                    NPC.catchItem = ModContent.ItemType<PrismaticGuppyRadiantItem>();
                     break;
             }
         }
         public override void AI()
         {
             // Spawn more guppies if a leader/naturally spawned guppy
-            if (Role == 0)
+            if (Role == 0 && NPC.releaseOwner == 255)
             {
                 Role = 2;
                 NPC.TargetClosest(false);
@@ -335,6 +310,22 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        // Item sprite based on fish
+        public override void OnCaughtBy(Player player, Item item, bool failed)
+        {
+            if (item.ModItem != null)
+            {
+                if (item.ModItem is PrismaticGuppyItem gup)
+                {
+                    if (CurrentShape == (int)FishShape.Cube)
+                        gup.shapeVariant = 1;
+
+                    if (CurrentShape == (int)FishShape.Angel)
+                        gup.shapeVariant = 2;
+                }
+            }
+        }
+
         public override void FindFrame(int frameHeight)
         {
             if (!NPC.wet && !NPC.IsABestiaryIconDummy)
@@ -364,19 +355,19 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (CurrentColor)
             {
                 case (int)FishColor.Radiant:
-                    textureAsset = CurrentShape == (int)FishShape.Angel ? RadiantTexture3 : CurrentShape == (int)FishShape.Cow ? RadiantTexture2 : RadiantTexture;
+                    textureAsset = CurrentShape == (int)FishShape.Angel ? RadiantTexture3 : CurrentShape == (int)FishShape.Cube ? RadiantTexture2 : RadiantTexture;
                     break;
                 case (int)FishColor.Gold:
-                    textureAsset = CurrentShape == (int)FishShape.Angel ? GoldTexture3 : CurrentShape == (int)FishShape.Cow ? GoldTexture2 : GoldTexture;
+                    textureAsset = CurrentShape == (int)FishShape.Angel ? GoldTexture3 : CurrentShape == (int)FishShape.Cube ? GoldTexture2 : GoldTexture;
                     break;
                 case (int)FishColor.Green:
-                    textureAsset = CurrentShape == (int)FishShape.Angel ? GreenTexture3 : CurrentShape == (int)FishShape.Cow ? GreenTexture2 : GreenTexture;
+                    textureAsset = CurrentShape == (int)FishShape.Angel ? GreenTexture3 : CurrentShape == (int)FishShape.Cube ? GreenTexture2 : GreenTexture;
                     break;
                 case (int)FishColor.Pink:
-                    textureAsset = CurrentShape == (int)FishShape.Angel ? PinkTexture3 : CurrentShape == (int)FishShape.Cow ? PinkTexture2 : PinkTexture;
+                    textureAsset = CurrentShape == (int)FishShape.Angel ? PinkTexture3 : CurrentShape == (int)FishShape.Cube ? PinkTexture2 : PinkTexture;
                     break;
                 default:
-                    textureAsset = CurrentShape == (int)FishShape.Angel ? Texture3 : CurrentShape == (int)FishShape.Cow ? Texture2 : TextureAssets.Npc[Type];
+                    textureAsset = CurrentShape == (int)FishShape.Angel ? Texture3 : CurrentShape == (int)FishShape.Cube ? Texture2 : TextureAssets.Npc[Type];
                     break;
             }
             Texture2D texture = textureAsset.Value;

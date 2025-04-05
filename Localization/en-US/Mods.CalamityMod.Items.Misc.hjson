@@ -128,6 +128,31 @@ PiggyItem: {
 	Tooltip: ""
 }
 
+PrismaticGuppyBlueItem: {
+	DisplayName: Blue Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyGoldItem: {
+	DisplayName: Gold Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyGreenItem: {
+	DisplayName: Green Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyPinkItem: {
+	DisplayName: Pink Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyRadiantItem: {
+	DisplayName: Radiant Prismatic Guppy
+	Tooltip: ""
+}
+
 RepairUnitItem: {
 	DisplayName: "{$NPCs.RepairUnitCritter.DisplayName}"
 	Tooltip: ""
