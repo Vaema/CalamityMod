@@ -270,7 +270,7 @@ BadgeofBravery: {
 	DisplayName: Badge of Bravery
 	Tooltip:
 		'''
-		Increases melee damage and melee crit by 10%
+		Increases melee damage and critical strike chance by 10%
 		Increases melee armor penetration by 5
 		'''
 }
