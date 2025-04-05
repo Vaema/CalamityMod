@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeWithGeneral(Type);
 
             HitSound = MinePlatingSound;
-            AddMapEntry(new Color(164, 150, 125));
+            AddMapEntry(new Color(109, 132, 101));
         }
 
         public override bool CreateDust(int i, int j, ref int type)

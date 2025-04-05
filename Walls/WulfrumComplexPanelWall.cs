@@ -19,7 +19,7 @@ namespace CalamityMod.Walls
 
             Main.wallHouse[Type] = true;
             Main.wallLight[Type] = true;
-            AddMapEntry(new Color(116, 153, 40));
+            AddMapEntry(new Color(28, 28, 29));
         }
 
         public override void Unload()
