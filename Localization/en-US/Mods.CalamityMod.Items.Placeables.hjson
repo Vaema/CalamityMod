@@ -4243,3 +4243,8 @@ WulfrumPillar: {
 	DisplayName: Wulfrum Pillar
 	Tooltip: ""
 }
+
+WulfrumComplexPanelWall: {
+	DisplayName: Wulfrum Complex Panel Wall
+	Tooltip: ""
+}

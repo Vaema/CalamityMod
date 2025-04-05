@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 4;
+            Projectile.localNPCHitCooldown = 5;
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 25;
         }
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.115f;
+            modifiers.SourceDamage *= 0.075f;
             if (Owner.Calamity().hellbornShots < 12)
             {
                 Owner.Calamity().hellbornShots++;
