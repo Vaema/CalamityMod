@@ -131,7 +131,18 @@ namespace CalamityMod.Projectiles.Melee
                 target.MoveNPC(launchVel, 20, true);
             }
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45 * sizeMult * (Projectile.numHits > 0 ? 6 : 1), targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float size = 45 * sizeMult * (Projectile.numHits > 0 ? 6 : 1);
+            Player Owner = Main.player[Projectile.owner];
+            if (time <= 1 && Projectile.ai[1] != 0.5f)
+            {
+                float _ = float.NaN;
+                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Owner.Center, size, ref _);
+            }
+            else
+                return CalamityUtils.CircularHitboxCollision(Projectile.Center, size, targetHitbox);
+        }
         public override bool? CanCutTiles() => false;
     }
 }
