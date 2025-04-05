@@ -16,6 +16,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -123,7 +124,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs => new List<int>()
         {
-            //ModContent.NPCType<Slugbun>()
+            ModContent.NPCType<Slugbun>()
         };
 
         protected override List<int> PredatorIDs => new List<int>() {
@@ -180,7 +181,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
             NPC.chaseable = false;
-            //NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyItem>();
+            NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyBlueItem>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
@@ -471,6 +472,17 @@ namespace CalamityMod.NPCs.SunkenSea
                         gup.shapeVariant = 2;
                 }
             }
+        }
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows || spawnInfo.Player.Calamity().ZoneClamDen)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+                if (spawnInfo.Player.Calamity().ZonePolypForest)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+            }
+            return 0f;
         }
 
         public override void FindFrame(int frameHeight)

@@ -2608,6 +2608,37 @@ namespace CalamityMod.ILEditing
                     }
                 }
             }
+            else if (item.makeNPC == ModContent.NPCType<Slugbun>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)Slugbun.SlugSkin.Reef;
+                    if (item.type == ModContent.ItemType<SlugbunPolypItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Polyp;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunBurrowsItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Burrows;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunRadiantItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Radiant;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC, ai1: colorType);
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
             else
             {
                 orig(player, item);

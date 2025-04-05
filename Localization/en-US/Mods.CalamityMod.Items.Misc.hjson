@@ -173,6 +173,26 @@ ShroombleItem: {
 	Tooltip: ""
 }
 
+SlugbunBurrowsItem: {
+	DisplayName: Burrows Slugbun
+	Tooltip: ""
+}
+
+SlugbunItem: {
+	DisplayName: Reef Slugbun
+	Tooltip: ""
+}
+
+SlugbunPolypItem: {
+	DisplayName: Polyp Slugbun
+	Tooltip: ""
+}
+
+SlugbunRadiantItem: {
+	DisplayName: Radiant Slugbun
+	Tooltip: ""
+}
+
 TwinklerItem: {
 	DisplayName: "{$NPCs.Twinkler.DisplayName}"
 	Tooltip: ""

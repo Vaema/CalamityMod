@@ -26,15 +26,8 @@ namespace CalamityMod.NPCs.SunkenSea
         // Where the tentacle will hover when not attacking
         public Vector2 anchor;
 
-        protected override List<int> PreyIDs => new List<int>()
-        {
-            ModContent.NPCType<SeaMinnow>(),
-            ModContent.NPCType<AlphaSeaMinnow>(),
-            ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>(),
-            ModContent.NPCType<KelpieSeadragon>(),
-            ModContent.NPCType<PrismaticGuppy>(),
-        };
+        // They attack everything
+        protected override List<int> PreyIDs => new List<int>();
         
         protected override List<int> PredatorIDs => new List<int>();
 

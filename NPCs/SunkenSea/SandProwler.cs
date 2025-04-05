@@ -53,6 +53,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             ModContent.NPCType<PolypPanasea>(),
             ModContent.NPCType<PrismaticGuppy>(),
+            ModContent.NPCType<Slugbun>(),
         };
 
         protected override List<int> PredatorIDs => new List<int>()
@@ -585,7 +586,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool NPCSearchFilter(NPC n)
         {
-            float huntRange = 1200f;
+            float huntRange = 600f;
             float avoidRange = 200f;
             bool preyFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < huntRange * huntRange && PreyIDs.Contains(n.type);
             bool predFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < avoidRange * avoidRange && PredatorIDs.Contains(n.type);
