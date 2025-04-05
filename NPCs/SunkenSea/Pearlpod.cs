@@ -43,8 +43,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public NPC clam => NPC.Calamity().newAI[2] == 0 ? null : Main.npc[(int)NPC.Calamity().newAI[2] - 1];
 
+        public override void SetStaticDefaults()
+        {
+            base.SetStaticDefaults();
+        }
+
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
             NPC.damage = 0;
             NPC.width = 24;
@@ -374,6 +380,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 6;
         }
         public override int PearlType => ItemID.WhitePearl;
@@ -384,6 +391,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 6;
         }
@@ -396,6 +404,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 6;
         }
@@ -407,6 +416,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 6;
         }

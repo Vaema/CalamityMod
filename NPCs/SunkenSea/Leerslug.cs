@@ -285,6 +285,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return true;
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
             Vector2 pos = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
 

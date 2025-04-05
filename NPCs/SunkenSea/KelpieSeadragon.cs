@@ -380,6 +380,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return true;
             Asset<Texture2D> tex = TextureAssets.Npc[Type];
             SpriteEffects fx = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Vector2 stretch = NPC.ai[0] == 1 && NPC.ai[1] > 0 ? new Vector2(SquishX, SquishY): Vector2.One;

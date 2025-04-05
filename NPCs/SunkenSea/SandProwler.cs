@@ -596,6 +596,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
+        public override bool CanHitNPC(NPC target)
+        {
+            return IsHead;
+        }
+
         public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineSandProwlerLoot(npcLoot);
 
         public static void DefineSandProwlerLoot(NPCLoot npcLoot)
