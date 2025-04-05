@@ -367,6 +367,9 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Exo Mechs: Ares
+            // 35% resist to Devil's Devastation's slash.
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<DevilsDevastationHoldout>()))));
+
             // 30% resist to Dynamic Pursuer.
             NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
