@@ -46,15 +46,47 @@ namespace CalamityMod.NPCs.SunkenSea
             Angel = 2
         }
 
+        /// <summary>
+        /// AI State
+        /// </summary>
         public ref float CurrentPhase => ref NPC.ai[0];
 
+        /// <summary>
+        /// The color to use
+        /// </summary>
         public ref float CurrentColor => ref NPC.ai[1];
 
+        /// <summary>
+        /// The shape to use
+        /// </summary>
         public ref float CurrentShape => ref NPC.ai[2];
 
+        /// <summary>
+        /// The fish's role
+        /// </summary>
         public ref float Role => ref NPC.ai[3];
 
-        public bool Leader => NPC.ai[3] == 1;
+        /// <summary>
+        /// The index of the guppy that this guppy should follow
+        /// </summary>
+        public ref float OwnerIndex => ref NPC.localAI[0];
+
+        /// <summary>
+        /// Timer for handling when the guppy goes out of hiding
+        /// </summary>
+        public ref float HideTimer => ref NPC.localAI[1];
+
+        /// <summary>
+        /// The horizontal coordinate of a located crystal
+        /// </summary>
+        public ref float TileX => ref NPC.localAI[2];
+
+        /// <summary>
+        /// The vertical coordinate of a located crystal
+        /// </summary>
+        public ref float TileY => ref NPC.localAI[3];
+
+        public Vector2 tilePosition => new Vector2(TileX, TileY);
 
         // Each shape has a different frame count
         public int FrameCount => CurrentShape == (int)FishShape.Angel ? 5 : CurrentShape == (int)FishShape.Cube ? 4 : 6;
@@ -234,7 +266,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Main.npc[n].netUpdate = true;
                 }
             }
-            NPC owner = Main.npc[(int)NPC.localAI[0]];
+            NPC owner = Main.npc[(int)OwnerIndex];
             if (NPC.wet)
             {
                 switch (CurrentPhase)
@@ -296,7 +328,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             {
                                 pathfinding.Acceleration = 0.6f;
                                 pathfinding.MaxSpeed = 6;
-                                Vector2? tilePos = new Vector2(NPC.localAI[2], NPC.localAI[3]);
+                                Vector2? tilePos = tilePosition;
 
                                 // Find a sea prism
                                 if (tilePos == null || tilePos == Vector2.Zero)
@@ -307,8 +339,8 @@ namespace CalamityMod.NPCs.SunkenSea
                                 // Go to a Prism Shard if one exists nearby
                                 if (tilePos != null && tilePos != Vector2.Zero)
                                 {
-                                    NPC.localAI[2] = tilePos.Value.X;
-                                    NPC.localAI[3] = tilePos.Value.Y;
+                                    TileX = tilePos.Value.X;
+                                    TileY = tilePos.Value.Y;
                                     pathfinding.DoPathfinding(new(NPC.Center, tilePos.Value, SunkenSeaTileValiditySizeless));
                                     if (NPC.Distance(tilePos.Value) < 16)
                                     {
@@ -348,7 +380,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Stay still
                             NPC.rotation = Utils.AngleLerp(NPC.rotation, 0, 0.05f);
                             NPC.velocity *= 0.95f;
-                            Tile t = CalamityUtils.ParanoidTileRetrieval((int)(NPC.localAI[2] / 16), (int)(NPC.localAI[3] / 16));
+                            Tile t = CalamityUtils.ParanoidTileRetrieval((int)(TileX / 16), (int)(TileY / 16));
 
                             // Assure the prism still exists, if the player breaks it, the disguise is gone
                             if (t.TileType != ModContent.TileType<SeaPrismCrystals>())
@@ -361,8 +393,8 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Once the coast is clear, wait 2 seconds then go out
                             if (CurrentPredator is null)
                             {
-                                NPC.localAI[1]--;
-                                if (NPC.localAI[1] <= 0)
+                                HideTimer--;
+                                if (HideTimer <= 0)
                                 {
                                     CurrentPhase = (int)PhaseType.Idle;
                                     NPC.netUpdate = true;
@@ -372,7 +404,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             else
                             {
                                 NPC.direction = NPC.DirectionTo(CurrentPredator.Center).X.DirectionalSign();
-                                NPC.localAI[1] = 120;
+                                HideTimer = 120;
                             }
                         }
                         break;
