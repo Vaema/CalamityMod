@@ -57,11 +57,6 @@ namespace CalamityMod.Projectiles.Summon
             if (target.defense > 999 || target.Calamity().DR >= 0.95f || target.Calamity().unbreakableDR)
                 return;
 
-            int cap = 3;
-            float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
-            modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
-
             // Bypass a portion of the target's DR
             float maxDRPenetration = 1.05f; // 5% extra damage
             modifiers.FinalDamage *= MathHelper.Clamp(1f / (1f - target.Calamity().DR), 1f, maxDRPenetration);
@@ -111,16 +106,15 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (Projectile.alpha != 0)
             {
-                Projectile.rotation -= 0.25f;
-                Projectile.velocity.X *= 0.985f;
-                Projectile.velocity.Y *= 0.985f;
+                Projectile.rotation -= 6f * (MathF.Pow(Projectile.Opacity,2f));
+                Projectile.velocity *= MathHelper.Lerp(1, 0.9f, Projectile.Opacity);
                 if (Projectile.alpha < 3)
                 {
                     Projectile.alpha = 0;
                     homing = true;
                 }
                 else
-                    Projectile.alpha -= 3;
+                    Projectile.alpha -= 2;
             }
             else
             {
@@ -139,8 +133,8 @@ namespace CalamityMod.Projectiles.Summon
                     targetDist = projVel / targetDist;
                     targetXDist *= targetDist;
                     targetYDist *= targetDist;
-                    Projectile.velocity.X = (Projectile.velocity.X * 25f + targetXDist) / 26f;
-                    Projectile.velocity.Y = (Projectile.velocity.Y * 25f + targetYDist) / 26f;
+                    Projectile.velocity.X = (Projectile.velocity.X * 2f + targetXDist) / 3f;
+                    Projectile.velocity.Y = (Projectile.velocity.Y * 2f + targetYDist) / 3f;
                 }
                 else
                 {
