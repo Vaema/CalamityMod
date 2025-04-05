@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Collections;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -147,7 +148,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         /// <param name="n">The NPC to evaluate.</param>
         /// <returns><see langword="true"/> if the NPC is a valid target; otherwise, <see langword="false"/>.</returns>
-        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
+        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type)) && !(n.type == ModContent.NPCType<PrismaticGuppy>() && n.alpha > 0);
 
         /// <summary>
         /// Updates the current targets of this creature, including prey, predators, and players, based on detection logic.
@@ -186,17 +187,35 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         /// <summary>
-        /// Checks whether a specific tile is valid for an NPC, considering water level and entity size.
+        /// Checks whether a specific tile is valid for this NPC, considering water level.
+        /// </summary>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        protected bool SunkenSeaTileValiditySizeless(Point point)
+        {
+            return SunkenSeaTileValidity(NPC, point, false);
+        }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for an NPC, considering water level and entity size if given.
         /// </summary>
         /// <param name="npc">The npc to use for the check.</param>
         /// <param name="point">The tile location to check.</param>
         /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
-        public static bool SunkenSeaTileValidity(NPC npc, Point point)
+        public static bool SunkenSeaTileValidity(NPC npc, Point point, bool accountForSize = true)
         {
             Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
-            return npc.Hitbox.Contains(actualFuckingPoint)
-                || !npc.GetIntersectingHitboxPoints(
-                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+            
+            if (accountForSize)
+            {
+                return npc.Hitbox.Contains(actualFuckingPoint)
+                    || !npc.GetIntersectingHitboxPoints(
+                        actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+            }
+            else
+            {
+                return !(Main.tile[point].IsTileSolidGround() || Main.tile[point].LiquidAmount < 255 || Main.tile[point].LiquidType != LiquidID.Water);
+            }
         }
     }
 }

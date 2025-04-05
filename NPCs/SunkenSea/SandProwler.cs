@@ -589,7 +589,8 @@ namespace CalamityMod.NPCs.SunkenSea
             float avoidRange = 200f;
             bool preyFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < huntRange * huntRange && PreyIDs.Contains(n.type);
             bool predFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < avoidRange * avoidRange && PredatorIDs.Contains(n.type);
-            return preyFilter || predFilter;
+            bool hidingGuppy = n.type == ModContent.NPCType<PrismaticGuppy>() && n.alpha > 0;
+            return !hidingGuppy && (preyFilter || predFilter);
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);

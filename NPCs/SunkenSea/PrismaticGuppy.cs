@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -19,6 +21,14 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class PrismaticGuppy : SunkenSeaNPC
     {   
+        public enum PhaseType
+        {
+            Idle = 0,
+            Pawn = 1,
+            Fleeing = 2,
+            Hiding = 3
+        }
+
         public enum FishColor
         {
             Blue = 0,
@@ -218,6 +228,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 for (int i = 0; i < fishCount; i++)
                 {
                     int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Type);
+                    Main.npc[n].ai[0] = (int)PhaseType.Pawn;
                     Main.npc[n].ai[3] = 1; // mark this guppy as a pawn
                     Main.npc[n].localAI[0] = NPC.whoAmI; // makes the spawned guppy recognize this one as the alpha
                     Main.npc[n].netUpdate = true;
@@ -226,78 +237,175 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC owner = Main.npc[(int)NPC.localAI[0]];
             if (NPC.wet)
             {
-                // Behaviour for owners/freed guppies
-                if (owner == null || !owner.active || owner.type != ModContent.NPCType<PrismaticGuppy>())
+                switch (CurrentPhase)
                 {
-                    Role = 2;
-                    pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+                    // Just do generic pathfinding if a leader. Target prey if one exists
+                    case (int)PhaseType.Idle:
+                        {
+                            pathfinding.Acceleration = 0.5f;
+                            pathfinding.MaxSpeed = 4;
+                            if (CurrentPrey is not null)
+                                pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+                            else
+                                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+                        }
+                        break;
+                    // The unenlightened masses, They cannot make the judgement call
+                    case (int)PhaseType.Pawn:
+                        {
+                            if (owner == null || !owner.active || owner.type != ModContent.NPCType<PrismaticGuppy>())
+                            {
+                                CurrentPhase = (int)PhaseType.Idle;
+                                Role = 2;
+                                break;
+                            }
+                            float SAImovement = 0.2f;
+                            for (int k = 0; k < Main.maxNPCs; k++)
+                            {
+                                NPC otherFish = Main.npc[k];
+                                // Short circuits to make the loop as fast as possible
+                                if (!otherFish.active || k == NPC.whoAmI || otherFish.type != ModContent.NPCType<PrismaticGuppy>())
+                                    continue;
+
+                                float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
+                                if (taxicabDist < NPC.width * 2f)
+                                {
+                                    if (NPC.position.X < otherFish.position.X)
+                                        NPC.velocity.X -= SAImovement;
+                                    else
+                                        NPC.velocity.X += SAImovement;
+
+                                    if (NPC.position.Y < otherFish.position.Y)
+                                        NPC.velocity.Y -= SAImovement;
+                                    else
+                                        NPC.velocity.Y += SAImovement;
+                                }
+                            }
+
+                            if (!owner.active)
+                                return;
+
+                            if (NPC.Distance(owner.Center) > 20)
+                                pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
+                        }
+                        break;
+                    // Run from predators, attempting to find crystals to camo in
+                    case (int)PhaseType.Fleeing:
+                        {
+                            if (CurrentPredator is not null)
+                            {
+                                pathfinding.Acceleration = 0.6f;
+                                pathfinding.MaxSpeed = 6;
+                                Vector2? tilePos = new Vector2(NPC.localAI[2], NPC.localAI[3]);
+
+                                // Find a sea prism
+                                if (tilePos == null || tilePos == Vector2.Zero)
+                                {
+                                    tilePos = CalamityUtils.NPCTileDetection(NPC, ModContent.TileType<SeaPrismCrystals>(), 300, true);
+                                }
+
+                                // Go to a Prism Shard if one exists nearby
+                                if (tilePos != null && tilePos != Vector2.Zero)
+                                {
+                                    NPC.localAI[2] = tilePos.Value.X;
+                                    NPC.localAI[3] = tilePos.Value.Y;
+                                    pathfinding.DoPathfinding(new(NPC.Center, tilePos.Value, SunkenSeaTileValiditySizeless));
+                                    if (NPC.Distance(tilePos.Value) < 16)
+                                    {
+                                        CurrentPhase = (int)PhaseType.Hiding;
+                                        NPC.netUpdate = true;
+                                        break;
+                                    }
+                                }
+                                // While it doesn't have any obstacles in front of it, run away in a straight line.
+                                // Try to manuever if there are any obstacles.
+                                else if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * 96).ToTileCoordinates()].IsTileSolid())
+                                {
+                                    NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                                    pathfinding.ClearResults();
+
+                                    // Cap the speed if MaxSpeed has been surpassed.
+                                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                                }
+                                else
+                                {
+                                    float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
+                                    randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                                    NPC.netUpdate = true;
+                                    pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                                }
+                            }
+                            else
+                            {
+                                CurrentPhase = (int)PhaseType.Idle;
+                            }
+                        }
+                        break;
+                    // Hide
+                    case (int)PhaseType.Hiding:
+                        {
+                            // Stay still
+                            NPC.rotation = Utils.AngleLerp(NPC.rotation, 0, 0.05f);
+                            NPC.velocity *= 0.95f;
+                            Tile t = CalamityUtils.ParanoidTileRetrieval((int)(NPC.localAI[2] / 16), (int)(NPC.localAI[3] / 16));
+
+                            // Assure the prism still exists, if the player breaks it, the disguise is gone
+                            if (t.TileType != ModContent.TileType<SeaPrismCrystals>())
+                            {
+                                CurrentPhase = (int)PhaseType.Idle;
+                                NPC.netUpdate = true;
+                                break;
+                            }
+
+                            // Once the coast is clear, wait 2 seconds then go out
+                            if (CurrentPredator is null)
+                            {
+                                NPC.localAI[1]--;
+                                if (NPC.localAI[1] <= 0)
+                                {
+                                    CurrentPhase = (int)PhaseType.Idle;
+                                    NPC.netUpdate = true;
+                                }
+                            }
+                            // Face towards the predator and set the safety timer to 2 seconds
+                            else
+                            {
+                                NPC.direction = NPC.DirectionTo(CurrentPredator.Center).X.DirectionalSign();
+                                NPC.localAI[1] = 120;
+                            }
+                        }
+                        break;
+                }
+
+                NPC.dontTakeDamage = NPC.alpha > 0;
+
+                int dir = NPC.velocity.X.DirectionalSign();
+                // Become transparent while hiding and opaque otherwise
+                if (CurrentPhase != (int)PhaseType.Hiding)
+                {
+                    NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
+                    if (NPC.alpha > 0)
+                    {
+                        NPC.alpha -= 40;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
+                    }
                 }
                 else
                 {
-                    float SAImovement = 0.2f;
-                    for (int k = 0; k < Main.maxNPCs; k++)
+                    if (NPC.alpha < 150)
                     {
-                        NPC otherFish = Main.npc[k];
-                        // Short circuits to make the loop as fast as possible
-                        if (!otherFish.active || k == NPC.whoAmI || otherFish.type != ModContent.NPCType<PrismaticGuppy>())
-                            continue;
-
-                        float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
-                        if (taxicabDist < NPC.width * 2f)
-                        {
-                            if (NPC.position.X < otherFish.position.X)
-                                NPC.velocity.X -= SAImovement;
-                            else
-                                NPC.velocity.X += SAImovement;
-
-                            if (NPC.position.Y < otherFish.position.Y)
-                                NPC.velocity.Y -= SAImovement;
-                            else
-                                NPC.velocity.Y += SAImovement;
-                        }
+                        NPC.alpha += 10;
                     }
-
-                    if (!owner.active)
-                        return;
-
-                    if (NPC.Distance(owner.Center) > 20)
-                        pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
                 }
-                int dir = NPC.velocity.X.DirectionalSign();
-                NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
                 NPC.spriteDirection = NPC.direction = dir;
             }
-            /*else
+            else
             {
-                // Check who is the avoided entity specifically.
-                avoidedEntity = avoidedEntity is NPC ? CurrentPredator : CurrentPlayer;
-
-                if (avoidedEntity is not null)
-                {
-                    // While it doesn't have any obstacles in front of it, run away in a straight line.
-                    // Try to manuever if there are any obstacles.
-                    if (!Main.tile[(NPC.Center + NPC.DirectionFrom(avoidedEntity.Center) * 96).ToTileCoordinates()].IsTileSolid())
-                    {
-                        NPC.velocity += NPC.DirectionFrom(avoidedEntity.Center) * pathfinding.Acceleration;
-                        pathfinding.ClearResults();
-
-                        // Cap the speed if MaxSpeed has been surpassed.
-                        if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                            NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                    }
-                    else
-                    {
-                        float distanceFromAvoided = Vector2.Distance(NPC.Center, avoidedEntity.Center);
-                        randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
-                        NPC.netUpdate = true;
-                        pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
-                    }
-                }
-                else
-                {
-                    pathfinding.DoPathfinding(new(NPC.Center, Main.rand.NextVector2Unit() * Main.rand.Next(300, 1000), SunkenSeaTileValidity));
-                }
-            }*/
+                if (NPC.velocity.Y < 12)
+                    NPC.velocity.Y += 1;
+            }
 
             if (CurrentColor == (int)FishColor.Gold)
             {
@@ -308,6 +416,13 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.rarity = 3;
             }
+        }
+
+        protected override void OnPredatorDetection(NPC predator)
+        {
+            // Don't reset the flee state while hiding
+            if (CurrentPhase != (int)PhaseType.Hiding)
+                CurrentPhase = (int)PhaseType.Fleeing;
         }
 
         // Item sprite based on fish
@@ -328,7 +443,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void FindFrame(int frameHeight)
         {
-            if (!NPC.wet && !NPC.IsABestiaryIconDummy)
+            if ((!NPC.wet && !NPC.IsABestiaryIconDummy) || CurrentPhase == (int)PhaseType.Hiding)
             {
                 NPC.frameCounter = 0.0;
                 return;
@@ -408,12 +523,18 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             writer.WriteVector2(randomPathPoint);
             writer.Write(NPC.localAI[0]);
+            writer.Write(NPC.localAI[1]);
+            writer.Write(NPC.localAI[2]);
+            writer.Write(NPC.localAI[3]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             randomPathPoint = reader.ReadVector2();
             NPC.localAI[0] = reader.ReadSingle();
+            NPC.localAI[1] = reader.ReadSingle();
+            NPC.localAI[2] = reader.ReadSingle();
+            NPC.localAI[3] = reader.ReadSingle();
         }
     }
 }
