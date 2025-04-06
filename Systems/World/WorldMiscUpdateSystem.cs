@@ -101,7 +101,7 @@ namespace CalamityMod.Systems
             if (!DownedBossSystem.downedDesertScourge && Main.netMode != NetmodeID.MultiplayerClient && !Main.hardMode)
                 CalamityWorld.StopSandstorm();
 
-            // Attempt to summon lab critters manually since they refuse to exist when using vanilla's spawn methods.
+            // Attempt to summon lab critters and lava-based NPCs manually since they refuse to exist when using vanilla's spawn methods.
             // This needs to check all players since the method only runs server-side.
             foreach (Player p in Main.ActivePlayers)
             {
@@ -109,6 +109,7 @@ namespace CalamityMod.Systems
                     continue;
 
                 CalamityGlobalNPC.AttemptToSpawnLabCritters(p);
+                CalamityGlobalNPC.AttemptToSpawnLavaNPCs(p);
             }
 
             // Make the cultist countdown happen much more quickly.
