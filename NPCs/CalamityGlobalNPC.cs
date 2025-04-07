@@ -7039,6 +7039,10 @@ namespace CalamityMod.NPCs
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
+            // For now, we only need this for the Basalt Gully, but this may be used for the crags in the future
+            if (!player.Calamity().ZoneBasaltGully)
+                return;
+
             int spawnRate = 400;
             int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
             NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
@@ -7062,7 +7066,7 @@ namespace CalamityMod.NPCs
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 0f);
-                //pool.Add(NPCType<PodobooKoi>(), 0.25f);
+                pool.Add(NPCType<PodobooKoi>(), 0.25f);
 
                 int typeToSpawn = pool.Get();
                 if (typeToSpawn != NPCID.None)

@@ -217,5 +217,19 @@ namespace CalamityMod.NPCs.SunkenSea
                 return !(Main.tile[point].IsTileSolidGround() || Main.tile[point].LiquidAmount < 255 || Main.tile[point].LiquidType != LiquidID.Water);
             }
         }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for a lava NPC, considering water level and entity size if given.
+        /// </summary>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        public bool LavaTileValidity(Point point)
+        {
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+
+            return NPC.Hitbox.Contains(actualFuckingPoint)
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Lava);
+        }
     }
 }
