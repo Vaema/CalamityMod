@@ -265,10 +265,11 @@ namespace CalamityMod.NPCs.Crabulon
                 float idleTime = phase4 ? 480f : death ? 30f : expertMode ? 60f : 120f;
                 if (NPC.ai[1] >= idleTime)
                 {
+                    bool deathModeTripleStomp = Main.rand.NextBool() && death && phase2;
                     NPC.TargetClosest();
-                    NPC.noGravity = true;
-                    NPC.noTileCollide = true;
-                    NPC.ai[0] = 1f;
+                    NPC.noGravity = !deathModeTripleStomp;
+                    NPC.noTileCollide = !deathModeTripleStomp;
+                    NPC.ai[0] = deathModeTripleStomp ? 5f : 1f;
                     NPC.ai[1] = 0f;
                     NPC.netUpdate = true;
                 }
@@ -304,10 +305,7 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.direction = playerLocation < 0 ? 1 : -1;
 
                     float inertia = revenge ? 10f : 20f;
-                    if (NPC.direction > 0)
-                        NPC.velocity.X = (NPC.velocity.X * inertia + walkingVelocity) / (inertia + 1f);
-                    if (NPC.direction < 0)
-                        NPC.velocity.X = (NPC.velocity.X * inertia - walkingVelocity) / (inertia + 1f);
+                    NPC.velocity.X = (NPC.velocity.X * inertia + walkingVelocity * NPC.direction) / (inertia + 1f);
                 }
 
                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.Center, 1, 1) && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height) && player.position.Y <= NPC.position.Y + NPC.height && !NPC.collideX)
@@ -704,42 +702,45 @@ namespace CalamityMod.NPCs.Crabulon
             }
             else if (NPC.ai[0] == 4f)
             {
-                NPC.ai[1] += 1f;
+                if (NPC.velocity.Y == 0f || NPC.ai[2] == 1f)
+                    NPC.ai[1] += 1f;
+
                 if (NPC.ai[1] >= DelayBeforeBigJump)
                 {
-                    if ((NPC.ai[1] == DelayBeforeBigJump || NPC.velocity.Y != 0f) && NPC.ai[2] == 0f)
+                    if (NPC.ai[1] == DelayBeforeBigJump && NPC.ai[2] == 0f)
                     {
                         Vector2 center = NPC.Center;
                         if (!player.dead && player.active && Math.Abs(NPC.Center.X - player.Center.X) / 16f <= despawnDistanceInTiles)
                             center = player.Center;
 
-                        center.Y -= 384f;
+                        center.Y -= 480f;
                         center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X - NPC.Center.X > 0f) ? 1 : -1);
-                        if (NPC.velocity.Y == 0f)
-                        {
-                            NPC.ai[2] = 1f;
-                            NPC.ai[3] = NPC.Bottom.Y;
-                            NPC.noTileCollide = true;
-                            NPC.velocity = center - NPC.Center;
-                            NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
-                            NPC.velocity *= bossRush ? 24f : death ? 21f : 18f;
-                            NPC.netUpdate = true;
-                        }
-                        else
-                            NPC.velocity.Y *= 0.95f;
+
+                        NPC.ai[2] = 1f;
+                        NPC.ai[3] = NPC.Bottom.Y;
+                        NPC.noTileCollide = true;
+                        NPC.velocity = center - NPC.Center;
+                        NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
+                        NPC.velocity *= bossRush ? 24f : death ? 21f : 18f;
+
+                        float jumpVelocityMin = -12f;
+                        if (NPC.velocity.Y > jumpVelocityMin)
+                            NPC.velocity.Y = jumpVelocityMin;
+
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
                         float mushroomFireRate = death ? 20f : 10f;
                         if (NPC.ai[1] % mushroomFireRate == 0f)
                         {
-                            int type = ModContent.ProjectileType<MushBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float yVelocity = death ? 4f : 2f;
+                                int type = ModContent.ProjectileType<MushBomb>();
+                                int damage = NPC.GetProjectileDamage(type);
+                                float yVelocity = death ? 3f : 2f;
                                 if (death)
                                 {
                                     int numProj = 3;
@@ -757,10 +758,11 @@ namespace CalamityMod.NPCs.Crabulon
                         }
 
                         // Impact and create lines of mushrooms that spread out along the ground (similar to an old Providence attack)
-                        if (NPC.Bottom.Y >= NPC.ai[3] - NPC.height)
+                        if (NPC.Bottom.Y >= NPC.ai[3] - NPC.height && NPC.velocity.Y >= 0f)
                         {
                             SoundEngine.PlaySound(SlamSound, NPC.Center);
 
+                            NPC.ai[0] = 0f;
                             NPC.ai[1] = 0f;
                             NPC.ai[2] = 0f;
                             NPC.ai[3] = 0f;
@@ -775,13 +777,13 @@ namespace CalamityMod.NPCs.Crabulon
                                 float xVelocity = death ? 2f : 1f;
                                 int numProj = 5;
                                 Vector2 initialVelocity = Vector2.UnitX * xVelocity;
-                                Vector2 initialSpawnLocation = NPC.Center + new Vector2(0f, 8f);
+                                Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - ((i / numProj) * initialVelocity), type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - ((i / (float)numProj) * initialVelocity), type, damage, 0f, Main.myPlayer);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), -(initialVelocity - ((i / numProj) * initialVelocity)), type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, damage, 0f, Main.myPlayer);
                             }
 
                             for (int j = (int)NPC.position.X - 20; j < (int)NPC.position.X + NPC.width + 40; j += 20)
@@ -817,6 +819,152 @@ namespace CalamityMod.NPCs.Crabulon
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            // Stomp three times quickly, creating lines of mushrooms and a column of mushrooms that slowly fall down
+            else if (NPC.ai[0] == 5f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.noTileCollide = false;
+                if (NPC.velocity.Y == 0f)
+                {
+                    NPC.velocity.X *= 0.8f;
+                    NPC.ai[1] += 1f;
+                    if (NPC.ai[1] % 15f == 14f)
+                        NPC.netUpdate = true;
+
+                    float jumpGateValue = 10f;
+                    if (NPC.ai[1] >= jumpGateValue)
+                    {
+                        NPC.ai[1] = -20f;
+                    }
+                    else if (NPC.ai[1] == -1f)
+                    {
+                        NPC.velocity.Y = -(2f + NPC.ai[2]);
+
+                        SoundEngine.PlaySound(JumpSound, NPC.Center);
+
+                        NPC.ai[0] = 6f;
+                        NPC.ai[1] = 0f;
+                        NPC.netUpdate = true;
+                    }
+                }
+            }
+            else if (NPC.ai[0] == 6f)
+            {
+                if (NPC.velocity.Y == 0f)
+                {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
+                    SoundEngine.PlaySound(SlamSound, NPC.Center);
+
+                    NPC.ai[2] += 1f;
+                    if (NPC.ai[2] >= 3f)
+                    {
+                        // Columns of mushrooms
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int type = ModContent.ProjectileType<MushBombFall>();
+                            int damage = NPC.GetProjectileDamage(type);
+                            int maxColumns = 5;
+                            int mushroomsPerColumn = 8;
+                            Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(210f, 8f);
+                            Vector2 initialVelocity = Vector2.UnitY * 24f;
+                            for (int i = 0; i < maxColumns; i++)
+                            {
+                                // 0 = 0.5, 1 = 0.25, 2 = 0, 3 = 0.25, 4 = 0.5
+                                initialVelocity -= Vector2.UnitY * 8f * Math.Abs(0.5f - (i / (float)(maxColumns - 1)));
+
+                                for (int j = 0; j < mushroomsPerColumn; j++)
+                                {
+                                    initialVelocity += Vector2.UnitX * Main.rand.NextFloat(-0.5f, 0.5f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(70f * (i + 1), 0f), -(initialVelocity - ((j / (float)mushroomsPerColumn) * initialVelocity)), type, damage, 0f, Main.myPlayer, 1f, NPC.Bottom.Y - 16f);
+                                }
+
+                                initialVelocity = Vector2.UnitY * 16f;
+                            }
+                        }
+
+                        NPC.ai[0] = 1f;
+                        NPC.ai[2] = 0f;
+                        NPC.ai[3] = 0f;
+                        NPC.netUpdate = true;
+                    }
+                    else
+                    {
+                        // Mushrooms along the ground
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int type = ModContent.ProjectileType<MushBombGround>();
+                            int damage = NPC.GetProjectileDamage(type);
+                            float xVelocity = death ? 3f : 1.5f;
+                            int numProj = 3;
+                            Vector2 initialVelocity = Vector2.UnitX * xVelocity;
+                            Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
+
+                            for (int i = 0; i < numProj; i++)
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 41), 0f), initialVelocity - ((i / (float)numProj) * initialVelocity), type, damage, 0f, Main.myPlayer);
+
+                            for (int i = 0; i < numProj; i++)
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 41), 0f), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, damage, 0f, Main.myPlayer);
+                        }
+
+                        float playerLocation = NPC.Center.X - player.Center.X;
+                        NPC.direction = playerLocation < 0 ? 1 : -1;
+
+                        NPC.ai[0] = 5f;
+                        NPC.netUpdate = true;
+                    }
+
+                    for (int j = (int)NPC.position.X - 20; j < (int)NPC.position.X + NPC.width + 40; j += 20)
+                    {
+                        for (int k = 0; k < 4; k++)
+                        {
+                            int stompDust = Dust.NewDust(new Vector2(NPC.position.X - 20f, NPC.position.Y + NPC.height), NPC.width + 20, 4, DustID.BlueFairy, 0f, 0f, 100, default, 1.5f);
+                            Main.dust[stompDust].velocity *= 0.2f;
+                        }
+
+                        // Destroy tiles with stomps in Zenith seed (this is going to be so awful with this attack lol)
+                        if (Main.zenithWorld)
+                        {
+                            int x = j / 16;
+                            int y = (int)(NPC.position.Y + NPC.height) / 16;
+                            Tile groundTile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                            Tile walkTile = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
+                            if (!walkTile.HasTile && walkTile.LiquidAmount == 0 && groundTile != null && WorldGen.SolidTile(groundTile))
+                            {
+                                walkTile.TileFrameY = 0;
+                                walkTile.Get<TileWallWireStateData>().Slope = SlopeType.Solid;
+                                walkTile.Get<TileWallWireStateData>().IsHalfBlock = false;
+                                if (groundTile.TileType == TileID.MushroomGrass || groundTile.TileType == TileID.Mud)
+                                {
+                                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                                    walkTile.TileType = TileID.MushroomPlants;
+                                    walkTile.TileFrameX = (short)(Main.rand.Next(5) * 18);
+
+                                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                                        NetMessage.SendTileSquare(-1, x, y - 1, 1, TileChangeType.None);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
+                    if (!player.dead)
+                    {
+                        if ((player.position.Y > NPC.Bottom.Y && NPC.velocity.Y > 0f) || (player.position.Y < NPC.Bottom.Y && NPC.velocity.Y < 0f))
+                            NPC.noTileCollide = true;
+                        else if ((NPC.velocity.Y > 0f && NPC.Bottom.Y > Main.player[NPC.target].Top.Y) || (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].Center, 1, 1) && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height)))
+                            NPC.noTileCollide = false;
                     }
                 }
             }
@@ -918,7 +1066,7 @@ namespace CalamityMod.NPCs.Crabulon
         {
             if (NPC.ai[0] > 1f)
             {
-                if (NPC.velocity.Y == 0f && ((NPC.ai[1] >= 0f && NPC.ai[0] == 2f) || (NPC.ai[1] < (DelayBeforeBigJump - TelegraphTimeBeforeBigJump) && NPC.ai[0] == 4f && NPC.ai[2] == 0f))) // Idle just before jump
+                if (NPC.velocity.Y == 0f && ((NPC.ai[1] >= 0f && (NPC.ai[0] == 2f || NPC.ai[0] == 5f)) || (NPC.ai[1] < (DelayBeforeBigJump - TelegraphTimeBeforeBigJump) && NPC.ai[0] == 4f && NPC.ai[2] == 0f))) // Idle just before jump
                 {
                     if (stomping)
                         stomping = false;
@@ -993,7 +1141,7 @@ namespace CalamityMod.NPCs.Crabulon
                 Vector2 drawPos = NPC.Center - screenPos + (Vector2.UnitX * textureIdle.Width * c * 1.6f);
 
                 // Jumping
-                if (NPC.ai[0] > 2f && NPC.velocity.Y != 0f)
+                if ((NPC.ai[0] > 2f && NPC.ai[0] != 5f) && NPC.velocity.Y != 0f)
                 {
                     drawOrigin = new Vector2(textureAttack.Width / 2, textureAttack.Height / 2);
                     drawPos -= new Vector2(textureAttack.Width, textureAttack.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;

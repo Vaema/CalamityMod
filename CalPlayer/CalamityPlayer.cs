@@ -783,9 +783,11 @@ namespace CalamityMod.CalPlayer
         public int gloveLevel = 0;
         public bool alreadyHasFrogLeg = false; // Unused, intended to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
-        /// <summary> Counter variable used for spawning Statis' Void Sash's scythes when dashing. </summary>
-        public int statisTimer = 0;
         public bool statisNinjaBelt = false;
+        /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
+        public int statisPenaltyTimer = 0;
+        public int statisAnticheese = 0;
+        public int statisTimerMax => (int)(Utils.Remap(statisAnticheese, 1, 6, 120, 50, true));
         public bool voidSashVisuals = true;
         public bool statisVoidSash = false;
         public bool nucleogenesis = false;
@@ -2878,7 +2880,7 @@ namespace CalamityMod.CalPlayer
             scuttlerCooldown = 0;
             rogueCrownCooldown = 0;
             wingProjectileCooldown = 0;
-            statisTimer = 0;
+            statisPenaltyTimer = -1;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
             ladHearts = 0;

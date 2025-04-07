@@ -2701,7 +2701,6 @@ namespace CalamityMod.NPCs
                 case NPCID.EyeofCthulhu:
                 case NPCID.BrainofCthulhu:
                 case NPCID.QueenBee:
-                case NPCID.Corruptor:
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                 case NPCID.ManEater:
@@ -2813,7 +2812,6 @@ namespace CalamityMod.NPCs
                     npc.defDamage = npc.damage;
                     npc.defense /= 2;
                     npc.defDefense = npc.defense;
-                    canBreakPlayerDefense = true;
                     break;
 
                 case NPCID.Antlion:

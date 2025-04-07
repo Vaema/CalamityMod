@@ -50,7 +50,7 @@
         #region Dashes and Dodges
         // Dash cooldowns (in frames)
         internal const int UniversalDashCooldown = 30;
-        internal const int UniversalSashDashCooldown = 23;
+        internal const int UniversalSashDashCooldown = 30;
         internal const int UniversalShieldSlamCooldown = 30;
         internal const int UniversalShieldBonkCooldown = 30;
         internal const int OnShieldBonkCooldown = 30;

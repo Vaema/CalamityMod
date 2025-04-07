@@ -1963,8 +1963,13 @@ namespace CalamityMod.CalPlayer
                 if (vortexBoosterStealthDelay == 1)
                     Player.vortexStealthActive = true;
             }
-            if (statisTimer > 0 && Player.dashDelay >= 0)
-                statisTimer = 0;
+            if (statisPenaltyTimer > 0)
+                statisPenaltyTimer--;
+            if (statisPenaltyTimer == 0 && statisAnticheese > 0)
+            {
+                statisAnticheese--;
+                statisPenaltyTimer = statisTimerMax;
+            }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
             if (sulphurBubbleCooldown > 0)
@@ -3588,11 +3593,11 @@ namespace CalamityMod.CalPlayer
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
             if (molluskChest)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
             if (molluskLegs)
-                Player.velocity.X *= 0.994f;
+                Player.velocity.X *= 0.995f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {

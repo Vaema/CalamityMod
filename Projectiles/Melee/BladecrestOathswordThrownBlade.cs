@@ -103,11 +103,13 @@ namespace CalamityMod.Projectiles.Melee
                                     ejectedBlade = projectile;
                                 }
                             }
-                            ejectedBlade.localAI[0] = 5;
-                            ejectedBlade.ai[1] += 1000;
-                            ejectedBlade.velocity = Projectile.velocity.RotatedByRandom(0.2f);
-                            ejectedBlade.netUpdate = true;
-                            ejectedBlade.netSpam = 0;
+                            if (ejectedBlade != null)
+                            {
+                                ejectedBlade.localAI[0] = 5;
+                                ejectedBlade.ai[1] += 1000;
+                                ejectedBlade.velocity = Projectile.velocity.RotatedByRandom(0.2f);
+                                ejectedBlade.ForceNetUpdate();
+                            }
 
                             for (int i = 0; i < 8; i++)
                             {

@@ -648,8 +648,12 @@ namespace CalamityMod
             SetMerge(type, TileType<AshenSlab>());
             SetMerge(type, TileType<VoidstoneSlab>());
             SetMerge(type, TileType<WulfrumPanels>());
+            SetMerge(type, TileType<WulfrumSiding>());
             SetMerge(type, TileType<WulfrumPlating>());
             SetMerge(type, TileType<WulfrumEnergyBarrier>());
+            SetMerge(type, TileType<RoundedAnodizedWulfrumPanels>());
+            SetMerge(type, TileType<AnodizedWulfrumTrim>());
+            SetMerge(type, TileType<AnodizedWulfrumPanels>());
         }
 
         /// <summary>
