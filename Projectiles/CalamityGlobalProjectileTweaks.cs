@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IchorBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
+                { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
                 { ProjectileID.LaserDrill, Do(ArmorPenetrationDelta(+25), LocalIFrames(5)) },
