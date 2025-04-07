@@ -328,7 +328,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.UnholyTridentHostile, defenseDamage },
                 #endregion
 
-                #region CATEGORY 6: Static Iframe changes
+                #region CATEGORY 6: ID-Static Immunity Frame changes
                 {ProjectileID.AbigailCounter, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.Ale, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.AmberBolt, Do(DefaultIDStaticIFrames)},
@@ -351,7 +351,6 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.Bone, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.BoneArrowFromMerchant, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.BoneDagger, Do(DefaultIDStaticIFrames)},
-                {ProjectileID.BoneJavelin, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.BookOfSkullsSkull, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.BookStaffShot, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.Boulder, Do(DefaultIDStaticIFrames)},
@@ -382,7 +381,6 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.ClusterSnowmanFragmentsI, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.ClusterSnowmanFragmentsII, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.CoinPortal, Do(DefaultIDStaticIFrames)},
-                {ProjectileID.CombatWrench, Do(IDStaticIFrames(7))}, // Has an exception in Vanilla iframe code, uses 7 iframes
                 {ProjectileID.CopperCoin, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.CorruptSpray, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.CrimsandBallFalling, Do(DefaultIDStaticIFrames)},
@@ -397,7 +395,6 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.CursedDartFlame, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.CursedFlameFriendly, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.CursedFlare, Do(DefaultIDStaticIFrames)},
-                {ProjectileID.Daybreak, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.DD2PhoenixBow, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.DemonScythe, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.DiamondBolt, Do(DefaultIDStaticIFrames)},
@@ -462,7 +459,6 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.LifeCrystalBoulder, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.MagicMissile, Do(IDStaticIFrames(8))}, // Has an exception in Vanilla iframe code, uses 8 iframes
                 {ProjectileID.MagnetSphereBolt, Do(DefaultIDStaticIFrames)},
-                {ProjectileID.MechanicWrench, Do(IDStaticIFrames(7))}, // Has an exception in Vanilla iframe code, uses 7 iframes
                 {ProjectileID.MedusaHead, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.MedusaHeadRay, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.Meteor1, Do(IDStaticIFrames(5))}, // Has an exception in Vanilla iframe code, uses 5 iframes
@@ -583,7 +579,6 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.StarAnise, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.StarCannonStar, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.StardustCellMinion, Do(DefaultIDStaticIFrames)},
-                {ProjectileID.StardustCellMinionShot, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.StardustGuardianExplosion, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.StickyBomb, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.StickyDynamite, Do(DefaultIDStaticIFrames)},
