@@ -12,7 +12,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
     public class WulfrumPanels : ModTile
     {
         public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
+        private const short subsheetWidth = 216;
+        private const short subsheetHeight = 72;
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -32,7 +33,15 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+            TileFramingSystem.CompactFraming(i, j, resetFrame);
+            return false;
+        }
+        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
+        {
+            int xPos = i % 2;
+            int yPos = j % 2;
+            frameXOffset = xPos * subsheetWidth;
+            frameYOffset = yPos * subsheetHeight;
         }
     }
 }
