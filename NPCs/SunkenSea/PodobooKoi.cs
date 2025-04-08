@@ -20,6 +20,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using ReLogic.Content;
 using System.Linq;
+using CalamityMod.Projectiles.Enemy;
+using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -289,17 +291,59 @@ namespace CalamityMod.NPCs.SunkenSea
                 pathfinding.ClearResults();
             }
 
+            // Normal variants fire basic projectiles
+            // Orandas fire a projectile that splits into 2 bouncing projectiles
+            // Bubble Eyes fire a projectile with some quirky homing
+            // Comet fires a very fast projectile
+
+            int projType = CurrentVariant switch
+            {
+                (int)VariantType.Comet => ModContent.ProjectileType<PodobooSpitUltima>(),
+                (int)VariantType.Oranda => ModContent.ProjectileType<PodobooSpitSplitting>(),
+                (int)VariantType.BubbleEye => ModContent.ProjectileType<PodobooSpitHoming>(),
+                _ => ModContent.ProjectileType<PodobooSpit>()
+            };
+
+            int speed = CurrentVariant switch
+            {
+                (int)VariantType.Comet => 18,
+                (int)VariantType.Oranda => 8,
+                (int)VariantType.BubbleEye => 8,
+                _ => 10
+            };
+
+            int fireRate = CurrentVariant switch
+            {
+                (int)VariantType.Comet => Main.rand.Next(90, 110),
+                (int)VariantType.Oranda => Main.rand.Next(70, 100),
+                (int)VariantType.BubbleEye => Main.rand.Next(80, 120),
+                _ => Main.rand.Next(50, 80)
+            };
+
+            float shotCompletion = Utils.GetLerpValue(0, -30, ShootTimer, true);
+            int soundFreq = (int)MathHelper.Lerp(10, 5, shotCompletion);
+            float pitch = MathHelper.Lerp(0, 0.6f, shotCompletion);
+            // Play bubbly sounds at increasing frequency and pitch
+            if (ShootTimer < 0 && ShootTimer % soundFreq == 0)
+            {
+                SoundEngine.PlaySound(SoundID.Item111 with { Pitch = pitch, MaxInstances = 0 }, NPC.Center);
+                // Star!
+                if (CurrentVariant == (int)VariantType.Comet)
+                {
+                    SoundEngine.PlaySound(SoundID.Item9 with { Pitch = pitch * 0.5f + 0.2f, MaxInstances = 0, Volume = 0.4f }, NPC.Center);
+                }
+            }
+
             // Lava attack, directly shoot at the player
             if (useLavaAI)
-            { 
-                ShootTimer++;
-
-                if (ShootTimer >= Main.rand.Next(50, 80))
+            {
+                ShootTimer--;
+                if (ShootTimer < -30)
                 {
-                    ShootTimer = 0;
+                    ShootTimer = fireRate;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, NPC.SafeDirectionTo(CurrentPlayer.Center, Vector2.UnitY) * 12, ModContent.ProjectileType<DrizzlefishFireball>(), NPC.damage, 0);
+                        int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, NPC.SafeDirectionTo(CurrentPlayer.Center, Vector2.UnitY) * speed, projType, NPC.damage, 0);
                         Main.projectile[p].hostile = true;
                         Main.projectile[p].friendly = false;
                     }
@@ -309,20 +353,30 @@ namespace CalamityMod.NPCs.SunkenSea
             else if (useAirAI)
             {
                 pathfinding.MaxSpeed = 4;
-                ShootTimer++;
+                ShootTimer--;
 
-                if (ShootTimer >= Main.rand.Next(50, 80))
+                if (ShootTimer <= -30)
                 {
-                    ShootTimer = 0;
+                    ShootTimer = fireRate;
+
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        // Scale the vertical velocity based on distance from the player
-                        float upwards = 0.01f * MathF.Abs(CurrentPlayer.Center.Y - NPC.Center.Y);
-                        int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, NPC.DirectionTo(CurrentPlayer.Center) * 10 - Vector2.UnitY * upwards, ModContent.ProjectileType<DrizzlefishFireball>(), NPC.damage, 0);
-                        Main.projectile[p].hostile = true;
-                        Main.projectile[p].friendly = false;
+                        int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, NPC.DirectionTo(CurrentPlayer.Center) * speed, projType, NPC.damage, 0, ai0: CurrentPlayer.whoAmI);
                     }
+
+                    for (int i = 0; i < 30; i++)
+                    {
+                        int d = Dust.NewDust(NPC.Center + NPC.DirectionTo(CurrentPlayer.Center) * NPC.width / 2, 10, 10, DustID.InfernoFork, Scale: Main.rand.NextFloat(0.8f, 1.4f));
+                        Main.dust[d].velocity = (NPC.DirectionTo(CurrentPlayer.Center) * Main.rand.Next(4, 10)).RotatedByRandom(Main.rand.NextFloat(-0.6f, 0.6f));
+                        Main.dust[d].noGravity = true;
+                    }
+
+                    NPC.velocity.X = -NPC.DirectionTo(CurrentPlayer.Center).X * 4;
                 }
+            }
+            else
+            {
+                ShootTimer = 0;
             }
             int dir = NPC.DirectionTo(CurrentPlayer.Center).X.DirectionalSign();
             NPC.rotation = NPC.DirectionTo(CurrentPlayer.Center).ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
@@ -363,6 +417,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.velocity.Y = 10f;
             }
+            NPC.rotation = 0;
         }
 
         protected override bool NPCSearchFilter(NPC n)
@@ -378,7 +433,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (lavaLine != Vector2.Zero)
             {
                 Vector2 lavaDist = lavaLine - p.Center;
-                airFilter = !p.lavaWet && p.Center.Y <= lavaLine.Y && MathF.Abs(lavaDist.Y) < 200 && MathF.Abs(lavaDist.X) < 300;
+                airFilter = !p.lavaWet && p.Center.Y <= lavaLine.Y && MathF.Abs(lavaDist.Y) < 300 && MathF.Abs(lavaDist.X) < 1000;
             }
             return NPC.HasSight(p.Center) && (lavaFilter || airFilter || alreadyVisible);
         }
@@ -431,7 +486,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     tex = bubbleEyedTex.Value;
                     break;
             }
-            spriteBatch.Draw(tex, NPC.Center - screenPos, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            float animSped = MathHelper.Lerp(0, 10, Utils.GetLerpValue(0, -30, ShootTimer, true));
+            Vector2 scale = Vector2.One + new Vector2(MathF.Cos(Main.GlobalTimeWrappedHourly * animSped), MathF.Sin(Main.GlobalTimeWrappedHourly * animSped)) * 0.05f;
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             return false;
         }
 
