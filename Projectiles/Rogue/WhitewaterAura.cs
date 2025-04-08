@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -38,9 +38,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Player player = Main.player[playerIndex];
                 float targetDist = Vector2.Distance(player.Center, Projectile.Center);
 
-                if (targetDist < 200f * areaScale && time % 12 == 0)
+                if (targetDist < 200f * areaScale && player.Calamity().whitewaterHeal == 0)
                 {
-                    player.HealPlayer(1);
+                    player.Calamity().whitewaterHeal = (player.whoAmI == Projectile.owner ? 300 : 600);
                 }
             }
 
@@ -68,12 +68,9 @@ namespace CalamityMod.Projectiles.Rogue
         {
             target.AddBuff(BuffID.Wet, 300);
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Projectile.Center - target.Center).SafeNormalize(Vector2.UnitY) * -6;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+            target.MoveNPC(launchVel, 9, true);
         }
         public override bool PreDraw(ref Color lightColor)
         {

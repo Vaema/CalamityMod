@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.Boss
             // Nuke explosion sound.
             SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, Projectile.Center);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Nuke gores
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("AresGaussNuke1").Type, 1f);

@@ -120,11 +120,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
 
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
 
                     return;
@@ -202,12 +198,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.SyncExtraAI();
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
                 }
                 else
@@ -248,12 +239,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.SyncExtraAI();
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -507,12 +493,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         }
                     }
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
             }
@@ -539,12 +520,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
 
@@ -569,12 +545,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
 
@@ -610,12 +581,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
             }
@@ -647,12 +613,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[0] = 3.1f;
                     npc.ai[1] = 0f;
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
 
@@ -704,12 +665,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[0] = 3.2f;
                     npc.ai[1] = npc.direction;
 
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-
+                    npc.ForceNetUpdate(false);
                     npc.SyncExtraAI();
                 }
             }
@@ -732,12 +688,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
                     else if (Math.Abs(npc.Center.X - player.Center.X) > chargeDistance + 200f)
                     {
@@ -745,12 +696,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -780,12 +726,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.Distance(player.Center) < 600f || npc.ai[2] >= 180f)
                     {
                         npc.ai[1] = 1f;
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
                 }
                 else
@@ -839,11 +780,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (Vector2.Distance(follySpawnCenter, player.Center) > 150f)
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)follySpawnCenter.X, (int)follySpawnCenter.Y, ModContent.NPCType<Bumblefuck2>(), npc.whoAmI);
 
-                            npc.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (npc.netSpam >= 10)
-                                npc.netSpam = 9;
+                            npc.ForceNetUpdate(false);
                         }
                     }
 
@@ -856,12 +793,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
                     npc.TargetClosest();
-
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -889,12 +821,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             ai0 = 3f;
 
                         Projectile.NewProjectile(npc.GetSource_FromAI(), follySpawnCenter.X, follySpawnCenter.Y, 0f, 0f, ModContent.ProjectileType<BirbAuraFlare>(), 0, 0f, Main.myPlayer, ai0, npc.target + 1);
-
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
+                        npc.ForceNetUpdate(false);
                     }
 
                     if (Main.zenithWorld)
@@ -922,12 +849,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
-
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
+                    npc.ForceNetUpdate(false);
                 }
             }
         }
@@ -1063,9 +985,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (Main.getGoodWorld && !Main.zenithWorld)
                         npc.velocity *= 1.15f;
 
-                    npc.netSpam = 5;
-                    if (Main.netMode == NetmodeID.Server)
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                    npc.ForceNetUpdate();
 
                     return;
                 }

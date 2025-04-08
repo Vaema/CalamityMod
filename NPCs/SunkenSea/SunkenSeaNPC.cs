@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CalamityMod.Enums;
-using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,182 +13,73 @@ using static Terraria.Utilities.NPCUtils;
 namespace CalamityMod.NPCs.SunkenSea
 {
     /// <summary>
-    /// An abstract class that gives an NPC the memebers needed to be a Sunken Sea NPC.<br/>
-    /// These have the ability to hunt both players and NPCs, and also have a list of NPCs they hunt and avoid.
+    /// An abstract class that provides the necessary members for an NPC to function as a Sunken Sea NPC.<br/>
+    /// These NPCs can hunt both players and other NPCs, and maintain lists of NPCs they hunt and avoid.
     /// </summary>
     public abstract class SunkenSeaNPC : ModNPC
     {
-        #region Fields & Properties
+        protected PathfindingManager pathfinding = null;
+        
+        private NPC _currentPrey;
+        private NPC _currentPredator;
+        private Player _currentPlayer;
 
         /// <summary>
-        /// Since a lot of these NPCs change behaviors a lot, this abstract class provides an <see cref="Action"/> property to store and trigger behaviors.<br/>
-        /// Automatically resets <see cref="PathfindingPoints"/> and <see cref="PathTimer"/> to not cause errors.
+        /// A list of NPC IDs that this creature hunts.
         /// </summary>
-        protected Action CurrentBehavior
-        {
-            get => _currentBehavior;
-            set
-            {
-                OnBehaviorChange(value);
-
-                PathfindingPoints = null;
-                PathPointIndex = 0;
-
-                PreviousBehavior = _currentBehavior;
-                _currentBehavior = value;
-
-                NetUpdate();
-            }
-        }
-        private Action _currentBehavior;
+        protected abstract List<int> PreyIDs { get; }
 
         /// <summary>
-        /// The previous behavior that was used for <see cref="CurrentBehavior"/>.
+        /// A list of NPC IDs that this creature avoids.
         /// </summary>
-        protected Action PreviousBehavior { get; private set; }
+        protected abstract List<int> PredatorIDs { get; }
 
         /// <summary>
-        /// A lot of these Sunken Sea creatures use the <see cref="CalamityUtils.AStar"/> pathfinding algorithm,<br/>
-        /// so this abstract class provides a <see cref="List{T}"/> so you can store the paths.<br/>
-        /// Defaults to <see langword="null"/>.
+        /// The biome flags that define where this Sunken Sea NPC can spawn.
         /// </summary>
-        protected List<Vector2> PathfindingPoints { get; set; }
+        protected abstract SunkenSeaBiomeFlags BiomeDesignation { get; }
 
         /// <summary>
-        /// The probablity that this Sunken Sea NPC spawns given the conditions.
-        /// </summary>
-        protected abstract float SpawningChance { get; }
-
-        protected int PathPointIndex { get; set; }
-
-        private bool _hasSpawned;
-
-        #region Targetting
-
-        /// <summary>
-        /// A list which stores the NPC's IDs that this creature hunts.
-        /// </summary>
-        protected abstract List<int> HuntNPCs { get; }
-
-        /// <summary>
-        /// A list which stores the NPC's IDs that this creature avoids.
-        /// </summary>
-        protected abstract List<int> AvoidNPCs { get; }
-
-        /// <summary>
-        /// The current NPC that this creature has detected as prey.
+        /// The current NPC that this creature has identified as prey.
         /// </summary>
         protected NPC CurrentPrey
         {
             get => _currentPrey;
             private set
             {
-                if (value != _currentPrey && value != null)
+                if (value != null && (_currentPrey == null || _currentPrey.whoAmI != value.whoAmI))
                     OnPreyDetection(value);
-
                 _currentPrey = value;
             }
         }
-        private NPC _currentPrey;
 
         /// <summary>
-        /// The current NPC that this creature has detected as a predator.
+        /// The current NPC that this creature has identified as a predator.
         /// </summary>
         protected NPC CurrentPredator
         {
             get => _currentPredator;
             private set
             {
-                if (value != _currentPredator && value != null)
+                if (value != null && (_currentPredator == null || _currentPredator.whoAmI != value.whoAmI))
                     OnPredatorDetection(value);
-
                 _currentPredator = value;
             }
         }
-        private NPC _currentPredator;
 
         /// <summary>
-        /// The current Player that this creature has detected.
+        /// The current player that this creature has detected.
         /// </summary>
         protected Player CurrentPlayer
         {
             get => _currentPlayer;
             private set
             {
-                if (value != _currentPlayer && value != null)
+                if (value != null && (_currentPlayer == null || _currentPlayer.whoAmI != value.whoAmI))
                     OnPlayerDetection(value);
-
                 _currentPlayer = value;
             }
         }
-        private Player _currentPlayer;
-
-        /// <summary>
-        /// The nearest entity detected, could be an NPC or Player.
-        /// </summary>
-        protected Entity NearestEntity { get; private set; }
-
-        /// <summary>
-        /// The distance detection radius.<br/>
-        /// Defaults to 300 pixels.
-        /// </summary>
-        protected float DetectionDistance { get; set; } = 300f;
-
-        /// <summary>
-        /// The direction of the cone used to detect targets.<br/>
-        /// Defaults to <see cref="Vector2.UnitX"/> times the direction.<br/>
-        /// When set, it normalizes the vector.
-        /// </summary>
-        protected Vector2 ConeDetectionDirection
-        {
-            get => _coneDetectionDirection;
-            set
-            {
-                _coneDetectionDirection = value.SafeNormalize(Vector2.UnitX * NPC.direction);
-                NetUpdate();
-            }
-        }
-        private Vector2 _coneDetectionDirection;
-
-        /// <summary>
-        /// How open the cone detection is -- given an angle.<br/>
-        /// Defaults to 45 degrees.
-        /// </summary>
-        protected float ConeDetectionAngle { get; set; } = MathHelper.ToRadians(45f);
-
-        /// <summary>
-        /// When a this creature has lost sight of a target, it'll still have a sense of permanence.<br/>
-        /// This means that, even if it can't see it, it can know it's there.<br/>
-        /// This property states how much seconds it can know it's there.<br/>
-        /// Defaults to 3 seconds.
-        /// </summary>
-        protected virtual float PermanenceSenseTime => CalamityUtils.SecondsToFrames(3f);
-        private int _permanenceSenseTimer;
-
-        /// <summary>
-        /// Whether or not the creature has detected anything at all.
-        /// </summary>
-        protected bool HasAnyTargets => CurrentPrey != null || CurrentPredator != null || CurrentPlayer != null;
-
-        #endregion
-
-        #region Biome Designation
-
-        /// <summary>
-        /// The biomes that this Sunken Sea NPC belongs to.
-        /// </summary>
-        protected abstract SunkenSeaBiomeFlags BiomeDesignation { get; }
-
-        /// <summary>
-        /// The spawn conditions for each biome that this Sunken Sea NPC belongs to.
-        /// </summary>
-        protected List<Func<NPCSpawnInfo, bool>> BiomeSpawnConditions { get; private set; } = [];
-
-        #endregion
-
-        #endregion
-
-        #region ModNPC Overrides
 
         public override void SetStaticDefaults()
         {
@@ -201,277 +89,108 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            List<int> biomeTypes = [];
-            foreach (var flag in Enum.GetValues<SunkenSeaBiomeFlags>())
-            {
-                if (flag == SunkenSeaBiomeFlags.None)
-                    continue;
+            NPC.aiStyle = -1;
+            AIType = -1;
 
-                if (!BiomeDesignation.HasFlag(flag))
-                    continue;
+            SpawnModBiomes = Enum.GetValues<SunkenSeaBiomeFlags>()
+                .Where(flag => flag != SunkenSeaBiomeFlags.None &&
+                               flag != SunkenSeaBiomeFlags.UndergroundDesert &&
+                               BiomeDesignation.HasFlag(flag))
+                .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
+                .ToArray();
 
-                if (!SunkenSeaBiomeCorrespondentDict.TryGet(flag, out var spawnCondition, out var biomeType))
-                    continue;
-
-                // Apply Conditions and Biome Types
-                BiomeSpawnConditions.Add(spawnCondition);
-                if (flag != SunkenSeaBiomeFlags.UndergroundDesert)
-                    biomeTypes.Add(biomeType);
-            }
-            SpawnModBiomes = [.. biomeTypes];
+            Banner = Type;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) => bestiaryEntry.Info.AddRange([new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")]);
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+            => bestiaryEntry.Info.AddRange([new FlavorTextBestiaryInfoElement($"Mods.CalamityMod.Bestiary.{Name}")]);
 
-        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        public override bool PreAI()
         {
-            if (BiomeSpawnConditions.Any(f => f.Invoke(spawnInfo)) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
-                return SpawningChance;
-            return 0f;
-        }
-
-        public sealed override void AI()
-        {
-            if (!_hasSpawned)
-            {
-                _coneDetectionDirection = Vector2.UnitX * NPC.direction;
-                BehaviorOnSpawn();
-                _hasSpawned = true;
-                NetUpdate();
-            }
-
             UpdateTargets();
-
-            CreatureAI();
+            return true;
         }
 
-        #endregion
-
-        #region Methods
-
         /// <summary>
-        /// Same function as OnSpawn, but this one actually syncs to the server.
+        /// Called when this NPC is hit by another NPC. Override this method to define custom behavior when attacked.
         /// </summary>
-        protected virtual void BehaviorOnSpawn() { }
-
-        /// <summary>
-        /// A method that is called on <see cref="AI"/> every frame, to put your actual enemy AI.
-        /// </summary>
-        protected virtual void CreatureAI() { }
-
-        /// <summary>
-        /// A method that is triggered when this NPC's behavior is changed.
-        /// </summary>
-        protected virtual void OnBehaviorChange(Action newBehavior) { }
-
-        /// <summary>
-        /// A custom method for when this NPC is hit by another NPC.
-        /// </summary>
-        /// <param name="attacker"></param>
+        /// <param name="attacker">The NPC that attacked this creature.</param>
         public virtual void OnHitByNPC(NPC attacker) { }
 
         /// <summary>
-        /// A method that is triggered when this creature has detected a prey.
+        /// Called when this creature detects a prey NPC. Override this method to define custom behavior upon detecting prey.
         /// </summary>
+        /// <param name="prey">The NPC that has been detected as prey.</param>
         protected virtual void OnPreyDetection(NPC prey) { }
 
         /// <summary>
-        /// A method that is triggered when this creature has detected a predator.
+        /// Called when this creature detects a predator NPC. Override this method to define custom behavior upon detecting a predator.
         /// </summary>
+        /// <param name="predator">The NPC that has been detected as a predator.</param>
         protected virtual void OnPredatorDetection(NPC predator) { }
 
         /// <summary>
-        /// A method that is triggered when this creature detects a player.
+        /// Called when this creature detects a player. Override this method to define custom behavior upon detecting a player.
         /// </summary>
+        /// <param name="player">The player that has been detected.</param>
         protected virtual void OnPlayerDetection(Player player) { }
 
         /// <summary>
-        /// Whether or not a detected player is valid to be set as a target given some conditions.
+        /// Determines whether a detected player is a valid target based on specific conditions.
         /// </summary>
-        protected virtual bool PlayerSearchFilter(Player p)
-        {
-            if (!HasLineOfSight(p.Center))
-                return false;
-
-            bool isInsideCone = Vector2.Dot(_coneDetectionDirection, NPC.DirectionTo(p.Center)) >= MathF.Cos(ConeDetectionAngle) && NPC.DistanceSQ(p.Center) < DetectionDistance * DetectionDistance;
-            bool isInsideCirlceWhenAware = HasAnyTargets && NPC.DistanceSQ(p.Center) <= DetectionDistance * DetectionDistance;
-            if (isInsideCone || isInsideCirlceWhenAware)
-                return true;
-
-            return false;
-        }
+        /// <param name="p">The player to evaluate.</param>
+        /// <returns><see langword="true"/> if the NPC is a valid target; otherwise, <see langword="false"/>.</returns>
+        protected virtual bool PlayerSearchFilter(Player p) => NPC.HasSight(p.Center) && Vector2.DistanceSquared(NPC.Center, p.Center) < 72900f;
 
         /// <summary>
-        /// Whether or not a detected NPC is valid to be set as a target given some conditions.
+        /// Determines whether a detected NPC is a valid target based on specific conditions.
         /// </summary>
-        protected virtual bool NPCSearchFilter(NPC n)
-        {
-            if (!HasLineOfSight(n.Center))
-                return false;
-
-            bool isInsideCone = Vector2.Dot(_coneDetectionDirection, NPC.DirectionTo(n.Center)) >= MathF.Cos(ConeDetectionAngle) && NPC.DistanceSQ(n.Center) < DetectionDistance * DetectionDistance;
-            bool isInsideCirlceWhenAware = HasAnyTargets && NPC.DistanceSQ(n.Center) <= DetectionDistance * DetectionDistance;
-            if (isInsideCone || isInsideCirlceWhenAware)
-                return true;
-
-            return false;
-        }
+        /// <param name="n">The NPC to evaluate.</param>
+        /// <returns><see langword="true"/> if the NPC is a valid target; otherwise, <see langword="false"/>.</returns>
+        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f;
 
         /// <summary>
-        /// A method that finds and updates the current detected targets of this creature.
+        /// Updates the current targets of this creature, including prey, predators, and players, based on detection logic.
         /// </summary>
         protected void UpdateTargets()
         {
             var searchResults = SearchForTarget(NPC, playerFilter: PlayerSearchFilter, npcFilter: NPCSearchFilter);
             if (searchResults.FoundTarget)
             {
-                CurrentPlayer = searchResults.NearestTankOwner;
-                NearestEntity = searchResults.NearestTankOwner;
-
                 if (searchResults.FoundNPC)
                 {
-                    if (AvoidNPCs.Contains(searchResults.NearestNPC.type))
+                    if (PredatorIDs.Contains(searchResults.NearestNPC.type))
                         CurrentPredator = searchResults.NearestNPC;
+                    else
+                        CurrentPredator = null;
 
-                    else if (HuntNPCs.Contains(searchResults.NearestNPC.type))
+                    if (PreyIDs.Contains(searchResults.NearestNPC.type))
                         CurrentPrey = searchResults.NearestNPC;
-
-                    if (searchResults.NearestNPCDistance < searchResults.NearestTankDistance)
-                        NearestEntity = searchResults.NearestNPC;
+                    else
+                        CurrentPrey = null; 
                 }
 
-                NetUpdate();
+                CurrentPlayer = searchResults.NearestTankOwner;
             }
             else
             {
-                _permanenceSenseTimer++;
-                if (_permanenceSenseTimer > PermanenceSenseTime)
-                {
-                    CurrentPlayer = null;
-                    NearestEntity = null;
-                    CurrentPredator = null;
-                    CurrentPrey = null;
-                    _permanenceSenseTimer = 0;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Helper Methods
-
-        protected bool HasPath => PathfindingPoints is not null;
-
-        protected bool IsPointAbleToNavigate(Point point) =>
-            Main.tile[point].LiquidAmount > 125 && Main.tile[point].LiquidType == LiquidID.Water && NPC.DoesEntityFitInPath(point, fluffX: 16, fluffY: 16);
-
-        protected void SunkenSeaPathfinding(Vector2 goal) => PathfindingPoints = NPC.Center.DoPathfinding(goal, IsPointAbleToNavigate);
-
-        protected void SunkenSeaPathfinding() => PathfindingPoints = NPC.Center.DoPathfinding(tileValidation: IsPointAbleToNavigate);
-
-        /// <summary>
-        /// A quickhand method to follow a path found.
-        /// </summary>
-        protected void GenericPathFollowing(float acceleration)
-        {
-            Vector2 currentlyFollowedPathPoint = PathfindingPoints[PathPointIndex];
-
-            NPC.velocity += NPC.DirectionTo(currentlyFollowedPathPoint) * acceleration;
-
-            if (NPC.DistanceSQ(currentlyFollowedPathPoint) < 48f * 48f)
-            {
-                PathPointIndex++;
-                PathPointIndex = (int)MathHelper.Clamp(PathPointIndex, 0, PathfindingPoints.Count - 1);
-            }
-
-            if (PathPointIndex == PathfindingPoints.Count - 1)
-            {
-                PathPointIndex = 0;
-                PathfindingPoints = null;
+                CurrentPredator = null;
+                CurrentPrey = null;
+                CurrentPlayer = null;
             }
         }
 
         /// <summary>
-        /// A quick method to check whether this NPC has line of sight with something.
+        /// Checks whether a specific tile is valid for this NPC, considering water level and entity size.
         /// </summary>
-        protected bool HasLineOfSight(Vector2 position) => Collision.CanHitLine(NPC.Center, 0, 0, position, 0, 0);
-
-        /// <summary>
-        /// Spawns an emote particle.
-        /// </summary>
-        protected void React(Color emoteColor, EmoteExpressionParticle.EmoteType emoteImage, SoundStyle? sound = null)
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        protected bool SunkenSeaTileValidity(Point point)
         {
-            if (!Main.dedServ)
-            {
-                var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
-                Particle emote = new EmoteExpressionParticle(
-                    NPC.Center + emoteDirection * 2f,
-                    emoteDirection,
-                    2.2f,
-                    emoteColor,
-                    Main.rand.Next(30, 46),
-                    emoteImage);
-                GeneralParticleHandler.SpawnParticle(emote);
-
-                if (sound is not null)
-                    SoundEngine.PlaySound(sound, NPC.Center);
-            }
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+            return NPC.Hitbox.Contains(actualFuckingPoint) 
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
         }
-
-        #endregion
-
-        #region Syncing
-
-        /// <summary>
-        /// A quick method to both do <see cref="NPC.netUpdate"/> and set <see cref="NPC.netSpam"/>.<br/>
-        /// Defaults <see cref="NPC.netSpam"/> to 0.
-        /// </summary>
-        protected void NetUpdate(int netSpam = 0)
-        {
-            NPC.netUpdate = true;
-            NPC.netSpam = netSpam;
-        }
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write7BitEncodedInt(CurrentPrey.whoAmI);
-            writer.Write7BitEncodedInt(CurrentPredator.whoAmI);
-            writer.Write7BitEncodedInt(CurrentPlayer.whoAmI);
-            writer.Write7BitEncodedInt(NearestEntity.whoAmI);
-
-            writer.Write(DetectionDistance);
-            writer.WritePackedVector2(_coneDetectionDirection);
-            writer.Write(ConeDetectionAngle);
-            writer.Write7BitEncodedInt(_permanenceSenseTimer);
-
-            writer.Write7BitEncodedInt(PathfindingPoints.Count);
-            foreach (var point in PathfindingPoints)
-                writer.WritePackedVector2(point);
-            writer.Write7BitEncodedInt(PathPointIndex);
-
-            writer.Write(_hasSpawned);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            CurrentPrey.whoAmI = reader.Read7BitEncodedInt();
-            CurrentPredator.whoAmI = reader.Read7BitEncodedInt();
-            CurrentPlayer.whoAmI = reader.Read7BitEncodedInt();
-            NearestEntity.whoAmI = reader.Read7BitEncodedInt();
-
-            DetectionDistance = reader.ReadSingle();
-            _coneDetectionDirection = reader.ReadPackedVector2();
-            ConeDetectionAngle = reader.ReadSingle();
-            _permanenceSenseTimer = reader.Read7BitEncodedInt();
-
-            int count = reader.Read7BitEncodedInt();
-            for (int i = 0; i < count; i++)
-                PathfindingPoints.Add(reader.ReadPackedVector2());
-            PathPointIndex = reader.Read7BitEncodedInt();
-
-            _hasSpawned = reader.ReadBoolean();
-        }
-
-        #endregion
     }
 }

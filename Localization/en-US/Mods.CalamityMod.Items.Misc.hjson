@@ -20,7 +20,7 @@ AndroombaItem: {
 
 BabyCannonballJellyfishItem: {
 	DisplayName: "{$NPCs.BabyCannonballJellyfish.DisplayName}"
-	Tooltip: ""
+	Tooltip: Can be fired out of cannons
 }
 
 BabyFlakCrabItem: {
@@ -394,6 +394,24 @@ RelicOfConvergence: {
 		All players within the area of effect are healed for {0} HP
 		Allies gain 50% extra healing
 		Holding out the crystal heavily reduces the damage of all summons
+		[c/FF8C00:Never once had I known kindness. Neither my peers or family had a shred of compassion for me.]
+		[c/FF8C00:I wished for someone I could confide. A presence that cleansed me of anxiety.]
+		[c/FF8C00:And when I saw Her radiant smile when we met, I knew I had finally found it.]
+		'''
+}
+
+RelicOfResilience: {
+	DisplayName: Relic of Resilience
+	Tooltip:
+		'''
+		Holding this item creates orbiting rock shards around you and nearby allies
+		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
+		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
+		This effect has a 10 second cooldown after taking a hit
+		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
+		[c/FF8C00:I saw a massacre and did nothing to stop it. My vow broken, I was shunned.]
+		[c/FF8C00:My will to forge ahead vanished. My final wish was simply to not die alone.]
+		[c/FF8C00:But when She put faith in my shield, I would never again let it falter.]
 		'''
 }
 
@@ -426,17 +444,5 @@ SuperDummy: {
 		Regenerates 1 million life per second
 		Will not die when taking damage over time from debuffs
 		Right click to kill all super dummies
-		'''
-}
-
-RelicOfResilience: {
-	DisplayName: Relic Of Resilience
-	Tooltip:
-		'''
-		Holding this item creates orbiting rock shards around you and nearby allies
-		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
-		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
-		This effect has a 10 second cooldown after taking a hit
-		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
 		'''
 }

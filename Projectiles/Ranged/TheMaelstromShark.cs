@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             // Create death effects for the shark, including a death sound, gore, and some blood.
             SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("MaelstromReaperShark1").Type, Projectile.scale);
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("MaelstromReaperShark2").Type, Projectile.scale);

@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 30;
             NPC.height = 30; //32
             NPC.defense = 10;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -461,7 +461,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0 && Main.netMode != NetmodeID.Server)
+            if (NPC.life <= 0 && !Main.dedServ)
             {
                 for (int k = 0; k < 10; k++)
                 {

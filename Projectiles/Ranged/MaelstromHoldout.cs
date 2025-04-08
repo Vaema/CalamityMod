@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         public void ShootProjectiles(Vector2 shootPosition)
         {
             // Create electric particles.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 16; i++)
                 {
@@ -111,10 +111,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), aimInterpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity * 24f;

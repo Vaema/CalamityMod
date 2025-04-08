@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Fishing
         {
             Item.width = 34;
             Item.height = 30;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;

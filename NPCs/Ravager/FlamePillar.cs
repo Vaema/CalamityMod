@@ -128,12 +128,7 @@ namespace CalamityMod.NPCs.Ravager
 
                         NPC.ai[2] += 1f;
                         NPC.localAI[0] = 0f;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
                 else

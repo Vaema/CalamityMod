@@ -20,17 +20,36 @@ namespace CalamityMod.World
     public static class CalamityWorld
     {
         #region Vars
+        /// <summary> Tracks the amount of money stolen by the Bandit in this world, in Copper Coins. </summary>
         public static int MoneyStolenByBandit = 0;
+        /// <summary>
+        /// Tracks the number of reforges which have been performed since the Bandit last refunded the player.<br/>
+        /// Used to allow the refund feature to work, and for allowing special Goblin Tinkerer and Bandit dialogue.
+        /// </summary>
         public static int Reforges;
+        /// <summary>
+        /// If false, this world was created before the Draedon Update (1.5.0.001).<br/>
+        /// Worlds created before the Draedon Update will not lock specific Draedon's Arsenal recipes behind Schematics.
+        /// </summary>
         public static bool IsWorldAfterDraedonUpdate = false;
+        /// <summary>
+        /// Stores the pre-Hardmode ore types that this world generated with.<br/>
+        /// Is not actually used for any world gen tasks, and is only used to change the item sprite of the Suspicious Scrap item.
+        /// </summary>
         public static ushort[] OreTypes = new ushort[4];
 
         // Modes
-        public static bool revenge = false; // Revengeance Mode
-        public static bool death = false; // Death Mode
-        public static bool armageddon = false; // Armageddon Mode
+        /// <summary> If true, the world is in Revengeance Mode. </summary>
+        public static bool revenge = false;
+        /// <summary> If true, the world is in Death Mode. </summary>
+        public static bool death = false;
+        /// <summary>
+        /// If true, taking damage while a boss is alive will instantly kill the player.<br/>
+        /// Unused by Calamity and can only be set externally.
+        /// </summary>
+        public static bool armageddon = false;
 
-        // Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy)
+        /// <summary> Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy). </summary>
         public static bool LegendaryMode => Main.getGoodWorld && ReflectMasterMode();
 
         // FTW automatically bumps difficulties up and has no proper check for Master since a world generated in Expert Mode will be classified as Master
@@ -48,26 +67,31 @@ namespace CalamityMod.World
         // Shrines
         public static int[] SChestX = new int[10];
         public static int[] SChestY = new int[10];
-        public static bool roxShrinePlaced = false;
 
-        // Planetoids
+        /// <summary> Used to check if the world has generated Luminite planetoids from Moon Lord's defeat. </summary>
         public static bool HasGeneratedLuminitePlanetoids = false;
 
-        // Town NPC spawn/home bools
+        /// <summary> If true, the Bandit has lived in this world. Used to ensure their spawn condition is not required on subsequent respawns. </summary>
         public static bool spawnedBandit = false;
+        /// <summary> If true, the Drunk Princess has lived in this world. Used to ensure her spawn condition is not required on subsequent respawns. </summary>
         public static bool spawnedCirrus = false;
+        /// <summary> If true, the Archmage has lived in a house in this world. Solely used as a condition for dialogue. </summary>
         public static bool foundHomePermafrost = false;
 
-        // Town Pet name chosen bools
+        /// <summary> Used for allowing custom Town Cat patreon names. </summary>
         public static bool catName = false;
+        /// <summary> Used for allowing custom Town Dog patreon names. </summary>
         public static bool dogName = false;
+        /// <summary> Used for allowing custom Town Bunny patreon names. </summary>
         public static bool bunnyName = false;
 
         // Draedon Summoning stuff.
         public static int DraedonSummonCountdown = 0;
         public static ExoMech DraedonMechToSummon;
         public static Vector2 DraedonSummonPosition = Vector2.Zero;
+        /// <summary> Used to track whether or not Draedon has given their initial monologue when summoned before the Exo Mechs fight for the first time. </summary>
         public static bool TalkedToDraedon = false;
+        /// <summary> If true, Draedon will immediately spawn Exo Mechdusa after being summoned. </summary>
         public static bool DraedonMechdusa = false;
         public static bool AbleToSummonDraedon
         {

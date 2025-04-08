@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage * 0.9f), Projectile.knockBack, Projectile.owner);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmall");
                     if (fullRevShots % 2 == 0)
-                        SoundEngine.PlaySound(fire with { Volume = 0.8f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
                     //SoundEngine.PlaySound(SoundID.Item40 with { PitchVariance = 0.4f }, Projectile.Center);
                     Owner.channel = true;
 
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
-                        SoundEngine.PlaySound(fire with { Volume = 0.6f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.4f }, Projectile.Center);
                         framesBetweenShots = 3;
                     }
                     if (framesBetweenShots > 0)
@@ -155,10 +155,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), 0.185f).SafeNormalize(Vector2.UnitY);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
             Projectile.Center = armPosition + Projectile.velocity * MathHelper.Clamp(47f - (framesBetweenShots * 2), 0f, 47f) + new Vector2(0, 5);
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);

@@ -119,7 +119,7 @@ namespace CalamityMod
         public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
 
-        public static string ProvidenceNightText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceNight");
+        public static string ProvidenceEnragedText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceEnraged");
         public static string ProvidenceChallengeText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceChallenge");
 
         #endregion
@@ -1450,7 +1450,7 @@ namespace CalamityMod
                     return;
 
                 // If server-side, then the item must be spawned for each client individually.
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NPC npc = info.npc;
                     int idx = Item.NewItem(npc.GetSource_Loot(), npc.Center, itemId, stack, true, -1);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
@@ -676,9 +677,6 @@ IL_6899:
         {
             npcLoot.Add(ItemID.AncientBattleArmorMaterial);
 
-            // Great Sand Shark drops the Desert Key
-            npcLoot.Add(ItemID.DungeonDesertKey, 3);
-
             // 1 Grand Scale guaranteed; on Expert, 33% chance of getting a second one
             npcLoot.Add(ModContent.ItemType<GrandScale>());
             npcLoot.AddIf(() => Main.expertMode, ModContent.ItemType<GrandScale>(), 3);
@@ -709,7 +707,7 @@ IL_6899:
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
     }
 }

@@ -46,14 +46,5 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             return true;
         }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.Hive, 10).
-                AddIngredient(ItemID.BeeWax, 8).
-                AddTile(TileID.Anvils).
-                Register();
-        }
     }
 }

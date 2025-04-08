@@ -53,12 +53,11 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             itemLoot.Add(ItemID.Rope, 1, 50, 50);
 
             // Potions
-            itemLoot.Add(ItemID.MiningPotion);
-            itemLoot.Add(ItemID.SpelunkerPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.SwiftnessPotion, 1, 3, 3);
-            itemLoot.Add(ItemID.GillsPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.ShinePotion);
+            LeadingConditionRule multiplayer = itemLoot.DefineConditionalDropSet(() => Main.netMode == NetmodeID.MultiplayerClient);
+            itemLoot.Add(ItemID.MiningPotion, 1, 3, 3);
+            itemLoot.Add(ItemID.SpelunkerPotion, 1, 3, 3);
             itemLoot.Add(ItemID.RecallPotion, 1, 3, 3);
+            multiplayer.Add(ItemID.WormholePotion, 1, 3, 3);
 
             // Tiles
             itemLoot.Add(ItemID.Torch, 1, 25, 25);
@@ -80,6 +79,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName == "Aleksh" || playerName == "Shark Lad";
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
+
+            // Mihaii dev item
+            // Name specific: "Mihaii"
+            static bool getsGoldenBomb(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Mihaii";
+            };
+            itemLoot.AddIf(getsGoldenBomb, ModContent.ItemType<GoldenBomb>());
 
             // HPU dev item
             // Name specific: "Heart Plus Up"

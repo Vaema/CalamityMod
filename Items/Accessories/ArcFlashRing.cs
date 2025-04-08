@@ -1,7 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -11,8 +13,8 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 34;
+            Item.width = 56;
+            Item.height = 64;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.accessory = true;
@@ -26,6 +28,22 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.arcFlashRingVisual = true;
             else
                 modPlayer.arcFlashRingVisual = false;
+        }
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                texture: TextureAssets.Item[Type].Value,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale,
+                wantedScale: 0.7f,
+                drawOffset: new(1f, 0f)
+            );
+            return false;
         }
     }
 }

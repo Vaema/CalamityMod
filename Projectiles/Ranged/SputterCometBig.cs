@@ -68,15 +68,13 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
             if (Projectile.owner == Main.myPlayer)
             {
-                int flash = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<Flash>(), (int)((double)Projectile.damage * 0.5), 0f, Projectile.owner, 0f, 0f);
-                Main.projectile[flash].usesLocalNPCImmunity = true;
-                Main.projectile[flash].localNPCHitCooldown = 10;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<Flash>(), (int)((double)Projectile.damage * 0.5), 0f, Projectile.owner, 0f, 0f);
             }
             for (int k = 0; k < 5; k++)
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {

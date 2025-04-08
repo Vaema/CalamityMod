@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 30;
             NPC.height = 24; 
             NPC.defense = 10;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -573,7 +573,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, 1f);
                 }

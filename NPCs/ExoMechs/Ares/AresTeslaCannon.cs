@@ -113,6 +113,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             writer.Write(frameX);
             writer.Write(frameY);
             writer.Write(NPC.dontTakeDamage);
+            writer.Write(NPC.localAI[0]);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -122,6 +123,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             frameX = reader.ReadInt32();
             frameY = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
+            NPC.localAI[0] = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -229,6 +231,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     NPC.Opacity = 0f;
             }
 
+            // Global timer used for passive movement
+            NPC.localAI[0]++;
+            if (NPC.localAI[0] >= 240f)
+                NPC.localAI[0] = 0f;
+
             // Predictiveness
             float predictionAmt = bossRush ? 40f : death ? 30f : revenge ? 27.5f : expertMode ? 25f : 20f;
             if (nerfedAttacks)
@@ -314,10 +321,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Default vector to fly to
-            float offsetX = -375f;
-            float offsetY = 160f;
-            float offsetX2 = -540f;
-            float offsetY2 = 540f;
+            Vector2 offset = new Vector2(-375f, 160f + 20f * (float)Math.Sin(NPC.localAI[0] * MathHelper.Pi / 120f));
+            Vector2 offset2 = new Vector2(-540f, 540f);
             switch ((int)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3])
             {
                 case 0:
@@ -328,12 +333,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
                 case 2:
                 case 3:
-                    offsetX *= -1f;
-                    offsetX2 *= -1f;
-                    offsetY2 *= -1f;
+                    offset.X *= -1f;
+                    offset2 *= -1f;
                     break;
             }
-            Vector2 destination = calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX2, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY2) : new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY);
+            Vector2 destination = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center + (calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? offset2 : offset);
 
             // Velocity and acceleration values
             float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
@@ -439,9 +443,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             {
                                 int type = ModContent.ProjectileType<AresTeslaOrb>();
                                 int damage = NPC.GetProjectileDamage(type);
-                                Vector2 offset = Vector2.Normalize(teslaOrbVelocity) * 40f + Vector2.UnitY * 8f;
+                                Vector2 orbOffset = Vector2.Normalize(teslaOrbVelocity) * 40f + Vector2.UnitY * 8f;
                                 float identity = fireMoreOrbs ? -2f : calamityGlobalNPC.newAI[3] + (calamityGlobalNPC.newAI[2] - teslaOrbTelegraphDuration) / divisor;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, teslaOrbVelocity, type, damage, 0f, Main.myPlayer, identity);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + orbOffset, teslaOrbVelocity, type, damage, 0f, Main.myPlayer, identity);
                             }
 
                             // Recoil
@@ -675,7 +679,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresTeslaCannon1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresTeslaCannon2").Type, 1f);

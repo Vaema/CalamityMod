@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.coldDamage = true;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 180;
+            Projectile.alpha = 255;
         }
 
         public override void AI()
@@ -40,11 +41,13 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.velocity *= 0.001f;
                     }
                     bool isCounter = Projectile.ai[2] < 0;
+                    // start further away and then rapidly go inwards
+                    float dist = Math.Abs(Projectile.ai[2]) == 12 ? 160 : MathHelper.Lerp(210, 160, Utils.GetLerpValue(0, 5, Projectile.ai[1], true));
                     if (Main.player[Projectile.owner].active && !Main.player[Projectile.owner].dead)
                     {
                         float shardNum = Math.Abs(Projectile.ai[2]) - 1;
                         float aivar = isCounter ? 1 - shardNum - 1 : shardNum;
-                        Projectile.position = Main.player[Projectile.owner].Center + (2 * MathHelper.Pi / 12 * aivar - MathHelper.PiOver2).ToRotationVector2() * 160 - Projectile.Size / 2;
+                        Projectile.position = Main.player[Projectile.owner].Center + (2 * MathHelper.Pi / 12 * aivar - MathHelper.PiOver2).ToRotationVector2() * dist - Projectile.Size / 2;
                     }
                     if (Projectile.ai[1] >= (12 - Math.Abs(Projectile.ai[2])) * 5 + 2)
                     {
@@ -63,6 +66,11 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.ai[0] = 1;
                         Projectile.ai[1] = 0;
                     }
+                    // icicles 11 and 12 have barely any time, so they tick down much faster
+                    if (Math.Abs(Projectile.ai[2]) >= 11)
+                        Projectile.alpha -= 150;
+                    else
+                        Projectile.alpha -= 30;
                     break;
                 // jet out 
                 case 1:

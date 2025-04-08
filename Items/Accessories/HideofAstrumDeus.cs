@@ -21,13 +21,9 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            player.buffImmune[ModContent.BuffType<AstralInfectionDebuff>()] = true;
             modPlayer.hideOfDeus = true;
             if (modPlayer.hideOfDeusMeleeBoostTimer > 0)
                 player.GetDamage<TrueMeleeDamageClass>() += 0.3f;
-            player.buffImmune[BuffID.CursedInferno] = true;
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
             player.thorns += 0.75f;
         }
     }

@@ -34,7 +34,7 @@ namespace CalamityMod.Items
                     {
                         int damage = npc.SimpleStrikeNPC((int)(npc.lifeMax / 200), player.direction, true);
                         SoundEngine.PlaySound(Projectiles.Summon.CnidarianJellyfishOnTheString.SlapSound with { Volume = 2, MaxInstances = 200 }, npc.Center);
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             BloodShed(itemRect, npc, damage, player);
                         }

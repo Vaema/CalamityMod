@@ -35,7 +35,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Difficulty bools
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Projectile types and damage
@@ -267,8 +266,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= (float)scoopRubbleGateValue)
                     {
                         Point sourceTileCoords = npc.Top.ToTileCoordinates();
-                        int numRubble = death ? (masterMode ? 60 : 40) : (masterMode ? 32 : 20);
-                        int distancedByThisManyTiles = death ? (masterMode ? 3 : 4) : (masterMode ? 4 : 5);
+                        int numRubble = death ? 60 : 20;
+                        int distancedByThisManyTiles = death ? 3 : 5;
                         sourceTileCoords.X += npc.direction * 3;
                         sourceTileCoords.Y -= 10;
                         int screenShakeGateValue = (int)npc.ai[1] - scoopRubbleGateValue;
@@ -315,11 +314,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = (masterMode ? 7 : 5) + (int)MathHelper.Lerp(0f, 11f, 1f - lifeRatio);
+                            int totalProjectiles = (death ? 7 : 5) + (int)MathHelper.Lerp(0f, 11f, 1f - lifeRatio);
                             float velocityMultIncrement = ((totalProjectiles + 1) / (float)totalProjectiles) - 1f;
-                            float randomRadialOffset = MathHelper.ToRadians(MathHelper.Lerp(0f, masterMode ? 270f : 180f, 1f - lifeRatio));
+                            float randomRadialOffset = MathHelper.ToRadians(MathHelper.Lerp(0f, death ? 270f : 180f, 1f - lifeRatio));
                             float radians = MathHelper.TwoPi / totalProjectiles + randomRadialOffset;
-                            float velocity = (masterMode ? 9f : 7f) + MathHelper.Lerp(0f, 3.5f, 1f - lifeRatio);
+                            float velocity = (death ? 9f : 7f) + MathHelper.Lerp(0f, 3.5f, 1f - lifeRatio);
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
@@ -376,7 +375,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int handAmount = (int)MathHelper.Lerp(masterMode ? 5f : 3f, masterMode ? 12f : 10f, 1f - lifeRatio);
+                            int handAmount = (int)MathHelper.Lerp(death ? 5f : 3f, death ? 12f : 10f, 1f - lifeRatio);
                             for (int i = 0; i < handAmount; i++)
                             {
                                 RandomizeInsanityShadowFor(Main.player[npc.target], death, isHostile: true, out var spawnposition, out var spawnvelocity, out var ai, out var ai2);

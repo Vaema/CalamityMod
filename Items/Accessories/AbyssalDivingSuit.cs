@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Add equip textures
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Head}", EquipType.Head, this);
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
                 int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -65,7 +65,6 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<AbyssalDivingGear>().
                 AddIngredient<AnechoicPlating>().
-                AddIngredient<IronBoots>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<MolluskHusk>(15).
                 AddTile(TileID.LunarCraftingStation).

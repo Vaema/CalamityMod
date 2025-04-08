@@ -50,7 +50,7 @@ namespace CalamityMod.Particles
         public override void Update()
         {
             // Don't perform any operations on the server. Doing so would be a waste of space as these sets are entirely based on drawcode.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             if (bloom == null)

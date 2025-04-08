@@ -179,12 +179,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(70 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 114, 88);
                     NPC.position -= NPC.Size * 0.5f;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
             }
 
@@ -230,7 +225,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (phase2)
                     {
                         // Fire lasers from every 15th (20th in normal mode) body segment if not in laser wall phase
-                        float laserWallPhaseGateValue = 720f;
+                        float laserWallPhaseGateValue = DevourerofGodsHead.LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
                         if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[3] < laserWallPhaseGateValue - 180f)
                         {
                             NPC.localAI[0] += 1f;
@@ -259,7 +254,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else
                     {
                         // Fire lasers from every 20th (25th in normal mode) body segment if not in laser barrage phase
-                        float laserBarrageGateValue = bossRush ? 780f : death ? 900f : 960f;
+                        float laserBarrageGateValue = bossRush ? 1080f : death ? 1320f : 1440f;
                         float laserBarrageShootGateValue = bossRush ? 160f : 240f;
                         float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue * 1.5f;
                         if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[1] < laserBarragePhaseGateValue)
@@ -319,11 +314,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (NPC.Opacity < 0.2f)
                                 NPC.Opacity = 0f;
 
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -472,12 +463,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             if (NPC.realLife >= 0)
             {
@@ -487,12 +473,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
-
-                Head.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (Head.netSpam >= 10)
-                    Head.netSpam = 9;
+                Head.ForceNetUpdate(false);
             }
             return false;
         }
@@ -501,7 +482,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("DoGS6").Type, NPC.scale);

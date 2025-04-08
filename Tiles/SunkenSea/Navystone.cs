@@ -54,7 +54,7 @@ namespace CalamityMod.Tiles.SunkenSea
                     Below.TileType = (ushort)ModContent.TileType<DepthVines>();
                     Below.HasTile = true;
                     WorldGen.SquareTileFrame(i, j + 1, true);
-                    if (Main.netMode == NetmodeID.Server) 
+                    if (Main.dedServ) 
                     {
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
                     }

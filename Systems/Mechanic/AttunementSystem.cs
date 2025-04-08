@@ -20,10 +20,10 @@ namespace CalamityMod.Systems
             Registry = [
                 
                 // Broken Biome Blade
-                new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
+                new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new EvilAttunement(),
 
                 // Biome Blade
-                new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(), new MarineAttunement(),
+                new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(),
                 
                 // True Biome Blade
                 new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),

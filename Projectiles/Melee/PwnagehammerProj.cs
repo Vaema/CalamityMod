@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Melee
         public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f };
         public static int HighBong = 0;
         public int time = 0;
-        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer;
+        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().Holyhammer;
 
         public override void SetStaticDefaults()
         {

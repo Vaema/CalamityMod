@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,11 +25,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public const float MaxTime = 120;
 
-
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -85,8 +81,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_WheelProc)
-                sword.OnHitProc = true;
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword)
+            {
+                if (Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_WheelProc)
+                    sword.OnHitProc = true;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

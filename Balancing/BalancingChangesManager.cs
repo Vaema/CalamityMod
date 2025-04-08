@@ -82,8 +82,8 @@ namespace CalamityMod.Balancing
                 // Nerf Mushroom Spear projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, MushroomSpearFilter)),
 
-                // Nerf Orichalcum armor set bonus petals by 33%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.66f, OrichalcumPetalFilter)),
+                // Nerf Orichalcum armor set bonus petals by 25%.
+                Do(new ProjectileSpecificRequirementBalancingRule(0.75f, OrichalcumPetalFilter)),
 
                 // Nerf Spectre Mask set bonus projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, SpectreMaskSetBonusFilter)),
@@ -93,13 +93,13 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
             #region Desert Scourge
-            // 25% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DesertScourgeIDList.List, Do(ResistTrueMelee(0.75f))));
+            // 20% resist to true melee.
+            NPCSpecificBalancingChanges.AddRange(Bundle(DesertScourgeIDList.List, Do(ResistTrueMelee(0.8f))));
             #endregion
 
             #region Crabulon
-            // 25% resist to true melee.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.75f)));
+            // 20% resist to true melee.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
             #endregion
 
             #region Brain of Cthulhu: Creepers
@@ -148,9 +148,6 @@ namespace CalamityMod.Balancing
             // 40% resist to Cryophobia.
             NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<CryoBlast>()))));
 
-            // 40% resist to SHPC.
-            NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<SHPExplosion>()))));
-
             // 30% resist to Meowthrower.
             NPCSpecificBalancingChanges.AddRange(Bundle(AquaticScourgeIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<MeowFire>()))));
 
@@ -188,8 +185,6 @@ namespace CalamityMod.Balancing
             #region Astrum Aureus
             // 30% resist to The Ballista's greatarrows.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<BallistaGreatArrow>()))));
-            // 30% resist to Whitewater.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<WhitewaterProj>(), ProjectileType<WhitewaterAura>(), ProjectileType<WhitewaterSpear>()))));
             #endregion
 
             #region Duke Fishron
@@ -217,9 +212,6 @@ namespace CalamityMod.Balancing
 
             // 50% resist to Icicle Arrows.
             NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<IcicleArrowProj>()))));
-
-            // 50% resist to Whitewater.
-            NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<WhitewaterAura>(), ProjectileType<WhitewaterProj>(), ProjectileType<WhitewaterSpear>()))));
 
             // 35% resist to Flying Dragon.
             NPCSpecificBalancingChanges.AddRange(Bundle(RavagerIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
@@ -261,14 +253,14 @@ namespace CalamityMod.Balancing
             // 70% resist to Stardust Dragon Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 
-            // 65% resist to Atlantis (Atlantis gaming!).
-            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<AtlantisSpear>()))));
-
             // 55% resist to Flak Kraken.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.45f, ProjectileType<FlakKrakenProjectile>()))));
 
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(ResistTrueMelee(0.5f))));
+
+            // 50% resist to Atlantis (Atlantis gaming!).
+            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AtlantisSpear>()))));
 
             // 50% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AuroraFire>()))));
@@ -289,9 +281,6 @@ namespace CalamityMod.Balancing
             #region Moon Lord
             // 20% resist to The Hive's nuke.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<HiveNuke>()))));
-
-            // 20% resist to Mercurial Tides (True Biome Blade).
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<MercurialTides>(), ProjectileType<MercurialTidesMonolith>(), ProjectileType<MercurialTidesBlast>()))));
             #endregion
 
             #region Profaned Guardians
@@ -310,6 +299,9 @@ namespace CalamityMod.Balancing
 
             // 50% resist to Galactus Blade.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.5f, ProjectileType<GalacticaComet>())));
+
+            // 40% resist to Pristine Fury's alt fire.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<PristineSecondary>())));
 
             // 40% resist to Stellar Torus Staff.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<StellarTorusBeam>())));
@@ -334,11 +326,11 @@ namespace CalamityMod.Balancing
             // 50% resist to Tactician's Trump Card's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));
 
+            // 40% resist to Devil's Sunrise's slashes.
+            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<DevilsSunriseProj>()))));
+
             // 35% resist to Event Horizon.
             NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
-
-            // 25% resist to Molten Amputator's blobs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(StormWeaverIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
             #endregion
 
             #region Old Duke
@@ -350,13 +342,13 @@ namespace CalamityMod.Balancing
             // 65% resist to Wave Pounder.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
 
+            // 35% resist to Sulphuric Acid Cannon's explosions.
+            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
+
             // 35% resist to Venusian Trident.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
 
-            // 35% resist to Sulphuric Acid Cannon's Explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
-
-            // 25% resist to Corinth Prime's Grenades.
+            // 25% resist to Corinth Prime's grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
@@ -367,11 +359,17 @@ namespace CalamityMod.Balancing
             #endregion The Devourer of Gods
 
             #region Yharon
+            // 15% resist to The Old Reaper's stealth strike rain.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<RadiationRain>()))));
+
             // 15% resist to Time Bolt.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
             #endregion
 
             #region Exo Mechs: Ares
+            // 35% resist to Devil's Devastation's slash.
+            NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<DevilsDevastationHoldout>()))));
+
             // 30% resist to Dynamic Pursuer.
             NPCSpecificBalancingChanges.AddRange(Bundle(AresIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
@@ -489,9 +487,6 @@ namespace CalamityMod.Balancing
             // 15% resist to The Final Dawn's AoE sweep flames.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<FinalDawnFlame>()))));
 
-            // 15% resist to Dragon's Breath Beam.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<DragonsBreathBurst>()))));
-
             // 15% resist to God Slayer Slugs.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<GodSlayerSlugProj>()))));
 
@@ -503,6 +498,9 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Supreme Calamitas: Brimstone Hearts
+            // 34% resist to Celestus' mini scythes.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.66f, ProjectileType<CelestusMiniScythe>())));
+
             // 30% resist to Supernova.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.7f, ProjectileType<SupernovaBoom>(), ProjectileType<SupernovaStealthBoom>())));
 

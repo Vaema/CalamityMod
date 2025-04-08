@@ -23,14 +23,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Lightmask", AssetRequestMode.AsyncLoad);
             }
         }
 
         public override void SetDefaults()
         {
             NPC.damage = 100;
-            NPC.width = 60;
+            NPC.width = 110;
             NPC.height = 88;
             NPC.defense = 0;
             NPC.LifeMaxNERB(2500000, 3000000);
@@ -190,9 +190,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 for (int k = 0; k < 10; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm3").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm4").Type, 1f);
                 }
             }
         }

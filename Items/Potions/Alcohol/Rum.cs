@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(237, 165, 9),
                 new Color(247, 219, 54),

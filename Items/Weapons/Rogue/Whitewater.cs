@@ -15,12 +15,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 36;
             Item.height = 40;
-            Item.damage = 90;
+            Item.damage = 120;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 42;
+            Item.useTime = Item.useAnimation = 42;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 42;
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item106 with { Volume = 0.7f };
             Item.autoReuse = true;

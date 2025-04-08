@@ -27,12 +27,15 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
             CreateRecipe().
                 AddIngredient<StratusWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<StratusPlatform>(2).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<StratusStarPlatformItem>(2).
+                DisableDecraft().
                 Register();
         }
     }

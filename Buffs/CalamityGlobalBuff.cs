@@ -48,6 +48,12 @@ namespace CalamityMod.Buffs
             {
                 player.moveSpeed -= 0.1f;
             }
+            else if (type == BuffID.Tipsy)
+            {
+                player.statDefense += 4;
+                player.GetCritChance<MeleeDamageClass>() -= 2;
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+            }
             else if (type == BuffID.WellFed)
             {
                 player.moveSpeed -= 0.15f;
@@ -95,6 +101,10 @@ namespace CalamityMod.Buffs
             else if (type == BuffID.Rabies)
             {
                 player.GetDamage<GenericDamageClass>() -= 0.2f;
+            }
+            else if (type == BuffID.Werewolf)
+            {
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
             }
         }
 

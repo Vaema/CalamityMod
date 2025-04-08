@@ -100,7 +100,7 @@ namespace CalamityMod.Packets
                     }
                 }
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 // Server should NOT handle cooldown itself!
                 // Server doesn't have information for cooldown netIDs!

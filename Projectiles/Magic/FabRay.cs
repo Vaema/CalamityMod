@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.hostile)
-                target.AddBuff(ModContent.BuffType<FabsolVodkaBuff>(), 54000);
+                target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), 54000);
         }
     }
 }

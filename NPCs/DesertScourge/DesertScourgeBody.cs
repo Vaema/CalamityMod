@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1400000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
@@ -109,11 +109,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture2 is null ? 0 : BodyTexture2.Width(), BodyTexture2 is null ? 0 : BodyTexture2.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
 
@@ -124,11 +120,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture3 is null ? 0 : BodyTexture3.Width(), BodyTexture3 is null ? 0 : BodyTexture3.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
 
@@ -139,11 +131,7 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.position = NPC.Center;
                         NPC.position -= NPC.Size * 0.5f;
                         NPC.frame = new Rectangle(0, 0, BodyTexture4 is null ? 0 : BodyTexture4.Width(), BodyTexture4 is null ? 0 : BodyTexture4.Height());
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
 
                         break;
                 }
@@ -156,6 +144,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
+            NPC.canDisplayBuffs = Main.npc[(int)NPC.ai[1]].canDisplayBuffs;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -339,7 +328,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     switch ((int)NPC.ai[3])
                     {
@@ -379,7 +368,7 @@ namespace CalamityMod.NPCs.DesertScourge
             // Sometimes "Deflect" projectiles in gfb into water blasts.
             if (Main.rand.NextBool(20) && Main.zenithWorld)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 velocity = new Vector2(-projectile.velocity.X, -projectile.velocity.Y);
                     velocity.Normalize();

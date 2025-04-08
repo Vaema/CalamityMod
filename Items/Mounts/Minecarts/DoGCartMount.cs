@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Mounts.Minecarts
             MountData.runSpeed = 22f;
             MountData.acceleration = 0.16f;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.textureWidth = 74;
                 MountData.textureHeight = 114;

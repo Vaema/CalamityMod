@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Head", EquipType.Head, name: "MeldTransformation");
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Body", EquipType.Body, name: "MeldTransformation");
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             var equipSlotHead = EquipLoader.GetEquipSlot(Mod, "MeldTransformation", EquipType.Head);

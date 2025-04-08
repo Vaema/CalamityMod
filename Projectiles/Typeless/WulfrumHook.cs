@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,7 +32,7 @@ namespace CalamityMod.Projectiles.Typeless
             Grappling = 3 //Making this value "3" is important here, as it makes it so that i can put this projectile in the player grapple list while also never having it considered as "grappling" (aka ai[0] = 2)
         }
 
-        public static float MaxReach = 600;
+        public float MaxReach => Owner.GetModPlayer<WulfrumPackPlayer>().ActualMaxLength;
 
         public override void SetStaticDefaults()
         {
@@ -104,7 +99,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             else if (State == HookState.Retracting)
             {
-                Projectile.velocity = BetweenOwner.SafeNormalize(Vector2.One) * WulfrumPackPlayer.ReturnVelocity;
+                Projectile.velocity = BetweenOwner.SafeNormalize(Vector2.One) * Owner.GetModPlayer<WulfrumPackPlayer>().ActualReturnVelocity;
                 Projectile.Center += Vector2.UnitY * 0.5f;
 
                 if (BetweenOwner.Length() < 25f)
@@ -164,7 +159,7 @@ namespace CalamityMod.Projectiles.Typeless
                         continue;
 
                     OnGrapple(worldPos, x, y);
-                    
+
                     break;
                 }
 
@@ -177,7 +172,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             WulfrumPackPlayer mp = Owner.GetModPlayer<WulfrumPackPlayer>();
             //Clear previous grapple
-            if (Main.projectile[mp.Grapple].active && Main.projectile[mp.Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling)
+            if (mp.Grapple > -1 && Main.projectile[mp.Grapple].active && Main.projectile[mp.Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling)
                 Main.projectile[mp.Grapple].Kill();
 
             //Hook onto the tile
@@ -231,7 +226,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Vector2[] segmentPositions = new Vector2[] {Projectile.Center, Owner.Center };
+            Vector2[] segmentPositions = new Vector2[] { Projectile.Center, Owner.Center };
 
             if (State == HookState.Grappling)
                 segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();

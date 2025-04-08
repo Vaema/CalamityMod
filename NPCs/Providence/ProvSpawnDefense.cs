@@ -29,7 +29,6 @@ namespace CalamityMod.NPCs.Providence
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
             NPC.damage = 0;
@@ -156,9 +155,9 @@ namespace CalamityMod.NPCs.Providence
                 }
             }
 
-            NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+            NPC.DrawBackglow(new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
 
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, vector43, NPC.frame, ProvUtils.GetColorBasedOnEnrage(false, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -179,7 +178,7 @@ namespace CalamityMod.NPCs.Providence
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossT").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossT2").Type, 1f);

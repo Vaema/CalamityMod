@@ -120,6 +120,8 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
                 if (DashID == DeepDiverDash.ID)
                     dashDelayToApply = 23;
+                if (DashID == StatisNinjaBeltDash.ID || DashID == StatisVoidSashDash.ID || Player.dashType == 1)
+                    dashDelayToApply = BalancingConstants.UniversalSashDashCooldown;
 
                 float dashSpeed = 12f;
                 float dashSpeedDecelerationFactor = 0.985f;
@@ -144,8 +146,10 @@ namespace CalamityMod.CalPlayer
 
                 if (HasCustomDash)
                 {
-                    if (Player.wingsLogic != (int)VanillaWingID.WingsVortex)
-                        Player.vortexStealthActive = false;
+                    // Vortex Booster automatically re-engages Vortex armor's stealth after a delay when dashing
+                    if (Player.wingsLogic == (int)VanillaWingID.WingsVortex && Player.vortexStealthActive)
+                        vortexBoosterStealthDelay = 60;
+                    Player.vortexStealthActive = false;
 
                     // Decide the player's facing direction.
                     if (Player.velocity.X != 0f)

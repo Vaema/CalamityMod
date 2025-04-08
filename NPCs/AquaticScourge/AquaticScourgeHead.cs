@@ -282,8 +282,8 @@ namespace CalamityMod.NPCs.AquaticScourge
             // If Aquatic Scourge has not yet been killed, notify players of buffed Acid Rain
             if (!DownedBossSystem.downedAquaticScourge)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(Mauler.RoarSound, Main.LocalPlayer.Center);
 
                 string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
@@ -315,7 +315,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 for (int k = 0; k < 15; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ASHead").Type, NPC.scale);
                 }

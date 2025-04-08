@@ -14,12 +14,12 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float DamageBoost = 0.04f;
         public static float KnockbackBoost = 0.2f;
         public static int CritBoost = 2;
-        public static float DefenseLossPercent = 5;
+        public static float DefenseLossPercent = 0.05f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), KnockbackBoost.ToPercent(), CritBoost, DefenseLossPercent.ToPercent());
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(227, 148, 11),
                 new Color(235, 177, 5),

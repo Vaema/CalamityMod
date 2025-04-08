@@ -200,13 +200,13 @@ namespace CalamityMod.Projectiles.Ranged
                             int bonusHeal = Main.rand.NextBool(3) ? 5 : 3;
                             int heal = improvedHeal ? bonusHeal : 2;
 
-                            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                            if (Main.LocalPlayer.lifeSteal <= 0f)
                             {
                                 Projectile.Kill();
                                 return;
                             }
 
-                            Main.player[Main.myPlayer].lifeSteal -= heal;
+                            Main.LocalPlayer.lifeSteal -= heal;
                             player.HealPlayer(heal);
                         }
 

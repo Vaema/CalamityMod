@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Wulfrum;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.FurniturePlagued;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
@@ -24,13 +25,12 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
-using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,13 +54,10 @@ using Terraria.Graphics.Capture;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 using Terraria.WorldBuilding;
-using static Terraria.WaterfallManager;
 
 namespace CalamityMod.ILEditing
 {
@@ -90,7 +87,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
             {
                 orig();
@@ -474,6 +471,13 @@ namespace CalamityMod.ILEditing
 
             // No interference with ShadowDodge (previously Titanium armor, now Hallowed armor)
         }
+
+        private static void AddHolyProtectionCooldown(On_Player.orig_PutHallowedArmorSetBonusOnCooldown orig, Player self)
+        {
+            // Adds Calamity's Holy Protection cooldown when triggering Hallowed armor's dodge.
+            orig(self);
+            self.AddCooldown(HolyProtection.ID, CalamityUtils.SecondsToFrames(30));
+        }
         #endregion
 
         #region Custom Gate Door Logic
@@ -655,7 +659,7 @@ namespace CalamityMod.ILEditing
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
                     // Display text indicating that healing was applied to the bleedout buffer.
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         string text = $"(+{amountOfBleedToClear})";
                         Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
@@ -850,7 +854,7 @@ namespace CalamityMod.ILEditing
 
             cursor.EmitDelegate<Action>(() =>
             {
-                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
                     DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
 
@@ -918,6 +922,17 @@ namespace CalamityMod.ILEditing
         {
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
+        }
+        #endregion
+
+        #region Disable Moon Lord Style Flashes With Photosensitivity Config
+        private static void DisableFlashesWithPhotosensitivityConfig(On_MoonlordDeathDrama.orig_RequestLight orig, float light, Vector2 spot)
+        {
+            // Disable this function from running if the Photosensitivity config is enabled.
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                return;
+
+            orig(light, spot);
         }
         #endregion
 
@@ -1746,8 +1761,8 @@ namespace CalamityMod.ILEditing
         #region Shimmer effect edits
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<CirrusVodka>())
             {
                 self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
                 self.shimmered = true;
@@ -1840,6 +1855,12 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, newPos, Style, extraInfo);
+                // Potion of Return triggers Jared if used in the Abyss
+                if (Style == 8)
+                {
+                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                        self.AddBuff(BuffID.ChaosState, 2);
+                }
             }
         }
         #endregion
@@ -1847,7 +1868,7 @@ namespace CalamityMod.ILEditing
         #region Revengeance Master Mode Twins Shenanigans
         public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
         {
-            if (Main.masterMode && CalamityWorld.revenge && type == NPCID.Retinazer)
+            if (CalamityWorld.death && type == NPCID.Retinazer)
             {
                 int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
                 if (retinazerIndex == 200)
@@ -1857,7 +1878,7 @@ namespace CalamityMod.ILEditing
                 Main.npc[retinazerIndex].target = targetPlayerIndex;
                 Main.npc[retinazerIndex].timeLeft *= 20;
 
-                if (Main.netMode == NetmodeID.Server && retinazerIndex < 200)
+                if (Main.dedServ && retinazerIndex < 200)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
                 }
@@ -1875,7 +1896,7 @@ namespace CalamityMod.ILEditing
 
         public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
         {
-            if (Main.masterMode && CalamityWorld.revenge && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
+            if (CalamityWorld.death && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
             {
                 self.value = 0f;
                 self.boss = false;
@@ -1890,7 +1911,7 @@ namespace CalamityMod.ILEditing
         public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
         {
             bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
-            if (Main.masterMode && CalamityWorld.revenge && correctNPCType)
+            if (CalamityWorld.death && correctNPCType)
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                     Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);
@@ -1965,6 +1986,117 @@ namespace CalamityMod.ILEditing
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
             }
+        }
+        #endregion
+
+        #region Allow Cannons to use jellyfish
+        public static void AllowCannonJellyfishUse(Terraria.On_Player.orig_PlaceThing_CannonBall orig, Player self)
+        {
+            // Check if the player is holding a jelly
+            if (self.HeldItem.type == ModContent.ItemType<BabyCannonballJellyfishItem>())
+            {
+                // I have no comments here.
+                bool veryLongRangeCheck = self.position.X / 16f - (float)Player.tileRangeX - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetX
+                    && (self.position.X + (float)self.width) / 16f + (float)Player.tileRangeX + (float)self.HeldItem.tileBoost - 1f + (float)self.blockRange >= (float)Player.tileTargetX
+                    && self.position.Y / 16f - (float)Player.tileRangeY - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetY
+                    && (self.position.Y + (float)self.height) / 16f + (float)Player.tileRangeY + (float)self.HeldItem.tileBoost - 2f + (float)self.blockRange >= (float)Player.tileTargetY;
+
+                int targX = Player.tileTargetX;
+                int targY = Player.tileTargetY;
+
+                Tile t = CalamityUtils.ParanoidTileRetrieval(targX, targY);
+
+                // All vanilla cannon types (such as the Bunny Cannon) are a single tile ID, this lets us determine that this tile is the normal Cannon
+                int cannonType = t.TileFrameX / 72;
+
+                // If the player's target tile is within range, is a normal Cannon, they are using an item, and their item time is zero, shoot the baby
+                if (t.TileType == TileID.Cannon && cannonType == 0 && self.ItemTimeIsZero && self.controlUseItem && veryLongRangeCheck)
+                {
+                    self.cursorItemIconEnabled = true;
+                    self.cursorItemIconID = ModContent.ItemType<BabyCannonballJellyfishItem>();
+                    self.HeldItem.makeNPC = -1; // Prevent it from spawning critters when used
+
+                    // Determines where all the action should happen and what the angle of the cannon is
+                    int tileX = t.TileFrameX / 18;
+                    int angle = 0;
+                    while (tileX >= 4)
+                    {
+                        tileX -= 4;
+                    }
+                    tileX = targX - tileX;
+                    int tileY;
+                    for (tileY = t.TileFrameY / 18; tileY >= 3; tileY -= 3)
+                    {
+                        angle++;
+                    }
+                    tileY = targY - tileY;
+
+                    self.ApplyItemTime(self.HeldItem);
+
+                    float speedX = 0f;
+                    float speedY = 0f;
+
+                    // Vanilla code for determining the velocity of shot cannonballs kept intact for consistency
+                    if (angle == 0)
+                    {
+                        speedX = 10f;
+                        speedY = 0f;
+                    }
+                    if (angle == 1)
+                    {
+                        speedX = 7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 2)
+                    {
+                        speedX = 5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 3)
+                    {
+                        speedX = 2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 4)
+                    {
+                        speedX = 0f;
+                        speedY = -10f;
+                    }
+                    if (angle == 5)
+                    {
+                        speedX = -2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 6)
+                    {
+                        speedX = -5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 7)
+                    {
+                        speedX = -7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 8)
+                    {
+                        speedX = -10f;
+                        speedY = 0f;
+                    }
+                    Vector2 spawnPosition = new Vector2((tileX + 2) * 16, (tileY + 2) * 16);
+                    // Finally shoot the projectile
+                    int jellyfishb = Projectile.NewProjectile(new EntitySource_TileInteraction(self, tileX, tileY), spawnPosition.X, spawnPosition.Y, speedX, speedY, ModContent.ProjectileType<BabyCannonballProjectile>(), self.HeldItem.damage, 8f, self.whoAmI);
+                    Main.projectile[jellyfishb].originatedFromActivableTile = true;
+                    // Shlorb
+                    SoundEngine.PlaySound(SoundID.Item95, spawnPosition);
+                }
+                else
+                {
+                    // Reset the item to be able to spawn critters again if any of the conditions aren't met
+                    self.HeldItem.makeNPC = ModContent.NPCType<BabyCannonballJellyfish>();
+                }
+            }
+            else
+                orig(self);
         }
         #endregion
 
@@ -2352,6 +2484,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #endregion
+
+        #region Make Celestial Onion give the Master Mode slot
+        public static bool MasterModeCelestialOnionCheck(Terraria.On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
+        {
+            if ((slot == 9 || slot == 19) && self.Calamity().extraAccessoryML && !Main.gameMenu)
+            {
+                return true;
+            }
+            return orig(self, slot);
+        }
         #endregion
     }
 }

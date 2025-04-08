@@ -99,10 +99,6 @@ namespace CalamityMod
             // PART 2: Specific other cases that can't be neatly fit into the database
             //
 
-            // All bosses and several enemies are automatically immune to Pearl Aura.
-            if (EnemyImmunitiesList.Includes(npc.type) || npc.boss)
-                NPCID.Sets.SpecificDebuffImmunity[npc.type][ModContent.BuffType<PearlAura>()] = true;
-
             // Make all Cal NPCs immune to confused unless otherwise specified
             // Extra note: Clams are not in this list as they initially immune to Confused, but are no longer immune once aggro'd. This is set in their AI().
             bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(ModContent.GetInstance<CalamityMod>().Name);
@@ -336,7 +332,6 @@ namespace CalamityMod
                 { ModContent.NPCType<MicrobialCluster>(), sulphur },
                 { ModContent.NPCType<Trasher>(), sulphur },
 
-                { ModContent.NPCType<BlindedAngler>(), sunkenSea },
                 { ModContent.NPCType<Clam>(), sunkenSea },
                 { ModContent.NPCType<EutrophicRay>(), sunkenSea },
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
@@ -419,10 +414,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
-                { ModContent.NPCType<SeaUrchin>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
 
-                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<CloudElemental>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<CrimulanBlightSlime>(), slime },
                 { ModContent.NPCType<EbonianBlightSlime>(), slime },

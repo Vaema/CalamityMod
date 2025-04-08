@@ -551,7 +551,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnKill(int timeLeft)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int index = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, new Vector2(0f, 0f), Main.rand.Next(61, 64), Projectile.scale);
                 Main.gore[index].velocity *= 0.1f;

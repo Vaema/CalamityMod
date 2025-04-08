@@ -3,6 +3,7 @@ using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -11,6 +12,12 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Riptide : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 288f;
+        public static float Speed = 25f;
+        public static float Duration = 18f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed, Duration);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Yoyo[Type] = true;
@@ -20,10 +27,10 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 44;
+            Item.width = 46;
+            Item.height = 48;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 12;
+            Item.damage = 14;
             Item.knockBack = 1f;
             Item.useTime = 25;
             Item.useAnimation = 25;

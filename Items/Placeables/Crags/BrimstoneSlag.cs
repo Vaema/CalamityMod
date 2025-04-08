@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Placeables.Crags
             CreateRecipe().
                 AddIngredient<BrimstoneSlagWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

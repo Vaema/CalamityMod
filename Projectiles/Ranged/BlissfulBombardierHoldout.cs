@@ -79,8 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (OffsetLengthFromArm != MaxOffsetLengthFromArm)
                 OffsetLengthFromArm = MathHelper.Lerp(OffsetLengthFromArm, MaxOffsetLengthFromArm, RecoilResolveSpeed);
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
         public override void HoldoutAI()
         {

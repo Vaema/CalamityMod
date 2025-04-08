@@ -150,7 +150,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.width = Projectile.height = ItemTexture is null ? 1 : ItemTexture.Width();
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
-            Projectile.ContinuouslyUpdateDamageStats = true;
+            // While having this enabled would be good, it seems to mess with crits on all holdout when applied, so it will stay disabled
+            //Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void OnSpawn(IEntitySource source) => OffsetLengthFromArm = MaxOffsetLengthFromArm;
@@ -229,8 +230,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (OffsetLengthFromArm != MaxOffsetLengthFromArm)
                 OffsetLengthFromArm = MathHelper.Lerp(OffsetLengthFromArm, MaxOffsetLengthFromArm, RecoilResolveSpeed);
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         /// <summary>

@@ -35,9 +35,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.MinionAntiClump();
             Projectile.spriteDirection = Target == null ? MathF.Sign(Projectile.velocity.X) : MathF.Sign(Target.Center.X - Projectile.Center.X);
 
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
+            Projectile.ForceNetUpdate(false);
         }
 
         #region AI Methods

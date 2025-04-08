@@ -175,7 +175,7 @@ IL_6899:
             //companion cube lighting check and stab
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Color color;

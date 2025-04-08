@@ -98,28 +98,20 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary>
-        /// Boss Kill Time data structure
-        /// </summary>
+        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
         public static SortedDictionary<int, int> BossKillTimes;
 
-        /// <summary>
-        /// Damage Reduction Lookup Table
-        /// </summary>
+        /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
-        /// <summary>
-        /// Damage Reduction Value
-        /// </summary>
+        /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary>
-        /// If this is set to true, the NPC's DR cannot be reduced via any means. This applies regardless of whether customDR is true or false.
-        /// </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
         public bool unbreakableDR = false;
 
         /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br></br>
+        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
         /// Used primarily by post-Moon Lord bosses.
         /// </summary>
         public bool customDR = false;
@@ -128,114 +120,150 @@ namespace CalamityMod.NPCs
 
         public int KillTime { get; set; } = 0;
 
-        public const int DoGPhase1KillTime = 5400;
-
-        // Debuff Vulnerabilities
-        // null = neutral, true = vulnerable, false = resistant
-        // neutral = 100% effective, vulnerable = 400% effective DoT and 200% effective non-DoT effects (within reason, some aren't exactly 200% more effective), resistant = 50% effective
+        /// <summary>
+        /// Controls the effectiveness of heat debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToHeat = null;
+        /// <summary>
+        /// Controls the effectiveness of cold debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToCold = null;
+        /// <summary>
+        /// Controls the effectiveness of sickness debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToSickness = null;
+        /// <summary>
+        /// Controls the effectiveness of electricity debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToElectricity = null;
+        /// <summary>
+        /// Controls the effectiveness of water debuffs against this NPC.<br/>
+        /// If true, they are vulnerable and debuffs are 200% effective. If false, they are resistant and debuffs are 50% effective. If null, they are neutral and suffer standard effects.
+        /// </summary>
         public bool? VulnerableToWater = null;
 
         public const double BaseDoTDamageMult = 1D;
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
+        public const double ResistantToDoTDamageMult = 0.5;
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
         public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
-        // Transformer effect
-        public bool IncreasedElectricityEffects_Transformer = false;
+        // Electric effects
+        public bool IncreasedElectricityEffects_Unused = false;
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
-        public bool IncreasedHeatEffects_FlameWakerBoots = false;
-        public bool IncreasedHeatEffects_HellfireTreads = false;
+        public int IncreasedHeatEffects_FireBoots = 0;
         public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
 
-        // Evergreen Gin effect
-        public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        // Amulets effects
+        public bool IncreasedWaterEffects_Amulet1 = false;
+        public bool IncreasedWaterEffects_Amulet2 = false;
 
-        // Biome enrage timer max
+        // Sickness and Water debuff effects
+        public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
+        public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
+
+        /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
-        // Variable for certain worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target
-        // Currently only used by DoG
+        /// <summary>
+        /// Variable for worm bosses used to prevent them from moving too fast upon swapping phases while far away from their target.<br/>
+        /// Currently only used by DoG.
+        /// </summary>
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
         public bool ShouldFallThroughPlatforms;
 
-        /// <summary>
-        /// Allows hostile NPCs to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
-        // Total defense loss from some true melee hits and other things that reduce defense
+        /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
 
-        // Distance values for when bosses increase velocity to catch up to their target
+        /// <summary>
+        /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance200Tiles = 3200f;
+        /// <summary>
+        /// Constant representing a distance of 350 tiles in pixel measurement.<br/>
+        /// Used by bosses to increase their velocity in order to catch up to their target.
+        /// </summary>
         public const float CatchUpDistance350Tiles = 5600f;
+        /// <summary>
+        /// Constant representing a distance of 400 tiles in pixel measurement.<br/>
+        /// Used as a cap on the distance away from a boss a player can be inflicted with Boss Effects.
+        /// </summary>
+        private const float BossZenDistance = 6400f;
 
         /// <summary>
-        /// Destroyer laser colors, used for telegraphs
+        /// Destroyer laser colors, used for telegraphs.<br/>
         /// None = -1, Red = 0, Green = 1, Cyan = 2
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        // Boss Zen distance
-        private const float BossZenDistance = 6400f;
-
-        // Buff most vanilla enemy HP by 25%
+        /// <summary> Constant multiplier used to increase vanilla enemy health. </summary>
         private const double EnemyHPMultiplier = 1.25;
-
-        // Used to nerf desert prehardmode enemies pre-Desert Scourge
+        /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-
-        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        /// <summary>
+        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
+        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
+        /// </summary>
         public const double MasterModeBossHPMultiplier = 0.85;
 
-        // Used to nerf Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
         public const double MasterModeEnemyHPMultiplier = 0.75;
+        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
         public const double MasterModeEnemyDamageMultiplier = 0.9;
-
-        // Used to nerf Expert and Master Mode enemies
+        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
         public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
+        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
         public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
-        // HP and damage multipliers for the Early Hardmode Progression Rework
+        /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert = 0.9;
+        /// <summary> <inheritdoc cref="EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic" /> </summary>
         public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert = 0.95;
 
-        // Used to increase coin drops in Normal Mode
-        private const double NPCValueMultiplier_NormalCalamity = 1.5;
-
-        // Used to decrease coin drops in Expert Mode
+        /// <summary> Constant multiplier used to increase coin drops in Classic Mode. </summary>
+        private const double NPCValueMultiplier_ClassicCalamity = 1.5;
+        /// <summary> Constant multiplier used to decrease coin drops in Expert Mode. </summary>
         private const double NPCValueMultiplier_ExpertVanilla = 2.5;
-
-        // Used to change the Expert Mode coin drop multiplier
+        /// <summary> <inheritdoc cref="NPCValueMultiplier_ExpertVanilla"/> </summary>
         private const double NPCValueMultiplier_ExpertCalamity = 1.5;
 
         // Dash damage immunity timer
         public const int maxPlayerImmunities = Main.maxPlayers + 1;
         public int[] dashImmunityTime = new int[maxPlayerImmunities];
 
-        // Town NPC shop alert animation variables
+        /// <summary> Used to control the animation of the Town NPC Shop Alert icon, if the respective config is enabled. </summary>
         public int shopAlertAnimTimer = 0;
+        /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
 
-        // Set to false for this NPC to be unable to generate proximity Rage, regardless of other factors
+        /// <summary>
+        /// If set to false, prevents this NPC from allowing Rage to be generated by nearby players, regardless of other factors.<br/>
+        /// Defaults to true.
+        /// </summary>
         public bool ProvidesProximityRage = true;
 
         // NewAI
@@ -243,23 +271,20 @@ namespace CalamityMod.NPCs
         public float[] newAI = new float[maxAIMod];
         public int AITimer = 0;
 
-        // Town NPC Patreon
+        /// <summary> Used for allowing Patreon names for Town NPCs. </summary>
         public bool setNewName = true;
 
-        // Stuff used by the Boss Health UI
+        /// <summary> If set to true, the Boss Health Bar for this NPC will count the total health of all individual segments using worm segment logic. </summary>
         public bool SplittingWorm = false;
+        /// <summary> If set to true, allows this NPC to draw a Boss Health Bar, regardless of other factors. </summary>
         public bool CanHaveBossHealthBar = false;
+        /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        // Timer for how long an NPC is immune to certain debuffs
+        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
         public const int slowingDebuffResistanceMin = 1800;
+        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
         public int debuffResistanceTimer = 0;
-
-        // If a boss is affected by knockback and a timer for how long that boss is immune to knockback after being knocked back
-        public bool bossCanBeKnockedBack = false;
-        public const int knockbackResistanceMin = 180;
-        public int knockbackResistanceTimer = 0;
-
 
         // Debuffs
         public int vaporfied = 0;
@@ -272,20 +297,34 @@ namespace CalamityMod.NPCs
         public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
+        /// <summary>
+        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
+        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
+        /// </summary>
         public int pearlAuraCounter = 0;
+        /// <summary>
+        /// When an NPC is inflicted with Pearl Aura, this variable is set to index of the player who inflicted it.<br/>
+        /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
+        /// </summary>
+        public int pearlAuraOwner = -1;
         public int bBlood = 0;
         public int brainRot = 0;
+        public int heavybleeding = 0;
         public int laceration = 0;
         public int elementalMix = 0;
         public int marked = 0;
         public int absorberAffliction = 0;
         public int irradiated = 0;
         public int bFlames = 0;
+        public int demonicFlames = 0;
+        public int demonicFlamesBonusDamage = 0;
         public int hFlames = 0;
+        /// <summary> Plague debuff. </summary>
         public int pFlames = 0;
         public int aCrunch = 0;
         public int crumble = 0;
 
+        public int antlionCloudDebuffTimer = 0;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -294,25 +333,50 @@ namespace CalamityMod.NPCs
         public float warbannerBurnIntensity = 0;
         public bool warbannerBurnMarked = false;
         public bool warbannerBurnHideEffects = false;
+        /// <summary> Constant variable representing the delay, in frames, before Verium Bolt's extra damage applies. </summary>
         public const int veriumDoomTime = 90;
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+
+        public bool laserBurnMarked = false;
+        /// <summary>
+        /// The type of laser burn that this NPC is inflicted with.<br/>
+        /// When set to 1, applies all accrued damage in a single hit. When set to 2, deals constant flat damage + extra flat damage from stacks.
+        /// </summary>
+        public int laserBurnType = 0;
+        public int laserBurnDamage = 0; // Only used if laser burn type is 1
+        public const int laserBurnTime = 300;
+        public int laserBurnTimer = 0;
+        public int laserBurnStacks = 0;
+
+        /// <summary>
+        /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
+        /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
+        /// </summary>
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
+        public int demonSwordImpales = 0;
+        public int impalePacketTimer = 0;
 
-        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        /// <summary>
+        /// If set to true, prevents this NPC from dealing contact damage.<br/>
+        /// Used by Septic Skewer's execution attack.
+        /// </summary>
         public bool pacified = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
+        /// <summary> Tracks how many stacks of the Shred debuff this NPC is inflicted with. </summary>
         public int somaShredStacks = 0;
+        /// <summary> Tracks the index of the player that inflicted this NPC with Shred, for the purpose of scaling damage. </summary>
         public int somaShredApplicator = -1;
-        // Reduced by the number of active stacks every frame. If it hits zero, one stack disappears.
+        /// <summary> Counter used for removing stacks of Shred. The number of stacks is subtracted every frame, and when it hits zero, it is reset and one stack is removed. </summary>
         public int somaShredFalloff = Shred.StackFalloffFrames;
 
         public int cDepth = 0;
         public int rTide = 0;
+        public int hPressure = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
         public int vermillionFlux = 0;
@@ -322,15 +386,17 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        /// <summary> If greater than 0, this NPC has been "shocked" by Ilmeris' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        public int transformerShocked = 0;
         public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
+        /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public int kamiFlu = 0;
         public int relicOfResilienceWeakness = 0;
+        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
         public int GaussFluxTimer = 0;
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
@@ -338,6 +404,10 @@ namespace CalamityMod.NPCs
         public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
+        /// <summary>
+        /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
+        /// Used by Rancor's laser beam.
+        /// </summary>
         public int ashesOnDeath = 0;
 
         // whoAmI Variables
@@ -399,30 +469,34 @@ namespace CalamityMod.NPCs
         // Drawing variables.
         public FireParticleSet VulnerabilityHexFireDrawer = null;
 
-        // Boss Enrage variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.
-        // 2 - Otherwise, check if the demonshade enrage is active. If it is, register this as true. If not, go to step 3.
-        // 3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.
-        // 4 - Check if Boss Rush isn't active. If so, set this to true.
+        /// <summary>
+        /// Boss Enrage variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - For special cases with super-enrages (specifically Yharon/SCal with their arenas), go solely based on whether that enrage is active. That information is most important to the player.</para>
+        /// <para>2 - Check if the Demonshade enrage is active. If it is, register this as true. If not, go to step 3.</para>
+        /// <para>3 - Check if a specific enrage condition (such as Duke Fishron's Ocean check) is met. If it is, and Boss Rush is not active, set this to true. If not, go to step 4.</para>
+        /// <para>4 - Check if Boss Rush isn't active. If so, set this to true.</para>
+        /// </summary>
         public bool CurrentlyEnraged;
 
-        // Increased defense or DR variable for use with the boss health UI.
-        // The logic behind this is as follows:
-        // 1 - When bosses are transitioning phases they gain a massive DR increase.
-        // 2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.
+        /// <summary>
+        /// Increased defense or DR variable for use with the boss health UI.<br/>
+        /// The logic behind this is as follows:
+        /// <para>1 - When bosses are transitioning phases they gain a massive DR increase.</para>
+        /// <para>2 - When bosses are using certain attacks that make them particularly vulnerable they gain a massive DR or defense increase.</para>
+        /// While either of these are occuring, this variable should be set to true.
+        /// </summary>
         public bool CurrentlyIncreasingDefenseOrDR;
 
-        // Other Boss Rush stuff
+        /// <summary> If set to true, this NPC will be ignored by Boss Rush's whitelist and will always be allowed to exist. </summary>
         public bool DoesNotDisappearInBossRush;
 
-        // On-Kill variables
+        /// <summary> Variable used for Gladiator's Locket's on-kill effect to ensure it only triggers once per kill. </summary>
         public bool gladiatorOnKill = true;
-
-        // Variable for if enemy has been recently hit by an ArcZap
+        /// <summary> Cooldown variable for Unstable Granite Core's arc zap effect. </summary>
         public int arcZapCooldown = 0;
 
-        // Animates worms in the bestiary but only when their entry is being looked at
+        /// <summary> Timer for animating worm enemies in the bestiary. </summary>
         public float bestiaryWormTimer = 0;
         #endregion
 
@@ -460,13 +534,15 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
             myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
-            myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
+            myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
-            myClone.IncreasedHeatEffects_FlameWakerBoots = IncreasedHeatEffects_FlameWakerBoots;
-            myClone.IncreasedHeatEffects_HellfireTreads = IncreasedHeatEffects_HellfireTreads;
+            myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
+            myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
+            myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
+            myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
@@ -501,9 +577,6 @@ namespace CalamityMod.NPCs
 
             myClone.debuffResistanceTimer = debuffResistanceTimer;
 
-            myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
-            myClone.knockbackResistanceTimer = knockbackResistanceTimer;
-
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
             myClone.gState = gState;
@@ -517,17 +590,21 @@ namespace CalamityMod.NPCs
             myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
+            myClone.heavybleeding = heavybleeding;
             myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
             myClone.marked = marked;
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.bFlames = bFlames;
+            myClone.demonicFlames = demonicFlames;
+            myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
             myClone.hFlames = hFlames;
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
 
+            myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -540,6 +617,8 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
+            myClone.demonSwordImpales = demonSwordImpales;
+            myClone.impalePacketTimer = impalePacketTimer;
 
             myClone.pacified = pacified;
 
@@ -549,6 +628,7 @@ namespace CalamityMod.NPCs
 
             myClone.cDepth = cDepth;
             myClone.rTide = rTide;
+            myClone.hPressure = hPressure;
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
@@ -559,7 +639,6 @@ namespace CalamityMod.NPCs
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
-            myClone.transformerShocked = transformerShocked;
             myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
@@ -822,13 +901,16 @@ namespace CalamityMod.NPCs
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
 
             bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
+            bool wetReducedEffectiveness = npc.wet || npc.honeyWet || npc.dripping;
             double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            if (wetReducedEffectiveness)
+                heatDamageMult *= wormBoss || slimeGod ? 0.66 : ResistantToDoTDamageMult;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
                     heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 1.25 : 1.5) : ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : 0.5) : 0.5;
+                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double coldDamageMult = BaseDoTDamageMult;
@@ -837,7 +919,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToCold.Value)
                     coldDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    coldDamageMult *= 0.5;
+                    coldDamageMult *= ResistantToDoTDamageMult;
             }
 
             double sicknessDamageMult = irradiated > 0 ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
@@ -846,7 +928,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToSickness.Value)
                     sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
@@ -856,7 +938,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToElectricity.Value)
                     electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
                 else
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : 0.5) : 0.5;
+                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
 
             double waterDamageMult = BaseDoTDamageMult;
@@ -865,7 +947,7 @@ namespace CalamityMod.NPCs
                 if (VulnerableToWater.Value)
                     waterDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    waterDamageMult *= 0.5;
+                    waterDamageMult *= ResistantToDoTDamageMult;
             }
 
             if (IncreasedColdEffects_EskimoSet)
@@ -875,23 +957,31 @@ namespace CalamityMod.NPCs
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
-            if (IncreasedElectricityEffects_Transformer)
+            if (IncreasedElectricityEffects_Unused)
                 electricityDamageMult += 0.5;
 
             if (IncreasedHeatEffects_Fireball)
                 heatDamageMult += Fireball.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FlameWakerBoots)
-                heatDamageMult += 0.25;
+            if (IncreasedHeatEffects_FireBoots > 0)
+                heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
                 heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-            if (IncreasedHeatEffects_HellfireTreads)
-                heatDamageMult += 0.5;
             if (IncreasedHeatEffects_FlameWings)
                 heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
 
+            if (IncreasedWaterEffects_Amulet1)
+                waterDamageMult += 0.35;
+            if (IncreasedWaterEffects_Amulet2)
+                waterDamageMult += 0.75;
+
+            if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
+            {
+                sicknessDamageMult += 0.25;
+                waterDamageMult += 0.25;
+            }
             if (IncreasedSicknessAndWaterEffects_EvergreenGin)
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
@@ -907,7 +997,7 @@ namespace CalamityMod.NPCs
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
+            bool hasModHotOil = bFlames > 0 || demonicFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
             if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
             {
                 double multiplier = 1D;
@@ -1057,6 +1147,15 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
+            // Demonic Flames
+            // An unresistable fire debuff that you can set the damage of when it is applied
+            // This way it can be viable for multiple tiers
+            if (demonicFlames > 0)
+            {
+                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
             // Holy Flames
             if (hFlames > 0)
             {
@@ -1192,6 +1291,13 @@ namespace CalamityMod.NPCs
                 int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
                 ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
             }
+
+            //Hadopelagic Pressure
+            if (hPressure > 0)
+            {
+                int baseHadopelagicPressureDoTValue = (int)(400 * waterDamageMult);
+                ApplyDPSDebuff(baseHadopelagicPressureDoTValue, baseHadopelagicPressureDoTValue / 2, ref npc.lifeRegen, ref damage);
+            }
             #endregion
 
             if (npc.dryadBane)
@@ -1236,10 +1342,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (laceration > 0)
+            if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
+            if (laceration > 0)
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
-                ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
                 ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
@@ -1626,7 +1734,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 75000;
+                    npc.lifeMax = 80000;
                     break;
 
                 case NPCID.PlanterasTentacle:
@@ -2593,7 +2701,6 @@ namespace CalamityMod.NPCs
                 case NPCID.EyeofCthulhu:
                 case NPCID.BrainofCthulhu:
                 case NPCID.QueenBee:
-                case NPCID.Corruptor:
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                 case NPCID.ManEater:
@@ -2705,7 +2812,6 @@ namespace CalamityMod.NPCs
                     npc.defDamage = npc.damage;
                     npc.defense /= 2;
                     npc.defDefense = npc.defense;
-                    canBreakPlayerDefense = true;
                     break;
 
                 case NPCID.Antlion:
@@ -2776,9 +2882,9 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Rev+ Master Mode
+                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = Main.masterMode && CalamityWorld.revenge;
+                    npc.dontTakeDamage = CalamityWorld.death;
                     break;
 
                 default:
@@ -3448,7 +3554,7 @@ namespace CalamityMod.NPCs
             // Rebalance coin drops so that Normal Mode enemies and bosses drop an adequate amount of coins.
 
             // Increase Normal Mode coin drops by 1.5x.
-            npc.value = (int)(npc.value * NPCValueMultiplier_NormalCalamity);
+            npc.value = (int)(npc.value * NPCValueMultiplier_ClassicCalamity);
 
             // Change the Expert Mode coin drop multiplier.
             if (Main.expertMode)
@@ -3645,9 +3751,9 @@ namespace CalamityMod.NPCs
                     cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
             }
 
-            bool nightProvi = npc.type == NPCType<Providence.Providence>() && !Main.IsItDay();
+            bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
             bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (nightProvi || dayEmpress))
+            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (enragedProvi || dayEmpress))
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
@@ -3749,6 +3855,11 @@ namespace CalamityMod.NPCs
 
             return calcDR;
         }
+
+        public bool IsArmored()
+        {
+            return unbreakableDR && DR > 0.9f;
+        }
         #endregion
 
         #region Boss Head Slot
@@ -3800,10 +3911,13 @@ namespace CalamityMod.NPCs
             if (KillTime > 0 || npc.type == NPCType<Draedon>())
             {
                 // Apply Boss Effects while any boss NPC is active
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < BossZenDistance)
-                        Main.player[Main.myPlayer].AddBuff(BuffType<BossEffects>(), 2);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
+
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && npc.type == NPCType<RavagerBody>() && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
+                        Main.LocalPlayer.AddBuff(BuffType<WeakPetrification>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -3944,7 +4058,7 @@ namespace CalamityMod.NPCs
                     return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
             }
 
-            if (Main.masterMode && CalamityWorld.revenge)
+            if (CalamityWorld.death)
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
@@ -4973,7 +5087,7 @@ namespace CalamityMod.NPCs
                     }
 
                     Lighting.AddLight(npc.Center, dustLerpColor1.ToVector3() * 0.7f);
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Player localPlayer = Main.LocalPlayer;
                         if (!localPlayer.dead && localPlayer.HitboxForBestiaryNearbyCheck.Intersects(npc.Hitbox))
@@ -5488,14 +5602,9 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
-            // Incremement Giant Pearl's pearl shard counter
-            pearlAuraCounter++;
-
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
-            if (knockbackResistanceTimer > 0)
-                knockbackResistanceTimer--;
 
             if (timeSlow > 0)
                 timeSlow--;
@@ -5524,6 +5633,8 @@ namespace CalamityMod.NPCs
                 bBlood--;
             if (brainRot > 0)
                 brainRot--;
+            if (heavybleeding > 0)
+                heavybleeding--;
             if (laceration > 0)
                 laceration--;
             if (elementalMix > 0)
@@ -5545,6 +5656,10 @@ namespace CalamityMod.NPCs
                 irradiated--;
             if (bFlames > 0)
                 bFlames--;
+            if (demonicFlames > 0)
+                demonicFlames--;
+            else
+                demonicFlamesBonusDamage = 0;
             if (hFlames > 0)
                 hFlames--;
             if (pFlames > 0)
@@ -5556,6 +5671,8 @@ namespace CalamityMod.NPCs
                 crumble--;
             if (cDepth > 0)
                 cDepth--;
+            if (hPressure > 0)
+                hPressure--;
             if (rTide > 0)
                 rTide--;
             if (gsInferno > 0)
@@ -5578,8 +5695,6 @@ namespace CalamityMod.NPCs
                 nightwither--;
             if (shocked > 0)
                 shocked--;
-            if (transformerShocked > 0)
-                transformerShocked--;
             if (voidfrost > 0)
                 voidfrost--;
             if (shellfishVore > 0)
@@ -5601,6 +5716,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            if (antlionCloudDebuffTimer > 0)
+                antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
 
@@ -5677,6 +5794,9 @@ namespace CalamityMod.NPCs
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
+            if (laserBurnTimer > 0)
+                laserBurnTimer--;
+
             if (veriumDoomTimer == 0 && veriumDoomMarked)
             {
                 for (int d = 0; d < 14 + veriumDoomStacks; d++)
@@ -5692,40 +5812,96 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Amidias' Spark and Transformer spark spawning
-            if (shocked > 0 || transformerShocked > 0)
+            // Amidias' Spark spark spawning
+            if (shocked > 0)
             {
                 var player = Main.LocalPlayer;
-                bool strongerShock = transformerShocked > 0;
 
-                int frequency = strongerShock ? 10 : 12;
+                int frequency = 15;
 
                 // Spawn sparks from the enemy
                 if (player.miscCounter % frequency == 0)
                 {
-                    int sDamage = strongerShock ? 50 : 10;
+                    int sDamage = 10;
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
                     spark.penetrate = 3;
-                    if (strongerShock)
-                    {
-                        spark.timeLeft = 240;
-                        spark.extraUpdates = 1;
-                        spark.penetrate = 10;
-                    }
                 }
             }
 
+            if ((laserBurnTimer <= 0 || laserBurnDamage >= npc.life * 1.5f) && laserBurnMarked && laserBurnType > 0)
+            {
+                if (laserBurnType == 1) // Applied damage
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), laserBurnDamage, 0, Main.myPlayer, npc.whoAmI);
+                if (laserBurnType == 2) // Flat damage + stacks
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 70 + (20 * laserBurnStacks), 0, Main.myPlayer, npc.whoAmI);
+
+                for (int d = 0; d < (int)(7 + laserBurnStacks * 0.4f); d++)
+                {
+                    float partScale = Main.rand.NextFloat(0.7f, 1f);
+                    Vector2 partVel = (new Vector2(10, 10) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+
+                    Particle spark2 = new CustomSpark(npc.Center, partVel, "CalamityMod/Particles/BloomLineSoftEdge", false, 12, Main.rand.NextFloat(0.02f, 0.03f), Effects.ArsenalEffects.ArsenalLaserColor * 0.8f, new Vector2(1, 1), true, false, 0, false, false, 1f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                    Dust dust = Dust.NewDustPerfect(npc.Center, Effects.ArsenalEffects.ArsenalLaserDust);
+                    dust.velocity = (Vector2.UnitX * 5 * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f);
+                    dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
+                    dust.noGravity = true;
+                    dust.color = Color.Red;
+                }
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
+                laserBurnMarked = false;
+                laserBurnStacks = 0;
+                laserBurnTimer = 0;
+                laserBurnDamage = 0;
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
+
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
-            if (pearlAura > 0 && pearlAuraCounter % 12 == 0)
+            if (pearlAura > 0)
             {
-                SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
-                Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                int damage = 20;
-                Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                pearlAuraCounter++;
+                if (pearlAuraCounter >= 45)
+                {
+                    pearlAuraCounter = 0;
+                    SoundEngine.PlaySound(SoundID.Item49, npc.Center);
+
+                    // Prevent things from getting too crazy
+                    // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
+                    if (CalamityUtils.CountOwnedProjectiles(ProjectileType<PearlAuraShard>(), pearlAuraOwner) <= 3)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
+                            Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
+                            int damage = 20;
+                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, pearlAuraOwner);
+                        }
+                    }
+                }
             }
+            else
+            {
+                pearlAuraCounter = 0;
+                pearlAuraOwner = -1;
+            }
+
+            if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+            {
+                npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
+                if (impalePacketTimer > 30) // There's probably a better solution, but this is the best for now
+                {
+                    npc.SyncMotionToServer();
+                    impalePacketTimer = 0;
+                }
+            }
+            impalePacketTimer++;
 
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
@@ -5909,12 +6085,9 @@ namespace CalamityMod.NPCs
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
 
-            if (target.Calamity().aSpark)
+            if (target.Calamity().ilSpark)
             {
-                if (target.Calamity().transformer)
-                    transformerShocked = 120;
-                else
-                    shocked = 120;
+                shocked = 120;
             }
 
             if (target.Calamity().snowman)
@@ -5960,16 +6133,16 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffID.Bleeding, 300);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffID.Bleeding, 180);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.Plantera:
@@ -5990,6 +6163,10 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    break;
+
+                case NPCID.DukeFishron:
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
                     break;
 
                 case NPCID.AncientLight:
@@ -6137,6 +6314,11 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
+
             // True melee resists
             if (DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper ||
                 PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
@@ -6162,6 +6344,11 @@ namespace CalamityMod.NPCs
 
             MakeTownNPCsTakeMoreDamage(npc, projectile, Mod, ref modifiers);
 
+            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
+            {
+                modifiers.HideCombatText();
+            }
+
             // Block natural falling stars from killing boss spawners randomly
             if ((projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000) && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
                 modifiers.SourceDamage *= 0f;
@@ -6183,11 +6370,16 @@ namespace CalamityMod.NPCs
                     if (Main.rand.NextFloat(100f) <= lastLayerCritChance)
                         ++supercritLayers;
 
-                    // Apply supercrit damage. This projectile is already guaranteed to be a crit, which will double its damage at the end.
-                    // As such, only 50% damage is added per supercrit layer here.
-                    modifiers.SourceDamage *= 1f + 0.5f * supercritLayers;
+                    // 08MAR2025: Ozzatron: changed supercrit implementation to actually increase crit multiplier instead of multiplying source damage
+                    // This means supercrits don't affect on-hits, just like regular crits don't
+                    //
+                    // Apply supercrit damage as a direct increase to the critical strike damage multiplier, which starts at 2.0 (aka 200%).
+                    modifiers.CritDamage += supercritLayers;
                 }
             }
+
+            // 08MAR2025: Simplistic crit damage increase. Doesn't force a crit, though you can do that separately.
+            modifiers.CritDamage += cgp.bonusCritDamage;
 
             //
             // DAAWNLIGHT SPIRIT ORIGIN AIM IMPLEMENTATION
@@ -6347,10 +6539,28 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != 15 && projectile.aiStyle != 39 && projectile.aiStyle != 99)
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
                 projectile.Calamity().timesPierced++;
         }
+        #endregion
+        #region OnHitBy overrides
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
 
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
+        {
+            if (IsArmored())
+            {
+                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
+            }
+        }
+        #endregion
+        #region Whip Tag 
         // Make whip tags multiplicative, by effectively reversing the process done to it
         private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
@@ -6410,9 +6620,9 @@ namespace CalamityMod.NPCs
                 //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
                 //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    var color = ProvUtils.GetDayNightColor(!Main.dayTime, 0);
+                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
                     var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
                     var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
@@ -6520,7 +6730,7 @@ namespace CalamityMod.NPCs
                                     npc2.velocity.Y -= Main.rand.Next(0, 10) * (Main.getGoodWorld ? 0.5f : 0.1f) + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
-                                    if (Main.netMode == NetmodeID.Server && slime < Main.maxNPCs)
+                                    if (Main.dedServ && slime < Main.maxNPCs)
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slime, 0f, 0f, 0f, 0, 0, 0);
                                 }
                             }
@@ -6791,7 +7001,7 @@ namespace CalamityMod.NPCs
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 0f);
                 pool.Add(NPCType<RepairUnitCritter>(), 0.025f);
-                pool.Add(NPCType<Androomba>(), 0.001f);
+                pool.Add(NPCType<Androomba>(), 0.01f);
                 // Normal droids are replaced with plague droids in the Jungle Lab.
                 if (nearPlagueLab)
                 {
@@ -6809,7 +7019,7 @@ namespace CalamityMod.NPCs
                 if (typeToSpawn != NPCID.None)
                 {
                     int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
-                    if (Main.netMode == NetmodeID.Server && spawnedNPC < Main.maxNPCs)
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
                     {
                         Main.npc[spawnedNPC].position.Y -= 8f;
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
@@ -7054,6 +7264,9 @@ namespace CalamityMod.NPCs
         // Debuff visuals. Alphabetical order as per usual, please
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            if (!npc.canDisplayBuffs)
+                return;
+
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
@@ -7079,6 +7292,9 @@ namespace CalamityMod.NPCs
             if (bFlames > 0 || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
 
+            if (demonicFlames > 0)
+                DemonicFlames.DrawEffects(npc, ref drawColor);
+
             if (bBlood > 0)
                 BurningBlood.DrawEffects(npc, ref drawColor);
 
@@ -7087,6 +7303,9 @@ namespace CalamityMod.NPCs
 
             if (cDepth > 0)
                 CrushDepth.DrawEffects(npc, ref drawColor);
+
+            if (hPressure > 0)
+                HadopelagicPressure.DrawEffects(npc, ref drawColor);
 
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
@@ -7114,6 +7333,9 @@ namespace CalamityMod.NPCs
             if (hFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
 
+            if (heavybleeding > 0)
+                HeavyBleeding.DrawEffects(npc, ref drawColor);
+
             if (laceration > 0)
                 Laceration.DrawEffects(npc, ref drawColor);
 
@@ -7136,7 +7358,7 @@ namespace CalamityMod.NPCs
             if (rTide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
 
-            if (somaShredStacks > 0 && Main.netMode != NetmodeID.Server)
+            if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
 
             if (sulphurPoison > 0)
@@ -7157,6 +7379,28 @@ namespace CalamityMod.NPCs
                     Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
                     Particle markedSparkle = new CustomPulse(randPosition, Vector2.Zero, Color.Lerp(new Color(103, 230, 240), new Color(255, 110, 220), 1 - veriumRatio), "CalamityMod/Particles/Sparkle", Vector2.One, Main.rand.NextFloat(-0.75f, 0.75f), 0.9f, 1.1f, 35);
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
+                }
+            }
+
+            if (laserBurnTimer > 0)
+            {
+                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
+                if (laserBurnTimer % particleChance == 0)
+                {
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+
+                    Dust dust = Dust.NewDustPerfect(randPosition, Effects.ArsenalEffects.ArsenalLaserDust);
+                    dust.velocity = ((Vector2.UnitX * 3 * (laserBurnStacks * 0.03f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f)) + npc.velocity * 0.5f;
+                    dust.scale = Main.rand.NextFloat(0.55f, 0.7f) + laserBurnStacks * 0.01f;
+                    dust.noGravity = true;
+                    dust.color = Color.Red;
+                    dust.fadeIn = laserBurnStacks * 0.3f;
+                }
+                if (laserBurnType == 0)
+                {
+                    Main.NewText("No Burn Type Set", Color.OrangeRed);
+                    laserBurnMarked = false;
+                    laserBurnTimer = 0;
                 }
             }
 
@@ -7203,7 +7447,7 @@ namespace CalamityMod.NPCs
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if (ladHearts > 0 && !npc.loveStruck && Main.netMode != NetmodeID.Server)
+            if (ladHearts > 0 && !npc.loveStruck && !Main.dedServ)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -7261,7 +7505,7 @@ namespace CalamityMod.NPCs
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
-            if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
+            if (npc.type == NPCID.KingSlime && CalamityWorld.death)
                 return NPC.AnyNPCs(NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
@@ -7295,13 +7539,16 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
             ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
             ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix > 0),
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hPressure > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
             ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
+            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
@@ -7338,6 +7585,10 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            // This is used so that NPCs with specific PreDraws can still have Odd Mushroom clone drawing.
+            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
+            bool shouldDrawBool = true;
+
             if (npc.IsABestiaryIconDummy)
             {
                 switch (npc.netID)
@@ -7450,10 +7701,10 @@ namespace CalamityMod.NPCs
                     float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
 
                     // The height of a single frame of the npc
-                    float npcHeight = (float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
+                    float npcHeight = (npc.height * npc.scale)/2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
 
                     // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
-                    float drawPosY = npcHeight + npc.gfxOffY + 16f;
+                    float drawPosY = npcHeight + npc.gfxOffY + 32f;
 
                     // Iterate through the buff texture list
                     for (int i = 0; i < currentDebuffs.Count; i++)
@@ -7486,7 +7737,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc.type))
-                    return false;
+                    shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
@@ -7499,7 +7750,7 @@ namespace CalamityMod.NPCs
 
                 Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
-                return false;
+                shouldDrawBool = false;
             }
 
             if (npc.type == NPCID.GolemHeadFree)
@@ -7524,7 +7775,7 @@ namespace CalamityMod.NPCs
                 frame = npc.frame;
                 Rectangle glowFrame2 = frame;
                 spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-                return false;
+                shouldDrawBool = false;
             }
 
             if (Main.LocalPlayer.Calamity().trippy && !npc.IsABestiaryIconDummy)
@@ -7540,97 +7791,97 @@ namespace CalamityMod.NPCs
                 alphaColor.G = (byte)(alphaColor.G * RGBMult);
                 alphaColor.B = (byte)(alphaColor.B * RGBMult);
                 alphaColor.A = (byte)(alphaColor.A * RGBMult);
-                int totalAfterimages = Main.player[Main.myPlayer].Calamity().trippyLevel == 3 ? 16 : (Main.player[Main.myPlayer].Calamity().trippyLevel == 2 ? 12 : 4);
+                int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
                 for (int i = 0; i < totalAfterimages; i++)
                 {
                     Vector2 position = npc.position;
-                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
 
                     float smallDistanceMult = 0.48f;
                     float largeDistanceMult = 1.33f;
-                    bool whatTheFuck = Main.player[Main.myPlayer].Calamity().trippyLevel == 3;
+                    bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
 
                     switch (i)
                     {
                         case 0:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 1:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                             break;
 
                         case 2:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 3:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             break;
 
                         case 4: // 1 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 5: // 4 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 6: // 7 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
                             break;
 
                         case 7: // 10 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
                             break;
 
                         case 8: // 11 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 9: // 2 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 10: // 5 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
                             break;
 
                         case 11: // 8 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
                             break;
 
                         case 12:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 13:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
                             break;
 
                         case 14:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
                         case 15:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
                             break;
 
 
@@ -7683,7 +7934,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            return true;
+            return shouldDrawBool;
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -7940,8 +8191,8 @@ namespace CalamityMod.NPCs
                             currentColor.A = (byte)((float)(int)currentColor.A * opacity);
 
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i > 3)
                             {
                                 currentColor *= 0.5f;
@@ -7955,46 +8206,46 @@ namespace CalamityMod.NPCs
                             {
                                 case 0:
                                 case 4:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 1:
                                 case 5:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 2:
                                 case 6:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y;
                                     break;
 
                                 case 3:
                                 case 7:
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X;
                                     break;
 
                                 case 8:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 9:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                     break;
 
                                 case 10:
-                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 case 11:
-                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                     break;
 
                                 default:
@@ -8046,18 +8297,18 @@ namespace CalamityMod.NPCs
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                             if (i == 0 || i == 2)
-                                position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
                             else
-                                position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
 
                             position.X -= npc.width / 2;
                             if (i == 0 || i == 1)
-                                position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                             else
-                                position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
 
                             position.Y -= npc.height / 2;
 
@@ -8082,8 +8333,8 @@ namespace CalamityMod.NPCs
                             for (int i = 0; i < totalAfterimages; i++)
                             {
                                 Vector2 position = npc.position;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
+                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
                                 if (i > 3)
                                 {
                                     currentColor *= 0.5f;
@@ -8095,46 +8346,46 @@ namespace CalamityMod.NPCs
                                 {
                                     case 0:
                                     case 4:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 1:
                                     case 5:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 2:
                                     case 6:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromBrain.Y;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
                                         break;
 
                                     case 3:
                                     case 7:
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromBrain.X;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
                                         break;
 
                                     case 8:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 9:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
                                         break;
 
                                     case 10:
-                                        position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     case 11:
-                                        position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                                        position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
                                         break;
 
                                     default:
@@ -8236,7 +8487,7 @@ namespace CalamityMod.NPCs
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
                 {
-                    Texture2D npcTexture = (masterMode && revenge && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
+                    Texture2D npcTexture = (death && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
                     npc.frame.Y = (int)newAI[3];
@@ -8299,7 +8550,7 @@ namespace CalamityMod.NPCs
                     spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                     Color eyesColor = new Color(200, 200, 200, 0);
-                    if (masterMode && revenge)
+                    if (death)
                     {
                         int alpha = 192;
                         eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
@@ -8392,7 +8643,7 @@ namespace CalamityMod.NPCs
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
-            if ((CalamityWorld.revenge && Main.masterMode) || BossRushEvent.BossRushActive)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.Creeper)
                 {
@@ -9607,6 +9858,35 @@ namespace CalamityMod.NPCs
             }
             result += " " + CalamityUtils.GetTextValue("UI.DebuffSystem.To") + " " + name;
             return result;
+        }
+        #endregion
+
+        #region Type Name Changes
+        public override void ModifyTypeName(NPC npc, ref string typeName)
+        {
+            if ((Main.masterMode && CalamityWorld.death) || BossRushEvent.BossRushActive)
+            {
+                if (npc.type == NPCID.SkeletronPrime)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.SkeletronOmega.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeSaw)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaSaw.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeLaser)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaLaser.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeVice)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaVice.DisplayName");
+                }
+                if (npc.type == NPCID.PrimeCannon)
+                {
+                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaCannon.DisplayName");
+                }
+            }
         }
         #endregion
     }

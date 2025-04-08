@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Armor.Umbraphile
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 12;
+            Item.defense = 14;
         }
 
         public override void UpdateEquip(Player player)

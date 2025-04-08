@@ -4,7 +4,7 @@ AcesHigh: {
 		'''
 		Fires a string of cards with varying effects based on card type
 		Hearts grant lifesteal 
-		Spades pierce and ignore immunity frames
+		Spades pierce enemies
 		Diamonds violently explode 
 		Clubs split into three
 		'''
@@ -46,12 +46,12 @@ Animosity: {
 	TooltipNormal:
 		'''
 		Fires a shotgun blast with a tight spread which is imbued with Brimstone Flames
-		Press Right Click to fire a powerful brimstone round that inflicts Whispering Death
+		Press <right> to fire a powerful brimstone round that inflicts Whispering Death
 		'''
 	TooltipGFB:
 		'''
 		[c/9c0b0b:Fires a shotgun blast full of hatred... among other things]
-		[c/ac14ba:Press Right Click to use a hexing rifle round instead]
+		[c/ac14ba:Press <right> to use a hexing rifle round instead]
 		[c/454545:By Cthulhu Eye, Yharon tooth...]
 		'''
 }
@@ -82,7 +82,11 @@ Arbalest: {
 
 Archerfish: {
 	DisplayName: Archerfish
-	Tooltip: Converts musket balls into streams of water
+	Tooltip:
+		'''
+		Converts musket balls into streams of water
+		33% chance to save ammo
+		'''
 }
 
 ArcNovaDiffuser: {
@@ -208,6 +212,15 @@ BlossomFlux: {
 		'''
 		Fires a stream of leaves
 		Press <right> to fire a spore orb that explodes into a cloud of spore gas
+		'''
+	LegendaryText:
+		'''
+		'...I see... So frightened by the Godseeker were my children they chose to defile death for a warden in my image.
+		I am sorry. I could not gaze unto your hearts. The despair I inflicted upon you... I should have forseen the consequences of taking away your guardian.
+		But you shan't be neglected any longer.
+		Heed me, floral beast, on my authority. Ravage this place no longer, stand guard of the home and memories of the people who once lived here.
+		Channel all the might of this canopy and of the dead within you, so that no Godseeker, lowly or high, will ever trespass into this settlement.
+		Defend it till the last rays of the sun, so my hero shall yet have a home.'
 		'''
 }
 
@@ -404,16 +417,6 @@ DeepcoreGK2: {
 		'''
 }
 
-Disseminator: {
-	DisplayName: Disseminator
-	Tooltip:
-		'''
-		Fires a tight spread of bullets that call a great number of bullets from the sky
-		50% chance to save ammo
-		[c/768EE6:@everyone]
-		'''
-}
-
 DodusHandcannon: {
 	DisplayName: Dodu's Handcannon
 	Tooltip:
@@ -468,9 +471,8 @@ FetidEmesis: {
 		'''
 		Fires an accelerating stream of bullets until the barrel overheats
 		When the barrel overheats, a spread of fetid chunks is vomited out
-		Holding <right> while firing will hold in the chunks
-		If held in for long enough, more chunks will be fired
 		After firing, the gun must cool back down before it can be used again
+		Pressing <right> while firing will instantly launch the chunks
 		75% chance to save ammo
 		'''
 }
@@ -617,7 +619,7 @@ Hellborn: {
 		'''
 		An ornate firearm created during the Draconic Era by Azafure's finest forgemaster
 		Hold <left> to twirl the gun in your hand, rapidly hitting nearby enemies
-		Hits with the gun itself add rounds to the gun, up to a max of 8
+		Hits with the gun itself add rounds to the gun, up to a max of 12
 		At the cost of one round, hold <right> to fire a giant energy sphere with potent recoil
 		[c/E1B65F:'Know the grace of a gun forged through beauteous inspiration']
 		'''
@@ -954,14 +956,14 @@ PolarisParrotfish: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Rapidly fires an array of colorful star shots that bounce off tiles
-		However, only two shots can exist at once
+		Rapidly fires an array of colorful star shots
+		Firing speed increases the closer you are to an enemy
 		'It carries the mark of the Northern Star'
 		'''
 	TooltipGFB:
 		'''
-		Rapidly fires an array of colorful star shots that bounce off tiles
-		However, only two shots can exist at once
+		Rapidly fires an array of colorful star shots
+		Firing speed increases the closer you are to an enemy
 		Right click to give the little girl some attention
 		'She is a happy girl'
 		'''
@@ -993,10 +995,10 @@ PristineFury: {
 		'''
 	LegendaryText:
 		'''
-		'Me and many others lost everything in this world's darkest hour.
-		I saw a beast descend from the heavens. It had seven eyes in its body, and heralded countless angels of death.
+		'I and many others lost everything in this world's darkest hour.
+		I saw a beast descend from the heavens. A hulking cosmic monstrosity that heralded countless angels of death.
 		My family was torn from me by them, and my people forsake me. Even our supposed protectors did nothing to aid us.
-		And thus I swore to those I lost that I would never take such pain laying down again, that my name would dwarf even that of Zeratros;
+		And thus I swore to those I lost that I would do what is right, that my blaze's light would dwarf even that of Zeratros' Sun;
 		That one day, this cruel world would know nothing less than My perfect fury.'
 		'''
 }
@@ -1158,9 +1160,10 @@ SomaPrime: {
 	Tooltip:
 		'''
 		This weapon can supercrit if its crit chance is over 100%
-		All bullets fired inflict Shred, a stacking bleed debuff
-		Shred deals 150 DPS per stack and scales with your ranged stats
-		Damage ticks of Shred can also critically strike or supercrit
+		All bullets fired have a 5% chance to inflict Shred, a stacking bleed debuff
+		Critical strikes deal 3x damage instead of 2x by default and have a 30% chance to inflict Shred
+		Shred deals 600 DPS per stack and scales with your ranged stats
+		Damage ticks of Shred can critically strike for 3x damage and can supercrit
 		Replaces musket balls with enhanced High Velocity Bullets
 		80% chance to save ammo
 		'''

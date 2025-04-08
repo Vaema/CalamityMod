@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (!screwRegained && Main.netMode != NetmodeID.Server)
+            if (!screwRegained && !Main.dedServ)
             {
                 Gore screwGore = Gore.NewGorePerfect(Projectile.GetSource_Death(), Projectile.position, -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(4f, 6f) + Projectile.velocity * 0.7f, Mod.Find<ModGore>("WulfrumScrewGore").Type);
                 screwGore.timeLeft = 20;
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(CommonCalamitySounds.WulfrumNPCDeathSound, Projectile.Center);
 
             SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore screwGore = Gore.NewGorePerfect(Projectile.GetSource_Death(), Projectile.position, -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(1f, 3f) + Projectile.velocity * 0.7f, Mod.Find<ModGore>("WulfrumScrewGore").Type);
                 screwGore.timeLeft = 20;

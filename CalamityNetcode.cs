@@ -136,7 +136,7 @@ namespace CalamityMod
 
         public static void SyncWorld()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.WorldData);
         }
 
@@ -234,6 +234,8 @@ namespace CalamityMod
         SpawnBossOnPosition,
         SyncNPCMotionDataToServer,
         SyncNPCPosAndRotOnly,
+        SyncNPCDemonicFlamesDamage,
+        SyncNPCDemonSwordImpales,
 
         // Tile Entities
         PowerCellFactory,
@@ -245,6 +247,7 @@ namespace CalamityMod
         UpdateCodebreakerContainedStuff,
         UpdateCodebreakerDecryptCountdown,
         UnlockAbyssChests,
+        UpdateCanvasPainting,
 
         // Draedon Summoner
         CodebreakerSummonStuff,

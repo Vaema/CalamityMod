@@ -44,10 +44,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 16;
         }
 
-        public override bool? CanDamage()
-        {
-            return (State == 1);
-        }
+        public override bool? CanDamage() => State == 1f ? (bool?)null : false;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -87,14 +84,18 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     else
                     {
-
                         SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
+                        float screenshakeLevel = 4f + CurrentIndicator * 2f;
+                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenshakeLevel)
+                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenshakeLevel;
+                        CustomPulse shatter = new(Owner.Center, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.0075f * CurrentIndicator, 0.075f * CurrentIndicator, 30);
+                        GeneralParticleHandler.SpawnParticle(shatter);
+
                         State = 1f;
-                        Projectile.timeLeft = (7 + (int)((Charge / MaxCharge - 0.25f) * 20)) * 2; //Keep that even, if its an odd number itll fuck off and wont reset the players velocity on death
+                        Projectile.timeLeft = (7 + (int)((Charge / MaxCharge - 0.25f) * 20)) * 2; // Keep that even, if it's an odd number it'll fuck off and won't reset the player's velocity on death
                         dashDuration = Projectile.timeLeft;
                         lastDisplacement = Projectile.Center - Owner.Center;
-                        Projectile.netUpdate = true;
-                        Projectile.netSpam = 0;
+                        Projectile.ForceNetUpdate();
                     }
                 }
             }
@@ -111,11 +112,11 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
                 if ((Charge / MaxCharge >= 0.25f && CurrentIndicator == 0f) || (Charge / MaxCharge >= 0.5f && CurrentIndicator == 1f) || (Charge / MaxCharge >= 0.75f && CurrentIndicator == 2f) && Owner.whoAmI == Main.myPlayer)
                 {
-                    //WOahhh do a ring of projectiles!! woahhh
+                    // Spawn a ring of stars
                     for (int i = 0; i < 5; i++)
                     {
-                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_BoltsDamageReduction), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
-                        blast.timeLeft = 30;
+                        Vector2 velocity = direction.RotatedByRandom(MathHelper.PiOver4) * 10f;
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, velocity, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f, 1f);
                     }
 
                     SoundEngine.PlaySound(SoundID.Item79, Projectile.Center);
@@ -143,11 +144,11 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (Owner.whoAmI == Main.myPlayer && CurrentIndicator < 4f)
                     {
-                        //Projectiles!!! wah!!!
+                        // Spawn more stars
                         for (int i = 0; i < 9; i++)
                         {
-                            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, (MathHelper.TwoPi * i / 9f).ToRotationVector2() * 10f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_BoltsDamageReduction), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f);
-                            blast.timeLeft = 50;
+                            Vector2 velocity = direction.RotatedByRandom(MathHelper.PiOver4) * 10f;
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, velocity, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_ChargeupBoltDamageMultiplier), 0f, Owner.whoAmI, 0.75f, MathHelper.Pi * 0.02f, 1f);
                         }
 
                         OverCharge = 20f;
@@ -164,14 +165,14 @@ namespace CalamityMod.Projectiles.Melee
 
                 Owner.Calamity().LungingDown = true;
 
+                // Immediately cancel the lunge if you hit a tile
+                // Unlike its downgrades, there are NO effects from hitting tiles - it's too impractical at this stage, why would there be?
                 if (Collision.SolidCollision(Owner.Center + (direction * 120 * Projectile.scale) - Vector2.One * 5f, 10, 10))
                 {
-                    SlamDown();
                     Projectile.timeLeft = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
 
                 Owner.velocity = direction * 30f;
@@ -203,69 +204,22 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
-        public void SlamDown()
-        {
-            if (Owner.whoAmI != Main.myPlayer)
-                return;
-
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 15)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15;
-
-            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + (direction * 120 * Projectile.scale), -direction * 16f, ProjectileType<GalaxiaBolt>(), Projectile.damage, 10f, Owner.whoAmI, 0.75f, MathHelper.Pi / 25f);
-            proj.scale = 3f;
-            proj.timeLeft = 50;
-
-            SideSprouts(1, 150f, 1f * Charge / MaxCharge);
-            SideSprouts(-1, 150f, 1f * Charge / MaxCharge);
-
-            SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = SoundID.DD2_MonkStaffGroundImpact.Volume * 1.5f }, Projectile.Center);
-        }
-
-        public bool SideSprouts(float facing, float distance, float projSize)
-        {
-            float widestAngle = 0f;
-            float widestSurfaceAngle = 0f;
-            bool validPositionFound = false;
-            for (float i = 0f; i < 1; i += 1 / distance)
-            {
-                Vector2 positionToCheck = Owner.Center + (direction * 120 * Projectile.scale) + direction.RotatedBy((i * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
-
-                if (Main.tile[(int)(positionToCheck.X / 16), (int)(positionToCheck.Y / 16)].IsTileSolid())
-                    widestAngle = i;
-
-                else if (widestAngle != 0)
-                {
-                    validPositionFound = true;
-                    widestSurfaceAngle = widestAngle;
-                }
-            }
-
-            if (validPositionFound)
-            {
-                Vector2 projPosition = Owner.Center + (direction * 120 * Projectile.scale) + direction.RotatedBy((widestSurfaceAngle * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
-                Vector2 monolithRotation = direction.RotatedBy(Utils.AngleLerp(widestSurfaceAngle * -facing, 0f, projSize));
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<AndromedasStrideBoltSpawner>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
-                if (proj.ModProjectile is AndromedasStrideBoltSpawner spawner)
-                {
-                    spawner.WaitTimer = (1 - projSize) * 34f;
-                    spawner.OriginDirection = direction;
-                    spawner.Facing = facing;
-                }
-            }
-
-            return validPositionFound;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // 17APR2024: Ozzatron: Galaxia's dash gives iframes when striking enemies in a similar manner to a ram dash.
             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
             Owner.GiveUniversalIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
+
+            // ai[0] is NPC index to stay locked onto it, ai[1] is charge level to determine how many stars are rained
+            if (!CalamityUtils.AnyProjectiles(ProjectileType<AndromedasStrideBoltSpawner>()))
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<AndromedasStrideBoltSpawner>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_StarDamageMultiplier), Projectile.knockBack, Owner.whoAmI, target.whoAmI, CurrentIndicator);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 1f + FourSeasonsGalaxia.AndromedaAttunement_FullChargeBoost * (float)Math.Pow(Charge / MaxCharge, 2);
+            // Lunge always critically strikes
+            modifiers.SetCrit();
+            modifiers.SourceDamage *= (FourSeasonsGalaxia.AndromedaAttunement_FullChargeMult * (float)Math.Pow(Charge / MaxCharge, 2));
         }
 
         public override bool PreDraw(ref Color lightColor)

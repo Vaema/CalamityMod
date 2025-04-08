@@ -541,7 +541,7 @@ namespace CalamityMod.Events
                 if (HostileProjectileKillCounter == 1)
                     CalamityUtils.KillAllHostileProjectiles();
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     BRHostileProjKillSyncPacket.Send();
                 }
@@ -557,7 +557,7 @@ namespace CalamityMod.Events
                 if (BossRushStage != 0)
                 {
                     BossRushStage = 0;
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                     {
                         BossRushStagePacket.Send();
                     }
@@ -656,7 +656,7 @@ namespace CalamityMod.Events
             CalamityUtils.KillAllHostileProjectiles();
 
             CalamityNetcode.SyncWorld();
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 BossRushStagePacket.Send();
                 BossRushStartTimerPacket.Send();
@@ -745,7 +745,7 @@ namespace CalamityMod.Events
             }
 
             // Sync the stage and progress of Boss Rush whenever a relevant boss dies.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
                 BossRushStagePacket.Send();
                 BRHostileProjKillSyncPacket.Send();
@@ -776,7 +776,7 @@ namespace CalamityMod.Events
         public static void SyncStartTimer(int time)
         {
             StartTimer = time;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             BossRushStartTimerPacket.Send();
@@ -785,7 +785,7 @@ namespace CalamityMod.Events
         public static void SyncEndTimer(int time)
         {
             EndTimer = time;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             BossRushEndTimerPacket.Send();

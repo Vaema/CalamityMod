@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Main.dust[exo].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = Projectile.Center;
                     int goreAmt = 9;
@@ -185,15 +185,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                float random = Main.rand.Next(30, 90);
-                float spread = random * 0.0174f;
-                double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                double deltaAngle = spread / 8f;
-                for (int i = 0; i < 4; i++)
+                float angleOffset = Main.rand.NextFloat(-30f, 30f);
+                for (int i = 0; i < 8; i++)
                 {
-                    double offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    int proj1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<MagnomalyBeam>(), Projectile.damage / 4, Projectile.knockBack / 4, Projectile.owner, 0f, 1f);
-                    int proj2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<MagnomalyBeam>(), Projectile.damage / 4, Projectile.knockBack / 4, Projectile.owner, 0f, 1f);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.ToRadians(67.5f + angleOffset) - Projectile.velocity.ToRotation())).ToRotationVector2() * 4f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MagnomalyBeam>(), (int)(Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Projectile.owner, ai1: 1f);
                 }
             }
         }

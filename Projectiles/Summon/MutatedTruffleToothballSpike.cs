@@ -46,8 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 float inertia = 25f;
                 Projectile.velocity = (Projectile.velocity * inertia + Projectile.SafeDirectionTo(TargetShot.Center) * Utils.Remap(Projectile.timeLeft, 600f, 540f, MutatedTruffle.ToothballSpikeSpeed - 15f, MutatedTruffle.ToothballSpikeSpeed)) / (inertia + 1f);
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
         }
 

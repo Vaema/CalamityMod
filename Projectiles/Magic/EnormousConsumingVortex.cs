@@ -169,8 +169,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 Vector2 idealVelocity = Vector2.Zero.MoveTowards(hoverDestination - Projectile.Center, 32f);
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.04f);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
 
             // Re-determine the hitbox size.

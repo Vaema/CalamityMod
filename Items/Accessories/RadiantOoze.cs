@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,6 +30,15 @@ namespace CalamityMod.Items.Accessories
             // Add light if the other accessories aren't equipped and visibility is turned on
             if (!(modPlayer.aAmpoule || modPlayer.purity) && !hideVisual)
                 Lighting.AddLight(player.Center, new Vector3(1f, 1f, 0.6f));
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            var player = Main.LocalPlayer;
+            if (player != null)
+            {
+                list.FindAndReplace("[REGEN]", (player.Calamity().radiantOozeRegen).ToString("0.##"));
+            }
         }
 
         public override void AddRecipes()

@@ -28,6 +28,8 @@ namespace CalamityMod.NPCs.Leviathan
         private bool forceChargeFrames = false;
         private int frameUsed = 0;
         public bool HasBegunSummoningLeviathan = false;
+        private int DrawProjectileTelegraphTimer = 0;
+        private int LegendaryModeAttackChosen = 0;
         public static Asset<Texture2D> ChargeTexture;
         public bool WaitingForLeviathan
         {
@@ -112,6 +114,7 @@ namespace CalamityMod.NPCs.Leviathan
             writer.Write(NPC.dontTakeDamage);
             writer.Write(NPC.Calamity().newAI[0]);
             writer.Write(HasBegunSummoningLeviathan);
+            writer.Write(DrawProjectileTelegraphTimer);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -126,6 +129,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.dontTakeDamage = reader.ReadBoolean();
             NPC.Calamity().newAI[0] = reader.ReadSingle();
             HasBegunSummoningLeviathan = reader.ReadBoolean();
+            DrawProjectileTelegraphTimer = reader.ReadInt32();
         }
 
         public override void AI()
@@ -162,6 +166,7 @@ namespace CalamityMod.NPCs.Leviathan
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
             bool notOcean = player.position.Y < 800f || player.position.Y > Main.worldSurface * 16.0 || (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400));
 
             // Enrage
@@ -175,7 +180,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
                 NPC.Calamity().CurrentlyEnraged = !bossRush;
@@ -205,6 +210,8 @@ namespace CalamityMod.NPCs.Leviathan
                 {
                     // Avoid cheap bullshit
                     NPC.damage = 0;
+                    // Remove projectile telegraph
+                    DrawProjectileTelegraphTimer = 0;
 
                     // Use charging frames.
                     NPC.ai[0] = 3f;
@@ -626,89 +633,150 @@ namespace CalamityMod.NPCs.Leviathan
 
                 NPC.ai[1] += 1f;
 
-                float divisor = 140f;
-                divisor -= (int)(30f * enrageScale);
+                float attackDivisor = 140f - (int)(30f * enrageScale);
+                float telegraphOffset = death ? 45f : 60f;
                 if (!leviAlive || phase4)
-                    divisor -= (float)Math.Ceiling(50f * (1f - lifeRatio));
-
-                bool shootProjectiles = NPC.ai[1] % divisor == 0f;
-                if (Main.netMode != NetmodeID.MultiplayerClient && shootProjectiles)
                 {
-                    float projectileVelocity = expertMode ? 3f : 2f;
-                    projectileVelocity += enrageScale;
-                    if (!leviAlive || phase4)
-                        projectileVelocity += death ? 3f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
+                    attackDivisor -= (float)Math.Ceiling(50f * (1f - lifeRatio));
+                    telegraphOffset = (float)Math.Ceiling(telegraphOffset * 0.66f);
+                }
 
-                    int totalProjectiles = 8;
-                    int projectileDistance = 600;
-                    int type = ModContent.ProjectileType<WaterSpear>();
-                    if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                bool telegraphProjectiles = NPC.ai[1] % attackDivisor == (attackDivisor - telegraphOffset);
+                bool shootProjectiles = NPC.ai[1] % attackDivisor == 0f;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    if (telegraphProjectiles)
                     {
-                        float radians = MathHelper.TwoPi / totalProjectiles;
-                        int damage = NPC.GetProjectileDamage(type);
-                        for (int i = 0; i < totalProjectiles; i++)
+                        DrawProjectileTelegraphTimer = (int)telegraphOffset;
+                        // For telegraph projectiles:
+                        // ai[0] holds the index of the targeted player
+                        // ai[1] is used to determine what type of projectile it is a telegraph for
+                        int totalTelegraphs = 8;
+                        float telegraphDist = 500f;
+
+                        // In Legendary, the projectiles she fires is randomized
+                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         {
-                            switch (Main.rand.Next(3))
+                            LegendaryModeAttackChosen = Main.rand.Next(3);
+                            if (LegendaryModeAttackChosen == 2)
+                                telegraphDist -= 50f;
+
+                            for (int i = 0; i < totalTelegraphs; i++)
+                            {
+                                Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
+                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, LegendaryModeAttackChosen);
+                                Main.projectile[tele].netUpdate = true;
+                                    
+                            }
+                        }
+                        else
+                        {
+                            switch ((int)NPC.localAI[3])
+                            {
+                                case 0:
+                                    break;
+                                case 1:
+                                    totalTelegraphs = 3;
+                                    break;
+                                case 2:
+                                    totalTelegraphs = 6;
+                                    telegraphDist -= 50f;
+                                    break;
+                            }
+                            if ((phase2 && !leviAlive) || phase4)
+                                totalTelegraphs += totalTelegraphs / 2;
+
+                            for (int i = 0; i < totalTelegraphs; i++)
+                            {
+                                Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, NPC.localAI[3]);
+                                    
+                            }
+                        }
+                    }
+                    else // Decrement the telegraph counter constantly
+                    {
+                        DrawProjectileTelegraphTimer--;
+                    }
+
+                    if (shootProjectiles)
+                    {
+                        float projectileVelocity = expertMode ? 3f : 2f;
+                        projectileVelocity += enrageScale;
+                        if (!leviAlive || phase4)
+                            projectileVelocity += death ? 3f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
+
+                        int totalProjectiles = 8;
+                        int projectileDistance = 600;
+                        int type = ModContent.ProjectileType<WaterSpear>();
+                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        {
+                            float radians = MathHelper.TwoPi / totalProjectiles;
+                            int damage = NPC.GetProjectileDamage(type);
+                            for (int i = 0; i < totalProjectiles; i++)
+                            {
+                                switch (LegendaryModeAttackChosen)
+                                {
+                                    case 0:
+                                        SoundEngine.PlaySound(SoundID.Item21, player.Center);
+                                        break;
+
+                                    case 1:
+                                        type = ModContent.ProjectileType<FrostMist>();
+                                        SoundEngine.PlaySound(SoundID.Item30, player.Center);
+                                        break;
+
+                                    case 2:
+                                        type = ModContent.ProjectileType<SirenSong>();
+                                        float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
+                                        Main.musicPitch = soundPitch;
+                                        SoundEngine.PlaySound(SoundID.Item26, player.Center);
+                                        break;
+                                }
+
+                                Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
+                                Vector2 projVelocity = Vector2.Normalize(player.Center - spawnVector) * projectileVelocity;
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, projVelocity, type, damage, 0f, Main.myPlayer);
+                                Main.projectile[proj].netUpdate = true;
+                            }
+                        }
+                        else
+                        {
+                            switch ((int)NPC.localAI[3])
                             {
                                 case 0:
                                     SoundEngine.PlaySound(SoundID.Item21, player.Center);
                                     break;
 
                                 case 1:
+                                    totalProjectiles = 3;
                                     type = ModContent.ProjectileType<FrostMist>();
                                     SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                     break;
 
                                 case 2:
+                                    totalProjectiles = 6;
                                     type = ModContent.ProjectileType<SirenSong>();
                                     float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                     Main.musicPitch = soundPitch;
                                     SoundEngine.PlaySound(SoundID.Item26, player.Center);
                                     break;
                             }
+                            NPC.localAI[3] += 1f;
+                            if (NPC.localAI[3] > 2f)
+                                NPC.localAI[3] = 0f;
 
-                            Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
-                            Vector2 projVelocity = Vector2.Normalize(player.Center - spawnVector) * projectileVelocity;
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, projVelocity, type, damage, 0f, Main.myPlayer);
-                            Main.projectile[proj].netUpdate = true;
-                        }
-                    }
-                    else
-                    {
-                        switch ((int)NPC.localAI[3])
-                        {
-                            case 0:
-                                SoundEngine.PlaySound(SoundID.Item21, player.Center);
-                                break;
+                            if ((phase2 && !leviAlive) || phase4)
+                                totalProjectiles += totalProjectiles / 2;
 
-                            case 1:
-                                totalProjectiles = 3;
-                                type = ModContent.ProjectileType<FrostMist>();
-                                SoundEngine.PlaySound(SoundID.Item30, player.Center);
-                                break;
-
-                            case 2:
-                                totalProjectiles = 6;
-                                type = ModContent.ProjectileType<SirenSong>();
-                                float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
-                                Main.musicPitch = soundPitch;
-                                SoundEngine.PlaySound(SoundID.Item26, player.Center);
-                                break;
-                        }
-                        NPC.localAI[3] += 1f;
-                        if (NPC.localAI[3] > 2f)
-                            NPC.localAI[3] = 0f;
-
-                        if ((phase2 && !leviAlive) || phase4)
-                            totalProjectiles += totalProjectiles / 2;
-
-                        float radians = MathHelper.TwoPi / totalProjectiles;
-                        int damage = NPC.GetProjectileDamage(type);
-                        for (int i = 0; i < totalProjectiles; i++)
-                        {
-                            Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
-                            Vector2 projVelocity = Vector2.Normalize(player.Center - spawnVector) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, projVelocity, type, damage, 0f, Main.myPlayer);
+                            float radians = MathHelper.TwoPi / totalProjectiles;
+                            int damage = NPC.GetProjectileDamage(type);
+                            for (int i = 0; i < totalProjectiles; i++)
+                            {
+                                Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
+                                Vector2 projVelocity = Vector2.Normalize(player.Center - spawnVector) * projectileVelocity;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, projVelocity, type, damage, 0f, Main.myPlayer);
+                            }
                         }
                     }
                 }
@@ -738,6 +806,8 @@ namespace CalamityMod.NPCs.Leviathan
             {
                 // Avoid cheap bullshit
                 NPC.damage = 0;
+                // Remove projectile telegraph
+                DrawProjectileTelegraphTimer = 0;
 
                 ChargeLocation(player, leviAlive && !phase4, revenge);
 
@@ -906,7 +976,29 @@ namespace CalamityMod.NPCs.Leviathan
             SpriteEffects spriteEffects = charging ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (NPC.spriteDirection == -1)
                 spriteEffects = charging ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Main.spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2((float)width / 2f, (float)height / 2f), NPC.scale, spriteEffects, 0f);
+
+            // Draw colored outline as telegraph for projectile attacks
+            if (DrawProjectileTelegraphTimer > 0)
+            {
+                Color telegraphColor = Color.Black;
+                switch (CalamityWorld.LegendaryMode && CalamityWorld.revenge ? LegendaryModeAttackChosen : (int)NPC.localAI[3])
+                {
+                    case 0:
+                        telegraphColor = new Color(55, 70, 240);
+                        break;
+                    case 1:
+                        telegraphColor = Color.White * 0.9f;
+                        break;
+                    case 2:
+                        telegraphColor = new Color(199, 90, 67);
+                        break;
+                }
+
+                Lighting.AddLight(NPC.Center, telegraphColor.ToVector3() * 0.75f);
+                NPC.DrawBackglow(telegraphColor * 0.35f, 9f, spriteEffects, NPC.frame, screenPos, texture);
+            }
+
+            Main.spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(width / 2f, height / 2f), NPC.scale, spriteEffects, 0f);
             return false;
         }
 

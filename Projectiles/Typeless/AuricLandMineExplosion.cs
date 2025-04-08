@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.tileCollide = false;
             Projectile.hostile = true;
             Projectile.friendly = true;
+            Projectile.trap = true;
         }
 
         public override void AI()

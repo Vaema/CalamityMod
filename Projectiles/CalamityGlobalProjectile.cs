@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -40,6 +41,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
@@ -57,85 +59,152 @@ namespace CalamityMod.Projectiles
             }
         }
 
-        // Source variables.
+        /// <summary>
+        /// If true, this projectile was spawned from a dash hit.<br/>
+        /// Solely used to prevent the projectile from inflicting Vulnerability Hex when using the Aflame enchantment.
+        /// </summary>
         public bool CreatedByPlayerDash = false;
+        /// <summary>
+        /// If a projectile is spawned from a hostile NPC, this variable is set to the index of the NPC.<br/>
+        /// Used for identifying which NPC to apply certain retaliatory effects on from projectiles hitting the player.
+        /// </summary>
+        public int ParentNPCIndex = -1;
 
-        // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
+        /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
 
-        // Damage Adjusters
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
         public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
         public const float PierceResistCap = 0.8f;
 
-        // defDamage was being used for frame1 hacks. this stands in as the replacement for that logic.
+        /// <summary>
+        /// Used for executing frame one hacks. Things set during this include:
+        /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.
+        /// <br/>* Adding armor penetration to rogue projectiles spawned while wearing Filthy Glove or its upgrades.
+        /// <br/>* Increasing the damage of projectiles from the post-Moon Lord Dungeon, and from the post-DoG Pumpkin Moon, Frost Moon, and Solar Eclipse.
+        /// </summary>
         private bool frameOneHacksExecuted = false;
 
-        // Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".
-        // For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.
-        // They then take the remainder (e.g. the remaining 16%) and roll against that for a final +100% (like normal crits).
-        // For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.
-        // An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.
-        // Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times
+        /// <summary>
+        /// Enables "supercrits". When crit is over 100%, projectiles with this bool enabled can "supercrit".<br/>
+        /// For every 100% critical strike chance over 100%, "supercrit" projectiles do a guaranteed +100% damage.<br/>
+        /// They then take the remainder and roll against that for a final +100% (like normal crits).<br/>
+        /// For example if you have 716% critical strike chance, you are guaranteed +700% damage and then have a 16% chance for +800% damage instead.<br/>
+        /// An example of this is Soma Prime, but any bullet fired from that gun can supercrit when this bool is activated.<br/>
+        /// Set this to -1 if you want the projectile to supercrit forever, and to any positive value to make it supercrit only x times.
+        /// </summary>
         public int supercritHits = 0;
 
-        // Without adjusting underlying crit calculations, set this to true to force a projectile as a crit.
-        // TODO -- In the TML 1.4.4 port, there is a much better way to set NPC strike events to be forced crits.
+        /// <summary>
+        /// Bonus damage on critical strikes expressed as a ratio. <br />
+        /// 0f = 200% crit damage, vanilla standard.<br />
+        /// 1f = 300% crit damage.<br /><br />
+        /// This applies independently of supercrits and will stack additively with them.
+        /// </summary>
+        public float bonusCritDamage = 0f;
+
+        // 08MAR2025: This remains so that "delayed forced crits" can still be set. This is used for Marksman Ricoshots.
+        /// <summary> Set to true to force a projectile to critically strike. </summary>
         public bool forcedCrit = false;
 
-        // The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo.
+        /// <summary> The total bonus damage (as a ratio of the projectile's own damage) applied to this projectile as a result of a ricoshot combo. </summary>
         public float totalRicoshotDamageBonus = 0f;
 
-        // If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime.
+        /// <summary> If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime. </summary>
         public bool appliesSomaShred = false;
 
-        // Arc Flash bolt spawning management
+        /// <summary>
+        /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
+        /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
+        /// </summary>
         public bool spawnArcFlash = true;
+        /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
 
-        // Adds Brimstone flames to bullets, currently only used by Animosity
+        /// <summary>
+        /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
+        /// Used by Animosity.
+        /// </summary>
         public bool brimstoneBullets = false;
-
-        // Adds fire to bullets, currently used by Thermocline Blaster
+        /// <summary>
+        /// If true, adds a fire trail to the projectile, and makes it inflict Hellfire.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
         public bool fireBullet = false;
-
-        // Adds ice to bullets, currently used by Thermocline Blaster
+        /// <summary>
+        /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
+        /// Used by Thermocline Blaster.
+        /// </summary>
         public bool iceBullet = false;
-
-        // Adds shock to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds an electric trail to the projectile, and makes it inflict Electrified and create an explosion on hit.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool shockBullet = false;
-
-        // Adds... pearl? to bullets (visual 1, blue), currently used by Pearl God
-        public bool pearlBullet1 = false;
-        // Adds... pearl? to bullets (visual 2, pink), currently used by Pearl God
-        public bool pearlBullet2 = false;
-        // Adds... pearl? to bullets (visual 3, yellow), currently used by Pearl God
-        public bool pearlBullet3 = false;
-
-        // Adds lifesteal to bullets, currently used by Arietes 41
+        /// <summary>
+        /// If true, adds a white trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Arietes 41.
+        /// </summary>
         public bool lifeBullet = false;
-
-        // Adds lifesteal to bullets (visual 1), currently used by Pearl God
-        public bool betterLifeBullet1 = false;
-        // Adds lifesteal to bullets (visual 2), currently used by Pearl God
-        public bool betterLifeBullet2 = false;
-
-        // If true, this projectile creates impact sparks upon hitting enemies
+        /// <summary>
+        /// If true, this projectile creates visual impact sparks upon hitting enemies.<br/>
+        /// Used by Deepcore GK2.
+        /// </summary>
         public bool deepcoreBullet = false;
-
-        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
-        // Currently used for Arterial Assault.
+        /// <summary>
+        /// If true, adds a blue and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet1 = false;
+        /// <summary>
+        /// If true, adds a pink and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet2 = false;
+        /// <summary>
+        /// If true, adds a khaki and pearly trail to the projectile, and makes it create an explosion on hit.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool pearlBullet3 = false;
+        /// <summary>
+        /// If true, adds a blue, pink, and khaki helix trail to the projectile, and allows it to lifesteal.<br/>
+        /// Used by Pearl God.
+        /// </summary>
+        public bool betterLifeBullet1 = false;
+        /// <summary> <inheritdoc cref="betterLifeBullet1"/> </summary>
+        public bool betterLifeBullet2 = false;
+        /// <summary>
+        /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
+        /// Used by Arterial Assault.
+        /// </summary>
         public float conditionalHomingRange = 0f;
 
-        // Amount of extra updates that are set in SetDefaults.
+        /// <summary>
+        /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
+        /// This is NOT set automatically, and must be set whenever it is needed.
+        /// </summary>
         public int defExtraUpdates = -1;
 
-        // How many times this projectile has pierced.
+        /// <summary>
+        /// How many times this projectile has pierced an enemy which applies pierce resist.<br/>
+        /// Used for calculating pierce resist damage reduction.
+        /// </summary>
         public int timesPierced = 0;
 
-        // Point-blank shot timer and distance check.
+        /// <summary>
+        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
+        /// If it reaches 0, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public int pointBlankShotDuration = 0;
+        /// <summary>
+        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
+        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
+        /// </summary>
         public float pointBlankShotDistanceTravelled = 0f;
-        public const int DefaultPointBlankDuration = 18; // 18 frames
+        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
+        public const int DefaultPointBlankDuration = 18;
+        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
         public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
         // Empress of Light variables
@@ -148,47 +217,73 @@ namespace CalamityMod.Projectiles
         private const int FishronCthulhunadoTotalDuration = 840;
         private const int FishronTornadoTimeBeforeDealingDamage = 60;
 
-        // Temporary flat damage reduction effects. This is typically used for parry effects such as Ark of the Ancients
+        /// <summary> Timer for how long a projectile's damage is reduced by the value in <see cref="flatDR"/>. </summary>
         public int flatDRTimer = 0;
-        /// <summary>
-        /// The amount of final damage substracted from the projectile's own damage count when hitting the player. Resets to 0 if the flatDRTimer variable drops to 0
-        /// </summary>
+        /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
-        /// <summary>
-        /// Allows hostile Projectiles to deal damage to the player's defense stat, used mostly for hard-hitting bosses.
-        /// </summary>
+        /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
-        // Old Fashioned buff. This does not have effect unless the player has the buff consumed.
+        /// <summary>
+        /// Determines how this projectile's damage is affected by the Old Fashioned buff. This does not have an effect unless the player has the buff consumed.<br/>
+        /// If true, its damage is buffed. If false, its damage is nerfed. If null, its damage is unchanged. Defaults to null.
+        /// </summary>
         public bool? buffedByOldFashioned;
-
-        // Nihility Quiver
+        /// <summary> If true, this projectile has been buffed by Quiver of Nihility's void fields. Used to ensure the buff is only applied once. </summary>
         public bool nihilicArrow = false;
 
         // Rogue Stuff
+        /// <summary> If true, this projectile is from a rogue stealth strike. The primary variable responsible for triggering stealth strike effects. </summary>
         public bool stealthStrike = false;
+        /// <summary>
+        /// Number of times this stealth strike projectile has pierced an enemy.<br/>
+        /// Used to limit the number of times a projectile can proc certain effects from rogue accessories.
+        /// </summary>
         public int stealthStrikeHitCount = 0;
+        /// <summary> Variable to ensure that Ethereal Extorter's soul projectiles only spawn on projectiles spawning directly from item use. </summary>
         public bool extorterBoost = false;
+        /// <summary>
+        /// If true, this projectile is a Venerated Locket clone projectile.<br/>
+        /// Used to prevent certain rogue weapon and accessory effects.
+        /// </summary>
         public bool LocketClone = false;
+        /// <summary>
+        /// If true, this projectile cannot proc projectile effects from rogue accessories.<br/>
+        /// Set this variable for projectiles that are prone to spawning an excessive amount of projectiles.
+        /// </summary>
         public bool CannotProc = false;
+        /// <summary> Tracks whether this projectile has already triggered Scuttler's Jewel's projectile effect. </summary>
         public bool JewelSpikeSpawned = false;
+
+        /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
+        public int TransformerTimer = 0;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
         public int lineColor = 0;
 
-        // This flag is set to true on summon-classed attacks that are NOT minions, and thus should ALWAYS be able to hit enemies ALL the time.
-        // There are several enemies/NPCs in Calamity which do not take damage from minions in certain circumstances.
+        /// <summary>
+        /// There are several NPCs in Calamity which do not take damage from minions in certain circumstances.<br/>
+        /// If true, this variable allows a projectile that deals summon damage to bypass this mechanic.
+        /// </summary>
         public bool overridesMinionDamagePrevention = false;
 
         // Enchantment variables.
+        /// <summary>
+        /// Variable used as a timer for minions with the Hellbound enchantment.<br/>
+        /// When spawned, this value is set to <see cref="ExplosiveEnchantTime"/> and gets decremented every frame. When it reaches 0, the minion explodes and despawns.<br/>
+        /// Also used for spawning smaller explosions and for scaling damage as the timer decreases.
+        /// </summary>
         public int ExplosiveEnchantCountdown = 0;
+        /// <summary> Constant variable which stores the duration of minions with the Hellbound enchantment, in frames. </summary>
         public const int ExplosiveEnchantTime = 2400;
 
-        // Custom update priority.
-        // Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.
-        // Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// <summary>
+        /// Custom update priority.<br/>
+        /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
+        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// </summary>
         public float UpdatePriority = 0f;
 
         #region On Spawn
@@ -204,6 +299,12 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
+
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
@@ -211,10 +312,21 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
         }
-
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
         #endregion On Spawn
 
         #region Set Defaults
+        public override void SetStaticDefaults()
+        {
+            // Making Rocket Launcher, Grenade Launcher, Proximity Mine Launcher, and Cluster Rocket fragments not damage the player.
+            for (int type = 0; type < ProjectileID.Count; type++)
+            {
+                if ((type >= 133 && type <= 144) || (type >= 776 && type <= 801))
+                    ProjectileID.Sets.RocketsSkipDamageForPlayers[type] = true;
+            }
+        }
+
         public override void SetDefaults(Projectile projectile)
         {
             // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
@@ -414,7 +526,7 @@ namespace CalamityMod.Projectiles
                         homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < (revSkeletronPrimeHomingSkull ? ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 192f : 120f) : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -653,86 +765,6 @@ namespace CalamityMod.Projectiles
                 }
 
                 projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.QueenBeeStinger)
-            {
-                if (projectile.ai[1] != 0f)
-                {
-                    if (projectile.position.Y > projectile.ai[1])
-                        projectile.tileCollide = true;
-                }
-
-                if (Main.rand.NextBool())
-                    Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 0.9f).noGravity = true;
-
-                if (projectile.localAI[0] == 0f)
-                {
-                    projectile.localAI[0] = 1f;
-                    for (int num99 = 0; num99 < 20; num99++)
-                    {
-                        Dust dust3 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 1.3f);
-                        dust3.noGravity = true;
-                        dust3.velocity += projectile.velocity * 0.75f;
-                    }
-
-                    for (int num100 = 0; num100 < 10; num100++)
-                    {
-                        Dust dust4 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, DustID.t_Honey, 0f, 0f, 0, default(Color), 1.3f);
-                        dust4.noGravity = true;
-                        dust4.velocity *= 2f;
-                    }
-                }
-
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.EyeLaser && projectile.ai[0] == 1f)
-            {
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                Lighting.AddLight(projectile.Center, (255 - projectile.alpha) * 0.3f / 255f, 0f, (255 - projectile.alpha) * 0.3f / 255f);
-
-                if (projectile.alpha > 0)
-                    projectile.alpha -= 125;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
-
-                if (projectile.localAI[1] == 0f)
-                {
-                    SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                    projectile.localAI[1] = 1f;
-                }
-
-                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                    projectile.velocity *= 1.0025f;
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.DeathLaser && projectile.ai[0] == 1f)
-            {
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                Lighting.AddLight(projectile.Center, (255 - projectile.alpha) * 0.75f / 255f, 0f, 0f);
-
-                if (projectile.alpha > 0)
-                    projectile.alpha -= 125;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
-
-                if (projectile.localAI[1] == 0f)
-                {
-                    SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                    projectile.localAI[1] = 1f;
-                }
-
-                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                    projectile.velocity *= 1.0025f;
 
                 return false;
             }
@@ -1214,16 +1246,16 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.HallowBossRainbowStreak && projectile.hostile)
             {
-                bool revMasterMode = (Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive;
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 bool spreadOut = false;
                 bool homeIn = false;
                 float spreadOutCutoffTime = EmpressRainbowStreakSpreadOutCutoff;
-                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
+                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (death ? 55f : 65f) : (death ? 70f : 80f);
                 float spreadDeceleration = 0.97f;
-                float minAcceleration = revMasterMode ? 0.075f : 0.05f;
-                float maxAcceleration = revMasterMode ? 0.15f : 0.1f;
-                float homingVelocity = revMasterMode ? 36f : 30f;
+                float minAcceleration = death ? 0.075f : 0.05f;
+                float maxAcceleration = death ? 0.15f : 0.1f;
+                float homingVelocity = death ? 36f : 30f;
                 float maxVelocity = homingVelocity * 1.5f;
                 float accelerationToMaxVelocity = 1.01f;
 
@@ -1384,54 +1416,6 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            else if (projectile.type == ProjectileID.Starfury)
-            {
-                if (projectile.timeLeft > 75)
-                    projectile.timeLeft = 75;
-
-                if (projectile.ai[1] == 0f && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
-                {
-                    projectile.ai[1] = 1f;
-                    projectile.netUpdate = true;
-                }
-
-                if (projectile.soundDelay == 0)
-                {
-                    projectile.soundDelay = 20 + Main.rand.Next(40);
-                    SoundEngine.PlaySound(SoundID.Item9, projectile.Center);
-                }
-
-                if (projectile.localAI[0] == 0f)
-                    projectile.localAI[0] = 1f;
-
-                projectile.alpha += (int)(25f * projectile.localAI[0]);
-                if (projectile.alpha > 200)
-                {
-                    projectile.alpha = 200;
-                    projectile.localAI[0] = -1f;
-                }
-                if (projectile.alpha < 0)
-                {
-                    projectile.alpha = 0;
-                    projectile.localAI[0] = 1f;
-                }
-
-                projectile.rotation += (Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y)) * 0.01f * projectile.direction;
-
-                if (projectile.ai[1] == 1f)
-                {
-                    projectile.light = 0.9f;
-
-                    if (Main.rand.NextBool(10))
-                        Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Enchanted_Pink, projectile.velocity.X * 0.5f, projectile.velocity.Y * 0.5f, 150, default, 1.2f);
-
-                    if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
-                        Gore.NewGore(projectile.GetSource_FromAI(), projectile.position, projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
-                }
-
-                return false;
-            }
-
             // Copy pasted vanilla AI with minor changes to the homing distance and velocity formula
             else if (projectile.type == ProjectileID.SpiritFlame)
             {
@@ -1539,80 +1523,6 @@ namespace CalamityMod.Projectiles
                 {
                     projectile.ai[0] = -1f;
                     projectile.netUpdate = true;
-                }
-
-                return false;
-            }
-
-            else if (projectile.type == ProjectileID.TrueNightsEdge)
-            {
-                float fadeInTime = 50f;
-                float fadeOutTime = 15f;
-                float timeBeforeFadeOut = projectile.ai[1] + fadeInTime;
-                float projectileDuration = timeBeforeFadeOut + fadeOutTime;
-                float stopDealingDamageTime = 80f;
-
-                if (projectile.localAI[0] == 0f)
-                    SoundEngine.PlaySound(SoundID.Item8, projectile.Center);
-
-                projectile.localAI[0] += 1f;
-                if (projectile.damage == 0 && projectile.localAI[0] < MathHelper.Lerp(timeBeforeFadeOut, projectileDuration, 0.5f))
-                    projectile.localAI[0] += 6f;
-
-                projectile.Opacity = Utils.Remap(projectile.localAI[0], 0f, projectile.ai[1], 0f, 1f) * Utils.Remap(projectile.localAI[0], timeBeforeFadeOut, projectileDuration, 1f, 0f);
-                if (projectile.localAI[0] >= projectileDuration)
-                {
-                    projectile.localAI[1] = 1f;
-                    projectile.Kill();
-                    return false;
-                }
-
-                Player player = Main.player[projectile.owner];
-                float fromValue = projectile.localAI[0] / projectile.ai[1];
-                projectile.direction = (projectile.spriteDirection = (int)projectile.ai[0]);
-
-                if (projectile.damage != 0 && projectile.localAI[0] >= stopDealingDamageTime)
-                    projectile.damage = 0;
-
-                if (projectile.damage != 0)
-                {
-                    int size = 80;
-                    bool notInsideTiles = false;
-                    float rotation = projectile.velocity.ToRotation();
-                    for (float i = -1f; i <= 1f; i += 0.5f)
-                    {
-                        Vector2 position = projectile.Center + (rotation + i * MathHelper.PiOver4 * 0.25f).ToRotationVector2() * size * 0.5f * projectile.scale;
-                        Vector2 position2 = projectile.Center + (rotation + i * MathHelper.PiOver4 * 0.25f).ToRotationVector2() * size * projectile.scale;
-                        if (!Collision.SolidTiles(projectile.Center, 0, 0) && Collision.CanHit(position, 0, 0, position2, 0, 0))
-                        {
-                            notInsideTiles = true;
-                            break;
-                        }
-                    }
-
-                    if (!notInsideTiles)
-                        projectile.damage = 0;
-                }
-
-                fromValue = projectile.localAI[0] / projectile.ai[1];
-                projectile.localAI[1] += 1f;
-                projectile.rotation += projectile.ai[0] * MathHelper.TwoPi * (4f + projectile.Opacity * 4f) / 90f;
-                projectile.scale = Utils.Remap(projectile.localAI[0], projectile.ai[1] + 2f, projectileDuration, 1.12f, 1f) * projectile.ai[2];
-                float randomDustSpawnLocation = projectile.rotation + Main.rand.NextFloatDirection() * MathHelper.PiOver2 * 0.7f;
-                Vector2 dustPosition = projectile.Center + randomDustSpawnLocation.ToRotationVector2() * 84f * projectile.scale;
-                if (Main.rand.NextBool(5))
-                {
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 14, null, 150, default, 1.4f);
-                    dust.noLight = (dust.noLightEmittence = true);
-                }
-
-                for (int i = 0; (float)i < 3f * projectile.Opacity; i++)
-                {
-                    Vector2 dustVelocity = projectile.velocity.SafeNormalize(Vector2.UnitX);
-                    int dustType = ((Main.rand.NextFloat() < projectile.Opacity) ? 75 : 27);
-                    Dust dust = Dust.NewDustPerfect(dustPosition, dustType, projectile.velocity * 0.2f + dustVelocity * 3f, 100, default, 1.4f);
-                    dust.noGravity = true;
-                    dust.customData = projectile.Opacity * 0.2f;
                 }
 
                 return false;
@@ -2169,16 +2079,6 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // Making Rocket Launcher, Grenade Launcher, Proximity Mine Launcher, and Cluster Rocket fragments not damage the player.
-            bool isGrenadeLauncherProj = (projectile.type == 133 || projectile.type == 136 || projectile.type == 139 || projectile.type == 142 || projectile.type == 777 || projectile.type == 781 || projectile.type == 785 || projectile.type == 788 || projectile.type == 791 || projectile.type == 794 || projectile.type == 797 || projectile.type == 800);
-            bool isRocketLauncherProj = (projectile.type == 134 || projectile.type == 137 || projectile.type == 140 || projectile.type == 143 || projectile.type == 776 || projectile.type == 780 || projectile.type == 784 || projectile.type == 787 || projectile.type == 790 || projectile.type == 793 || projectile.type == 796 || projectile.type == 799);
-            bool isProximityMineProj = (projectile.type == 135 || projectile.type == 138 || projectile.type == 141 || projectile.type == 144 || projectile.type == 778 || projectile.type == 782 || projectile.type == 786 || projectile.type == 789 || projectile.type == 792 || projectile.type == 795 || projectile.type == 798 || projectile.type == 801);
-
-            if (isGrenadeLauncherProj || isRocketLauncherProj || isProximityMineProj || projectile.type == ProjectileID.ClusterFragmentsI || projectile.type == ProjectileID.ClusterFragmentsII)
-            {
-                ProjectileID.Sets.RocketsSkipDamageForPlayers[projectile.type] = true;
-            }
-
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
                 bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
@@ -2516,29 +2416,6 @@ namespace CalamityMod.Projectiles
                     }
 
                     projectile.rotation += projectile.velocity.X * 0.1f;
-
-                    return false;
-                }
-
-                else if (projectile.type == ProjectileID.FrostBeam && projectile.ai[0] == 1f)
-                {
-                    projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
-
-                    Lighting.AddLight(projectile.Center, 0f, (255 - projectile.alpha) * 0.15f / 255f, (255 - projectile.alpha) * 0.6f / 255f);
-
-                    if (projectile.alpha > 0)
-                        projectile.alpha -= 125;
-                    if (projectile.alpha < 0)
-                        projectile.alpha = 0;
-
-                    if (projectile.localAI[1] == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item33, projectile.Center);
-                        projectile.localAI[1] = 1f;
-                    }
-
-                    if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
-                        projectile.velocity *= 1.0025f;
 
                     return false;
                 }
@@ -3426,10 +3303,6 @@ namespace CalamityMod.Projectiles
                     // This has many knock-on effects going forward with many many ranged weapons, and will be a pain to test and correct for.
                     // I don't care. This effect had to be removed.
                     //
-                    //if (modPlayer.deadshotBrooch && projectile.CountsAsClass<RangedDamageClass>() && player.heldProj != projectile.whoAmI)
-
-                    if (modPlayer.camper && !player.StandingStill())
-                        projectile.damage = (int)(projectile.damage * 0.1);
 
                     if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                         projectile.damage = (int)(projectile.damage * 0.1);
@@ -3542,14 +3415,39 @@ namespace CalamityMod.Projectiles
                 // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
                 if (projectile.ai[0] == 1f)
                 {
-                    projectile.ai[2]++;
-                    if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
-                        projectile.ai[1]--;
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
+                            projectile.ai[1]--;
+                    }
+                    else
+                        projectile.velocity *= 1.33f;
                 }
-                if (projectile.ai[0] == 1f || projectile.ai[0] == 2f || projectile.ai[0] == 4f)
-                    projectile.extraUpdates = 1;
-                else
-                    projectile.extraUpdates = 0;
+            }
+            // Similar hacky solution for The Meatball
+            if (projectile.type == ProjectileID.TheMeatball)
+            {
+                if (projectile.ai[0] == 1f)
+                {
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 7f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 7 frames to return
+                            projectile.ai[1]--;
+                    }
+                }
+            }
+
+            // Starfury stars never collide with tiles
+            if (projectile.type == ProjectileID.Starfury)
+                projectile.tileCollide = false;
+
+            // True Night's Edge projectiles instantly start with max velocity
+            if (projectile.type == ProjectileID.TrueNightsEdge)
+            {
+                if (projectile.localAI[1] < 32f)
+                    projectile.localAI[1] = 32f;
             }
 
             // Random velocities for Bouncy Boulders in GFB
@@ -3558,6 +3456,17 @@ namespace CalamityMod.Projectiles
                 // 5% chance every frame to get a random velocity multiplier (this is actually rolled twice per frame, due to the extra update in GFB)
                 if (Main.rand.Next(100) >= 95)
                     projectile.velocity *= Main.rand.NextFloat(0.9f, 1.25f);
+            }
+
+            // Prevents them from being affected by gravity
+            if (projectile.type == ProjectileID.QueenBeeStinger)
+                projectile.ai[0]--;
+
+            // Acceleration for certain lasers
+            if ((projectile.type == ProjectileID.EyeLaser || projectile.type == ProjectileID.DeathLaser || projectile.type == ProjectileID.FrostBeam) && projectile.ai[0] == 1f)
+            {
+                if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
+                    projectile.velocity *= 1.0025f;
             }
 
             // Accelerate for 1.5 seconds to full velocity
@@ -3915,7 +3824,7 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.X += Main.rand.Next(-50, 51) * 0.05f;
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
-                    if (Main.rand.NextBool(40) && Main.netMode != NetmodeID.Server)
+                    if (Main.rand.NextBool(40) && !Main.dedServ)
                     {
                         int Type = Main.rand.Next(276, 283);
                         Gore confetti = Gore.NewGoreDirect(projectile.GetSource_FromAI(), projectile.position, velocity, Type, 1f);
@@ -4098,6 +4007,10 @@ namespace CalamityMod.Projectiles
                 if (flatDRTimer <= 0)
                     flatDR = 0;
             }
+            if (projectile.FinalExtraUpdate() && TransformerTimer > 0)
+            {
+                TransformerTimer--;
+            }
 
             // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
             // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
@@ -4213,6 +4126,15 @@ namespace CalamityMod.Projectiles
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
+            // Adamantite Throwing Axe's lightning has damage falloff.
+            if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.8f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Stardust Wings buff the Stardust Guardian's damage.
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
@@ -4259,7 +4181,7 @@ namespace CalamityMod.Projectiles
             // Create sparks on hit to hammer in the defense shredding.
             if (deepcoreBullet)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 cen = Vector2.Lerp(projectile.Center, target.Center, 0.65f);
                     int numSparks = Main.rand.Next(2, 5);
@@ -4293,6 +4215,26 @@ namespace CalamityMod.Projectiles
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
         {
             modifiers.FinalDamage.Flat -= flatDR;
+        }
+        #endregion
+
+        #region On Hit NPC
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Implementation of shared static iframes.
+            // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
+            if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
+                return;
+
+            // Get the set of shared static iframe projectile types.
+            // If it's empty, then do nothing.
+            IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
+            if (sharedWithProjectiles.Count <= 0)
+                return;
+
+            // Apply the appropriate shared static iframes to all projectile types with which it is shared.
+            foreach (int projType in sharedWithProjectiles)
+                Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
         }
         #endregion
 
@@ -4378,7 +4320,7 @@ namespace CalamityMod.Projectiles
         #region Drawing
         public override Color? GetAlpha(Projectile projectile, Color lightColor)
         {
-            if (Main.player[Main.myPlayer].Calamity().trippy)
+            if (Main.LocalPlayer.Calamity().trippy)
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
@@ -4388,6 +4330,14 @@ namespace CalamityMod.Projectiles
                     Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
                     return mainColor;
                 }
+            }
+
+            if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
+            {
+                float homingTime = ((Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f);
+                if (projectile.ai[0] == -3f)
+                    homingTime += 60f;
+                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : lightColor;
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)
@@ -4458,6 +4408,10 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
+            // This is used so that projectiles with specific PreDraws can still have Odd Mushroom clone drawing.
+            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
+            bool shouldDrawBool = true;
+
             #region Vanilla Summons Drawing Changes
 
             //
@@ -4465,8 +4419,10 @@ namespace CalamityMod.Projectiles
             //
 
             if (projectile.type == ProjectileID.Raven)
-                return RavenMinionAI.DoRavenMinionDrawing(projectile, ref lightColor);
-
+            {
+                RavenMinionAI.DoRavenMinionDrawing(projectile, ref lightColor);
+                shouldDrawBool = false;
+            }
             #endregion
 
             if (projectile.type == ProjectileID.DeerclopsIceSpike && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
@@ -4500,38 +4456,39 @@ namespace CalamityMod.Projectiles
 
                 Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), value26, alpha5, projectile.rotation, origin12, vector39, spriteEffects);
 
-                return false;
+                shouldDrawBool = false;
             }
 
-            if (projectile.type == ProjectileID.Skull)
+            if (projectile.type == ProjectileID.Skull && projectile.ai[0] == -2f)
             {
-                if (projectile.ai[0] != -2f)
-                    return true;
-
                 Main.instance.LoadProjectile(ProjectileID.BoneGloveProj);
                 Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
+
                 Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                if (Main.LocalPlayer.Calamity().trippy)
+                    OddMushroomProjectileDrawing(projectile, crossbone);
                 return false;
             }
 
             if (projectile.type == ProjectileID.DemonSickle)
             {
-                if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
-                    return true;
+                if (!(Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide))
+                {
+                    Texture2D texture = ExtraTextureRefs.WallOfFleshDemonSickleTexture.Value;
+                    int frameHeight = texture.Height / Main.projFrames[projectile.type];
+                    int frameY = frameHeight * projectile.frame;
+                    Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+                    Vector2 origin = rectangle.Size() / 2f;
 
-                Texture2D texture = ExtraTextureRefs.WallOfFleshDemonSickleTexture.Value;
-                int frameHeight = texture.Height / Main.projFrames[projectile.type];
-                int frameY = frameHeight * projectile.frame;
-                Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
-                Vector2 origin = rectangle.Size() / 2f;
+                    SpriteEffects spriteEffects = SpriteEffects.None;
+                    if (projectile.spriteDirection == -1)
+                        spriteEffects = SpriteEffects.FlipHorizontally;
 
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (projectile.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
-                Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-
-                return false;
+                    Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
+                    if (Main.LocalPlayer.Calamity().trippy)
+                        OddMushroomProjectileDrawing(projectile, texture);
+                    return false;
+                }
             }
 
             // Manual drawing to adjust for scale change
@@ -4543,140 +4500,18 @@ namespace CalamityMod.Projectiles
                 SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                 Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                return false;
+                shouldDrawBool = false;
             }
 
             // Chlorophyte Crystal AI rework.
             if (projectile.type == ProjectileID.CrystalLeaf)
-                return ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
-
-            if (Main.player[Main.myPlayer].Calamity().trippy)
             {
-                Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
-
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (projectile.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
-                Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
-                Color alphaColor = projectile.GetAlpha(rainbow);
-                float RGBMult = 0.99f;
-                alphaColor.R = (byte)(alphaColor.R * RGBMult);
-                alphaColor.G = (byte)(alphaColor.G * RGBMult);
-                alphaColor.B = (byte)(alphaColor.B * RGBMult);
-                alphaColor.A = (byte)(alphaColor.A * RGBMult);
-                int totalAfterimages = Main.player[Main.myPlayer].Calamity().trippyLevel == 3 ? 16 : (Main.player[Main.myPlayer].Calamity().trippyLevel == 2 ? 12 : 4);
-                for (int i = 0; i < totalAfterimages; i++)
-                {
-                    Vector2 position = projectile.position;
-                    float distanceFromTargetX = Math.Abs(projectile.Center.X - Main.player[Main.myPlayer].Center.X);
-                    float distanceFromTargetY = Math.Abs(projectile.Center.Y - Main.player[Main.myPlayer].Center.Y);
-
-                    float smallDistanceMult = 0.48f;
-                    float largeDistanceMult = 1.33f;
-                    bool whatTheFuck = Main.player[Main.myPlayer].Calamity().trippyLevel == 3;
-
-                    switch (i)
-                    {
-                        case 0:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                            break;
-
-                        case 1:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
-                            break;
-
-                        case 2:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                            break;
-
-                        case 3:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
-                            break;
-
-                        case 4: // 1 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                            break;
-
-                        case 5: // 4 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                            break;
-
-                        case 6: // 7 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                            break;
-
-                        case 7: // 10 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                            break;
-
-                        case 8: // 11 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            break;
-
-                        case 9: // 2 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                            break;
-
-                        case 10: // 5 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            break;
-
-                        case 11: // 8 o'clock position
-                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                            break;
-
-                        case 12:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
-                            break;
-
-                        case 13:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
-                            break;
-
-                        case 14:
-                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
-                            break;
-
-                        case 15:
-                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
-                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    position.X -= projectile.width / 2;
-                    position.Y -= projectile.height / 2;
-
-                    int frameHeight = texture.Height / Main.projFrames[projectile.type];
-                    int currentframeHeight = frameHeight * projectile.frame;
-                    Rectangle frame = new Rectangle(0, currentframeHeight, texture.Width, frameHeight);
-
-                    Vector2 halfSize = frame.Size() / 2;
-
-                    Main.spriteBatch.Draw(texture,
-                        new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
-                        position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
-                        frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-                }
+                ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
+                shouldDrawBool = false;
             }
+
+            if (Main.LocalPlayer.Calamity().trippy)
+                OddMushroomProjectileDrawing(projectile);
 
             if (Main.zenithWorld)
             {
@@ -4689,15 +4524,143 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            return true;
+            return shouldDrawBool;
         }
+
+        private static void OddMushroomProjectileDrawing(Projectile projectile, Texture2D? tex = null)
+        {
+            Texture2D texture = tex ?? TextureAssets.Projectile[projectile.type].Value;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+            Color alphaColor = projectile.GetAlpha(rainbow);
+            float RGBMult = 0.99f;
+            alphaColor.R = (byte)(alphaColor.R * RGBMult);
+            alphaColor.G = (byte)(alphaColor.G * RGBMult);
+            alphaColor.B = (byte)(alphaColor.B * RGBMult);
+            alphaColor.A = (byte)(alphaColor.A * RGBMult);
+            int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
+            for (int i = 0; i < totalAfterimages; i++)
+            {
+                Vector2 position = projectile.position;
+                float distanceFromTargetX = Math.Abs(projectile.Center.X - Main.LocalPlayer.Center.X);
+                float distanceFromTargetY = Math.Abs(projectile.Center.Y - Main.LocalPlayer.Center.Y);
+
+                float smallDistanceMult = 0.48f;
+                float largeDistanceMult = 1.33f;
+                bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
+
+                switch (i)
+                {
+                    case 0:
+                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                        break;
+
+                    case 1:
+                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                        break;
+
+                    case 2:
+                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                        break;
+
+                    case 3:
+                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                        break;
+
+                    case 4: // 1 o'clock position
+                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                        break;
+
+                    case 5: // 4 o'clock position
+                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                        break;
+
+                    case 6: // 7 o'clock position
+                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                        break;
+
+                    case 7: // 10 o'clock position
+                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                        break;
+
+                    case 8: // 11 o'clock position
+                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                        break;
+
+                    case 9: // 2 o'clock position
+                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                        break;
+
+                    case 10: // 5 o'clock position
+                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                        break;
+
+                    case 11: // 8 o'clock position
+                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                        break;
+
+                    case 12:
+                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
+                        break;
+
+                    case 13:
+                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
+                        break;
+
+                    case 14:
+                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
+                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
+                        break;
+
+                    case 15:
+                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
+                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                position.X -= projectile.width / 2;
+                position.Y -= projectile.height / 2;
+
+                int frameHeight = texture.Height / Main.projFrames[projectile.type];
+                int currentframeHeight = frameHeight * projectile.frame;
+                Rectangle frame = new Rectangle(0, currentframeHeight, texture.Width, frameHeight);
+
+                Vector2 halfSize = frame.Size() / 2;
+
+                Main.spriteBatch.Draw(texture,
+                    new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
+                    position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
+                    frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
+                }
+            }
         #endregion
 
         #region Pre Kill
         public override bool PreKill(Projectile projectile, int timeLeft)
         {
             bool masterRevSkeletronPrimeBomb = projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && (Main.masterMode || BossRushEvent.BossRushActive);
-            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death) && projectile.wet;
+            bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death);
             bool revGolemInferno = projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f;
 
             if (revQueenBeeBeeHive)
@@ -4811,11 +4774,12 @@ namespace CalamityMod.Projectiles
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int beeAmt = Main.rand.Next(2, 6);
-                        int availableAmountOfNPCsToSpawnUpToSlot = NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
-                        for (int i = 0; i < availableAmountOfNPCsToSpawnUpToSlot; i++)
+                        int beeAmt = Main.rand.Next(2, 5 + 1);
+                        int totalBeesAlive = NPC.CountNPCS(NPCID.Bee) + NPC.CountNPCS(NPCID.BeeSmall);
+                        int finalBeeAmtToSpawn = NPC.AnyNPCs(NPCID.QueenBee) ? Math.Min(beeAmt, (Main.masterMode ? 9 : 15) - totalBeesAlive) : NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
+                        for (int i = 0; i < finalBeeAmtToSpawn; i++)
                         {
-                            int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
+                            int beeType = Main.rand.NextBool() ? NPCID.Bee : NPCID.BeeSmall;
                             if (Main.zenithWorld)
                             {
                                 beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();
@@ -4939,10 +4903,10 @@ namespace CalamityMod.Projectiles
 
         public static void SpawnLifeStealProjectile(Projectile projectile, Player player, float healAmount, int healProjectileType, float distanceRequired, float cooldownMultiplier = 1f)
         {
-            if (Main.player[Main.myPlayer].moonLeech)
+            if (Main.LocalPlayer.moonLeech)
                 return;
 
-            Main.player[Main.myPlayer].lifeSteal -= healAmount * cooldownMultiplier;
+            Main.LocalPlayer.lifeSteal -= healAmount * cooldownMultiplier;
 
             float lowestHealthCheck = 0f;
             int healTarget = projectile.owner;

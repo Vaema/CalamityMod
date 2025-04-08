@@ -53,7 +53,7 @@ namespace CalamityMod.Packets
                 string id = CooldownRegistry.registry[instance.netID].ID;
                 player.cooldowns[id] = instance;
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 // Server should NOT handle cooldown itself!
                 // Server doesn't have information for cooldown netIDs!

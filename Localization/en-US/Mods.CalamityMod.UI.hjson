@@ -1,6 +1,4 @@
-// Vanilla UI edits
 SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
-WorldMaster: Game over man, game over! (Brutally hard boss changes, for the truly brave)
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -36,7 +34,7 @@ Revengeance: Revengeance
 RevMaster: Rev+Master
 RevLegend: Rev+Legend
 RevengeanceEnabled: Revengeance Mode is enabled
-RevengeanceShortInfo: "[c/F54254:The intended Calamity experience!]"
+RevengeanceShortInfo: "[c/F54254:The intended Calamity experience! Can only be enabled in Expert Mode!]"
 RevengeanceExpandedInfo:
 	'''
 	[c/B55362:Enables the] [c/85FFE9:Adrenaline] [c/B55362:mechanic. You gain Adrenaline while fighting bosses. Getting hit drops Adrenaline back to 0]
@@ -53,7 +51,7 @@ Death: Death
 DeathMaster: Death+Master
 DeathLegend: Death+Legend
 DeathEnabled: Death Mode is enabled
-DeathShortInfo: "[c/C82DF7:A tougher challenge for the more experienced, or for those that want a step up from Revengeance Mode]"
+DeathShortInfo: "[c/C82DF7:A far more difficult challenge than Revengeance Mode! Can only be enabled in Master Mode!]"
 DeathExpandedInfo:
 	'''
 	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs and increased damage]
@@ -98,7 +96,10 @@ Cooldowns: {
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
 	HellbornShots: Hellborn Shots
+	HolyProtection: Holy Protection
 	InkBomb: Ink Bomb Cooldown
+	KillModeActive: Kill Mode Active
+	KillModeCooldown: Kill Mode Cooldown
 	LifeSteal: Life Steal Cooldown
 	LionHeartShield: Energy Shell Cooldown
 	MasterChefShieldDurability: MJOLNIR Shield Level

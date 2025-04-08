@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
         public static readonly SoundStyle SmashSoundGFB = new("CalamityMod/Sounds/Item/TF2PanHit");
 
         public static float ExplosionDamageKBMult = 2f;
-        public static float SuperHammerDamageMult = 4f;
+        public static float SuperHammerDamageMult = 3f;
         public static float SmashHomingRange = 800f; // 50 tiles
         public static float WindUpTime = 216f; // 1.2 seconds
         public static float ConvergeTime = 18f; // 0.1 seconds

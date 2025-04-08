@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -111,16 +109,18 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.IsABestiaryIconDummy)
                 return true;
 
+            spriteBatch.ExitShaderRegion();
+
             for (int i = 0; i < ChainEndpoints.Count; i++)
             {
-                List<Vector2> points = new List<Vector2>()
-                {
-                    NPC.Center,
-                    ChainEndpoints[i] + NPC.DirectionTo(ChainEndpoints[i]) * 25f
-                };
+                float dist = NPC.Distance(ChainEndpoints[i]);
+                List<Vector2> points = new List<Vector2>();
+                for (int j = 0; j < 4; j++)
+                    points.Add(NPC.Center + NPC.DirectionTo(ChainEndpoints[i]) * dist * 0.25f * j);
+                points.Add(ChainEndpoints[i] + NPC.DirectionTo(ChainEndpoints[i]) * 18f);
+
                 PrimitiveRenderer.RenderTrail(points, new(PrimitiveWidthFunction, PrimitiveColorFunction), 40);
             }
-
             return true;
         }
 
@@ -139,7 +139,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 2; i++)
                     {
@@ -155,12 +155,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void DrawBehind(int index)
         {
             Main.instance.DrawCacheNPCsBehindNonSolidTiles.Add(index);
-        }
-
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
-            if (projectile.type == ModContent.ProjectileType<CelestusMiniScythe>())
-                modifiers.SourceDamage *= 0.66f;
         }
 
         public override bool CheckActive() => false;

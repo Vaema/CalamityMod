@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Placeables.FurnitureEutrophic
             CreateRecipe().
                 AddIngredient<SmoothNavystoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

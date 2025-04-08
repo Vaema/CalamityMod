@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Magic
         public int time = 0;
         public float dustRotation = 0;
         public bool launched = false;
+        public NPC targeted;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
@@ -64,10 +65,10 @@ namespace CalamityMod.Projectiles.Magic
                     launched = true;
                 }
 
-                NPC target = Projectile.Center.ClosestNPCAt(700);
-                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.15f, 6, 0.98f, accelerate: true);
+                targeted = Projectile.Center.ClosestNPCAt(950);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
-                if (time < 550 && target == null)
+                if (time < 550 && targeted == null)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (Projectile.velocity.Length() < 6)
@@ -102,14 +103,17 @@ namespace CalamityMod.Projectiles.Magic
             modifiers.SourceDamage *= (launched ? 1f : 0.4f);
 
             Player Owner = Main.player[Projectile.owner];
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
-        }
 
+            Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
+            target.MoveNPC(launchVel, 10 * (launched ? 0.5f : 1), true);
+        }
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (targeted != null)
+                return (target == targeted ? null : false);
+            else
+                return null;
+        }
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 3; i++)

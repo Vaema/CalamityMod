@@ -27,13 +27,14 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
-            TimeBeforeHoming = Main.rand.Next(30, 60);
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
             Projectile.width = 13;
-            Projectile.scale = Main.rand.NextFloat(0.7f, 1.2f);
             Projectile.height = 13;
+            Projectile.friendly = true;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.ignoreWater = true;
+            Projectile.scale = Main.rand.NextFloat(0.7f, 1.2f);
+            Projectile.timeLeft = 240;
+            TimeBeforeHoming = Main.rand.Next(30, 60);
         }
         public override bool? CanDamage()
         {
@@ -52,9 +53,17 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.ai[2] = MathHelper.Lerp(Projectile.ai[2], 10, 0.05f);
                 CalamityUtils.HomeInOnNPC(Projectile, false, 400, Projectile.ai[2], 0.2f);
-                Projectile.velocity.Y += 0.4f;
+                Projectile.velocity.Y += 0.25f;
             }
 
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (Projectile.velocity.X != oldVelocity.X)
+                Projectile.velocity.X = -Projectile.velocity.X;
+            if (Projectile.velocity.Y != oldVelocity.Y)
+                Projectile.velocity.Y = -Projectile.velocity.Y;
+            return false;
         }
         public override bool PreDraw(ref Color lightColor)
         {

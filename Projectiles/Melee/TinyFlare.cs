@@ -26,9 +26,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
             {
-                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, Main.rand.NextFloat(1.5f, 2.5f));
+                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, Main.rand.NextFloat(1f, 1.5f));
                 Main.dust[fiery].noGravity = true;
                 Main.dust[fiery].velocity *= 0f;
             }
@@ -37,9 +37,6 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 10f, 20f);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.OnFire3, 90);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 90);
     }
 }

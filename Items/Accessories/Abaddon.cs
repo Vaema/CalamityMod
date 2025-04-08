@@ -8,6 +8,8 @@ namespace CalamityMod.Items.Accessories
     public class Abaddon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int AbaddonExploDamage = 90;
         public override void SetDefaults()
         {
             Item.width = 26;

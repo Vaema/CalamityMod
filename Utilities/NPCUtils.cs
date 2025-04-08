@@ -177,7 +177,7 @@ namespace CalamityMod
                     return true;
                 }
             }
-            return FindFirstProjectile(ProjectileType<DeusRitualDrama>()) != -1;
+            return false;
         }
         #endregion
 
@@ -316,6 +316,18 @@ namespace CalamityMod
                 return;
 
             SyncVanillaNPCLocalAIArrayPacket.Send(npc);
+        }
+
+        /// <summary>
+        /// Helper method which both sets <see cref="NPC.netUpdate"/> and resets <see cref="NPC.netSpam"/> to 0 to prevent the net update from being blocked.
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="ignoreCurrentNetSpam">If set to false, the method will only reset <see cref="NPC.netSpam"/> if it is greater than or equal to 10.</param>
+        public static void ForceNetUpdate(this NPC npc, bool ignoreCurrentNetSpam = true)
+        {
+            npc.netUpdate = true;
+            if (npc.netSpam >= 10 || ignoreCurrentNetSpam)
+                npc.netSpam = 0;
         }
 
         /// <summary>
@@ -740,7 +752,21 @@ namespace CalamityMod
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// Moves an NPC, usually used as custom knockback
+        /// </summary>
+        /// <param name="target">The NPC being moved.</param>
+        /// <param name="ignoreKBImmune">Whether or not NPC's that normally have knockback immunity can be moved around.</param>
+        public static void MoveNPC(this NPC target, Vector2 direction, float strength, bool ignoreKBImmune = false)
+        {
+            if (target.CanBeMoved(ignoreKBImmune))
+            {
+                Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
+                float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
+                target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
+            }
+            target.SyncMotionToServer();
+        }
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))
@@ -755,6 +781,19 @@ namespace CalamityMod
             {
                 target.AddBuff(buff, SecondsToFrames(timeBase), false);
             }
+        }
+
+        /// <summary>
+        /// Spawns a <see cref="CombatText"/> indicating the amount of damage manually dealt to the NPC, such as from self-damage. Automatically syncs it in multiplayer.
+        /// </summary>
+        public static void DamageEffect(this NPC npc, int damageAmount)
+        {
+            Rectangle r = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
+            Color textColor = new Color(255, 30, 100);
+            if (Main.dedServ)
+                NetMessage.SendData(MessageID.CombatTextInt, -1, -1, null, (int)textColor.PackedValue, r.Center.X, r.Center.Y, damageAmount);
+            else
+                CombatText.NewText(r, textColor, damageAmount);
         }
 
         public static void ProduceGoldCritterDust(this NPC npc)
@@ -866,6 +905,8 @@ namespace CalamityMod
             return false;
         }
 
+        public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
+
         #region Boss Spawning
         /// <summary>
         /// Shortcut for the generic boss summon message.
@@ -879,7 +920,7 @@ namespace CalamityMod
             {
                 Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), new Color(175, 75, 255));
             }
-            else if (Main.netMode == NetmodeID.Server)
+            else if (Main.dedServ)
             {
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", [Main.npc[npcIndex].GetTypeNetName()]), new Color(175, 75, 255));
             }
@@ -989,7 +1030,7 @@ namespace CalamityMod
                 npc.timeLeft *= 20;
                 
                 // Server Exclusive: Sync NPC Data
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
                 }
@@ -1022,7 +1063,7 @@ namespace CalamityMod
         /// <param name="playerIndex">The index of the player who will spawn Old Duke.</param>
         internal static void SpawnOldDuke(int playerIndex)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 return;
 
             Player player = Main.player[playerIndex];

@@ -37,7 +37,5 @@ namespace CalamityMod.Items.Weapons.Rogue
         public virtual void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
         }
-
-        public override bool ConsumeItem(Player player) => Main.rand.NextFloat() < player.Calamity().rogueAmmoCost;
     }
 }

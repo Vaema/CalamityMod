@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 30;
             Item.height = 38;
             Item.useAnimation = Item.useTime = 8;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<WulfrumDiggingTurtleProjectile>();
@@ -60,8 +60,7 @@ namespace CalamityMod.Items.Tools
 
                     p.ai[1] = 1f;
                     p.timeLeft = 1;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
 
                     explodedAny = true;
                 }

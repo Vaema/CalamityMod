@@ -192,6 +192,17 @@ CinnamonRoll: {
 		'''
 }
 
+CirrusVodka: {
+	DisplayName: Cirrus' Vodka
+	Tooltip:
+		'''
+		{0}% increased damage, but lowers defense by {1}%
+		Increases immune time after being struck
+		{$Common.AlcoholWarning}
+		This magical liquor is highly sought by those with a refined palate
+		'''
+}
+
 Everclear: {
 	DisplayName: Everclear
 	Tooltip:
@@ -212,17 +223,6 @@ EvergreenGin: {
 		Reduces life regen by {1} HP/s
 		{$Common.AlcoholWarning}
 		[c/B00BA5:'It tastes like a Christmas tree, if you can imagine that.']
-		'''
-}
-
-FabsolsVodka: {
-	DisplayName: Fabsol's Vodka
-	Tooltip:
-		'''
-		{0}% increased damage, but lowers defense by {1}%
-		Increases immune time after being struck
-		{$Common.AlcoholWarning}
-		This magical liquor is highly sought by those with a refined palate
 		'''
 }
 
@@ -399,5 +399,53 @@ WhiteWine: {
 		Reduces defense by {1}% and life regen by {2} HP/s
 		{$Common.AlcoholWarning}
 		[c/B00BA5:'I drank a full barrel of this stuff once in one night, I couldn't remember who I was the next day.']
+		'''
+}
+
+// Food
+Barberry: {
+	DisplayName: Barberry
+	Tooltip: "{$CommonItemTooltip.MediumStats}"
+}
+
+Cometfruit: {
+	DisplayName: Cometfruit
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MediumStats}
+		'Tastes stellar!'
+		'''
+}
+
+Jackfruit: {
+	DisplayName: Jackfruit
+	Tooltip: "{$CommonItemTooltip.MinorStats}"
+}
+
+Lotus: {
+	DisplayName: Lotus
+	Tooltip: "{$CommonItemTooltip.MediumStats}"
+}
+
+Mangosteen: {
+	DisplayName: Mangosteen
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MediumStats}
+		'Queen of fruits'
+		'''
+}
+
+Salak: {
+	DisplayName: Salak
+	Tooltip: "{$CommonItemTooltip.MinorStats}"
+}
+
+ShroomBowl: {
+	DisplayName: Shroom Bowl
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MediumStats}
+		'He has been grounded'
 		'''
 }

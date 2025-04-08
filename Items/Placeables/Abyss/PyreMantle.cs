@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Placeables.Abyss
             CreateRecipe().
                 AddIngredient<PyreMantleWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

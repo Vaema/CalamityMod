@@ -42,6 +42,16 @@ namespace CalamityMod.Projectiles.Melee
                 Dust dust = Dust.NewDustPerfect(dustPos, 176, (angle - MathHelper.PiOver2 * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 8f + Projectile.velocity, Scale: Main.rand.NextFloat(1.6f, 3f));
                 dust.noGravity = true;
             }
+
+            Vector2 trailOffset = Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(40f, 48f);
+            Dust trail = Dust.NewDustPerfect(Projectile.Center + trailOffset, 176, Main.rand.NextVector2Circular(0.2f, 0.2f));
+            trail.noGravity = true;
+            trail.scale = Main.rand.NextFloat(0.8f, 3f);
+            trail.alpha = Main.rand.Next(120, 180 + 1);
+            trail = Dust.NewDustPerfect(Projectile.Center - trailOffset, 176, Main.rand.NextVector2Circular(0.2f, 0.2f));
+            trail.noGravity = true;
+            trail.scale = Main.rand.NextFloat(0.8f, 3f);
+            trail.alpha = Main.rand.Next(120, 180 + 1);
         }
 
         public override bool PreDraw(ref Color lightColor)

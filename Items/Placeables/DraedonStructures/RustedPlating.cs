@@ -36,6 +36,7 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
             CreateRecipe().
                 AddIngredient<RustedPlatingWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
 
             CreateRecipe().

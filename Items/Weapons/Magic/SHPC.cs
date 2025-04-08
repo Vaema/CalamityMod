@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
 
-        public const int ShotsPerSoul = 40;
+        public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
         public int storedSoulType = ItemID.SoulofLight; // Determines bar color and soul effects for projectile
         public int recoilProgress = 0;
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         #region Weapon-Specific Functions
-        public int FindSoulForAmmo(Player player)
+        public static int FindSoulForAmmo(Player player)
         {
             int soul = -1;
             bool foundItem = false;
@@ -307,7 +307,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 damage *= damageMult;
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
 
         public override void AddRecipes()
         {

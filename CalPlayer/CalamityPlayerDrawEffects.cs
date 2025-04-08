@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
@@ -231,6 +232,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
                 Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
 
+            if (calamityPlayer.demonicFlames && drawInfo.shadow == 0f)
+                DemonicFlames.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 
@@ -252,13 +256,22 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 
+            if (calamityPlayer.heavybleeding && drawInfo.shadow == 0f)
+                HeavyBleeding.DrawEffects(drawInfo);
+
             // Holy Flames, Holy Inferno and Banishing Fire share the same visual effects
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
 
+            if (calamityPlayer.hPressure && drawInfo.shadow == 0f)
+                HadopelagicPressure.DrawEffects(drawInfo);
+
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
             else if (calamityPlayer.icarusFolly && drawInfo.shadow == 0f)
                 IcarusFolly.DrawEffects(drawInfo);
+
+            if (calamityPlayer.laceration && drawInfo.shadow == 0f)
+                Laceration.DrawEffects(drawInfo);
 
             if (calamityPlayer.miracleBlight && drawInfo.shadow == 0f)
                 MiracleBlight.DrawEffects(drawInfo);
@@ -269,9 +282,6 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
-
-            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
-                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
@@ -300,6 +310,9 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
                 VermillionFlux.DrawEffects(drawInfo);
+
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);
@@ -365,7 +378,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
-            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && Main.netMode != NetmodeID.Server && drawInfo.shadow == 0f)
+            if ((calamityPlayer.ladHearts > 0) && !Player.loveStruck && !Main.dedServ && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -429,7 +442,7 @@ namespace CalamityMod.CalPlayer
         }
         #endregion Profaned Moonlight Dye Colors
 
-        #region Tanks/Backpacks
+        #region Vanity Accessories and Tanks/Backpacks
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
         {
             if (drawInfo.shadow != 0f)
@@ -437,6 +450,52 @@ namespace CalamityMod.CalPlayer
 
             Player drawPlayer = drawInfo.drawPlayer;
             Item item = drawPlayer.ActiveItem();
+
+            // Vanity accessory effects, allows them to draw while the game is paused
+            if (drawPlayer.Calamity().ghostBracelet)
+            {
+                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
+                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
+                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
+            }
+            else if ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide)
+            {
+                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
+                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
+                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
+                drawPlayer.face = -1;
+            }
+            else if (drawPlayer.Calamity().punchCard)
+            {
+                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
+                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
+                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
+            }
+            else if ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide)
+            {
+                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
+                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
+                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
+                drawPlayer.face = -1;
+            }
+            else if ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide)
+            {
+                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
+                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
+                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
+                drawPlayer.face = -1;
+            }
+            // Need to set all of these so that certain vanity pieces like Capricorn Tail don't screw it up
+            if (drawPlayer.Calamity().ghostBracelet || ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide) ||
+                drawPlayer.Calamity().punchCard || ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide) ||
+                ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide))
+            {
+                drawInfo.legsGlowMask = -1;
+                drawInfo.legsOffset = Vector2.Zero;
+                drawInfo.bodyGlowMask = -1;
+                drawInfo.headGlowMask = -1;
+                drawInfo.helmetOffset = Vector2.Zero;
+            }
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&
@@ -462,7 +521,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.ItemType<Shadethrower>(),
                     ModContent.ItemType<BloodBoiler>(),
                     ModContent.ItemType<PristineFury>(),
-                    ModContent.ItemType<AuroraBlazer>()
+                    ModContent.ItemType<AuroraBlazer>(),
+                    ModContent.ItemType<PurgeGuzzler>()
                 };
                 List<Texture2D> tankTextures = new List<Texture2D>()
                 {
@@ -481,7 +541,8 @@ namespace CalamityMod.CalPlayer
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_Shadethrower").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_BloodBoiler").Value,
                     ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PristineFury").Value,
-                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value,
+                    ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PurgeGuzzler").Value
                 };
                 if (tankItems.Contains(item.type) || drawPlayer.Calamity().plaguebringerCarapace)
                 {

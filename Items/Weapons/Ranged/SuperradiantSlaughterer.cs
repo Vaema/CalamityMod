@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 46;
-            Item.damage = 88;
+            Item.damage = 127;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;

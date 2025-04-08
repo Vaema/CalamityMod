@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.netUpdate = true;
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                Projectile.Center = Owner.MountedCenter + Projectile.velocity * 12f;
+                Projectile.Center = Owner.MountedCenter + (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 12;
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                 startDamage = Projectile.damage;

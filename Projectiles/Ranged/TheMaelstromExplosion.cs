@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Projectile.scale * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
             // Emit sparks and dust.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int sparkLifetime = Main.rand.Next(22, 36);
                 float sparkScale = Main.rand.NextFloat(1f, 1.3f);
@@ -61,9 +61,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {

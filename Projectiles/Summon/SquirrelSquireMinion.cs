@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Summon
             set
             {
                 Projectile.ai[0] = (float)value;
-                NetUpdate();
+                Projectile.ForceNetUpdate();
             }
         }
 
@@ -140,18 +140,11 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.knockBack,
                     Projectile.owner);
                 SoundEngine.PlaySound(SoundID.Item1 with { Volume = 0.5f, Pitch = 0.8f, PitchVariance = 0.1f }, spawnPosition);
-                NetUpdate();
+                Projectile.ForceNetUpdate();
             }
 
             Projectile.spriteDirection = MathF.Sign(Target.Center.X - Projectile.Center.X);
         }
-
-        private void NetUpdate()
-        {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-        }
-
         #endregion
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;

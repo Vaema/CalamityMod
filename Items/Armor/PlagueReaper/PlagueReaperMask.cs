@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.defense = 9; //35
+            Item.defense = 11;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

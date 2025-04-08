@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.Calamity().canBreakPlayerDefense = false;
 
                 // Play exhausted sound
-                if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, npc.Center) < 2800f)
+                if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < 2800f)
                     SoundEngine.PlaySound(OldDuke.OldDuke.HuffSound with { Volume = OldDuke.OldDuke.HuffSound.Volume * 1.25f }, Main.LocalPlayer.Center);
 
                 if (Main.zenithWorld)

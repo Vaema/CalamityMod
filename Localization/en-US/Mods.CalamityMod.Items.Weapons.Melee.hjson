@@ -40,8 +40,8 @@ AirSpinner: {
 	DisplayName: Air Spinner
 	Tooltip:
 		'''
+		{$Common.YoyoStats}
 		Fires feathers when enemies are near
-		A very agile yoyo
 		'''
 }
 
@@ -64,8 +64,8 @@ Aorta: {
 	DisplayName: Aorta
 	Tooltip:
 		'''
+		{$Common.YoyoStats}
 		Fires homing blood when enemies are near
-		A very agile yoyo
 		'''
 }
 
@@ -88,14 +88,10 @@ ArkoftheCosmos: {
 		'''
 		<right> to snip out the scissor blades in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
-		You can parry projectiles to make them deal 160 less damage for a short period
-		Parrying anything will empower the next 15 swings of the sword
+		You can also parry projectiles to make them deal 160 less damage for a short period
+		Parrying will empower the next 15 swings of the sword
 		'''
-	BlastInfo:
-		'''
-		Pressing <right> while holding UP with empowered charges will provoke a Big Rip in spacetime and use all charges
-		If more than 5 charges were used, you can dash across the rip by holding UP
-		'''
+	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
 }
 
 ArkoftheElements: {
@@ -104,7 +100,6 @@ ArkoftheElements: {
 		'''
 		[COMBO]
 		[PARRY]
-		[BLAST]
 		A heavenly pair of blades infused with the essence of Terraria, powerful enough to cut through the fabric of reality
 		'''
 	ComboInfo:
@@ -119,7 +114,6 @@ ArkoftheElements: {
 		You can parry projectiles to make them deal 100 less damage for a short period
 		Parrying will empower the next 10 swings of the sword, letting you use both blades at once
 		'''
-	BlastInfo: Pressing <right> while holding UP with empowered charges will provoke a Big Rip in spacetime and use all charges
 }
 
 AstralBlade: {
@@ -155,15 +149,19 @@ Azathoth: {
 	DisplayName: Azathoth
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires cosmic orbs that blast nearby enemies with lasers
-		An exceptionally agile yoyo
 		'Destroy the universe in the blink of an eye'
 		'''
 }
 
 BalefulHarvester: {
 	DisplayName: Baleful Harvester
-	Tooltip: Summons flaming pumpkins and skulls that split into homing fire orbs on enemy hits
+	Tooltip:
+		'''
+		A flaming scythe which is rapidly swung around three times in succession
+		Enemy hits summon flaming skulls that split into homing fire orbs
+		'''
 }
 
 BallOFugu: {
@@ -192,7 +190,17 @@ Basher: {
 
 BladecrestOathsword: {
 	DisplayName: Bladecrest Oathsword
-	Tooltip: Fires bursts of demonic blades that exponentially decelerate and explode
+	Tooltip:
+		'''
+		Throw a sharp blade that impales and slows enemies
+		Up to three blades can impale an enemy at a time
+		Consecutive hits past the first three will launch out the previous impaled blades
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/df0049:A ritual blade used by Demons for sacrifices.]
+		[c/df0049:The more blood taints the edge, the sharper it becomes.]
+		'''
 }
 
 BlightedCleaver: {
@@ -261,6 +269,7 @@ BurningRevelation: {
 	DisplayName: Burning Revelation
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		An ever burning yoyo that constantly charges power
 		Direct hits greatly increase the charge and release profaned energy that scales with charge level
 		At maximum charge, the yoyo unleashes a volley of homing stars that gain damage the farther they travel
@@ -277,11 +286,6 @@ BurntSienna: {
 Carnage: {
 	DisplayName: Carnage
 	Tooltip: Enemies explode into homing blood on death
-}
-
-CatastropheClaymore: {
-	DisplayName: Catastrophe Claymore
-	Tooltip: Fires sparkles which inflict Frostbite, Hellfire, or Ichor
 }
 
 CelestialClaymore: {
@@ -367,24 +371,37 @@ DepthCrusher: {
 		'''
 }
 
-Devastation: {
-	DisplayName: Devastation
-	Tooltip: Fires galaxy blasts that explode
-}
-
 DevilsDevastation: {
 	DisplayName: Devil's Devastation
 	Tooltip:
 		'''
-		Fires a spread of demonic scythes
-		Pitchforks rise from the underworld to skewer your foes
-		Critical hits cause shadowflame explosions
+		Throw a demonic blade that impales, immolates, and slows enemies
+		Up to five blades can impale an enemy at a time, with further hits launching the previous impaled blades
+		Press <right> to enter a stance where you can use <left> to perform a colossal, devastating slash
+		While in the stance, you gain life and flight time regeneration and your dashes have a shorter cooldown
+		The devastating slash must recharge after being used
+		Striking an impaled enemy with the devastating slash launches all blades and readies another slash
+		The final enemy hit with a devastating slash has a death mark applied to them
+		When you exit the stance, the death mark explodes for massive damage
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/d13ca2:The perfect blade of the Underworld, wielding the power of Brimstone directly.]
+		[c/d13ca2:Humans understand this force as Havoc, the inevitable sundering of all order in fire.]
+		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]	
 		'''
 }
 
 DevilsSunrise: {
 	DisplayName: Devil's Sunrise
-	Tooltip: Balls? Smalls.
+	Tooltip:
+		'''
+		Unleashes a devilish flurry of swipes
+		Hellish energy charges in the blades over time, which is accelerated by striking foes
+		Press <right> while swinging the blades with full energy to throw the spinning blades to your cursor
+		The spinning blades lodge into and repeatedly slice the first foe they meet, stealing their life
+		'Balls? Smalls.'
+		'''
 }
 
 DraconicDestruction: {
@@ -441,7 +458,7 @@ EarthenPike: {
 
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
-	Tooltip: Throws a flurry of bouncing knives that can heal the user
+	Tooltip: Throws a flurry of homing knives that bounce off of tiles and heal the user
 }
 
 EntropicClaymore: {
@@ -481,7 +498,22 @@ EvilSmasher: {
 
 ExaltedOathblade: {
 	DisplayName: Exalted Oathblade
-	Tooltip: Fires a spread of demonic scythes and critical hits cause shadowflame explosions
+	Tooltip:
+		'''
+		Throw a twisted blade that impales, immolates, and slows enemies
+		Up to four blades can impale an enemy at a time, with further hits launching the previous impaled blades
+		Press <right> to enter a stance where you can use <left> to perform a devastating slash
+		While in the stance, you gain life and flight time regeneration and your dashes have a shorter cooldown
+		The devastating slash must recharge after being used
+		Striking an impaled enemy with the devastating slash launches all blades and readies another slash
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/b63cd1:A sword fashioned from the legend of the Last Demon Lord.]
+		[c/b63cd1:Crowned through his overwhelming might, his sword bathed in the blood of Demons and the fires of hell.]
+		[c/b63cd1:Even long after his passing, none have dared to take the seat.]
+		[c/b63cd1:Demonkind has not known unity since.]
+		'''
 }
 
 Excelsus: {
@@ -518,8 +550,8 @@ FaultLine: {
 	DisplayName: Fault Line
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Explodes on enemy hits
-		A very agile yoyo
 		'''
 }
 
@@ -540,7 +572,20 @@ Floodtide: {
 
 ForbiddenOathblade: {
 	DisplayName: Forbidden Oathblade
-	Tooltip: Fires a demonic scythe and critical hits cause shadowflame explosions
+	Tooltip:
+		'''
+		Throw a sharp blade that impales, burns, and slows enemies
+		Up to three blades can impale an enemy at a time, with further hits launching the previous impaled blades
+		Press <right> to enter a stance where you can use <left> to perform a powerful slash
+		The powerful slash must recharge after being used
+		Striking an impaled enemy with the powerful slash launches all blades and readies another slash
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/b63cd1:A blade forged in the likeness of that granted to the Demon Lord.]
+		[c/b63cd1:The title was coveted by all demonkind. Only one may exist at a time.]
+		[c/b63cd1:Any claimant who seeks the throne has a simple goal: the head of the former Lord.]
+		'''
 }
 
 ForsakenSaber: {
@@ -554,12 +599,10 @@ FourSeasonsGalaxia: {
 	Tooltip:
 		'''
 		[FUNC]
-		[PASS]
 		Freed from earthly shackles and coursing with cosmic power
 		Has access to all of the attunements at all times
 		Press <right> to cycle the sword's attunement depending on the cursor's position
 		Active Attunement : [ATT]
-		Passive Blessing : [BLE]
 		'''
 }
 
@@ -574,7 +617,6 @@ FracturedArk: {
 		'''
 		<right> to extend the Ark out in front of you
 		Hitting an enemy with it will parry them, granting you a small window of invulnerability
-		You can also parry projectiles and temporarily make them deal 50 less damage
 		Parrying empowers the next 10 swings of the sword, boosting damage and letting them throw projectiles
 		'''
 }
@@ -707,7 +749,7 @@ Hellkite: {
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
 		Holding <right> will begin charging a strengthened swing
-		Releasing <right> while fully charged will unleash a devastating slash
+		Releasing <right> while fully charged will unleash a devastating slash that always critically strikes
 		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
 	TooltipGFB:
@@ -715,7 +757,7 @@ Hellkite: {
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
 		Holding <right> will begin charging a strengthened swing
-		Releasing <right> while fully charged will unleash a devastating slash
+		Releasing <right> while fully charged will unleash a devastating slash that always critically strikes
 		[c/0C507F:'My beloved <3' -Xyk]
 		'''
 }
@@ -734,7 +776,7 @@ HolyCollider: {
 
 IllustriousKnives: {
 	DisplayName: Illustrious Knives
-	Tooltip: Throws a flurry of homing knives that can heal the user
+	Tooltip: Throws a barrage of fast-moving homing knives that heal the user
 }
 
 InsidiousImpaler: {
@@ -760,8 +802,8 @@ Lacerator: {
 	DisplayName: Lacerator
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Accelerates natural life regeneration on hits with the yoyo
-		An exceptionally agile yoyo
 		[GFB]
 		'''
 	TooltipNormal: Someone thought this was a viable weapon against DoG at one point lol
@@ -828,7 +870,7 @@ MonolithSword: {
 
 MonstrousKnives: {
 	DisplayName: Monstrous Knives
-	Tooltip: Throws a spread of knives that can heal the user
+	Tooltip: Throws a spread of short-range knives that have a chance to heal the user
 }
 
 Mourningstar: {
@@ -857,7 +899,6 @@ Nadir: {
 	Tooltip:
 		'''
 		Fires void essences which flay nearby enemies with tentacles
-		Ignores immunity frames
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
@@ -880,18 +921,18 @@ Oblivion: {
 	DisplayName: Oblivion
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires brimstone darts when enemies are near
-		A very agile yoyo
 		'''
 }
 
 OldLordClaymore: {
 	DisplayName: Old Lord Claymore
-	Tooltip:
+	Tooltip: A slow but powerful blade that sets enemies ablaze and has substantial knockback
+	HoldShiftTooltip:
 		'''
-		Holding <right> rapidly absorbs energy into the blade until it is charged
-		Press <left> while charged to fly in the direction of the cursor
-		Using the lunge resets the blade's charge to zero
+		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
+		[c/df4420:The prosperity he brought to their kind is unmatched even now that they alone rule the Undeworld.]
 		'''
 }
 
@@ -935,8 +976,8 @@ Pandemic: {
 	DisplayName: Pandemic
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires plague seekers when enemies are near
-		A very agile yoyo
 		'''
 }
 
@@ -989,8 +1030,8 @@ Quagmire: {
 	DisplayName: Quagmire
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires spore clouds
-		A very agile yoyo
 		'''
 }
 
@@ -1000,18 +1041,6 @@ RedSun: {
 		'''
 		Drops a barrage of solar flares from the sky
 		'Over paradise'
-		'''
-}
-
-RedtideSpear: {
-	DisplayName: Redtide Spear
-	Tooltip:
-		'''
-		Poisons enemies on hit
-		Aiming the spear in front of you while running holds it down with increased knockback
-		Releasing the attack button after the charge makes an upwards slash, sending enemies flying into the air
-		[c/5C95A1:'The people of the sea were adept hunters, but they abhorred unnecessary violence.]
-		[c/5C95A1:Unfortunately, neighboring nations were brutish, so they fashioned their tools for war.']
 		'''
 }
 
@@ -1036,7 +1065,11 @@ Respiteblock: {
 
 Riptide: {
 	DisplayName: Riptide
-	Tooltip: Sprays a spiral of aqua streams
+	Tooltip:
+		'''
+		{$Common.YoyoStats}
+		Rapidly pulses riptide waves which get larger the more hits landed by the yoyo
+		'''
 }
 
 Roxcalibur: {
@@ -1073,11 +1106,6 @@ ScourgeoftheCosmos: {
 	Tooltip: Throws a bouncing cosmic scourge that emits tiny homing cosmic scourges on enemy and tile hits
 }
 
-SeashineSword: {
-	DisplayName: Seashine Sword
-	Tooltip: Shoots an aqua sword beam
-}
-
 SeekingScorcher: {
 	DisplayName: Seeking Scorcher
 	Tooltip:
@@ -1094,8 +1122,8 @@ Shimmerspark: {
 	DisplayName: Shimmerspark
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires stars when enemies are near
-		A very agile yoyo
 		'''
 }
 
@@ -1111,7 +1139,11 @@ SkytideDragoon: {
 
 SmokingComet: {
 	DisplayName: Smoking Comet
-	Tooltip: Rains stars from the sky
+	Tooltip:
+		'''
+		{$Common.YoyoStats}
+		Rains stars from the sky
+		'''
 }
 
 SolsticeClaymore: {
@@ -1216,9 +1248,9 @@ SulphurousGrabber: {
 	DisplayName: Sulphurous Grabber
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Occasionally releases a ring of colored bubbles
 		The yoyo powers up after touching a green bubble
-		A very agile yoyo
 		'''
 }
 
@@ -1303,8 +1335,8 @@ TheGodsGambit: {
 	DisplayName: The God's Gambit
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires a stream of slime when enemies are near
-		A very agile yoyo
 		'''
 }
 
@@ -1317,8 +1349,8 @@ TheMicrowave: {
 	DisplayName: The Microwave
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fries nearby enemies with radiation
-		An exceptionally agile yoyo
 		'Cooking, Astral Infection style'
 		'''
 }
@@ -1334,12 +1366,12 @@ TheMutilator: {
 
 TheObliterator: {
 	DisplayName: The Obliterator
-	Tooltip: "[GFB]"
-	TooltipNormal:
+	Tooltip:
 		'''
-		Ruins nearby enemies with death lasers
-		An exceptionally agile yoyo
+		{$Common.YoyoStatsInfinite}
+		[GFB]
 		'''
+	TooltipNormal: Ruins nearby enemies with death lasers
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 
@@ -1347,9 +1379,9 @@ TheOracle: {
 	DisplayName: The Oracle
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Emits an aura of lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
-		An exceptionally agile yoyo
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'
 		'''
 }
@@ -1386,8 +1418,7 @@ TrueArkoftheAncients: {
 		<right> to extend the Ark out in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
 		You can also parry projectiles to make them deal 80 less damage for a short period
-		Parrying empowers the next 10 swings of the sword, letting them throw stronger projectiles
-		Pressing <right> while holding UP will release all empowered charges in a powerful burst of energy
+		Parrying will empower the next 10 swings of the sword, letting it throw stronger projectiles
 		'''
 }
 
@@ -1442,14 +1473,9 @@ UltimusCleaver: {
 	Tooltip: Launches damaging homing sparks and explodes on enemy hits
 }
 
-UrchinFlail: {
-	DisplayName: Urchin Flail
-	Tooltip: Launch an urchin ball, which shoots a spike on contact with an enemy
-}
-
 UrchinMace: {
 	DisplayName: Urchin Mace
-	Tooltip: Throws out a whirlpool when released at full charge
+	Tooltip: Throws out a whirlpool when released
 }
 
 VanishingPoint: {
@@ -1522,8 +1548,8 @@ YinYo: {
 	DisplayName: Yin-Yo
 	Tooltip:
 		'''
+		{$Common.YoyoStatsInfinite}
 		Fires light or dark shards when enemies are near
 		Shards fly back and forth
-		A very agile yoyo
 		'''
 }

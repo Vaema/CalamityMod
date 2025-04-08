@@ -29,6 +29,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
         {
             RegisterItemDrop(ModContent.ItemType<PlagueHumidifier>());
             Main.tileFrameImportant[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
             TileObjectData.newTile.Height = 4;
             TileObjectData.newTile.Origin = new Point16(1, 3);

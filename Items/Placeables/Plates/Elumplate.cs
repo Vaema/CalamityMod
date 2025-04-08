@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Placeables.Plates
             CreateRecipe().
                 AddIngredient<ElumplateWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

@@ -137,7 +137,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     tail = true;
                 }
-                if (!NPC.active && Main.netMode == NetmodeID.Server)
+                if (!NPC.active && Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, NPC.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                 }
@@ -416,7 +416,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoT").Type, 1f);
                 }

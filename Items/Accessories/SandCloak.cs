@@ -17,11 +17,8 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SandCloakHotkey);
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.moveSpeed += 0.05f;
             player.Calamity().sandCloak = true;
         }
     }

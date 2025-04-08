@@ -75,7 +75,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.value = Item.buyPrice(0, 0, 0, 80);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumDroneBanner>();
@@ -108,16 +108,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             Player player = Main.player[NPC.target];
 
             bool farFromPlayer = NPC.Distance(player.Center) > 960f;
-            bool obstacleInFrontOfPlayer = Main.remixWorld ? false : !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
 
-            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || farFromPlayer || obstacleInFrontOfPlayer || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || farFromPlayer || player.dead || !player.active)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
                 farFromPlayer = NPC.Distance(player.Center) > 960f;
-                obstacleInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
                 // Fly away if there is no living target, or the closest target is too far away.
-                if (player.dead || !player.active || farFromPlayer || obstacleInFrontOfPlayer)
+                if (player.dead || !player.active || farFromPlayer)
                 {
                     if (FlyAwayTimer > 420)
                     {

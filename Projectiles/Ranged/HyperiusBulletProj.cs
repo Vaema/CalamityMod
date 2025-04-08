@@ -1,7 +1,9 @@
 ﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,7 +16,8 @@ namespace CalamityMod.Projectiles.Ranged
         public float dustAngle = 0f;
         public bool growing = false;
         public bool dustWave = false;
-        public float variance;
+        public float variance = 0.8f;
+        public Vector2 lastPos;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
@@ -41,12 +44,13 @@ namespace CalamityMod.Projectiles.Ranged
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            variance = Main.rand.NextFloat(0.3f, 1.7f);
             if (currentColor == Color.Black)
             {
+                variance = Main.rand.NextFloat(0.7f, 1f);
                 dustWave = Main.rand.NextBool();
                 Projectile.scale = 1.5f;
                 Projectile.velocity *= 0.3f;
+                lastPos = Projectile.velocity;
                 switch (Main.rand.Next(0, 4 +1))
                 {
                     case 4: // Yellow shot
@@ -77,14 +81,22 @@ namespace CalamityMod.Projectiles.Ranged
             dustAngle += (growing ? 0.07f * variance : -0.07f * variance);
 
             Projectile.localAI[0] += 1f;
+            Vector2 orbPos = Projectile.Center + (Projectile.velocity.RotatedBy((dustWave ? 1 : -1) * dustAngle) * 4.5f - Projectile.velocity * 5);
             if (Projectile.localAI[0] > 12f && targetDist < 1200f)
             {
-                GlowOrbParticle orb = new GlowOrbParticle((Projectile.Center + Projectile.velocity.RotatedBy((dustWave ? 1 : -1) * dustAngle) * 4.5f) - Projectile.velocity * 5, Vector2.Zero, false, 5, 0.55f + MathF.Abs(dustAngle * 0.5f), currentColor, true, true);
+                CustomSpark orb = new CustomSpark(orbPos, Utils.DirectionTo(lastPos, orbPos), "CalamityMod/Particles/BloomCircle", false, 5, (0.55f + MathF.Abs(dustAngle * 0.65f)) * 0.2f, currentColor, new Vector2(1 + MathF.Abs(dustAngle * 0.6f), 1), true, true, 0, false, false, 0.8f - MathF.Abs(dustAngle * 0.7f), 0.7f, 0.8f);
                 GeneralParticleHandler.SpawnParticle(orb);
 
-                PointParticle spark = new PointParticle(Projectile.Center + Projectile.velocity * 3.5f, Projectile.velocity, false, 2, 0.6f, currentColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                if (Main.rand.NextBool(7))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.8f, 1.3f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
+                    dust.color = currentColor;
+                    dust.noLightEmittence = true;
+                }
             }
+            lastPos = orbPos;
         }
 
         // This projectile is always fullbright.
@@ -108,7 +120,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int b = 0; b < 3; b++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -oldVelocity.RotatedByRandom(0.5f) * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
+                    Vector2 vel = (-oldVelocity.SafeNormalize(Vector2.UnitX) * 5);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel.RotatedByRandom(0.5f) * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
                 }
             }
             return true;
@@ -129,7 +142,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int b = 0; b < 3; b++)
                 {
-                    Vector2 velocity = Projectile.velocity.RotatedByRandom(0.5f);
+                    Vector2 velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5).RotatedByRandom(0.5f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)(Projectile.damage * 0.1), Projectile.knockBack * 2f, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
                 }
             }
@@ -137,13 +150,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/ShadowboltWallHit") with { Volume = 0.25f, Pitch = Main.rand.NextFloat(0.6f, 1f), MaxInstances = -1 }, Projectile.Center);
             for (int b = 0; b < 4; b++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 66, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
                 dust.color = currentColor;
-                dust.fadeIn = 0;
+                dust.noLightEmittence = true;
             }
         }
     }

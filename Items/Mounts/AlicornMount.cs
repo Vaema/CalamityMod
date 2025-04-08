@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/AlicornMountExtra");
                 MountData.textureWidth = MountData.backTexture.Width();
@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Mounts
         {
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (npc.type == ModContent.NPCType<FAP>())
+                if (npc.type == ModContent.NPCType<Cirrus>())
                 {
                     npc.active = false;
                     npc.netUpdate = true;
@@ -100,10 +100,10 @@ namespace CalamityMod.Items.Mounts
             // Spawn Cirrus if no other players are on the Alicorn mount.
             if (!anyPlayerOnFabMount)
             {
-                if (!NPC.AnyNPCs(ModContent.NPCType<FAP>()))
+                if (!NPC.AnyNPCs(ModContent.NPCType<Cirrus>()))
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(NPC.GetSource_TownSpawn(), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<FAP>());
+                        NPC.NewNPC(NPC.GetSource_TownSpawn(), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<Cirrus>());
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Mounts
         public override void UpdateEffects(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.fabsolVodka)
+            if (modPlayer.cirrusVodka)
                 player.GetDamage<GenericDamageClass>() += 0.1f;
 
             if (player.velocity.Length() > 9f)

@@ -35,9 +35,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            CalamityPlayer p = Main.player[Main.myPlayer].Calamity();
-            //If stealth is full, shoot a spread of 3 boomerangs with reduced range
-            if (p.StealthStrikeAvailable())
+            if (player.Calamity().StealthStrikeAvailable())
             {
                 int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (proj.WithinBounds(Main.maxProjectiles))

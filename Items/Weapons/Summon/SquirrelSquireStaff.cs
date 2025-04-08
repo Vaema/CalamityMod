@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -45,8 +46,21 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
-            Projectile.NewProjectile(source, new(XPosition, YPosition - YOffset), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            // Find the base farthest position
+            Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
+            int dontLoopForever = 0;
+
+            // Move the squirrel towards the player if the position does not have line of sight on all edges
+            while ((!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0) ||
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) && dontLoopForever < 200) 
+            {
+                initialSpawn = Vector2.Lerp(player.Center, initialSpawn, 0.99f);
+                dontLoopForever++;
+            }
+
+            Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);
             player.UpdateMaxTurrets();
             return false;
         }
@@ -54,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Wood, 10).
+                AddRecipeGroup("Wood", 10).
                 AddIngredient(ItemID.Acorn).
                 AddTile(TileID.WorkBenches).
                 Register();

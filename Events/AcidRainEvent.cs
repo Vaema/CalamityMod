@@ -337,7 +337,7 @@ namespace CalamityMod.Events
 
                 // Flow: 2024/09/06 
                 // Salute for the one who wrote 3 if conditional block after experiencing immeasurable torment with packet generations
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     AcidRainSyncPacket.Send();
                     AcidRainOldDukeSummonSyncPacket.Send();

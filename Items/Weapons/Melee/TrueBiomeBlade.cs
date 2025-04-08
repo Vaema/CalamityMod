@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
@@ -21,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
 {
     // TODO -- CANNOT RENAME this and True Biome Blade to "TrueBiomeBlade" and "BiomeBlade" internally without corrupting existing items
     // (Comment copied from an equivalent one on OmegaBiomeBlade from June 2022)
-    public class TrueBiomeBlade : ModItem, ILocalizedModType
+    public class TrueBiomeBlade : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;
@@ -34,10 +35,12 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 115;
 
-        public static int DefaultAttunement_BaseDamage = 105;
+        public static int DefaultAttunement_BaseDamage = 100;
         public static int DefaultAttunement_SigilTime = 900;
         public static int DefaultAttunement_BeamTime = 90;
-        public static float DefaultAttunement_HomingAngle = MathHelper.PiOver4;
+        public static float DefaultAttunement_LungeDamageMult = 2f;
+        public static int DefaultAttunement_LungeIFrames = 20;
+        public static float DefaultAttunement_HomingAngle = MathHelper.Pi / 3f;
 
         public static int EvilAttunement_BaseDamage = 155;
         public static int EvilAttunement_Lifesteal = 2;
@@ -45,16 +48,14 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float EvilAttunement_SlashDamageBoost = 3f;
         public static int EvilAttunement_SlashIFrames = 60;
 
-        public static int ColdAttunement_BaseDamage = 175;
-        public static float ColdAttunement_ThirdSwingBoost = 1.75f;
-        public static float ColdAttunement_MistDamageReduction = 0.09f;
+        public static int ColdAttunement_BaseDamage = 150;
+        public static float ColdAttunement_ThirdSwingBoost = 1.25f;
+        public static float ColdAttunement_MistDamageReduction = 0.11f;
 
-        public static int HotAttunement_BaseDamage = 122;
-        public static int HotAttunement_FullChargeDamage = 160;
-        public static int HotAttunement_ShredIFrames = 8;
+        public static int HotAttunement_BaseDamage = 135;
+        public static int HotAttunement_PlayerShredIFrames = 8;
         public static float HotAttunement_ShotDamageBoost = 4.5f;
-        public static int HotAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int HotAttunement_LocalIFramesCharged = 16;
+        public static int HotAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 0.65f; //How much charge is lost per frame.
 
         public static int TropicalAttunement_BaseDamage = 150;
@@ -63,28 +64,13 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.5f; //It also crits, so be mindful of that
         public static int TropicalAttunement_LocalIFrames = 60; //Be warned its got 2 extra updates so all the iframes should be divided in 3
 
-        public static int HolyAttunement_BaseDamage = 60;
-        public static float HolyAttunement_BaseDamageReduction = 0.4f;
-        public static float HolyAttunement_FullChargeDamageBoost = 2f;
+        public static int HolyAttunement_BaseDamage = 66;
+        public static float HolyAttunement_BaseSwingDamageMult = 0.75f;
+        public static float HolyAttunement_FullSwingDamageMult = 1.5f;
         public static float HolyAttunement_ThrowDamageBoost = 3.8f;
         public static int HolyAttunement_LocalIFrames = 16; //Be warned its got 1 extra update yadda yadda
-
-        public static int AstralAttunement_BaseDamage = 250;
-        public static int AstralAttunement_DashHitIFrames = 20;
-        public static float AstralAttunement_FullChargeBoost = 4f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
-        public static float AstralAttunement_MonolithDamageBoost = 1.25f;
-        public static float AstralAttunement_MonolithDamageFalloff = 0.25f; //Damage multiplier for all subsequent hits after the first one.
-
-        public static int MarineAttunement_BaseDamage = 300;
-        public static float MarineAttunement_InWaterDamageMultiplier = 1.5f;
-
+        public static float HolyAttunement_MonolithDamage = 0.5f;
         #endregion
-
-
-        public override void SetStaticDefaults()
-        {
-            //Theres potential for flavor text as well but im not a writer
-        }
 
         #region tooltip editing
 
@@ -95,7 +81,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -169,7 +155,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             var clone = base.Clone(item);
             if (Main.mouseItem.type == ItemType<TrueBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
             if (clone is TrueBiomeBlade a && item.ModItem is TrueBiomeBlade a2)
             {
                 a.mainAttunement = a2.mainAttunement;
@@ -231,6 +217,9 @@ namespace CalamityMod.Items.Weapons.Melee
 
             if (secondaryAttunement != null)
                 secondaryAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)secondaryAttunement.id));
+
+            if (mainAttunement == secondaryAttunement)
+                secondaryAttunement = null;
         }
 
         private static int ClampAttunementRange(int input)
@@ -238,8 +227,8 @@ namespace CalamityMod.Items.Weapons.Melee
             if (input < (int)AttunementID.TrueDefault)
                 return (int)AttunementID.TrueDefault;
 
-            if (input > (int)AttunementID.Marine)
-                return (int)AttunementID.Marine;
+            if (input > (int)AttunementID.Holy)
+                return (int)AttunementID.Holy;
 
             return input;
         }
@@ -308,9 +297,7 @@ namespace CalamityMod.Items.Weapons.Melee
             (n.type == ProjectileType<TrueBitingEmbrace>() ||
              n.type == ProjectileType<TrueGrovetendersTouch>() ||
              n.type == ProjectileType<TrueAridGrandeur>() ||
-             n.type == ProjectileType<HeavensMight>() ||
-             n.type == ProjectileType<ExtantAbhorrence>() ||
-             n.type == ProjectileType<GestureForTheDrowned>()));
+             n.type == ProjectileType<HeavensMight>()));
         }
 
         // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
@@ -323,27 +310,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
             ComboResetTimer = 1f;
             return mainAttunement.Shoot(player, source, ref position, ref velocity.X, ref velocity.Y, ref type, ref damage, ref knockback, ref Combo, ref StoredLunges, ref PowerLungeCounter);
-        }
-
-
-        //This is only used for the purity sigil effect of the default attunement
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (mainAttunement == null || mainAttunement.id != AttunementID.TrueDefault || player.whoAmI != Main.myPlayer)
-                return;
-
-            foreach (Projectile proj in Main.projectile)
-            {
-                if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == player.whoAmI)
-                {
-                    //Reset the timeleft on the sigil & give it its new target (or the same, it doesnt matter really.
-                    proj.ai[0] = target.whoAmI;
-                    proj.timeLeft = DefaultAttunement_SigilTime;
-                    return;
-                }
-            }
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ProjectileType<PurityProjectionSigil>(), 0, 0, player.whoAmI, target.whoAmI);
         }
 
         internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);

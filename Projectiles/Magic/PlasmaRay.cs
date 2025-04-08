@@ -53,19 +53,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            float random = Main.rand.Next(30, 90);
-            float spread = random * 0.0174f;
-            double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-            double deltaAngle = spread / 8f;
-            double offsetAngle;
-            int i;
             if (Projectile.owner == Main.myPlayer)
             {
-                for (i = 0; i < 4; i++)
+                float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+                for (int i = 0; i < 8; i++)
                 {
-                    offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<PlasmaRay2>(), (int)(Projectile.damage * 1.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<PlasmaRay2>(), (int)(Projectile.damage * 1.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - offset).ToRotationVector2() * 4f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PlasmaRay2>(), (int)(Projectile.damage * 1.75), Projectile.knockBack, Projectile.owner);
                 }
             }
             Projectile.penetrate--;

@@ -32,6 +32,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
 
             RegisterItemDrop(ModContent.ItemType<DraconicIncense>());
             Main.tileFrameImportant[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
             TileObjectData.newTile.Height = 6;
             TileObjectData.newTile.Origin = new Point16(0, 5);

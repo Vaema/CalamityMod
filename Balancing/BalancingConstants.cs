@@ -6,8 +6,8 @@
         // When the relevant config is enabled: Multiplies the player's movement speed by 1.5x at all times
         internal static readonly float DefaultMoveSpeedBoost = 1.5f;
 
-        // When the relevant config is enabled: Increases the player's base jump height by 10%
-        internal static readonly float ConfigBoostedBaseJumpHeight = 5.51f; // vanilla = 5.01f
+        // When the relevant config is enabled: Increases the player's base jump speed by 13.97% (allows you to jump 7 blocks)
+        internal static readonly float ConfigBoostedBaseJumpSpeed = 5.71f; // vanilla = 5.01f
 
         // When the relevant config is enabled: Allows the player to hold the Down button (S by default) to fast fall.
         // This is the multiplier for the player's gravity (downwards acceleration) while holding Down.
@@ -50,6 +50,7 @@
         #region Dashes and Dodges
         // Dash cooldowns (in frames)
         internal const int UniversalDashCooldown = 30;
+        internal const int UniversalSashDashCooldown = 30;
         internal const int UniversalShieldSlamCooldown = 30;
         internal const int UniversalShieldBonkCooldown = 30;
         internal const int OnShieldBonkCooldown = 30;
@@ -62,17 +63,17 @@
 
         // Dodge cooldowns (in frames)
         // TODO -- Some of these could be moved to the respective item files
-        internal static readonly int BeltDodgeCooldownMin = 900;
+        internal static readonly int BeltDodgeCooldownMin = 1200;
         internal static readonly int BeltDodgeCooldownMax = 5400;
-        internal static readonly int BrainDodgeCooldownMin = 900;
+        internal static readonly int BrainDodgeCooldownMin = 1200;
         internal static readonly int BrainDodgeCooldownMax = 5400;
-        internal static readonly int AmalgamDodgeCooldownMin = 900;
+        internal static readonly int AmalgamDodgeCooldownMin = 1200;
         internal static readonly int AmalgamDodgeCooldownMax = 5400;
-        internal static readonly int MirrorDodgeCooldownMin = 900;
+        internal static readonly int MirrorDodgeCooldownMin = 1200;
         internal static readonly int MirrorDodgeCooldownMax = 5400;
-        internal static readonly int DaedalusReflectCooldownMin = 900;
+        internal static readonly int DaedalusReflectCooldownMin = 1200;
         internal static readonly int DaedalusReflectCooldownMax = 5400;
-        internal static readonly int EvolutionReflectCooldownMin = 900;
+        internal static readonly int EvolutionReflectCooldownMin = 1200;
         internal static readonly int EvolutionReflectCooldownMax = 5400;
         #endregion
 

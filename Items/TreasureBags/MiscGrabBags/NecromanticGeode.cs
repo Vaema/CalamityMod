@@ -21,7 +21,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ModContent.RarityType<Turquoise>();
         }

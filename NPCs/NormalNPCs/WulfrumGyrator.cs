@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 23;
             NPC.knockBackResist = 0.15f;
             NPC.value = Item.buyPrice(0, 0, 0, 75);
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumGyratorBanner>();
@@ -109,8 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.netMode != NetmodeID.MultiplayerClient && jumpWouldHitPlayer && NPC.collideY && NPC.velocity.Y == 0f)
                 {
                     NPC.velocity.Y = chargeJumpSpeed;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
 
                 SuperchargeTimer--;
@@ -120,8 +119,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Main.netMode != NetmodeID.MultiplayerClient && HoleAtPosition(NPC.Center.X + NPC.velocity.X * 4f) && NPC.collideY && NPC.velocity.Y == 0f)
             {
                 NPC.velocity.Y = JumpSpeed;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
 
             if (Collision.CanHitLine(player.position, player.width, player.height, NPC.position, NPC.width, NPC.height) &&
@@ -132,8 +130,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.direction != direction)
                 {
                     NPC.direction = direction;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
                 //GOTTA GO FAST (Legendary only)
                 if (CalamityWorld.LegendaryMode)
@@ -155,8 +152,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else if (Main.netMode != NetmodeID.MultiplayerClient && NPC.collideX && NPC.collideY && NPC.velocity.Y == 0f)
             {
                 NPC.velocity.Y = JumpSpeed;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
 
             if (NPC.oldPosition == NPC.position)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -70,6 +71,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             ModContent.ProjectileType<DWArrow>(),
             ModContent.ProjectileType<DrataliornusFlame>(),
             ModContent.ProjectileType<FlareBat>(),
+            ModContent.ProjectileType<ImmolationArrow>(),
+            ModContent.ProjectileType<ImmolationSpray>(),
             ModContent.ProjectileType<FeatherLarge>(),
             ModContent.ProjectileType<SlimeStream>(), // Not ranged
             ModContent.ProjectileType<ExoCrystalArrow>(),

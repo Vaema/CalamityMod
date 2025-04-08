@@ -1,13 +1,11 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -60,6 +58,33 @@ namespace CalamityMod.Items.Armor.Auric
             var modPlayer = player.Calamity();
             modPlayer.auricBoost = true;
             player.GetDamage<SummonDamageClass>() += 0.15f;
+        }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            ref var holdingShift = ref AuricTeslaBodyArmor.holdingShift;
+            ref var setBonusTooltipNumber = ref AuricTeslaBodyArmor.setBonusTooltipNumber;
+            if (Main.keyState.PressingShift())
+            {
+                if (!holdingShift)
+                {
+                    holdingShift = true;
+                    setBonusTooltipNumber++;
+                    if (setBonusTooltipNumber > 3) setBonusTooltipNumber = 1;
+                }
+                foreach (TooltipLine line in tooltips)
+                {
+                    if (line.Name == "SetBonus")
+                    {
+                        Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipSilvaColor };
+                        line.Text = this.GetLocalizedValue($"SetBonus{setBonusTooltipNumber}");
+                        line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
+                    }
+                }
+            }
+            else
+            {
+                holdingShift = false;
+            }
         }
 
         public override void AddRecipes()

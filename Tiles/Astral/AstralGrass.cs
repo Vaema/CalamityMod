@@ -58,7 +58,7 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(20) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
@@ -74,7 +74,7 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(23) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }

@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe().
                 AddIngredient<ScoriaBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

@@ -25,7 +25,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            tip = base.Description.Format((1f + Main.player[Main.myPlayer].Calamity().GetAdrenalineDamage()).Round());
+            tip = base.Description.Format((1f + Main.LocalPlayer.Calamity().GetAdrenalineDamage()).Round());
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

@@ -67,7 +67,7 @@ namespace CalamityMod.Skies
 
         public static void CreateLightningBolt(int count = 1, bool playSound = false)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             for (int i = 0; i < count; i++)

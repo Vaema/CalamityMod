@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.TownCritter.Chance) * 0.05f;
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDay.Chance) * 0.1f;
         }
 
         public override void FindFrame(int frameHeight)
@@ -167,7 +167,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                      Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, hit.HitDirection * 0.5f, -0.5f, 0, default, 0.5f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble").Type);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Shroomble2").Type);

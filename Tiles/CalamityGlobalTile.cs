@@ -6,16 +6,15 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,6 +36,10 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
+
+            // Allow Queen Bee larvae to be protected by Guide to Environmental Protection
+            // Yes this naming is backwards. Do not blame me!
+            TileID.Sets.TileCutIgnore.IgnoreDontHurtNature[TileID.Larva] = true;
         }
 
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
@@ -238,7 +241,7 @@ namespace CalamityMod.Tiles
                     {
                         tile.Get<TileWallWireStateData>().HasTile = false;
                         WorldGen.KillTile(x, y, fail: false, effectOnly: false, noItem: true);
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.TrySendData(17, -1, -1, null, 20, x, y);
                     }
                 }
@@ -249,7 +252,7 @@ namespace CalamityMod.Tiles
                 {
                     Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                 }
-                else if (Main.netMode == NetmodeID.Server)
+                else if (Main.dedServ)
                 {
                     int proj = Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 8, j * 16 + 8, 0f, 0.41f, projectileType, damage, 0f, Main.myPlayer);
                     Main.projectile[proj].netUpdate = true;
@@ -309,12 +312,21 @@ namespace CalamityMod.Tiles
                 {
                     DropItem(i, j, ItemID.SoulofNight, quantity: 4, asStack: false, spreadMinMax);
                     WorldGen.altarCount++; // altarCount does not update automatically if ProgressionRework is enabled!
+                    AchievementsHelper.NotifyProgressionEvent(6); // Gives the Begone, Evil! achievement
                 }
 
                 // Drop Evil Smasher on every 12 alter smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
                 {
                     DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
+                }
+            }
+            // Drop Golden Bombs at a 0.33% chance from Pots
+            if (type == TileID.Pots)
+            {
+                if (Main.rand.NextBool(300))
+                {
+                    DropItem(i, j, ModContent.ItemType<GoldenBomb>(), quantity: 1, asStack: true);
                 }
             }
         }

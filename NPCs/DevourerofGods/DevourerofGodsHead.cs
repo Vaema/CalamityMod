@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Phase variables
         private const int idleCounterMax = 300;
         private int idleCounter = idleCounterMax;
-        private const float LaserWallCooldown = 1200f;
+        public const float LaserWallCooldown = 1200f;
         private int postTeleportTimer = 0;
         private int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 120;
@@ -143,7 +143,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const int TimeBeforeTeleport_Expert = 160;
         private const int TimeBeforeTeleport_Normal = 180;
         private bool spawnedGuardians3 = false;
-        private const float alphaGateValue = 669f;
+        private const float AlphaGateValue = 1060f;
         public const float SkyColorTransitionTime = 90f;
 
         // Death animation variables
@@ -287,11 +287,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             writer.Write(extrapitch);
 
             // Be sure to inform clients of the fact that The Devourer of Gods is dying if only the server recieved this packet.
-            if (Main.netMode == NetmodeID.Server && !wasDyingBefore && Dying)
-            {
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
-            }
+            if (Main.dedServ && !wasDyingBefore && Dying)
+                NPC.ForceNetUpdate();
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -472,11 +469,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             continue;
 
                         Main.npc[a].active = false;
-                        Main.npc[a].netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (Main.npc[a].netSpam >= 10)
-                            Main.npc[a].netSpam = 9;
+                        Main.npc[a].ForceNetUpdate(false);
                     }
                 }
             }
@@ -534,8 +527,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.ai[3] = 0f;
                         calamityGlobalNPC.newAI[1] = 0f;
                         calamityGlobalNPC.newAI[2] = 0f;
-                        NPC.netSpam = 0;
-                        NPC.netUpdate = true;
+                        NPC.ForceNetUpdate();
                     }
 
                     // Phase 2 countdown
@@ -554,12 +546,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(186 * NPC.scale);
                     NPC.position -= NPC.Size * 0.5f;
                     NPC.frame = new Rectangle(0, 0, 134, 196);
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
 
                 // Dialogue the moment the second phase starts
@@ -598,12 +585,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (Main.netMode != NetmodeID.MultiplayerClient && newOpacity > 0f && NPC.Opacity > newOpacity)
                         {
                             NPC.Opacity = newOpacity;
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
 
                         if (NPC.Opacity < 0.2f)
@@ -620,12 +602,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         PortalIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), portalSpawnPosition, Vector2.Zero, ModContent.ProjectileType<DoGP1EndPortal>(), 0, 0f);
 
                         hasCreatedPhase1Portal = true;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
 
                     AttemptingToEnterPortal = true;
@@ -659,30 +636,26 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         Dying = true;
                         NPC.dontTakeDamage = true;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
 
                         return;
                     }
 
                     // Laser walls
+                    float adjustedAlphaGateValue = AlphaGateValue - (bossRush ? 360f : death ? 180f : 0f);
                     if (phase4 && !spawnedGuardians3 && postTeleportTimer <= 0)
                     {
                         if (laserWallPhase == (int)LaserWallPhase.SetUp)
                         {
                             // Enter laser wall phase very quickly when final phase starts
-                            if (phase6 && calamityGlobalNPC.newAI[3] < alphaGateValue)
-                                calamityGlobalNPC.newAI[3] = alphaGateValue;
+                            if (phase6 && calamityGlobalNPC.newAI[3] < adjustedAlphaGateValue)
+                                calamityGlobalNPC.newAI[3] = adjustedAlphaGateValue;
 
                             // Increment next laser wall phase timer
                             calamityGlobalNPC.newAI[3] += 1f;
 
                             // Set alpha value prior to firing laser walls
-                            if (calamityGlobalNPC.newAI[3] > alphaGateValue)
+                            if (calamityGlobalNPC.newAI[3] > adjustedAlphaGateValue)
                             {
                                 // Disable teleports
                                 if (teleportTimer > 0)
@@ -691,12 +664,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     teleportTimer = 0;
                                 }
 
-                                NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - alphaGateValue) * 5f, 0f, 255f) / 255f);
+                                NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - adjustedAlphaGateValue) * 5f, 0f, 255f) / 255f);
                             }
 
                             // Fire laser walls every X seconds after a laser wall phase ends
                             float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
-                            if (calamityGlobalNPC.newAI[3] >= LaserWallCooldown)
+                            if (calamityGlobalNPC.newAI[3] >= laserWallGateValue)
                             {
                                 NPC.Opacity = 0f;
 
@@ -1029,10 +1002,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Set flight time to max during laser walls
                     if (!spawnedGuardians3 && laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
 
@@ -1059,10 +1032,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Flight
                     if (NPC.ai[3] == 0f)
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1081,7 +1054,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Go to ground phase sooner
                         if (increaseSpeedMore)
                         {
-                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
+                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= adjustedAlphaGateValue)
                                 SpawnTeleportLocation(player);
                         }
 
@@ -1262,22 +1235,17 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 1f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
 
                     // Ground
                     else
                     {
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
-                            if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1294,7 +1262,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Enrage
                         if (increaseSpeedMore)
                         {
-                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= alphaGateValue)
+                            if (laserWallPhase == (int)LaserWallPhase.SetUp && calamityGlobalNPC.newAI[3] <= adjustedAlphaGateValue)
                                 SpawnTeleportLocation(player);
                             else
                                 groundPhaseTurnSpeed *= 4f;
@@ -1523,38 +1491,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (flies)
                         {
                             if (NPC.localAI[0] != 1f)
-                            {
-                                NPC.netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
-                            }
+                                NPC.ForceNetUpdate(false);
 
                             NPC.localAI[0] = 1f;
                         }
                         else
                         {
                             if (NPC.localAI[0] != 0f)
-                            {
-                                NPC.netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
-                            }
+                                NPC.ForceNetUpdate(false);
 
                             NPC.localAI[0] = 0f;
                         }
 
                         if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         if (calamityGlobalNPC.newAI[2] > phaseLimit)
                         {
@@ -1562,12 +1512,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 0f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -1864,10 +1809,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Flight
                 if (NPC.ai[3] == 0f)
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<Warped>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                     }
 
                     // Flying movement
@@ -2049,22 +1994,17 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.ai[3] = 1f;
                         calamityGlobalNPC.newAI[2] = 0f;
                         NPC.TargetClosest();
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
 
                 // Ground
                 else
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                     }
 
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -2296,38 +2236,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (flies)
                     {
                         if (NPC.localAI[0] != 1f)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         NPC.localAI[0] = 1f;
                     }
                     else
                     {
                         if (NPC.localAI[0] != 0f)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         NPC.localAI[0] = 0f;
                     }
 
                     if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-                    {
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
-                    }
+                        NPC.ForceNetUpdate(false);
 
                     if (calamityGlobalNPC.newAI[2] > phaseLimit)
                     {
@@ -2437,12 +2359,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Prediction is Death Mode only for now because it's weird without the line telegraph that Shayy spoke about
             Vector2 predictionVector = death ? player.velocity * 40f : Vector2.Zero;
             NPC.velocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * chargeVelocity;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             foreach (NPC n in Main.ActiveNPCs)
             {
@@ -2453,11 +2370,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (n.type == ModContent.NPCType<DevourerofGodsTail>())
                         ((DevourerofGodsTail)n.ModNPC).setInvulTime(720);
 
-                    n.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (n.netSpam >= 10)
-                        n.netSpam = 9;
+                    n.ForceNetUpdate(false);
                 }
             }
 
@@ -2504,12 +2417,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         n.life = 0;
                         n.HitEffect();
                         n.active = false;
-
-                        n.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (n.netSpam >= 10)
-                            n.netSpam = 9;
+                        n.ForceNetUpdate(false);
 
                         destroyedSegments++;
                         break;
@@ -2539,7 +2447,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<DoGDeathBoom>(), 0, 0f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(DeathAnimationSound, NPC.Center);
 
@@ -2565,12 +2473,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.HitEffect();
                 NPC.NPCLoot();
                 NPC.active = false;
-
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
             }
             DeathAnimationTimer++;
         }
@@ -2660,7 +2563,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedDoG);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedDoG);
 
             // If DoG has not been killed yet, notify players that the holiday moons are buffed
             if (!DownedBossSystem.downedDoG)
@@ -2700,8 +2603,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Extraneous potions
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
 
-            // Fabsol Mount
-            npcLoot.AddIf((info) => info.player.Calamity().fabsolVodka, ModContent.ItemType<Fabsol>());
+            // Alicorn Mount
+            npcLoot.AddIf((info) => info.player.Calamity().cirrusVodka, ModContent.ItemType<PrincessSpiritinaBottle>());
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -2836,12 +2739,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             Dying = true;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             return false;
         }
@@ -2855,7 +2753,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS2").Type, NPC.scale);

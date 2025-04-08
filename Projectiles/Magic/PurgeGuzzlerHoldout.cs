@@ -14,12 +14,17 @@ namespace CalamityMod.Projectiles.Magic
     internal class PurgeGuzzlerHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<PurgeGuzzler>();
-        public override float MaxOffsetLengthFromArm => 20f;
-        public override float BaseOffsetY => 0f;
+        public override float MaxOffsetLengthFromArm => 35f;
+        public override float OffsetYUpwards => base.OffsetYUpwards;
+        public override float OffsetXUpwards => base.OffsetXUpwards;
+        public override float OffsetXDownwards => base.OffsetXDownwards;
+        public override float OffsetYDownwards => base.OffsetYDownwards;
+
+        public override float BaseOffsetY => -5f;
         public override float RecoilResolveSpeed => 0.4f;
         public override float WeaponTurnSpeed => cooldownTimer > 0 ? 0.02f : 0.06f;
         public override string Texture => "CalamityMod/Items/Weapons/Magic/PurgeGuzzler";
-        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * -10;
+        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * 10 + Vector2.UnitY * 3;
         public ref float revFrames => ref Projectile.ai[0];
         public ref float cooldownTimer => ref Projectile.ai[1];
         public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
@@ -132,6 +137,7 @@ namespace CalamityMod.Projectiles.Magic
             
             if (Owner.ownedProjectileCounts[ModContent.ProjectileType<HolyLaser>()] > 0 && shotsFired > 0)
             {
+                float fade = Utils.GetLerpValue(1, 4, revSpeed);
                 Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom").Value;
                 float rot = Main.GlobalTimeWrappedHourly * 25;
 
@@ -139,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Glow Orb
                 for (int i = 0; i < 6; i++)
-                    Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.Lerp(Color.Orchid, Color.Khaki, i * 0.1f) with { A = 0 } * 0.4f, rot * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.03f + i * 0.007f) * revSpeed * sine, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, (Color.Lerp(Color.Orange, Color.Lerp(Color.Orchid, Color.Khaki, i * 0.1f), fade + 0.3f)) with { A = 0 } * 0.35f, rot * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.03f + i * 0.007f) * MathHelper.Clamp(revSpeed, 1f, 3.3f) * sine, SpriteEffects.None, 0);
             }
             return false;
         }

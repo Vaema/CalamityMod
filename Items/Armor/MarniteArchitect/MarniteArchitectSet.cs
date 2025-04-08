@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -138,14 +138,14 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/MarniteArchitect/MarniteArchitectToga_Legs", EquipType.Legs, this);
         }
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
         }
 
@@ -366,7 +366,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             MountData.playerHeadOffset = 4;
 
             //Sprites
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureGlow = Request<Texture2D>("CalamityMod/Items/Armor/MarniteArchitect/MarniteLiftFire");
             }

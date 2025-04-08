@@ -28,10 +28,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (Collision.SolidCollision(Projectile.Center, 3, 3))
+                Projectile.Kill();
+
             if (Main.rand.NextBool(Projectile.Calamity().stealthStrike ? 3 : 7))
             {
                 Dust dust = Main.dust[Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.X * -3f, Projectile.velocity.Y * -3f, 0, default, Projectile.Calamity().stealthStrike ? Main.rand.NextFloat(2.5f, 3.2f) : 1.5f)];

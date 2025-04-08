@@ -45,15 +45,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = TrueBiomeBlade.HotAttunement_LocalIFrames;
         }
 
-        public override bool? CanDamage()
-        {
-            return Projectile.timeLeft <= 2; //Prevent spam click abuse
-        }
+        public override bool? CanDamage() => Projectile.timeLeft <= 2; //Prevent spam click abuse
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLength = 120 * Projectile.scale;
+            float bladeLength = 115 * Projectile.scale;
             float bladeWidth = 76 * Projectile.scale;
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (direction * bladeLength), bladeWidth, ref collisionPoint);
@@ -65,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * pogoStrenght; //Bounce
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
-                PogoCooldown = 30; //Cooldown
+                PogoCooldown = 30;
                 SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Projectile.position);
 
                 Vector2 hitPosition = Owner.Center + (direction * 100 * Projectile.scale);
@@ -124,15 +121,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.Center + (direction * 60);
 
             //Scaling based on shred
-            Projectile.localNPCHitCooldown = TrueBiomeBlade.HotAttunement_LocalIFrames - (int)(MathHelper.Lerp(0, TrueBiomeBlade.HotAttunement_LocalIFrames - TrueBiomeBlade.HotAttunement_LocalIFramesCharged, ShredRatio)); //Increase the hit frequency
-            Projectile.scale = 1f + (ShredRatio * 1f); //SWAGGER
-
+            Projectile.scale = 1.33f + (ShredRatio * 1f);
 
             if (Collision.SolidCollision(Owner.Center + (direction * 100 * Projectile.scale) - Vector2.One * 5f, 10, 10))
             {
                 Pogo();
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Make the owner look like theyre holding the sword bla bla
@@ -168,27 +162,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
         }
 
-        //Since the iframes vary, adjust the damage to be consistent no matter the iframes. The true scaling happens between the BaseDamage and the FulLChargeDamage
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            float maxMultiplier = TrueBiomeBlade.HotAttunement_FullChargeDamage / (float)TrueBiomeBlade.HotAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)TrueBiomeBlade.HotAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float maxMultiplier = TrueBiomeBlade.HotAttunement_FullChargeDamage / (float)TrueBiomeBlade.HotAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)TrueBiomeBlade.HotAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
 
@@ -196,17 +169,15 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Main.myPlayer != Owner.whoAmI)
                 return;
-            // get lifted up
+            // Get lifted up
             if (PogoCooldown <= 0)
             {
                 SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); //Sizzle
-                Shred += 62; //Augment the shredspeed
-                if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
+                Shred += 62; //Augment the shred speed
 
                 // 17APR2024: Ozzatron: Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
                 // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
-                Owner.GiveUniversalIFrames(TrueBiomeBlade.HotAttunement_ShredIFrames);
+                Owner.GiveUniversalIFrames(TrueBiomeBlade.HotAttunement_PlayerShredIFrames);
                 PogoCooldown = 20;
             }
         }

@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = 21f;
-            ProjectileID.Sets.YoyosMaximumRange[Type] = 320f;
-            ProjectileID.Sets.YoyosTopSpeed[Type] = 20f;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = SmokingComet.Duration;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = SmokingComet.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = SmokingComet.Speed;
 
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
             ProjectileID.Sets.TrailingMode[Type] = 1;

@@ -187,8 +187,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 10, loops: 1, gravity: 0.3f);
 
-            NPC.netUpdate = true;
-            NPC.netSpam = 0;
+            NPC.ForceNetUpdate();
         }
 
         internal float WidthFunction(float completionRatio)
@@ -223,13 +222,13 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         VerletSimulatedSegment v = Segments[i];
                         int goreType = i < Segments.Count / 2 ? Mod.Find<ModGore>("ChumBone2").Type : Mod.Find<ModGore>("ChumBone1").Type;
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             Gore.NewGorePerfect(NPC.GetSource_Death(), v.position, new Vector2(Main.rand.NextFloat(-2, 2), -6), goreType);
                         }
                     }
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("HauntedChum").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("HauntedChumMouth").Type, 1f);

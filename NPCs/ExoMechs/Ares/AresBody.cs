@@ -125,6 +125,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         // Variable used to stop the arm spawning loop
         private bool armsSpawned = false;
 
+        // Variable used to prevent the fight from softlocking if one mech enters berserk before spawning the others
+        public bool berserkEarlyBugFix = false;
+
         // Exo Mechdusa stuff
         public bool exoMechdusa = false;
         public int neurontimer = 0;
@@ -318,17 +321,21 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         {
                             case 0:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresLaserCannon>(), NPC.whoAmI);
+                                Main.npc[lol].localAI[0] = Main.rand.Next(240);
                                 break;
                             case 1:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresPlasmaFlamethrower>(), NPC.whoAmI);
+                                Main.npc[lol].Calamity().newAI[3] = Main.rand.Next(240);
                                 Main.npc[lol].Calamity().newAI[1] = plasmaArmStartTimer;
                                 break;
                             case 2:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresTeslaCannon>(), NPC.whoAmI);
+                                Main.npc[lol].localAI[0] = Main.rand.Next(240);
                                 Main.npc[lol].Calamity().newAI[1] = teslaArmStartTimer;
                                 break;
                             case 3:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresGaussNuke>(), NPC.whoAmI);
+                                Main.npc[lol].Calamity().newAI[3] = Main.rand.Next(240);
                                 break;
                             default:
                                 break;
@@ -377,7 +384,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             Vector2 betweenR = NeuronRight + velocity * 650;
                             Vector2 betweenL = NeuronLeft + velocity * 650;
                         
-                            Terraria.Audio.SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound with { Volume = CommonCalamitySounds.LaserCannonSound.Volume - 0.2f, Pitch = CommonCalamitySounds.LaserCannonSound.Pitch + 0.2f }, NeuronRight);
+                            SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound with { Volume = CommonCalamitySounds.LaserCannonSound.Volume - 0.2f, Pitch = CommonCalamitySounds.LaserCannonSound.Pitch + 0.2f }, NeuronRight);
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenL, betweenL + velocity, ModContent.ProjectileType<ArtemisLaser>(), 111, 0f, Main.myPlayer, 7, NPC.whoAmI);
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenR, betweenR + velocity, ModContent.ProjectileType<ArtemisLaser>(), 111, 0f, Main.myPlayer, 7, NPC.whoAmI);
 
@@ -442,6 +449,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoWormAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechWorm].ModNPC as ThanatosHead).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -452,6 +462,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoTwinsAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].ModNPC as Apollo.Apollo).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -593,7 +606,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             // Velocity and acceleration values
             float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
-            float baseVelocity = (EnragedState == (float)Enraged.Yes ? 28f : 20f) * baseVelocityMult;
+            float baseVelocity = (EnragedState == (float)Enraged.Yes ? 22f : 14f) * baseVelocityMult;
             float baseAcceleration = shouldGetBuffedByBerserkPhase ? 1.25f : 1f;
             float decelerationVelocityMult = 0.85f;
 
@@ -674,6 +687,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Artemis.Artemis>());
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Apollo.Apollo>());
                             }
+
+                            // If the mech somehow got low enough to enter berserk phase here, trigger the bug fix variable
+                            if (lifeRatio < 0.4f)
+                                berserkEarlyBugFix = true;
                         }
                     }
                     else
@@ -750,8 +767,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 // Fly above target and become immune
                 case (int)SecondaryPhase.PassiveAndImmune:
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 24MAR2025: Actually fixed the early berserk softlock without affecting the normal fight
+                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f || berserkEarlyBugFix) && !otherMechIsBerserk)
                     {
                         // Tells Ares to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
@@ -853,11 +871,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case (int)Phase.Deathrays:
 
                     // Set flight time to max during Deathray Spiral
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < DeathrayEnrageDistance)
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < DeathrayEnrageDistance)
                         {
-                            Main.player[Main.myPlayer].Calamity().infiniteFlight = true;
+                            Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
 
@@ -872,9 +890,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode && revenge)) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
                             {
-                                SoundEngine.PlaySound(EnragedSound, Main.player[Main.myPlayer].Center);
+                                SoundEngine.PlaySound(EnragedSound, Main.LocalPlayer.Center);
                             }
 
                             // Draedon comments on how foolish it is to run
@@ -983,10 +1001,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             }
                         }
 
+                        // The sound stops a few seconds before the attack ends as the lasers shrink in size
+                        float stopSound = deathrayTelegraphDuration + deathrayDuration - 160;
+
                         // Update the deathray sound if it's being played.
-                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying)
+                        if (SoundEngine.TryGetActiveSound(DeathraySoundSlot, out var deathraySound) && deathraySound.IsPlaying && calamityGlobalNPC.newAI[2] < stopSound)
                             deathraySound.Position = NPC.Center;
-                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration)
+                        if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration && calamityGlobalNPC.newAI[2] < stopSound)
                         {
                             // Start the loop sound if the start sound finished.
                             if (deathraySound is null || !deathraySound.IsPlaying || calamityGlobalNPC.newAI[2] == deathrayTelegraphDuration + 180f)
@@ -999,6 +1020,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 else if (deathraySound is not null)
                                     deathraySound.Resume();
                             }
+                        }
+
+                        // Stop the laser loop and play the end sound.
+                        if (calamityGlobalNPC.newAI[2] == stopSound)
+                        {
+                            deathraySound?.Stop();
+                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
                         }
 
                         if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration + deathrayDuration)
@@ -1065,10 +1093,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (EnragedState == (float)Enraged.Yes)
                                     EnragedState = (float)Enraged.No;
                             }
-
-                            // Stop the laser loop and play the end sound.
-                            deathraySound?.Stop();
-                            SoundEngine.PlaySound(LaserEndSound, NPC.Center);
 
                             NPC.localAI[0] += 1f;
                             NPC.TargetClosest();
@@ -1667,7 +1691,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresBody1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresBody2").Type, 1f);

@@ -75,8 +75,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = mouse;
             else
                 Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(mouse) * 19f) / 4f;
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         internal void ReturnToOwner()
@@ -104,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 // Play a splatter and impact sound.
                 SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);

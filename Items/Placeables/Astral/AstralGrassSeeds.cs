@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Placeables.Astral
             Item.useTime = 10;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
 
             Item.value = Item.buyPrice(silver: 20); // Sold by Dryad; equal to Hallowed Seeds
         }

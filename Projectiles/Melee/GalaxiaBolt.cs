@@ -15,7 +15,9 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
 
         public ref float Hue => ref Projectile.ai[0];
-        public ref float HomingStrenght => ref Projectile.ai[1];
+        public ref float HomingStrength => ref Projectile.ai[1];
+        public ref float ShouldDelayHoming => ref Projectile.ai[2];
+        public bool StrongerHoming = false;
 
         Particle Head;
 
@@ -56,10 +58,10 @@ namespace CalamityMod.Projectiles.Melee
             if (target == null)
                 target = Projectile.Center.ClosestNPCAt(812f, true);
 
-            else if (CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2) //Home in
+            else if ((CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2 || StrongerHoming) && (ShouldDelayHoming != 1f || Projectile.timeLeft < 60)) //Home in
             {
                 float idealDirection = Projectile.AngleTo(target.Center);
-                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrenght);
+                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrength);
                 Projectile.velocity = updatedDirection.ToRotationVector2() * Projectile.velocity.Length() * 0.995f;
             }
 

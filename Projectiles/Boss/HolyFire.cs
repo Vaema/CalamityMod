@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
 
-            Projectile.alpha -= !ProvUtils.DayAI() ? 10 : 5;
+            Projectile.alpha -= !ProvUtils.StandardAI() ? 10 : 5;
             if (Projectile.alpha <= 0)
                 Projectile.Kill();
 
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.scale = 1.5f;
-            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFireNight").Value;
+            Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFireNight").Value;
             int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, new Vector2(Projectile.scale));

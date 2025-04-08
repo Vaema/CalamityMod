@@ -443,8 +443,8 @@ namespace CalamityMod.World
                 NetMessage.SendTileSquare(-1, i, j, 40, TileChangeType.None);
                 if (CanAstralBiomeSpawn())
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                        SoundEngine.PlaySound(MeteorSound, Main.player[Main.myPlayer].position);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                        SoundEngine.PlaySound(MeteorSound, Main.LocalPlayer.position);
 
                     // Immediately prior to mass-converting blocks to Astral, write down the Y position of this event.
                     YStart = j;
@@ -455,7 +455,7 @@ namespace CalamityMod.World
                     if (j < 181)
                         j = 181;
 
-                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-80, -40) : WorldGen.genRand.Next(40, 80);
+                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-100, -50) : WorldGen.genRand.Next(50, 100);
 
                     bool altarPlaced = false;
                     while (!altarPlaced)
@@ -473,6 +473,7 @@ namespace CalamityMod.World
                         if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x, y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType]
                             && (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType))) //AVOID HOUSES
                         {
+
                             bool place = true;
                             SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(x, y - 5), SchematicAnchor.Center, ref place);
 
@@ -1177,7 +1178,7 @@ namespace CalamityMod.World
                     {
                         WorldGen.SquareTileFrame(x, y, true);
                     }
-                    else if (Main.netMode == NetmodeID.Server)
+                    else if (Main.dedServ)
                     {
                         NetMessage.SendTileSquare(-1, x, y, 1);
                     }

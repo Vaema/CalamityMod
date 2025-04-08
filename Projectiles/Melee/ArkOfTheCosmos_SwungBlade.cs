@@ -153,8 +153,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.localNPCHitCooldown = (int)(Projectile.localNPCHitCooldown / 4f);
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (!Thrown)
@@ -414,7 +413,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Combo == 3f)
-                modifiers.SourceDamage *= ArkoftheElements.snapDamageMultiplier;
+                modifiers.SourceDamage *= ArkoftheCosmos.SnapDamageMultiplier;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

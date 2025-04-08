@@ -12,9 +12,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 {
     public abstract class BaseCustomUseStyleProjectile : ModProjectile
     {
-
+        public bool whenSpawned = true;
         public override void SetDefaults()
         {
+            // Width and height are set here so it can destroy cobwebs better lol
+            Projectile.width = (int)Math.Max(HitboxSize.X, 1);
+            Projectile.height = (int)Math.Max(HitboxSize.Y, 1);
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
@@ -65,6 +68,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// If true, flips the sprite with a 45-degree sword tilt in mind.
         /// </summary>
         public bool FlipAsSword = false;
+
+        /// <summary>
+        /// If true, the sword will be active reguardless of the player being in an item use state.
+        /// </summary>
+        public bool IgnoreActiveAnimation = false;
 
         /// <summary>
         /// The offset in radians of the weapon's rotation from its current rotation.
@@ -145,6 +153,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual void ResetStyle() { }
 
         /// <summary>
+        /// Determines the behavior of the projectile when spawned. (but it is multiplayer synced)
+        /// </summary>
+        public virtual void WhenSpawned() { }
+        /// <summary>
         /// Determines the behavior of the projectile when the item is in use.
         /// </summary>
         public virtual void UseStyle() { }
@@ -162,9 +174,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            if (whenSpawned)
+            {
+                WhenSpawned();
+                whenSpawned = false;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
+                Projectile.netUpdate = true;
+            }
+
             bool ItemAnimationActive = Owner.ItemAnimationActive;
 
-            if (Owner.HeldItem.type != AssignedItemID)
+            if (Owner.HeldItem.type != AssignedItemID || Owner.dead)
             {
                 Projectile.Kill();
             }
@@ -172,7 +192,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.Calamity().mouseWorldListener = true;
             Owner.Calamity().rightClickListener = true;
 
-            if (ItemAnimationActive)
+            if (ItemAnimationActive || IgnoreActiveAnimation)
             {
                 Animation++;
 

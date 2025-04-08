@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
         // Reused by Rubber Mortar Rounds.
         internal static void SpawnExplosionGores(Projectile p)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Vector2 goreSource = p.Center;

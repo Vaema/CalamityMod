@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 34;
-            Item.damage = 320;
+            Item.damage = 385;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -51,11 +51,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.Calamity().cooldowns.TryGetValue(HellbornShots.ID, out var cooldown))
             {
-                cooldown.timeLeft = 8 - player.Calamity().hellbornShots;
+                cooldown.timeLeft = 12 - player.Calamity().hellbornShots;
             }
             else
             {
-                player.AddCooldown(HellbornShots.ID, 8);
+                player.AddCooldown(HellbornShots.ID, 12);
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

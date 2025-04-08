@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
             CalamityPlayer modPlayer = player.Calamity();
@@ -179,10 +179,6 @@ namespace CalamityMod.Items.Accessories
                             TwoPlaces(60f * player.GetStandingStealthRegen()),
                             TwoPlaces(60f * player.GetMovingStealthRegen()),
                             Sign(rogueVelocity) + TwoPlaces(100f * rogueVelocity));
-
-                        // Rogue consumable chance only if item is consumable
-                        if (heldItem.consumable)
-                            stats2 += this.GetLocalization("RogueConsumption").Format(100f * modPlayer.rogueAmmoCost);
                     }
 
                     // If tool, add tool range

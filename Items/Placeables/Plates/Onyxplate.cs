@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Placeables.Plates
             CreateRecipe().
                 AddIngredient<OnyxplateWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

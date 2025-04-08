@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundStyle onKill = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
             SoundEngine.PlaySound(onKill with { Volume = 0.4f, Pitch = 0.4f }, Projectile.position);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int k = 0; k < 7; k++)
                 {

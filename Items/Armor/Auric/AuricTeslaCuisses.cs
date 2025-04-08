@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Armor.Bloodflare;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
@@ -30,6 +31,18 @@ namespace CalamityMod.Items.Armor.Auric
             player.carpet = true;
             player.GetDamage<GenericDamageClass>() += 0.12f;
             player.GetCritChance<GenericDamageClass>() += 5;
+        }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            //This just runs the ModifyTooltips for whatever helmet is equipped if a full auric set is equipped; but runs it on this item's tooltips.
+            //This is a simple way to copy the tooltip edits for the set bonuses and have it adapt to helmet type.
+            //If we ever add a way for auricSet to be TRUE without a helmet on, this will need to be changed.
+            //If the helmet's ModifyTooltips is changed to do more than just the Set Bonus, their Set Bonus modification should be moved into it's own method, and have that called both here and in the helmet's ModifyTooltips.
+            //Alternatively, their ModifyTooltips could simply return early if the item ID doesn't match the helmet type.
+            if (Main.LocalPlayer.Calamity().auricSet)
+            {
+                Main.LocalPlayer.armor[0].ModItem.ModifyTooltips(tooltips);
+            }
         }
 
         public override void AddRecipes()

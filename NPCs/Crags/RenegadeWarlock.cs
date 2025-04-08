@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int count = Main.zenithWorld ? 20 : 1; // remember that old oversight in the draedon update?
                     for (int g = 0; g < count; g++)

@@ -27,16 +27,12 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float needleDamageMultiplier = 0.8f; //Damage multiplier for non-homing needle projectile
         public static float glassStarDamageMultiplier = 0.2f; //Damage multiplier for the homing glass stars (4 glass stars per shot)
 
-        public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
-        public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
-        public static float blastFalloffStrenght = 0.75f; //Value between 0 and 1 that determines how much falloff increases affect the damage : Closer to 0 = damage falls off less intensely, closer to 1 : damage falls off way harder
-
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             if (tooltips == null)
                 return;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -51,12 +47,6 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 parryTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
                 parryTooltip.OverrideColor = Color.Orange;
-            }
-            var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
-            if (blastTooltip != null)
-            {
-                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
-                blastTooltip.OverrideColor = Color.Gold;
             }
         }
 
@@ -106,18 +96,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                if (Charge > 0 && player.controlUp)
-                {
-                    float angle = velocity.ToRotation();
-                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheElementsSnapBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
-                    Charge = 0;
-                }
-
-                else if (!Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == ProjectileType<ArkoftheAncientsParryHoldout>() || n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() || n.type == ProjectileType<ArkoftheElementsParryHoldout>() || n.type == ProjectileType<ArkoftheCosmosParryHoldout>())))
+                if (!Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == ProjectileType<ArkoftheAncientsParryHoldout>() || n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() || n.type == ProjectileType<ArkoftheElementsParryHoldout>() || n.type == ProjectileType<ArkoftheCosmosParryHoldout>())))
                     Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheElementsParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
 
                 return false;
@@ -132,9 +111,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Combo += 1;
             if (Combo > ComboLength)
                 Combo = 0;
-
-
-
 
             //Shoot projectiles every upwards swing
             if (scissorState == 1f)

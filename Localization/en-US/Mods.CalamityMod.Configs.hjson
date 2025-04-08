@@ -183,6 +183,16 @@ CalamityClientConfig: {
 			'''
 	}
 
+	Photosensitivity: {
+		Label: "[i:DiscoBall] Photosensitivity Mode"
+		Tooltip:
+			'''
+			Reduces or disables the brightness and/or flashiness of certain visual effects.
+			Also disables all screenshake effects.
+			Highly recommended if you are photosensitive.
+			'''
+	}
+
 	RageMeterPosX: {
 		Label: "[i:LaserRuler] Rage Meter X Position"
 		Tooltip:
@@ -312,7 +322,7 @@ CalamityClientConfig: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
 			'''
-			Adds the vanilla debuffs Potion Sickness and Chaos State to the Cooldown Rack.
+			Adds the vanilla effects Potion Sickness, Chaos State, and Holy Protection to the Cooldown Rack.
 			The debuffs will still appear in the buffs array, but this may help make them more visible.
 			'''
 	}
@@ -454,15 +464,6 @@ CalamityServerConfig: {
 			'''
 	}
 
-	HigherJumpHeight: {
-		Label: "[i:ShinyRedBalloon] Increase Base Jump Height"
-		Tooltip:
-			'''
-			Increases the player's base jump height by 10% so that they can jump 7 tiles.
-			Calamity is balanced around this setting being enabled.
-			'''
-	}
-
 	NerfExpertDebuffs: {
 		Label: "[i:AnkhCharm] Remove Increased Debuff Duration"
 		Tooltip:
@@ -483,15 +484,6 @@ CalamityServerConfig: {
 			'''
 			Removes randomness from the Goblin Tinkerer's reforges for both weapons and accessories.
 			Disable this if using mods that change reforging on their own to prevent conflicts.
-			'''
-	}
-
-	PotionSelling: {
-		Label: "[i:SpelunkerPotion] Town NPC Potion Selling"
-		Tooltip:
-			'''
-			Allows town NPCs to sell various potions.
-			Certain potions are sold after specific bosses have been defeated.
 			'''
 	}
 

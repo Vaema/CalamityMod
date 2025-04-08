@@ -36,7 +36,7 @@ namespace CalamityMod.Particles
         {
             get
             {
-                if (Main.netMode != NetmodeID.Server && basicShader is null)
+                if (!Main.dedServ && basicShader is null)
                 {
                     basicShader = new BasicEffect(Main.instance.GraphicsDevice)
                     {
@@ -88,7 +88,7 @@ namespace CalamityMod.Particles
         public static void CreateAshesFromNPC(NPC npc, Vector2 velocityOverride)
         {
             // Don't create ashes serverside.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             VelOverride = velocityOverride;
@@ -250,7 +250,7 @@ namespace CalamityMod.Particles
         public static void UpdateAll()
         {
             // Don't draw ashes serverside.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             foreach (DeathAshParticle ash in Ashes)

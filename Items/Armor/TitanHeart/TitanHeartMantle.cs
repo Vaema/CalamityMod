@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -34,8 +34,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            // 15% attack speed penalty
-            player.GetAttackSpeed<ThrowingDamageClass>() -= 0.15f;
+            player.GetDamage<ThrowingDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()

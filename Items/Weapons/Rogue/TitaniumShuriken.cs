@@ -12,12 +12,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 34;
             Item.height = 34;
-            Item.damage = 41;
+            Item.damage = 38;
+            Item.useAnimation = Item.useTime = 9;
+            Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 9;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 9;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -27,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-        public override float StealthDamageMultiplier => 1.3f;
         public override float StealthVelocityMultiplier => 1.25f;
 
 
@@ -42,9 +40,9 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].usesLocalNPCImmunity = true;
                     Main.projectile[stealth].aiStyle = -1;
                     Main.projectile[stealth].extraUpdates = 1;
+                    Main.projectile[stealth].localNPCHitCooldown = -1;
                 }
                 return false;
             }

@@ -44,6 +44,7 @@ namespace CalamityMod.ILEditing
             On_Main.DrawInfernoRings += DrawForegroundParticles;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
+            On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;
 
             // Graphics (dyeable shader stuff)
             On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;
@@ -67,6 +68,7 @@ namespace CalamityMod.ILEditing
             On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
+            On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
             On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
@@ -89,6 +91,8 @@ namespace CalamityMod.ILEditing
             On_NPC.DoDeathEvents_CelebrateBossDeath += TripletsDefeatTextOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
+            On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
+            On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
@@ -144,12 +148,13 @@ namespace CalamityMod.ILEditing
             IL_Projectile.Damage += VanillaBossResistChanges;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
+            IL_Player.UpdateArmorSets += SolarWingsDashChange;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            IL_Player.Update += BaseJumpHeightAdjustment;
+            IL_Player.Update += BaseJumpSpeedAdjustment;
             IL_Player.Update += RunSpeedAdjustments;
             IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
@@ -173,7 +178,6 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
             IL_UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
-            IL_UIWorldCreation.AddWorldDifficultyOptions += SwapMasterModeDescriptionKey;
             Terraria.IO.On_WorldFile.ClearTempTiles += ClearModdedTempTiles;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
@@ -188,6 +192,7 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
+            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
@@ -198,9 +203,10 @@ namespace CalamityMod.ILEditing
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
-            On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
+            On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
+            On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

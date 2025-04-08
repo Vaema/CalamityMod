@@ -93,7 +93,11 @@ namespace CalamityMod.Projectiles.Melee
                 GalaxyMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 195f * Main.rand.NextFloat(0.9f, 1f));
             }
         }
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (targeted != null && target != targeted)
+                modifiers.SourceDamage *= 0.3f;
+        }
         public override bool? CanHitNPC(NPC target)
         {
             return null;

@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 namespace CalamityMod.Projectiles.Magic
 {
     public class PrimordialAncientProjectile : ModProjectile, ILocalizedModType
@@ -32,7 +28,6 @@ namespace CalamityMod.Projectiles.Magic
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 140;
@@ -47,7 +42,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 40 * Projectile.extraUpdates;
         }
-
         public override void AI()
         {
             if (time == 0)
@@ -63,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
                 curve = MathHelper.Lerp(curve, 0f, 0.035f);
                 Projectile.velocity *= Main.rand.NextFloat(0.985f, 0.995f);
                 if (Projectile.ai[1] != 1)
-                    Projectile.velocity = Projectile.velocity.RotatedBy(curve * rotDirection);
+                    Projectile.velocity = Projectile.velocity.RotatedBy(curve * Projectile.localAI[0]);
             }
 
             if (Projectile.ai[2] == 1)
@@ -77,7 +71,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 540);
+                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 840);
 
                             int Dusts = 8;
                             float radians = MathHelper.TwoPi / Dusts;
@@ -203,7 +197,7 @@ namespace CalamityMod.Projectiles.Magic
                 dust2.alpha = 100;
             }
 
-            Projectile.rotation += Main.rand.NextFloat(0.1f * Utils.GetLerpValue(-100, 360, time)) * (float)Projectile.direction * rotDirection;
+            Projectile.rotation += Main.rand.NextFloat(0.1f * Utils.GetLerpValue(-100, 360, time)) * (float)Projectile.direction * Projectile.localAI[0];
 
             time++;
         }

@@ -51,19 +51,10 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.Calamity().stealthStrike)
                 {
-                    float random = Main.rand.Next(30, 90);
-                    float spread = random * 0.0174f;
-                    double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                    double deltaAngle = spread / 8f;
-
-                    int projID = ModContent.ProjectileType<TarraThornRight>();
-                    int splitDamage = (int)(Projectile.damage * 0.25f);
-                    float splitKB = 1f;
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 8; i++)
                     {
-                        double offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f) * 2f, (float)(Math.Cos(offsetAngle) * 5f) * 2f, projID, splitDamage, splitKB, Projectile.owner);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f) * 2f, (float)(-Math.Cos(offsetAngle) * 5f) * 2f, projID, splitDamage, splitKB, Projectile.owner);
+                        Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.ToRadians(67.5f) - Projectile.velocity.ToRotation())).ToRotationVector2() * 10f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TarraThornRight>(), (int)(Projectile.damage * 0.25f), Projectile.knockBack * 0.25f, Projectile.owner);
                     }
                 }
             }

@@ -60,9 +60,11 @@ ApoctosisArray: {
 	DisplayName: Apoctosis Array
 	Tooltip:
 		'''
-		Fires ion blasts that speed up and then explode
-		Damage scales with how full your mana is
-		Using Astral Injection reduces the effectiveness of the mana boost
+		Rapidly fires an array of ion blasts with heavy armor penetration that accelerate and explode
+		Press <right> to charge the blaster, restoring your mana until it reaches max
+		The more mana you restore, the stronger the arrow is when you release it
+		Charging for 90% of your max mana or more will reach max power
+		Holding this weapon disables the pickup of stars
 		'''
 }
 
@@ -495,9 +497,11 @@ IonBlaster: {
 	DisplayName: Ion Blaster
 	Tooltip:
 		'''
-		Fires ion blasts that speed up and then explode
-		Damage scales with how full your mana is
-		Using Astral Injection reduces the effectiveness of the mana boost
+		Rapidly fires ion blasts with heavy armor penetration that accelerate and explode
+		Press <right> to charge the blaster, restoring your mana until it reaches max
+		The more mana you restore, the stronger the burst is when you release it
+		Charging for 90% of your max mana or more will reach max power
+		Holding this weapon disables the pickup of stars
 		'''
 }
 
@@ -517,11 +521,6 @@ LashesofChaos: {
 		Alternates between exploding hellfireballs and piercing hellblasts
 		'Watch the world burn...'
 		'''
-}
-
-Lazhar: {
-	DisplayName: Lazhar
-	Tooltip: Fires a highly volatile concentrated solar beam
 }
 
 LightGodsBrilliance: {
@@ -933,15 +932,6 @@ ThornBlossom: {
 		'''
 }
 
-Thunderbolt: {
-	DisplayName: Thunderbolt
-	Tooltip:
-		'''
-		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
-		Each ball lightning emits two additional lightning bolts before exploding
-		'''
-}
-
 Tradewinds: {
 	DisplayName: Tradewinds
 	Tooltip: Casts fast moving sunlight feathers
@@ -1030,9 +1020,18 @@ VoltaicClimax: {
 	Tooltip: Conjures a ring of supercharged magnet spheres around the cursor
 }
 
+Volterion: {
+	DisplayName: Volterion
+	Tooltip:
+		'''
+		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
+		Each ball lightning emits two additional lightning bolts before exploding
+		'''
+}
+
 Waywasher: {
 	DisplayName: Waywasher
-	Tooltip: Casts a deluge of inaccurate water bolts
+	Tooltip: Casts two large swirling waves
 }
 
 Wingman: {
@@ -1052,11 +1051,6 @@ WintersFury: {
 		Fires a stream of ice orbs and a barrage of ice shards towards the cursor
 		'The pages are freezing to the touch'
 		'''
-}
-
-WrathoftheAncients: {
-	DisplayName: Wrath of the Ancients
-	Tooltip: Summons an energy pulse at the cursor to periodically summon homing spirits
 }
 
 WulfrumProsthesis: {

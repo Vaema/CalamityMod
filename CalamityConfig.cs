@@ -65,6 +65,10 @@ namespace CalamityMod
         public bool Afterimages { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool Photosensitivity { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool EnableVanillaTextureEdits { get; set; }
 
@@ -322,10 +326,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool PotionSelling { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(false)]
         public bool TownNPCsSpawnAtNight { get; set; }
 
         private const int MinTownNPCSpawnMultiplier = 1;
@@ -378,10 +378,6 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FasterRopeClimbSpeed { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool HigherJumpHeight { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

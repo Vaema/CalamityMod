@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
         }
         public override void AI()
         {
@@ -167,26 +167,22 @@ namespace CalamityMod.Projectiles.Rogue
                         Projectile.Kill();
                         if (Projectile.Calamity().stealthStrike)
                         {
-                            for (int x = 0; x < Main.maxProjectiles; x++)
+                            foreach (Projectile p in Main.ActiveProjectiles)
                             {
-                                Projectile projectile = Main.projectile[x];
-                                if (projectile.active)
+                                if (p.type == ModContent.ProjectileType<WhitewaterAura>() && p.owner == Projectile.owner)
                                 {
-                                    if (projectile.type == ModContent.ProjectileType<WhitewaterAura>())
-                                    {
-                                        if (projectile.timeLeft > 30)
-                                            projectile.timeLeft = 30;
-                                    }
+                                    if (p.timeLeft > 30)
+                                        p.timeLeft = 30;
                                 }
                             }
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.1f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.3f), Projectile.knockBack, Projectile.owner, 0f, 0f);
                         }
                     }
                 }
             }
             time++;
         }
-        public override bool? CanDamage() => (shattered && !returning) ? false : null;
+        public override bool? CanDamage() => (shattered || returning) ? false : null;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (damageModifier > 0.05f)
@@ -197,7 +193,7 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundStyle sound = new("CalamityMod/Sounds/Item/BreakAndReform");
                 SoundEngine.PlaySound(sound with { Volume = 0.4f }, Projectile.Center);
 
-                int points = Projectile.Calamity().stealthStrike ? 8 : 4;
+                int points = Projectile.Calamity().stealthStrike ? 6 : 4;
                 float radians = MathHelper.TwoPi / points;
                 Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
                 for (int k = 0; k < points; k++)

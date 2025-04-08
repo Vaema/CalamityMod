@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 74;
             Item.height = 126;
-            Item.damage = 79;
+            Item.damage = 116; 
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 25;
@@ -74,9 +74,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            // Always fires Radiant Arrows regardless of ammo used
-            //type = Item.shoot;
-
             // The arrow appears from a random location "on the bow".
             // They are also moved backwards so that they have some time to build up past positions. This helps make them not appear out of thin air.
 
@@ -95,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 SoundEngine.PlaySound(sound with { Volume = 0.25f, Pitch = Main.rand.NextFloat(-0.3f, -0.8f), MaxInstances = -1 }, player.Center);
                 type = Item.shoot;
             }
-            Projectile.NewProjectile(source, position, velocity, type, (isHolyArrow ? (int)(damage * 1.2f) : damage), knockback, player.whoAmI);
+            Projectile.NewProjectile(source, (isHolyArrow || shots % 2 == 0) ? position : player.Center + velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.ToRadians(90)) * Main.rand.NextFloat(-15, 15), velocity, type, (isHolyArrow ? (int)(damage * 1.2f) : damage), knockback, player.whoAmI);
             shots++;
             return false;
         }

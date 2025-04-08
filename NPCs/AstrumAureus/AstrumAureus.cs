@@ -95,8 +95,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.width = 374;
             NPC.height = 374;
             NPC.defense = 40;
-            NPC.DR_NERD(0.5f);
-            NPC.LifeMaxNERB(100000, 120000, 740000); // 30 seconds in boss rush
+            NPC.DR_NERD(0.4f);
+            NPC.LifeMaxNERB(120000, 140000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -431,7 +431,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<FAP>() }, DownedBossSystem.downedAstrumAureus);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)
@@ -490,7 +490,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     aureusDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                     Main.dust[aureusDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("Aureus1").Type, 1f);

@@ -86,15 +86,15 @@ namespace CalamityMod.Items.Armor.LunicCorps
             string adrenTooltip = CalamityWorld.revenge ? "\n" + this.GetLocalizedValue("ShieldAdren") : "";
             player.setBonus = this.GetLocalization("SetBonus").Format(adrenTooltip);
 
-            player.bulletDamage += 0.1f;
-            player.specialistDamage += 0.1f;
+            player.bulletDamage += 0.15f;
+            player.specialistDamage += 0.15f;
 
             player.jumpSpeedBoost += 1f;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.12f;
+            player.GetDamage<RangedDamageClass>() += 0.15f;
             player.nightVision = true;
             player.detectCreature = true;
         }
@@ -169,8 +169,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            var matrix = Main.GameViewMatrix.TransformationMatrix;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
             {
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");

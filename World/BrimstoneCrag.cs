@@ -524,11 +524,11 @@ namespace CalamityMod.World
 
             if (!firstItem)
             {
-                contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Weapons.Rogue.AshenStalactite>(), 1));
+                contents.Insert(0, new ChestItem(ItemID.ObsidianWaterWalkingBoots, 1));
             }
             else
             {
-                contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Weapons.Melee.BladecrestOathsword>(), 1));
+                contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Fishing.FishingRods.SlurperPole>(), 1));
             }
 
             for (int i = 0; i < contents.Count; i++)

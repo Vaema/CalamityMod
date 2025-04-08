@@ -16,14 +16,14 @@ namespace CalamityMod.Items.Armor.Mollusk
             Item.height = 22;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 22;
+            Item.defense = 18;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.GetCritChance<GenericDamageClass>() += 6;
-            player.moveSpeed -= 0.15f;
+            player.GetDamage<GenericDamageClass>() += 0.06f;
+            player.GetCritChance<GenericDamageClass>() += 5;
+            player.Calamity().molluskChest = true;
         }
 
         public override void AddRecipes()

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
@@ -242,6 +243,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (Main.rand.NextBool(3))
                 target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 90);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 90);
 
             SoundEngine.PlaySound(SoundID.Item70 with { Volume = SoundID.Item70.Volume * 0.5f }, Projectile.Center);
             Projectile.velocity = new Vector2(0f, 5f).RotatedBy(Projectile.velocity.ToRotation() + 1.5f);

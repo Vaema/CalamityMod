@@ -2,6 +2,7 @@
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -27,7 +28,6 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 25;
             NPC.width = 50;
             NPC.height = 36;
@@ -171,7 +171,11 @@ namespace CalamityMod.NPCs.SulphurousSea
             return 0f;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ItemID.TurtleShell, 10);
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<ContaminatedBile>(), 5);
+            npcLoot.AddIf(() => Main.hardMode, ItemID.TurtleShell, 10);
+        }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
@@ -183,7 +187,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 for (int k = 0; k < 15; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Gnasher").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Gnasher2").Type, 1f);

@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             if (Projectile.ai[0] == 0)
             {
+                Projectile.ArmorPenetration = 40;
                 if (Projectile.timeLeft == TimeLeft)
                 {
                     storedVel = Projectile.velocity;
@@ -51,12 +52,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
-
                     if (Projectile.timeLeft == TimeLeft - 60)
                         Projectile.velocity = storedVel;
 
-                    NPC target = Projectile.Center.ClosestNPCAt(500);
-                    CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.3f, 10, 0.99f);
+                    NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(500);
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.3f, 10, 0.98f);
 
                     if (Main.rand.NextBool(5))
                     {
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.ai[0] == 0) // "Jaw" teeth
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             }
             for (int i = 0; i <= 4; i++)
             {
@@ -133,6 +133,13 @@ namespace CalamityMod.Projectiles.Melee
             }
             SoundStyle sound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
             SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.25f;
+            int hitsToMinMult = 6;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
     }
 }

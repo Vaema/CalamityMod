@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using Terraria.ID;
@@ -32,12 +33,11 @@ namespace CalamityMod.Systems.Collections
                 ProjectileID.ChargedBlasterCannon,
                 ProjectileID.MedusaHead,
 
-                ProjectileType<UrchinMaceProjectile>(),
+                ProjectileType<UrchinMaceProj>(),
                 ProjectileType<BrokenBiomeBladeHoldout>(),
                 ProjectileType<AridGrandeur>(),
                 ProjectileType<BitingEmbrace>(),
                 ProjectileType<DecaysRetort>(),
-                ProjectileType<GrovetendersTouch>(),
                 ProjectileType<BiomeBladeHoldout>(),
                 ProjectileType<TrueAridGrandeur>(),
                 ProjectileType<TrueBitingEmbrace>(),
@@ -45,13 +45,12 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<TrueGrovetendersTouch>(),
                 ProjectileType<HeavensMight>(),
                 ProjectileType<HellbornHoldout>(),
-                ProjectileType<ExtantAbhorrence>(),
                 ProjectileType<TrueBiomeBladeHoldout>(),
                 ProjectileType<LamentationsOfTheChained>(),
                 ProjectileType<ChainedMeatHook>(),
                 ProjectileType<SwordsmithsPride>(),
                 ProjectileType<SanguineFury>(),
-                ProjectileType<MercurialTides>(),
+                ProjectileType<EarthenTides>(),
                 ProjectileType<GalaxiaHoldout>(),
                 ProjectileType<PhoenixsPride>(),
                 ProjectileType<PolarisGaze>(),
@@ -61,12 +60,15 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<ArkoftheAncientsParryHoldout>(),
                 ProjectileType<TrueArkoftheAncientsSwungBlade>(),
                 ProjectileType<TrueArkoftheAncientsParryHoldout>(),
-                ProjectileType<TrueAncientBlast>(),
                 ProjectileType<ArkoftheElementsSwungBlade>(),
                 ProjectileType<ArkoftheElementsParryHoldout>(),
                 ProjectileType<ArkoftheCosmosSwungBlade>(),
                 ProjectileType<ArkoftheCosmosParryHoldout>(),
                 ProjectileType<BasherHoldout>(),
+                ProjectileType<OldLordClaymoreHoldout>(),
+                ProjectileType<ForbiddenOathbladeHoldout>(),
+                ProjectileType<ExaltedOathbladeHoldout>(),
+                ProjectileType<DevilsDevastationHoldout>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<EarthHoldout>(),

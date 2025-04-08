@@ -464,7 +464,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     //head
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Top, NPC.velocity * 0.5f, Mod.Find<ModGore>("AtlasGore4").Type);

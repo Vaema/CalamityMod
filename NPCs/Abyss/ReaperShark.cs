@@ -115,7 +115,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.soundDelay = 360;
                 if (hasBeenHit)
                 {
-                    SoundEngine.PlaySound(EnragedRoarSound, NPC.Center);
+                    // Roar becomes lower pitch when crippled
+                    float pitch = phase3 ? -0.4f : 0;
+                    SoundEngine.PlaySound(EnragedRoarSound with { Pitch = pitch }, NPC.Center);
                 }
                 else
                 {
@@ -709,7 +711,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 300, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

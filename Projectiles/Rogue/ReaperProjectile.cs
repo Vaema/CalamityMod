@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public int time = 0;
-        public int ChargeupTime = 56;
+        public int ChargeupTime = 50;
         public int Lifetime = 500;
         public bool spinning = false;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/TheOldReaper";
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     if (time >= 150)
                     {
-                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(1000);
+                        NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(2000);
                         if (time == 150)
                         {
                             Projectile.extraUpdates = 25;
@@ -243,7 +243,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     Particle Smear = new CustomPulse(rainSpot, Vector2.Zero, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-5, 5), 0, 0.35f, 12);
                     GeneralParticleHandler.SpawnParticle(Smear);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.13), 0f, Projectile.owner, 0, 0, 100);
                 }
                 else // Radiation Burst
                 {

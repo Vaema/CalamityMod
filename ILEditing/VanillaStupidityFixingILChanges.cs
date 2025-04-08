@@ -7,6 +7,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -14,7 +15,9 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -251,6 +254,15 @@ namespace CalamityMod.ILEditing
                 pickPower = 65;
 
             return orig(self, x, y, pickPower, hitBufferIndex, tileTarget);
+        }
+        #endregion
+
+        #region Remove Flail Throw Velocity Being Affected By Player Velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
         }
         #endregion
 
@@ -1037,7 +1049,7 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
-        #region Remove Lihzahrd Power Cells Requiring Plantera Defeated
+        #region Vanilla Non-Linearity Fixes
         private static void RemovePowerCellPlanteraLock(ILContext il)
         {
             // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
@@ -1054,13 +1066,13 @@ namespace CalamityMod.ILEditing
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
-        #endregion
 
-        #region Celestial Sigil Non-Linearity Change
-        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        private static bool RemoveUseLocks(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+            if (sItem.type == ItemID.SolarTablet)
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }
@@ -1109,6 +1121,38 @@ namespace CalamityMod.ILEditing
             // After that we pop NPC.damage and 0 from stack
             cursor.EmitPop();
             cursor.EmitPop();
+        }
+        #endregion
+
+        #region Multiple NPC Happiness support for Cirrus
+        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        {
+            FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
+            NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
+
+            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            {
+                MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                FieldInfo happinessField = typeof(ShopHelper).GetField("_currentPriceAdjustment", BindingFlags.Instance | BindingFlags.NonPublic);
+                float currentPriceAdjustment = (float)happinessField.GetValue(self);
+
+                if (affectionLevel != 0 && Enum.IsDefined(affectionLevel))
+                {
+                    // Add a suffix to the localization key which specifies the NPC's name
+                    addReportField.Invoke(self, [ $"{affectionLevel}NPC_" + NPCID.Search.GetName(npcType),  new
+                    {
+                        NPCName = NPC.GetFullnameByID(npcType)
+                    }, 0]);
+                    currentPriceAdjustment *= NPCHappiness.AffectionLevelToPriceMultiplier[affectionLevel];
+                    happinessField.SetValue(self, currentPriceAdjustment);
+                }
+            }
+            else
+            {
+                orig(self, npcType, affectionLevel);
+            }
         }
         #endregion
 

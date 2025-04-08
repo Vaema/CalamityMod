@@ -107,6 +107,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
         // Variable to pick a different location after each attack
         private bool pickNewLocation = false;
 
+        // Variable used to prevent the fight from softlocking if one mech enters berserk before spawning the others
+        public bool berserkEarlyBugFix = false;
+
         // Marks Apollo as a component of the Exo Mechdusa
         public bool exoMechdusa = false;
 
@@ -277,6 +280,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
                     otherExoMechsAlive++;
                     exoWormAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechWorm].ModNPC as ThanatosHead).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
             if (CalamityGlobalNPC.draedonExoMechPrime != -1)
@@ -288,6 +294,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
                     otherExoMechsAlive++;
                     exoPrimeAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ModNPC as AresBody).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -669,6 +678,10 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                                 NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<ThanatosHead>());
                                 NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<AresBody>());
                             }
+
+                            // If the mech somehow got low enough to enter berserk phase here, trigger the bug fix variable
+                            if (lifeRatio < 0.4f)
+                                berserkEarlyBugFix = true;
                         }
                     }
                     else
@@ -851,14 +864,15 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                     // Do nothing while immune
                     AIState = (float)Phase.Normal;
 
-                    // Enter the fight again if any of the other exo mechs is below 70% and other mechs aren't berserk
-                    if ((exoWormLifeRatio < 0.7f || exoPrimeLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
+                    // CIT 24MAR2025: Actually fixed the early berserk softlock without affecting the normal fight
+                    if ((exoWormLifeRatio < 0.7f || exoPrimeLifeRatio < 0.7f || berserkEarlyBugFix) && !otherMechIsBerserk)
                     {
                         // Set Artemis variables
                         if (exoMechTwinRedAlive)
                         {
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] =
-                                totalOtherExoMechLifeRatio > 5f ? (float)Artemis.Artemis.SecondaryPhase.Nothing : (float)Artemis.Artemis.SecondaryPhase.Passive;
+                                totalOtherExoMechLifeRatio > 5f ? (float)SecondaryPhase.Nothing : (float)SecondaryPhase.Passive;
 
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
@@ -1163,8 +1177,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
 
                         NPC.velocity = Vector2.Normalize(chargeLocations[(int)calamityGlobalNPC.newAI[2] + 1] - chargeLocations[(int)calamityGlobalNPC.newAI[2]]) * chargeVelocity;
                         NPC.localAI[2] = 1f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam -= 5;
+                        NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
                         if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge))) // I'm not that evil (you aren't, but I am - Fab)
@@ -1750,7 +1763,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Apollo1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Apollo2").Type, 1f);

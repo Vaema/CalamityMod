@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                     }
 
                     shootTimer = 0f;
-                    SyncVariables(proj);
+                    proj.ForceNetUpdate(false);
                 }
             }
 
@@ -113,24 +113,16 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             if (!proj.WithinRange(owner.Center, 160f))
             {
                 proj.velocity = (proj.velocity + proj.SafeDirectionTo(owner.Center)) * 0.9f;
-                SyncVariables(proj);
+                proj.ForceNetUpdate(false);
             }
 
             // The minion will teleport on the owner if they get far enough.
             if (!proj.WithinRange(owner.Center, MaxEnemyDistanceDetection))
             {
                 proj.Center = owner.Center;
-                SyncVariables(proj);
+                proj.ForceNetUpdate(false);
             }
         }
-
-        private static void SyncVariables(Projectile proj)
-        {
-            proj.netUpdate = true;
-            if (proj.netSpam >= 10)
-                proj.netSpam = 9;
-        }
-
         #endregion
     }
 }

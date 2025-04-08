@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int k = 0; k < 20; k++)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Glass, Projectile.velocity.X > 0f ? 1f : -1f, -1f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreVelocity = new Vector2(Projectile.velocity.X, Projectile.velocity.Y * 0.4f);
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, goreVelocity, Mod.Find<ModGore>("DankCreeperGore").Type);
@@ -45,13 +45,15 @@ namespace CalamityMod.Projectiles.Typeless
 
             // Spawn shade rain clouds out to the sides
             // Number of clouds and their damage scale based on what accessory in the upgrade path triggered it (damage is set when the spawner is created)
-            int cloudAmt = EffectStrength == 3f ? 10 : EffectStrength == 2f ? 6 : 4;
-            for (int c = -(cloudAmt / 2); c < cloudAmt / 2; c++)
+            if (Main.myPlayer == Projectile.owner)
             {
-                Vector2 cloudVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi / 72f) * Main.rand.NextFloat(4.5f, 11f);
-                cloudVelocity *= c < 0f ? -1f : 1f;
-                if (Main.myPlayer == Projectile.owner)
+                int cloudAmt = EffectStrength == 3f ? 11 : EffectStrength == 2f ? 7 : 5;
+                for (int c = -(cloudAmt - 1) / 2; c <= (cloudAmt - 1) / 2; c++)
+                {
+                    Vector2 cloudVelocity = c == 0 ? Vector2.Zero : Vector2.UnitX.RotatedByRandom(MathHelper.Pi / 72f) * Main.rand.NextFloat(3f, 9.5f);
+                    cloudVelocity *= c < 0f ? -1f : 1f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, cloudVelocity, ModContent.ProjectileType<ShadeNimbus>(), Projectile.damage, 0f, Main.myPlayer);
+                }
             }
         }
     }

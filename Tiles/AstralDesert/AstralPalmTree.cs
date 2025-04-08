@@ -2,6 +2,7 @@
 using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -121,6 +122,16 @@ namespace CalamityMod.Tiles.AstralDesert
                 if (!Main.dayTime && Main.rand.NextBool())
                     type = ItemID.FallenStar;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);
+            }
+            else if (Main.rand.Next(36) < 5) // Vanilla palm fruit logic goes first
+            {
+                int fruitType = Main.rand.NextBool() ? ItemID.Coconut : ItemID.Banana;
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
+            }
+            else if (Main.rand.Next(36) < 5)
+            {
+                int fruitType = Main.rand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>();
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
             }
             return false;
         }

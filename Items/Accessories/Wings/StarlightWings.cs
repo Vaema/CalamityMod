@@ -10,21 +10,17 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class StarlightWings : ModItem, ILocalizedModType
+    public class StarlightWings : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 7.5f, 1.5f);
-        }
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(160, 7.5f, 1.5f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -46,15 +42,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             player.noFallDmg = true;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.5f;
-            ascentWhenRising = 0.1f;
-            maxCanAscendMultiplier = 0.5f;
-            maxAscentMultiplier = 1.5f;
-            constantAscend = 0.1f;
         }
 
         public override void AddRecipes()

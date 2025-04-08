@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.rand.NextBool(4) || explodingSoon)
                     SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
             }
-            if ((Main.rand.NextBool(12) || (explodingSoon && Main.rand.NextBool(3))) && Main.netMode != NetmodeID.Server)
+            if ((Main.rand.NextBool(12) || (explodingSoon && Main.rand.NextBool(3))) && !Main.dedServ)
             {
                 Gore star = Gore.NewGoreDirect(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.2f, Main.rand.Next(16, 18), 1f);
                 star.velocity *= 0.66f;
@@ -73,8 +73,7 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.Center = Owner.Bottom;
 
                     Projectile.ai[2] = 1f;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
                 if (Owner.channel)
                 {
@@ -142,7 +141,7 @@ namespace CalamityMod.Projectiles.Magic
                     smoke.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 5; i++)
                 {

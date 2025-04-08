@@ -1,12 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class BrimstoneSlabWall : ModWall
+    public class BrimstoneSlabWall : MultiVariantModWall
     {
         public override void SetStaticDefaults()
         {
@@ -28,14 +26,10 @@ namespace CalamityMod.Walls
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => spriteBatch.DrawMultiVariantWall(Type, i, j, CreatePattern(i, j));
-
-        private int[] CreatePattern(int i, int j)
+        public override void PopulateWallVariant(int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int[] sheetOffset = new int[2] { i % 2, j % 2 };
-            sheetOffset[0] = sheetOffset[0] * 468;
-            sheetOffset[1] = sheetOffset[1] * 180;
-            return sheetOffset;
+            frameXOffset = (i % 2) * 468;
+            frameYOffset = (j % 2) * 180;
         }
     }
 }

@@ -92,14 +92,14 @@ namespace CalamityMod.ILEditing
             cursor.Next.Operand = 0;
         }
 
-        private const float VanillaBaseJumpHeight = 5.01f;
-        private static void BaseJumpHeightAdjustment(ILContext il)
+        private const float VanillaBaseJumpSpeed = 5.01f;
+        private static void BaseJumpSpeedAdjustment(ILContext il)
         {
             // Increase the base jump height of the player to make early game less of a slog.
             var cursor = new ILCursor(il);
 
             // The jumpSpeed variable is set to this specific value before anything else occurs.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpHeight)))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpSpeed)))
             {
                 LogFailure("Base Jump Height Buff", "Could not locate the jump height variable.");
                 return;
@@ -107,7 +107,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
         }
         #endregion
 
@@ -659,14 +659,14 @@ namespace CalamityMod.ILEditing
         #region Vortex Booster Keeps Vortex Stealth When Dashing
         private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
         {
-            // Allows for Vortex Booster to keep Vortex armor's stealth when dashing
+            // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
             bool vortexStealth = self.vortexStealthActive;
             orig(self);
 
             if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
             {
                 if (vortexStealth && !self.vortexStealthActive)
-                    self.vortexStealthActive = true;
+                    self.Calamity().vortexBoosterStealthDelay = 60;
             }
         }
         #endregion
@@ -716,6 +716,29 @@ namespace CalamityMod.ILEditing
             // Remove and replace with a higher value.
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_R4, 12f);
+        }
+        #endregion
+
+        #region Solar Wings Change to Solar Flare Armor Dash
+        private static void SolarWingsDashChange(ILContext il)
+        {
+            // Make Solar Wings always allow using Solar Flare armor's dash.
+            var cursor = new ILCursor(il);
+
+            // Genuinely how the fuck is this the only OR opcode in the entire method
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchOr()))
+            {
+                LogFailure("Solar Dash Change", "Could not locate the OR opcode.");
+                return;
+            }
+
+            // Add an additional check for if the player is wearing Solar Wings.
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsSolar);
+            cursor.EmitCeq();
+            // Then OR it.
+            cursor.EmitOr();
         }
         #endregion
 

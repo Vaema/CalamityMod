@@ -280,7 +280,7 @@ namespace CalamityMod.NPCs.Abyss
             HopTimer = ai2 == -1 ? 0 : ai2;
             CalmDownTimer = ai3 == -1 ? 0 : ai3;
             NPC.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI);
         }
 
@@ -453,7 +453,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 5; i++)
                     {

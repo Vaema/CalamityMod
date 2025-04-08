@@ -19,6 +19,11 @@ CinnamonRollBuff: {
 	Description: Mana regen rate and fire debuff damage increased, defense reduced
 }
 
+CirrusVodkaBuff: {
+	DisplayName: Fab
+	Description: You feel fabulous
+}
+
 EverclearBuff: {
 	DisplayName: Everclear
 	Description: Damage increased, life regen and defense reduced
@@ -27,11 +32,6 @@ EverclearBuff: {
 EvergreenGinBuff: {
 	DisplayName: Evergreen Gin
 	Description: Sickness and water debuff damage increased, life regen reduced
-}
-
-FabsolVodkaBuff: {
-	DisplayName: Fab
-	Description: You feel fabulous
 }
 
 FireballBuff: {
@@ -151,6 +151,11 @@ BrainRot: {
 	Description: Your neurons are popping like corn kernels
 }
 
+DemonicFlames: {
+	DisplayName: Demonic Flames
+	Description: Immolating flames sear your soul
+}
+
 ElementalMix: {
 	DisplayName: Elemental Mix
 	Description: A beautiful elemental symphony is flaying you alive
@@ -174,6 +179,11 @@ Dragonfire: {
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off
+}
+
+HeavyBleeding: {
+	DisplayName: Heavy Bleeding
+	Description: That's gonna need stitches
 }
 
 HolyFlames: {
@@ -998,6 +1008,11 @@ GlacialState: {
 	Description: Cannot move
 }
 
+HadopelagicPressure: {
+	DisplayName: Hadopelagic Pressure
+	Description: Rapidly sinking to a watery grave
+}
+
 IcarusFolly: {
 	DisplayName: Icarus' Folly
 	Description:
@@ -1456,6 +1471,11 @@ SandyWaifu: {
 SarosPossessionBuff: {
 	DisplayName: Saros Possession
 	Description: A radiant aura protects you
+}
+
+SeashineSwordBuff: {
+	DisplayName: Seashine Sword
+	Description: A beautiful dance of crystalline blades...
 }
 
 SeaSnailBuff: {

@@ -2,6 +2,8 @@
 using System.IO;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -72,7 +74,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!initialized) //Initialization. Here its litterally just playing a sound tho lmfao
+            if (!initialized) //Initialization.
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
@@ -100,8 +102,7 @@ namespace CalamityMod.Projectiles.Melee
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
                     // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-
-                    //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
+                    //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES
                     for (int i = 0; i <= 8; i++)
                     {
                         float variation = Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4);
@@ -123,12 +124,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    if (hasMadeChargeSound == 0f && Empowerment / maxEmpowerment >= 0.5)
-                    {
-                        hasMadeChargeSound = 1f;
-                        SoundEngine.PlaySound(SoundID.Item76);
-                    }
-
                     float rotation = direction.ToRotation();
                     if (rotation > -MathHelper.PiOver2 - MathHelper.PiOver4 && rotation < -MathHelper.PiOver2 + MathHelper.PiOver4 && hasMadeSound == 1f)
                         hasMadeSound = 0f;
@@ -137,6 +132,22 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         hasMadeSound = 1f;
                         SoundEngine.PlaySound(SoundID.Item71);
+                    }
+                }
+
+                if (Empowerment / maxEmpowerment >= 0.5f && hasMadeChargeSound == 0f)
+                {
+                    SoundEngine.PlaySound(DeusRitualDrama.PulseSound with { Pitch = -0.05f }, Projectile.Center);
+                    hasMadeChargeSound++;
+                }
+
+                if (Empowerment >= maxEmpowerment)
+                {
+                    Empowerment = Empowerment;
+                    if (Owner.whoAmI == Main.myPlayer && hasMadeChargeSound < 2f)
+                    {
+                        SoundEngine.PlaySound(AstralBeacon.UseSound, Projectile.Center);
+                        hasMadeChargeSound++;
                     }
                 }
 
@@ -154,7 +165,7 @@ namespace CalamityMod.Projectiles.Melee
                         smear.Time = 0;
                         smear.Position = Owner.Center;
                         smear.Scale = Projectile.scale * 1.5f;
-                        smear.Color = Color.Lerp(Color.HotPink, Color.Cyan, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
+                        smear.Color = Color.Lerp(Color.HotPink, Color.Purple, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
                     }
                 }
 
@@ -163,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.scale = 1 + Empowerment / maxEmpowerment * 1.5f;
 
                 oldDirection = direction;
-                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment / maxEmpowerment, 0.4f, 1f) * MathHelper.PiOver4 * 0.20f);
+                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment * 1.1f / maxEmpowerment, 0.45f, 1f) * MathHelper.PiOver4 * 0.20f);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
                 Projectile.Center = Owner.Center + (direction * Projectile.scale * 10);
@@ -192,12 +203,25 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Spawn a monolith on max power sword throws
+            if (!(CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<HeavensMonolith>())))
+                return;
+
+            if (Empowerment >= maxEmpowerment)
+            {
+                float monolithScale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10f), ProjectileType<HeavensMonolith>(), (int)(Projectile.damage * TrueBiomeBlade.HolyAttunement_MonolithDamage), 10f, Owner.whoAmI, Main.rand.Next(4), monolithScale, target.whoAmI);
+            }
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (CurrentState == 1f)
                 modifiers.SourceDamage *= MathHelper.Lerp(1f, TrueBiomeBlade.HolyAttunement_ThrowDamageBoost, Empowerment / maxEmpowerment);
             else
-                modifiers.SourceDamage *= TrueBiomeBlade.HolyAttunement_BaseDamageReduction + (TrueBiomeBlade.HolyAttunement_FullChargeDamageBoost * Empowerment / maxEmpowerment);
+                modifiers.SourceDamage *= MathHelper.Lerp(TrueBiomeBlade.HolyAttunement_BaseSwingDamageMult, TrueBiomeBlade.HolyAttunement_FullSwingDamageMult, Empowerment / maxEmpowerment);
         }
 
         public override void OnKill(int timeLeft)
@@ -227,7 +251,7 @@ namespace CalamityMod.Projectiles.Melee
                     Main.spriteBatch.Draw(handle, drawOffset, null, color * MathHelper.Lerp(0f, 0.5f, MathHelper.Clamp(Empowerment / maxEmpowerment - 0.4f / 0.1f, 0f, 1f)), afterimageRotation, drawOrigin, Projectile.scale - 0.2f * ((i / (float)Projectile.oldRot.Length)), 0f, 0f);
                 }
 
-                Main.spriteBatch.End(); //Haha sup babe what if i restarted the spritebatch way too many times haha /blushes
+                Main.spriteBatch.End(); //Yippee spritebatch resetting wahoo
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 Vector2 afterimageDrawOrigin = new Vector2(0f, blade.Height);
