@@ -220,7 +220,7 @@ namespace CalamityMod.Projectiles.Melee
                                 Owner.Calamity().GeneralScreenShakePower = 3f;
                                 SoundStyle sound = new("CalamityMod/Sounds/Item/SkytiedBolt");
                                 SoundEngine.PlaySound(sound with { Volume = 0.8f }, Projectile.Center);
-                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 5), Projectile.knockBack, Projectile.owner, 0, 0.5f);
+                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 0.5f);
                                 proj.timeLeft = 45;
                                 swingCount = 0;
                                 attackPower = 6;

@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool hasPlayedSound = false;
         public bool hasPlayedReloadSound = false;
         public float fade = 0;
+        public int hitTimer = 0;
 
         public override void SetStaticDefaults()
         {
@@ -46,12 +47,15 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 5;
+            Projectile.localNPCHitCooldown = 4;
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 25;
         }
         public override void HoldoutAI()
         {
+            if (hitTimer > 0)
+                hitTimer--;
+
             fade = Utils.GetLerpValue(0, 40, time, true);
             if (SoundEngine.TryGetActiveSound(SoundSlot, out var sSound) && sSound.IsPlaying)
             {
@@ -201,10 +205,18 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.075f;
-            if (Owner.Calamity().hellbornShots < 12)
+            if (hitTimer == 0)
             {
-                Owner.Calamity().hellbornShots++;
+                modifiers.SourceDamage *= 0.08f;
+                if (Owner.Calamity().hellbornShots < 12)
+                {
+                    Owner.Calamity().hellbornShots++;
+                }
+                hitTimer = Projectile.localNPCHitCooldown;
+            }
+            else
+            {
+                modifiers.SourceDamage *= 0.02f;
             }
         }
         public override bool PreDraw(ref Color lightColor)

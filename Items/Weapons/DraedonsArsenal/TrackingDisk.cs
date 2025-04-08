@@ -20,8 +20,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 58;
-            Item.height = 48;
+            Item.width = 52;
+            Item.height = 40;
             Item.damage = 16;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = 40;
@@ -41,17 +41,24 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<TrackingDiskProjectile>();
             Item.shootSpeed = 8f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 50f;
-            modItem.ChargePerUse = 0.05f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (proj.WithinBounds(Main.maxProjectiles))
-                Main.projectile[proj].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
+            if (player.Calamity().StealthStrikeAvailable())
+            {
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    Vector2 vel = (velocity * 1.2f).RotatedBy(0.6f * i);
+                    int proj = Projectile.NewProjectile(source, position, vel, type, (int)(damage * 0.8f), knockback, player.whoAmI);
+                    Main.projectile[proj].Calamity().stealthStrike = true;
+                    Main.projectile[proj].ai[2] = i;
+                    Main.projectile[proj].extraUpdates = 3;
+                    Main.projectile[proj].tileCollide = false;
+                }
+            }
+            else
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
 

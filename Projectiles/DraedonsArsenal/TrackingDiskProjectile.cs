@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
 
         public const int LaserFireRate = 19;
-        public const int LaserFireRateStealth = 15;
+        public const int LaserFireRateStealth = 25;
         public const int MaxLaserCountPerShot = 2; // This only applies to stealth strikes.
         public const float MaxTargetSearchDistance = 600f;
         public const float MaxTargetSearchStealth = 800f;
@@ -44,8 +44,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            Projectile.width = 58;
-            Projectile.height = 48;
+            Projectile.width = 52;
+            Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 2;
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.4f);
+            Lighting.AddLight(Projectile.Center, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, 0.5f).ToVector3() * 0.5f);
 
             Player player = Main.player[Projectile.owner];
 
@@ -65,6 +65,21 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             if (Time == 5)
                 Projectile.tileCollide = true;
+            if (Time < 100 && Time > 10 && Projectile.Calamity().stealthStrike)
+                Projectile.velocity = Projectile.velocity.RotatedBy(-0.029f * Projectile.ai[2]);
+
+            if (false)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.rotation.ToRotationVector2() * 5, Effects.ArsenalEffects.ArsenalLaserDust);
+                dust.velocity = Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.1f, 0.2f);
+                dust.scale = Main.rand.NextFloat(0.35f, 0.8f);
+                dust.noGravity = true;
+                dust.color = Color.Red;
+                dust.fadeIn = 10;
+                dust.noLight = true;
+                dust.noLightEmittence = true;
+            }
+            
 
             if (!ReturningToPlayer)
             {
@@ -121,14 +136,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     if (targetCount >= MaxLaserCountPerShot)
                         break;
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(Projectile.rotation * Utils.GetLerpValue(300, 30, Time, true));
-                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnLocation,
-                                                                      (spawnLocation - target.Center).SafeNormalize(Vector2.UnitX) * -3f,
-                                                                      ModContent.ProjectileType<TrackingDiskLaser>(),
-                                                                      (int)(damage),
-                                                                      Projectile.knockBack,
-                                                                      Projectile.owner,
-                                                                      1f);
-                    laser.scale *= 1.6f;
+                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center,
+                        Vector2.Zero,
+                        ModContent.ProjectileType<TrackingDiskLaser>(),
+                        (int)(damage),
+                        Projectile.knockBack,
+                        Projectile.owner,
+                        1f, Projectile.whoAmI, target.whoAmI);
+                    laser.scale *= 1.4f;
                     laser.netUpdate = true;
                     targetCount++;
                     extraShotTarget = target;
@@ -136,13 +151,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 if (targetCount == 1)
                 {
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(-Projectile.rotation * Utils.GetLerpValue(300, 30, Time, true));
-                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnLocation,
-                                                                      (spawnLocation - extraShotTarget.Center).SafeNormalize(Vector2.UnitX) * -3f,
-                                                                      ModContent.ProjectileType<TrackingDiskLaser>(),
-                                                                      (int)(damage),
-                                                                      Projectile.knockBack,
-                                                                      Projectile.owner,
-                                                                      1f);
+                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center,
+                        Vector2.Zero,
+                        ModContent.ProjectileType<TrackingDiskLaser>(),
+                        (int)(damage),
+                        Projectile.knockBack,
+                        Projectile.owner,
+                        -1f, Projectile.whoAmI, extraShotTarget.whoAmI);
                 }
             }
             else
@@ -151,7 +166,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 if (potentialTarget != null)
                 {
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(Projectile.rotation * 0.4f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnLocation, (spawnLocation - potentialTarget.Center).SafeNormalize(Vector2.UnitX) * -3f, ModContent.ProjectileType<TrackingDiskLaser>(), damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TrackingDiskLaser>(), damage, Projectile.knockBack, Projectile.owner, 0, Projectile.whoAmI, potentialTarget.whoAmI);
                 }
             }
         }
@@ -173,16 +188,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Asset<Texture2D> texture = ModContent.Request<Texture2D>(Texture);
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 rotationPoint = texture.Size() * 0.5f;
             Vector2 origin = texture.Size() * 0.5f;
 
             Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, ProjectileID.Sets.TrailCacheLength[Projectile.type], null, true, false);
-            // Glow Orb
-            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.Red with { A = 0 } * 0.65f, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.4f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.White with { A = 0 } * 0.35f, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.2f, SpriteEffects.None, 0);
-            
+            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, ProjectileID.Sets.TrailCacheLength[Projectile.type], null, true, false);
+
             Main.EntitySpriteDraw(texture.Value, drawPosition, null, lightColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
