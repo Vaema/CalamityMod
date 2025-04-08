@@ -79,6 +79,9 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || bossRush;
+
             NPC.realLife = -1;
 
             // Target
@@ -110,8 +113,17 @@ namespace CalamityMod.NPCs.Perforator
                 }
 
                 // Splitting effect
+                bool spawnedBlob = false;
                 if (!Main.npc[(int)NPC.ai[1]].active && !Main.npc[(int)NPC.ai[0]].active)
                 {
+                    if (death)
+                    {
+                        spawnedBlob = true;
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -120,6 +132,14 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 if (!Main.npc[(int)NPC.ai[1]].active || Main.npc[(int)NPC.ai[1]].aiStyle != NPC.aiStyle)
                 {
+                    if (death && !spawnedBlob)
+                    {
+                        spawnedBlob = true;
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.type = ModContent.NPCType<PerforatorHeadMedium>();
                     int whoAmI = NPC.whoAmI;
                     float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -133,6 +153,13 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 if (!Main.npc[(int)NPC.ai[0]].active || Main.npc[(int)NPC.ai[0]].aiStyle != NPC.aiStyle)
                 {
+                    if (death && !spawnedBlob)
+                    {
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     int whoAmI2 = NPC.whoAmI;
                     float otherLifeRatio = NPC.life / (float)NPC.lifeMax;
                     float ai1 = NPC.ai[1];

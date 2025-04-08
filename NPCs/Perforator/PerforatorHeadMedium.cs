@@ -157,8 +157,17 @@ namespace CalamityMod.NPCs.Perforator
                 }
 
                 // Splitting effect
+                bool spawnedBlob = false;
                 if (!Main.npc[(int)NPC.ai[1]].active && !Main.npc[(int)NPC.ai[0]].active)
                 {
+                    if (death)
+                    {
+                        spawnedBlob = true;
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -167,6 +176,13 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 if (!Main.npc[(int)NPC.ai[0]].active)
                 {
+                    if (death && !spawnedBlob)
+                    {
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();

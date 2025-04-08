@@ -127,7 +127,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Despawn
             float distanceFromTarget = Vector2.Distance(npc.Center, Main.player[npc.target].Center);
-            if (npc.ai[0] != 6f)
+            if (npc.ai[0] != 7f)
             {
                 if (npc.timeLeft < 60)
                     npc.timeLeft = 60;
@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[0] = 4f;
             }
             if (Main.player[npc.target].dead)
-                npc.ai[0] = 6f;
+                npc.ai[0] = 7f;
 
             // Adjust slowing debuff immunity
             bool immuneToSlowingDebuffs = npc.ai[0] == 0f;
@@ -159,7 +159,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn phase
-            if (npc.ai[0] == 6f)
+            if (npc.ai[0] == 7f)
             {
                 // Avoid cheap bullshit
                 npc.damage = 0;
@@ -202,7 +202,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
-                    int maxRandom = phase4 ? 5 : 4;
+                    int maxRandom = phase4 ? (death ? 6 : 5) : 4;
                     do phase = Main.rand.Next(maxRandom);
                     while (phase == npc.ai[1] || phase == 1 || (phase == 2 && phase4) || (death && phase6 && phase == 3));
 
@@ -211,6 +211,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // 5 is stinger arc and charge
                     if (phase == 4)
                         phase = 5;
+
+                    // 6 is beenade vomit
+                    if (phase == 5)
+                        phase = 6;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     npc.ai[0] = phase;
@@ -908,6 +912,46 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else
                     npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
+            }
+
+            // Spit beenades
+            else if (npc.ai[0] == 6f)
+            {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
+                // Direction
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
+                npc.spriteDirection = npc.direction;
+
+                float beenadeAttackSpeed = 20f + 4f * enrageScale;
+                float beenadeAttackAccel = 0.75f;
+                Vector2 targetVector = Main.player[npc.target].Center + Vector2.UnitY * 240f;
+
+                if (npc.Distance(targetVector) > 80f)
+                    npc.SimpleFlyMovement(npc.SafeDirectionTo(targetVector) * beenadeAttackSpeed, beenadeAttackAccel);
+                else
+                    npc.velocity *= 0.8f;
+
+                float phaseLimit = 180f;
+                npc.ai[1] += 1f;
+                if (npc.ai[1] >= phaseLimit)
+                {
+                    npc.ai[0] = -1f;
+                    npc.ai[1] = 5f;
+                    npc.ai[2] = 0f;
+                    npc.netUpdate = true;
+                }
+                else if (npc.ai[1] % 61f == 0f)
+                {
+                    Vector2 beenadeSpawnLocation = npc.Center + new Vector2(20f * npc.direction, -40f);
+                    SoundEngine.PlaySound(SoundID.Item76, beenadeSpawnLocation);
+                    int type = ModContent.ProjectileType<QueenBeenade>();
+                    int damage = npc.GetProjectileDamage(type);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), beenadeSpawnLocation, Vector2.UnitX * 6f * npc.direction, type, damage, 0f, Main.myPlayer);
+                }
             }
 
             if (Main.dedServ)
