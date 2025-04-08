@@ -22,6 +22,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Thanatos
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class ThanatosHead : ModNPC
     {

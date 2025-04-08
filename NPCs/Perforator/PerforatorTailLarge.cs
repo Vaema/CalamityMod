@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadLarge))]
     public class PerforatorTailLarge : ModNPC
     {

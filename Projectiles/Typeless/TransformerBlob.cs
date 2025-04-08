@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class TransformerBlob : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";

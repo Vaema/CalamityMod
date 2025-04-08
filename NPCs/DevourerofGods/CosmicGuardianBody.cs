@@ -13,6 +13,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(CosmicGuardianHead))]
     public class CosmicGuardianBody : ModNPC
     {

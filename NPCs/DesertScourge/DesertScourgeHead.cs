@@ -32,6 +32,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DesertScourge
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class DesertScourgeHead : ModNPC
     {

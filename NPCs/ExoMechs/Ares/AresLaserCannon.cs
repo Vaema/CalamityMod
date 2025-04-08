@@ -21,6 +21,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresLaserCannon : ModNPC
     {
         public enum Phase

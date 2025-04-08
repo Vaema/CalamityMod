@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -13,6 +14,7 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class RancorLaserbeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";

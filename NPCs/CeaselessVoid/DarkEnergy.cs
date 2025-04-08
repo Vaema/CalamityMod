@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
+    [HasPierceResist]
     public class DarkEnergy : ModNPC
     {
         private bool start = true;

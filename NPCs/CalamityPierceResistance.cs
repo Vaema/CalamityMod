@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles;
@@ -59,6 +60,7 @@ namespace CalamityMod.NPCs
             exemptProjectiles.Add(ProjectileID.FinalFractal);
             exemptProjectiles.Add(ProjectileID.FlyingKnife);
             exemptProjectiles.Add(ProjectileID.LastPrismLaser);
+            exemptProjectiles.Add(ProjectileType<MarniteRepulsionHitbox>()); // Included here as it does not have a projectile
             exemptProjectiles.Add(ProjectileID.MonkStaffT3);
             exemptProjectiles.Add(ProjectileID.PiercingStarlight);
             exemptProjectiles.Add(ProjectileID.SandnadoFriendly);

@@ -41,6 +41,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     public class AresBody : ModNPC
     {
         // Used for loot

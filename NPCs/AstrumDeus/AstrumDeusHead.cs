@@ -35,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumDeus
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class AstrumDeusHead : ModNPC
     {

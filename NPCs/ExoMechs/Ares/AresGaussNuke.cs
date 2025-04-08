@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresGaussNuke : ModNPC
     {
         public enum Phase
