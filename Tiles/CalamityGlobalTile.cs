@@ -43,16 +43,8 @@ namespace CalamityMod.Tiles
             TileID.Sets.TileCutIgnore.IgnoreDontHurtNature[TileID.Larva] = true;
         }
 
-        public override bool ShakeTree(int x, int y, TreeTypes treeType)
+        public override void PreShakeTree(int x, int y, TreeTypes treeType)
         {
-            // Ha-pu Fruit @ 1% (6.67% during Valentines)
-            // This *will* work on modded trees as well
-            if (WorldGen.genRand.NextBool(100) || (DateTime.Now.Month == 2 && DateTime.Now.Day == 14 && WorldGen.genRand.NextBool(15)))
-            {
-                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), x * 16, y * 16, 16, 16, ItemType<HapuFruit>());
-                return true;
-            }
-
             // Add an additional 25% chance to drop vanilla fruits
             if (WorldGen.genRand.NextBool(4))
             {
@@ -142,11 +134,20 @@ namespace CalamityMod.Tiles
                 }
 
                 if (treeDropItemType != 0)
-                {
                     Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), x * 16, y * 16, 16, 16, treeDropItemType);
-                    return true;
-                }
             }
+        }
+
+        public override bool ShakeTree(int x, int y, TreeTypes treeType)
+        {
+            // Ha-pu Fruit @ 1% (6.67% during Valentines)
+            // This *will* work on modded trees as well
+            if (WorldGen.genRand.NextBool(100) || (DateTime.Now.Month == 2 && DateTime.Now.Day == 14 && WorldGen.genRand.NextBool(15)))
+            {
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), x * 16, y * 16, 16, 16, ItemType<HapuFruit>());
+                return true;
+            }
+
             return base.ShakeTree(x, y, treeType);
         }
 
