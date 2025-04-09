@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe(15).
