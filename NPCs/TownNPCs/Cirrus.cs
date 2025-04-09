@@ -698,7 +698,7 @@ namespace CalamityMod.NPCs.TownNPCs
             Player player = Main.LocalPlayer;
             if (Main.zenithWorld)
             {
-                player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false);
+                player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name)), player.statLife / 2, -player.direction, false, false, -1, false);
                 SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
             }
 
@@ -728,7 +728,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 {
                     if (!beLessDrunk)
                     {
-                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
                         SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
                         return this.GetLocalizedValue("Chat.BloodMoonSlap1");
                     }
