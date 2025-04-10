@@ -71,6 +71,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "ENNWAY",
             "Flowaria",
             "Fluffy",
+            "fryzahh",
             "HaguriHat",
             "Heart Plus Up!",
             "Hugekraken",
