@@ -732,7 +732,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     for (int dustIndex = 0; dustIndex < 2; dustIndex++)
                     {
-                        int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default(Color), 2f);
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].noLight = true;
                     }
@@ -1276,7 +1276,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     for (int num80 = 0; num80 < 2; num80++)
                     {
-                        int num81 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default(Color), 2f);
+                        int num81 = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
                         Main.dust[num81].noGravity = true;
                         Main.dust[num81].noLight = true;
                     }
