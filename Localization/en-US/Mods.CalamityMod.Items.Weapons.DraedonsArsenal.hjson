@@ -2,10 +2,10 @@ CompactRailgun: {
 	DisplayName: Compact Railgun
 	Tooltip:
 		'''
-A magnet powered energy railgun that fires rapidly, creating lingering magnetic implosions that pull in weak enemies on hit
-Only one implosion can exist at a time
-Press <right> to begin charging a devastating energy beam that always crits and will fire once ready
-This charge attack can not be interrupted once started and has a long cooldown
+		A magnet powered energy railgun that fires rapidly, creating lingering magnetic implosions that pull in weak enemies on hit
+		Only one implosion can exist at a time
+		Press <right> to begin charging a devastating energy beam that always crits and will fire once ready
+		This charge attack can not be interrupted once started and has a long cooldown
 		[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
 		[c/1FFBFF:This railgun has reliably pulled in skeptics of its crushing efficiency.']
 		'''
