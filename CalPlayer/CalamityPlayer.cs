@@ -3511,16 +3511,19 @@ namespace CalamityMod.CalPlayer
             {
                 PlayerLoader.ArmorSetBonusActivated(Player);
 
-                // Activate vanilla set bonuses
-                if (Player.setVortex && !Player.mount.Active)
-                    Player.vortexStealthActive = !Player.vortexStealthActive;
-
-                if (Player.setForbidden)
+                if (CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap)
                 {
-                    Player.MinionRestTargetAim();
+                    // Activate vanilla set bonuses
+                    if (Player.setVortex && !Player.mount.Active)
+                        Player.vortexStealthActive = !Player.vortexStealthActive;
 
-                    if (!Player.setForbiddenCooldownLocked)
-                        Player.CommandForbiddenStorm();
+                    if (Player.setForbidden)
+                    {
+                        Player.MinionRestTargetAim();
+
+                        if (!Player.setForbiddenCooldownLocked)
+                            Player.CommandForbiddenStorm();
+                    }
                 }
             }
 
@@ -3733,6 +3736,10 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
+            // Don't trigger set bonuses if the config is disabled and the double-tap hotkey was triggered
+            if (!(CalamityKeybinds.ArmorSetBonusHotKey.JustPressed || CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap))
+                return;
+
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
@@ -5710,7 +5717,7 @@ namespace CalamityMod.CalPlayer
                     Player.HealEffect(-5);
                     Player.statLife -= 5;
                     if (Player.statLife <= 0)
-                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").Format(Player.name)), 1000, -1);
+                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").ToNetworkText(Player.name)), 1000, -1);
                 }
 
                 for (int i = 0; i < 8; i++)

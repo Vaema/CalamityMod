@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient(ItemID.Daybloom, 3).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 AddDecraftCondition(Condition.Hardmode).
                 Register();
 

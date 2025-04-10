@@ -102,7 +102,7 @@ namespace CalamityMod.World
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.15f), (int)(Main.maxTilesY * 0.5f));
+                int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface, (int)(Main.maxTilesY * 0.5f));
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0) / 2, TileMaps[mapKey].GetLength(1)); //Fooling the system into thinking the shrine is smaller than it actually is so it fits into chasms
@@ -193,7 +193,7 @@ namespace CalamityMod.World
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.15f), (int)(Main.maxTilesY * 0.5f));
+                int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface, (int)(Main.maxTilesY * 0.5f));
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
