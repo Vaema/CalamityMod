@@ -771,7 +771,7 @@ namespace CalamityMod.CalPlayer
                     Player.velocity += yeetVec * auricRejectionKB;
                     if (tile.TileType == auricOreID)
                     {
-                        Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
+                        Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
                         Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
@@ -2189,7 +2189,7 @@ namespace CalamityMod.CalPlayer
 
                 if (necroReviveCounter >= NecroArmorSetChange.PostMortemDuration * 60)
                 {
-                    Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").Format(Player.name)), 1000, -1);
+                    Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").ToNetworkText(Player.name)), 1000, -1);
                     necroReviveCounter = -1;
                 }
                 else if (necroReviveCounter % 60 == 59)

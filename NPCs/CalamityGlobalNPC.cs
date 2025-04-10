@@ -5830,31 +5830,28 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (laserBurnTimer <= 0 && laserBurnMarked && laserBurnType > 0)
+            if ((laserBurnTimer <= 0 || laserBurnDamage >= npc.life * 1.5f) && laserBurnMarked && laserBurnType > 0)
             {
                 if (laserBurnType == 1) // Applied damage
                     Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), laserBurnDamage, 0, Main.myPlayer, npc.whoAmI);
                 if (laserBurnType == 2) // Flat damage + stacks
                     Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 70 + (20 * laserBurnStacks), 0, Main.myPlayer, npc.whoAmI);
 
-                for (int d = 0; d < (int)(6 + laserBurnStacks * 0.35f); d++)
+                for (int d = 0; d < (int)(7 + laserBurnStacks * 0.4f); d++)
                 {
                     float partScale = Main.rand.NextFloat(0.7f, 1f);
-                    Vector2 partVel = (new Vector2(15, 15) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Particle sparks = new SparkParticle(npc.Center, partVel, false, 30, i == 0 ? partScale : partScale * 0.4f, i == 0 ? Color.Red : Color.White);
-                        GeneralParticleHandler.SpawnParticle(sparks);
-                    }
+                    Vector2 partVel = (new Vector2(10, 10) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(npc.Center, 278);
-                    dust.velocity = (new Vector2(10, 10) * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) + new Vector2(0, -1);
-                    dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
-                    dust.noGravity = false;
+                    Particle spark2 = new CustomSpark(npc.Center, partVel, "CalamityMod/Particles/BloomLineSoftEdge", false, 12, Main.rand.NextFloat(0.02f, 0.03f), Effects.ArsenalEffects.ArsenalLaserColor * 0.8f, new Vector2(1, 1), true, false, 0, false, false, 1f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                    Dust dust = Dust.NewDustPerfect(npc.Center, Effects.ArsenalEffects.ArsenalLaserDust);
+                    dust.velocity = (Vector2.UnitX * 5 * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f);
+                    dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
+                    dust.noGravity = true;
                     dust.color = Color.Red;
                 }
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, PitchVariance = 0.15f }, npc.Center);
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
                 laserBurnMarked = false;
                 laserBurnStacks = 0;
                 laserBurnTimer = 0;
@@ -6299,7 +6296,7 @@ namespace CalamityMod.NPCs
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 12f;
 
-                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").Format(target.name)), 1000.0, 0);
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").ToNetworkText(target.name)), 1000.0, 0);
                 modifiers.SourceDamage *= target.statLifeMax2 * Main.rand.NextFloat(3f, 6f);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -7439,8 +7436,13 @@ namespace CalamityMod.NPCs
                 if (laserBurnTimer % particleChance == 0)
                 {
                     Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
-                    Particle markedParticle = new GlowOrbParticle(randPosition, Vector2.Zero, false, Main.rand.Next(7, 9 + 1), Main.rand.NextFloat(0.3f, 0.45f) + (laserBurnStacks * 0.045f), Color.Red);
-                    GeneralParticleHandler.SpawnParticle(markedParticle);
+
+                    Dust dust = Dust.NewDustPerfect(randPosition, Effects.ArsenalEffects.ArsenalLaserDust);
+                    dust.velocity = ((Vector2.UnitX * 3 * (laserBurnStacks * 0.03f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f)) + npc.velocity * 0.5f;
+                    dust.scale = Main.rand.NextFloat(0.55f, 0.7f) + laserBurnStacks * 0.01f;
+                    dust.noGravity = true;
+                    dust.color = Color.Red;
+                    dust.fadeIn = laserBurnStacks * 0.3f;
                 }
                 if (laserBurnType == 0)
                 {

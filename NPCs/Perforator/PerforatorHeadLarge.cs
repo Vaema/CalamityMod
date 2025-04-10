@@ -168,10 +168,6 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
-            NPC.alpha -= 42;
-            if (NPC.alpha < 0)
-                NPC.alpha = 0;
-
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!TailSpawned)
@@ -282,31 +278,32 @@ namespace CalamityMod.NPCs.Perforator
             }
 
             // This is possibly the best or worst idea ever conceived
-            float laserOffset = 1500f;
-            float laserVelocity = 4f;
-            int type = ModContent.ProjectileType<DoGDeath>();
-            int damage = NPC.GetProjectileDamage(type);
-
             if (Main.zenithWorld)
-                NPC.Calamity().newAI[3]++;
-
-            if (NPC.Calamity().newAI[3] > 180f) // Effectively 10 seconds but give a little headstart in case players kill it too fast
             {
-                if (NPC.Calamity().newAI[3] % 60 == 59)
-                {
-                    SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                    for (int i = -7; i < 8; i++) // 15 lasers
-                    {
-                        float laserGap = (i * 128f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserOffset, player.Center.Y + laserGap, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - laserOffset, player.Center.Y + laserGap, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                    }
-                }
+                float laserOffset = 1500f;
+                float laserVelocity = 4f;
+                int type = ModContent.ProjectileType<DoGDeath>();
+                int damage = NPC.GetProjectileDamage(type);
 
-                if (NPC.Calamity().newAI[3] >= 300f)
-                    NPC.Calamity().newAI[3] = -300f;
+                NPC.Calamity().newAI[3]++;
+                if (NPC.Calamity().newAI[3] > 180f) // Effectively 10 seconds but give a little headstart in case players kill it too fast
+                {
+                    if (NPC.Calamity().newAI[3] % 60 == 59)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item12, player.Center);
+                        for (int i = -7; i < 8; i++) // 15 lasers
+                        {
+                            float laserGap = (i * 128f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserOffset, player.Center.Y + laserGap, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - laserOffset, player.Center.Y + laserGap, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                        }
+                    }
+
+                    if (NPC.Calamity().newAI[3] >= 300f)
+                        NPC.Calamity().newAI[3] = -300f;
+                }
             }
 
             float speedCopy = speed;
@@ -527,6 +524,23 @@ namespace CalamityMod.NPCs.Perforator
 
             if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
                 NPC.netUpdate = true;
+
+            if (NPC.alpha > 0 && NPC.life > 0)
+            {
+                for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                {
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].noLight = true;
+                }
+            }
+
+            if ((NPC.position - NPC.oldPosition).Length() > 2f)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

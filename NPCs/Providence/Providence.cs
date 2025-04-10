@@ -2960,7 +2960,7 @@ namespace CalamityMod.NPCs.Providence
                 Target.statLife -= NegativeHealValue;
                 if (Target.statLife < 0)
                 {
-                    PlayerDeathReason CustomSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProvidenceAntiHealing").Format(Target.name));
+                    PlayerDeathReason CustomSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProvidenceAntiHealing").ToNetworkText(Target.name));
                     Target.KillMe(CustomSource, NegativeHealValue, 0);
                 }
 

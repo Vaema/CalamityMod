@@ -4278,3 +4278,8 @@ AnodizedWulfrumPanels: {
 	DisplayName: Anodized Wulfrum Panels
 	Tooltip: ""
 }
+
+WulfrumPanelWall: {
+	DisplayName: Wulfrum Panel Wall
+	Tooltip: ""
+}

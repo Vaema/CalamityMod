@@ -5711,7 +5711,7 @@ namespace CalamityMod.CalPlayer
                     Player.HealEffect(-5);
                     Player.statLife -= 5;
                     if (Player.statLife <= 0)
-                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").Format(Player.name)), 1000, -1);
+                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").ToNetworkText(Player.name)), 1000, -1);
                 }
 
                 for (int i = 0; i < 8; i++)

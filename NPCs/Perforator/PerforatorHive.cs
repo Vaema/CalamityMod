@@ -266,14 +266,23 @@ namespace CalamityMod.NPCs.Perforator
                         if (Main.getGoodWorld && lifeRatio < 0.5f)
                         {
                             if (lifeRatio > 0.35f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<PerforatorHeadLarge>(), 1);
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
                             else if (lifeRatio > 0.2f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<PerforatorHeadMedium>(), 1);
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadMedium>(), 1);
                             else if (lifeRatio > 0.05f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<PerforatorHeadSmall>(), 1);
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadSmall>(), 1);
                         }
                         else
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, wormType, 1);
+                        {
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+
+                            // Spawn two small worms in Death
+                            if (death)
+                            {
+                                if (wormType == ModContent.NPCType<PerforatorHeadSmall>())
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+                            }
+                        }
 
                         NPC.TargetClosest();
 
@@ -384,9 +393,9 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.damage = 0;
 
                 if (revenge)
-                    Movement(player, 6f + velocityEnrageIncrease, 0.3f, 450f);
+                    Movement(player, 9f + velocityEnrageIncrease, 0.3f, 450f);
                 else
-                    Movement(player, 5f + velocityEnrageIncrease, 0.2f, 450f);
+                    Movement(player, 6f + velocityEnrageIncrease, 0.2f, 450f);
 
                 return;
             }
@@ -449,13 +458,13 @@ namespace CalamityMod.NPCs.Perforator
                         NPC.damage = NPC.defDamage;
 
                         if (large || death)
-                            Movement(player, 11f + velocityEnrageIncrease, death ? 0.1125f : 0.0975f, 20f);
+                            Movement(player, 13f + velocityEnrageIncrease, death ? 0.115f : 0.1f, 20f);
                         else if (medium)
-                            Movement(player, 10f + velocityEnrageIncrease, death ? 0.105f : 0.09f, 30f);
+                            Movement(player, 12f + velocityEnrageIncrease, death ? 0.11f : 0.095f, 30f);
                         else if (small)
-                            Movement(player, 9f + velocityEnrageIncrease, death ? 0.0975f : 0.0825f, 40f);
+                            Movement(player, 11f + velocityEnrageIncrease, death ? 0.105f : 0.09f, 40f);
                         else
-                            Movement(player, 8f + velocityEnrageIncrease, death ? 0.09f : 0.075f, 50f);
+                            Movement(player, 10f + velocityEnrageIncrease, death ? 0.1f : 0.085f, 50f);
 
                         break;
 
@@ -464,7 +473,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 6f + velocityEnrageIncrease, 0.15f, 350f);
+                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 350f);
 
                         break;
 
@@ -473,7 +482,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 6f + velocityEnrageIncrease, 0.15f, 275f);
+                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 275f);
 
                         break;
 
@@ -482,7 +491,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 6f + velocityEnrageIncrease, 0.15f, 200f);
+                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 200f);
 
                         break;
                 }
@@ -492,7 +501,7 @@ namespace CalamityMod.NPCs.Perforator
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                Movement(player, 6f + velocityEnrageIncrease, 0.075f, 350f);
+                Movement(player, 6f + velocityEnrageIncrease, 0.15f, 350f);
             }
         }
 
