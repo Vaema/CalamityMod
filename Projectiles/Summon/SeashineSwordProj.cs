@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public Vector2 tipPosition;
         public Vector2 savedTipPos = Vector2.Zero;
-        public bool attackMode => Owner.HeldItem.type == ModContent.ItemType<SeashineSword>(); // If not holding the weapon, the blades won't charge (no whips for you)
+        public bool attackMode => Owner.HeldItem.type == ModContent.ItemType<SeashineHilt>(); // If not holding the weapon, the blades won't charge (no whips for you)
 
         // Values stored to create blade swing arc
         public Vector2 startPos;

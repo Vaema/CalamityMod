@@ -544,20 +544,23 @@ namespace CalamityMod.Items
         #endregion
 
         #region Pickup Item Changes
+        public override bool CanPickup(Item item, Player player)
+        {
+            // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
+            if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
+            {
+                if (player.ActiveItem().type == ModContent.ItemType<IonBlaster>() || player.ActiveItem().type == ModContent.ItemType<ApoctosisArray>())
+                    return false;
+            }
+            return base.CanPickup(item, player);
+        }
+
         public override bool OnPickup(Item item, Player player)
         {
             if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane) // On heart pickup
             {
-                bool boostedHeart = player.Calamity().photosynthesis;
-                if (boostedHeart)
-                {
+                if (player.Calamity().photosynthesis)
                     player.HealPlayer(PhotosynthesisPotion.IncreasedHeartHeal);
-                }
-            }
-            if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum) // On star pickup
-            {
-                if (player.ActiveItem().type == ModContent.ItemType<IonBlaster>() || player.ActiveItem().type == ModContent.ItemType<ApoctosisArray>())
-                    return false;
             }
             return true;
         }

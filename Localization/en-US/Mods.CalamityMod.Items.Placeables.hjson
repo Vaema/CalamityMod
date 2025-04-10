@@ -4198,3 +4198,88 @@ RunestoneWall: {
 	DisplayName: Runestone Wall
 	Tooltip: ""
 }
+
+WulfrumEnergyBarrier: {
+	DisplayName: Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumPanels: {
+	DisplayName: Wulfrum Panels
+	Tooltip: ""
+}
+
+ChargedWulfrumEnergyBarrier: {
+	DisplayName: Charged Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumEnergyBarrierWall: {
+	DisplayName: Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+ChargedWulfrumEnergyBarrierWall: {
+	DisplayName: Charged Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+WulfrumPlatform: {
+	DisplayName: Wulfrum Platform
+	Tooltip: ""
+}
+
+WulfrumSheets: {
+	DisplayName: Wulfrum Sheets
+	Tooltip: ""
+}
+
+WulfrumSiding: {
+	DisplayName: Wulfrum Siding
+	Tooltip: ""
+}
+
+WulfrumPillar: {
+	DisplayName: Wulfrum Pillar
+	Tooltip: ""
+}
+
+WulfrumComplexPanelWall: {
+	DisplayName: Wulfrum Complex Panel Wall
+	Tooltip: ""
+}
+
+AnodizedWulfrumPlatform: {
+	DisplayName: Anodized Wulfrum Platform
+	Tooltip: ""
+}
+
+AnodizedWulfrumTrim: {
+	DisplayName: Anodized Wulfrum Trim
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanels: {
+	DisplayName: Rounded Anodized Wulfrum Panels
+	Tooltip: ""
+}
+
+AnodizedWulfrumTrimWall: {
+	DisplayName: Anodized Wulfrum Trim Wall
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanelWall: {
+	DisplayName: Rounded Anodized Wulfrum Panel Wall
+	Tooltip: ""
+}
+
+AnodizedWulfrumPanels: {
+	DisplayName: Anodized Wulfrum Panels
+	Tooltip: ""
+}
+
+WulfrumPanelWall: {
+	DisplayName: Wulfrum Panel Wall
+	Tooltip: ""
+}

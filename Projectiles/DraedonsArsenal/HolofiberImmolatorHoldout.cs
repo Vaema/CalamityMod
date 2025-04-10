@@ -19,12 +19,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override float OffsetXUpwards => -0f;
         public override float BaseOffsetY => -0f;
         public override float OffsetYDownwards => 0f;
+        public override float WeaponTurnSpeed => 0.45f;
 
-        public static int FramesPerLoad = 13;
-        public static int MaxLoadableShots = 15;
         public static float BulletSpeed = 12f;
         public SlotId ChargeSlot;
-        public Color mainColor = Color.Lerp(Color.Chartreuse, Color.White, 0.35f);
         public int time = 0;
 
         public ref float CurrentChargingFrames => ref Projectile.ai[0];
@@ -80,15 +78,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                     for (int i = 0; i <= 25; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, 267, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(0.5f, 1.3f));
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, Effects.ArsenalEffects.ArsenalPlasmaDust, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(0.5f, 1.3f));
                         dust.noGravity = true;
-                        dust.color = mainColor;
+                        dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                     }
                     CurrentChargingFrames = 0;
-                    if (modItem.Charge > 0)
-                        modItem.Charge -= 0.06f;
-                    else
-                        Projectile.Kill();
                 }
                 // Spread Fire mode
                 else
@@ -105,15 +99,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     }
                     for (int i = 0; i <= 4; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, 267, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.9f, 1.2f), 0, default, Main.rand.NextFloat(0.4f, 1.1f));
-                        dust.noGravity = true;
-                        dust.color = mainColor;
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, Effects.ArsenalEffects.ArsenalPlasmaDust, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.9f, 1.2f), 0, default, Main.rand.NextFloat(0.8f, 1.3f));
+                        dust.noGravity = false;
+                        dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
+                        dust.fadeIn = 2;
                     }
                     CurrentChargingFrames = 0;
-                    if (modItem.Charge > 0)
-                        modItem.Charge -= 0.025f;
-                    else
-                        Projectile.Kill();
                 }
             }
             else if (downtime == 0)
@@ -124,7 +115,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     float particleScale = Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true);
                     float strength = particleScale;
-                    Vector3 DustLight = mainColor.ToVector3();
+                    Vector3 DustLight = Effects.ArsenalEffects.ArsenalPlasmaColor.ToVector3();
                     Lighting.AddLight(GunTipPosition, DustLight * strength);
                 }
 
@@ -134,11 +125,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     ChargeSound?.Stop();
                     for (int i = 0; i < 20; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, Effects.ArsenalEffects.ArsenalDust);
                         chargefull.velocity = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 4f + Owner.velocity * 0.5f;
                         chargefull.scale = Main.rand.NextFloat(0.6f, 0.8f);
                         chargefull.noGravity = false;
-                        chargefull.color = mainColor;
+                        chargefull.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                     }
                     SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorChargeLoop");
                     ChargeSlot = SoundEngine.PlaySound(sound with { Volume = 0.7f, IsLooped = true }, Projectile.Center);
@@ -146,11 +137,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 if (CurrentChargingFrames > chargeMax && Main.rand.NextBool())
                 {
-                    Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                    Dust chargefull = Dust.NewDustPerfect(GunTipPosition, Effects.ArsenalEffects.ArsenalDust);
                     chargefull.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(5, 9);
                     chargefull.scale = Main.rand.NextFloat(0.2f, 0.4f);
                     chargefull.noGravity = true;
-                    chargefull.color = mainColor;
+                    chargefull.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                 }
             }
 
@@ -193,10 +184,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (CurrentChargingFrames > 0 && downtime == 0)
             {
                 float randSize = Main.rand.NextFloat(0.8f, 1.2f);
-                Main.EntitySpriteDraw(rechargeTexture, tipPosition - Main.screenPosition, null, mainColor with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.25f * Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true) * randSize, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(rechargeTexture, tipPosition - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.25f * Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true) * randSize, SpriteEffects.None, 0);
                 Main.EntitySpriteDraw(rechargeTexture, tipPosition - Main.screenPosition, null, Color.White with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.15f * Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true) * randSize, SpriteEffects.None, 0);
 
-                Main.EntitySpriteDraw(pointTexture, tipPosition - Main.screenPosition + (Projectile.velocity * 15 * fade), null, mainColor with { A = 0 } * fade, Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)).ToRotation(), pointTexture.Size() * 0.5f, new Vector2(0.5f, 0.9f) * 0.035f * fade * randSize * (CurrentChargingFrames == chargeMax ? 1.5f : 1), flipSprite);
+                Main.EntitySpriteDraw(pointTexture, tipPosition - Main.screenPosition + (Projectile.velocity * 15 * fade), null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * fade, Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)).ToRotation(), pointTexture.Size() * 0.5f, new Vector2(0.5f, 0.9f) * 0.035f * fade * randSize * (CurrentChargingFrames == chargeMax ? 1.5f : 1), flipSprite);
             }
             return false;
         }

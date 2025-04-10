@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class SeashineSword : ModItem, ILocalizedModType
+    [LegacyName("SeashineSword")]
+    public class SeashineHilt : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()

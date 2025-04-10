@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Magic
             float manaPercent = ((float)Owner.statMana / (float)Owner.statManaMax2);
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
             Vector2 firingVelocity = (shootDirection * 4);
-            float damageBoost = Math.Max((manaPower * 55) * (manaPower >= 1 ? 1.3f : 1f), 1);
+            float damageBoost = Math.Max((manaPower * 60) * (manaPower >= 1 ? 1.5f : 1f), 1);
 
             if (big)
             {

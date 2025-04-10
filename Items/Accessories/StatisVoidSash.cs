@@ -35,20 +35,21 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
+
+            modPlayer.voidSashVisuals = !hideVisual;
+
             player.autoJump = true;
             player.jumpSpeedBoost += 1.6f;
+            player.moveSpeed += 0.2f;
             player.noFallDmg = true;
             player.blackBelt = true;
             modPlayer.DashID = StatisVoidSashDash.ID;
             player.dashType = 0;
             player.spikedBoots = 2;
             player.accFlipper = true;
-            player.hasMagiluminescence = true;
+            player.Calamity().statisVoidSash = true;
 
             player.MountedCenter.ToTileCoordinates();
-            DelegateMethods.v3_1 = new Vector3(0.8f, 0.5f, 1f);
-            Utils.PlotTileLine(player.Center, player.Center + player.velocity * 6f, 20f, DelegateMethods.CastLightOpen);
-            Utils.PlotTileLine(player.Left, player.Right, 20f, DelegateMethods.CastLightOpen);
         }
 
         public override void AddRecipes()

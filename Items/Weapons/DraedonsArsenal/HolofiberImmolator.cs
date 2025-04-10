@@ -41,11 +41,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<HolofiberImmolatorHoldout>();
             Item.shootSpeed = 12f;
-            //Item.useAmmo = AmmoID.Arrow;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0.001f; // Charge depletion is done in the holdout, but it needs a small fee to prevent usage at 0%
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

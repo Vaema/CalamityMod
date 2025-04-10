@@ -66,8 +66,14 @@ namespace CalamityMod.NPCs.HiveMind
         private int lungeDelay = 90; // # of ticks long hive mind spends sliding to a stop before lunging
         private int lungeTime = 33;
         private int lungeFade = 15; // Divide 255 by this for duration of hive mind spin before slowing for lunge
+        private int lungeAmount = 1;
+        private int lungesPerformed = 0;
+        private bool performingLungeCombo = false;
         private double lungeRots = 0.2; // Number of revolutions made while spinning/fading in for lunge
         private bool dashStarted = false;
+        private int rainDashAmount = 1;
+        private int rainDashesPerformed = 0;
+        private bool performingRainDashCombo = false;
         private int vileSpitFireRate = 24; // Fire rate for Expert-exclusive Vile Spits during phase 1 teleports
         private int phase2timer = 360;
         private int rotationDirection;
@@ -177,6 +183,8 @@ namespace CalamityMod.NPCs.HiveMind
             if (death)
             {
                 lungeRots = 0.4;
+                lungeAmount = 3;
+                rainDashAmount = 2;
                 minimumDriftTime = 60;
                 reelbackFade = 6;
                 lungeTime = 23;
@@ -256,6 +264,10 @@ namespace CalamityMod.NPCs.HiveMind
             writer.Write(rotation);
             writer.Write(previousState);
             writer.Write(reelCount);
+            writer.Write(lungesPerformed);
+            writer.Write(performingLungeCombo);
+            writer.Write(rainDashesPerformed);
+            writer.Write(performingRainDashCombo);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -276,6 +288,10 @@ namespace CalamityMod.NPCs.HiveMind
             rotation = reader.ReadDouble();
             previousState = reader.ReadInt32();
             reelCount = reader.ReadInt32();
+            lungesPerformed = reader.ReadInt32();
+            performingLungeCombo = reader.ReadBoolean();
+            rainDashesPerformed = reader.ReadInt32();
+            performingRainDashCombo = reader.ReadBoolean();
         }
 
         public override void FindFrame(int _)
@@ -358,11 +374,11 @@ namespace CalamityMod.NPCs.HiveMind
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            int maxSpawns = death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+            int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
                 int type = NPCID.EaterofSouls;
-                int choice = -1;
+                int choice = masterMode ? 1 : -1;
                 do
                 {
                     choice++;
@@ -372,18 +388,21 @@ namespace CalamityMod.NPCs.HiveMind
                         case 1:
                             type = NPCID.EaterofSouls;
                             break;
+
                         case 2:
                             type = NPCID.DevourerHead;
                             break;
+
                         case 3:
                         case 4:
                             type = ModContent.NPCType<DankCreeper>();
                             break;
+
                         default:
                             break;
                     }
                 }
-                while (NPC.AnyNPCs(type) && choice < 5);
+                while (NPC.CountNPCS(type) < 2 && choice < 5);
 
                 if (choice < 5)
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + Main.rand.Next(NPC.width), (int)NPC.position.Y + Main.rand.Next(NPC.height), type);
@@ -845,13 +864,16 @@ namespace CalamityMod.NPCs.HiveMind
 
                     phase2timer--;
 
-                    // Use an attack sooner if being hit
-                    if (NPC.justHit && masterMode)
-                        phase2timer -= 4;
+                    if (masterMode)
+                    {
+                        // Use an attack sooner if being hit
+                        if (NPC.justHit)
+                            phase2timer -= 4;
 
-                    // Use an attack sooner if target is close
-                    if (NPC.Distance(player.Center) < 160f)
-                        phase2timer -= 2;
+                        // Use an attack sooner if target is close
+                        if (NPC.Distance(player.Center) < 160f)
+                            phase2timer -= 2;
+                    }
 
                     if (phase2timer <= -180) // No stalling drift mode forever
                     {
@@ -925,21 +947,24 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
-                        if (revenge && lifeRatio < 0.53f)
+                        if (revenge && lifeRatio < 0.53f && lungesPerformed == 0 && rainDashesPerformed == 0)
                         {
                             state = nextState;
                             nextState = 0;
                             previousState = state;
                         }
                         else
-                            state = 3;
+                            state = performingRainDashCombo ? 5 : 3;
 
-                        if (player.velocity.X > 0)
-                            rotationDirection = 1;
-                        else if (player.velocity.X < 0)
-                            rotationDirection = -1;
-                        else
-                            rotationDirection = player.direction;
+                        if (!performingRainDashCombo)
+                        {
+                            if (player.velocity.X > 0)
+                                rotationDirection = 1;
+                            else if (player.velocity.X < 0)
+                                rotationDirection = -1;
+                            else
+                                rotationDirection = player.direction;
+                        }
                     }
 
                     break;
@@ -965,7 +990,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
 
                         rotation += rotationIncrement * rotationDirection;
-                        phase2timer = lungeDelay;
+                        phase2timer = lungesPerformed > 0 ? (lungeDelay / (lungesPerformed + 1)) : lungeDelay;
 
                         NPC.alpha -= lungeFade;
                         if (NPC.alpha < 0)
@@ -1016,6 +1041,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 // Avoid cheap bullshit
                                 NPC.damage = 0;
 
+                                performingLungeCombo = death;
                                 state = 6;
                                 phase2timer = 0;
                                 deceleration = NPC.velocity / decelerationTime;
@@ -1065,7 +1091,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
 
                             phase2timer++;
-                            if (phase2timer == (int)arcTime / 6)
+                            if (phase2timer == (int)(arcTime / 6f))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
@@ -1104,7 +1130,7 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y -= teleportRadius;
-                            NPC.position.X += teleportRadius * rotationDirection;
+                            NPC.position.X += (death ? (teleportRadius * 1.5f) : teleportRadius) * (rainDashesPerformed == 0 ? rotationDirection : -rotationDirection);
                         }
 
                         NPC.alpha -= masterMode ? 10 : 5;
@@ -1123,7 +1149,7 @@ namespace CalamityMod.NPCs.HiveMind
                             dashStarted = true;
                             SoundEngine.PlaySound(RoarSound, NPC.Center);
                             NPC.velocity.X = teleportRadius / arcTime * 3;
-                            NPC.velocity *= -rotationDirection;
+                            NPC.velocity *= (rainDashesPerformed == 0 ? -rotationDirection : rotationDirection);
                             NPC.ForceNetUpdate();
                         }
                         else
@@ -1132,7 +1158,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.damage = NPC.defDamage;
 
                             phase2timer++;
-                            if (phase2timer == (int)arcTime / 20)
+                            if (phase2timer == (int)(arcTime / (death ? 15f : 20f)))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
@@ -1147,6 +1173,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                                 if (NPC.ai[0] == 10f)
                                 {
+                                    performingRainDashCombo = death;
                                     state = 6;
                                     NPC.ai[0] = 0f;
                                     deceleration = NPC.velocity / decelerationTime;
@@ -1166,8 +1193,42 @@ namespace CalamityMod.NPCs.HiveMind
                     phase2timer++;
                     if (phase2timer == decelerationTime)
                     {
-                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
-                        state = 0;
+                        if (performingRainDashCombo)
+                        {
+                            rainDashesPerformed++;
+                            if (rainDashesPerformed < rainDashAmount)
+                            {
+                                state = 2;
+                            }
+                            else
+                            {
+                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                performingRainDashCombo = false;
+                                rainDashesPerformed = 0;
+                                state = 0;
+                            }
+                        }
+                        else if (performingLungeCombo)
+                        {
+                            lungesPerformed++;
+                            if (lungesPerformed < lungeAmount)
+                            {
+                                state = 2;
+                            }
+                            else
+                            {
+                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                performingLungeCombo = false;
+                                lungesPerformed = 0;
+                                state = 0;
+                            }
+                        }
+                        else
+                        {
+                            phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                            state = 0;
+                        }
+
                         NPC.ForceNetUpdate();
                     }
 

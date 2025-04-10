@@ -575,6 +575,7 @@ namespace CalamityMod
 
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBomb>()), new int[] { 32, 48, 60, 72, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombFall>()), new int[] { 32, 48, 60, 72, 108 } },
+                { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombGround>()), new int[] { 32, 48, 60, 72, 108 } },
 
                 { new Tuple<int, int>(NPCID.EaterofWorldsHead, ProjectileID.CursedFlameHostile), new int[] { 26, 44, 60, 76, 114 } },
                 { new Tuple<int, int>(NPCID.EaterofWorldsHead, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 26, 36, 44, 52, 84 } },
@@ -598,6 +599,7 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<PerforatorHeadLarge>(), ModContent.ProjectileType<DoGDeath>()), new int[] { 22, 36, 44, 52, 84 } },
 
                 { new Tuple<int, int>(NPCID.QueenBee, ProjectileID.QueenBeeStinger), new int[] { 22, 44, 64, 84, 126 } },
+                { new Tuple<int, int>(NPCID.QueenBee, ModContent.ProjectileType<QueenBeenade>()), new int[] { 46, 72, 84, 96, 144 } }, // Beenade Bees: 122 (death mode-exclusive)
 
                 { new Tuple<int, int>(NPCID.SkeletronHead, ProjectileID.Skull), new int[] { 46, 72, 84, 96, 144 } },
                 { new Tuple<int, int>(NPCID.SkeletronHead, ProjectileID.Shadowflames), new int[] { 36, 72, 88, 104, 156 } },

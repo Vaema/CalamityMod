@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,13 +15,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        private Color mainColor = Color.Orchid;
-        private bool doDamage = false;
-        private NPC closestTarget = null;
-        private NPC lastTarget = null;
-        private float distance;
+        public ref float time => ref Projectile.ai[0];
+        public bool onSpawn = true;
+        private NPC targeted = null;
+        private NPC lastHitTarget = null;
         private int timesItCanHit = 1;
+        public bool startAttackEffects = true;
+        public int attackTime = 160; // The amount of time an orb spends slowing before it attacks
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -27,8 +29,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 1240;
+            Projectile.extraUpdates = 5;
+            Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
@@ -36,186 +38,179 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
-            // If it's hit targeted enemies enough, kill it
-            if (timesItCanHit <= 0)
-            {
-                if (Projectile.ai[1] < 5)
-                {
-                    Projectile uwa = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5).RotatedBy(0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, 5);
-                    Projectile uwaAgain = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5).RotatedBy(-0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, 5);
-                    uwa.penetrate = 1;
-                    uwaAgain.penetrate = 1;
-                }
-                Projectile.Kill();
-                return;
-            }
-
-            Lighting.AddLight(Projectile.Center, 0.3f, 0f, 0.5f);
+            Lighting.AddLight(Projectile.Center, Effects.ArsenalEffects.ArsenalPulseColor.ToVector3() * 0.5f);
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-            Projectile.rotation = Projectile.velocity.ToRotation();
 
-            float createDustVar = 10f;
-
-            if (Projectile.localAI[0] == 0)
+            if (onSpawn)
             {
-                if (Projectile.ai[1] == 1)
+                if (Projectile.ai[1] == 0)
                     SoundEngine.PlaySound(SoundID.DD2_DarkMageCastHeal with { Volume = 1.7f, Pitch = 0.3f }, Projectile.Center);
-            }
 
-            if (targetDist < 1400f)
-            {
-                GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 5, 1.7f - Projectile.ai[1] * 0.18f, Main.rand.NextBool(3) ? Color.DarkViolet : mainColor);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
-            if (targetDist < 1400f && Main.rand.NextBool())
-            {
-                GlowOrbParticle spark = new GlowOrbParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2f, 2f), -Projectile.velocity * Main.rand.NextFloat(-0.01f, 0.01f), false, 5, 1.7f - Projectile.ai[1] * 0.18f, Main.rand.NextBool(3) ? Color.DarkViolet : mainColor);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
-
-            if (Projectile.localAI[0] > 90)
-            {
-                // Velocity must look like it has stoped, but can't actually be zero otherwise homing code doesn't work
-                if (Projectile.localAI[0] == 91)
-                    Projectile.velocity *= 0.001f;
-
-                // When they begin the homing after a hit of spawning, do a few visuals
-                if (Projectile.localAI[0] == 120)
+                for (int i = 0; i <= 8; i++)
                 {
-                    distance = 3000;
-
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/PulseSound");
-                    SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 0.3f, MaxInstances = -1 }, Projectile.Center);
-
-
-                    Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, mainColor, new Vector2(1f, 1f), Main.rand.NextFloat(12f, 25f), 0f, 0.5f, 15);
-                    GeneralParticleHandler.SpawnParticle(pulse);
-
-                    for (int k = 0; k < 6; k++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 66);
-                        dust.scale = Main.rand.NextFloat(0.6f, 1.1f);
-                        dust.velocity = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f);
-                        dust.noGravity = true;
-                        dust.color = Main.rand.NextBool(3) ? Color.DarkViolet : mainColor;
-                        dust.noLight = true;
-                    }
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPulseDust);
+                    dust.scale = Main.rand.NextFloat(1.2f, 1.9f) * Projectile.scale;
+                    dust.velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotateRandom(0.5f) * Main.rand.NextFloat(5f, 7f);
+                    dust.noGravity = true;
+                    dust.color = Effects.ArsenalEffects.ArsenalPulseColor;
+                    dust.fadeIn = 1;
                 }
-                // Homing code
-                if (Projectile.localAI[0] > 120)
+                for (int i = 0; i <= 6; i++)
                 {
-                    // Do damage if it's near its target otherwise don't, this is to prevent excessive hits as orbs rail through worm bosses and such
-                    if (closestTarget is not null)
-                        doDamage = Vector2.Distance(Projectile.Center, closestTarget.Center) < 10;
-                    else
-                        doDamage = false;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>());
+                    dust.scale = Main.rand.NextFloat(1.2f, 1.9f) * Projectile.scale;
+                    dust.velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotateRandom(0.3f) * Main.rand.NextFloat(7f, 9f);
+                    dust.noGravity = true;
+                    dust.color = Effects.ArsenalEffects.ArsenalPulseColor;
+                    dust.fadeIn = 0.3f;
+                }
 
-                    // Tracking code, originally was going to try only tracking the closest target not including the last target you hit, but I couldn't make it work
-                    // Eventually I settled on how it works now and it seems to home consistently so I'm happy enough there
-                    float projectileSpeed = 9.5f;
-                    if (closestTarget is not null && closestTarget.active)
-                    {
-                        float targetDirectionRotation = Projectile.SafeDirectionTo(closestTarget.Center).ToRotation();
-                        float turningRate = 10f + Projectile.localAI[0] * 0.00008f;
-                        Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(targetDirectionRotation, turningRate).ToRotationVector2() * projectileSpeed;
-                    }
-                    else
-                    {
-                        Projectile.velocity = Projectile.rotation.ToRotationVector2() * projectileSpeed;
-                        Projectile.velocity *= 0.999f;
-                    }
-                    if (closestTarget is not null && Vector2.Distance(Projectile.Center, closestTarget.Center) < 10)
-                    {
-                        closestTarget = null;
-                        distance = 3000;
-                    }
+                onSpawn = false;
+            }
 
-                    // Add extra updates as it hits more times, this smoothy increases the speed without destroying velocity based visual effects
-                    Projectile.extraUpdates = 5 + (int)(Projectile.numHits * 0.3f);
+            if (time >= attackTime) // home in on enemy
+            {
+                // Find a target
+                if (targeted == null)
+                {
+                    Projectile.velocity *= 0.9f;
+                    
+                    startAttackEffects = true;
+                    NPC chosenTarget = null;
+                    float distance = 2500;
+                    for (int index = 0; index < Main.npc.Length; index++) // look for a target that isnt one it has already hit in the last two hits.
                     {
-                        // Actual homing movement
+                        NPC searchedTarget = Main.npc[index];
+                        if (searchedTarget.CanBeChasedBy(null, false))
+                        {
+                            if (Vector2.Distance(Projectile.Center, searchedTarget.Center) < distance && (lastHitTarget != null ? searchedTarget != lastHitTarget : true) && searchedTarget.active && searchedTarget.life > 0)
+                            {
+                                distance = Vector2.Distance(Projectile.Center, searchedTarget.Center);
+                                chosenTarget = searchedTarget;
+                            }
+                        }
+                    }
+                    if (chosenTarget == null) // If no target was found, check again but accept last hit targets as viable.
+                    {
+                        if (lastHitTarget != null)
+                            Projectile.localNPCImmunity[lastHitTarget.whoAmI] = 0;
+
                         for (int index = 0; index < Main.npc.Length; index++)
                         {
-                            if (Main.npc[index].CanBeChasedBy(null, false) || Main.npc[index] == lastTarget)
+                            NPC searchedTarget = Main.npc[index];
+                            if (searchedTarget.CanBeChasedBy(null, false))
                             {
-                                float extraDistance = (Main.npc[index].width / 2) + (Main.npc[index].height / 2);
-
-                                if (Vector2.Distance(Projectile.Center, Main.npc[index].Center) < (distance + extraDistance))
+                                if (Vector2.Distance(Projectile.Center, searchedTarget.Center) < distance && searchedTarget.active && searchedTarget.life > 0)
                                 {
-                                    closestTarget = Main.npc[index];
-                                    distance = Vector2.Distance(Projectile.Center, Main.npc[index].Center);
+                                    distance = Vector2.Distance(Projectile.Center, searchedTarget.Center);
+                                    chosenTarget = searchedTarget;
                                 }
                             }
                         }
                     }
+
+                    targeted = chosenTarget;
+                }
+                else // Home in on selected target
+                {
+                    // Add extra updates as it hits more times, this smoothy increases the speed without destroying velocity based visual effects
+                    Projectile.extraUpdates = 5 + (int)(Projectile.numHits * 0.6f);
+
+                    if (Projectile.timeLeft < 110 * Projectile.extraUpdates)
+                        Projectile.timeLeft = 110 * Projectile.extraUpdates;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.5f, 15, 0.97f);
+                    if (startAttackEffects)
+                    {
+                        Projectile.velocity = Utils.DirectionTo(Projectile.Center, targeted.Center) * 10;
+                        SoundStyle pulse = new("CalamityMod/Sounds/Item/PulseSound");
+                        SoundEngine.PlaySound(pulse with { Volume = 0.25f, Pitch = Math.Max(0.6f, Main.rand.NextFloat(0.3f, 0.4f) + Projectile.numHits * 0.1f), MaxInstances = 5 }, Projectile.Center);
+                        for (int k = 0; k < 6; k++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPulseDust);
+                            dust.scale = Main.rand.NextFloat(1.2f, 1.9f) * Projectile.scale;
+                            dust.velocity = Utils.DirectionTo(Projectile.Center, targeted.Center).RotatedByRandom(0.5f) * Main.rand.NextFloat(5f, 9f);
+                            dust.noGravity = true;
+                            dust.color = Effects.ArsenalEffects.ArsenalPulseColor;
+                            dust.fadeIn = 1;
+                        }
+                        startAttackEffects = false;
+                    }
+                    if (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy())
+                        targeted = null;
                 }
             }
             else
             {
-                // Minor dust trail for when they first spawn
-                if (Main.rand.NextBool(5))
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5), 66);
-                    dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
-                    dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.5f);
-                    dust.noGravity = true;
-                    dust.color = Main.rand.NextBool(3) ? Color.DarkViolet : mainColor;
-                    dust.noLight = true;
-                }
-                Projectile.velocity *= 0.98f;
+                Projectile.velocity *= Projectile.numHits > 0 ? 0.955f : 0.97f;
             }
 
-            // Visuals for the shot as it exits the tip of the rifle
-            if (Projectile.localAI[0] == createDustVar)
-                PulseBurst(4f, 5f);
+            float squash = Utils.GetLerpValue(1, 3, Projectile.velocity.Length(), true);
+            if (targetDist < 1400f && squash > 0.2f && (Projectile.ai[1] == 0 || time > 5)) // The trail
+            {
+                Particle trail = new CustomSpark(Projectile.Center, Projectile.velocity * 0.01f, "CalamityMod/Particles/DualTrail", false, 13, 0.075f * Projectile.scale, Effects.ArsenalEffects.ArsenalPulseColor * 0.6f * squash, new Vector2(1 - 0.15f * squash, 1.5f), true, false, shrinkSpeed: 0.2f * squash);
+                GeneralParticleHandler.SpawnParticle(trail);
+            }
 
-            Projectile.localAI[0]++;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            time++;
         }
 
-        public override bool? CanHitNPC(NPC target) => doDamage ? null : false;
+        public override bool? CanHitNPC(NPC target) => (target == targeted) ? null : false;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            bool onKill = target.life <= 0;
+            bool onKill = (target.life <= 0 && target.realLife == -1);
             
             // Set some values to get ready for it to home again for its next hit
-            lastTarget = target;
-            distance = 3000;
-            Projectile.localAI[0] = 60;
-            Projectile.velocity *= MathHelper.Clamp(1.5f - Projectile.numHits * 0.5f, 1f, 1.5f);
+            lastHitTarget = target;
+            targeted = null;
+            time = 0;
+            timesItCanHit--;
+            Projectile.velocity *= 0.8f;
 
-            for (int i = 0; i <= 2; i++)
+            for (int i = 0; i <= 5; i++)
             {
-                SquishyLightParticle energy = new SquishyLightParticle(Projectile.Center, (Projectile.velocity * 2).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.1f, 0.4f), Main.rand.NextFloat(0.1f, 0.25f), Main.rand.NextBool(3) ? Color.DarkViolet : mainColor, Main.rand.Next(20, 30 + 1), 0.25f, 2f);
-                GeneralParticleHandler.SpawnParticle(energy);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>());
+                dust.scale = Main.rand.NextFloat(1.7f, 2.4f) * Projectile.scale;
+                dust.velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotateRandom(0.3f) * Main.rand.NextFloat(4f, 9f);
+                dust.noGravity = true;
+                dust.color = Effects.ArsenalEffects.ArsenalPulseColor;
+                dust.fadeIn = 0.3f;
             }
-
-            if (target == closestTarget)
-                timesItCanHit--;
 
             if (onKill)
+                timesItCanHit += 1;
+
+            // If it's hit targeted enemies enough, kill it
+            if (timesItCanHit <= 0)
             {
-                timesItCanHit += 2;
-                Projectile.timeLeft += 90;
+                if (Projectile.ai[1] == 0 && Main.myPlayer == Projectile.owner)
+                {
+                    Projectile pulseOrb1 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10).RotatedBy(0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, 1);
+                    Projectile pulseOrb2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10).RotatedBy(-0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, -1);
+                    pulseOrb1.penetrate = 1;
+                    pulseOrb1.scale = 0.7f;
+                    pulseOrb2.penetrate = 1;
+                    pulseOrb2.scale = 0.7f;
+                }
+                Projectile.Kill();
             }
         }
-        private void PulseBurst(float speed1, float speed2)
+        public override bool PreDraw(ref Color lightColor)
         {
-            for (int i = 0; i <= 8; i++)
+            Asset<Texture2D> orb = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), 5, 10, 1, 0.6f), Utils.Remap(Projectile.velocity.Length(), 5, 10, 1, 2f));
+            float timeleftFade = (float)Math.Pow(Utils.GetLerpValue(0, 40 * Projectile.extraUpdates, Projectile.timeLeft, true), 5);
+
+            for (int i = 0; i < 6; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 66);
-                dust.scale = Main.rand.NextFloat(0.4f, 1.4f);
-                dust.velocity = (Projectile.velocity * 4).RotateRandom(0.6f) * Main.rand.NextFloat(0.2f, 0.9f);
-                dust.noGravity = true;
-                dust.color = Main.rand.NextBool(3) ? Color.DarkViolet : mainColor;
-                dust.noLight = true;
+                Color orbColor = Color.Lerp(Effects.ArsenalEffects.ArsenalPulseColor, Color.White, i * 0.07f) with { A = 0 } * 0.5f;
+                Vector2 scale = Projectile.scale * timeleftFade * squash * (0.05f + i * 0.01f) * 3;
+                Main.EntitySpriteDraw(orb.Value, Projectile.Center - Main.screenPosition, null, orbColor, Projectile.rotation, orb.Size() * 0.5f, scale, SpriteEffects.None);
             }
-            for (int i = 0; i <= 8; i++)
-            {
-                SquishyLightParticle energy = new SquishyLightParticle(Projectile.Center, (Projectile.velocity * 4).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.1f, 0.4f), Main.rand.NextFloat(0.2f, 0.6f), Main.rand.NextBool(3) ? Color.DarkViolet : mainColor, Main.rand.Next(30, 40 + 1), 0.25f, 2f);
-                GeneralParticleHandler.SpawnParticle(energy);
-            }
+
+            return false;
         }
     }
 }

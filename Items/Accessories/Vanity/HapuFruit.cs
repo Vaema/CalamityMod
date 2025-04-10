@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -82,6 +83,21 @@ namespace CalamityMod.Items.Accessories.Vanity
                 Player.head = EquipLoader.GetEquipSlot(Mod, "HapuFruit", EquipType.Head);
 
                 //Player.HideAccessories();
+            }
+        }
+
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            if (vanityEquipped)
+            {
+                drawInfo.drawPlayer.back = EquipLoader.GetEquipSlot(Mod, "HapuFruit", EquipType.Back);
+                drawInfo.drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "HapuFruit", EquipType.Legs);
+                drawInfo.legsGlowMask = -1;
+                drawInfo.legsOffset = Vector2.Zero;
+                drawInfo.drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "HapuFruit", EquipType.Body);
+                drawInfo.drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "HapuFruit", EquipType.Head);
+                drawInfo.headGlowMask = -1;
+                drawInfo.helmetOffset = Vector2.Zero;
             }
         }
     }

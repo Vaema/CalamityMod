@@ -19,9 +19,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 68;
             Item.height = 38;
-            Item.damage = 42;
+            Item.damage = 24;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 8;
+            Item.mana = 12;
             Item.useAnimation = 7;
             Item.useTime = 7;
             Item.useStyle = ItemUseStyleID.Shoot;

@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Armor.Silva
         public override void UpdateEquip(Player player)
         {
             player.moveSpeed += 0.1f;
-            player.GetDamage<GenericDamageClass>() += 0.12f;
-            player.GetCritChance<GenericDamageClass>() += 12;
+            player.GetDamage<GenericDamageClass>() += 0.11f;
+            player.GetCritChance<GenericDamageClass>() += 11;
         }
 
         public override void AddRecipes()

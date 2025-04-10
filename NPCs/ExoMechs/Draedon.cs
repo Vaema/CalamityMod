@@ -794,7 +794,7 @@ namespace CalamityMod.NPCs.ExoMechs
             if (NPC.life > 0)
                 return;
 
-            if (!Main.dedServ && !HasBeenKilled)
+            if (!Main.dedServ && !HasBeenKilled && HologramEffectTimer > 0f)
             {
                 for (int i = 1; i <= 4; i++)
                 {

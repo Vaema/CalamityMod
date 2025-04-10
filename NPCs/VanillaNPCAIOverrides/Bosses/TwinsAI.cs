@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Foveanator spawn
             if (!oblivionAlive && death && calamityGlobalNPC.newAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient && !bossRush)
             {
-                NPC.SpawnOnPlayer(npc.FindClosestPlayer(), ModContent.NPCType<Foveanator>());
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<Foveanator>());
                 calamityGlobalNPC.newAI[0] = 1f;
                 npc.SyncExtraAI();
             }

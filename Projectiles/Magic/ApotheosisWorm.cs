@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (Main.rand.NextBool(10))
-                    SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
             }
 
             float idealFlyAcceleration = 0.18f;

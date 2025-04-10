@@ -203,7 +203,7 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public float pointBlankShotDistanceTravelled = 0f;
         /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
-        public const int DefaultPointBlankDuration = 18; // 18 frames
+        public const int DefaultPointBlankDuration = 18;
         /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
         public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 

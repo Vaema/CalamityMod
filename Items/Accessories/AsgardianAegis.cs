@@ -19,11 +19,11 @@ namespace CalamityMod.Items.Accessories
 
         public Color? TooltipExtensionColor => new(195, 223, 255);
 
-        public const int ShieldSlamDamage = 900;
+        public const int ShieldSlamDamage = 1000;
         public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;
 
-        public const int RamExplosionDamage = 450;
+        public const int RamExplosionDamage = 300;
         public const float RamExplosionKnockback = 20f;
 
         public override void SetDefaults()

@@ -1,3 +1,16 @@
+CompactRailgun: {
+	DisplayName: Compact Railgun
+	Tooltip:
+		'''
+		A magnet powered energy railgun that fires rapidly, creating lingering magnetic implosions that pull in weak enemies on hit
+		Only one implosion can exist at a time
+		Press <right> to begin charging a devastating energy beam that always crits and will fire once ready
+		This charge attack can not be interrupted once started and has a long cooldown
+		[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
+		[c/1FFBFF:This railgun has reliably pulled in skeptics of its crushing efficiency.']
+		'''
+}
+
 FrequencyManipulator: {
 	DisplayName: Frequency Manipulator
 	Tooltip:
@@ -48,25 +61,14 @@ GaussPistol: {
 		'''
 }
 
-GaussRifle: {
-	DisplayName: Gauss Rifle
-	Tooltip:
-		'''
-		A magnet powered energy rifle that fires piercing shots, creating magnetic implosions that pull in weak enemies on hit
-		Implosions only spawn on the first enemy hit by the beam
-		[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
-		[c/1FFBFF:This rifle has reliably pulled in skeptics of its crushing efficiency.']
-		'''
-}
-
 HolofiberImmolator: {
 	DisplayName: Holofiber Immolator
 	Tooltip:
 		'''
 		Fires three gravity-affected plasma drops which dissolve through foes
-		Holding <left> quickly charges the bow, firing a homing plasma arrow
+		Holding <left> quickly charges the bow, firing a high-speed plasma arrow
 		Plasma arrows will detonate after impact, creating stronger explosions if stuck into tiles
-		Holding <right> will repeatedly fire uncharged shots
+		Holding <right> while firing will repeatedly fire uncharged shots
 		[c/1FFBFF:'The elegance of holofibre is unmatched.]
 		[c/1FFBFF:However, mechanical tension may have produced more consistent results.']
 		'''
@@ -143,7 +145,7 @@ PulsePistol: {
 		'''
 		Fires a pulse orb that tracks nearby targets
 		After hitting an enemy, the pulse orb will split in two
-		Pulse orb pierce will not decrease when killing enemies
+		Pulse orb pierce will increase when killing enemies
 		'''
 }
 
@@ -174,9 +176,9 @@ ScattershotSkewer: {
 	Tooltip:
 		'''
 		Fires a spread of lasers
-		Holding <left> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
 		Using the charged attack has a short cooldown
-		Holding <right> will repeatedly fire uncharged shots
 		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
 		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
 		'''
@@ -217,8 +219,11 @@ Taser: {
 	DisplayName: Taser
 	Tooltip:
 		'''
-		Shoots a hook that attaches to enemies and rapidly electrocutes them before returning
-		After electrocuting an enemy enough, the hook will create a large electric burst on it
+		Press <left> to rapidly fire stunning bolts with high knockback
+		Press <right> to shoot a hook that attaches to enemies and rapidly electrocutes them
+		After electrocuting an enemy enough, the hook will create a shock explosion before returning to you
+		Successful hook attacks have a short cooldown that is applied unless the hook kills an enemy
+		{$Common.ArmorPenetration}
 		'''
 }
 
@@ -249,7 +254,7 @@ TrackingDisk: {
 		Lasers do not directly damage enemies, but instead apply a stacking laser burn effect
 		Once hit by enough lasers or sufficient time has passed, laser burn will deal direct damage
 		The disk gains acceleration as it returns to the player
-		Stealth strikes fire lasers at a faster rate and distance, can fire at multiple different targets, and lasers deal small amounts of damage
+		Stealth strikes toss two disks that can fire at multiple different targets from farther range
 		'''
 }
 

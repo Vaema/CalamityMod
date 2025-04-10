@@ -26,6 +26,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ironBoots = true;
+            player.noFallDmg = true;
         }
     }
 }

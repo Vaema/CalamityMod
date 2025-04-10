@@ -369,7 +369,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                                 dust.noGravity = true;
                             }
                         }
-                        SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
                     }
                 }
             }
