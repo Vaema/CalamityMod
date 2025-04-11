@@ -281,6 +281,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FasterFallHotkey { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool CalamityArmorSetBonusDoubleTap { get; set; }
         #endregion
     }
 

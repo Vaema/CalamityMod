@@ -114,7 +114,7 @@ namespace CalamityMod.NPCs.Perforator
                         spawnedBlob = true;
                         int type = ModContent.ProjectileType<IchorBlob>();
                         int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     NPC.life = 0;
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.Perforator
                         spawnedBlob = true;
                         int type = ModContent.ProjectileType<IchorBlob>();
                         int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     NPC.type = ModContent.NPCType<PerforatorHeadMedium>();
@@ -151,7 +151,7 @@ namespace CalamityMod.NPCs.Perforator
                     {
                         int type = ModContent.ProjectileType<IchorBlob>();
                         int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, NPC.velocity + Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     int whoAmI2 = NPC.whoAmI;

@@ -30,6 +30,7 @@ namespace CalamityMod.Tiles
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = true;
+            TileID.Sets.DisableSmartCursor[Type] = true;
             TileID.Sets.MultiTileSway[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
             TileObjectData.newTile.Height = 3;
@@ -43,21 +44,21 @@ namespace CalamityMod.Tiles
             TileObjectData.addAlternate(0);
             TileObjectData.addTile(Type);
             DustType = -1;
-            TileID.Sets.DisableSmartCursor[Type] = true;
             AddMapEntry(new Color(13, 88, 130), Language.GetText("MapObject.Banner"));
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (!closer)
-                return;
-            Player player = Main.LocalPlayer;
-            if (player is null || !player.active || player.dead)
+            if (closer)
                 return;
 
             int style = Main.tile[i, j].TileFrameX / 18;
             int npc = GetBannerNPC(style);
-            if (npc != -1)
+            if (npc == -1)
+                return;
+
+            int itemType = TileLoader.GetItemDropFromTypeAndStyle(Type, style);
+            if (ItemID.Sets.BannerStrength.IndexInRange(itemType) && ItemID.Sets.BannerStrength[itemType].Enabled)
             {
                 Main.SceneMetrics.NPCBannerBuff[npc] = true;
                 Main.SceneMetrics.hasBanner = true;
@@ -65,6 +66,8 @@ namespace CalamityMod.Tiles
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
+
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => offsetY += 2;
 
         public static int GetBannerNPC(int style)
         {
