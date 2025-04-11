@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -104,6 +107,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Fire pus at the player
                         if (ExtraTimer == 40f)
                         {
+                            SoundEngine.PlaySound(SoundID.NPCHit10, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Vector2 spawn = NPC.Center + Vector2.UnitX * 13f * NPC.spriteDirection;
@@ -116,6 +120,13 @@ namespace CalamityMod.NPCs.SunkenSea
                             PusAmount--;
                             if (PusAmount == 0)
                                 AttackState = 1f;
+                        }
+                        else // Dust telegraph
+                        {
+                            Vector2 dustSpawn = NPC.Center + Vector2.UnitX * 20f * NPC.direction * NPC.scale;
+                            Vector2 dustVel = (Vector2.UnitX * 3f).RotatedByRandom(MathHelper.Pi / 6f) * Main.rand.NextBool().ToDirectionInt();
+                            Dust dust = Dust.NewDustPerfect(dustSpawn, ModContent.DustType<LightDust>(), dustVel, 100, Main.rand.NextBool() ? Color.Yellow : Color.DarkRed, 0.6f);
+                            dust.noLightEmittence = true;
                         }
                     }
                 }
@@ -133,8 +144,19 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Charge
                         if (ExtraTimer == 40f)
                         {
+                            SoundEngine.PlaySound(SoundID.NPCHit6, NPC.Center);
                             NPC.damage = NPC.defDamage;
                             NPC.velocity = Utils.DirectionTo(NPC.Center, target.Center) * 13.5f;
+
+                            CustomPulse woosh = new(NPC.Center, Vector2.Zero, Color.DarkRed, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0.1f, 0.6f, 15);
+                            GeneralParticleHandler.SpawnParticle(woosh);
+                        }
+                        else if (ExtraTimer < 40f)
+                        {
+                            Vector2 dustSpawn = NPC.Center + Main.rand.NextVector2CircularEdge(35f, 35f);
+                            Vector2 dustVel = Utils.DirectionTo(dustSpawn, NPC.Center) * 4f + NPC.velocity * 0.75f;
+                            Dust dust = Dust.NewDustPerfect(dustSpawn, ModContent.DustType<LightDust>(), dustVel, 100, Color.DarkRed, 0.6f);
+                            dust.noLightEmittence = true;
                         }
 
                         NPC.velocity *= ExtraTimer > 60f ? 0.96f : ExtraTimer < 40f ? 0.98f : 1f;
@@ -162,8 +184,9 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
+            // This code has to be run in ModifyHitPlayer because otherwise shields prevent it from working
             // We don't have to check the AttackState because it only deals contact damage while ramming
             // localAI[1] is used a temp set for filling with pus so that the current charge can finish before starting pus shooting mode
             NPC.localAI[1] = 1f;
@@ -179,13 +202,18 @@ namespace CalamityMod.NPCs.SunkenSea
             return 0f;
         }
 
+        /*public override void FindFrame(int frameHeight)
+        {
+            base.FindFrame(frameHeight);
+        }*/
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D tex = TextureAssets.Npc[Type].Value;
             // If in the bestiary or is buffering the pus fill from hitting a charge, draw the sac; otherwise it's based on AttackState
             Rectangle frame = tex.Frame(2, 1, NPC.IsABestiaryIconDummy || NPC.localAI[1] == 1f ? 0 : (int)AttackState, NPC.frame.Y);
 
-            spriteBatch.Draw(tex, NPC.Center - screenPos, frame, drawColor, NPC.rotation, new Vector2((float)(tex.Width / 2), (float)(tex.Height / Main.npcFrameCount[Type] / 2)), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, frame, drawColor, NPC.rotation, frame.Size() / 2f, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             return false;
         }
     }
