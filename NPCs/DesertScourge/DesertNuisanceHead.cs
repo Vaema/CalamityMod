@@ -455,7 +455,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
 
             Vector2 destination = Main.player[NPC.target].Center;
-            if (NPC.Distance(destination) > 1000f)
+            if (NPC.Distance(destination) > (getMad ? 750f : 1000f))
                 NPC.velocity += (destination - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             // Calculate contact damage based on velocity
