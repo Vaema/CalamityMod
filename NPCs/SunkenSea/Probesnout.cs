@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Xml.XPath;
 using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles;
 using Microsoft.Xna.Framework;
@@ -415,6 +416,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.catchItem = ModContent.ItemType<ProbesnoutItem>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -463,6 +465,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             NPC.rarity = 3;
+            NPC.catchItem = ItemType<ProbesnoutGoldItem>();
+            NPC.value = 100000;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

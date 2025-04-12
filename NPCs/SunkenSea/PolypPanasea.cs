@@ -227,7 +227,11 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)FishColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
+            }
+            if (Variant == (int)FishColor.Gold || Variant == (int)FishColor.Radiant)
+            {
                 NPC.rarity = 3;
+                NPC.value = 100000;
             }
         }
 
@@ -376,6 +380,18 @@ namespace CalamityMod.NPCs.SunkenSea
                         EmoteExpressionParticle.EmoteType.Exclamation);
                     GeneralParticleHandler.SpawnParticle(emote2);
                 }
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (Variant == (int)FishColor.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantPolypPanasea");
+            }
+            if (Variant == (int)FishColor.Gold)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.GoldPolypPanasea");
             }
         }
 

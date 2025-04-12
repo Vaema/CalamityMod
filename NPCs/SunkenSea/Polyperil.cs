@@ -85,7 +85,11 @@ namespace CalamityMod.NPCs.SunkenSea
             Color = Main.rand.Next(0, 3);
             // 1 in 30 chance to be Radiant
             if (Main.rand.NextBool(30))
+            {
                 Color = 3;
+                NPC.rarity = 3;
+                NPC.value = 100000;
+            }
 
             // Spawn tentacles
             int dist = 80;
@@ -132,6 +136,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (Color == 3)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantPolyperil");
             }
         }
 

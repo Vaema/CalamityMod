@@ -140,12 +140,14 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         NPC.catchItem = ModContent.ItemType<BabyGhostBellRadiantItem>();
                         NPC.rarity = 3;
+                        NPC.value = 100000;
                     }
                     break;
                 case (int)JellyColor.Gold:
                     {
                         NPC.catchItem = ModContent.ItemType<BabyGhostBellGoldItem>();
                         NPC.rarity = 3;
+                        NPC.value = 100000;
                     }
                     break;
                 case (int)JellyColor.Voltaic:
@@ -236,7 +238,23 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)JellyColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
+            }
+            if (Variant == (int)JellyColor.Radiant || Variant == (int)JellyColor.Gold)
+            {
                 NPC.rarity = 3;
+                NPC.value = 100000;
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (Variant == (int)JellyColor.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantBabyGhostBell");
+            }
+            if (Variant == (int)JellyColor.Gold)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.GoldBabyGhostBell");
             }
         }
 

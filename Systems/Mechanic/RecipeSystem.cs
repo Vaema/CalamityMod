@@ -1280,6 +1280,42 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<BabyGhostBellGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<ProbesnoutGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<PolypPanaseaGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<PearlpodGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<SeaMinnowGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<AlphaSeaMinnowGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
             r.AddTile(TileID.Hellforge);

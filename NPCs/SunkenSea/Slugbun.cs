@@ -135,6 +135,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentSkin = (int)SlugSkin.Radiant;
                 NPC.rarity = 3;
+                NPC.value = 100000;
             }
             // Decide item..........................
             switch (CurrentSkin)
@@ -191,6 +192,11 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                 }
             }
+            if (CurrentSkin == (int)SlugSkin.Radiant)
+            {
+                NPC.rarity = 3;
+                NPC.value = 100000;
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -204,6 +210,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     NPC.frame.Y = 0;
                 }
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (CurrentSkin == (int)SlugSkin.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantSlugbun");
             }
         }
 

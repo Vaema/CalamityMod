@@ -17,6 +17,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using static Terraria.GameContent.Animations.IL_Actions.NPCs;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -222,6 +223,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentColor = Main.rand.Next(3, 5);
                 NPC.rarity = 3;
+                NPC.value = 100000;
             }
             // Decide item..........................
             switch (CurrentColor)
@@ -443,11 +445,13 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CurrentColor == (int)FishColor.Gold)
             {
                 NPC.rarity = 3;
+                NPC.value = 100000;
                 NPC.ProduceGoldCritterDust();
             }
             if (CurrentColor == (int)FishColor.Radiant)
             {
                 NPC.rarity = 3;
+                NPC.value = 100000;
             }
         }
 
@@ -473,6 +477,19 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (CurrentColor == (int)FishColor.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantPrismaticGuppy");
+            }
+            if (CurrentColor == (int)FishColor.Gold)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.GoldPrismaticGuppy");
+            }
+        }
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)

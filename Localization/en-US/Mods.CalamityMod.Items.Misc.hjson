@@ -1,11 +1,11 @@
 // Critters
 AlphaSeaMinnowItem: {
-	DisplayName: Alpha Sea Minnow
+	DisplayName: "{$NPCs.AlphaSeaMinnow.DisplayName}"
 	Tooltip: ""
 }
 
 AlphaSeaMinnowGoldItem: {
-	DisplayName: Gold Alpha Sea Minnow
+	DisplayName: "{$NPCs.AlphaSeaMinnowGold.DisplayName}"
 	Tooltip: ""
 }
 
@@ -34,7 +34,7 @@ BabyGhostBellItem: {
 }
 
 BabyGhostBellGoldItem: {
-	DisplayName: Gold Baby Ghost Bell
+	DisplayName: "{$NPCs.GoldBabyGhostBell}"
 	Tooltip: ""
 }
 
@@ -44,7 +44,7 @@ BabyGhostBellGreenItem: {
 }
 
 BabyGhostBellRadiantItem: {
-	DisplayName: Radiant Baby Ghost Bell
+	DisplayName: "{$NPCs.RadiantBabyGhostBell}"
 	Tooltip: ""
 }
 
@@ -84,7 +84,7 @@ PearlpodItem: {
 }
 
 PearlpodGoldItem: {
-	DisplayName: Gold Pearlpod
+	DisplayName: "{$NPCs.PearlpodGold.DisplayName}"
 	Tooltip: ""
 }
 
@@ -94,7 +94,7 @@ PearlpodPinkItem: {
 }
 
 PolypPanaseaGoldItem: {
-	DisplayName: Gold Polyp Panasea
+	DisplayName: "{$NPCs.GoldPolypPanasea}"
 	Tooltip: ""
 }
 
@@ -114,7 +114,7 @@ PolypPanaseaPurpleItem: {
 }
 
 PolypPanaseaRadiantItem: {
-	DisplayName: Radiant Polyp Panasea
+	DisplayName: "{$NPCs.RadiantPolypPanasea}"
 	Tooltip: ""
 }
 
@@ -134,7 +134,7 @@ PrismaticGuppyBlueItem: {
 }
 
 PrismaticGuppyGoldItem: {
-	DisplayName: Gold Prismatic Guppy
+	DisplayName: "{$NPCs.GoldPrismaticGuppy}"
 	Tooltip: ""
 }
 
@@ -149,7 +149,17 @@ PrismaticGuppyPinkItem: {
 }
 
 PrismaticGuppyRadiantItem: {
-	DisplayName: Radiant Prismatic Guppy
+	DisplayName: "{$NPCs.RadiantPrismaticGuppy}"
+	Tooltip: ""
+}
+
+ProbesnoutGoldItem: {
+	DisplayName: "{$NPCs.ProbesnoutGold.DisplayName}"
+	Tooltip: ""
+}
+
+ProbesnoutItem: {
+	DisplayName: "{$NPCs.Probesnout.DisplayName}"
 	Tooltip: ""
 }
 
@@ -164,7 +174,12 @@ SeaMinnowItem: {
 }
 
 SeaMinnowGoldItem: {
-	DisplayName: Gold Sea Minnow
+	DisplayName: "{$NPCs.SeaMinnowGold.DisplayName}"
+	Tooltip: ""
+}
+
+SearslugItem: {
+	DisplayName: "{$NPCs.Searslug.DisplayName}"
 	Tooltip: ""
 }
 
@@ -189,7 +204,7 @@ SlugbunPolypItem: {
 }
 
 SlugbunRadiantItem: {
-	DisplayName: Radiant Slugbun
+	DisplayName: "{$NPCs.RadiantSlugbun}"
 	Tooltip: ""
 }
 
@@ -490,9 +505,4 @@ SuperDummy: {
 		Will not die when taking damage over time from debuffs
 		Right click to kill all super dummies
 		'''
-}
-
-SearslugItem: {
-	DisplayName: Searslug Item
-	Tooltip: ""
 }

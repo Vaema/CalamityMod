@@ -216,6 +216,19 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override void ModifyTypeName(ref string typeName)
+        {
+            NPC parent = Main.npc[(int)ParentIndex];
+            if (parent == null || !parent.active || parent.life < 0 || parent.type != ModContent.NPCType<Polyperil>())
+            {
+                return;
+            }
+            if (parent.ai[1] == 3)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantPolyperil");
+            }
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             NPC parent = Main.npc[(int)ParentIndex];

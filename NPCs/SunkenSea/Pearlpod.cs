@@ -423,7 +423,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetDefaults()
         {
             base.SetDefaults();
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = 120000;
             NPC.catchItem = ItemType;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
             NPC.rarity = 3;
