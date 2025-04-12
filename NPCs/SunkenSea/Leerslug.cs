@@ -174,6 +174,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         // Do a few hops towards the player
                         int maxJumps = 3;
+                        int jumpHeight = Target.Bottom.Y < NPC.Top.Y ? 8 : 5;
                         if (NPC.ai[2] >= maxJumps - 1 && NPC.velocity.Y == 0)
                         {
                             ChangePhase((int)PhaseType.Dash);
@@ -181,9 +182,18 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Jump
                         if (NPC.velocity.Y == 0)
                         {
-                            NPC.velocity.Y = -5;
+                            NPC.velocity.Y = -jumpHeight;
                             NPC.velocity.X = NPC.DirectionTo(Target.Center).X.DirectionalSign() * 4;
                             NPC.ai[2]++;
+                        }
+                        // Move towards the player if it fell in lava
+                        else if (NPC.lavaWet)
+                        {
+                            NPC.velocity.X = NPC.DirectionTo(Target.Center).X.DirectionalSign() * 4;
+                            if (Main.rand.NextBool(20))
+                            {
+                                SoundEngine.PlaySound(SoundID.Zombie7 with { Pitch = 0.7f }, NPC.Center);
+                            }
                         }
                         NPC.direction = NPC.velocity.X.DirectionalSign();
                     }
@@ -210,10 +220,18 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Leave behind some hot mist particles
                         else
                         {
-                            if (Timer % 2 == 0)
+                            if (NPC.velocity.X == 0)
                             {
-                                MediumMistParticleAlphaBlend particle = new MediumMistParticleAlphaBlend(NPC.Center, -NPC.velocity, Color.Red, Color.Orange, Main.rand.NextFloat(0.8f, 1.2f), 80f, 0.2f);
-                                GeneralParticleHandler.SpawnParticle(particle);
+                                ChangePhase((int)PhaseType.Jumps);
+                                break;
+                            }
+                            if (Timer < squash + 60)
+                            {
+                                if (Timer % 2 == 0)
+                                {
+                                    MediumMistParticle particle = new MediumMistParticle(NPC.Center, -NPC.velocity, Color.Red, Color.Orange, Main.rand.NextFloat(0.8f, 1.2f), 255f, 0.2f);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                                }
                             }
                             NPC.direction = NPC.velocity.X.DirectionalSign();
                         }
@@ -224,6 +242,11 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.StepUpBlocks();
             NPC.spriteDirection = NPC.direction;
+            // Bounce on lava
+            if (NPC.lavaWet)
+            {
+                NPC.velocity.Y = MathHelper.Min(NPC.velocity.Y - 0.2f, -4);
+            }
             Timer++;
         }
 
