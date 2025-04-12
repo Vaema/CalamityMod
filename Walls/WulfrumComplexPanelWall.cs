@@ -18,7 +18,6 @@ namespace CalamityMod.Walls
             GlowMask = new("CalamityMod/Walls/WulfrumComplexPanelWall_Glow", 36, 36);
 
             Main.wallHouse[Type] = true;
-            Main.wallLight[Type] = true;
             AddMapEntry(new Color(28, 28, 29));
         }
 
