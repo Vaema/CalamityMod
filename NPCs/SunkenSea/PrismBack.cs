@@ -1,30 +1,36 @@
-﻿using System.IO;
-using CalamityMod.BiomeManagers;
+﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using ReLogic.Content;
-using CalamityMod.Items.Placeables.SunkenSea;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class PrismBack : ModNPC
+    public class PrismBack : SunkenSeaNPC
     {
         public static Asset<Texture2D> GlowTexture;
+        private int ShardCooldown = 0;
+        protected override List<int> PreyIDs => [];
+        protected override List<int> PredatorIDs => [];
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 5;
+            //Main.npcFrameCount[Type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0
@@ -35,17 +41,18 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
             }
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = Main.hardMode ? 40 : 20;
-            NPC.width = 72;
-            NPC.height = 58;
-            NPC.defense = Main.hardMode ? 25 : 10;
+            NPC.damage = 20;
+            NPC.width = 88;
+            NPC.height = 66;
+            NPC.defense = 15;
             NPC.DR_NERD(0.25f);
-            NPC.lifeMax = Main.hardMode ? 1000 : 350;
+            NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 8, 0) : Item.buyPrice(0, 0, 2, 0);
@@ -74,85 +81,37 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(NPC.chaseable);
-        }
+        public override void SendExtraAI(BinaryWriter writer) => writer.Write(NPC.chaseable);
+        public override void ReceiveExtraAI(BinaryReader reader) => NPC.chaseable = reader.ReadBoolean();
 
-        public override void ReceiveExtraAI(BinaryReader reader)
+        public override void OnSpawn(IEntitySource source)
         {
-            NPC.chaseable = reader.ReadBoolean();
+            pathfinding = new PathfindingManager(NPC)
+            {
+                MaxSpeed = 1.8f
+            };
         }
 
         public override void AI()
         {
-            if ((NPC.Center.Y + 10f) > Main.player[NPC.target].Center.Y)
+            NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
+            Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.75f / 255f, (255 - NPC.alpha) * 0.75f / 255f);
+
+            if (ShardCooldown > 0)
+                ShardCooldown--;
+
+            if (NPC.wet)
             {
-                if (CalamityWorld.death)
-                {
-                    NPC.damage = NPC.defDamage * 3;
-                }
-                else if (CalamityWorld.revenge)
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 2.75);
-                }
-                else if (Main.expertMode)
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 2.5);
-                }
-                else
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 1.25);
-                }
+                NPC.noGravity = true;
+                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
             }
             else
             {
-                if (CalamityWorld.death)
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 2.5);
-                }
-                else if (CalamityWorld.revenge)
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 2.25);
-                }
-                else if (Main.expertMode)
-                {
-                    NPC.damage = NPC.defDamage * 2;
-                }
-                else
-                {
-                    NPC.damage = NPC.defDamage;
-                }
+                NPC.noGravity = false;
             }
-            Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.75f / 255f, (255 - NPC.alpha) * 0.75f / 255f);
-            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 0f, 0f, 0f, 0f, 0f, 0.1f);
         }
 
-        public override void FindFrame(int frameHeight)
-        {
-            NPC.frameCounter += (NPC.wet || NPC.IsABestiaryIconDummy) ? 0.1f : 0f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-            {
-                spriteEffects = SpriteEffects.FlipHorizontally;
-            }
-            Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
-            Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
-            vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.Blue);
-            Main.spriteBatch.Draw(GlowTexture.Value, vector,
-                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
-        }
-
+        public override bool CanBeHitByNPC(NPC attacker) => false;
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
             if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
@@ -161,10 +120,30 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             return null;
         }
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            if ((NPC.Center.Y + 10f) > target.Center.Y)
+                modifiers.SourceDamage *= CalamityWorld.death ? 3f : CalamityWorld.revenge ? 2.75f : Main.expertMode ? 2.5f : 1.25f;
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone) => SpawnShards(player);
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone) => SpawnShards(projectile);
+        private void SpawnShards(Entity e)
+        {
+            if (ShardCooldown > 0)
+                return;
+
+            ShardCooldown = 20;
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 shardVel = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(1.25f) * -1);
+                Projectile.NewProjectile(NPC.GetSource_OnHurt(e), NPC.Center + Vector2.UnitX * Main.rand.NextFloat(-20f, 20f), shardVel, ModContent.ProjectileType<PrismBackCrystal>(), 10, 0f, Main.myPlayer, Main.rand.Next(3), NPC.whoAmI);
+            }
+        }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if ((spawnInfo.Player.Calamity().ZoneRadiantReefs || spawnInfo.Player.Calamity().ZoneGleamingBurrows) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.CaveJellyfish.Chance * 0.9f;
             }
@@ -198,6 +177,22 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+        }
+
+        /*public override void FindFrame(int frameHeight)
+        {
+            NPC.frameCounter += (NPC.wet || NPC.IsABestiaryIconDummy) ? 0.1f : 0f;
+            NPC.frameCounter %= Main.npcFrameCount[Type];
+            int frame = (int)NPC.frameCounter;
+            NPC.frame.Y = frame * frameHeight;
+        }*/
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Rectangle frame = GlowTexture.Value.Frame(1, Main.npcFrameCount[Type], 0, NPC.frame.Y);
+            SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.Blue);
+            Main.spriteBatch.Draw(GlowTexture.Value, NPC.Center - screenPos, null, color, NPC.rotation, frame.Size() / 2f, 1f, spriteEffects, 0f);
         }
     }
 }
