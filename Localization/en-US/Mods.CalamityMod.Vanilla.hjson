@@ -277,7 +277,7 @@ EditedTooltip: {
 	ApprenticeAltPants: 10% increased summon damage
 	GravityGlobe:
 		'''
-		Provides 40% increased jump speed and increased fall speed
+		Provides 32% increased jump speed and increased fall speed
 		Press UP to change gravity
 		Press DOWN to fall faster
 		'''
