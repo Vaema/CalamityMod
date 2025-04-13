@@ -225,6 +225,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         {
             "Emmett",
+            "Casino King Gray", // <@!555512087711973390> (eternalgrayson)
         };
         private static readonly string[] TravelingMerchantNames =
         {
