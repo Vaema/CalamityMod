@@ -1292,7 +1292,16 @@ namespace CalamityMod.Items
             if (item.type == ItemID.TerrasparkBoots)
                 player.buffImmune[BuffID.OnFire] = true;
 
-            else if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
+            if (item.type == ItemID.GravityGlobe)
+            {
+                player.jumpSpeedBoost += 1.6f;
+                if (player.controlDown)
+                    player.maxFallSpeed *= 1.5f;
+                else
+                    player.maxFallSpeed *= 1.2f;
+            }
+
+            if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
             {
                 if (player.IsUnderwater())
                     player.gills = true;
