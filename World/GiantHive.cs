@@ -87,7 +87,7 @@ namespace CalamityMod.World
                         //place living mahogany leaves at the end of each branch
                         foreach (Point item in list)
                         {
-                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)),
+                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(2, 5), WorldGen.genRand.Next(3, 5)),
                             new Modifiers.SkipTiles(383, 21, 467, 226, 237), new Modifiers.SkipWalls(78, 87), new Actions.SetTile(TileID.LivingMahoganyLeaves), new Actions.SetFrames(frameNeighbors: true)));
                         }
                     }
@@ -375,13 +375,13 @@ namespace CalamityMod.World
                             {
                                 Tile tTile = Main.tile[tileX, tileY];
                                 tTile.HasTile = false;
-                                tTile.WallType = WallID.HiveUnsafe;
+                                tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
                                 tTile.LiquidAmount = 0;
 
                                 WorldGen.SquareWallFrame(tileX, tileY);
 
                                 // Optional: Add honey with low chance
-                                if (WorldGen.genRand.NextBool(20))
+                                if (WorldGen.genRand.NextBool(10))
                                 {
                                     tTile.LiquidAmount = 100;
                                     tTile.LiquidType = LiquidID.Honey;
@@ -425,6 +425,38 @@ namespace CalamityMod.World
                 }
             }
         }
+        public static void CreateGiantHiveHexagon(int centerX, int centerY, int hexagonSize, int tileType, bool doWalls = false)
+        {
+            int halfHexagonSize = hexagonSize / 2;
+
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
+            {
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
+
+                for (int y = y1; y < y2; y++)
+                {
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
+                    {
+                        Tile tTile = Main.tile[tileX, tileY];
+                        if (!doWalls)
+                        {
+                            tTile.HasTile = true;
+                            tTile.TileType = (ushort)tileType;
+                            WorldGen.SquareTileFrame(tileX, tileY);
+                        }
+                        else
+                        {
+                            tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
+                            WorldGen.SquareWallFrame(tileX, tileY);
+                        }
+                    }
+                }
+            }
+        }
         public static void ClearHexagon(int centerX, int centerY, int hexagonSize)
         {
             int halfHexagonSize = hexagonSize / 2;
@@ -456,11 +488,42 @@ namespace CalamityMod.World
                 }
             }
         }
+        public static void GiantHiveWallHexagon(int centerX, int centerY, int hexagonSize)
+        {
+            int halfHexagonSize = hexagonSize / 2;
+
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
+            {
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
+
+                for (int y = y1; y < y2; y++)
+                {
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
+                    {
+                        Tile tTile = Main.tile[tileX, tileY];
+                        tTile.HasTile = false;
+                        tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
+                        tTile.LiquidAmount = 0;
+                        WorldGen.SquareWallFrame(tileX, tileY);
+                        if (WorldGen.genRand.NextBool(15))
+                        {
+                            tTile.LiquidAmount = 100;
+                            tTile.LiquidType = LiquidID.Honey;
+                            WorldGen.SquareTileFrame(tileX, tileY);
+                        }
+                    }
+                }
+            }
+        }
         public static Vector2 MakeCell(int x, int y, UnifiedRandom random)
         {
          CreateHexagon(x, y - 30, 110, TileID.Hive);
-         CreateHexagon(x, y - 30, 108, TileID.Hive, true);
-         ClearHexagon(x, y - 22, 90);
+         CreateGiantHiveHexagon(x, y - 30, 108, TileID.Hive, true);
+         GiantHiveWallHexagon(x, y - 22, 90);
 
     
 
@@ -535,11 +598,12 @@ namespace CalamityMod.World
                     if (!overlaps)
                     {
                         int hexRadius = WorldGen.genRand.Next(30, 45);
-                        CreateHexagon(newX, newY - 15, hexRadius - 1, TileID.Hive, true);
+                        CreateGiantHiveHexagon(newX, newY - 15, hexRadius - 1, TileID.Hive, true);
                         CreateHexagon(newX, newY - 15, hexRadius, TileID.Hive);
+                        ClearTunnel(x, y + 30, newX, newY, 5);
                         CreateTunnel(x, y + 30, newX, newY);
-                        ClearTunnel(x, y + 30, newX, newY);
-                        ClearHexagon(newX, newY - 10, WorldGen.genRand.Next(19, 26));
+                        ClearTunnel(x, y + 30, newX, newY, 3);
+                        GiantHiveWallHexagon(newX, newY - 10, WorldGen.genRand.Next(19, 26));
 
                         // Place honey chest in this cell with a small chance
                         if (chestsPlaced < chestMax)
@@ -554,7 +618,8 @@ namespace CalamityMod.World
                 }
             }
 
-            ClearHexagon(x, y - 22, 90);
+            GiantHiveWallHexagon(x, y - 22, 90);
+            ClearHexagon(x, y - 18, 80);
 
             return new Vector2(x, y);
         }
