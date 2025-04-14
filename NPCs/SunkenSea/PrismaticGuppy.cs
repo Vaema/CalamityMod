@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
@@ -17,7 +16,6 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using static Terraria.GameContent.Animations.IL_Actions.NPCs;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -336,7 +334,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 // Find a sea prism
                                 if (tilePos == null || tilePos == Vector2.Zero)
                                 {
-                                    tilePos = CalamityUtils.NPCTileDetection(NPC, ModContent.TileType<SeaPrismCrystals>(), 300, true);
+                                    tilePos = CalamityUtils.NPCTileDetection(NPC, ModContent.TileType<SeaPrismCrystals>(), 300);
                                 }
 
                                 // Go to a Prism Shard if one exists nearby

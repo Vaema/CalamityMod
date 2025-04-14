@@ -979,6 +979,7 @@ namespace CalamityMod
         public static Vector2? NPCTileDetection(NPC npc, int tileType, float radius, bool usesSunkenSeaValidity = false)
         {
             Vector2? tileFoundPosition = null;
+            int? tileIndexFound = null;
             for (int i = 0; i < 360 && tileFoundPosition == null; i += 15)
             {
                 var points = GetIntersectingPointsInLine(npc.Center, npc.Center - Vector2.UnitY.RotatedBy(MathHelper.ToRadians(i)) * radius);
@@ -986,11 +987,38 @@ namespace CalamityMod
                 {
                     if (Main.tile[points[j]].TileType == tileType)
                     {
-                        tileFoundPosition = points[j].ToWorldCoordinates();
+                        if (usesSunkenSeaValidity)
+                        {
+                            tileIndexFound = j;
+                        }
+                        else
+                        {
+                            tileFoundPosition = points[j].ToWorldCoordinates();
+                        }
                         break;
                     }
                 }
+
+                if (usesSunkenSeaValidity)
+                {
+                    if (tileIndexFound == null)
+                        continue;
+
+                    for (int k = tileIndexFound.Value; k >= 0; k--)
+                    {
+                        Vector2 worldPos = points[k].ToWorldCoordinates();
+                        if (npc.HasSight(worldPos) && SunkenSeaNPC.SunkenSeaTileValidity(npc, points[k]))
+                        {
+                            tileFoundPosition = worldPos;
+                            break;
+                        }
+                    }
+                    
+                    tileIndexFound = null;
+                }
             }
+
+
 
             if (tileFoundPosition.HasValue)
                 return tileFoundPosition.Value;
