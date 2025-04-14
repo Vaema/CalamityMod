@@ -22,8 +22,8 @@ namespace CalamityMod.NPCs.DesertScourge
         public bool flies = false;
         private bool tailSpawned = false;
 
-        public const float SegmentVelocity_Expert = 12f;
-        public const float SegmentVelocity_Master = 14f;
+        public const float SegmentVelocity_Expert = 10f;
+        public const float SegmentVelocity_Master = 12f;
         public const float SegmentVelocity_GoodWorld = 16f;
         public const float SegmentVelocity_ZenithSeed = 18f;
 
@@ -136,12 +136,12 @@ namespace CalamityMod.NPCs.DesertScourge
             // Percent life remaining.
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = death ? 0.12f : 0.1f;
-            float turnSpeed = death ? 0.18f : 0.15f;
+            float speed = death ? 0.1f : 0.08f;
+            float turnSpeed = death ? 0.15f : 0.12f;
             speed += speed * 0.4f * (1f - lifeRatio);
             turnSpeed += turnSpeed * 0.4f * (1f - lifeRatio);
-            speed += 0.1f * enrageScale;
-            turnSpeed += 0.15f * enrageScale;
+            speed += 0.08f * enrageScale;
+            turnSpeed += 0.12f * enrageScale;
 
             if (Main.getGoodWorld)
             {
