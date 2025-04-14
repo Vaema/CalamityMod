@@ -1264,7 +1264,7 @@ namespace CalamityMod.CalPlayer
                     if (holdingDown && Player.ControlsEnabled() && notInLiquid && notOnRope && notGrappling && airborne && !Player.Calamity().gSabatonFalling) //Player cannot further increase their ridiculous gravity during a Gravistar Slam
                     {
                         Player.velocity.Y += Player.gravity * Player.gravDir * (BalancingConstants.HoldingDownGravityMultiplier - 1f);
-                        if (Player.Calamity().gSabaton)
+                        if (Player.Calamity().gSabaton && !Player.gravControl2)
                         {
                             Player.maxFallSpeed *= 1.5f;
                         }
@@ -4211,6 +4211,10 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
                 Player.GetCritChance<MeleeDamageClass>() += 10;
             }
+
+
+            if (Player.portableStoolInfo.IsInUse)
+                Player.GetCritChance(DamageClass.Generic) += 5;
 
             // Amalgam boosts
             if (Main.myPlayer == Player.whoAmI)

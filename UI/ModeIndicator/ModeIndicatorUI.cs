@@ -218,9 +218,9 @@ namespace CalamityMod.UI.ModeIndicator
                         anyActiveMode = true;
                     }
                 }
-                string modeStr = CalamityUtils.GetTextValue("UI.ModeAppend");
+                string modeStr = CalamityUtils.GetText("UI.ModeAppend").Format(modeToDisplay);
                 string activeText = CalamityUtils.GetTextValue("UI." + (anyActiveMode ? "Active" : "NotActive"));
-                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeToDisplay + modeStr, activeText.ToLower());
+                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeStr, activeText.ToLower());
             }
         }
 

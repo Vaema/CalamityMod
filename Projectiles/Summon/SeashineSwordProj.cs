@@ -255,7 +255,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/SeashineSword").Value;
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/SeashineHilt").Value;
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
             Texture2D tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
 
