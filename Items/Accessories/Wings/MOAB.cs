@@ -133,9 +133,10 @@ namespace CalamityMod.Items.Accessories.Wings
             player.Calamity().calamityBonusLuck += 0.05f;
         }
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        //This code is commented out so it can be used when we get a MOAB wingless sprite
+        /*public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
+            frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2);
             position -= -new Vector2(0, frame.Height/2-2);
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
@@ -148,6 +149,15 @@ namespace CalamityMod.Items.Accessories.Wings
                 scale
             );
             return false;
+        }*/
+
+        //This entire method can be deleted when we get a wingless sprite
+        public override void UpdateInventory(Player player)
+        {
+            if (Item.wingSlot == -1)
+                Item.color = Color.DarkGray;
+            else
+                Item.color = Color.Transparent;
         }
 
         public override void AddRecipes()

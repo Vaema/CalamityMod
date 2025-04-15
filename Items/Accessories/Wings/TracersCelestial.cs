@@ -111,8 +111,9 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            frame = new Rectangle(0,(Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
-            position -= -new Vector2((Item.wingSlot == -1 ? 4 : 0), frame.Height / 2 - (Item.wingSlot == -1 ? 2 : 0));
+            //This code is commented out as it's for when Tracers get wingless sprites. Uncomment it then.
+            //frame = new Rectangle(0,(Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
+            //position -= -new Vector2((Item.wingSlot == -1 ? 4 : 0), frame.Height / 2 - (Item.wingSlot == -1 ? 2 : 0));
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,
@@ -126,6 +127,14 @@ namespace CalamityMod.Items.Accessories.Wings
                 drawOffset: new(1f, 0f)
             );
             return false;
+        }
+        // This code is to color the sprite until we get wingless sprites.
+        public override void UpdateInventory(Player player)
+        {
+            if (Item.wingSlot == -1)
+                Item.color = Color.DarkGray;
+            else
+                Item.color = Color.Transparent;
         }
     }
 }

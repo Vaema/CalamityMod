@@ -259,7 +259,8 @@ namespace CalamityMod
             wantedScale = Math.Max(scale, wantedScale * Main.inventoryScale);
             float scaleDifference = wantedScale - scale;
             position += drawOffset * wantedScale;
-            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, wantedScale, SpriteEffects.None, 0);
+            if (itemColor == Color.Transparent) itemColor = Color.White;
+            spriteBatch.Draw(texture, position, frame, itemColor.MultiplyRGB(drawColor), 0f, origin, wantedScale, SpriteEffects.None, 0);
         }
 
         /// <summary>
