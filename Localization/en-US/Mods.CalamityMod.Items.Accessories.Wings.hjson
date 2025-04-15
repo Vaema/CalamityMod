@@ -119,6 +119,7 @@ TracersCelestial: {
 		Shift-<right> this item while in your inventory to toggle the wings
 		24% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
+		Provides immunity to lava
 		'Ludicrous speed!'
 		'''
 }
@@ -131,6 +132,7 @@ TracersElysian: {
 		Shift-<right> this item while in your inventory to toggle the wings
 		36% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
+		Provides immunity to lava
 		'Ludicrous speed!'
 		'''
 }
@@ -143,7 +145,7 @@ TracersSeraph: {
 		Shift-<right> this item while in your inventory to toggle the wings
 		50% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
-		Provides immunity to [i:CalamityMod/AuricOre] Auric Ore's rejection
+		Provides immunity to lava and damaging tiles, including [i:CalamityMod/AuricOre] Auric Ore
 		'Taking speed EVEN FURTHER BEYOND!'
 		'''
 }
