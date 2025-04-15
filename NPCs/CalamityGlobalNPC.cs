@@ -3630,6 +3630,16 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Scale Expert Multiplayer Stats
+        private const float VanillaScalingFactor_2Players = 1.35f;
+        private const float VanillaScalingFactor_3Players = 1.9166666666666666f;
+
+        /// <summary>
+        /// Applies Calamity's adjustments to difficulty-based player count stat scaling for NPCs. Calamity only adjusts the health of NPCs and does not touch any other stats.
+        /// </summary>
+        /// <param name="npc">The NPC which is having its stats adjusted.</param>
+        /// <param name="numPlayers">The number of players considered active for the purposes of stat scaling.</param>
+        /// <param name="balance">The vanilla Expert+ multiplayer health scalar value.</param>
+        /// <param name="bossAdjustment">An arbitrary float to make Master Mode easier. On Master Mode, it is 0.85, otherwise it is 1.0.</param>
         public override void ApplyDifficultyAndPlayerScaling(NPC npc, int numPlayers, float balance, float bossAdjustment)
         {
             // Do absolutely nothing in single player, or in multiplayer with only one player connected.
@@ -3640,43 +3650,72 @@ namespace CalamityMod.NPCs
             bool scalesLikeBoss = countsAsBoss || BossHPScalingList.List.Contains(npc.type);
             bool isCalamityNPC = npc.ModNPC != null && npc.ModNPC.Mod == CalamityMod.Instance;
 
-            // All bosses, NPCs that are supposed to scale like bosses, and Calamity NPCs follow these rules.
-            if (scalesLikeBoss || isCalamityNPC)
+            // 14APR2025: Ozzatron: Reworked how Calamity changes the health of Expert+ multiplayer bosses
+            // Non-boss enemies that receive scaling in Expert+ are still reduced via the old formula
+            //
+            // TL;DR:
+            // - 2 players goes from 135% health to 175% health
+            // - 3 players goes from 191.6% health to 225% health
+            // - 4 players and beyond are unedited (4 players is 262.8% for reference)
+
+            // This case applies to all bosses: vanilla, Calamity, and other mods, and anything that is supposed to scale like a boss.
+            if (countsAsBoss || scalesLikeBoss)
             {
-                double scalar;
-                switch (numPlayers) // Decrease HP in multiplayer before vanilla scaling
-                {
-                    case 1:
-                        scalar = 1.0;
-                        break;
+                double adjustmentFactor = 1.0;
 
-                    case 2:
-                        scalar = 0.9; // 1.8
-                        break;
+                // The 2-player boss case is too easy; 1.35x health does not even come close to justify being able to respawn.
+                if (numPlayers == 2)
+                    adjustmentFactor = BalancingConstants.ExpertHealthScalingOverride_2Players / VanillaScalingFactor_2Players;
 
-                    case 3:
-                        scalar = 0.82; // 2.46
-                        break;
+                // Similarly, the 3-player boss case is too easy, given the considerably higher damage output available.
+                else if (numPlayers == 3)
+                    adjustmentFactor = BalancingConstants.ExpertHealthScalingOverride_3Players / VanillaScalingFactor_3Players;
 
-                    case 4:
-                        scalar = 0.76; // 3.04
-                        break;
+                // Cases beyond 3 players are already sufficiently scaled by vanilla and continue to scale harder with more players.
 
-                    case 5:
-                        scalar = 0.71; // 3.55
-                        break;
-
-                    case 6:
-                        scalar = 0.67; // 4.02
-                        break;
-
-                    default:
-                        scalar = 0.64; // 4.48 + 0.64 per player beyond 7
-                        break;
-                }
-
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * scalar);
+                // Apply the adjustment factor, if any. No other changes are made to bosses or boss-like NPCs.
+                npc.life = (int)Math.Round(npc.life * adjustmentFactor);
+                return;
             }
+
+            // Do not touch non-boss NPCs from vanilla or other mods.
+            if (!isCalamityNPC)
+                return;
+
+            // Reduction to multiplayer HP scaling for non-boss Calamity enemies in Expert+
+            double scalar;
+            switch (numPlayers)
+            {
+                case 1:
+                    scalar = 1.0;
+                    break;
+
+                case 2:
+                    scalar = 0.9; // 1.8
+                    break;
+
+                case 3:
+                    scalar = 0.82; // 2.46
+                    break;
+
+                case 4:
+                    scalar = 0.76; // 3.04
+                    break;
+
+                case 5:
+                    scalar = 0.71; // 3.55
+                    break;
+
+                case 6:
+                    scalar = 0.67; // 4.02
+                    break;
+
+                default:
+                    scalar = 0.64; // 4.48 + 0.64 per player beyond 7
+                    break;
+            }
+
+            npc.lifeMax = (int)Math.Round(npc.lifeMax * scalar);
         }
         #endregion
 
