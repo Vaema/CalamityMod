@@ -59,7 +59,8 @@ MOAB: {
 	DisplayName: MOAB
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall}
+		{$CommonItemTooltip.FlightAndSlowfall} when jetpack is enabled
+		Shift-<right> this item while in your inventory to toggle the jetpack
 		32% increased jump speed and allows auto-jump
 		Grants the player cloud, blizzard, and sandstorm mid-air jumps
 		'The Mother Of All Balloons'
@@ -114,10 +115,10 @@ TracersCelestial: {
 	DisplayName: Celestial Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall}
-		24% increased running acceleration and greater mobility on ice
-		Provides the ability to walk on water, honey, and lava
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
+		Shift-<right> this item while in your inventory to toggle the wings
+		24% increased running acceleration
+		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		'Ludicrous speed!'
 		'''
 }
@@ -126,10 +127,10 @@ TracersElysian: {
 	DisplayName: Elysian Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall}
-		36% increased running acceleration and greater mobility on ice
-		Provides the ability to walk on water, honey, and lava
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
+		Shift-<right> this item while in your inventory to toggle the wings
+		36% increased running acceleration
+		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		'Ludicrous speed!'
 		'''
 }
@@ -138,10 +139,11 @@ TracersSeraph: {
 	DisplayName: Seraph Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall}
-		50% increased running acceleration and greater mobility on ice
-		Provides the ability to walk on water, honey, and lava
-		Grants immunity to fire, lava, and harmful block effects
+		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
+		Shift-<right> this item while in your inventory to toggle the wings
+		50% increased running acceleration
+		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
+		Provides immunity to [i:CalamityMod/AuricOre] Auric Ore's rejection
 		'Taking speed EVEN FURTHER BEYOND!'
 		'''
 }

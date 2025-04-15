@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -10,6 +11,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -23,7 +25,12 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 2.7f;
         public override float BaseAscent => 0.135f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(220, 10f, 2.7f);
+        public static int wingSlot = 0;
+        public override void SetStaticDefaults()
+        {
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(220, 10f, 2.7f);
+            wingSlot = Item.wingSlot;
+        }
 
         public override void SetDefaults()
         {
@@ -33,7 +40,45 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("wingsDisabled", Item.wingSlot == -1);
+        }
 
+        public override void LoadData(TagCompound tag)
+        {
+            if (tag.TryGet("wingsDisabled", out bool wingsDisabled))
+            {
+                if (wingsDisabled) Item.wingSlot = -1;
+            }
+        }
+
+        public override bool CanRightClick()
+        {
+            if (!Main.keyState.PressingShift())
+                return false;
+            if (Main.LocalPlayer.armor.Contains(Item)) foreach (var item in Main.LocalPlayer.armor)
+                {
+                    if (item.wingSlot > 0 && item.wingSlot != wingSlot)
+                        return false;
+                }
+            return true;
+        }
+        public override void RightClick(Player player)
+        {
+            if (Item.wingSlot == wingSlot)
+            {
+                Item.wingSlot = -1;
+                Item.color = Color.Gray;
+            }
+            else
+            {
+                Item.wingSlot = wingSlot;
+                Item.color = Color.White;
+            }
+        }
+
+        public override bool ConsumeItem(Player player) => false;
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
@@ -61,6 +106,12 @@ namespace CalamityMod.Items.Accessories.Wings
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
+            player.socialShadowRocketBoots = true;
+            if (Item.wingSlot == -1) //Only applies if tracers are plucked
+            {
+                player.rocketBoots = player.vanityRocketBoots = 1;
+                modPlayer.angelTreads = true;
+            }
             modPlayer.tracersDust = !hideVisual;
             modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersElysian = true;
@@ -79,6 +130,8 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
+            position -= -new Vector2((Item.wingSlot == -1 ? 4 : 0), frame.Height / 2 - (Item.wingSlot == -1 ? 2 : 0));
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,

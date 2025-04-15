@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -17,7 +20,12 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 2.5f;
         public override float BaseAscent => 0.125f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
+        public static int wingSlot = 0;
+        public override void SetStaticDefaults()
+        {
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
+            wingSlot = Item.wingSlot;
+        }
 
         public override void SetDefaults()
         {
@@ -28,9 +36,37 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.rare = ItemRarityID.LightPurple;
         }
 
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("wingsDisabled", Item.wingSlot == -1);
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            if (tag.TryGet("wingsDisabled", out bool wingsDisabled))
+            {
+                if (wingsDisabled) Item.wingSlot = -1;
+            }
+        }
+        public override bool CanRightClick()
+        {
+            if (!Main.keyState.PressingShift())
+                return false;
+            return true;
+        }
+        public override void RightClick(Player player)
+        {
+            if (Item.wingSlot == wingSlot)
+                Item.wingSlot = -1;
+            else
+                Item.wingSlot = wingSlot;
+        }
+
+        public override bool ConsumeItem(Player player) => false;
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (Item.wingSlot != -1 && player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
                 if (player.rocketDelay2 <= 0)
@@ -95,6 +131,23 @@ namespace CalamityMod.Items.Accessories.Wings
 
             // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).
             player.Calamity().calamityBonusLuck += 0.05f;
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
+            position -= -new Vector2(0, frame.Height/2-2);
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                texture: TextureAssets.Item[Type].Value,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale
+            );
+            return false;
         }
 
         public override void AddRecipes()
