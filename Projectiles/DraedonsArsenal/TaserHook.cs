@@ -58,6 +58,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15;
+            Projectile.ArmorPenetration = 10;
         }
 
         public override void AI()
@@ -142,8 +143,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         if (giveCooldown)
                         {
-                            player.Calamity().arsenalCooldown = 180;
-                            player.AddCooldown(ArsenalPower.ID, 180);
+                            player.Calamity().arsenalCooldown = 300;
+                            player.AddCooldown(ArsenalPower.ID, 300);
                         }
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
                         Projectile.Kill();

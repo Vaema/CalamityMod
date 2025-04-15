@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public bool Trail = true;
         public int shotCount = 0;
 
-        public static int boomTime = 6;
+        public static int boomTime = 60;
 
         public override Color? TooltipExtensionColor => new Color(255, 140, 0);
 
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 100;
             Item.height = 46;
-            Item.damage = 80;
+            Item.damage = 77;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 15;
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
-                Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), (int) (damage * 0.7f), knockback, player.whoAmI); //.7x base damage
 
                 Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), ModContent.DustType<LightDust>(), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(0.4f, 0.8f));
                 dust.noGravity = true;

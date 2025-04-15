@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public bool onSpawn = true;
         private NPC targeted = null;
         private NPC lastHitTarget = null;
-        private int timesItCanHit = 2;
+        private int timesItCanHit = 1;
         public bool startAttackEffects = true;
         public int attackTime = 160; // The amount of time an orb spends slowing before it attacks
         public override void SetDefaults()
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
 
             if (onKill)
-                timesItCanHit += 2;
+                timesItCanHit += 1;
 
             // If it's hit targeted enemies enough, kill it
             if (timesItCanHit <= 0)

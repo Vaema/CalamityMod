@@ -30,18 +30,16 @@ namespace CalamityMod.Items.Accessories
         {
             player.autoJump = true;
             player.jumpSpeedBoost += 1.6f;
+            player.moveSpeed += 0.1f;
             player.noFallDmg = true;
             player.blackBelt = true;
             player.dashType = 0;
             player.Calamity().DashID = StatisNinjaBeltDash.ID;
             player.spikedBoots = 2;
             player.accFlipper = true;
-            player.hasMagiluminescence = true;
+            player.Calamity().statisNinjaBelt = true;
 
             player.MountedCenter.ToTileCoordinates();
-            DelegateMethods.v3_1 = new Vector3(0.8f, 0.5f, 1f);
-            Utils.PlotTileLine(player.Center, player.Center + player.velocity * 6f, 20f, DelegateMethods.CastLightOpen);
-            Utils.PlotTileLine(player.Left, player.Right, 20f, DelegateMethods.CastLightOpen);
         }
 
         public override void AddRecipes()
@@ -51,8 +49,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.MasterNinjaGear).
                 AddIngredient(ItemID.FrogFlipper).
-                AddIngredient(ItemID.Magiluminescence).
-                AddIngredient<PurifiedGel>(50).
+                AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
@@ -61,8 +58,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.Tabi).
                 AddIngredient(ItemID.BlackBelt).
                 AddIngredient(ItemID.FrogGear).
-                AddIngredient(ItemID.Magiluminescence).
-                AddIngredient<PurifiedGel>(50).
+                AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

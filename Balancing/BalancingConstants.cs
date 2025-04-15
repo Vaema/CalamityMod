@@ -50,6 +50,7 @@
         #region Dashes and Dodges
         // Dash cooldowns (in frames)
         internal const int UniversalDashCooldown = 30;
+        internal const int UniversalSashDashCooldown = 30;
         internal const int UniversalShieldSlamCooldown = 30;
         internal const int UniversalShieldBonkCooldown = 30;
         internal const int OnShieldBonkCooldown = 30;
@@ -250,6 +251,13 @@
         // If an enemy has more health than this, they are considered an enemy even if they have 0 contact damage
         internal const int NoContactDamageHealthThreshold = 3000;
         internal const int UnreasonableHealthThreshold = 25000000; // 25 million
+        #endregion
+
+        #region Multiplayer Boss Health Scaling Overrides
+        // These values are used to replace the vanilla 1.35f and 1.9166666666666666f for the 2-player and 3-player cases, respectively.
+        // Editing them via reflection or otherwise will apply to newly spawned bosses during gameplay.
+        public static float ExpertHealthScalingOverride_2Players = 1.75f;
+        public static float ExpertHealthScalingOverride_3Players = 2.25f;
         #endregion
 
         // TODO -- Add all balance related constants here that don't belong in other files.

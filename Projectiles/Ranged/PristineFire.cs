@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
-                    if (Vector2.Distance(Projectile.Center, projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<PristineSecondary>() && projectile.Opacity > 0.5f)
+                    if (Vector2.Distance(Projectile.Center, projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<PristineSecondary>() && projectile.Opacity > 0.7f)
                     {
                         if (projectile.ai[2] == 0)
                         {

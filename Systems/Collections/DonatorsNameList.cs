@@ -297,7 +297,6 @@ namespace CalamityMod.Systems.Collections
                 "Goblin",
                 "NoOneElse",
                 "Nicholas",
-                "Toasty",
                 "oli saer",
                 "Blobby6799",
                 "Domrinth",

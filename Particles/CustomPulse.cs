@@ -56,7 +56,20 @@ namespace CalamityMod.Particles
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
             Texture2D tex = ModContent.Request<Texture2D>(NewTexture).Value;
-            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish, SpriteEffects.None, 0);
+            float scaleMult = 1;
+            if (Main.zenithWorld)
+            {
+                DateTime day = DateTime.Now;
+                if (day.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    Texture2D joke = ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value;
+                    scaleMult = (MathHelper.Lerp(tex.Size().X / joke.Size().X, tex.Size().Y / joke.Size().Y, 0.5f));
+                    Main.NewText(scaleMult);
+                    tex = joke;
+                    UseAltVisual = true;
+                }
+            }
+            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish * scaleMult, SpriteEffects.None, 0);
         }
 
     }

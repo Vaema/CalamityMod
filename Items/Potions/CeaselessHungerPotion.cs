@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient(ItemID.BottledWater, 4).
                 AddIngredient<DarkPlasma>().
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe(8).

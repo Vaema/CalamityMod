@@ -36,6 +36,14 @@ namespace CalamityMod.Systems
         #region ModifyWorldGenTasks
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
+            // Better Underworld (similar to Don't Dig Up seed but with some adjustments)
+            int UnderworldIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Underworld"));
+            tasks[UnderworldIndex] = new PassLegacy("Underworld", (progress, config) =>
+            {
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterUnderworld").Value;
+                CustomUnderworld.NewUnderworld();
+            });
+
             // Evil Floating Island
             int islandIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Floating Island Houses"));
             if (islandIndex != -1)
@@ -71,7 +79,7 @@ namespace CalamityMod.Systems
                     FloralParadiseMinibiome.GenerateInstances();
             }));
 
-            // Improved Golem arena
+            // Improved Golem Arena
             int JungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
             tasks[JungleTempleIndex2] = new PassLegacy("Temple", (progress, config) =>
             {
@@ -82,7 +90,7 @@ namespace CalamityMod.Systems
                 Main.tileSolid[232] = false;
             });
 
-            // Better Lihzahrd altar (consistency?)
+            // Better Lihzahrd Altar (consistency?)
             int LihzahrdAltarIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
             tasks[LihzahrdAltarIndex] = new PassLegacy("Lihzahrd Altars", (progress, config) =>
             {
@@ -90,7 +98,7 @@ namespace CalamityMod.Systems
                 CustomTemple.NewJungleTempleLihzahrdAltar();
             });
 
-            // Giant beehive
+            // Big Hive
             int giantHiveIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
             if (giantHiveIndex != -1)
             {
@@ -143,7 +151,7 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Vernal pass
+            // Vernal Pass
             int vernalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Muds Walls In Jungle"));
             if (vernalIndex != -1)
             {
@@ -154,7 +162,7 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // sunken sea
+            // Sunken Sea
             int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
             if (SunkenSeaIndex != -1)
             {
@@ -181,6 +189,17 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceSunkenSeaAmbience();
+                }));
+            }
+
+            // Remove lava from ash island after it's been settled
+            int ashIslandLavaRemovalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tile Cleanup"));
+            if (ashIslandLavaRemovalIndex != -1)
+            {
+                tasks.Insert(ashIslandLavaRemovalIndex + 1, new PassLegacy("Ash Island Lava Removal", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AshIslandLavaRemoval").Value;
+                    CustomUnderworld.RemoveLavaFromAshIsland();
                 }));
             }
 

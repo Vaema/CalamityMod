@@ -323,7 +323,7 @@ namespace CalamityMod.Projectiles.Boss
             string path = Main.zenithWorld ? "GFB" : "";
             path += Main.rand.Next(1, 4).ToString();
             if (Main.myPlayer == player.whoAmI && player.statLife <= 0)
-                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.WhisperingMaelstrom" + path).Format(player.name)), 1000, -1);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.WhisperingMaelstrom" + path).ToNetworkText(player.name)), 1000, -1);
 
             // Still do not allow a standard hit, but the player should surely be feeling the pain soon...
             return false;

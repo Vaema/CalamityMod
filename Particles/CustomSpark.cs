@@ -91,6 +91,19 @@ namespace CalamityMod.Particles
             Vector2 scale = Stretch * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(NewTexture).Value;
 
+            float scaleMult = 1;
+            if (Main.zenithWorld)
+            {
+                DateTime day = DateTime.Now;
+                if (day.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    Texture2D joke = ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value;
+                    scaleMult = (MathHelper.Lerp(texture.Size().X / joke.Size().X, texture.Size().Y / joke.Size().Y, 0.5f));
+                    texture = joke;
+                    AltVisual = true;
+                }
+            }
+
             Color col = Color;
 
             if (AffectedByLight)
@@ -98,9 +111,9 @@ namespace CalamityMod.Particles
                 col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGB(Color);
             }
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale * scaleMult, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             if (GlowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.White, 0.8f) * GlowOpacity, Rotation, texture.Size() * 0.5f, scale * 0.8f * GlowCenterScale, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(Color.Lerp(col, Color.White, 0.8f), Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)) * GlowOpacity, Rotation, texture.Size() * 0.5f, scale * 0.8f * GlowCenterScale * scaleMult, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
     }
 }

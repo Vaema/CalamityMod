@@ -39,9 +39,9 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
         public bool playRoarSound = false;
 
-        public const float SegmentVelocity_Normal = 12f;
-        public const float SegmentVelocity_Expert = 15f;
-        public const float SegmentVelocity_Master = 18f;
+        public const float SegmentVelocity_Normal = 10f;
+        public const float SegmentVelocity_Expert = 12.5f;
+        public const float SegmentVelocity_Master = 15f;
         public const float SegmentVelocity_GoodWorld = 21f;
         public const float SegmentVelocity_ZenithSeed = 24f;
 
@@ -239,8 +239,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float burrowDistance = hide ? BurrowDistance_Hide : bossRush ? BurrowDistance_BossRush : BurrowDistance;
 
-            float speed = death ? 0.15f : 0.12f;
-            float turnSpeed = death ? 0.3f : 0.24f;
+            float speed = death ? 0.125f : 0.1f;
+            float turnSpeed = death ? 0.25f : 0.2f;
 
             if (expertMode)
             {
@@ -250,12 +250,12 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (revenge)
             {
-                speed += (death ? 0.05f : 0.04f) * (1f - lifeRatio);
-                turnSpeed += (death ? 0.1f : 0.08f) * (1f - lifeRatio);
+                speed += (death ? 0.03f : 0.02f) * (1f - lifeRatio);
+                turnSpeed += (death ? 0.06f : 0.04f) * (1f - lifeRatio);
             }
 
-            speed += 0.12f * enrageScale;
-            turnSpeed += 0.24f * enrageScale;
+            speed += 0.1f * enrageScale;
+            turnSpeed += 0.2f * enrageScale;
 
             if (Main.getGoodWorld)
             {

@@ -783,8 +783,13 @@ namespace CalamityMod.CalPlayer
         public int gloveLevel = 0;
         public bool alreadyHasFrogLeg = false; // Unused, intended to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
-        /// <summary> Counter variable used for spawning Statis' Void Sash's scythes when dashing. </summary>
-        public int statisTimer = 0;
+        public bool statisNinjaBelt = false;
+        /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
+        public int statisPenaltyTimer = 0;
+        public int statisAnticheese = 0;
+        public int statisTimerMax => (int)(Utils.Remap(statisAnticheese, 1, 6, 120, 50, true));
+        public bool voidSashVisuals = true;
+        public bool statisVoidSash = false;
         public bool nucleogenesis = false;
         public bool nuclearFuelRod = false;
         public bool nebulousCore = false;
@@ -804,9 +809,11 @@ namespace CalamityMod.CalPlayer
         public bool rampartOfDeities = false;
         public bool gShell = false;
         public bool lAmbergris = false;
+        public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
         public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
@@ -823,6 +830,9 @@ namespace CalamityMod.CalPlayer
         public float pulseRate = 1;
         public bool aAmpoule = false;
         public bool rOoze = false;
+        public float radiantOozeRegen = 0;
+        public float ambrosialAmpouleRegen = 0;
+        public float purityRegen = 0;
         public bool fBarrier = false;
         public bool aBrain = false;
         public bool amalgam = false;
@@ -931,7 +941,8 @@ namespace CalamityMod.CalPlayer
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
-        public bool Pauldron = false;
+        public bool sPauldron = false;
+        public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
@@ -2172,11 +2183,15 @@ namespace CalamityMod.CalPlayer
             tortShell = false;
             absorber = false;
             alwaysHoneyRegen = false;
+            alwaysHoneyRegenAmount = 0;
             honeyTurboRegen = false;
             honeyDewHalveDebuffs = false;
             livingDewHalveDebuffs = false;
             aAmpoule = false;
             rOoze = false;
+            radiantOozeRegen = 0;
+            ambrosialAmpouleRegen = 0;
+            purityRegen = 0;
             fBarrier = false;
             aBrain = false;
             amalgam = false;
@@ -2195,6 +2210,8 @@ namespace CalamityMod.CalPlayer
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
+            statisNinjaBelt = false;
+            statisVoidSash = false;
             alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
@@ -2240,7 +2257,7 @@ namespace CalamityMod.CalPlayer
             shieldOfTheOcean = false;
             normalityRelocator = false;
             flameLickedShell = false;
-            Pauldron = false;
+            sPauldron = false;
             XykVisualsBlue = false;
             XykVisualsOrange = false;
             manaOverloader = false;
@@ -2862,7 +2879,7 @@ namespace CalamityMod.CalPlayer
             scuttlerCooldown = 0;
             rogueCrownCooldown = 0;
             wingProjectileCooldown = 0;
-            statisTimer = 0;
+            statisPenaltyTimer = -1;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
             ladHearts = 0;
@@ -3494,16 +3511,19 @@ namespace CalamityMod.CalPlayer
             {
                 PlayerLoader.ArmorSetBonusActivated(Player);
 
-                // Activate vanilla set bonuses
-                if (Player.setVortex && !Player.mount.Active)
-                    Player.vortexStealthActive = !Player.vortexStealthActive;
-
-                if (Player.setForbidden)
+                if (CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap)
                 {
-                    Player.MinionRestTargetAim();
+                    // Activate vanilla set bonuses
+                    if (Player.setVortex && !Player.mount.Active)
+                        Player.vortexStealthActive = !Player.vortexStealthActive;
 
-                    if (!Player.setForbiddenCooldownLocked)
-                        Player.CommandForbiddenStorm();
+                    if (Player.setForbidden)
+                    {
+                        Player.MinionRestTargetAim();
+
+                        if (!Player.setForbiddenCooldownLocked)
+                            Player.CommandForbiddenStorm();
+                    }
                 }
             }
 
@@ -3716,6 +3736,10 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
+            // Don't trigger set bonuses if the config is disabled and the double-tap hotkey was triggered
+            if (!(CalamityKeybinds.ArmorSetBonusHotKey.JustPressed || CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap))
+                return;
+
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
@@ -4405,6 +4429,8 @@ namespace CalamityMod.CalPlayer
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
+                    (statisNinjaBelt ? 0.6f : 0f) +
+                    (statisVoidSash ? 0.85f : 0f) +
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
@@ -5691,7 +5717,7 @@ namespace CalamityMod.CalPlayer
                     Player.HealEffect(-5);
                     Player.statLife -= 5;
                     if (Player.statLife <= 0)
-                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").Format(Player.name)), 1000, -1);
+                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").ToNetworkText(Player.name)), 1000, -1);
                 }
 
                 for (int i = 0; i < 8; i++)

@@ -409,7 +409,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (instakill)
             {
-                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").Format(target.name)), 1000.0, 0, false);
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").ToNetworkText(target.name)), 1000.0, 0, false);
                 modifiers.FinalDamage *= target.statLifeMax2 * Main.rand.NextFloat(2.0f, 3.5f);
             }
         }

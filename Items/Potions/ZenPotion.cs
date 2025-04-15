@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<PurifiedGel>(2).
                 AddIngredient(ItemID.Daybloom, 3).
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().

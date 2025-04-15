@@ -13,6 +13,7 @@ AstralStar.DisplayName: Star
 AuricLandMineExplosion.DisplayName: Auric Land Mine Explosion
 BabyCannonballProjectile.DisplayName: Baby Cannonball Projectile
 BasicBurst.DisplayName: Nondescript Damaging Explosion
+BasicBurstExclusive.DisplayName: Nondescript Damaging Explosion
 BasicPlagueBee.DisplayName: Basic Plague Bee
 BlackGlassBandProjectile.DisplayName: Obsidian Strike
 BlazingStarHeal.DisplayName: Blazing Star Heal
@@ -77,6 +78,8 @@ HydrothermalSmoke.DisplayName: Smoke
 HydrothermicFlare.DisplayName: Hydrothermic Flare
 HydrothermicFlareRogue.DisplayName: Hydrothermic Flare
 HydrothermicSphere.DisplayName: Hydrothermic Sphere
+HyperiusDamage.DisplayName: Hyperius Overflow
+HyperiusBleed.DisplayName: Hyperius Bleed
 JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
