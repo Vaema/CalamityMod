@@ -6613,6 +6613,7 @@ namespace CalamityMod.NPCs
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
                 EditWhipTagDamage(projectile, npc, ref modifiers);
         }
+        #endregion  
 
         #region OnHitBy overrides
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
@@ -6641,6 +6642,7 @@ namespace CalamityMod.NPCs
             }
 
         }
+        #endregion
 
         #region Whip Tag
         // Make whip tags multiplicative, by effectively reversing the process done to it
