@@ -26,8 +26,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			TileObjectData.newTile.CoordinatePadding = 2;
 			TileObjectData.newTile.DrawYOffset = 3;
 			TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(79, 196, 149));
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -55,8 +55,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(79, 196, 149));
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -83,8 +83,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(146, 123, 127));
-            DustType = 96;
+            AddMapEntry(new Color(79, 196, 149));
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

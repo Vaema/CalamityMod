@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.HasSlopeFrames[Type] = true;
             HitSound = SoundID.Dig;
-            DustType = 121;
+            DustType = DustID.Shadewood_Tree;
             AddMapEntry(new Color(136, 129, 154));
 
             // 02JUN2024: Ozzatron: Dunesand has no merge

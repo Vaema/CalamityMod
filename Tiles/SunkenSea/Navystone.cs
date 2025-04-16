@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithDesert(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             AddMapEntry(new Color(17, 53, 77));
             HitSound = SoundID.Tink;
 

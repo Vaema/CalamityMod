@@ -22,7 +22,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
-            DustType = 17;
+            DustType = DustID.CorruptPlants;
             AddMapEntry(new Color(123, 127, 170));
 
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");

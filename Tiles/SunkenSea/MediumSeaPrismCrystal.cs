@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine2[Type] = true;
 
             HitSound = SoundID.Item27;
-            DustType = 67;
+            DustType = DustID.IceRod;
             MinPick = 55;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);

@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            DustType = 36;
+            DustType = DustID.Ash;
             HitSound = SoundID.Tink;
 
             AddMapEntry(new Color(58, 55, 70));
