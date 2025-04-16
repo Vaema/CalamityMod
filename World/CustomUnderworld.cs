@@ -167,12 +167,10 @@ namespace CalamityMod.World
                 {
                     if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
                     {
-                        if (WorldGen.genRand.NextBool(3))
+                        if (WorldGen.genRand.NextBool(4))
                             ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                        else if (WorldGen.genRand.NextBool(6))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
                         else if (WorldGen.genRand.NextBool(8))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
                     }
 
                     if (ashIslandGenLimiter < ashIslandHeightLimit)
@@ -192,6 +190,11 @@ namespace CalamityMod.World
                     Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
                 }
             }
+
+            // Place smaller hellstone splotches in the ash island
+            // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
+            for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0002); i++)
+                WorldGen.TileRunner(WorldGen.genRand.Next(ashIslandX, ashIslandX2), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(2, 4), TileID.Hellstone);
 
             // More cursed magic water function
             Liquid.QuickWater(-2);
