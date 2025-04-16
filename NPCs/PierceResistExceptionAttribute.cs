@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs
     public sealed class PierceResistExceptionAttribute : Attribute
     {
         /// <summary>
-        /// <para>If this is present, the projectile is only exempt on NPC's with a large single hitbox)</para>
+        /// <para>Set this to true to indicate this projectile is only exempt from piercing resistance when attacking NPCs with a single large hitbox.</para>
         /// </summary>
         public bool OnlyForSingleHitbox { get; }
 
