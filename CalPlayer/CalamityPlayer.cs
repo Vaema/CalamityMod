@@ -837,7 +837,7 @@ namespace CalamityMod.CalPlayer
         public bool aBrain = false;
         public bool amalgam = false;
         public bool raiderTalisman = false;
-        public float raiderCritLifespan = 0f;
+        public int raiderCritLifespan = 0;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
         public int gSabatonHotkeyHoldTime = 0;
@@ -2838,7 +2838,7 @@ namespace CalamityMod.CalPlayer
             spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
-            raiderCritLifespan = 0f;
+            raiderCritLifespan = 0;
             raiderSoundCooldown = 0;
             gSabatonHotkeyHoldTime = 0;
             gSabatonFall = 0;
