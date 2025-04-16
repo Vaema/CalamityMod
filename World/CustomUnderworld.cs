@@ -67,7 +67,7 @@ namespace CalamityMod.World
                     while (!Main.tile[x, y].HasTile && y > Main.maxTilesY - 135)
                         y--;
 
-                    WorldGen.TileRunner(WorldGen.genRand.Next(0, Main.maxTilesX), y + WorldGen.genRand.Next(20, 50), WorldGen.genRand.Next(15, 20), 1000, TileID.Ash, addTile: true, 0D, WorldGen.genRand.Next(1, 3), noYChange: true);
+                    WorldGen.TileRunner(WorldGen.genRand.Next(Main.maxTilesX), y + WorldGen.genRand.Next(20, 50), WorldGen.genRand.Next(15, 20), 1000, TileID.Ash, addTile: true, 0D, WorldGen.genRand.Next(1, 3), noYChange: true);
                 }
             }
 
@@ -137,7 +137,7 @@ namespace CalamityMod.World
 
             // Place hellstone splotches
             for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0008); i++)
-                WorldGen.TileRunner(WorldGen.genRand.Next(0, Main.maxTilesX), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(2, 7), WorldGen.genRand.Next(3, 7), TileID.Hellstone);
+                WorldGen.TileRunner(WorldGen.genRand.Next(Main.maxTilesX), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(2, 7), WorldGen.genRand.Next(3, 7), TileID.Hellstone);
 
             // Remix world stuff, the Ash island in the middle
             int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
@@ -153,13 +153,13 @@ namespace CalamityMod.World
                 // Less random ash island terrain to make unmodified traversal less annoying
                 if (!ashIslandGenLimitHit)
                 {
-                    ashIslandGenLimiter -= WorldGen.genRand.Next(1, 3);
+                    ashIslandGenLimiter -= WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
                     if (ashIslandGenLimiter < ashIslandDepthLimit)
                         ashIslandGenLimitHit = true;
                 }
                 else if (ashIslandTilePlacementX >= ashIslandX2)
                 {
-                    ashIslandGenLimiter += WorldGen.genRand.Next(1, 3);
+                    ashIslandGenLimiter += WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
                     if (ashIslandGenLimiter > Main.maxTilesY - 1)
                         ashIslandGenLimiter = Main.maxTilesY - 1;
                 }
@@ -167,10 +167,22 @@ namespace CalamityMod.World
                 {
                     if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
                     {
-                        if (WorldGen.genRand.NextBool(4))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                        else if (WorldGen.genRand.NextBool(8))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                        if (!WorldGen.remixWorldGen)
+                        {
+                            if (WorldGen.genRand.NextBool(4))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                            else if (WorldGen.genRand.NextBool(8))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                        }
+                        else
+                        {
+                            if (WorldGen.genRand.NextBool(3))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                            else if (WorldGen.genRand.NextBool(6))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                            else if (WorldGen.genRand.NextBool(8))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-4, 5);
+                        }
                     }
 
                     if (ashIslandGenLimiter < ashIslandHeightLimit)
@@ -191,10 +203,13 @@ namespace CalamityMod.World
                 }
             }
 
-            // Place smaller hellstone splotches in the ash island
-            // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
-            for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0002); i++)
-                WorldGen.TileRunner(WorldGen.genRand.Next(ashIslandX, ashIslandX2), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(2, 4), TileID.Hellstone);
+            if (!WorldGen.remixWorldGen)
+            {
+                // Place smaller hellstone splotches in the ash island
+                // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
+                for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0002); i++)
+                    WorldGen.TileRunner(WorldGen.genRand.Next(ashIslandX, ashIslandX2), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(1, 5), WorldGen.genRand.Next(2, 5), TileID.Hellstone);
+            }
 
             // More cursed magic water function
             Liquid.QuickWater(-2);
@@ -303,7 +318,7 @@ namespace CalamityMod.World
         {
             // Original tower gen area was the outer quarters of the underworld
             // New tower gen area is the outer thirds of the underworld
-            int towerGenArea = (int)((double)Main.maxTilesX * 0.33);
+            int towerGenArea = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.25 : 0.33));
 
             // Generate towers
             for (int i = 100; i < Main.maxTilesX - 100; i++)
@@ -334,18 +349,61 @@ namespace CalamityMod.World
                     // Move index further along to keep towers spread apart
                     // Original min and max values were, respectively, 30 and 130
                     // New min and max values are, respectively, 30 and 60
-                    i += WorldGen.genRand.Next(30, 60);
+                    i += WorldGen.genRand.Next(30, WorldGen.remixWorldGen ? 130 : 60);
 
                     // Randomly add more distance between towers
                     // Original max value was 200
                     // New max value is 50
                     if (WorldGen.genRand.NextBool(10))
-                        i += WorldGen.genRand.Next(0, 50);
+                        i += WorldGen.genRand.Next(WorldGen.remixWorldGen ? 200 : 50);
+                }
+            }
+
+            if (!WorldGen.remixWorldGen)
+            {
+                // Generate some small houses on the ash island
+                int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
+                int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
+                int ashIslandDistance = ashIslandX2 - ashIslandX;
+                int flatDistanceBetweenHellHouses = ashIslandDistance / 3;
+
+                // Keep track of world size to adjust house distances
+                float houseDistanceMult = Main.maxTilesX / 4200f;
+                int maxRandomDistanceBetweenHouses = (int)(75 * houseDistanceMult);
+
+                // ashIslandX + 100 places the first hell house at the perfect position on the left shore of the ash island
+                // Add some random variance so that it doesn't feel so artificial
+                int firstHouseLocation = ashIslandX + 100 + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
+
+                // Max amount of houses generated on ash island
+                int maxHouses = 3;
+                int placedHouses = 0;
+                for (int i = firstHouseLocation; i < ashIslandX2 - 100; i++)
+                {
+                    // Start searching at Main.maxTilesY - 130 because ashIsland's max depth is Main.maxTilesY - 135
+                    int hellHouseGenY = Main.maxTilesY - 130;
+                    while (Main.tile[i, hellHouseGenY].HasTile || Main.tile[i, hellHouseGenY].LiquidAmount > 0)
+                        hellHouseGenY--;
+
+                    if (Main.tile[i, hellHouseGenY + 1].HasTile)
+                    {
+                        // Place house
+                        // TODO -- Stip's houses will be generated here eventually
+                        //WorldGen.HellHouse(i, hellHouseGenY);
+
+                        // Move index further along to keep houses spread apart
+                        i += flatDistanceBetweenHellHouses + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
+
+                        // Increment placed houses index and break loop once enough are placed
+                        placedHouses++;
+                        if (placedHouses >= maxHouses)
+                            break;
+                    }
                 }
             }
 
             // Placing torches in towers
-            float torchAmountMult = Main.maxTilesX / 4200;
+            float torchAmountMult = Main.maxTilesX / 4200f;
             for (int torchIndex = 0; (float)torchIndex < 200f * torchAmountMult; torchIndex++)
             {
                 int attempts = 0;
