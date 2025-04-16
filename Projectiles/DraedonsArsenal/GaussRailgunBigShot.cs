@@ -78,10 +78,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.numHits--;
 
             modifiers.SetCrit();
+            Player Owner = Main.player[Projectile.owner];
+            float critDamage = Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f;
             float minMult = 0.25f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
+            modifiers.SourceDamage *= damageMult + critDamage;
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             float launchPower = 20;

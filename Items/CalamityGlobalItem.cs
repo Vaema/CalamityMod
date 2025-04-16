@@ -7,6 +7,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -905,6 +906,31 @@ namespace CalamityMod.Items
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
         #endregion
+
+        public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Hyperius Overflow
+            if (target.Calamity().hyperiusMarked)
+            {
+                int damage = 0;
+                if (target.Calamity().hyperiusDamage < damageDone)
+                    damage = damageDone - target.Calamity().hyperiusDamage;
+                else
+                    damage = damageDone;
+                target.Calamity().hyperiusDamage -= damage;
+
+                // Spawn overflow hit
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                overflow.DamageType = item.DamageType;
+                overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
+
+                if (target.Calamity().hyperiusDamage <= 0)
+                {
+                    target.Calamity().hyperiusDamage = 0;
+                    target.Calamity().hyperiusMarked = false;
+                }
+            }
+        }
 
         #region Armor Set Changes
         public override string IsArmorSet(Item head, Item body, Item legs)
