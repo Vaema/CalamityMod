@@ -242,6 +242,16 @@
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.
         #endregion
 
+        #region Pierce Resistance
+        // Both of the below variables only apply when an NPC has universal pierce resistance enabled via attribute.
+        // Projectiles may be marked as exempt from this pierce resistance by using an attribute.
+
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
+        public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
+        public const float PierceResistCap = 0.8f;
+        #endregion
+
         // TODO -- NPC classification is not done consistently with predictable thresholds.
         // These variables should be used in general to classify "enemies" vs "non-enemies" as well.
         // See NPCUtils.IsAnEnemy

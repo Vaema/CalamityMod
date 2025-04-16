@@ -74,11 +74,6 @@ namespace CalamityMod.Projectiles
         /// <summary> Constant variable used as a speed cap for boss laser projectiles with 2 extra updates. </summary>
         public const float AcceleratingBossLaserVelocityCap = 8f;
 
-        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
-        public const float PierceResistHarshness = 0.12f;
-        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
-        public const float PierceResistCap = 0.8f;
-
         /// <summary>
         /// Used for executing frame one hacks. Things set during this include:
         /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles;
 using CalamityMod.Systems.Collections;
 using Terraria;
@@ -149,9 +148,9 @@ namespace CalamityMod.NPCs
             if (ThanatosIDList.Includes(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
                 return;
 
-            float damageReduction = projectile.Calamity().timesPierced * CalamityGlobalProjectile.PierceResistHarshness;
-            if (damageReduction > CalamityGlobalProjectile.PierceResistCap)
-                damageReduction = CalamityGlobalProjectile.PierceResistCap;
+            float damageReduction = projectile.Calamity().timesPierced * BalancingConstants.PierceResistHarshness;
+            if (damageReduction > BalancingConstants.PierceResistCap)
+                damageReduction = BalancingConstants.PierceResistCap;
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
