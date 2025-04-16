@@ -344,9 +344,9 @@ namespace CalamityMod.Projectiles.Rogue
                         searchedTarget.active = false;
                     }
 
-                    SoundStyle gfb = new("CalamityMod/Sounds/Item/HolyBurst");
-                    for (int i = 0; i < 7; i++)
-                        SoundEngine.PlaySound(gfb with { Volume = 1f, Pitch = 0.2f * i, MaxInstances = 7 }, Projectile.Center);
+                    SoundStyle gong = new("CalamityMod/Sounds/Custom/GFB/Jesus");
+                    for (int i = 0; i < 2; i++)
+                        SoundEngine.PlaySound(gong with { Volume = 1f, MaxInstances = 2 }, Projectile.Center);
                 }
                 else
                 {

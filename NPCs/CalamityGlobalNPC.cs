@@ -72,7 +72,9 @@ using CalamityMod.UI;
 using CalamityMod.UI.DebuffSystem;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
+using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -350,6 +352,13 @@ namespace CalamityMod.NPCs
         public int laserBurnTimer = 0;
         public int laserBurnStacks = 0;
 
+        public bool hyperiusMarked = false;
+        public int hyperiusDamage = 0;
+        public static int hyperiusOverflowTime = 100;
+        public int hyperiusOverflowTimer = hyperiusOverflowTime;
+        public static float hyperiusLifePercentThreshold = 0.07f; // The % of max life the damage stacks must reach before they start to overflow
+        public int hyperiusFxTimer = 0;
+
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
         /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
@@ -616,6 +625,15 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
+            myClone.laserBurnDamage = laserBurnDamage;
+            myClone.laserBurnMarked = laserBurnMarked;
+            myClone.laserBurnStacks = laserBurnStacks;
+            myClone.laserBurnTimer = laserBurnTimer;
+            myClone.laserBurnType = laserBurnType;
+            myClone.hyperiusDamage = hyperiusDamage;
+            myClone.hyperiusMarked = hyperiusMarked;
+            myClone.hyperiusOverflowTimer = hyperiusOverflowTimer;
+            myClone.hyperiusFxTimer = hyperiusFxTimer;
             myClone.cursorFocus = cursorFocus;
             myClone.demonSwordImpales = demonSwordImpales;
             myClone.impalePacketTimer = impalePacketTimer;
@@ -5868,6 +5886,45 @@ namespace CalamityMod.NPCs
                     spark.penetrate = 3;
                 }
             }
+            if (hyperiusMarked)
+            {
+                if (hyperiusFxTimer < 20)
+                    hyperiusFxTimer++;
+                else if (hyperiusFxTimer > 20)
+                    hyperiusFxTimer = (int)Utils.Lerp(hyperiusFxTimer, 20, 0.2f);
+
+                float threshold = ((float)(hyperiusDamage) / (float)(npc.lifeMax));
+                int overflowSpeed = (int)Utils.Remap(threshold, hyperiusLifePercentThreshold, 0.35f, 1, 34);
+                if (threshold > hyperiusLifePercentThreshold) // If the stored damage is greater than the life % cap of the target's max health, rapily deal a % of the stored damage to the enemy to drain it
+                {
+                    bool enemyIsNotArmored = (npc.defense < 1000 && !unbreakableDR && DR <= 0.9f && !npc.dontTakeDamage && !npc.immortal);
+                    if (enemyIsNotArmored)
+                        hyperiusOverflowTimer -= overflowSpeed;
+                    if (hyperiusOverflowTimer <= 0)
+                    {
+                        hyperiusOverflowTimer = hyperiusOverflowTime;
+
+                        float damagePercent = 0.07f; // The % of stacks drained when you're over the cap
+                        int damage = (int)Math.Max((int)((float)(hyperiusDamage) * damagePercent), 1);
+                        hyperiusDamage -= damage;
+
+                        // Spawn "bleed" hit
+                        // Uses a seperate projectile so that the hit takes defense and DR into account
+                        Projectile overflow = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<HyperiusBleed>(), damage, 0, -1, npc.whoAmI);
+                        overflow.DamageType = DamageClass.Ranged;
+                        if (hyperiusFxTimer >= 20)
+                            hyperiusFxTimer = 35;
+
+                        if (hyperiusDamage <= 0)
+                        {
+                            hyperiusDamage = 0;
+                            hyperiusMarked = false;
+                        }
+                    }
+                }
+            }
+            else if (hyperiusFxTimer > 0)
+                hyperiusFxTimer--;
 
             if ((laserBurnTimer <= 0 || laserBurnDamage >= npc.life * 1.5f) && laserBurnMarked && laserBurnType > 0)
             {
@@ -6589,6 +6646,25 @@ namespace CalamityMod.NPCs
             {
                 CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
             }
+            if (projectile.type == ProjectileType<HyperiusDamage>() || projectile.type == ProjectileType<HyperiusBleed>())
+            {
+                float rate = (Main.GlobalTimeWrappedHourly * 3f);
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.Yellow,
+                    Color.Magenta,
+                    Color.Red,
+                    Color.Cyan,
+                    Color.Lime
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                CombatText.NewText(npc.Hitbox, usedColor, damagedone, hit.Crit, true);
+            }
+
         }
 
         public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
@@ -7375,8 +7451,68 @@ namespace CalamityMod.NPCs
             if (heavybleeding > 0)
                 HeavyBleeding.DrawEffects(npc, ref drawColor);
 
+            if (hyperiusFxTimer > 0)
+            {
+                float rate = (Main.GlobalTimeWrappedHourly * 5);
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.Yellow,
+                    Color.Magenta,
+                    Color.Red,
+                    Color.Cyan,
+                    Color.Lime
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                Texture2D tex2 = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Texture2D sparkle = Request<Texture2D>("CalamityMod/Particles/BloomLineSoftEdge").Value;
+                Vector2 drawPosition = npc.Center - Main.screenPosition;
+                float drawRotation = npc.rotation + (npc.spriteDirection == -1 ? MathHelper.Pi : 0f);
+
+                float power = (float)(Math.Pow(Utils.GetLerpValue(0, 20, hyperiusFxTimer, true), 3)) * MathHelper.Lerp(Math.Max(npc.height, npc.width) / 100, 1.4f, 0.5f);
+                for (int i = 0; i < 4; i++)
+                {
+                    float iMult = (1 + 0.25f * i);
+                    Main.EntitySpriteDraw(tex2, drawPosition, null, Color.Lerp(usedColor, Color.White, i * 0.1f) with { A = 0 } * 0.6f, Main.rand.NextFloat(-5f, 5f), tex2.Size() * 0.5f, new Vector2(1f, 0.8f) * 0.35f * Main.rand.NextFloat(0.9f, 1.1f) * iMult * power * (Utils.GetLerpValue(0, 20, hyperiusFxTimer)), SpriteEffects.None);
+
+                    for (int b = -1; b <= 1; b += 2)
+                    {
+                        float uncappedSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 8f / MathHelper.Pi);
+                        float sine = MathHelper.Lerp(Math.Abs(uncappedSine), 0.75f, 0.75f);
+                        Vector2 scale = new Vector2((0.25f / iMult) + (0.7f * (1 - sine)), 1.1f * sine * iMult) * power * 0.05f;
+                        float rotation = MathHelper.PiOver4 * b * uncappedSine;
+                        Main.EntitySpriteDraw(sparkle, drawPosition, null, Color.Lerp(usedColor, Color.White, i * 0.1f) with { A = 0 }, rotation, sparkle.Size() * 0.5f, scale, SpriteEffects.None);
+                    }
+                }
+            }
+
             if (laceration > 0)
                 Laceration.DrawEffects(npc, ref drawColor);
+
+            if (laserBurnTimer > 0)
+            {
+                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
+                if (laserBurnTimer % particleChance == 0)
+                {
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+
+                    Dust dust = Dust.NewDustPerfect(randPosition, Effects.ArsenalEffects.ArsenalLaserDust);
+                    dust.velocity = ((Vector2.UnitX * 3 * (laserBurnStacks * 0.03f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f)) + npc.velocity * 0.5f;
+                    dust.scale = Main.rand.NextFloat(0.55f, 0.7f) + laserBurnStacks * 0.01f;
+                    dust.noGravity = true;
+                    dust.color = Color.Red;
+                    dust.fadeIn = laserBurnStacks * 0.3f;
+                }
+                if (laserBurnType == 0)
+                {
+                    Main.NewText("No Burn Type Set", Color.OrangeRed);
+                    laserBurnMarked = false;
+                    laserBurnTimer = 0;
+                }
+            }
 
             // These draw effects do not include Miracle Blight's shader
             if (miracleBlight > 0)
@@ -7418,28 +7554,6 @@ namespace CalamityMod.NPCs
                     Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
                     Particle markedSparkle = new CustomPulse(randPosition, Vector2.Zero, Color.Lerp(new Color(103, 230, 240), new Color(255, 110, 220), 1 - veriumRatio), "CalamityMod/Particles/Sparkle", Vector2.One, Main.rand.NextFloat(-0.75f, 0.75f), 0.9f, 1.1f, 35);
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
-                }
-            }
-
-            if (laserBurnTimer > 0)
-            {
-                int particleChance = Math.Max(3, 10 - (laserBurnStacks / 3));
-                if (laserBurnTimer % particleChance == 0)
-                {
-                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
-
-                    Dust dust = Dust.NewDustPerfect(randPosition, Effects.ArsenalEffects.ArsenalLaserDust);
-                    dust.velocity = ((Vector2.UnitX * 3 * (laserBurnStacks * 0.03f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f)) + npc.velocity * 0.5f;
-                    dust.scale = Main.rand.NextFloat(0.55f, 0.7f) + laserBurnStacks * 0.01f;
-                    dust.noGravity = true;
-                    dust.color = Color.Red;
-                    dust.fadeIn = laserBurnStacks * 0.3f;
-                }
-                if (laserBurnType == 0)
-                {
-                    Main.NewText("No Burn Type Set", Color.OrangeRed);
-                    laserBurnMarked = false;
-                    laserBurnTimer = 0;
                 }
             }
 
