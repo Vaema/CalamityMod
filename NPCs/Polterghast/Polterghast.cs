@@ -1029,7 +1029,7 @@ namespace CalamityMod.NPCs.Polterghast
             // GFB Cell Phone drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CellPhone, hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CellPhone), hideLootReport: true);
             }
 
             // Lore

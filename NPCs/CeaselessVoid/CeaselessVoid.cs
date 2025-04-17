@@ -256,8 +256,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // GFB Eclipse Mirror and Nucleogenesis drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<EclipseMirror>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<Nucleogenesis>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<EclipseMirror>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Nucleogenesis>()), hideLootReport: true);
             }
 
             // Lore

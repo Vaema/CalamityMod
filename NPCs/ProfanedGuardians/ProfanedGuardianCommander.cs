@@ -1226,8 +1226,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // GFB Chicken Nugget and Divine Geode drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.ChickenNugget, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 25, 30, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.ChickenNugget, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DivineGeode>(), 1, 25, 30), true);
             }
 
             // Lore

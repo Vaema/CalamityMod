@@ -3017,7 +3017,7 @@ namespace CalamityMod.NPCs.Yharon
             // He is the dragon of rebirth afterall
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<YharonEgg>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonEgg>()), hideLootReport: true);
             }
 
             // Lore

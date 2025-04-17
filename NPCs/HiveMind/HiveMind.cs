@@ -1463,11 +1463,11 @@ namespace CalamityMod.NPCs.HiveMind
             // GFB class emblem drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.WarriorEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.RangerEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SorcererEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SummonerEmblem, hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<RogueEmblem>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.WarriorEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.RangerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SorcererEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SummonerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RogueEmblem>()), hideLootReport: true);
             }
 
             // Lore
