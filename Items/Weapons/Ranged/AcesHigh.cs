@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class AcesHigh : ModItem, ILocalizedModType
     {
+        public int shots = 0;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
@@ -56,13 +57,23 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            type = Utils.SelectRandom(Main.rand, new int[]
+            shots++;
+            switch (shots)
             {
-                ModContent.ProjectileType<CardHeart>(),
-                ModContent.ProjectileType<CardSpade>(),
-                ModContent.ProjectileType<CardDiamond>(),
-                ModContent.ProjectileType<CardClub>()
-            });
+                case 4:
+                    type = ModContent.ProjectileType<CardSpade>();
+                    shots = 0;
+                    break;
+                case 3:
+                    type = ModContent.ProjectileType<CardDiamond>();
+                    break;
+                case 2:
+                    type = ModContent.ProjectileType<CardClub>();
+                    break;
+                default:
+                    type = ModContent.ProjectileType<CardHeart>();
+                    break;
+            }
         }
     }
 }
