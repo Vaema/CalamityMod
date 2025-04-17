@@ -142,6 +142,7 @@ namespace CalamityMod.NPCs
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Cooler Kevin", // <@!614126424751603714> (exellent.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
+            "Wamy",
         };
         private static readonly string[] MechanicNames =
         {
