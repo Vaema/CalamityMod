@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories
 
             //get fixed boi funny
             if (Main.zenithWorld)
-                player.lifeRegen -= 10; //Never ending thrist
+                player.lifeRegen -= 10; //Never ending thirst
         }
 
         public override void AddRecipes()

@@ -1976,7 +1976,7 @@ VampiricTalisman: {
 		'''
 		Rogue critical strikes steal enemy life
 		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
-		Stealth strikes inflict heavy bleeding for 5 seconds and armor crunch for 2.5 seconds
+		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
 		'Possessing the talisman makes you yearn for blood'
 		'''
 	YearningForBlood: THIS ENDLESS HUNGER WON'T END
