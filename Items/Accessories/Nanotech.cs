@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.nanotech = true;
-            modPlayer.raiderTalisman = true;
             modPlayer.electricianGlove = true;
             modPlayer.filthyGlove = true;
             modPlayer.bloodyGlove = true;
@@ -36,7 +35,6 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<RogueEmblem>().
-                AddIngredient<RaidersTalisman>().
                 AddIngredient<MoonstoneCrown>().
                 AddIngredient<ElectriciansGlove>().
                 AddIngredient<AscendantSpiritEssence>(4).

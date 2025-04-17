@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AstrumDeus
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(AstrumDeusHead))]
     public class AstrumDeusBody : ModNPC
     {

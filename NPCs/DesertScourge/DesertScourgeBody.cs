@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(DesertScourgeHead))]
     public class DesertScourgeBody : ModNPC
     {

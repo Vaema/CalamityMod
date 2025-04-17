@@ -33,6 +33,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class StormWeaverHead : ModNPC
     {
