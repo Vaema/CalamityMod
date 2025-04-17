@@ -92,11 +92,6 @@ namespace CalamityMod.Balancing
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
-            #region Desert Scourge
-            // 20% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DesertScourgeIDList.List, Do(ResistTrueMelee(0.8f))));
-            #endregion
-
             #region Crabulon
             // 20% resist to true melee.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
