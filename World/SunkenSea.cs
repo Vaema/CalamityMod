@@ -449,7 +449,6 @@ namespace CalamityMod.World
         }
 
         //sides of the sunken sea (radiant reefs)
-        //LeftSideBarrier is used to make the barrier of basalt either on the left or right, since the sunken sea is meant to have barriers on both sides and the reefs is generated twice
         public static void PlaceRadiantReefs(int startPosX, int startPosY)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();

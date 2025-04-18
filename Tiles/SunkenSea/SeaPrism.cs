@@ -42,12 +42,10 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            // (i & 0b0001) = (i % 2)
-            //frameXOffset = (i & 0b0001) * subsheetWidth;
-            //frameYOffset = (j & 0b0001) * subsheetHeight; No idea how to work with this for now I'll use the way I know
             frameXOffset = i % 8 * subsheetWidth;
             frameYOffset = j % 8 * subsheetHeight;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.9f;

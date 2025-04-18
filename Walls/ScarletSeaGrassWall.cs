@@ -1,11 +1,11 @@
-﻿
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Walls
 {
     public class ScarletSeaGrassWall : ModWall, IVisibleThroughWater
@@ -16,8 +16,8 @@ namespace CalamityMod.Walls
 
         public override void SetStaticDefaults()
         {
-            // TODO -- Change this dust to be one more befitting Astral Grass.
-            DustType = DustID.Shadowflame;
+            // 18APR2025: Ozzatron: guessed a red dust for scarlet sea grass
+            DustType = DustID.CrimsonPlants;
 
             WallID.Sets.Conversion.Grass[Type] = true;
 
