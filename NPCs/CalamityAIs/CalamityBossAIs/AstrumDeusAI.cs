@@ -864,8 +864,15 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 }
             }
 
+            // Play spawn sound on Deus on the first frame because otherwise the sound wouldn't play properly in multiplayer
+            if (calamityGlobalNPC.newAI[1] == 0f && !doubleWormPhase)
+            {
+                SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, npc.Center);
+                calamityGlobalNPC.newAI[1] = 1f;
+            }
+
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
                 calamityGlobalNPC.newAI[1] += 1f;
 
             // Calculate contact damage based on velocity
