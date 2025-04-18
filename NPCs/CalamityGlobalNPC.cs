@@ -6761,7 +6761,8 @@ namespace CalamityMod.NPCs
                         NPCType<PhantomSpiritL>()
                     });
 
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, randomType);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, randomType);
                 }
             }
 
