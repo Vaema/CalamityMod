@@ -1133,23 +1133,6 @@ namespace CalamityMod.World
                             //clear absolutely everything before generating the caverns
                             Main.tile[X, Y].ClearEverything();
 
-                            ////generate perlin noise caves
-                            //float horizontalOffsetNoise = CalamityUtils.PerlinNoise2D(X / 80, Y / 80, 5, unchecked(cavePerlinSeed + 1)) * 0.01f;
-                            //float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 1075f, Y / 1075f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
-                            //float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 1075f, Y / 1075f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
-                            //float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
-                            //float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
-
-                            ////kill or place tiles depending on the noise map
-                            //if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
-                            //{
-                            //    WorldGen.KillTile(X, Y);
-                            //}
-                            //else
-                            //{
-                            //    WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Navystone>());
-                            //}
-
                             //place walls in the biome using a different "seed" so it differs from the cave generation
                             //this creates a neat effect where walls worm their way through the caverns while leaving openings for the background to show through
                             float horizontalOffsetNoiseWalls = CalamityUtils.PerlinNoise2D(X / 80, Y / 80, 5, unchecked(cavePerlinSeedWalls + 1)) * 0.01f;
@@ -1791,10 +1774,8 @@ namespace CalamityMod.World
                     //grow depth vines on navystone
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
                     {
-                        if (WorldGen.genRand.NextBool(1))
-                        {
-                            WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<DepthVines>());
-                        }
+                        // 18APR2025: Ozzatron: removed guaranteed RNG check here, since it was intended to be guaranteed
+                        WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<DepthVines>());
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<DepthVines>())
                     {

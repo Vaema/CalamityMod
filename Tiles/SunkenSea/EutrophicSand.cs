@@ -63,7 +63,7 @@ namespace CalamityMod.Tiles.SunkenSea
                 return;
 
             // Place corals
-            if (WorldGen.genRand.NextBool(1))
+            if (WorldGen.genRand.NextBool(3))
             {
                 up.TileType = (ushort)ModContent.TileType<SmallCorals>();
                 up.HasTile = true;
