@@ -251,7 +251,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Owner.AddCooldown(ArsenalPower.ID, 300);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                int chargeDamage = (int)(Projectile.damage * (50 + (didDash ? 10 : 0))); // Seems high but its on a cooldown and is a melee attack so might be okay
+                int chargeDamage = (int)(Projectile.damage * (35 + (didDash ? 10 : 0))); // Used to be 50x - 60x, skewed the damage way too much to the lance even with it being the special
                 float chargeKB = Projectile.knockBack * 3f;
                 Projectile skewer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ScattershotLance>(), chargeDamage, chargeKB, Projectile.owner,0,0, (didDash ? 5 : 0));
                 skewer.timeLeft = (didDash ? 25 : 10);

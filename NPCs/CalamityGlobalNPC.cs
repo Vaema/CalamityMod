@@ -7298,6 +7298,19 @@ namespace CalamityMod.NPCs
                 DeerclopsAI.outerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
             }
 
+            // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena
+            if (npc.boss)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (n.type == NPCID.BlazingWheel || n.type == NPCID.SpikeBall)
+                    {
+                        n.active = false;
+                        n.netUpdate = true;
+                    }
+                }
+            }
+
             if (npc.type != NPCID.VoodooDemon)
                 return;
 
