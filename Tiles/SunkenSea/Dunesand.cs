@@ -6,7 +6,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class RuneSand : ModTile
+    [LegacyName("RuneSand")]
+    public class Dunesand : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
             Main.tileShine2[Type] = true;
 
-            DustType = 147;
+            DustType = DustID.Hive;
             AddMapEntry(new Color(210, 124, 45));
 
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
