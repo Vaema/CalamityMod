@@ -1,31 +1,30 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.DataStructures;
-using Terraria.Enums;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-	public class FryCoral : ModTile
-	{
-		public override void SetStaticDefaults()
-		{
-			Main.tileFrameImportant[Type] = true;
-			Main.tileSolid[Type] = false;
+    public class FryCoral : ModTile
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.tileFrameImportant[Type] = true;
+            Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
             TileObjectData.newTile.Width = 2;
-			TileObjectData.newTile.Height = 2;
-			TileObjectData.newTile.Origin = new Point16(2, 2);
-			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, };
-			TileObjectData.newTile.StyleWrapLimit = 36;
-			TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-			TileObjectData.newTile.CoordinateWidth = 16;
-			TileObjectData.newTile.CoordinatePadding = 2;
-			TileObjectData.newTile.DrawYOffset = 3;
-			TileObjectData.addTile(Type);
+            TileObjectData.newTile.Height = 2;
+            TileObjectData.newTile.Origin = new Point16(2, 2);
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, };
+            TileObjectData.newTile.StyleWrapLimit = 36;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.DrawYOffset = 3;
+            TileObjectData.addTile(Type);
             AddMapEntry(new Color(79, 196, 149));
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
