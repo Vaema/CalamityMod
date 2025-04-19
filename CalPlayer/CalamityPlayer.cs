@@ -302,6 +302,10 @@ namespace CalamityMod.CalPlayer
         public bool despoilerNerf = false;
         /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
+        /// <summary> Variable used to track the fuel of Pristine Fury right click </summary>
+        public int furyFuelMax = 1800;
+        public int furyFuel = 1800;
+        public float furyRefuelTimer = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
