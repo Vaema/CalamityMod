@@ -12,6 +12,8 @@ namespace CalamityMod.World
 {
     public class CustomUnderworld
     {
+        private const int MaxIslands = 4;
+
         public static void NewUnderworld()
         {
             // Generate lower Underworld ash
@@ -45,8 +47,8 @@ namespace CalamityMod.World
                 if (lavaDepth > Main.maxTilesY - 60)
                     lavaDepth = Main.maxTilesY - 60;
 
-                if (lavaDepth < Main.maxTilesY - 100)
-                    lavaDepth = Main.maxTilesY - 120;
+                if (lavaDepth < Main.maxTilesY - 110)
+                    lavaDepth = Main.maxTilesY - 110;
 
                 for (int y = lavaDepth; y < Main.maxTilesY - 10; y++)
                 {
@@ -120,18 +122,21 @@ namespace CalamityMod.World
                 WorldGen.TileRunner(WorldGen.genRand.Next((int)(Main.maxTilesX * 0.35), (int)(Main.maxTilesX * 0.65)), WorldGen.genRand.Next(Main.maxTilesY - 180, Main.maxTilesY - 10), WorldGen.genRand.Next(5, 20), WorldGen.genRand.Next(5, 10), -2);
 
             // Place two lines of lava at maxTilesY - 145 and maxTilesY - 144
-            for (int x = 0; x < Main.maxTilesX; x++)
+            if (Main.zenithWorld)
             {
-                if (!Main.tile[x, Main.maxTilesY - 145].HasTile)
+                for (int x = 0; x < Main.maxTilesX; x++)
                 {
-                    Main.tile[x, Main.maxTilesY - 145].LiquidAmount = byte.MaxValue;
-                    Main.tile[x, Main.maxTilesY - 145].Get<LiquidData>().LiquidType = LiquidID.Lava;
-                }
+                    if (!Main.tile[x, Main.maxTilesY - 145].HasTile)
+                    {
+                        Main.tile[x, Main.maxTilesY - 145].LiquidAmount = byte.MaxValue;
+                        Main.tile[x, Main.maxTilesY - 145].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    }
 
-                if (!Main.tile[x, Main.maxTilesY - 144].HasTile)
-                {
-                    Main.tile[x, Main.maxTilesY - 144].LiquidAmount = byte.MaxValue;
-                    Main.tile[x, Main.maxTilesY - 144].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    if (!Main.tile[x, Main.maxTilesY - 144].HasTile)
+                    {
+                        Main.tile[x, Main.maxTilesY - 144].LiquidAmount = byte.MaxValue;
+                        Main.tile[x, Main.maxTilesY - 144].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    }
                 }
             }
 
@@ -145,10 +150,17 @@ namespace CalamityMod.World
             int numIslands = (int)(Main.maxTilesX / 4200f * 2f);
 
             // Start generating islands at this point
-            int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
+            int ashIslandX = (int)((double)Main.maxTilesX * 0.37);
 
             // Stop generating islands at this point
-            int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
+            int ashIslandX2 = (int)((double)Main.maxTilesX * 0.63);
+
+            // Total extra distance between islands for lava lakes
+            int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.02);
+
+            // Extra distance per island
+            // Due to this being done on both sides of each island, it is divided by 2
+            int extraDistanceBetweenAshIslands = totalExtraDistanceBetweenAshIslands / numIslands / 2;
 
             // Calculate distance between islands
             int distanceBetweenIslands = (ashIslandX2 - ashIslandX) / numIslands;
@@ -157,13 +169,33 @@ namespace CalamityMod.World
             int ashIslandDepthLimit = Main.maxTilesY - 135;
             int ashIslandHeightLimit = Main.maxTilesY - 160;
 
+            // Used for island height randomization
+            int[] randomHeightAdjustmentLimits = new int[MaxIslands]
+            {
+                WorldGen.genRand.Next(3) + 10,
+                WorldGen.genRand.Next(3) + 5,
+                WorldGen.genRand.Next(3),
+                WorldGen.genRand.Next(3) - 5
+            };
+
             // Loop to gen the islands
+            int chosenIslandSize;
+            int previouslyChosenIslandSize = -1;
             for (int i = 0; i < numIslands; i++)
             {
+                // Do not repeat the same island size twice in a row
+                do chosenIslandSize = WorldGen.genRand.Next(MaxIslands);
+                while (previouslyChosenIslandSize == chosenIslandSize);
+                previouslyChosenIslandSize = chosenIslandSize;
+
+                int randomizedIslandHeightAdjustment = randomHeightAdjustmentLimits[chosenIslandSize];
+                int randomizedAshIslandDepthLimit = ashIslandDepthLimit + randomizedIslandHeightAdjustment;
+                int randomizedAshIslandHeightLimit = ashIslandHeightLimit + randomizedIslandHeightAdjustment;
+
                 int ashIslandXAdjustment = distanceBetweenIslands * i;
                 int ashIslandX2Adjustment = distanceBetweenIslands * (numIslands - i - 1);
-                int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment;
-                int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment;
+                int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands;
+                int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands;
                 int ashIslandGenLimiter = Main.maxTilesY - 1;
                 bool ashIslandGenLimitHit = false;
                 Liquid.QuickWater(-2);
@@ -172,13 +204,15 @@ namespace CalamityMod.World
                     // Less random ash island terrain to make unmodified traversal less annoying
                     if (!ashIslandGenLimitHit)
                     {
-                        ashIslandGenLimiter -= WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
-                        if (ashIslandGenLimiter < ashIslandDepthLimit)
+                        // Steeper ash island edges
+                        ashIslandGenLimiter -= WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 8);
+                        if (ashIslandGenLimiter < randomizedAshIslandDepthLimit)
                             ashIslandGenLimitHit = true;
                     }
                     else if (ashIslandTilePlacementX >= ashIslandTilePlacementX2)
                     {
-                        ashIslandGenLimiter += WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
+                        // Steeper ash island edges
+                        ashIslandGenLimiter += WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 8);
                         if (ashIslandGenLimiter > Main.maxTilesY - 1)
                             ashIslandGenLimiter = Main.maxTilesY - 1;
                     }
@@ -188,10 +222,12 @@ namespace CalamityMod.World
                         {
                             if (!WorldGen.remixWorldGen)
                             {
-                                if (WorldGen.genRand.NextBool(4))
+                                if (WorldGen.genRand.NextBool(3))
                                     ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                else if (WorldGen.genRand.NextBool(8))
+                                else if (WorldGen.genRand.NextBool(6))
                                     ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                else if (WorldGen.genRand.NextBool(9))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
                             }
                             else
                             {
@@ -204,11 +240,11 @@ namespace CalamityMod.World
                             }
                         }
 
-                        if (ashIslandGenLimiter < ashIslandHeightLimit)
-                            ashIslandGenLimiter = ashIslandHeightLimit;
+                        if (ashIslandGenLimiter < randomizedAshIslandHeightLimit)
+                            ashIslandGenLimiter = randomizedAshIslandHeightLimit;
 
-                        if (ashIslandGenLimiter > ashIslandDepthLimit)
-                            ashIslandGenLimiter = ashIslandDepthLimit;
+                        if (ashIslandGenLimiter > randomizedAshIslandDepthLimit)
+                            ashIslandGenLimiter = randomizedAshIslandDepthLimit;
                     }
 
                     for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
@@ -290,50 +326,6 @@ namespace CalamityMod.World
             }
         }
 
-        public static void RemoveLavaFromAshIsland()
-        {
-            // Settle liquids again because the Sunken Sea doesn't get liquids settled because the gen step for settling liquids the final time happens before the Sunken Sea
-            Liquid.worldGenTilesIgnoreWater(ignoreSolids: true);
-            Liquid.QuickWater(3);
-            WorldGen.WaterCheck();
-            int attempts = 0;
-            Liquid.quickSettle = true;
-            int maxAttempts = 10;
-            while (attempts < maxAttempts)
-            {
-                attempts++;
-                int liquidAmount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-                int tries = liquidAmount * 5;
-                while (Liquid.numLiquid > 0)
-                {
-                    tries--;
-                    if (tries < 0)
-                        break;
-
-                    if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > liquidAmount)
-                        liquidAmount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-
-                    Liquid.UpdateLiquid();
-                }
-
-                WorldGen.WaterCheck();
-            }
-
-            Liquid.quickSettle = false;
-            Liquid.worldGenTilesIgnoreWater(ignoreSolids: false);
-            Main.tileSolid[TileID.RollingCactus] = false;
-
-            // REMOVE THE FUCKING LAVA
-            int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
-            int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
-            int ashIslandDepthLimit = Main.maxTilesY - 135;
-            for (int x = ashIslandX; x < ashIslandX2; x++)
-            {
-                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit; y++)
-                    Main.tile[x, y].LiquidAmount = 0;
-            }
-        }
-
         private static void AddHellHouses()
         {
             // Original tower gen area was the outer quarters of the underworld
@@ -382,8 +374,8 @@ namespace CalamityMod.World
             if (!WorldGen.remixWorldGen)
             {
                 // Generate some small houses on the ash island
-                int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
-                int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
+                int ashIslandX = (int)((double)Main.maxTilesX * 0.37);
+                int ashIslandX2 = (int)((double)Main.maxTilesX * 0.63);
                 int ashIslandDistance = ashIslandX2 - ashIslandX;
                 int flatDistanceBetweenHellHouses = ashIslandDistance / 3;
 

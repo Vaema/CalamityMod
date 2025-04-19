@@ -192,17 +192,6 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Remove lava from ash island after it's been settled
-            int ashIslandLavaRemovalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tile Cleanup"));
-            if (ashIslandLavaRemovalIndex != -1)
-            {
-                tasks.Insert(ashIslandLavaRemovalIndex + 1, new PassLegacy("Ash Island Lava Removal", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AshIslandLavaRemoval").Value;
-                    CustomUnderworld.RemoveLavaFromAshIsland();
-                }));
-            }
-
             // All further tasks occur right before vanilla worldgen is completed (which includes The Dirtiest Block and final secret seed adjustments)
             int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (FinalIndex != -1)
