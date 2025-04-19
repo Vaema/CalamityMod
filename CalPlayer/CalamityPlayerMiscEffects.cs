@@ -203,6 +203,16 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
+            if (furyFuel < furyFuelMax && furyRefuelTimer >= 0)
+            {
+                furyFuel += (int)furyRefuelTimer;
+                furyRefuelTimer = MathHelper.Lerp(furyRefuelTimer, 25, 0.01f);
+                if (furyFuel > furyFuelMax)
+                    furyFuel = furyFuelMax;
+            }
+            else if (furyRefuelTimer < 0)
+                furyRefuelTimer++;
+
             // De-equipping Draedon's Heart deletes all Adrenaline.
             if (!draedonsHeart && hadNanomachinesLastFrame)
             {
