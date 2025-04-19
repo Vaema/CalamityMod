@@ -139,67 +139,87 @@ namespace CalamityMod.World
             for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0008); i++)
                 WorldGen.TileRunner(WorldGen.genRand.Next(Main.maxTilesX), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(2, 7), WorldGen.genRand.Next(3, 7), TileID.Hellstone);
 
-            // Remix world stuff, the Ash island in the middle
+            // Remix world stuff, the Ash islands in the middle
+
+            // Large = 4, Medium = 3, Small = 2
+            int numIslands = (int)(Main.maxTilesX / 4200f * 2f);
+
+            // Start generating islands at this point
             int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
+
+            // Stop generating islands at this point
             int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
-            int ashIslandTilePlacementX = ashIslandX;
-            int ashIslandGenLimiter = Main.maxTilesY - 1;
+
+            // Calculate distance between islands
+            int distanceBetweenIslands = (ashIslandX2 - ashIslandX) / numIslands;
+
+            // Ash island gen limits
             int ashIslandDepthLimit = Main.maxTilesY - 135;
             int ashIslandHeightLimit = Main.maxTilesY - 160;
-            bool ashIslandGenLimitHit = false;
-            Liquid.QuickWater(-2);
-            for (; ashIslandGenLimiter < Main.maxTilesY - 1 || ashIslandTilePlacementX < ashIslandX2; ashIslandTilePlacementX++)
+
+            // Loop to gen the islands
+            for (int i = 0; i < numIslands; i++)
             {
-                // Less random ash island terrain to make unmodified traversal less annoying
-                if (!ashIslandGenLimitHit)
+                int ashIslandXAdjustment = distanceBetweenIslands * i;
+                int ashIslandX2Adjustment = distanceBetweenIslands * (numIslands - i - 1);
+                int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment;
+                int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment;
+                int ashIslandGenLimiter = Main.maxTilesY - 1;
+                bool ashIslandGenLimitHit = false;
+                Liquid.QuickWater(-2);
+                for (; ashIslandGenLimiter < Main.maxTilesY - 1 || ashIslandTilePlacementX < ashIslandTilePlacementX2; ashIslandTilePlacementX++)
                 {
-                    ashIslandGenLimiter -= WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
-                    if (ashIslandGenLimiter < ashIslandDepthLimit)
-                        ashIslandGenLimitHit = true;
-                }
-                else if (ashIslandTilePlacementX >= ashIslandX2)
-                {
-                    ashIslandGenLimiter += WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
-                    if (ashIslandGenLimiter > Main.maxTilesY - 1)
-                        ashIslandGenLimiter = Main.maxTilesY - 1;
-                }
-                else
-                {
-                    if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
+                    // Less random ash island terrain to make unmodified traversal less annoying
+                    if (!ashIslandGenLimitHit)
                     {
-                        if (!WorldGen.remixWorldGen)
+                        ashIslandGenLimiter -= WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
+                        if (ashIslandGenLimiter < ashIslandDepthLimit)
+                            ashIslandGenLimitHit = true;
+                    }
+                    else if (ashIslandTilePlacementX >= ashIslandTilePlacementX2)
+                    {
+                        ashIslandGenLimiter += WorldGen.genRand.Next(1, WorldGen.remixWorldGen ? 4 : 3);
+                        if (ashIslandGenLimiter > Main.maxTilesY - 1)
+                            ashIslandGenLimiter = Main.maxTilesY - 1;
+                    }
+                    else
+                    {
+                        if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
                         {
-                            if (WorldGen.genRand.NextBool(4))
-                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                            else if (WorldGen.genRand.NextBool(8))
-                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                            if (!WorldGen.remixWorldGen)
+                            {
+                                if (WorldGen.genRand.NextBool(4))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                else if (WorldGen.genRand.NextBool(8))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                            }
+                            else
+                            {
+                                if (WorldGen.genRand.NextBool(3))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                else if (WorldGen.genRand.NextBool(6))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                else if (WorldGen.genRand.NextBool(8))
+                                    ashIslandGenLimiter += WorldGen.genRand.Next(-4, 5);
+                            }
                         }
-                        else
-                        {
-                            if (WorldGen.genRand.NextBool(3))
-                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                            else if (WorldGen.genRand.NextBool(6))
-                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                            else if (WorldGen.genRand.NextBool(8))
-                                ashIslandGenLimiter += WorldGen.genRand.Next(-4, 5);
-                        }
+
+                        if (ashIslandGenLimiter < ashIslandHeightLimit)
+                            ashIslandGenLimiter = ashIslandHeightLimit;
+
+                        if (ashIslandGenLimiter > ashIslandDepthLimit)
+                            ashIslandGenLimiter = ashIslandDepthLimit;
                     }
 
-                    if (ashIslandGenLimiter < ashIslandHeightLimit)
-                        ashIslandGenLimiter = ashIslandHeightLimit;
+                    for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
+                        Main.tile[ashIslandTilePlacementX, y].LiquidAmount = 0;
 
-                    if (ashIslandGenLimiter > ashIslandDepthLimit)
-                        ashIslandGenLimiter = ashIslandDepthLimit;
-                }
-
-                for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
-                    Main.tile[ashIslandTilePlacementX, y].LiquidAmount = 0;
-
-                for (int y = ashIslandGenLimiter; y < Main.maxTilesY; y++)
-                {
-                    Main.tile[ashIslandTilePlacementX, y].Clear(TileDataType.All);
-                    Main.tile[ashIslandTilePlacementX, y].Get<TileWallWireStateData>().HasTile = true;
-                    Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
+                    for (int y = ashIslandGenLimiter; y < Main.maxTilesY; y++)
+                    {
+                        Main.tile[ashIslandTilePlacementX, y].Clear(TileDataType.All);
+                        Main.tile[ashIslandTilePlacementX, y].Get<TileWallWireStateData>().HasTile = true;
+                        Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
+                    }
                 }
             }
 
