@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public ref float shootingTimer => ref Projectile.ai[0];
         public ref float chargeTimer => ref Projectile.ai[1];
         public int fireRate => Owner.HeldItem.useAnimation;
-        public int chargeRate => 200;
+        public int chargeRate => 222; // It's spesifically this to line up with the charge sound
         public int time = 0;
         public float lightSine = 0;
         float charge = 0; // multiplier for vfx based on charge of the weapon
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Owner.AddCooldown(ArsenalPower.ID, 540);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                int chargeDamage = (int)(Projectile.damage * 30);
+                int chargeDamage = (int)(Projectile.damage * 33);
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<GaussRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
                 
                 SoundStyle sound = new("CalamityMod/Sounds/Item/GaussRailgunBigShot");
