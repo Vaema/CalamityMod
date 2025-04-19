@@ -420,7 +420,7 @@ namespace CalamityMod.Projectiles.Melee
             if (chargedSwing)
                 modifiers.SetCrit();
 
-            float critDamage = Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f;
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
