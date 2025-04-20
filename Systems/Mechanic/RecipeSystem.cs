@@ -793,7 +793,6 @@ namespace CalamityMod.Systems
 
             var edits = new Dictionary<Func<Recipe, bool>, Action<Recipe>>(128)
             {
-                { Vanilla(ItemID.EnchantedBoomerang), Disable }, // Calamity adds its own recipe
                 { Vanilla(ItemID.MiniNukeI), Disable },
                 { Vanilla(ItemID.MiniNukeII), Disable },
 
@@ -844,6 +843,9 @@ namespace CalamityMod.Systems
                 // Pumpkin & Frost Moon non linearity
                 { Vanilla(ItemID.PumpkinMoonMedallion), RemoveIngredient(ItemID.HallowedBar) },
                 { Vanilla(ItemID.NaughtyPresent), RemoveIngredient(ItemID.SoulofFright) },
+
+                // Make Enchanted Boomerang slightly harder to obtain
+                { Vanilla(ItemID.EnchantedBoomerang), EnchantedBoomerangRecipeEdit },
 
                 // Add 20 Souls of Flight to vanilla Luminite wings
                 { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), LunarWingsRecipeEdits },
@@ -1010,6 +1012,24 @@ namespace CalamityMod.Systems
             r.requiredItem[0] = r.requiredItem[2];
             r.requiredItem[2] = r.requiredItem[1];
             r.requiredItem[1] = store;
+        }
+
+        private static void EnchantedBoomerangRecipeEdit(Recipe r)
+        {
+            // Add Any Gold Bar and make it crafted at an Anvil
+            r.AddRecipeGroup(AnyGoldBar, 8);
+            r.AddTile(TileID.Anvils);
+
+            // Then move it to the proper spot
+            if (r.requiredItem.Count < 3)
+                return;
+
+            var store = r.requiredItem[1];
+            r.requiredItem[1] = r.requiredItem[2];
+            r.requiredItem[2] = store;
+
+            // Increase amount of Fallen Stars used
+            r.requiredItem[2].stack = 6;
         }
         #endregion
 
@@ -1374,9 +1394,8 @@ namespace CalamityMod.Systems
 
             // Desert Minecart
             r = Recipe.Create(ItemID.DesertMinecart);
+            r.AddIngredient(ItemID.Minecart);
             r.AddIngredient(ItemID.SandstoneBrick, 20);
-            r.AddRecipeGroup("AnyGoldBar", 6);
-            r.AddRecipeGroup("IronBar", 3);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
@@ -1472,15 +1491,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.PlatinumBroadsword);
             r.AddIngredient(ItemID.FallenStar, 10);
             r.AddIngredient<PearlShard>(3);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Enchanted Boomerang
-            r = Recipe.Create(ItemID.EnchantedBoomerang);
-            r.AddIngredient(ItemID.WoodenBoomerang);
-            r.AddIngredient(ItemID.FallenStar, 6);
-            r.AddRecipeGroup(AnyGoldBar, 8);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
