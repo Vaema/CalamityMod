@@ -1374,9 +1374,8 @@ namespace CalamityMod.Systems
 
             // Desert Minecart
             r = Recipe.Create(ItemID.DesertMinecart);
+            r.AddIngredient(ItemID.Minecart);
             r.AddIngredient(ItemID.SandstoneBrick, 20);
-            r.AddRecipeGroup("AnyGoldBar", 6);
-            r.AddRecipeGroup("IronBar", 3);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
