@@ -1016,8 +1016,9 @@ namespace CalamityMod.Systems
 
         private static void EnchantedBoomerangRecipeEdit(Recipe r)
         {
-            // Add Any Gold Bar
+            // Add Any Gold Bar and make it crafted at an Anvil
             r.AddRecipeGroup(AnyGoldBar, 8);
+            r.AddTile(TileID.Anvils);
 
             // Then move it to the proper spot
             if (r.requiredItem.Count < 3)
