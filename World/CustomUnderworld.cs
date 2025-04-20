@@ -12,7 +12,7 @@ namespace CalamityMod.World
 {
     public class CustomUnderworld
     {
-        private const int MaxIslands = 4;
+        private const int MaxIslands = 8;
 
         public static void NewUnderworld()
         {
@@ -147,10 +147,10 @@ namespace CalamityMod.World
             // Remix world stuff, the Ash islands in the middle
 
             // Start generating islands at this point
-            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.37));
+            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
 
             // Stop generating islands at this point
-            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.63));
+            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
 
             // Ash island gen limits
             int ashIslandDepthLimit = Main.maxTilesY - 135;
@@ -159,11 +159,11 @@ namespace CalamityMod.World
             // Multiple islands in non-remix
             if (!WorldGen.remixWorldGen)
             {
-                // Large = 4, Medium = 3, Small = 2
-                int numIslands = (int)(Main.maxTilesX / 4200f * 2f);
+                // Large = 8, Medium = 6, Small = 4
+                int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
 
                 // Total extra distance between islands for lava lakes
-                int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.02);
+                int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
 
                 // Extra distance per island
                 // Due to this being done on both sides of each island, it is divided by 2
@@ -175,10 +175,28 @@ namespace CalamityMod.World
                 // Used for island height randomization
                 int[] randomHeightAdjustmentLimits = new int[MaxIslands]
                 {
-                    WorldGen.genRand.Next(3) + 10,
-                    WorldGen.genRand.Next(3) + 5,
-                    WorldGen.genRand.Next(3),
-                    WorldGen.genRand.Next(3) - 5
+                    20,
+                    16,
+                    12,
+                    8,
+                    4,
+                    0,
+                    -4,
+                    -8
+                };
+
+                // Used for island edge drop off randomization
+                // Taller islands have steeper drop offs
+                int[] randomDropOffAdjustmentLimits = new int[MaxIslands]
+                {
+                    4,
+                    5,
+                    6,
+                    8,
+                    10,
+                    12,
+                    15,
+                    18
                 };
 
                 // Loop to gen the islands
@@ -191,6 +209,7 @@ namespace CalamityMod.World
                     while (previouslyChosenIslandSize == chosenIslandSize);
                     previouslyChosenIslandSize = chosenIslandSize;
 
+                    int randomizedIslandDropOffAdjustment = randomDropOffAdjustmentLimits[chosenIslandSize];
                     int randomizedIslandHeightAdjustment = randomHeightAdjustmentLimits[chosenIslandSize];
                     int randomizedAshIslandDepthLimit = ashIslandDepthLimit + randomizedIslandHeightAdjustment;
                     int randomizedAshIslandHeightLimit = ashIslandHeightLimit + randomizedIslandHeightAdjustment;
@@ -208,14 +227,14 @@ namespace CalamityMod.World
                         if (!ashIslandGenLimitHit)
                         {
                             // Steeper ash island edges
-                            ashIslandGenLimiter -= WorldGen.genRand.Next(1, 8);
+                            ashIslandGenLimiter -= WorldGen.genRand.Next(1, randomizedIslandDropOffAdjustment);
                             if (ashIslandGenLimiter < randomizedAshIslandDepthLimit)
                                 ashIslandGenLimitHit = true;
                         }
                         else if (ashIslandTilePlacementX >= ashIslandTilePlacementX2)
                         {
                             // Steeper ash island edges
-                            ashIslandGenLimiter += WorldGen.genRand.Next(1, 8);
+                            ashIslandGenLimiter += WorldGen.genRand.Next(1, randomizedIslandDropOffAdjustment);
                             if (ashIslandGenLimiter > Main.maxTilesY - 1)
                                 ashIslandGenLimiter = Main.maxTilesY - 1;
                         }
@@ -223,12 +242,49 @@ namespace CalamityMod.World
                         {
                             if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
                             {
-                                if (WorldGen.genRand.NextBool(3))
-                                    ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                else if (WorldGen.genRand.NextBool(6))
-                                    ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                                else if (WorldGen.genRand.NextBool(9))
-                                    ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                // More randomized terrain depending on island type
+                                // Lower islands have smoother terrain
+                                switch (chosenIslandSize)
+                                {
+                                    default:
+                                    case 0:
+                                    case 1:
+                                        if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(8))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        break;
+
+                                    case 2:
+                                    case 3:
+                                        if (WorldGen.genRand.NextBool(3))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(6))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(9))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+
+                                    case 4:
+                                    case 5:
+                                        if (WorldGen.genRand.NextBool())
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(6))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+
+                                    case 6:
+                                    case 7:
+                                        if (WorldGen.genRand.NextBool())
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(3))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+                                }
                             }
 
                             if (ashIslandGenLimiter < randomizedAshIslandHeightLimit)
@@ -253,9 +309,11 @@ namespace CalamityMod.World
                     int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands;
 
                     // Lava holes in ash islands
-                    double holeFrequency = 0.00008 / numIslands;
+
+                    // Small holes
+                    double holeFrequency = 0.00005 / numIslands;
                     for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * holeFrequency); j++)
-                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 15, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 25, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
 
                     // Place smaller hellstone splotches in the ash island
                     // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
@@ -426,8 +484,8 @@ namespace CalamityMod.World
             if (!WorldGen.remixWorldGen)
             {
                 // Generate some small houses on the ash island
-                int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.37));
-                int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.63));
+                int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
+                int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
                 int ashIslandDistance = ashIslandX2 - ashIslandX;
                 int flatDistanceBetweenHellHouses = ashIslandDistance / 3;
 
