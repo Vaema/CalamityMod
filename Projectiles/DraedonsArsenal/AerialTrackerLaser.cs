@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class TrackingDiskLaser : ModProjectile, ILocalizedModType
+    public class AerialTrackerLaser : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             // So unless placed here the position of projectile updates is inconsistent and will cause offsets
-            if (disk != null && disk.active && disk.type == ModContent.ProjectileType<TrackingDiskProjectile>())
+            if (disk != null && disk.active && disk.type == ModContent.ProjectileType<AerialTrackerProjectile>())
             {
                 laserStart = disk.Center;
             }

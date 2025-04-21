@@ -13,10 +13,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class CompactRailgunHoldout : BaseGunHoldoutProjectile
+    public class NidhogHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override int AssociatedItemID => ModContent.ItemType<CompactRailgun>();
+        public override int AssociatedItemID => ModContent.ItemType<Nidhog>();
 
         public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override float OffsetXUpwards => 0f;
         public override float BaseOffsetY => 0f;
         public override float OffsetYDownwards => 0f;
-        public override float WeaponTurnSpeed => charging? 0.6f : 0.25f;
+        public override float WeaponTurnSpeed => charging ? 0.75f : 0.4f;
         public SlotId SoundSlot;
         public bool charging => Projectile.ai[2] == 5;
         public ref float shootingTimer => ref Projectile.ai[0];
@@ -62,9 +62,19 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             if (shootingTimer < 0)
             {
+                if (charge > 0)
+                    charge = 1 - (float)Math.Pow(Utils.GetLerpValue(-50, -20, shootingTimer, true), 8);
                 shootingTimer++;
+                if (charge == 0) // Make a sound when the jaws close
+                {
+                    SoundStyle close = new("CalamityMod/Sounds/NPCHit/ExoHit2");
+                    SoundEngine.PlaySound(close with { Volume = 0.5f, Pitch = Main.rand.NextFloat(0.3f, 0.4f) }, Projectile.Center);
+                    charge -= 0.001f;
+                }
                 if (shootingTimer == 0)
+                {
                     shootingTimer = fireRate;
+                }
                 
                 return;
             }
@@ -97,8 +107,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                     if (chargeTimer == 0)
                     {
-                        
-                        SoundStyle sound = new("CalamityMod/Sounds/Item/GaussRailgunCharge");
+                        SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogCharge");
                         SoundSlot = SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
                     }
                     if (chargeTimer == chargeRate) // Reached max charge
@@ -125,7 +134,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             if (SoundEngine.TryGetActiveSound(SoundSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
-            charge = (float)(Math.Pow(chargeTimer / chargeRate, 3));
+            if (shootingTimer >= 0)
+                charge = (float)(Math.Pow(chargeTimer / chargeRate, 3));
         }
         public void Shoot(bool isBig)
         {
@@ -139,9 +149,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
                 int chargeDamage = (int)(Projectile.damage * 33);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<GaussRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<NidhogRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
                 
-                SoundStyle sound = new("CalamityMod/Sounds/Item/GaussRailgunBigShot");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogBigShot");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(sound with { Volume = 0.9f, MaxInstances = 2, Pitch = (i == 0 ? -0.4f : 0) }, Projectile.Center);
                 Owner.Calamity().GeneralScreenShakePower = 8f;
@@ -165,12 +175,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else
             {
                 OffsetLengthFromArm -= 5;
-                SoundStyle sound = new("CalamityMod/Sounds/Item/GaussFire");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogFire");
                 SoundEngine.PlaySound(sound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.5f, 0.65f) }, Projectile.Center);
 
-                // Holdout velocity weirdly can be a bit finnicky here. apparently.
-                Vector2 shootVelocity = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.UnitY) * 6f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<GaussRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<NidhogRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
 
                 for (int i = 0; i < 9; i++)
                 {
@@ -192,20 +201,21 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (time < 2)
                 return false;
 
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/CompactRailgun").Value;
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/CompactRailgunGlow").Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, -3);
-
+            Texture2D topJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhogTop").Value;
+            Texture2D bottomJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhogBottom").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/NidhogGlow").Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 jawVec = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2 * Projectile.direction);
 
             float randSize = Main.rand.NextFloat(0.9f, 1f);
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.direction == -1 ? MathHelper.Pi : 0f);
-            Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             Texture2D aimTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineThick").Value;
             Texture2D ringTex = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSquareFading").Value;
             Texture2D pointTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
+            Texture2D centerTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
 
             if (charging)
             {
@@ -218,16 +228,25 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Color lineColor = Effects.ArsenalEffects.ArsenalGaussColor with { A = 0 } * Math.Abs(sine) * Math.Min(chargeTimer / (chargeRate * 0.3f), 1) * 0.2f;
                     Main.EntitySpriteDraw(aimTex, Projectile.Center - Main.screenPosition + Projectile.velocity * 10, null, lineColor, Projectile.rotation + angle - MathHelper.PiOver2, new Vector2(aimTex.Size().X * 0.5f, 0), new Vector2(0.2f - Math.Abs(sine) * 0.12f, 8) * 0.07f, SpriteEffects.FlipVertically, 0);
                 }
+                for (int i = 0; i < 3; i++)
+                    Main.EntitySpriteDraw(centerTex, Projectile.Center - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, null, Color.Lerp(Effects.ArsenalEffects.ArsenalGaussColor, Color.White, i * 0.3f) with { A = 0 }, drawRotation, centerTex.Size() * 0.5f, new Vector2(2.1f, 0.9f) * ((0.04f + 0.1f * (float)Math.Pow(charge, 3)) - 0.02f * i), flipSprite);
             }
-
-            for (int i = 0; i < 20; i++)
+            // Oh boy I love perfectly placing multiple textures together!!!
+            Vector2 topJawPlace = drawPosition - jawVec * (5 + 10 * (float)Math.Pow(charge, 3));
+            Vector2 bottomJawPlace = drawPosition + jawVec * (4 + 10 * (float)Math.Pow(charge, 3)) + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6;
+            Vector2 glowPlace = topJawPlace + jawVec;
+            for (int i = 0; i < 14; i++)
             {
                 Color auraColor = Effects.ArsenalEffects.ArsenalGaussColor with { A = 0 } * 0.25f * charge;
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 5 * charge;
-                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 14f).ToRotationVector2() * 3 * charge;
+                Main.EntitySpriteDraw(bottomJaw, bottomJawPlace + drawOffset, null, auraColor, drawRotation, bottomJaw.Size() * 0.5f, Projectile.scale, flipSprite);
+                Main.EntitySpriteDraw(topJaw, topJawPlace + drawOffset, null, auraColor, drawRotation, topJaw.Size() * 0.5f, Projectile.scale, flipSprite);
             }
-            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
-            Main.EntitySpriteDraw(glowTexture, drawPosition, null, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+
+            Main.EntitySpriteDraw(bottomJaw, bottomJawPlace, null, drawColor, drawRotation, bottomJaw.Size() * 0.5f, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(topJaw, topJawPlace, null, drawColor, drawRotation, topJaw.Size() * 0.5f, Projectile.scale, flipSprite);
+            
+            Main.EntitySpriteDraw(glowTexture, glowPlace, null, Color.White, drawRotation, glowTexture.Size() * 0.5f, Projectile.scale, flipSprite);
             if (charging)
             {
                 for (int i = 1; i <= 3; i++) // "Rings"
@@ -236,7 +255,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float angle = MathHelper.ToRadians(36) * lightSine * (1 - charge);
                     Vector2 posOffset = Projectile.velocity * 20 * lightSine;
                     Color lineColor = Effects.ArsenalEffects.ArsenalGaussColor with { A = 0 } * Math.Min(chargeTimer / (chargeRate * 0.3f), 1) * 0.7f;
-                    Main.EntitySpriteDraw(ringTex, Projectile.Center - Main.screenPosition + posOffset, null, lineColor, Projectile.rotation + MathHelper.PiOver2, ringTex.Size() * 0.5f, new Vector2(1, 1) * (0.10f + i * 0.025f), SpriteEffects.FlipVertically, 0);
+                    Main.EntitySpriteDraw(ringTex, Projectile.Center - Main.screenPosition + posOffset, null, lineColor, Projectile.rotation + MathHelper.PiOver2, ringTex.Size() * 0.5f, new Vector2(1 + 0.5f * (float)Math.Pow(charge, 3), 1) * (0.12f + i * 0.025f), SpriteEffects.FlipVertically, 0);
                 }
             }
             return false;

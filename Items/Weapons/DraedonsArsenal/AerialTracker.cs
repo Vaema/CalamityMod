@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class TrackingDisk : RogueWeapon, ILocalizedModType
+    [LegacyName("TrackingDisk")]
+    public class AerialTracker : RogueWeapon, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
@@ -39,7 +40,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.shoot = ModContent.ProjectileType<TrackingDiskProjectile>();
+            Item.shoot = ModContent.ProjectileType<AerialTrackerProjectile>();
             Item.shootSpeed = 8f;
         }
 

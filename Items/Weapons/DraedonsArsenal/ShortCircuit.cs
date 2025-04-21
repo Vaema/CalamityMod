@@ -14,7 +14,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class Taser : ModItem, ILocalizedModType
+    [LegacyName("Taser")]
+    public class ShortCircuit : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(10);
@@ -42,7 +43,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
-            Item.shoot = ModContent.ProjectileType<TaserShot>();
+            Item.shoot = ModContent.ProjectileType<ShortCircuitShot>();
             Item.shootSpeed = 6f;
         }
         public override float UseSpeedMultiplier(Player player)
@@ -52,14 +53,14 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             return 1f;
         }
-        public override bool CanUseItem(Player player) => (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<TaserHook>()] <= 0) || player.altFunctionUse == 0;
+        public override bool CanUseItem(Player player) => (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<ShortCircuitHook>()] <= 0) || player.altFunctionUse == 0;
         public override bool AltFunctionUse(Player player) => true;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2 && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse && player.Calamity().arsenalCooldown <= 0)
             {
                 SoundEngine.PlaySound(Fire with { Pitch = -0.1f }, position);
-                Projectile hook = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<TaserHook>(), (int)(damage * 1.2f), 0, player.whoAmI);
+                Projectile hook = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<ShortCircuitHook>(), (int)(damage * 1.2f), 0, player.whoAmI);
                 return false;
             }
 

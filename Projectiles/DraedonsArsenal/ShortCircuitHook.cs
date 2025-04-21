@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
     [PierceResistException]
-    public class TaserHook : ModProjectile, ILocalizedModType
+    public class ShortCircuitHook : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public static readonly SoundStyle Explode = new("CalamityMod/Sounds/Item/ElectricBurst") { Volume = 0.8f };
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         Particle bloom = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 10, 1.3f, Effects.ArsenalEffects.ArsenalElectricColor, Vector2.One, true, true);
                         GeneralParticleHandler.SpawnParticle(bloom);
 
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TaserExplosion>(), Projectile.damage * 8, 0, Projectile.owner, 0);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShortCircuitExplosion>(), Projectile.damage * 8, 0, Projectile.owner, 0);
                         Time = 0;
                         Projectile.velocity = Projectile.SafeDirectionTo(player.Center);
 

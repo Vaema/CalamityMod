@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class ScattershotLance : ModProjectile, ILocalizedModType
+    public class PhalanxSurgeLance : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         Projectile projectile = Main.projectile[x];
-                        if (projectile.active && projectile.type == ModContent.ProjectileType<ScattershotSkewerHoldout>() && projectile.owner == Projectile.owner)
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<PhalanxSurgeHoldout>() && projectile.owner == Projectile.owner)
                         {
                             projectile.localAI[0] = distMult; // Tell the holdout that you hit a target and how much recoil
                         }
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         Projectile projectile = Main.projectile[x];
-                        if (projectile.active && projectile.type == ModContent.ProjectileType<ScattershotSkewerHoldout>() && projectile.owner == Projectile.owner && projectile.ai[0] > -extention)
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<PhalanxSurgeHoldout>() && projectile.owner == Projectile.owner && projectile.ai[0] > -extention)
                         {
                             projectile.ai[0] -= extention;
                         }
