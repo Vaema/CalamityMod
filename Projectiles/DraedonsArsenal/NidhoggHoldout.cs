@@ -13,10 +13,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class NidhogHoldout : BaseGunHoldoutProjectile
+    public class NidhoggHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override int AssociatedItemID => ModContent.ItemType<Nidhog>();
+        public override int AssociatedItemID => ModContent.ItemType<Nidhogg>();
 
         public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                     if (chargeTimer == 0)
                     {
-                        SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogCharge");
+                        SoundStyle sound = new("CalamityMod/Sounds/Item/NidhoggCharge");
                         SoundSlot = SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
                     }
                     if (chargeTimer == chargeRate) // Reached max charge
@@ -149,9 +149,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
                 int chargeDamage = (int)(Projectile.damage * 33);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<NidhogRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<NidhoggRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
                 
-                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogBigShot");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhoggBigShot");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(sound with { Volume = 0.9f, MaxInstances = 2, Pitch = (i == 0 ? -0.4f : 0) }, Projectile.Center);
                 Owner.Calamity().GeneralScreenShakePower = 8f;
@@ -175,11 +175,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else
             {
                 OffsetLengthFromArm -= 5;
-                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhogFire");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/NidhoggFire");
                 SoundEngine.PlaySound(sound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.5f, 0.65f) }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<NidhogRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<NidhoggRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
 
                 for (int i = 0; i < 9; i++)
                 {
@@ -201,9 +201,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (time < 2)
                 return false;
 
-            Texture2D topJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhogTop").Value;
-            Texture2D bottomJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhogBottom").Value;
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/NidhogGlow").Value;
+            Texture2D topJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhoggTop").Value;
+            Texture2D bottomJaw = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/NidhoggBottom").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/NidhoggGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 jawVec = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2 * Projectile.direction);
 
