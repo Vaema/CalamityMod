@@ -175,28 +175,29 @@ namespace CalamityMod.World
                 // Used for island height randomization
                 int[] randomHeightAdjustmentLimits = new int[MaxIslands]
                 {
+                    28,
+                    24,
                     20,
                     16,
                     12,
                     8,
                     4,
-                    0,
-                    -4,
-                    -8
+                    0
                 };
 
                 // Used for island edge drop off randomization
                 // Taller islands have steeper drop offs
+                // This is also used to decrease the width of the islands
                 int[] randomDropOffAdjustmentLimits = new int[MaxIslands]
                 {
+                    3,
                     4,
                     5,
-                    6,
-                    8,
-                    10,
-                    12,
+                    7,
+                    9,
+                    11,
                     15,
-                    18
+                    19
                 };
 
                 // Loop to gen the islands
@@ -216,8 +217,13 @@ namespace CalamityMod.World
 
                     int ashIslandXAdjustment = distanceBetweenIslands * i;
                     int ashIslandX2Adjustment = distanceBetweenIslands * (numIslands - i - 1);
-                    int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands;
-                    int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands;
+
+                    // Decrease the width of each island randomly
+                    // Taller islands have a greater reduction in width
+                    int randomWidthReduction_LeftSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
+                    int randomWidthReduction_RightSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
+                    int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
+                    int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands - randomWidthReduction_RightSide;
                     int ashIslandGenLimiter = Main.maxTilesY - 1;
                     bool ashIslandGenLimitHit = false;
                     Liquid.QuickWater(-2);
@@ -306,14 +312,14 @@ namespace CalamityMod.World
                     }
 
                     // This is necessary due to earlier calculations
-                    int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands;
+                    int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
 
                     // Lava holes in ash islands
 
                     // Small holes
                     double holeFrequency = 0.00005 / numIslands;
                     for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * holeFrequency); j++)
-                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 25, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 30, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
 
                     // Place smaller hellstone splotches in the ash island
                     // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
@@ -383,7 +389,7 @@ namespace CalamityMod.World
             // Create grass on ash
             for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
             {
-                for (int y = Main.maxTilesY - 300; y < ashIslandDepthLimit + 20; y++)
+                for (int y = Main.maxTilesY - 300; y < ashIslandDepthLimit + 30; y++)
                 {
                     Main.tile[x, y].LiquidAmount = 0;
 
@@ -399,7 +405,7 @@ namespace CalamityMod.World
             // Place ash trees
             for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
             {
-                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 20; y++)
+                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 30; y++)
                 {
                     if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
                         WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
