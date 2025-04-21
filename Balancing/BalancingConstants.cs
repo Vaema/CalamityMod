@@ -242,6 +242,16 @@
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.
         #endregion
 
+        #region Pierce Resistance
+        // Both of the below variables only apply when an NPC has universal pierce resistance enabled via attribute.
+        // Projectiles may be marked as exempt from this pierce resistance by using an attribute.
+
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
+        public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
+        public const float PierceResistCap = 0.8f;
+        #endregion
+
         // TODO -- NPC classification is not done consistently with predictable thresholds.
         // These variables should be used in general to classify "enemies" vs "non-enemies" as well.
         // See NPCUtils.IsAnEnemy
@@ -251,6 +261,13 @@
         // If an enemy has more health than this, they are considered an enemy even if they have 0 contact damage
         internal const int NoContactDamageHealthThreshold = 3000;
         internal const int UnreasonableHealthThreshold = 25000000; // 25 million
+        #endregion
+
+        #region Multiplayer Boss Health Scaling Overrides
+        // These values are used to replace the vanilla 1.35f and 1.9166666666666666f for the 2-player and 3-player cases, respectively.
+        // Editing them via reflection or otherwise will apply to newly spawned bosses during gameplay.
+        public static float ExpertHealthScalingOverride_2Players = 1.75f;
+        public static float ExpertHealthScalingOverride_3Players = 2.25f;
         #endregion
 
         // TODO -- Add all balance related constants here that don't belong in other files.

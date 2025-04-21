@@ -63,23 +63,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             Time++;
 
-            if (Time == 5)
+            if (Time == 5 && !Projectile.Calamity().stealthStrike)
                 Projectile.tileCollide = true;
             if (Time < 100 && Time > 10 && Projectile.Calamity().stealthStrike)
                 Projectile.velocity = Projectile.velocity.RotatedBy(-0.029f * Projectile.ai[2]);
-
-            if (false)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.rotation.ToRotationVector2() * 5, Effects.ArsenalEffects.ArsenalLaserDust);
-                dust.velocity = Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.1f, 0.2f);
-                dust.scale = Main.rand.NextFloat(0.35f, 0.8f);
-                dust.noGravity = true;
-                dust.color = Color.Red;
-                dust.fadeIn = 10;
-                dust.noLight = true;
-                dust.noLightEmittence = true;
-            }
-            
 
             if (!ReturningToPlayer)
             {

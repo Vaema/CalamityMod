@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class FungalClumpMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";

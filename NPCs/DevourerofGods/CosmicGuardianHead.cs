@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class CosmicGuardianHead : ModNPC
     {

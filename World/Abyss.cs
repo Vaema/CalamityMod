@@ -755,7 +755,7 @@ namespace CalamityMod.World
                         }
 
                         //pots
-                        if ((tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() || 
+                        if ((tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() ||
                         tile.TileType == ModContent.TileType<Voidstone>()) && Y > (Main.remixWorld ? rockLayer - (int)((y - 200) * 0.8f) : rockLayer))
                         {
                             if (WorldGen.genRand.NextBool(5))
@@ -1235,12 +1235,12 @@ namespace CalamityMod.World
                 (ushort)ModContent.TileType<PyreMantle>(),
                 (ushort)ModContent.TileType<Voidstone>(),
             };
-            
+
             void getAttachedPoints(int x, int y, List<Point> points)
             {
                 Tile t = CalamityUtils.ParanoidTileRetrieval(x, y);
                 Point p = new(x, y);
-                
+
                 if (!blockTileTypes.Contains(t.TileType) || !t.HasTile || points.Count > 75 || points.Contains(p))
                 {
                     return;

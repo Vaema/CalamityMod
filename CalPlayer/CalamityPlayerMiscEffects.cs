@@ -203,6 +203,16 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
+            if (furyFuel < furyFuelMax && furyRefuelTimer >= 0)
+            {
+                furyFuel += (int)furyRefuelTimer;
+                furyRefuelTimer = MathHelper.Lerp(furyRefuelTimer, 25, 0.01f);
+                if (furyFuel > furyFuelMax)
+                    furyFuel = furyFuelMax;
+            }
+            else if (furyRefuelTimer < 0)
+                furyRefuelTimer++;
+
             // De-equipping Draedon's Heart deletes all Adrenaline.
             if (!draedonsHeart && hadNanomachinesLastFrame)
             {
@@ -307,7 +317,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (dashStart)
                 {
-                    Player.velocity.X *= 3f; // +200% dash speed
+                    Player.velocity.X *= 2.2f; // +120% dash speed
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                 }
@@ -1264,7 +1274,7 @@ namespace CalamityMod.CalPlayer
                     if (holdingDown && Player.ControlsEnabled() && notInLiquid && notOnRope && notGrappling && airborne && !Player.Calamity().gSabatonFalling) //Player cannot further increase their ridiculous gravity during a Gravistar Slam
                     {
                         Player.velocity.Y += Player.gravity * Player.gravDir * (BalancingConstants.HoldingDownGravityMultiplier - 1f);
-                        if (Player.Calamity().gSabaton)
+                        if (Player.Calamity().gSabaton && !Player.gravControl2)
                         {
                             Player.maxFallSpeed *= 1.5f;
                         }
@@ -1960,7 +1970,7 @@ namespace CalamityMod.CalPlayer
             if (vortexBoosterStealthDelay > 0)
             {
                 vortexBoosterStealthDelay--;
-                if (vortexBoosterStealthDelay == 1)
+                if (vortexBoosterStealthDelay == 1 && Player.setVortex)
                     Player.vortexStealthActive = true;
             }
             if (statisPenaltyTimer > 0)
@@ -2331,8 +2341,10 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+            if (raiderTalisman && !vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
+            if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+                Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
@@ -4211,6 +4223,10 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
                 Player.GetCritChance<MeleeDamageClass>() += 10;
             }
+
+
+            if (Player.portableStoolInfo.IsInUse)
+                Player.GetCritChance(DamageClass.Generic) += 5;
 
             // Amalgam boosts
             if (Main.myPlayer == Player.whoAmI)

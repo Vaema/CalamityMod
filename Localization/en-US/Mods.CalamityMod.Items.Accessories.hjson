@@ -1042,7 +1042,7 @@ LeviathanAmbergris: {
 	DisplayName: Leviathan Ambergris
 	Tooltip:
 		'''
-		200% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
+		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
 		Your dashes are empowered by water, knocking back and damaging nearby enemies with viscous currents
 		Visual effects are reduced if visibility is disabled
 		'''
@@ -1402,7 +1402,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+	Tooltip: Stealth strikes grant 15% critical strike chance to non-stealth strikes for 10 seconds
 }
 
 RampartofDeities: {
@@ -1463,7 +1463,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling and deal 8% more damage
+	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1975,8 +1975,11 @@ VampiricTalisman: {
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
-		12% increased rogue damage
+		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
+		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
+		'Possessing the talisman makes you yearn for blood'
 		'''
+	YearningForBlood: THIS ENDLESS HUNGER WON'T END
 }
 
 VeneratedLocket: {
