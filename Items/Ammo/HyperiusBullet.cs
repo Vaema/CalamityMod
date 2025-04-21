@@ -9,7 +9,7 @@ namespace CalamityMod.Items.Ammo
 {
     public class HyperiusBullet : ModItem, ILocalizedModType
     {
-        public static float overflowEfficency = 1.15f; // Multiplier applied to overflow damage done by other damage sources
+        public static float overflowEfficency = 1.2f; // Multiplier applied to overflow damage done by other damage sources
         public static readonly SoundStyle hit = new("CalamityMod/Sounds/Item/HyperiusOverflow");
         public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 24;
             Item.height = 30;
-            Item.damage = 8;
+            Item.damage = 12;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;

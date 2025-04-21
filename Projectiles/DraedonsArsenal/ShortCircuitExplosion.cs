@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TaserExplosion : ModProjectile, ILocalizedModType
+    public class ShortCircuitExplosion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";

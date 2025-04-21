@@ -10,10 +10,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class TrackingDiskProjectile : ModProjectile, ILocalizedModType
+    public class AerialTrackerProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/TrackingDisk";
+        public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/AerialTracker";
         public NPC extraShotTarget;
 
         public bool ReturningToPlayer
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(Projectile.rotation * Utils.GetLerpValue(300, 30, Time, true));
                     Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center,
                         Vector2.Zero,
-                        ModContent.ProjectileType<TrackingDiskLaser>(),
+                        ModContent.ProjectileType<AerialTrackerLaser>(),
                         (int)(damage),
                         Projectile.knockBack,
                         Projectile.owner,
@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(-Projectile.rotation * Utils.GetLerpValue(300, 30, Time, true));
                     Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center,
                         Vector2.Zero,
-                        ModContent.ProjectileType<TrackingDiskLaser>(),
+                        ModContent.ProjectileType<AerialTrackerLaser>(),
                         (int)(damage),
                         Projectile.knockBack,
                         Projectile.owner,
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 if (potentialTarget != null)
                 {
                     Vector2 spawnLocation = Projectile.Center + new Vector2(25, 0).RotatedBy(Projectile.rotation * 0.4f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TrackingDiskLaser>(), damage, Projectile.knockBack, Projectile.owner, 0, Projectile.whoAmI, potentialTarget.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AerialTrackerLaser>(), damage, Projectile.knockBack, Projectile.owner, 0, Projectile.whoAmI, potentialTarget.whoAmI);
                 }
             }
         }

@@ -12,10 +12,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class ScattershotSkewerHoldout : BaseGunHoldoutProjectile
+    public class PhalanxSurgeHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override int AssociatedItemID => ModContent.ItemType<ScattershotSkewer>();
+        public override int AssociatedItemID => ModContent.ItemType<PhalanxSurge>();
 
         public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
@@ -145,18 +145,18 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         bool soundPlaying = (SoundEngine.TryGetActiveSound(StartSlot, out var audio) && audio != null);
                         if (chargeTimer == chargeRate && (!SoundEngine.TryGetActiveSound(ChargeSlot, out var audio3) || !audio3.IsPlaying))
                         {
-                            SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotChargeLoop");
+                            SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeLoop");
                             ChargeSlot = SoundEngine.PlaySound(sound with { Volume = 0.7f, IsLooped = true }, Projectile.Center);
                         }
                         if ((!soundPlaying || !audio.IsPlaying) && startChargeLoop)
                         {
-                            SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotCharge");
+                            SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeCharge");
                             StartSlot = SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
                             startChargeLoop = false;
                         }
                         if (chargeTimer == chargeRate) // Reached max charge
                         {
-                            SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotChargeMax");
+                            SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeMax");
                             StartSlot = SoundEngine.PlaySound(sound with { Volume = 0.8f }, Projectile.Center);
 
                             fullyCharged = true;
@@ -253,9 +253,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
                 int chargeDamage = (int)(Projectile.damage * (35 + (didDash ? 10 : 0))); // Used to be 50x - 60x, skewed the damage way too much to the lance even with it being the special
                 float chargeKB = Projectile.knockBack * 3f;
-                Projectile skewer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ScattershotLance>(), chargeDamage, chargeKB, Projectile.owner,0,0, (didDash ? 5 : 0));
+                Projectile skewer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<PhalanxSurgeLance>(), chargeDamage, chargeKB, Projectile.owner,0,0, (didDash ? 5 : 0));
                 skewer.timeLeft = (didDash ? 25 : 10);
-                SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotChargeShoot");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
                 Owner.Calamity().GeneralScreenShakePower = 6f;
 
@@ -274,17 +274,26 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else
             {
                 OffsetLengthFromArm -= 10;
-                SoundStyle sound = new("CalamityMod/Sounds/Item/ScattershotShoot");
+                SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
-                // Holdout velocity weirdly can be a bit finnicky here. apparently.
-                Vector2 shootVelocity = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.UnitY) * 6f;
-                for (int i = 0; i < 6; i++)
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 6f;
+                float angle1 = MathHelper.ToRadians(2f);
+                int projType = ModContent.ProjectileType<PhalanxSurgeLaser>();
+                for (int i = 0; i < 2; i++)
                 {
-                    float offset = MathHelper.ToRadians(MathHelper.Lerp(-5f, 5f, i / 5f));
-                    float timeFactor = MathHelper.Lerp(1.0875f, 0.65f, MathF.Abs(2.5f - i) / 2.5f);
-                    Vector2 spreadVelocity = shootVelocity.RotatedBy(offset) * (i % 3 == 1 ? 0.8f : MathF.Abs(2.5f - i) > 2f ? 0.9f : 1f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, spreadVelocity, ModContent.ProjectileType<ScattershotLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, timeFactor);
+                    Vector2 corVel1 = shootVelocity.RotatedBy(angle1 * 1.25f) * 0.8f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, corVel1, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
+                    Vector2 corVel2 = shootVelocity.RotatedBy(angle1 * 0.75f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 10, corVel2, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.65f);
+                    angle1 *= -1;
+                }
+                float angle2 = MathHelper.ToRadians(5f);
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 corVel3 = shootVelocity.RotatedBy(angle2) * 0.9f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 4, corVel3, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.8f);
+                    angle2 *= -1;
                 }
 
                 for (int i = 0; i < 9; i++)
@@ -310,8 +319,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (time < 2)
                 return false;
 
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/ScattershotSkewer").Value;
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/ScattershotSkewerGlow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PhalanxSurge").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PhalanxSurgeGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, -3);
 
 

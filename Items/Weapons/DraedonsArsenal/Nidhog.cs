@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
     [LegacyName("GaussRifle")]
-    public class CompactRailgun : ModItem, ILocalizedModType
+    [LegacyName("CompactRailgun")]
+    public class Nidhog : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetStaticDefaults()
@@ -41,7 +42,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
 
-            Item.shoot = ModContent.ProjectileType<CompactRailgunHoldout>();
+            Item.shoot = ModContent.ProjectileType<NidhogHoldout>();
             Item.shootSpeed = 7f;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -66,7 +67,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/CompactRailgunGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/NidhogGlow").Value);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 3);
         public override void AddRecipes()

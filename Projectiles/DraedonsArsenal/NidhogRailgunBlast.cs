@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussRailgunBlast : ModProjectile, ILocalizedModType
+    public class NidhogRailgunBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -62,13 +62,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (p.type == ModContent.ProjectileType<GaussRailgunExplosion>() && p.owner == Projectile.owner)
+                    if (p.type == ModContent.ProjectileType<NidhogExplosion>() && p.owner == Projectile.owner)
                     {
                         if (p.timeLeft > 10)
                             p.timeLeft = 10;
                     }
                 }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<GaussRailgunExplosion>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<NidhogExplosion>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0f, 0f);
             }
             impactDust();
 

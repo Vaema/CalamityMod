@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussRailgunBigShot : ModProjectile, ILocalizedModType
+    public class NidhogRailgunBigShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
